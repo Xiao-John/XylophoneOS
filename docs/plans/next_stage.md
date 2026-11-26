@@ -88,3 +88,17 @@ Pumpkin FAT 导入和多账户验收补齐，D1 映射器和私有 DNS 诊断已
 运行时重定位、受信部署的 Pumpkin 代际与凭据、ClarkE 的 WebCore 与网络组合，
 并保持 SDK 切换与回退的独立验证。
 [普通镜像复验](../work_log/1c7f9abb_next_stage_mainline_replay.md)
+
+
+`9ed4428d` 已含 Pumpkin 持久登录的 Mobius 会话、ClarkE 真实 HTML 分词和 Skia 软件栅格。
+前者验证两帧桌面、注销、持久吊销与旧登录回归，在线管理员撤销和部署凭据仍待验收。
+后者验证确定像素、FAT 输入绑定和资源回收，完整 DOM、CSS 布局及 Qt 视口仍待组合。
+[Mobius 会话](../work_log/242820a4_pumpkin_mobius_session.md) ·
+[Skia 栅格](../work_log/4cc10377_clarke_skia_raster.md)
+
+显式 glibc stock 候选 `7f88e4f9070640c2` 已验首个 dash 子进程、空盘自动安装和 13 个
+日用工具的重启与卸载。同盘外部应用组合在两次启动中运行 C、C++、GNU Make 和日用
+工具。首轮真实 dash 因预览版拒绝命令替换而退出，首次失败保留。组合复测确认文件
+持久化与回读，默认切换仍需命令替换、存量应用、升级及冻结 newlib 回退的独立证据。
+[安装 PR #288](https://github.com/Xiao-John/XylophoneOS/pull/288) ·
+[应用组合 PR #289](https://github.com/Xiao-John/XylophoneOS/pull/289)

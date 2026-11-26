@@ -37,6 +37,7 @@ extern "C" int __xos_file_test_startup_range(xos_u64, xos_u64) { return 0; }
 extern "C" xos_i64 __xos_wait_word(xos_u32*, xos_u32, xos_u64) { std::abort(); }
 extern "C" xos_i64 __xos_wake_word(xos_u32*, xos_u32) { return 0; }
 extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 second, xos_u64 third) {
+    if (number == 6) return 10;
     if (number == 22) {
         auto* handles = reinterpret_cast<xos_u32*>(first);
         handles[0] = 100; handles[1] = 101;

@@ -23,3 +23,6 @@ target_compile_options(skia_raster PRIVATE -O1 -ffp-contract=off -ffunction-sect
 
 add_executable(skia_raster_probe raster_probe.cpp)
 target_link_libraries(skia_raster_probe PRIVATE skia_raster)
+
+add_executable(skia_file_stream_probe file_stream_probe.cpp)
+target_link_libraries(skia_file_stream_probe PRIVATE skia_raster)

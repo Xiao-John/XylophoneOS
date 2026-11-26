@@ -58,3 +58,6 @@ cmake --build "$WEBKIT_OUTPUT" --target WebCore
 库的 CMake 搜索根。编译器和原生 ABI 头的布置沿用
 [JSCOnly 配置](../README.md#原生-llint-布局生成)。明确关闭 JIT、WebAssembly、采样
 及宿主动态依赖搜索。完整目标归档、客体 DOM/CSS 布局以及 Qt 视口仍待验证。
+
+[XOS CPU 共享内存](shared_memory_xos.md) 另外接入真实本进程 grant 和只读像素映射。
+所得对象可用于软件位图。跨进程编解码与收回仍按其单独的协议与验收门推进。

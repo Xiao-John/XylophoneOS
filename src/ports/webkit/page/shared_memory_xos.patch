@@ -1,0 +1,260 @@
+--- a/Source/WebCore/platform/SharedMemory.h
++++ b/Source/WebCore/platform/SharedMemory.h
+@@ -30,6 +30,9 @@
+ #include <wtf/ArgumentCoder.h>
+ #include <wtf/Forward.h>
+ #include <wtf/Platform.h>
++#if OS(XOS)
++#include <wtf/RefPtr.h>
++#endif
+ #include <wtf/ThreadSafeRefCounted.h>
+ 
+ #if USE(UNIX_DOMAIN_SOCKETS)
+@@ -53,16 +56,51 @@
+ class FragmentedSharedBuffer;
+ class ProcessIdentity;
+ class SharedBuffer;
++class SharedMemory;
+ 
+ enum class MemoryLedger : uint8_t { None, Default, Network, Media, Graphics, Neural };
+ enum class SharedMemoryProtection : bool { ReadOnly, ReadWrite };
+ 
++#if OS(XOS)
++class xos_memory_grant final : public ThreadSafeRefCounted<xos_memory_grant> {
++public:
++    ~xos_memory_grant();
++
++private:
++    friend class SharedMemory;
++    explicit xos_memory_grant(uint64_t handle)
++        : m_handle(handle)
++    {
++    }
++
++    uint64_t m_handle;
++};
++
++class xos_local_memory_handle final {
++public:
++    explicit operator bool() const { return !!m_grant; }
++
++private:
++    friend class SharedMemory;
++    xos_local_memory_handle(Ref<xos_memory_grant>&& grant, SharedMemoryProtection protection)
++        : m_grant(WTF::move(grant))
++        , m_protection(protection)
++    {
++    }
++
++    RefPtr<xos_memory_grant> m_grant;
++    SharedMemoryProtection m_protection;
++};
++#endif
++
+ WEBCORE_EXPORT bool isMemoryAttributionDisabled();
+ 
+ class SharedMemoryHandle {
+ public:
+     using Type =
+-#if USE(UNIX_DOMAIN_SOCKETS)
++#if OS(XOS)
++        xos_local_memory_handle;
++#elif USE(UNIX_DOMAIN_SOCKETS)
+         UnixFileDescriptor;
+ #elif OS(DARWIN)
+         MachSendRight;
+@@ -81,7 +119,7 @@
+     WEBCORE_EXPORT static std::optional<SharedMemoryHandle> createCopy(std::span<const uint8_t>, SharedMemoryProtection);
+ 
+     SharedMemoryHandle(SharedMemoryHandle&&) = default;
+-#if USE(UNIX_DOMAIN_SOCKETS)
++#if USE(UNIX_DOMAIN_SOCKETS) && !OS(XOS)
+     explicit SharedMemoryHandle(const SharedMemoryHandle&);
+ #else
+     explicit SharedMemoryHandle(const SharedMemoryHandle&) = default;
+@@ -97,7 +135,7 @@
+     // Transfer ownership of the memory for process memory accounting purposes.
+     WEBCORE_EXPORT void setOwnershipOfMemory(const WebCore::ProcessIdentity&, MemoryLedger) const;
+ 
+-#if USE(UNIX_DOMAIN_SOCKETS)
++#if USE(UNIX_DOMAIN_SOCKETS) && !OS(XOS)
+     UnixFileDescriptor releaseHandle();
+ #elif OS(DARWIN)
+     MachSendRight releaseHandle() { return std::exchange(m_handle, MachSendRight { }); }
+@@ -121,7 +159,7 @@
+     WEBCORE_EXPORT static RefPtr<SharedMemory> allocate(size_t);
+     WEBCORE_EXPORT static RefPtr<SharedMemory> copyBuffer(const WebCore::FragmentedSharedBuffer&);
+     WEBCORE_EXPORT static RefPtr<SharedMemory> map(Handle&&, Protection, CopyOnWrite = CopyOnWrite::No);
+-#if USE(UNIX_DOMAIN_SOCKETS)
++#if USE(UNIX_DOMAIN_SOCKETS) && !OS(XOS)
+     WEBCORE_EXPORT static RefPtr<SharedMemory> wrapMap(void*, size_t, int fileDescriptor);
+ #elif OS(DARWIN)
+     WEBCORE_EXPORT static RefPtr<SharedMemory> wrapMap(std::span<const uint8_t>, Protection);
+@@ -134,7 +172,14 @@
+     size_t size() const { return m_size; }
+ 
+     std::span<const uint8_t> span() const LIFETIME_BOUND { return unsafeMakeSpan(static_cast<const uint8_t*>(m_data), m_size); }
+-    std::span<uint8_t> mutableSpan() const LIFETIME_BOUND { return unsafeMakeSpan(static_cast<uint8_t*>(m_data), m_size); }
++    std::span<uint8_t> mutableSpan() const LIFETIME_BOUND
++    {
++#if OS(XOS)
++        if (m_xos_protection != Protection::ReadWrite)
++            return { };
++#endif
++        return unsafeMakeSpan(static_cast<uint8_t*>(m_data), m_size);
++    }
+ 
+ #if OS(WINDOWS)
+     HANDLE handle() const { return m_handle.get(); }
+@@ -158,7 +203,11 @@
+     Protection m_protection;
+ #endif
+ 
+-#if USE(UNIX_DOMAIN_SOCKETS)
++#if OS(XOS)
++    RefPtr<xos_memory_grant> m_xos_grant;
++    uint64_t m_xos_mapping { 0 };
++    Protection m_xos_protection { Protection::ReadOnly };
++#elif USE(UNIX_DOMAIN_SOCKETS)
+     UnixFileDescriptor m_fileDescriptor;
+     bool m_isWrappingMap { false };
+ #elif OS(DARWIN)
+--- a/Source/WebCore/platform/graphics/skia/ShareableBitmapSkia.cpp
++++ b/Source/WebCore/platform/graphics/skia/ShareableBitmapSkia.cpp
+@@ -59,11 +59,26 @@
+ 
+ sk_sp<SkSurface> ShareableBitmap::createSurface()
+ {
++#if OS(XOS)
++    auto pixels = mutableSpan();
++    if (pixels.empty())
++        return nullptr;
++#endif
+     ref();
+     SkSurfaceProps properties = FontRenderOptions::singleton().createSurfaceProps();
++#if OS(XOS)
++    auto surface = SkSurfaces::WrapPixels(m_configuration.imageInfo(), pixels.data(), bytesPerRow(), [](void*, void* context) {
++#else
+     auto surface = SkSurfaces::WrapPixels(m_configuration.imageInfo(), mutableSpan().data(), bytesPerRow(), [](void*, void* context) {
++#endif
+         static_cast<ShareableBitmap*>(context)->deref();
+     }, this, &properties);
++#if OS(XOS)
++    if (!surface) {
++        deref();
++        return nullptr;
++    }
++#endif
+ 
+     auto* canvas = surface->getCanvas();
+     if (!canvas)
+--- a/Source/WebCore/PlatformJSCOnly.cmake
++++ b/Source/WebCore/PlatformJSCOnly.cmake
+@@ -33,3 +33,8 @@
+         platform/network/xos/ResourceRequest.h
+         platform/network/xos/ResourceResponse.h)
+ endif ()
++
++if (XOS_WEBCORE_SOFTWARE)
++    list(APPEND WebCore_SOURCES platform/xos/SharedMemoryXOS.cpp)
++    list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES "${XOS_NATIVE_ABI_INCLUDE}")
++endif ()
+--- /dev/null
++++ b/Source/WebCore/platform/xos/SharedMemoryXOS.cpp
+@@ -0,0 +1,96 @@
++// SPDX-License-Identifier: Apache-2.0
++#include "config.h"
++#include "SharedMemory.h"
++
++#if OS(XOS)
++#include <xos/ipc_v1.hpp>
++#include <xos/vm_abi.hpp>
++#include <wtf/Assertions.h>
++
++namespace WebCore {
++namespace {
++
++constexpr auto grant_limit = uint64_t { xos::ipc_v1_max_grant_pages } * xos::vm_page_size;
++constexpr auto mapping_stride = grant_limit + xos::vm_page_size;
++constexpr auto local_rights = static_cast<uint32_t>(xos::ipc_v1_grant_right::read_mapping)
++    | static_cast<uint32_t>(xos::ipc_v1_grant_right::write_mapping)
++    | static_cast<uint32_t>(xos::ipc_v1_grant_right::manage);
++
++}
++
++xos_memory_grant::~xos_memory_grant()
++{
++    // A live local mapping owns a strong reference. Destruction therefore has
++    // no live users to keep pages pinned.
++    RELEASE_ASSERT(!xos::ipc_v1::grant_close(m_handle));
++}
++
++RefPtr<SharedMemory> SharedMemory::allocate(size_t size)
++{
++    if (!size || size > grant_limit)
++        return nullptr;
++
++    xos::u64 grant = 0;
++    xos::u64 length = 0;
++    if (xos::ipc_v1::grant_create(0, size, local_rights, grant, length))
++        return nullptr;
++
++    auto storage = adoptRef(*new xos_memory_grant(grant));
++    if (length != size)
++        return nullptr;
++
++    return map(Handle(Handle::Type(WTF::move(storage), Protection::ReadWrite), size), Protection::ReadWrite);
++}
++
++RefPtr<SharedMemory> SharedMemory::map(Handle&& handle, Protection protection, CopyOnWrite copy_on_write)
++{
++    auto storage = WTF::move(handle.m_handle);
++    const auto size = handle.size();
++    if (!storage || !size || size > grant_limit || copy_on_write == CopyOnWrite::Yes
++        || (protection == Protection::ReadWrite && storage.m_protection != Protection::ReadWrite))
++        return nullptr;
++
++    const auto access = protection == Protection::ReadWrite ? xos::ipc_v1_grant_access::read_write : xos::ipc_v1_grant_access::read;
++    const auto grant = storage.m_grant->m_handle;
++    // Address selection and reservation happen in one grant_map call. Gaps
++    // between candidates keep our reservations separately releasable.
++    for (uint64_t index = 1; index <= 2 * xos::ipc_v1_max_grant_mappings_system; ++index) {
++        const auto address = xos::vm_arena_end - index * mapping_stride;
++        xos::u64 mapping = 0;
++        xos::u64 length = 0;
++        const auto result = xos::ipc_v1::grant_map(grant, address, access, mapping, length);
++        if (result == static_cast<xos::i64>(xos::ipc_v1_error::address))
++            continue;
++        if (result)
++            return nullptr;
++        RELEASE_ASSERT(mapping);
++        if (length != size) {
++            RELEASE_ASSERT(!xos::ipc_v1::grant_unmap(grant, mapping));
++            return nullptr;
++        }
++
++        auto memory = adoptRef(*new SharedMemory);
++        memory->m_size = size;
++        memory->m_data = reinterpret_cast<void*>(address);
++        memory->m_xos_grant = WTF::move(storage.m_grant);
++        memory->m_xos_mapping = mapping;
++        memory->m_xos_protection = protection;
++        return memory;
++    }
++    return nullptr;
++}
++
++SharedMemory::~SharedMemory()
++{
++    RELEASE_ASSERT(!xos::ipc_v1::grant_unmap(m_xos_grant->m_handle, m_xos_mapping));
++}
++
++std::optional<SharedMemory::Handle> SharedMemory::createHandle(Protection protection)
++{
++    if (protection == Protection::ReadWrite && m_xos_protection != Protection::ReadWrite)
++        return std::nullopt;
++    return Handle(Handle::Type(Ref { *m_xos_grant }, protection), size());
++}
++
++} // namespace WebCore
++#endif

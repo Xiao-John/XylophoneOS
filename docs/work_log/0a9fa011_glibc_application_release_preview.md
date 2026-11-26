@@ -38,10 +38,31 @@ C、C++ 包，验证 C 读取用户文件和报告 glibc 2.44，以及 C++ 容�
 普通 ISO 分别在使用 glibc 应用前后启动冻结 newlib 对照 XPK。冻结 profile
 拒绝 glibc XPK，glibc profile 也拒绝向冻结工作盘安装该包。拒绝后工作盘
 的字节摘要一致。切回后，同一工作盘保留了原数据与第一次运行的追加内容。
-本次回退验证使用新候选 ISO 和冻结 SDK，原发布 ISO 对照仍待复验。
+这轮使用新候选 ISO 和冻结 SDK。下节记录随后的原版启动盘复验。
 [冻结回退前](../reports/glibc_application_release_preview_20261126/frozen_before.serial.log.gz)
 [冻结回退后](../reports/glibc_application_release_preview_20261126/frozen_after.serial.log.gz)
 [保留的客体数据](../reports/glibc_application_release_preview_20261126/frozen-preserved-user-data.txt)
+
+## 原版 v0.0.1-1024 回退复验
+
+下载原发布镜像归档，按发布记录核对 80,661,910 字节和 SHA-256。归档中的
+`xos.img` 是 BIOS 软盘镜像，与独立发布的 boot.img 摘要完全一致。
+以原发行工作盘为输入，安装由冻结 SDK 重建的对照 XPK 到私有副本，
+写入合成用户数据。QEMU 11.1.2 从原版软盘启动系统 `2c3876e640840ff5`。
+使用旧版 `sup>` 的 `exec-file` 执行对照包，确认正常退出及同步。
+[原发布资产记录](../releases/release_0_0_1_1024.json)
+
+切换阶段从普通候选 ISO `72a8c0f9fbad15a8` 冷启动，使用另一块盘运行 glibc
+2.44 的 C 应用。用 glibc profile 向旧盘安装该包被拒绝。回执记录旧用户盘在
+切换前后完全相同的 SHA-256。继续使用同一旧盘、同一原发行软盘再次冷启动，
+冻结 XPK 再次退出 0。同步后读回初始文件和按次序追加的 `before`、`after`。
+两次旧版启动的应用退出后均收回资源，保持 130342 空闲页、2 个任务、
+0 个完成记录。
+[回执](../reports/glibc_release_1024_rollback_20261126/historical_rollback.json)
+[首次旧版启动](../reports/glibc_release_1024_rollback_20261126/historical-before.serial.log.gz)
+[glibc 候选启动](../reports/glibc_release_1024_rollback_20261126/glibc-switch.serial.log.gz)
+[最后旧版启动](../reports/glibc_release_1024_rollback_20261126/historical-after.serial.log.gz)
+[保留的客体数据](../reports/glibc_release_1024_rollback_20261126/preserved_data.txt)
 
 本次交付覆盖本地发布组装和上述样例。默认 SDK 切换仍以迁移计划所列的
 存量软件验收和完整组合验收为门。

@@ -1,0 +1,41 @@
+{
+  "checks": {
+    "frozen_data_preserved": "passed",
+    "glibc_boot": "passed",
+    "glibc_install_refused_original_work_disk_unchanged": "passed",
+    "historical_boot_after": {
+      "resources": [
+        130342,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    "historical_boot_before": {
+      "resources": [
+        130342,
+        2,
+        0
+      ],
+      "status": "passed"
+    }
+  },
+  "historical_system_build": "2c3876e640840ff5",
+  "input_sha256": {
+    "frozen_probe_package": "e0b0c134d4beec862a2e6647363755df6cc5263f250e6374064c38fa44195819",
+    "frozen_profile": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+    "glibc_iso": "ec3e75d7a3d2a7508ab4f696bd31606239cbccff0874386acae509c9ae5a8aaf",
+    "glibc_probe_package": "d7aeef8b75b2186236694ed67a2da81de3ff7bd07be260181faa85cd623706e2",
+    "glibc_profile": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+    "preserved_user_disk_after_switch": "8d06900fe220aafc92fed8b980c6fce3d6494eb8c035a14665a6483d1de01ac0",
+    "preserved_user_disk_before_switch": "8d06900fe220aafc92fed8b980c6fce3d6494eb8c035a14665a6483d1de01ac0",
+    "published_images_archive": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a",
+    "published_work_disk": "79b38a3abd0b44f38a34cccde17b2330882627f54dd80b597ca5dfee78be45a4",
+    "released_boot_floppy": "1c2cfa90d65b9a9585ac3d5cef32c8376b1806e65f7502321912b2e15b54454c",
+    "user_disk_after_final_old_boot": "f556f6cf14017e559fae201bac2f2bb95c9fb63e43c52f4bef132d46078a6681"
+  },
+  "new_system_build": "72a8c0f9fbad15a8",
+  "qemu": "QEMU emulator version 11.1.2",
+  "source_commit": "83bde48a5d998ad89afe7706fdcd0cdba99c378c",
+  "status": "passed"
+}

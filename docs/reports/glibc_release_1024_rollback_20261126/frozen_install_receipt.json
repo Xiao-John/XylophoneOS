@@ -1,0 +1,11 @@
+{
+  "status": "exported_candidate",
+  "operation": "install",
+  "id": "selection.frozen",
+  "source_sha256": "79b38a3abd0b44f38a34cccde17b2330882627f54dd80b597ca5dfee78be45a4",
+  "output_sha256": "168730f7e6507d2c4554d9d3f3567063e6f4754158cf21a1c57f2803857a828c",
+  "output": "build/default-gates/frozen/restored-source.img",
+  "verified_files": 28,
+  "mutations": 41,
+  "backend_sha256": "21d8ce2f8397e4f34adc80a56c6e4873517441a10ec81ef5c49d1ea59d12f4b5"
+}

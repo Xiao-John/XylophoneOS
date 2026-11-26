@@ -1,0 +1,41 @@
+{
+  "checks": [
+    "frozen_newlib_profile_rejected",
+    "ordinary_install_denied"
+  ],
+  "cli_build_receipt_sha256": "46b4b01e3049d550f4140bd477998b9d9cc17886a38386f37b4962dffcd64077",
+  "error": "maintenance failed: maint-run /usr/bin/xypm install /out/cpython.xpk --sha256 a82ad13aba9c80966b3f37f359cafb39730422b0eef5c7b7aad28d8ca75c7287",
+  "image_sha256": "f6da8c00ff9ec412b9e89ac21dbcf7f55996501175350fbee0bb268ef7389760",
+  "install_baseline": [
+    129806,
+    2,
+    0
+  ],
+  "interpreter": {
+    "bytes": 9402160,
+    "debug_bytes": 46436592,
+    "debug_sha256": "f2ccaf5edb1f6de8732e102db0be2e53581f24f0518036f40785919efeb82fcd",
+    "layout": {
+      "format": "static_elf64",
+      "load_and_main_stack_pages": 2242,
+      "load_segments": 3,
+      "machine": "x86_64",
+      "static_tls": true
+    },
+    "objcopy_sha256": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+    "path": "usr/bin/python3",
+    "sha256": "a581294047917223a7d4907f439b927bdb75f736389e858dd879a6b0062351be",
+    "strip_mode": "strip-debug"
+  },
+  "library_sha256": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79",
+  "package_sha256": "a82ad13aba9c80966b3f37f359cafb39730422b0eef5c7b7aad28d8ca75c7287",
+  "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+  "status": "failed",
+  "stdlib_members": 558,
+  "system_build_id": "30071d4a06866c78",
+  "system_manifest_sha256": "a6af52341fa62f38724a3ffd5cd53a78b75ec179fb1dac55e19f8d2274b580b7",
+  "xypm_elf_sha256": "e11c05601ee281b88ee2785e65fda6b478d8db91ba4b081cae7db83378ad45cc",
+  "xypm_receipt_sha256": "852ea87ad15cc197a82a87a9017a834ce8a1af60f48f40e172ecd535aa872657"
+}

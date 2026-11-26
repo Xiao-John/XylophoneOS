@@ -1,0 +1,26 @@
+{
+  "absent_after_uninstall": [
+    "/var/lib/xypm/transaction",
+    "/var/lib/xypm/txdata",
+    "/usr/bin/python3",
+    "/usr/lib/python314.zip"
+  ],
+  "disk_sha256": "b62f0e1adec9d5e76af7333b56963743ca5e88b0034c41460a03670040b07aea",
+  "package_database": {
+    "packages": []
+  },
+  "preserved_files": {
+    "/work/py3a1/data/note.txt": {
+      "bytes": 14,
+      "sha256": "0ef5f509cc685bbad3241fb5656beeee111824a8d6e2c1bb76cda01bf93cc33d"
+    },
+    "/work/py3a1/data/stored.zip": {
+      "bytes": 128,
+      "sha256": "5bc5b869717cd68e3db8b6dc3836571fa79dc653b429e58709d239bdce9739d1"
+    },
+    "/work/user.txt": {
+      "bytes": 23,
+      "sha256": "9cda283a799cd426dbcf3be71525240d50d48c3da88c608cb80a7efc962a00c4"
+    }
+  }
+}

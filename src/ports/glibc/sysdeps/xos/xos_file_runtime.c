@@ -689,17 +689,33 @@ __xos_file_spawn_begin (struct xos_spawn_stdio *stdio)
         {
           int index = object_for (fd);
           if (descriptors[fd].close_on_exec) index = -1;
-          if (index >= 0 && (fd >= 3 || objects[index].kind != kind_kernel
-              || (objects[index].flags & O_NONBLOCK) != 0
-              || (fd == 0) != (objects[index].handle == 0)))
+          if (fd >= 3)
+            {
+              if (index >= 0) { error = -ENOTSUP; break; }
+              continue;
+            }
+          stdio->object[fd] = index;
+          stdio->route[fd] = -2;
+          stdio->file_handle[fd] = 0;
+          stdio->open_flags[fd] = 0;
+          if (index < 0) continue;
+          const struct open_object *object = &objects[index];
+          if (object->kind == kind_file)
+            {
+              stdio->route[fd] = -1;
+              stdio->file_handle[fd] = object->handle;
+              stdio->open_flags[fd] = object->flags;
+            }
+          else if ((object->flags & O_NONBLOCK) == 0
+                   && ((object->kind == kind_kernel
+                        && (fd == 0) == (object->handle == 0))
+                       || object->kind == (unsigned int) (fd == 0 ? kind_pipe_read
+                                                                 : kind_pipe_write)))
+            stdio->route[fd] = object->handle;
+          else
             {
               error = -ENOTSUP;
               break;
-            }
-          if (fd < 3)
-            {
-              stdio->object[fd] = index;
-              stdio->route[fd] = index < 0 ? -2 : (int) objects[index].handle;
             }
         }
       if (error == 0)

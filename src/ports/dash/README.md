@@ -58,14 +58,20 @@ or the shell's PATH lookup. The loader enforces the caller's create authority.
 Child arguments, environment, working directory and exit status use the native
 spawn and wait APIs.
 
-Parent-executed builtins can read here-documents from sealed anonymous files.
-Quoted delimiters preserve literal text, and unquoted delimiters allow the
-preview's supported expansions.
+Foreground pipelines can run up to four simple external commands with
+literal arguments and no assignments. Dash starts all stages before waiting and
+uses native pipe EOF, child status and `pipefail`. Native writes to a pipe
+whose read end has closed return `EPIPE`.
 
-Pipelines, subshells, command substitution, explicit exec and the fallback for
-executable text scripts require further port work. External file-backed
-redirection requires compatible standard descriptor transfer. The installed C3
-route uses newlib.
+Shell file redirections and simple here-documents can supply descriptors 0–2
+to an external ELF whose CRT advertises `.xos.exec`. The loader transfers the
+open file descriptions with their offsets and append mode. Quoted here-document
+delimiters preserve literal text, and unquoted delimiters allow the preview's
+supported expansions. Parent-executed builtins can also read here-documents.
+
+Pipeline builtins and functions, compound pipe stages, subshells, command
+substitution, explicit exec, and executable text-script fallback remain outside
+the preview. The installed C3 route uses newlib.
 
 
 C1 experimental branch adds external-only, foreground pipelines of at most four

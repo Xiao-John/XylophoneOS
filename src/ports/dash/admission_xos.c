@@ -71,9 +71,6 @@ void xos_check_tree(union node *n) {
         xos_check_tree(n->nredir.n); xos_check_redirect(n->nredir.redirect); break;
     case NNOT: xos_check_tree(n->nnot.com); break;
     case NPIPE: {
-#ifdef XOS_DASH_GLIBC_PREVIEW
-        sh_error("pipelines unavailable in the glibc dash preview");
-#endif
         struct nodelist *lp;
         unsigned count = 0;
         if (n->npipe.backgnd) sh_error("background pipeline unavailable in XOS dash C1");
@@ -149,7 +146,11 @@ int xos_evalpipe(union node *n, int flags) {
         }
         for (lp = n->npipe.cmdlist; lp; lp = lp->next) {
             if (lp->next) {
+#ifdef XOS_DASH_GLIBC_PREVIEW
+                if (pipe2(pip, O_CLOEXEC) < 0) sh_error("pipeline: pipe: %s", strerror(errno));
+#else
                 if (pipe(pip) < 0) sh_error("pipeline: pipe: %s", strerror(errno));
+#endif
                 // Closed stdio slots may be reused by pipe(); keep both ends
                 // away from dup2's destinations before installing any route.
                 for (fd = 0; fd < 2; ++fd) {

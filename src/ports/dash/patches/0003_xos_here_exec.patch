@@ -57,24 +57,9 @@
 +		*argv = cmd = path_bshell;
 +		goto repeat;
 +	}
---- a/src/eval.c
-+++ b/src/eval.c
-@@ -849 +849,11 @@
--	status = redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
-+#ifdef XOS_DASH_GLIBC_PREVIEW
-+	/* Reject unsupported commands before opening any redirection. */
-+	if (xos_has_heredoc(cmd->ncmd.redirect) &&
-+	    (argc == 0 || cmdentry.cmdtype != CMDBUILTIN || execcmd)) {
-+		sh_warnx("here-document requires a parent builtin in the glibc dash preview");
-+		execcmd = 0;
-+		status = 2;
-+		goto bail;
-+	}
-+#endif
-+	status = redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
 --- a/src/redir.c
 +++ b/src/redir.c
-@@ -356,37 +356,14 @@
+@@ -356,37 +356,22 @@
 -	size_t len = 0;
 -	int pip[2];
 -	int memfd;
@@ -124,5 +109,13 @@
 +        saved_error = errno; close(fd);
 +        sh_error("here-document: %s", strerror(saved_error));
 +    }
++#ifdef XOS_DASH_GLIBC_PREVIEW
++    /* If open used the target slot, the redirection will skip dup2. */
++    if (fd == redir->nfile.fd && fcntl(fd, F_SETFD, 0) < 0) {
++        saved_error = errno;
++        close(fd);
++        sh_error("here-document: %s", strerror(saved_error));
++    }
++#endif
 +    return fd;
 +}

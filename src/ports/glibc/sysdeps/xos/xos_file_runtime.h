@@ -30,7 +30,12 @@ long __xos_file_isatty (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_service_error (int) __attribute__ ((visibility ("hidden")));
 
 /* Keep the native stdio routes and cwd stable until loader commit or abort. */
-struct xos_spawn_stdio { int object[3], route[3]; };
+struct xos_spawn_stdio
+{
+  int object[3];
+  long route[3];
+  xos_u32 file_handle[3], open_flags[3];
+};
 long __xos_file_spawn_begin (struct xos_spawn_stdio *) __attribute__ ((visibility ("hidden")));
 void __xos_file_spawn_end (struct xos_spawn_stdio *) __attribute__ ((visibility ("hidden")));
 

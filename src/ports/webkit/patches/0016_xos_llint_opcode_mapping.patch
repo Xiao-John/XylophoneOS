@@ -1,0 +1,158 @@
+--- a/Source/JavaScriptCore/llint/InPlaceInterpreter64.asm
++++ b/Source/JavaScriptCore/llint/InPlaceInterpreter64.asm
+@@ -3076,5 +3076,5 @@
+     # Security guarantee: always less than 30 (0x00 -> 0x1e)
+     biaeq t0, 0x1f, .ipint_gc_nonexistent
+-    leap _os_script_config_storage, t1
++    load_opcode_config_base(t1)
+     loadp JSC::LLInt::OpcodeConfig::ipint_gc_dispatch_base[t1], t1
+     if ARM64 or ARM64E
+@@ -3096,5 +3096,5 @@
+     # Security guarantee: always less than 23 (0x00 -> 0x16)
+     biaeq t0, 0x17, .ipint_conversion_nonexistent
+-    leap _os_script_config_storage, t1
++    load_opcode_config_base(t1)
+     loadp JSC::LLInt::OpcodeConfig::ipint_conversion_dispatch_base[t1], t1
+     if ARM64 or ARM64E
+@@ -3116,5 +3116,5 @@
+     # Security guarantee: always less than 276 (0x00 -> 0x113, including relaxed SIMD)
+     biaeq t0, 0x114, .ipint_simd_nonexistent
+-    leap _os_script_config_storage, t1
++    load_opcode_config_base(t1)
+     loadp JSC::LLInt::OpcodeConfig::ipint_simd_dispatch_base[t1], t1
+     if ARM64 or ARM64E
+@@ -3136,5 +3136,5 @@
+     # Security guarantee: always less than 78 (0x00 -> 0x4e)
+     biaeq t0, 0x4f, .ipint_atomic_nonexistent
+-    leap _os_script_config_storage, t1
++    load_opcode_config_base(t1)
+     loadp JSC::LLInt::OpcodeConfig::ipint_atomic_dispatch_base[t1], t1
+     if ARM64 or ARM64E
+--- a/Source/JavaScriptCore/llint/LLIntData.cpp
++++ b/Source/JavaScriptCore/llint/LLIntData.cpp
+@@ -35,4 +35,8 @@
+ #include "Opcode.h"
+
++#if OS(XOS)
++#include <sys/mman.h>
++#endif
++
+ #if PLATFORM(COCOA)
+ #include <wtf/ResourceUsage.h>
+@@ -46,5 +50,5 @@
+ namespace LLInt {
+
+-#if !HAVE(OS_SCRIPT_CONFIG_SPI)
++#if !HAVE(OS_SCRIPT_CONFIG_SPI) && !OS(XOS)
+ #if COMPILER(CLANG)
+ // The purpose of applying this attribute is to move the os_script_config_storage away from other
+@@ -61,4 +65,9 @@
+
+ static_assert(sizeof(OpcodeConfig) <= OpcodeConfigSizeToProtect);
++
++#if OS(XOS)
++// The read-only XOS literal places this separate range immediately below the global configuration.
++static_assert(OpcodeConfigSizeToProtect == WTF::ConfigSizeToProtect);
++#endif
+
+ #if !ENABLE(C_LOOP)
+@@ -131,12 +140,21 @@
+ #endif
+
+-    WTF::makePagesFreezable(&os_script_config_storage, OpcodeConfigSizeToProtect);
++    auto* opcodeConfigStorage = addressOfOpcodeConfig();
++#if OS(XOS)
++    void* mapping = mmap(opcodeConfigStorage, OpcodeConfigSizeToProtect, PROT_NONE,
++        MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE, -1, 0);
++    RELEASE_ASSERT(mapping == opcodeConfigStorage);
++#endif
++    WTF::makePagesFreezable(opcodeConfigStorage, OpcodeConfigSizeToProtect);
+
+     if (g_jscConfig.vmEntryDisallowed || scriptingIsForbidden()) [[unlikely]] {
+         // FIXME: Check if we can do this in a more performant way. See rdar://158509720.
+         g_jscConfig.vmEntryDisallowed = true;
+-        WTF::permanentlyFreezePages(&os_script_config_storage, OpcodeConfigSizeToProtect, WTF::FreezePagePermission::None);
++        WTF::permanentlyFreezePages(opcodeConfigStorage, OpcodeConfigSizeToProtect, WTF::FreezePagePermission::None);
+         return;
+     }
++#if OS(XOS)
++    RELEASE_ASSERT(!mprotect(opcodeConfigStorage, OpcodeConfigSizeToProtect, PROT_READ | PROT_WRITE));
++#endif
+     WTF::compilerFence();
+
+@@ -181,5 +199,5 @@
+     // Step 2: freeze opcodeMaps.
+     WTF::compilerFence();
+-    WTF::permanentlyFreezePages(&os_script_config_storage, OpcodeConfigSizeToProtect, WTF::FreezePagePermission::ReadOnly);
++    WTF::permanentlyFreezePages(opcodeConfigStorage, OpcodeConfigSizeToProtect, WTF::FreezePagePermission::ReadOnly);
+     WTF::compilerFence();
+
+--- a/Source/JavaScriptCore/llint/LLIntData.h
++++ b/Source/JavaScriptCore/llint/LLIntData.h
+@@ -65,4 +65,8 @@
+ constexpr size_t OpcodeConfigSizeToProtect = std::max(CeilingOnPageSize, 16 * KB);
+
++#if OS(XOS)
++extern "C" const uintptr_t g_xos_jsc_opcode_config_address;
++inline OpcodeConfig* addressOfOpcodeConfig() { return std::bit_cast<OpcodeConfig*>(g_xos_jsc_opcode_config_address); }
++#else
+ #if HAVE(OS_SCRIPT_CONFIG_SPI)
+ static_assert(OS_SCRIPT_CONFIG_STORAGE_SIZE == OpcodeConfigSizeToProtect);
+@@ -79,4 +83,5 @@
+
+ inline OpcodeConfig* addressOfOpcodeConfig() { return std::bit_cast<OpcodeConfig*>(&os_script_config_storage); }
++#endif
+
+ #define g_opcodeConfig (*JSC::LLInt::addressOfOpcodeConfig())
+--- a/Source/JavaScriptCore/llint/LowLevelInterpreter.asm
++++ b/Source/JavaScriptCore/llint/LowLevelInterpreter.asm
+@@ -481,7 +481,16 @@
+ end
+
++macro load_opcode_config_base(reg)
++    if XOS_CONFIG_INDIRECT
++        pcrtoaddr _g_xos_jsc_opcode_config_address, reg
++        loadp [reg], reg
++    else
++        leap _os_script_config_storage, reg
++    end
++end
++
+ macro validateOpcodeConfig(scratchReg)
+     if ARM64E
+-        leap _os_script_config_storage, scratchReg
++        load_opcode_config_base(scratchReg)
+         loadp [scratchReg], scratchReg
+     end
+@@ -490,5 +499,5 @@
+ macro nextInstruction()
+     loadb [PB, PC, 1], t0
+-    leap _os_script_config_storage, t1
++    load_opcode_config_base(t1)
+     jmp JSC::LLInt::OpcodeConfig::opcodeMap[t1, t0, PtrSize]
+ end
+@@ -496,5 +505,5 @@
+ macro nextInstructionWide16()
+     loadb OpcodeIDNarrowSize[PB, PC, 1], t0
+-    leap _os_script_config_storage, t1
++    load_opcode_config_base(t1)
+     jmp JSC::LLInt::OpcodeConfig::opcodeMapWide16[t1, t0, PtrSize]
+ end
+@@ -502,5 +511,5 @@
+ macro nextInstructionWide32()
+     loadb OpcodeIDNarrowSize[PB, PC, 1], t0
+-    leap _os_script_config_storage, t1
++    load_opcode_config_base(t1)
+     jmp JSC::LLInt::OpcodeConfig::opcodeMapWide32[t1, t0, PtrSize]
+ end
+--- a/Source/WTF/wtf/WTFConfig.cpp
++++ b/Source/WTF/wtf/WTFConfig.cpp
+@@ -98,4 +98,8 @@
+ static_assert(!(xos_config_address & (WTF::ConfigAlignment - 1)));
+ extern "C" const uintptr_t g_xos_jsc_config_address = xos_config_address;
++constexpr uintptr_t xos_opcode_config_address = xos_config_address - WTF::ConfigSizeToProtect;
++static_assert(xos_opcode_config_address >= xos::vm_arena_begin);
++static_assert(!(xos_opcode_config_address & (WTF::ConfigAlignment - 1)));
++extern "C" const uintptr_t g_xos_jsc_opcode_config_address = xos_opcode_config_address;
+ #else
+ alignas(WTF::ConfigAlignment) WTF_CONFIG_SECTION Slot g_config[WTF::ConfigSizeToProtect / sizeof(Slot)];

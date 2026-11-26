@@ -1,0 +1,9 @@
+--- a/Source/WTF/wtf/CMakeLists.txt
++++ b/Source/WTF/wtf/CMakeLists.txt
+@@ -815,5 +815,5 @@
+     ${CMAKE_DL_LIBS}
+-    ICU::data
+     ICU::i18n
+     ICU::uc
++    ICU::data
+ )

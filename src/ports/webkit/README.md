@@ -93,3 +93,22 @@ guard、物理释放与回收均按原生 VM 操作完成。
 [正例与地址冲突客体](../../../docs/work_log/b73f1f0f_clarke_jsc_config_protection.md)
 分别验证初始化与原生只读权限、占用时的明确启动失败。完整 JSC 链接与 VM 启动
 另有独立验收。
+
+## JSCOnly 静态 shell
+
+`--jsc-executable` 使用上述锁定输入和新输出目录，构建实际 `jsc` 目标。
+构建使用单任务并关闭预编译头。回执绑定完整 `libJavaScriptCore.a` 与静态 x86-64
+ELF `bin/jsc`。XOS 使用普通可执行链接来保留早期 SDK 的 CRT 钩子。
+
+```sh
+python3 src/ports/webkit/build_llint_layout.py --jsc-executable \
+  --archive "$WPE_ARCHIVE" --icu-archive "$XOS_ICU79_ARCHIVE" \
+  --sdk-build "$GLIBC_BUILD" --sdk-profile "$GLIBC_CXX_PROFILE" --output "$JSC_OUT"
+python3 tests/jsc_static_guest.py --image "$XOS_PROBE_ISO" \
+  --payload "$JSC_OUT/layout/bin/jsc" --report "$GUEST_REPORT"
+```
+
+客体检查通过常规 Xsh 启动 `jsc`，执行新工作盘上的普通 JavaScript，并核对输出、
+退出状态和资源回收。XOS shell 使用 1 MiB 原生带保护页的线程栈，保留 JavaScriptCore
+原有栈保留区。VM 所有者调度、GC 根保留、WebCore 及浏览器进程均按各自门槛验收。
+[静态 shell 客体记录](../../../docs/work_log/3eba7c25_clarke_jsc_guest.md)

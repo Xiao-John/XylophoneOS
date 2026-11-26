@@ -1,0 +1,14 @@
+--- a/Source/cmake/OptionsCommon.cmake
++++ b/Source/cmake/OptionsCommon.cmake
+@@ -137,7 +137,10 @@
+ # Remove unused sections to reduce the binary size when supported.
+ if (LD_SUPPORTS_GC_SECTIONS)
+     WEBKIT_APPEND_GLOBAL_COMPILER_FLAGS(-ffunction-sections -fdata-sections)
+-    string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,--gc-sections")
++    # The pinned XOS SDK requires ordinary linking for the split CRT hooks.
++    if (NOT WTF_OS_XOS)
++        string(APPEND CMAKE_EXE_LINKER_FLAGS " -Wl,--gc-sections")
++    endif ()
+     string(APPEND CMAKE_SHARED_LINKER_FLAGS " -Wl,--gc-sections")
+     string(APPEND CMAKE_MODULE_LINKER_FLAGS " -Wl,--gc-sections")
+ endif ()

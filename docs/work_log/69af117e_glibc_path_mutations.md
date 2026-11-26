@@ -26,3 +26,9 @@ python3 tests/abi_doc_consistency.py
 | directories 候选 profile | `e2aae837fdd7b6cf342f3f65af57c6d9ae292eda59e47b8ebf8d1d246237e838` |
 | QEMU 报告 | `c1073338a4c3aafd2331c10957748164e8baebd825371000a5c67eed6bfb349c` |
 | 串口 | `5f499e9db388e92eb6b306caf1aa66606937edeb98a59f6860b255f6b70c76bc` |
+
+评审复验在 files 入口补齐了 `mkdir` 和目录专用 `rmdir` 的尾斜杠。
+从 `36568c6f` 重建系统，沿用已绑定的 C SDK，再次通过三次来宾运行。
+创建不存在的带斜杠目录、清除空目录、拒绝普通文件与非空目录均经过实测。
+ISO SHA-256 为 `cacd4eb16297edf9f1111ba0782f99b2682dd7dae76055ef0a7131e13eb95376`，
+回执为 `36d950dd707a180925f05caa665512ddb98268d822bbb8037aac2cde92c239f0`。

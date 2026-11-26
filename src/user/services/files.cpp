@@ -737,6 +737,16 @@ bool request_path(const request& in, client_session& session, path_reference& ou
     return output.error == status::ok;
 }
 
+bool directory_mutation_path(const request& in, client_session& session, path_reference& output,
+                             bool allow_root = false) {
+    u32 length = in.name_length;
+    if (length < max_name) {
+        while (length > 1 && in.name[length - 1] == '/') { --length; }
+    }
+    output.error = resolve_service_path(session, in.name, length, output, allow_root);
+    return output.error == status::ok;
+}
+
 status directory_from_path(path_reference& path, u32& object) {
     if (path.leaf[0] == '\0') {
         object = path.parent;
@@ -2020,7 +2030,9 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             reply(out, in, status::invalid); break;
         }
         path_reference resolved;
-        if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
+        const bool resolved_path = directory_only ? directory_mutation_path(in, session, resolved)
+                                                 : request_path(in, session, resolved);
+        if (!resolved_path) { reply(out, in, resolved.error); break; }
         const char* path = resolved.path;
         if (resolved.leaf[0] == '\0') { reply(out, in, status::invalid); break; }
         if (staging_active && refresh_staging_path() && same_path_object(staging_path, path)) {
@@ -2047,7 +2059,8 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     }
     case op::mkdir: {
         path_reference resolved;
-        if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
+        if (!directory_mutation_path(in, session, resolved, true)) { reply(out, in, resolved.error); break; }
+        if (resolved.leaf[0] == '\0') { reply(out, in, status::exists); break; }
         reply(out, in, from_fr(f_mkdir(resolved.path)));
         break;
     }

@@ -1,0 +1,90 @@
+{
+  "status": "failed_before_admin_action",
+  "scope": "diagnostic image with read-only numeric QEMU observations, separate from the fixed qualification",
+  "source_commit": "89d8445f965d6ec7702764aff1d45220eadf79d4",
+  "source_tree": "148c20cb3e9bbcc0acc4e466bcede6c1a74e81b6",
+  "image_manifest_sha256": "46f9e0a8b42f9a61ae4a81f3e51602edcf572381aec96d25dd7dc9287347189c",
+  "image_build_id": "66d9d90f93579ab0",
+  "installer_sha256": "7827b078d9a6242097983c0f33aec6e826c2ea9ed24afcc9f3d7d098169a83a1",
+  "raw_trace_sha256": "6936a616d23fd29eb301a850f9f653b9442c7324c0b63d03b2e302aed938d1ad",
+  "observer_sha256": "da0d74b14a23f6935c1e78970b9d8680b15e30bee8908ea32ddbd21c6ce4c366",
+  "first_visible_host_seconds": 26.766,
+  "first_poll_header": [
+    24.452,
+    "guest",
+    "PKD1",
+    14,
+    0,
+    1
+  ],
+  "final_header": [
+    32.571,
+    "guest",
+    "PKA1",
+    4,
+    74,
+    2
+  ],
+  "holder_status_74": "identity request not sent after losing the daemon endpoint",
+  "prior_live_sample": {
+    "time_seconds": 31.475,
+    "display_service_pid": 12,
+    "display_client_pid": 13,
+    "display_focus_pid": 13,
+    "pids": [
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      7,
+      8
+    ],
+    "supervisor": 19,
+    "holder_pid": 11,
+    "app_pid": 14,
+    "poll": 7,
+    "supervisor_user_pages": 102,
+    "holder": 50,
+    "storage": {
+      "granted_at": 1320000000,
+      "deadline": 31320000000,
+      "drop": 0,
+      "dropped_at": 0
+    },
+    "current_pid": 8,
+    "instruction": "0000000040004c9c",
+    "ppm_sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6",
+    "visible": true
+  },
+  "expiry_sample": {
+    "time_seconds": 33.051,
+    "display_service_pid": 0,
+    "display_client_pid": 0,
+    "display_focus_pid": 0,
+    "pids": [
+      9,
+      7,
+      8
+    ],
+    "supervisor": 174,
+    "holder_pid": 11,
+    "app_pid": 14,
+    "poll": 8,
+    "supervisor_user_pages": 102,
+    "storage": {
+      "granted_at": 1320000000,
+      "deadline": 31320000000,
+      "drop": 1,
+      "dropped_at": 31320000000
+    },
+    "current_pid": 8,
+    "instruction": "000000004000ef2c",
+    "ppm_sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6",
+    "visible": true
+  },
+  "qemu_exit": [
+    0
+  ]
+}

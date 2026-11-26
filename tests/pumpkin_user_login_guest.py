@@ -19,33 +19,34 @@ from pumpkin_user_login import bind_system, broker_artifact, credential_file_hea
 from pumpkin_generation_authority import generation_authority, publish_result
 
 
-def try_enroll(system, state, wallet):
+def try_first_provision(system, state, wallet):
     try:
-        operator.operate(system, state, "enroll", wallet)
+        operator.operate(system, state, "provision-first", wallet)
     except (operator.login_error, OSError):
         return
-    raise RuntimeError("Faulted enrollment unexpectedly reported success")
+    raise RuntimeError("Faulted first account provisioning unexpectedly reported success")
 
 
 def enrollment_failures(system, private, record):
-    for fault in ("publication_unknown", "wallet_sync_failed"):
+    for fault in ("genesis_unknown", "publication_unknown", "wallet_sync_failed"):
         state = private / fault
         wallet = private / (fault + "-credential")
         operator.prepare(state)
         authority = generation_authority(state / "authority", realm)
-        if fault == "publication_unknown":
+        revision = 1 if fault == "genesis_unknown" else 2
+        if fault != "wallet_sync_failed":
             publish = generation_authority.publish
             observed = []
 
             def publication(self, expected, candidate):
                 result = publish(self, expected, candidate)
-                if candidate.revision == 2:
+                if candidate.revision == revision:
                     observed.append(result)
                     return publish_result.outcome_unknown
                 return result
 
             with patch.object(generation_authority, "publish", publication):
-                try_enroll(system, state, wallet)
+                try_first_provision(system, state, wallet)
             assert observed == [publish_result.committed] and wallet.stat().st_size == 0
         else:
             sync = os.fsync
@@ -63,15 +64,35 @@ def enrollment_failures(system, private, record):
                     return save(descriptor, parent, identity, key)
 
             with patch.object(operator, "save_credential", wallet_write):
-                try_enroll(system, state, wallet)
+                try_first_provision(system, state, wallet)
             assert sync_attempts == [True] and wallet.stat().st_size == file_size
         selected = authority.read()
-        assert selected.revision == 2
+        assert selected.revision == revision
         replacement = private / (fault + "-replacement")
-        try_enroll(system, state, replacement)
+        try_first_provision(system, state, replacement)
         assert not replacement.exists() and authority.read() == selected
-        record.append({"case": fault, "revision": 2, "replacement_created": False})
-        print(f"PASS {fault} leaves the account and prevents duplicate issue", flush=True)
+        record.append({"case": fault, "revision": revision, "replacement_created": False})
+        print(f"PASS {fault} preserves the published state and prevents repeated first provisioning", flush=True)
+
+
+def destination_appears_after_preflight(system, state, wallet, authority):
+    check = operator.check_new_destination
+    marker = b"a newly reserved private file"
+
+    def destination_check(path):
+        check(path)
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(marker)
+
+    with patch.object(operator, "check_new_destination", destination_check):
+        try:
+            operator.operate(system, state, "provision-first", wallet)
+        except FileExistsError:
+            pass
+        else:
+            raise AssertionError("First provisioning accepted an occupied destination")
+    assert wallet.read_bytes() == marker and authority.read() is None
 
 
 def run(system, output, with_resource=False):
@@ -91,10 +112,12 @@ def run(system, output, with_resource=False):
             private = Path(directory)
             state, wallet = private / "installation", private / "credential"
 
-            def invoke(command, label, expected=0, credential=None):
+            def invoke(command, label, expected=0, credential=None, account=None):
                 args = [sys.executable, "-B", str(tool), command, "--system", str(system), "--state", str(state)]
                 if credential is not None:
                     args += ["--credential-file", str(credential)]
+                if account is not None:
+                    args += ["--account", account]
                 # Collect exit status only. No subprocess output or transport
                 # is retained in the acceptance artifacts.
                 result = subprocess.run(args, timeout=60, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -112,12 +135,27 @@ def run(system, output, with_resource=False):
                 stream.write(b"existing private file")
             invoke("enroll", "existing destination refused before publication", 1, credential=collision)
             assert collision.read_bytes() == b"existing private file" and authority.read() is None
-            invoke("enroll", "durable issue to owner", credential=wallet)
+            state.chmod(0o755)
+            try:
+                invoke("provision-first", "untrusted installation refused before first issue", 1, credential=wallet)
+            finally:
+                state.chmod(0o700)
+            assert not wallet.exists() and authority.read() is None
+            invoke("provision-first", "invalid first account request refused", 2, credential=wallet, account="/alice")
+            assert not wallet.exists() and authority.read() is None
+            destination_appears_after_preflight(system, state, private / "racing-destination", authority)
+            report["checks"].append({"case": "destination occupied after preflight left genesis unpublished"})
+            invoke("provision-first", "durable first issue to owner", credential=wallet)
             enrolled = authority.read()
             assert enrolled.revision == 2
             wallet_stat = wallet.stat()
             assert stat.S_IMODE(wallet_stat.st_mode) == 0o600 and wallet_stat.st_uid == os.geteuid()
             assert wallet_stat.st_size == file_size and wallet_stat.st_nlink == 1
+            repeated = private / "repeated-first-account"
+            invoke("provision-first", "duplicate first issue refused", 1, credential=repeated)
+            invoke("provision-first", "first issue of another name refused after initialization", 1,
+                   credential=repeated, account="another")
+            assert not repeated.exists() and authority.read() == enrolled
             invoke("enroll", "duplicate enrollment refused", 1, credential=wallet)
             invoke("login", "fresh VM accepts the same credential and logs out", credential=wallet)
             if with_resource:

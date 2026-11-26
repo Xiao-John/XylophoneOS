@@ -1,0 +1,8 @@
+{
+  "coverage": "native_pinned_fat_font_selection_subset",
+  "fontconfig_source_commit": "734935fe272c8ff5bbf8eabeca331b59c88e8d39",
+  "fontconfig_source_tree": "43f60f40cb576812cf11e3cfab12cf260b0e5978",
+  "signed_sdk_port_source_commit": "ab3628db",
+  "system_source_commit": "a213af635214d2ded76f9291ffb75739c7297b35",
+  "system_source_tree": "1ea3872fc372e14288662f8595d0bebb7812edd1"
+}

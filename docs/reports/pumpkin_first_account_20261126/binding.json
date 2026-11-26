@@ -1,0 +1,55 @@
+{
+  "baseline_commit": "f3f6ae6014158b2150c45dd00f53bf86e6bc6b66",
+  "source_commit": "dd87bcf920aff5dd0b0c8184720ab54650999fdb",
+  "source_tree": "31d71f6b81d4798811193e5a7457eb842a403520",
+  "profiles": {
+    "headless": {
+      "build_id": "bb090b77be6d7b0c",
+      "source_inputs_sha256": "bb090b77be6d7b0c3f665f20a1cfc8f66e01202f0281c80a5c6dea511f5d83f5",
+      "system_manifest_sha256": "16fd5054f59d2633935680d3634bf44324bc7e977c40a7c9487da066222337f8",
+      "installer_sha256": "bc3ec639c32d63e034f027218b2cb0dff84669137a2b6a367ad7a8f15a0333e3",
+      "kernel_sha256": "24025ba2deb35d85529d692e079f0cc43de5765562056bfeabf75e0c01f2d853",
+      "system_sdk_manifest_sha256": "923f18cfdbe3e3d40f2226f89575eac0620fd70e837c2c7a17a11c30d9c17e4d",
+      "operator_protocol": 2,
+      "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+      "toolchain": {
+        "target": "x86_64-elf",
+        "gcc": "16.2.0",
+        "binutils_release": "2.47",
+        "binutils": "2.47.20260726",
+        "nasm": "3.02",
+        "qemu": "11.1.2",
+        "cpp_standard": "c++20"
+      },
+      "guest_checks_passed": 19
+    },
+    "desktop": {
+      "build_id": "26a063fd05ca8334",
+      "source_inputs_sha256": "26a063fd05ca833418e307dfc9ea5ae99f163237d74fc543881936fd23ed6d18",
+      "system_manifest_sha256": "25a1121cc747c1b785062561e1e7dd787eba07e097aaf91373b38709ef51b97d",
+      "installer_sha256": "93f237a1e9f7968f49adda8947c9b4c5f19a2bb0b4932c74774784cf35bd4cbf",
+      "kernel_sha256": "450232b8f00b66758a06b3b409a6a16c22c38ff754976d8c81bba5b6ffd36179",
+      "system_sdk_manifest_sha256": "e0525bc862421b472c8a2271ecc386725a5e3ec78ec5eeebc561527f6ff27a97",
+      "operator_protocol": 2,
+      "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+      "toolchain": {
+        "target": "x86_64-elf",
+        "gcc": "16.2.0",
+        "binutils_release": "2.47",
+        "binutils": "2.47.20260726",
+        "nasm": "3.02",
+        "qemu": "11.1.2",
+        "cpp_standard": "c++20"
+      },
+      "guest_checks_passed": 8
+    }
+  },
+  "mobius_glibc_sdk": {
+    "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+    "sdk_tree_sha256": "b0d6dc0e59ad68ce22b4b98d03f6df26e85aa1046bc833ee1c92d04ff1652125",
+    "profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+    "build_receipt_sha256": "3f6ffda5f68f839cab3c590a2656c9de61e6376da4345efddff83018577c8483",
+    "elf_sha256": "9fdacb77d2dc935a83150d68f6275cc355f50cd3c8b693b7eb2e7529a612a413",
+    "elf_bytes": 32670232
+  }
+}

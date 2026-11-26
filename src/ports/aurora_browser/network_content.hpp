@@ -7,8 +7,11 @@
 #include <cstdio>
 
 namespace browser {
+inline bool secure_location(const QString& location) {
+    return location.startsWith(QStringLiteral("https://"), Qt::CaseInsensitive);
+}
 inline bool remote(const QString& location) {
-    return location.startsWith(QStringLiteral("http://"), Qt::CaseInsensitive);
+    return location.startsWith(QStringLiteral("http://"), Qt::CaseInsensitive) || secure_location(location);
 }
 inline QString display_location(const QString& location) {
     return remote(location) ? location : QStringLiteral("file:") + location;
@@ -47,6 +50,12 @@ inline QString resolve_resource(const QString& value, const QString& base, const
     return format_location(result, formatted, sizeof(formatted)) ? QString::fromLatin1(formatted) : QString{};
 }
 
+#ifdef XOS_CLARKE_HTTPS
+xos::i64 fetch_https(xos::u64 service, const browser_http::url& target,
+                    unsigned char* bytes, size_t capacity, xos::u64 deadline,
+                    browser_http::response& response);
+#endif
+
 class content_source {
     xos::u64 service_pid_;
     xos::net2::client network_;
@@ -62,7 +71,7 @@ public:
     bool load(QString& location, QByteArray& bytes, int limit, QString& error) {
         if (!remote(location)) return read(location, bytes, limit, error);
         bytes.clear();
-        if (!service_pid_) { error = QStringLiteral("Start with --network-service-pid to use HTTP"); return false; }
+        if (!service_pid_) { error = QStringLiteral("Start with --network-service-pid to use the network"); return false; }
         if (finished_) { error = QStringLiteral("Resource was not loaded during navigation"); return false; }
         const auto now = xos::sdk::syscall(xos::sys_clock_monotonic);
         if ((!budget_.deadline && !budget_.begin(now)) || !budget_.request(now)) {
@@ -80,11 +89,6 @@ public:
         // reservation, even when the transport cannot report a partial length.
         const size_t reservation = capacity + 1;
         if (!budget_.consume(reservation)) { error = QStringLiteral("Navigation byte budget exceeded"); return false; }
-        if (!connected_) {
-            const auto result = network_.connect(service_pid_);
-            if (result) { error = QStringLiteral("Network service unavailable (%1)").arg(static_cast<qlonglong>(result)); return false; }
-            connected_ = true;
-        }
         const auto encoded = location.toUtf8();
         browser_http::url requested{}, final_url{};
         if (remote_location(encoded.constData(), static_cast<size_t>(encoded.size()), nullptr, false, requested) != browser_http::error::ok) {
@@ -93,11 +97,30 @@ public:
         QByteArray response_bytes;
         response_bytes.resize(static_cast<qsizetype>(capacity));
         browser_http::response response{};
+        const bool secure = requested.protocol == browser_http::scheme::https;
+        const auto protocol = secure ? QStringLiteral("HTTPS") : QStringLiteral("HTTP");
+        xos::i64 result = 0;
         // One request per resource makes the document-wide request budget exact.
-        const auto result = browser_http::fetch(network_, requested,
-            reinterpret_cast<xos::u8*>(response_bytes.data()), capacity,
-            budget_.deadline, response, final_url, 0);
-        if (result) { error = QStringLiteral("HTTP request failed (%1)").arg(static_cast<qlonglong>(result)); return false; }
+        if (secure) {
+#ifdef XOS_CLARKE_HTTPS
+            result = fetch_https(service_pid_, requested,
+                reinterpret_cast<xos::u8*>(response_bytes.data()), capacity, budget_.deadline, response);
+            final_url = requested;
+#else
+            error = QStringLiteral("HTTPS requires a configured trust profile");
+            return false;
+#endif
+        } else {
+            if (!connected_) {
+                result = network_.connect(service_pid_);
+                if (result) { error = QStringLiteral("Network service unavailable (%1)").arg(static_cast<qlonglong>(result)); return false; }
+                connected_ = true;
+            }
+            result = browser_http::fetch(network_, requested,
+                reinterpret_cast<xos::u8*>(response_bytes.data()), capacity,
+                budget_.deadline, response, final_url, 0);
+        }
+        if (result) { error = QStringLiteral("%1 request failed (%2)").arg(protocol).arg(static_cast<qlonglong>(result)); return false; }
         if (response.body_offset > capacity || response.body_length > capacity - response.body_offset ||
             response.body_length > body_limit) { error = QStringLiteral("HTTP response exceeds resource budget"); return false; }
         const size_t received = response.body_offset + response.body_length;
@@ -112,7 +135,7 @@ public:
         location = QString::fromLatin1(formatted);
         bytes = response_bytes.mid(static_cast<qsizetype>(response.body_offset), static_cast<qsizetype>(response.body_length));
         const auto digest = QCryptographicHash::hash(bytes, QCryptographicHash::Sha256).toHex();
-        std::printf("BROWSER_HTTP status=%u bytes=%lld sha256=%s\n", response.status,
+        std::printf("BROWSER_%s status=%u bytes=%lld sha256=%s\n", secure ? "HTTPS" : "HTTP", response.status,
                     static_cast<long long>(bytes.size()), digest.constData());
         return true;
     }

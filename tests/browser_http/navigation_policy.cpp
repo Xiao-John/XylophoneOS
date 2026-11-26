@@ -29,6 +29,16 @@ int main() {
     char display[browser_http::max_url + 1]{};
     assert(browser::format_location(page, display, sizeof(display)) && !strcmp(display, source));
     assert(!browser::format_location(page, display, 8));
+    const char* secure = "https://test.example/web/start.html";
+    assert(browser::remote_location(secure, strlen(secure), nullptr, false, page) == error::ok);
+    assert(browser::remote_resource_location("theme.css", 9, page, page, target) == error::ok);
+    assert(browser::format_location(target, display, sizeof(display)) &&
+           !strcmp(display, "https://test.example/web/theme.css"));
+    const char* downgrade = "http://test.example:443/theme.css";
+    assert(browser_http::parse_url(downgrade, strlen(downgrade), target) == error::ok);
+    assert(!browser::same_origin(page, target));
+    assert(browser::remote_resource_location(downgrade, strlen(downgrade), page, page, target) == error::unsupported);
+    assert(browser::remote_resource_location("//other.example/theme.css", 25, page, page, target) == error::unsupported);
     target = page;
     memset(target.target, 'x', sizeof(target.target));
     assert(!browser::format_location(target, display, sizeof(display)));
@@ -45,5 +55,5 @@ int main() {
     assert(!budget.consume(2) && budget.remaining_bytes() == 1);
     assert(budget.consume(1) && !budget.request(101));
     assert(budget.begin(100) && !budget.consume(SIZE_MAX));
-    puts("BROWSER_NETWORK_POLICY_PASS origins=9 hosts=8 budgets=deadline,requests,bytes");
+    puts("BROWSER_NETWORK_POLICY_PASS HTTP/HTTPS origins, hosts and navigation budgets");
 }

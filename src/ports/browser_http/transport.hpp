@@ -4,6 +4,11 @@
 #include <xos/net_transport.hpp>
 
 namespace browser_http {
+// The reader returns zero on verified end of stream, or a negative transport error.
+using response_reader = xos::i64 (*)(void*, unsigned char*, xos::u32);
+xos::i64 read_framed_response(response_reader read, void* context,
+                              unsigned char* buffer, size_t capacity, response& result);
+
 // Caller provides a connected PID-pinned native client and a total absolute
 // monotonic deadline. The buffer contains exact HTTP wire bytes; response
 // body_offset/body_length select the fully framed body. Numeric IPv4 only.

@@ -27,10 +27,18 @@ int main() {
     for (const auto& p : vectors) ok &= check(resolve(u, p.input, strlen(p.input), v) == error::ok && !strcmp(v.target,p.output), p.input);
     const char* invalid_urls[] = {"http://", "http://u@host/", "http://-bad/", "http://bad../", "http://a:0/", "http://a:65536/", "http://[::1]/", "http://a/%00", "http://a/%0d", "http://a/%", "http://a/\r\nInjected:x", "http://a\\b/", "http://a:999999999999999999999/"};
     for (const auto* p : invalid_urls) ok &= check(parse_url(p, strlen(p), v) == error::invalid, p);
-    ok &= check(parse_url("https://a/",10,v) == error::unsupported, "https_refused");
+    ok &= check(parse_url("https://a/",10,v) == error::ok && v.protocol == scheme::https &&
+                v.port == 443, "https_parsed");
+    url secure = v;
+    ok &= check(resolve(secure,"//other/z",9,v) == error::ok && v.protocol == scheme::https &&
+                v.port == 443 && !strcmp(v.host,"other"), "https_network_reference");
     ok &= check(resolve(u,"javascript:alert(1)",19,v) == error::unsupported, "script_scheme_refused");
     ok &= check(resolve(u,"//other:90/z",12,v) == error::ok && !strcmp(v.host,"other") && v.port==90, "network_reference");
     char request[4096]; size_t size = 0;
+    ok &= check(get_request(secure, request, sizeof request, size) == error::ok && size < sizeof request,
+                "https_request");
+    request[size] = 0;
+    ok &= check(strstr(request, "\r\nHost: a\r\n") != nullptr, "https_default_port_is_implicit");
     ok &= check(get_request(u, request, sizeof request, size) == error::ok && size < sizeof request, "request");
     request[size] = 0;
     ok &= check(!strcmp(request,"GET /a/c?q=1 HTTP/1.1\r\nHost: example.test:8080\r\nConnection: close\r\nAccept-Encoding: identity\r\n\r\n"), "request_bytes");

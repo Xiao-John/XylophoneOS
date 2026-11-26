@@ -8,10 +8,13 @@
 namespace browser_http {
 constexpr size_t max_url = 2048, max_headers = 16384, max_body = 1024 * 1024;
 enum class error { ok, need_more, invalid, unsupported, too_large, truncated };
+enum class scheme { http, https };
+constexpr uint16_t default_port(scheme protocol) { return protocol == scheme::https ? 443 : 80; }
 struct url {
     char host[254]{};
     char target[max_url + 1]{};
     uint16_t port = 80;
+    scheme protocol = scheme::http;
 };
 struct response {
     unsigned status = 0;

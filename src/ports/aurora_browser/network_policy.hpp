@@ -10,7 +10,7 @@
 // Device, connection and address authority remains with the authenticated service.
 namespace browser {
 inline bool same_origin(const browser_http::url& left, const browser_http::url& right) {
-    return left.port == right.port && !strcmp(left.host, right.host);
+    return left.protocol == right.protocol && left.port == right.port && !strcmp(left.host, right.host);
 }
 
 inline bool numeric_host(const char* host) {
@@ -36,7 +36,8 @@ inline browser_http::error remote_location(const char* reference, size_t length,
     const auto result = base ? browser_http::resolve(*base, reference, length, candidate)
                              : browser_http::parse_url(reference, length, candidate);
     if (result != browser_http::error::ok) return result;
-    if (!numeric_host(candidate.host) || (resource && (!base || !same_origin(*base, candidate))))
+    if ((candidate.protocol == browser_http::scheme::http && !numeric_host(candidate.host)) ||
+        (resource && (!base || !same_origin(*base, candidate))))
         return browser_http::error::unsupported;
     output = candidate;
     return browser_http::error::ok;
@@ -51,16 +52,19 @@ inline browser_http::error remote_resource_location(const char* reference, size_
 
 inline bool format_location(const browser_http::url& input, char* output, size_t capacity) {
     if (!output || !capacity || !memchr(input.host, 0, sizeof(input.host)) ||
-        !memchr(input.target, 0, sizeof(input.target)) || !numeric_host(input.host) || !input.port) return false;
+        !memchr(input.target, 0, sizeof(input.target)) || !input.port ||
+        (input.protocol == browser_http::scheme::http && !numeric_host(input.host))) return false;
     // A valid URL can use fewer bytes than max_url for the target: the authority
     // and optional port count toward the same bound in the existing parser.
-    const int size = input.port == 80
-        ? snprintf(output, capacity, "http://%s%s", input.host, input.target)
-        : snprintf(output, capacity, "http://%s:%u%s", input.host,
+    const char* protocol = input.protocol == browser_http::scheme::https ? "https" : "http";
+    const int size = input.port == browser_http::default_port(input.protocol)
+        ? snprintf(output, capacity, "%s://%s%s", protocol, input.host, input.target)
+        : snprintf(output, capacity, "%s://%s:%u%s", protocol, input.host,
                    static_cast<unsigned>(input.port), input.target);
     if (size <= 0 || static_cast<size_t>(size) >= capacity) return false;
     browser_http::url checked{};
-    return browser_http::parse_url(output, static_cast<size_t>(size), checked) == browser_http::error::ok;
+    return browser_http::parse_url(output, static_cast<size_t>(size), checked) == browser_http::error::ok &&
+           checked.protocol == input.protocol;
 }
 
 struct navigation_budget {

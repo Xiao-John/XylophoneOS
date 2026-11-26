@@ -109,3 +109,15 @@ Pumpkin FAT 导入和多账户验收补齐，D1 映射器和私有 DNS 诊断已
 继续在该主线上复验，完整共享解释器和共享 libc 仍须完成实际启动。
 [网络合成回执](../work_log/cdd9b996_network_shell_post287.md) ·
 [D1 早期堆](../work_log/336f6cd9_glibc_d1_early_heap_combination.md)
+
+`31dae7e2` 纳入 glibc dash 的原生单线程 fork、GNU rtld 首线程 TLS 和可搬移 Qt Quick
+工具包。Qt 工具包在断网 Linux arm64 环境移位并重建外部应用，在同一普通镜像经两种
+Shell 输出相同实际帧。正式分发和静态重链接仍按许可范围验收。
+[Qt 工具包](../work_log/870aabad_qt_quick_relocatable_kit.md) ·
+[dash fork](../work_log/8d9ffeae_glibc_dash_fork.md) ·
+[首线程 TLS](../work_log/c4997306_glibc_d1_initial_thread_tls.md)
+
+旧静态 kit 上，stock 安装器提前回收四个启动演示任务后，从 `run` 到 shell 就绪为
+179.196 秒，空盘安装、重启、运行和卸载均通过。新验签 C/C++ kit 使用独立 profile，
+实测线程、异常与命令替换，正在用同一套新 kit 重建并验证安装镜像和应用。冻结 newlib
+回退仍按原 SDK、原 profile 和原盘验证。[安装器 PR #288](https://github.com/Xiao-John/XylophoneOS/pull/288)

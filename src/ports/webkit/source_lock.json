@@ -8,7 +8,8 @@
   "profile": "clarke_webkit_m0",
   "patches": {
     "patches/0001_xos_platform_identity.patch": "c1ad5c8a85833fe1c59d94dac9290bad58e5ad3f4516d15c148650aa03a52bbf",
-    "patches/0002_xos_pthread_types.patch": "1482e044f91027faeb09e61df8b808e7df8e970d1ef6b6a1d37b74e01dda21cf"
+    "patches/0002_xos_pthread_types.patch": "1482e044f91027faeb09e61df8b808e7df8e970d1ef6b6a1d37b74e01dda21cf",
+    "patches/0003_xos_stack_runtime.patch": "88bbd9b8f7523a968f3c9bec5714b150da4d8d832c6ddcba86eafdb0a4691220"
   },
   "llint_icu": {
     "version": "79.1",
@@ -19,5 +20,9 @@
       "lib/libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
       "lib/libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83"
     }
+  },
+  "platform_sources": {
+    "threading/xos_stack_bounds.cpp": "af13b958043e3b1fccec59a1b9e4796c6127d3d806d1f64dd1c1fe19eb122b03",
+    "threading/xos_stack_bounds.hpp": "265d42ea59bed1c1a947d40e2568fee3fd1b544ea82b2ad1bf0690115f7581b6"
   }
 }

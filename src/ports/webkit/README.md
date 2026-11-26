@@ -48,3 +48,11 @@ python3 src/ports/webkit/build_llint_layout.py \
 `manifest.json` 绑定实际生成的设置、偏移请求和汇编头，以及两个静态目标提取器。
 宿主 Ruby 从提取器读取目标编译时写入的设置表与偏移表。解释器链接、执行和跨线程
 GC 仍各自验收。 [验证记录](../../../docs/work_log/89051575_clarke_native_llint_layout_bridge.md)
+
+## 原生 WTF 栈边界对象
+
+在同一个构建入口添加 `--wtf-stack`，并指定一个新输出目录。该阶段编译上游 WTF
+的 `StackBounds.cpp`、使用该接口的 `Threading.cpp` 和 XOS 的 `xos_stack_bounds.cpp`。
+回执记录三个 x86-64 ELF 可重定位对象。WTF 从 glibc 查询当前线程和尚在启动握手中
+的新线程的真实栈范围，查询失败时触发发布构建断言。解释器链接和运行仍依赖线程挂起
+与 GC 生命周期的实现。 [验证记录](../../../docs/work_log/207c6644_clarke_native_wtf_thread_and_stack_slice.md)

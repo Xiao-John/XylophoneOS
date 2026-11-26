@@ -221,6 +221,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "files":
             extra_flags += private_storage_flags
+            if pumpkin_mobius:
+                extra_flags += ("-DXOS_FILES_PRIVATE_DESKTOP_LEASE=1",)
         if name in ("pumpkin_durable", "p2_auth_probe", "p2_anchor_proxy", "pumpkin_holder", "p2_sealed"):
             extra_flags += ("-Os", *durable_flags)
         if name == "net_service":

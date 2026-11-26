@@ -1,0 +1,66 @@
+{
+  "baseline_commit": "9dfccbe2341a829b0e94058c95ab50ad41e47fac",
+  "source_commit": "01bf9cf1a492ef431f73dee56c051e6783f69a20",
+  "source_tree": "705634345447b893ca2255709fec98339db64fda",
+  "original_pr_head": "5c5878829a1d4598edac075f6b4181c14817831f",
+  "trust_source": {
+    "profile": "controlled_host_operator",
+    "operator": "private installation directory owner and exclusive host lock",
+    "boot_transport": "fixed image with protected native COM1 proxy",
+    "generation": "separate host generation record outside the guest work disk, compare-and-publish",
+    "generation_implementation_sha256": "42acec9fec36402121419cf543bf3e34e543d38455c901b7572abe5826ab6205",
+    "operator_implementation_sha256": "f67cf260bd193b38d96edd58f2b90328eb4d3bd132839eceb1bfb7fd477365ac",
+    "physical_trusted_boot": "unqualified",
+    "physical_independent_generation": "unqualified"
+  },
+  "profiles": {
+    "headless": {
+      "build_id": "b70bb236fbad9c05",
+      "source_inputs_sha256": "b70bb236fbad9c057f25ac5525956e52ab051c5d862e713565d4a3b3f60528b9",
+      "system_manifest_sha256": "7161b0ef89d42a4a362d1b64669760ebe70117f4e374ed45a62738fa2271c2dc",
+      "installer_sha256": "0977acc3803de797d96223dada906a779199890c986249b7ea690edc04605c95",
+      "kernel_sha256": "1db375a4d17062da4fc8b89c9bc0fd11043beab2efa169cb5c27e76f13463a2f",
+      "system_sdk_manifest_sha256": "c4046f918e00a0fb1c665c94875c18f2329ef324e5374510d46f848ca59fdb5b",
+      "operator_protocol": 2,
+      "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+      "toolchain": {
+        "target": "x86_64-elf",
+        "gcc": "16.2.0",
+        "binutils_release": "2.47",
+        "binutils": "2.47.20260726",
+        "nasm": "3.02",
+        "qemu": "11.1.2",
+        "cpp_standard": "c++20"
+      },
+      "guest_checks_passed": 19
+    },
+    "desktop": {
+      "build_id": "a73d0182bebee595",
+      "source_inputs_sha256": "a73d0182bebee595ec624bb8907a21083146ac1dd9c2b5762b4f7cabf36aeed1",
+      "system_manifest_sha256": "598ba05d9b95a879bfaf3cb2430a86e1fcc70b11bc139b27c3614e8b86945619",
+      "installer_sha256": "e193f5098fd8e27a8b9fa4bfe41902f04e117054a4bc4c0625c55e00780f77a3",
+      "kernel_sha256": "4ac7eef3058ec95c0f136dcee4a487d0013bd031df685fa9e085da70aa2b72c1",
+      "system_sdk_manifest_sha256": "bebb021fdf1d6346254f3563d0a2354a4413905e2b7b8c25d281445ff4223c29",
+      "operator_protocol": 2,
+      "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+      "toolchain": {
+        "target": "x86_64-elf",
+        "gcc": "16.2.0",
+        "binutils_release": "2.47",
+        "binutils": "2.47.20260726",
+        "nasm": "3.02",
+        "qemu": "11.1.2",
+        "cpp_standard": "c++20"
+      },
+      "guest_checks_passed": 4
+    }
+  },
+  "mobius_glibc_sdk": {
+    "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+    "sdk_tree_sha256": "b0d6dc0e59ad68ce22b4b98d03f6df26e85aa1046bc833ee1c92d04ff1652125",
+    "profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+    "build_receipt_sha256": "3f6ffda5f68f839cab3c590a2656c9de61e6376da4345efddff83018577c8483",
+    "elf_sha256": "9fdacb77d2dc935a83150d68f6275cc355f50cd3c8b693b7eb2e7529a612a413",
+    "elf_bytes": 32670232
+  }
+}

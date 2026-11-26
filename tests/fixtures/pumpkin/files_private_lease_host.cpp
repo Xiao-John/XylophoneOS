@@ -21,6 +21,7 @@ struct kernel_fixture {
         {second_child, root_pid, 204, 205},
     };
     u64 endpoint_peer = 0;
+    i64 clock = 1;
     i64 readiness = 0;
     u32 next = 300;
     u32 created = 0;
@@ -171,6 +172,28 @@ void test_boot_binding() {
     assert(kernel.closed == 4);
     assert(service.grant(request, root, 0, true).status == result::invalid);
 }
+
+void test_lease_duration(lease_profile profile, u64 duration) {
+    kernel = {};
+    backend device;
+    broker service(device.io(), profile);
+    assert(service.establish_bootstrap());
+    const auto root = kernel.sessions[0];
+    const grant_request request{grant_magic, protocol_version, direct_child, access::writer, 0};
+    assert(service.grant(request, root, 0, true).status == result::ok);
+
+    kernel.clock = static_cast<i64>(duration);
+    service.poll(true);
+    assert(kernel.closed == 0);
+    ++kernel.clock;
+    service.poll(true);
+    assert(kernel.closed == 2);
+
+    assert(service.grant(request, root, 0, true).status == result::ok);
+    kernel.sessions[0] = {};
+    service.poll(true);
+    assert(kernel.closed == 4);
+}
 }
 
 i64 xos::sdk::syscall(u64 number, u64 first, u64 second, u64 third) {
@@ -200,7 +223,7 @@ i64 xos::sdk::syscall(u64 number, u64 first, u64 second, u64 third) {
             ++kernel.closed;
         }
         return 0;
-    case sys_clock_monotonic: return 1;
+    case sys_clock_monotonic: return kernel.clock;
     case sys_ipc_wait: return kernel.readiness;
     case getpid_syscall: return 8;
     case receive_syscall: return process_error_would_block;
@@ -220,4 +243,7 @@ int main() {
     std::puts("PASS sync/readback failures return outcome unknown");
     test_boot_binding();
     std::puts("PASS boot-pair and actual target-parent checks with endpoint cleanup");
+    test_lease_duration(lease_profile::short_operation, 30'000'000'000ull);
+    test_lease_duration(lease_profile::desktop, 31ull * 60 * 1'000'000'000);
+    std::puts("PASS short and desktop deadlines remain bounded and revoke with the controller");
 }

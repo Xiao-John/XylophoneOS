@@ -1,0 +1,5 @@
+PASS exclusive reader/writer lifecycle and stale binding rejection
+PASS partial writes stay in memory and later lease verifies full slot
+PASS sync/readback failures return outcome unknown
+PASS boot-pair and actual target-parent checks with endpoint cleanup
+PASS short and desktop deadlines remain bounded and revoke with the controller

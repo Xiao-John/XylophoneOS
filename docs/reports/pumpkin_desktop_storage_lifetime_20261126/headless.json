@@ -1,0 +1,95 @@
+{
+  "status": "passed_subset",
+  "build_id": "0556a7ad4fd45012",
+  "system_manifest_sha256": "55c90797d2da65f71e27d5bea4f0b976d5030fac5a9c4b7a94861f64c3089bd9",
+  "artifacts": {
+    "xos-install.iso": "08c4fcf3b8e014645452159167002b0d2e7bd2d944a821717d2553085be50a7a",
+    "user_files.image.elf": "f86732d1e4839720bcf5c4a7c17703574ff83d18ecfdaaed5ea089df286ad49a",
+    "user_supervisor.image.elf": "48130fce92b248aebcf86c69e5ef23a01e667ce9b2628d442b6d04ba09e340b3",
+    "user_pumpkin_durable.image.elf": "fc0fc68a5c51066f07c88284de92b5c95f7882755344fd7c7d59a4cfa8c1cfa0",
+    "user_p2_anchor_proxy.image.elf": "31aca001e0f3d6093784fd7ffbfe3f6fff7c3b7ed110e9b0c1e16804ae32b34c",
+    "user_pumpkin_holder.image.elf": "663d46bd8299d03a47ec460ef3cdec7925d821c832c420b0075a0e3200d35aa7"
+  },
+  "entry_sha256": "f67cf260bd193b38d96edd58f2b90328eb4d3bd132839eceb1bfb7fd477365ac",
+  "runner_sha256": "8b05af5c7ff3ac4a3f51c3f5ca389e077d33dd02e19b761d413db69abb267988",
+  "checks": [
+    {
+      "case": "private installation",
+      "exit": 0
+    },
+    {
+      "case": "existing destination refused before publication",
+      "exit": 1
+    },
+    {
+      "case": "untrusted installation refused before first issue",
+      "exit": 1
+    },
+    {
+      "case": "invalid first account request refused",
+      "exit": 2
+    },
+    {
+      "case": "destination occupied after preflight left genesis unpublished"
+    },
+    {
+      "case": "durable first issue to owner",
+      "exit": 0
+    },
+    {
+      "case": "duplicate first issue refused",
+      "exit": 1
+    },
+    {
+      "case": "first issue of another name refused after initialization",
+      "exit": 1
+    },
+    {
+      "case": "duplicate enrollment refused",
+      "exit": 1
+    },
+    {
+      "case": "fresh VM accepts the same credential and logs out",
+      "exit": 0
+    },
+    {
+      "case": "credential symlink refused",
+      "exit": 1
+    },
+    {
+      "case": "multiply-linked credential refused",
+      "exit": 1
+    },
+    {
+      "case": "public credential mode refused",
+      "exit": 1
+    },
+    {
+      "case": "wrong credential rejected by ordinary session",
+      "exit": 3
+    },
+    {
+      "case": "durable registrar revocation",
+      "exit": 0
+    },
+    {
+      "case": "fresh VM rejects the original revoked credential",
+      "exit": 3
+    },
+    {
+      "case": "genesis_unknown",
+      "revision": 1,
+      "replacement_created": false
+    },
+    {
+      "case": "publication_unknown",
+      "revision": 2,
+      "replacement_created": false
+    },
+    {
+      "case": "wallet_sync_failed",
+      "revision": 2,
+      "replacement_created": false
+    }
+  ]
+}

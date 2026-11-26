@@ -1,0 +1,12 @@
+{
+  "scope": "live-revocation desktop startup before sending an administration signal",
+  "operator_result": "Pumpkin desktop could not start or its logout was not confirmed",
+  "last_scanout_pixels": "black",
+  "last_scanout_dimensions": [
+    800,
+    600
+  ],
+  "last_ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077",
+  "raw_error_log_sha256": "f8e9841cfe85f530e9e5bb4b9bfeec6d5ecc17af9e0df5ce749a4094a9afec2b",
+  "origin": "unresolved"
+}

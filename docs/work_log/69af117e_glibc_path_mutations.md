@@ -33,8 +33,17 @@ python3 tests/abi_doc_consistency.py
 ISO SHA-256 为 `cacd4eb16297edf9f1111ba0782f99b2682dd7dae76055ef0a7131e13eb95376`，
 回执为 `36d950dd707a180925f05caa665512ddb98268d822bbb8037aac2cde92c239f0`。
 
-虚拟 `/dev` 与 `/dev/null` 在目录变更时沿用现有虚拟命名空间。
-实际工作盘预置空 FAT `dev` 目录，客体三次均拒绝删除虚拟目录和设备，
-并识别已有的虚拟目录。系统 `805d0237a18c3de2` 的 ISO 为
-`7102a81608d04f757be5ef9644138e3849aae37e53d00caa291f855d07551160`，
-QEMU 回执为 `17ec814e631d362db9f002f33cdf90026b7eb013401b482e8deb6ab825bbf05c`。
+虚拟 `/dev` 与 `/dev/null` 在目录变更时沿用现有虚拟命名空间。首次复验
+在 `805d0237a18c3de2` 上检查了虚拟节点。评审确认空 FAT `dev` 目录误放在
+服务退出测试的工作盘，同时该测试读了未绑定的 `args`。修复后从
+`befe3ff18e0339d41fa9283fbcb3773d868f642a` 重建。正确预置空 FAT `dev` 的工作盘
+通过三次目录变更和资源回收验证。独立跑完 files 四次，包括专用镜像真实服务退出、
+恢复资源及其余存活任务检查。
+
+| 工件 | SHA-256 |
+| --- | --- |
+| 系统 `92680efba9ec1c2c` 清单 | `2027e72ea3b7b85c868926620fb19fa28afa4972f34e2506a73f4f52ed550a58` |
+| ISO | `2a8b5495a9c235e801387a1f59bfda6e0dacd6f75d9a7837b96a152d02eca79f` |
+| 服务退出镜像 `cc1a5f6513a4d6f2` 清单 | `90124fc53189dd56936f7bc9dcd37ccd05dd7462728a3d47ecc53b97da739ba9` |
+| 目录变更报告 | `6463d2c653957c998ffcd39ded65ec48aa9a44a63ee580de2093abc721f9d085` |
+| files 含服务退出报告 | `488148fcb31c4ad2a16b23be6c2efc9eb802c33eedfa2d70dea55f3780f3fc86` |

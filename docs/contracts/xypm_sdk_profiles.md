@@ -169,6 +169,19 @@ python3 scripts/build_candidate.py --output build/candidates/glibc_installer \
 验收存量应用和回退。
 [glibc 迁移计划](../plans/glibc_port_scout.md#从加固期走向默认切换的门)
 
+带日用工具的候选使用包含 `cxx_runtime`、`directories` 和 `stdio_transfer` 的 glibc
+kit。用不同的 profile ID 发布不同的应用能力集合。`--glibc-daily-source` 接收锁定
+的 sbase 源码目录，并使用同一 kit 编译、打包、绑定日用 XPK 和原生 xypm。
+
+```sh
+python3 scripts/build_candidate.py --output build/candidates/glibc_stock \
+  --glibc-app-kit "$kit" --glibc-daily-source "$SBASE_SOURCE" --installer-guest
+```
+
+候选清单绑定三个安装成员。验收从空工作盘运行自动安装，重启验证文件及工具输出，
+再用客体 xypm 卸载并读回非托管文件。候选生成的普通镜像仍可供独立 smoke 与回退
+对照。[日用安装候选回执](../work_log/843260b2_glibc_stock_installer.md)
+
 运行路径选中部署目录内的 SDK 和 profile，工具可随目录搬移到源树外使用。
 目标构建要求 Python 3.11 及与 SDK manifest 匹配的 `x86_64-elf` 工具在 PATH 上。
 编译、汇编与链接工具仍按现有规则核验。工具启动按单次调用选定运行库，切回

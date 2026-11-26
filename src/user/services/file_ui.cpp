@@ -851,6 +851,11 @@ void install_boot_dash() {
     install_boot_payload();
 }
 
+bool boot_bundle_present() {
+    const i64 size = syscall(sys_boot_payload, 0, 0, 0);
+    return size > 0 && boot_payload_is_bundle(static_cast<u64>(size));
+}
+
 u32 staged_count() { return staged_package_count; }
 const char* staged_path(u32 index) {
     if (index >= staged_package_count) { return nullptr; }

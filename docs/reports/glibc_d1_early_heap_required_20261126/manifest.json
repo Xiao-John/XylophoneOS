@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "source_commit": "e466c10df7ea253d0dff13df1bd69af31eb7dca3",
+  "implementation_tree": "0c1d8632e8b3d119376e3d10a3bb52b50241ac41",
+  "files": {
+    "entry.json": "0d37f5f12f916101acdab798fa44c2bdb2a324ba4507ae54e4955d74dcdd9bca",
+    "mapper.json": "20bb093ba8cfd7c1ab9a4eada0e4ad637cadecb2adfdb7befa03ad1c46d91eef"
+  },
+  "raw_report_sha256": {
+    "entry.json": "05d4fd2263bfe0c45e8ed8e535a715aaf786fa93ccc910c510d9a8ee7da1abf7",
+    "mapper.json": "7a2e62d9e23375edac69159b4965c42bbe5a359d8fe484263876abce857a087f"
+  }
+}

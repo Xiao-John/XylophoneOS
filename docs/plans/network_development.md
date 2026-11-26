@@ -23,6 +23,17 @@ D1 的端点/直接A答案/有界熵已通过43项普通与ASan/UBSan真实帧�
 双构建回归和preview工具链编译，见[4e29c6b1](../work_log/4e29c6b1_network_dns_hardening.md)。
 下一步为D2生命周期与缓存、D3客体，以及独立TCP ISN加固；DNS/DHCP开关仍为0。
 
+### N4 安装顺序
+
+1. 先用已验 net2 票据和静态网卡路径交付受信安装 profile。构建时由安装维护者选择
+   网卡及 resolver，固化在安装内核携带的用户态映像。冷启动后从普通 xsh 与安装的
+   dash 启动 ClarkE，检查真实 DNS、HTTPS、渲染和退出。该阶段沿用固定静态子网和
+   应用目的地址约束。 [静态安装 profile 合同](../contracts/network_n4_v1_proposal.md#22-静态安装-profile)
+2. 现场可改的配置依赖具有管理权限和持久性的存储。确认原子发布、旧配置撤销与恢复
+   之后，再接入独立 shell 或登录会话的可信实例交付和独立证书信任配置。
+3. DHCP H1/H2 可和静态安装验收并行。租约地址、路由、resolver 的生命周期验收后，
+   再组合旧连接撤销、配置代际、受信启动及产品启用。普通镜像仍使用封闭默认值。
+
 <!-- coderabbit-ai-generated:v1 -->
 
 <!-- coderabbit-ai-generated-section:v1:3bd51f0965bffac939bc3d84fce5381a7c2af3f06d5b6a146214815277f73d94 -->

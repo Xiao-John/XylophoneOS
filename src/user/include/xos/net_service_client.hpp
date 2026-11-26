@@ -5,6 +5,8 @@
 #include <xos/thread_abi.hpp>
 
 namespace xos::net2 {
+inline constexpr char service_pid_variable[] = "XOS_NET_SERVICE_PID";
+
 class session_client {
 public:
     session_client() = default;
@@ -150,8 +152,9 @@ private:
             __builtin_memcpy(&config, reply.data, sizeof(config));
             return config.revision == configuration_revision && config.epoch && !config.reserved &&
                 config.capabilities == resolve_in_a && config.tickets <= client_sessions &&
+                config.address == static_address && config.mask == static_mask && config.gateway == permitted_address &&
                 ((config.mode == network_mode::disabled && !config.resolver) ||
-                 (config.mode == network_mode::static_direct && config.resolver == permitted_address));
+                 (config.mode == network_mode::static_direct && valid_static_resolver(config.resolver)));
         }
         case operation::resolve_result: {
             if (reply.result || reply.length != sizeof(resolve_reply) || reply.flags) return false;

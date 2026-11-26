@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "xos_rtld_mapping.h"
+#include "xos_rtld_heap.h"
 #include <errno.h>
 #include <xos/fault_sha256.hpp>
 #include <xos/sdk.hpp>
-#include <xos/vm_abi.hpp>
+#include <xos/vm.hpp>
 
 using namespace xos;
 #include "dependency_plan.hpp"
@@ -210,16 +211,23 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
         || __xos_rtld_open_pin(inputs[1].soname) != inputs[1].fd) { fail("closed SONAME lookup"); }
 
     if (expiry) {
+        const xos_rtld_heap_plan expired_heap{0x130000000000ULL, vm_page_size, plan.deadline_ns};
+        if (sdk::vm_reserve(expired_heap.base, expired_heap.bytes, vm_page_size, true)
+                != static_cast<i64>(expired_heap.base)
+            || __xos_rtld_heap_begin(&expired_heap) != 0) { fail("expired phase setup"); }
         const u32 seq = early.request_sequence;
         char data;
         if (sdk::syscall(47, plan.deadline_ns) != 0
+            || __xos_rtld_heap_grow(vm_page_size) != XOS_RTLD_HEAP_FAILED
+            || __xos_rtld_heap_seal() != ETIMEDOUT
+            || sdk::write(1, reinterpret_cast<const void*>(expired_heap.base), 1) >= 0
             || __xos_rtld_read_pin(inputs[0].fd, &data, 1) != -ETIMEDOUT
             || __xos_rtld_close_pin(inputs[0].fd) != -ETIMEDOUT
             || __xos_rtld_finish_images(&state) != ETIMEDOUT
             || early.request_sequence != seq || early.phase != xos_file_session_active) {
             fail("absolute phase expiry");
         }
-        sdk::print("D1_RTLD_PHASE_EXPIRED request=unsent\n");
+        sdk::print("D1_RTLD_PHASE_EXPIRED request=unsent heap=uncommitted\n");
         sdk::exit(54);
     }
 

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "scope": "sealed administrator static profile on two cold boots of the same installed work disk",
+  "source": {
+    "browser_and_tls": "e9955e4f42d8882d085a1ef9a251da5ab2788e50",
+    "profile_system_and_guest_runner": "38dd2ecec4358864b4f8f34c8b0dd53bb21114cc",
+    "ordinary_system_and_guest_runner": "0381195ae19b2280217f0422d7cf0d946322c961"
+  },
+  "system_manifest_sha256": "ce448647ee39fc05438f551b40d728a73be88608fbab7b2723505dfd43a71c53",
+  "native_tls_receipt_sha256": "ded2524f58f09258f41991297dee3e21511ffc9324a49f24240fbe55a202c716",
+  "toolchain_container_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "scanout": {
+    "width": 800,
+    "height": 600,
+    "crop_xyxy": [
+      32,
+      222,
+      768,
+      550
+    ],
+    "rgb_counts_by_shell": {
+      "xsh": {
+        "244,247,252": 226716,
+        "24,50,76": 1449,
+        "183,53,118": 1024
+      },
+      "dash": {
+        "244,247,252": 226763,
+        "24,50,76": 1473,
+        "183,53,118": 1024
+      }
+    }
+  },
+  "files": {
+    "dash.pcap": "41147464563d3d5be964973fc0b2d3381a72c7814068fd8334ef5f8eb79acc3f",
+    "dash.ppm.gz": "9c1e3d30b4f2bb8cc99a66d34c5b756840d5ce559504bd23266e797df6732145",
+    "dash_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "dash_serial.log.gz": "ea468a5c0626c1809e8515dea34b00a44f9ca93a6ad1d6cd1940175330a4d646",
+    "host-net.json": "22b37af053c2c128e682eef222c6e197ff8c2a72bf8c0081b12c2e91dc96acdd",
+    "installed.json": "f965c8851b26b9ca091b0788a4b04ad3a062bbe237d190b25ba18ad59bed8869",
+    "license-audit.txt": "6b6338c4b1a9b64e9b7f13f8dacc52351f951b573543fc146710157b8ef2f9e2",
+    "ordinary.json": "5a7b55229d9090bf33961dbf641b91e2589d2fd24ad6404c9a58848ec2cd13f2",
+    "ordinary.pcap": "308f1abd7d991eda84153640e93c988d8b852df699815c4e5f2dd234296ec8de",
+    "ordinary.serial.log.gz": "14ed8f14c885e3a88c203d9d171d5991d476b18136940b050e44921a86016f4f",
+    "profile.json": "5614e6876118ed26233ede73ddd77170b08ba11c1538810703f6b368c6b53de8",
+    "xsh.pcap": "7926f5d6bf700fa3de70d725d6a34ef5e7fe6ab51115f9fb735d03f1ceccd41e",
+    "xsh.ppm.gz": "2e0120e5aa095ffa54471832a27a142c2858c9d2aee64f1806ecdf1af60639b9",
+    "xsh_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "xsh_serial.log.gz": "6c7411a5c9ad606a5dd220c8384e97eb20b51a87865ea135397e08c36d7ac667"
+  }
+}

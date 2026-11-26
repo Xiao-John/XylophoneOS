@@ -38,7 +38,7 @@ static int emit(int expected_status, int reader_closes)
     return reader_closes ? 81 : expected_status;
 }
 
-static int receive(int relay)
+static int receive(int relay, int spaces)
 {
     size_t position = 0;
     for (;;) {
@@ -47,7 +47,9 @@ static int receive(int relay)
         if (count < 0) return 82;
         if (count == 0) break;
         for (ssize_t i = 0; i < count; ++i) {
-            if (position >= payload_size || bytes[i] != pattern(position++)) return 83;
+            unsigned char expected = spaces ? ' ' : pattern(position);
+            if (position >= payload_size || bytes[i] != expected) return 83;
+            ++position;
         }
         if (relay && write_all(STDOUT_FILENO, bytes, (size_t) count) != 0) return 84;
     }
@@ -74,8 +76,9 @@ int main(int argc, char **argv)
     if (strcmp(argv[1], "emit") == 0) return emit(0, 0);
     if (strcmp(argv[1], "emit7") == 0) return emit(7, 0);
     if (strcmp(argv[1], "emit-close") == 0) return emit(0, 1);
-    if (strcmp(argv[1], "relay") == 0) return receive(1);
-    if (strcmp(argv[1], "verify") == 0) return receive(0);
+    if (strcmp(argv[1], "relay") == 0) return receive(1, 0);
+    if (strcmp(argv[1], "verify") == 0) return receive(0, 0);
+    if (strcmp(argv[1], "spaces") == 0) return receive(0, 1);
     if (strcmp(argv[1], "line") == 0) return line();
     if (strcmp(argv[1], "one") == 0) {
         unsigned char byte;

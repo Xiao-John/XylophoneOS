@@ -135,6 +135,8 @@ CASES = {
     'builtins': (BUILTINS, 0, b'DASH_GLIBC_BUILTINS_PASS', ' alpha'),
     'files': (FILES, 0, b'DASH_GLIBC_FILES_PASS', ''),
     'pipeline': (PIPELINE, 0, b'DASH_GLIBC_PIPE_PASS', ''),
+    'pipeline_printf': ("printf '%10037s' '' | /bin/stream_child spaces\n",
+                        0, b'DASH_GLIBC_STREAM_BYTES=10037', ''),
     'pipeline_status': (PIPE_STATUS, 0, b'DASH_GLIBC_PIPE_STATUS_PASS', ''),
     'pipeline_redirect': (PIPE_REDIRECT, 0, b'DASH_GLIBC_PIPE_FILE_PASS', ''),
     'pipeline_closed': (PIPE_CLOSED, 0, b'DASH_GLIBC_PIPE_CLOSED_PASS', ''),

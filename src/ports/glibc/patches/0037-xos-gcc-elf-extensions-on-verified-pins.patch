@@ -1,0 +1,23 @@
+--- a/elf/dl-load.c
++++ b/elf/dl-load.c
+@@ -1582,8 +1582,18 @@
+ #define ELF32_CLASS ELFCLASS32
+ #define ELF64_CLASS ELFCLASS64
+ #ifndef VALID_ELF_HEADER
+-# define VALID_ELF_HEADER(hdr,exp,size)	(memcmp (hdr, exp, size) == 0)
+-# define VALID_ELF_OSABI(osabi)		(osabi == ELFOSABI_SYSV)
++# ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++  /* These header bytes come from the verified file pin.  The GNU tag
++     identifies ELF extensions such as IFUNC; XOS identity belongs to
++     the authenticated startup plan.  */
++#  define VALID_ELF_OSABI(osabi) \
++     ((osabi) == ELFOSABI_SYSV || (osabi) == ELFOSABI_GNU)
++#  define VALID_ELF_HEADER(hdr,exp,size) \
++     (memcmp (hdr, exp, EI_OSABI) == 0 && VALID_ELF_OSABI ((hdr)[EI_OSABI]))
++# else
++#  define VALID_ELF_HEADER(hdr,exp,size)	(memcmp (hdr, exp, size) == 0)
++#  define VALID_ELF_OSABI(osabi)		(osabi == ELFOSABI_SYSV)
++# endif
+ # define VALID_ELF_ABIVERSION(osabi,ver) (ver == 0)
+ #elif defined MORE_ELF_HEADER_DATA
+   MORE_ELF_HEADER_DATA;

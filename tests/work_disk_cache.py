@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
-"""The work-disk host tool cache must verify the binary hash, not only sources."""
+"""The work-disk helper cache verifies sources and binary bytes per host."""
 import hashlib
 import sys
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -61,20 +62,26 @@ def main():
         (tree / "src/third_party/fatfs/ff.c").write_text("/* stub */\n")
         (tree / "src/third_party/fatfs/ff.h").write_text("/* stub */\n")
         (tree / "src/user/services/fatfs_unicode.cpp").write_text("// stub\n")
-        (tree / "build/work_disk_host.sha256").write_bytes(b"\xff\xfe\x00broken")
+        (tree / "build/work_disk_host").write_bytes(b"legacy-helper-for-another-host")
 
         def _fake_compile(command, check):
             Path(command[command.index("-o") + 1]).write_bytes(b"rebuilt-helper")
 
-        real_root = work_disk.ROOT
-        real_run = work_disk.subprocess.run
-        work_disk.ROOT = tree
-        work_disk.subprocess.run = _fake_compile
-        try:
-            rebuilt = work_disk.host_tool()
-        finally:
-            work_disk.ROOT = real_root
-            work_disk.subprocess.run = real_run
+        with patch.object(work_disk, 'ROOT', tree), patch.object(work_disk.subprocess, 'run', _fake_compile):
+            with patch.object(work_disk, 'HOST_CACHE', 'linux-aarch64'):
+                linux = work_disk.host_tool()
+                assert work_disk.host_tool(build=False) == linux
+            with patch.object(work_disk, 'HOST_CACHE', 'darwin-arm64'):
+                try:
+                    work_disk.host_tool(build=False)
+                except FileNotFoundError:
+                    pass
+                else:
+                    raise AssertionError('prepared Linux helper accepted on macOS')
+                rebuilt = work_disk.host_tool()
+                assert rebuilt != linux
+                rebuilt.with_suffix('.sha256').write_bytes(b"\xff\xfe\x00broken")
+                assert work_disk.host_tool() == rebuilt
         assert rebuilt.read_bytes() == b"rebuilt-helper"
         sources = [tree / "scripts/work_disk_host.cpp",
                    tree / "src/third_party/fatfs/ff.c",

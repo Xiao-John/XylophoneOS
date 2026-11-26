@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "source_commit": "89538b47d4a66c205952f40f48541dc7e60552c9",
+  "implementation_tree": "19af5c5c8d1e6acd2a11e2ae214577ae1f0444fc",
+  "system_build_id": "4c169d887dc9a163",
+  "pre_fix": {
+    "build_id": "17dbec7f784e972b",
+    "status": "timed_out_waiting_for_supervisor_prompt",
+    "timeout_seconds": 360,
+    "raw_serial_sha256": "fea1346020f6b73b53a502d47e532f313492884aac5199b2a53504a20578bc69"
+  },
+  "files": {
+    "before_fix.serial.log.gz": "dd7004e9791fd7cd9aefc2940a0f069f839bd78b0c65aec74af79f2b7fe5ad34",
+    "candidate.json": "da17d1f37ad38b02ee328f09510e97ceb290b89435a2fafbf340e94142a485c3",
+    "install.serial.log.gz": "7bc808efc69f997d5c79b2a8859628570c78dc80466e01b2262523b5fc38bfcc",
+    "install_gate.serial.log.gz": "80605b46d74fdf7892b98c6178fd051dc58e0fa0eaa6555fb6169d9f6be880ce",
+    "installer_guest.json": "0532763bea52867ba356b346cb340a9061b9d0248c7ec3670f9bab48ee5cc997",
+    "ordinary_abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "ordinary_smoke.log": "fc28eddbfad47e86ef657de73300a354ba9eb9db99da64494a9df07785bdc3c8",
+    "run_remove.serial.log.gz": "b0779ac4ed64be3caeb474a7815e08b26e397c933d953481d2e9f95491890ecf",
+    "stock_guest.json": "67ad94f33c1583c418608414522a66822bb1c910d004faa85ff7f61df65465b5"
+  }
+}

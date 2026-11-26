@@ -1147,7 +1147,11 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                                    reinterpret_cast<u64>(&startup_gate));
     const bool ui_ran = !persistent_recovery_gate ||
                         (gate_query == 0 && startup_gate.owner_pid == pid());
-    if (ui_ran) { ui::init(); }
+    if (ui_ran) {
+        // Stop the installer demos before processing the large typed payload.
+        if (!demo_quiet && ui::boot_bundle_present()) { quiet_boot_demos(); }
+        ui::init();
+    }
     print("\nWelcome to Xshell | XylophoneOS\n"
           "help: commands   dash -i: POSIX shell   trace on: diagnostics\n\n");
     // The P2 guard needs exclusive admission before ordinary services start.

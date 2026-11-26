@@ -1,0 +1,178 @@
+{
+  "baseline": [
+    129709,
+    3,
+    1
+  ],
+  "binding": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+    "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "runtime_family": "glibc",
+    "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262",
+    "status": "candidate_binding_verified"
+  },
+  "checks": [
+    {
+      "command": "exec-file /bin/thread",
+      "exit_code": 0,
+      "markers": [
+        "xypm external glibc C++"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "xsh"
+    },
+    {
+      "command": "exec-file /bin/exception",
+      "exit_code": 0,
+      "markers": [
+        "[cpp_abi] exception_unwind=ok"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "xsh"
+    },
+    {
+      "command": "/bin/dash_glibc /bin/apps.sh",
+      "exit_code": 0,
+      "markers": [
+        "xypm external glibc C++",
+        "[cpp_abi] exception_unwind=ok",
+        "GLIBC_CXX_FORK_KIT_OK"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "glibc-dash"
+    },
+    {
+      "command": "exec-file /bin/thread",
+      "exit_code": 0,
+      "markers": [
+        "xypm external glibc C++"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "xsh"
+    },
+    {
+      "command": "exec-file /bin/exception",
+      "exit_code": 0,
+      "markers": [
+        "[cpp_abi] exception_unwind=ok"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "xsh"
+    },
+    {
+      "command": "/bin/dash_glibc /bin/apps.sh",
+      "exit_code": 0,
+      "markers": [
+        "xypm external glibc C++",
+        "[cpp_abi] exception_unwind=ok",
+        "GLIBC_CXX_FORK_KIT_OK"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "glibc-dash"
+    },
+    {
+      "command": "exec-file /bin/thread",
+      "exit_code": 0,
+      "markers": [
+        "xypm external glibc C++"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "xsh"
+    },
+    {
+      "command": "exec-file /bin/exception",
+      "exit_code": 0,
+      "markers": [
+        "[cpp_abi] exception_unwind=ok"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "xsh"
+    },
+    {
+      "command": "/bin/dash_glibc /bin/apps.sh",
+      "exit_code": 0,
+      "markers": [
+        "xypm external glibc C++",
+        "[cpp_abi] exception_unwind=ok",
+        "GLIBC_CXX_FORK_KIT_OK"
+      ],
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "shell": "glibc-dash"
+    }
+  ],
+  "dash": {
+    "elf_sha256": "d38457dd561b2fa2a09bdb99aa211c83fd07c006720310a653eed278b5d9076b",
+    "profile": {
+      "guest_qualification": "not_run",
+      "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+      "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+      "runtime_family": "glibc",
+      "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262",
+      "status": "candidate_binding_verified"
+    },
+    "receipt_sha256": "d77096e9f71f1c8d60d86fd2a19063040cd694029da666c35782261a3a4d62dd",
+    "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b"
+  },
+  "dash_fixture_sha256": "8e27bcf0c77b5c4db664392c9f21ef8bf85f47bfcb8154d76ce6b9438100708e",
+  "elfs": {
+    "exception": {
+      "build_receipt_sha256": "a9ced9fb9527609694e98e4ee10218c323922eb60ea17188c96a5d301fcb1fc0",
+      "fat_readback_sha256": "bceb13c8a18714ff77b614cf13fa03c6765b96423a1f4e54a2b33461b9c03a12",
+      "sha256": "bceb13c8a18714ff77b614cf13fa03c6765b96423a1f4e54a2b33461b9c03a12",
+      "source": "cpp_abi/exception_probe.cpp",
+      "source_sha256": "96ec1ff46f66346e5b225cc8ce6dd301ce5d6cd501dc45708b2aa4c6d0a46dc3"
+    },
+    "thread": {
+      "build_receipt_sha256": "e1b51ca82c2ccf93a5cc5dc863932eae003d482a3ed3bc0fb14cdba18357d5ea",
+      "fat_readback_sha256": "fb50d6080d5c7834fc8b752a6edf546ef721a4b7262a7da74b9f40fa15dd26f4",
+      "sha256": "fb50d6080d5c7834fc8b752a6edf546ef721a4b7262a7da74b9f40fa15dd26f4",
+      "source": "xypm/glibc_profile_program.cpp",
+      "source_sha256": "e76a9c796f8f2aaa373cc790798d8a889c22fd225900aa8447cb67a879944172"
+    }
+  },
+  "iso_sha256": "92ebcf8a77a304233eaee1fd936e50d1fc2db045f34027fa999b1285367efbcb",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "runner_sha256": "d60200ed48db2181ff896f94f1dbdd7d3b5d5f975f0115a7658dda492b6e9083",
+  "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+  "serial_sha256": "944c30f6c0149934aa66a7b19df0445f0923f1cf3f1de61720af77ea53dd8f78",
+  "status": "passed_subset",
+  "system_build_id": "2c1934f4bee40fb9",
+  "system_manifest_sha256": "47aee852bb2731d4b81480fc2be33f8463c314d9db509591a5640f661f8991d1"
+}

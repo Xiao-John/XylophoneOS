@@ -45,7 +45,7 @@ struct mapped_bounds { u64 begin, end; };
 
 bool image_bounds(const mapped_image& image, mapped_bounds& bounds) {
     if (image.bias < vm_arena_begin || image.bias >= vm_arena_end || image.bias % vm_page_size != 0 ||
-        image.loads == nullptr || image.load_count == 0 || image.load_count > max_headers) { return false; }
+        image.loads == nullptr || image.load_count == 0 || image.load_count > mapped_image_max_loads) { return false; }
     bounds = {vm_arena_end, vm_arena_begin};
     bool entry = false;
     for (u32 i = 0; i < image.load_count; ++i) {

@@ -1,6 +1,7 @@
 #include <xos/sdk.hpp>
+#include <xos/elf.hpp>
 namespace xos::sdk {
-u16 target_elf_machine() { return 62; }
+u16 target_elf_machine() { return elf::machine_x86_64; }
 i64 syscall(u64 number, u64 first, u64 second, u64 third) {
     u64 result;
     __asm__ volatile("int $0x80" : "=a"(result) : "a"(number), "D"(first), "S"(second),

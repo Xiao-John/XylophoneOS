@@ -25,7 +25,7 @@
 xsh `exec-file` 的无创建权入口验证 `EPERM` 及无子进程状态。夹具同时检查目标缺失、
 普通数据文件、描述符继承限制、原生权限和每轮进程资源恢复。
 
-| 最终绑定与套件 | 结果 |
+| 初次绑定与套件 | 结果 |
 | --- | --- |
 | 系统 `cbf62f2779d0fcbd` | ISO `85a5a5ccf383a87136bc388ed32d07700aa8525a74146b994f43e168b84b5f12` |
 | 经签名校验的 glibc 2.44 C SDK | Manifest `2e48a986d71478f82899e7480195056b2a739a4beaf808ae58819ffc91132ce3` |
@@ -34,3 +34,19 @@ xsh `exec-file` 的无创建权入口验证 `EPERM` 及无子进程状态。夹�
 | 既有回归 | `cwd` 双入口各一轮通过，另通过文件运行库 47 项宿主及 14 组真实 files/FatFs 集成检查 |
 | 来宾报告 | `82e4332a442a37e56848d792d163622a179dd35d8389b7b9cdeac229cc4aa01a` |
 | 串口日志 | `c0137dce2d27d7428c6769e1c81f0abfebf1ce0958b628bc6964bd0926e51167` |
+
+## 与文件查询修复合并后的复核
+
+在 `ae7598e4` 上移入 `c8e893d6` 的进程实现。`access(X_OK)` 继续通过单次
+files stat 请求完成。SDK 保留启动所需的 `elf.cpp`，库成员仅有一份检查器，并省去
+旧的客户端 ELF 检查桥。`posix_spawn`、`waitpid` 及 `chdir` 序列化实现沿用原进程提交。
+系统 files ELF 链接纯检查器。真实启动继续由调用方和加载器负责。
+
+| 合并后的验证绑定 | 结果 |
+| --- | --- |
+| 系统 `4e9f3ff3d50be5b8` | ISO `667fc1ed609bba317d5b5a285d546b161b7f8d9cd58423aea4cd99736a92f21e` |
+| 签名校验的 glibc 2.44 C SDK | Manifest `e6fd644f5c8717ea67877fb58d6ed1118703913d3ce77fc70e05cd98ffb2ab58` |
+| `cwd` QEMU 11.1.3 | xsh、dash 各两轮通过，报告 `a7d64341c6c381eecfb9bcbba78867302dc39d97aba4ccb7c42a6924ae13c651` |
+| `process` QEMU 11.1.3 | xsh 正常、xsh 拒绝、dash 各两轮通过，报告 `c4ede383867a1f3e3777b01387ef2f9621279e4e38ce270dc029643012b63390` |
+| 两组资源基线 | `[129698, 3, 1]`，十轮均恢复 |
+| 宿主文件回归 | 48 项检查及 14 组真实 files/FatFs 集成通过 |

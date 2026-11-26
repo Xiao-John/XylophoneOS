@@ -11,7 +11,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
-    "basic", "bounds", "concurrent", "public_lease", "native_read_capacity",
+    "basic", "bounds", "access_legacy_stat", "concurrent", "public_lease", "native_read_capacity",
     "block_valid", "block_bad_value", "block_bad_payload", "block_zero_success", "block_large_success",
     "anonymous_valid", "anonymous_bad_handle", "anonymous_bad_inode", "anonymous_bad_flags",
     "anonymous_bad_size", "anonymous_bad_payload",
@@ -36,7 +36,8 @@ def main():
     overlay = ROOT / "src/ports/glibc/sysdeps/xos"
     terminal_sources = [str(ROOT / 'src/ports/glibc/terminal_support.cpp'),
                         str(ROOT / 'src/user/sdk/terminal_client.cpp')]
-    sources = [ROOT / "src/user/services/files.cpp", ROOT / "src/third_party/fatfs/ff.c",
+    sources = [ROOT / "src/user/services/files.cpp", ROOT / "src/user/loader/elf.cpp",
+               ROOT / "src/third_party/fatfs/ff.c",
                ROOT / "src/shared/include/xos/file_abi.hpp", Path(__file__).resolve()]
     sources += list(overlay.glob("xos_file*"))
     sources += [overlay / "writev.c", overlay / "bits/stat.h", overlay / "bits/fcntl.h",
@@ -105,6 +106,7 @@ def main():
     for filename, source in [
         ("fatfs.o", "src/third_party/fatfs/ff.c"),
         ("unicode.o", "src/user/services/fatfs_unicode.cpp"),
+        ("elf.o", "src/user/loader/elf.cpp"),
         ("service.o", "tests/fixtures/file_semantics/libc_service.cpp"),
     ]:
         target = output / filename

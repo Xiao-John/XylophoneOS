@@ -5,6 +5,7 @@
 #include <xos/process_abi.hpp>
 
 namespace xos::elf {
+inline constexpr u16 machine_x86_64 = 62;
 struct segment { u64 offset, address, file_bytes, memory_bytes; u32 permissions; };
 struct tls_template { bool present; u64 offset, address, file_bytes, memory_bytes, alignment; };
 struct load_plan { u64 entry; u32 count; u32 pages; segment segments[8]; tls_template tls; };

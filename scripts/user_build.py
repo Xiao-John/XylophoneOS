@@ -159,7 +159,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
              *(["-Wl,--gc-sections"] if name in ("libc_hello", "net_service") else []),
              "-T", str(sdk / "user.ld"), str(sdk / ("crt0_posix.o" if name in ("runtime_probe", "cpp_runtime_probe", "tls_exit_probe") else "crt0_libc.o" if name in libc_programs else "crt0.o")), main,
-             *([str(loader_archive)] if name in ("supervisor", "xos_diag") else []), *fault_objects,
+             *([str(loader_archive)] if name in ("supervisor", "xos_diag", "files") else []), *fault_objects,
              *([str(core_archive), str(loader_archive)] if name in ("threading_core_probe", "gfxdemo", "terminal") else []),
              *([compile_source(root / "src/user/drivers/uart_16550.cpp")] if name == "terminal" else []),
              *([compile_source(root / "src/user/drivers/virtio_net.cpp")] if name == "net_service" else []),

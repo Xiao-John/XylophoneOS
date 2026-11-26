@@ -49,6 +49,25 @@ int main(int argc, char **argv)
     CHECK(access("read-only.txt", W_OK) == -1 && errno == EACCES);
     CHECK(access("plain.txt", X_OK) == -1 && errno == EACCES);
     CHECK(access("/bin/g3_cwd", R_OK | X_OK) == 0);
+    int writer = open("/bin/g3_cwd", O_RDWR);
+    CHECK(writer >= 0 && lseek(writer, 1, SEEK_SET) == 1);
+    CHECK(access("/bin/g3_cwd", W_OK | X_OK) == 0);
+    CHECK(lseek(writer, 0, SEEK_CUR) == 1);
+    CHECK(read(writer, &byte, 1) == 1 && byte == 'E');
+    CHECK(pwrite(writer, &byte, 1, 1) == 1 && close(writer) == 0);
+    int quota[32];
+    size_t occupied = 0;
+    while (occupied < sizeof(quota) / sizeof(quota[0])) {
+        int opened = open("plain.txt", O_RDONLY);
+        if (opened < 0) break;
+        quota[occupied++] = opened;
+    }
+    CHECK(occupied != 0 && occupied < sizeof(quota) / sizeof(quota[0]) && errno == EMFILE);
+    CHECK(access("/bin/g3_cwd", X_OK) == 0);
+    CHECK(access("plain.txt", X_OK) == -1 && errno == EACCES);
+    while (occupied != 0) {
+        CHECK(close(quota[--occupied]) == 0);
+    }
     CHECK(access("/bin/g3_cwd/", X_OK) == -1 && errno == ENOTDIR);
     CHECK(access(".", R_OK | W_OK | X_OK) == 0);
     CHECK(access("missing/../plain.txt", F_OK) == -1 && errno == ENOENT);

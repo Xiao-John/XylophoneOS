@@ -21,13 +21,17 @@ stdio 通过这些真实文件操作访问 files 服务。
 `bits/fcntl.h` 保留现有启动快照所使用的 XOS 公共 flag 数值。
 `bits/stat.h` 定义本 glibc profile 的 LP64 布局：`stat/stat64` 均为 120 字节，
 inode 与 offset 为 64 位，三个 timespec 保留纳秒字段。这是 libc 结构布局，
-files wire 与内核 ABI 均保持现状。编译断言位于 `files_public_layout.c`。
+files 消息布局与内核 ABI 保持现状。编译断言位于 `files_public_layout.c`。
 
 FAT 的权限和时间投影遵循文件元数据契约：创建 mode 由服务的固定权限规则
 解释；uid/gid 为 0，nlink 在延迟删除时为 0；mtime 同步投影到三个时间字段。
 旧服务的空 metadata trailer 可接受，已提供的 FMET v1 trailer 必须严格有效。
 当前 identity 是服务定义的 16 位命名空间：根 1、FAT 2–65533、`/dev` 65534、
 `/dev/null` 65535。零 identity 和超界值作为协议错误处理。
+
+`access` 的存在性与读写权限来自同一次 stat 的元数据。`X_OK` 同时请求
+[files 可执行文件查询](file_identity.md#可执行文件查询)，并要求成功响应中的确认位。
+客户端无需打开远端句柄，旧服务省略确认位时返回 `ENOTSUP`。
 
 ## FD、并发与服务会话
 

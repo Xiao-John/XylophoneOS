@@ -6,6 +6,7 @@
 #include "xos_wait_word.h"
 typedef __UINT16_TYPE__ xos_file_u16;
 typedef __INT32_TYPE__ xos_file_i32;
+enum { xos_file_stat_check_exec = 1U << 13, xos_file_stat_exec_checked = 1U << 3 };
 
 struct __attribute__ ((packed)) xos_file_request
 {

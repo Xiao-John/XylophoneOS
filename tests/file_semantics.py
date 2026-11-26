@@ -22,7 +22,7 @@ def main():
                "-I" + str(ROOT / "src/user/include"),
                "-I" + str(ROOT / "src/shared/include"),
                str(source), str(ROOT / "src/third_party/fatfs/ff.c"),
-               str(ROOT / "src/user/services/fatfs_unicode.cpp"),
+               str(ROOT / "src/user/services/fatfs_unicode.cpp"), str(ROOT / "src/user/loader/elf.cpp"),
                "-o", str(out / "file_semantics")]
     subprocess.run(command, check=True)
     with tempfile.TemporaryDirectory(prefix="xos_file_semantics_") as temp:
@@ -32,7 +32,7 @@ def main():
                              check=True, capture_output=True, text=True)
     paths = ["src/user/services/files.cpp",
              "tests/fixtures/file_semantics/file_semantics.cpp",
-             "src/third_party/fatfs/ff.c"]
+             "src/third_party/fatfs/ff.c", "src/user/loader/elf.cpp", "src/user/include/xos/elf.hpp"]
     report = {
         "status": "passed",
         "scope": "production file service with real host FatFs over a private memory image",

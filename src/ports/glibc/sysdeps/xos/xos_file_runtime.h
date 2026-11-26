@@ -2,7 +2,6 @@
 #ifndef XOS_GLIBC_FILE_RUNTIME_H
 #define XOS_GLIBC_FILE_RUNTIME_H 1
 #include "xos_file_wire.h"
-#include <stdbool.h>
 #include <stddef.h>
 #include <sys/stat.h>
 #ifdef __cplusplus
@@ -18,9 +17,7 @@ long __xos_file_seek (int, long, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_stat (int, const char *, struct stat *) __attribute__ ((visibility ("hidden")));
 long __xos_file_getcwd (char *, size_t) __attribute__ ((visibility ("hidden")));
 long __xos_file_chdir (const char *) __attribute__ ((visibility ("hidden")));
-typedef bool (*xos_image_read) (void *, xos_u64, unsigned char *, xos_u32);
-typedef long (*xos_image_inspect) (xos_image_read, void *, xos_u64);
-long __xos_file_access (const char *, int, xos_image_inspect) __attribute__ ((visibility ("hidden")));
+long __xos_file_access (const char *, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_dup (int, int, int, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_fcntl (int, int, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_path_op (const char *, int) __attribute__ ((visibility ("hidden")));

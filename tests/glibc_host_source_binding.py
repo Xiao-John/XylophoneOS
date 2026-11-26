@@ -41,7 +41,7 @@ def main():
         directories = ['src/ports/glibc/sysdeps/xos', 'src/shared/include', 'src/user/include',
                        'src/third_party/fatfs', 'tests/fixtures/file_semantics', 'tests/fixtures/glibc_g3']
         files = [runner, 'scripts/make_work_disk.py', 'src/user/services/files.cpp',
-                 'src/user/services/fatfs_unicode.cpp', 'src/user/sdk/file_client.cpp',
+                 'src/user/services/fatfs_unicode.cpp', 'src/user/loader/elf.cpp', 'src/user/sdk/file_client.cpp',
                  'src/user/sdk/terminal_client.cpp', 'src/user/sdk/text.cpp',
                  'src/ports/glibc/terminal_support.cpp']
         for name in directories:

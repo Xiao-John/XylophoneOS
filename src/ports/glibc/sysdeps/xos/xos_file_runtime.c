@@ -41,8 +41,7 @@ static int initialized, initialization_error, session_failed;
 static xos_u32 request_sequence, send_handle, receive_handle;
 static struct xos_file_request request;
 static struct xos_file_response response;
-enum { file_stat = 3, file_open = 4, file_close = 8, file_fstat = 18,
-       file_cwd_get = 27, file_read_at = 30, file_pin_read_only = 1 | (1 << 11) };
+enum { file_stat = 3, file_fstat = 18, file_cwd_get = 27 };
 /* The files service reserves this identity for its synthetic /dev namespace. */
 enum { file_device_directory_inode = 0xfffe };
 
@@ -199,11 +198,16 @@ valid_response_shape (unsigned int operation)
       && (response.flags & ~1U) == 0 && response.reserved != 0
       && response.reserved <= 65535 && response.value <= 0xfffffffeULL
       && (operation != 21 || (response.flags == 0 && response.value == 0));
-  if (operation == 3 || operation == 18)
-    return response.handle == 0 && (response.flags & ~7U) == 0
+  if (operation == file_stat || operation == file_fstat)
+    {
+      unsigned int allowed_flags = 7U;
+      if (operation == file_stat && (request.flags & xos_file_stat_check_exec) != 0)
+        allowed_flags |= xos_file_stat_exec_checked;
+      return response.handle == 0 && (response.flags & ~allowed_flags) == 0
       && response.reserved != 0 && response.reserved <= 65535
       && response.value <= 0xfffffffeULL
       && (response.length == 0 || response.length == 24);
+    }
   if (response.handle != 0 || response.flags != 0 || response.reserved != 0)
     return 0;
   if (operation == 5 || operation == 30)
@@ -763,7 +767,7 @@ done:
 static long
 decode_stat (struct stat *output)
 {
-  if (response.value > 0xfffffffeULL || (response.flags & ~7U) != 0
+  if (response.value > 0xfffffffeULL || (response.flags & ~(7U | xos_file_stat_exec_checked)) != 0
       || response.reserved > 65535)
     return session_fault (EIO);
   struct stat value;
@@ -800,10 +804,14 @@ decode_stat (struct stat *output)
 }
 
 static long
-stat_path (const char *path, struct stat *output)
+stat_path (const char *path, struct stat *output, unsigned int flags)
 {
   long result = prepare_path (path);
+  request.flags = flags;
   if (result == 0) result = call_service (file_stat);
+  if (result == 0 && (flags & xos_file_stat_check_exec) != 0
+      && (response.flags & xos_file_stat_exec_checked) == 0)
+    return -ENOTSUP;
   return result == 0 ? decode_stat (output) : result;
 }
 
@@ -837,7 +845,7 @@ __xos_file_stat (int fd, const char *path, struct stat *output)
     }
   else
     {
-      result = stat_path (path, output);
+      result = stat_path (path, output, 0);
       goto done;
     }
   result = call_service (file_fstat);
@@ -868,27 +876,6 @@ __xos_file_getcwd (char *output, size_t capacity)
   return result;
 }
 
-struct pinned_image { xos_u32 handle; long error; };
-
-static bool
-read_pinned_image (void *context, xos_u64 offset, unsigned char *output, xos_u32 length)
-{
-  struct pinned_image *image = context;
-  memset (&request, 0, sizeof (request));
-  request.handle = image->handle;
-  request.offset = offset;
-  request.length = length;
-  image->error = call_service (file_read_at);
-  if (image->error != 0) return false;
-  if (response.length != length)
-    {
-      image->error = -EIO;
-      return false;
-    }
-  memcpy (output, response.data, length);
-  return true;
-}
-
 static long
 access_mode (const struct stat *status, int mode)
 {
@@ -901,44 +888,16 @@ access_mode (const struct stat *status, int mode)
   return 0;
 }
 
-/* No process descriptor is consumed. Pin the same immutable bytes the
-   loader would inspect and check combined modes on that open file. */
-static long
-access_image (const char *path, int mode, xos_image_inspect inspect)
-{
-  memset (&request, 0, sizeof (request));
-  long result = prepare_path (path);
-  if (result != 0) return result;
-  request.flags = file_pin_read_only;
-  result = call_service (file_open);
-  if (result != 0) return result;
-  struct pinned_image image = { response.handle, 0 };
-  struct stat status;
-  memset (&request, 0, sizeof (request));
-  request.handle = image.handle;
-  result = call_service (file_fstat);
-  if (result == 0) result = decode_stat (&status);
-  if (result == 0) result = access_mode (&status, mode);
-  if (result == 0) result = inspect (read_pinned_image, &image, (xos_u64) status.st_size);
-  if (image.error != 0) result = image.error;
-  memset (&request, 0, sizeof (request));
-  request.handle = image.handle;
-  long closed = call_service (file_close);
-  return result != 0 ? result : closed;
-}
-
 long
-__xos_file_access (const char *path, int mode, xos_image_inspect inspect)
+__xos_file_access (const char *path, int mode)
 {
   if ((mode & ~(R_OK | W_OK | X_OK)) != 0) return -EINVAL;
   int error = begin ();
   if (error != 0) return error;
   struct stat status;
   memset (&request, 0, sizeof (request));
-  long result = stat_path (path, &status);
+  long result = stat_path (path, &status, (mode & X_OK) != 0 ? xos_file_stat_check_exec : 0);
   if (result == 0) result = access_mode (&status, mode);
-  if (result == 0 && (mode & X_OK) != 0 && !S_ISDIR (status.st_mode))
-    result = access_image (path, mode, inspect);
   unlock_session ();
   return result;
 }

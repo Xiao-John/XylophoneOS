@@ -1,0 +1,105 @@
+--- a/build-aux/config.sub
++++ b/build-aux/config.sub
+@@ -1761 +1761 @@
+-	     | fiwix* | mlibc* )
++	     | fiwix* | mlibc* | xos* )
+--- a/src/job.c
++++ b/src/job.c
+@@ -78,0 +79,3 @@
++#ifdef __xos__
++const char *default_shell = "/usr/bin/dash";
++#else
+@@ -79,0 +83 @@
++#endif
+@@ -2307,0 +2312,4 @@
++#ifdef __xos__
++#include "xos_spawn.h"
++#endif
++
+@@ -2320,0 +2329 @@
++# ifndef __xos__
+@@ -2323,0 +2333 @@
++# endif
+@@ -2371,0 +2382 @@
++#ifndef __xos__
+@@ -2416,0 +2428,2 @@
++#endif /* !__xos__ */
++
+@@ -2451,0 +2465,3 @@
++#ifdef __xos__
++  r = xos_spawn_recipe (&pid, cmd, argv, child->environment, fdin, fdout, fderr);
++#else
+@@ -2454,0 +2471 @@
++#endif
+@@ -2472,0 +2490,4 @@
++#ifdef __xos__
++      r = xos_spawn_recipe (&pid, nargv[0], nargv, child->environment,
++                            fdin, fdout, fderr);
++#else
+@@ -2475,0 +2497 @@
++#endif
+@@ -2490,0 +2513 @@
++#ifndef __xos__
+@@ -2494,0 +2518 @@
++#endif
+--- a/src/main.c
++++ b/src/main.c
+@@ -867 +867,7 @@
+-#ifdef NO_OUTPUT_SYNC
++#if defined(__xos__)
++  if (jobserver_auth || jobserver_style)
++    O (fatal, NILF, _("the recursive jobserver is unavailable on XOS"));
++  if ((output_sync_option && !streq (output_sync_option, "none")) || sync_mutex)
++    O (fatal, NILF, _("output synchronization is unavailable on XOS"));
++  output_sync = OUTPUT_SYNC_NONE;
++#elif defined(NO_OUTPUT_SYNC)
+@@ -2216,0 +2223 @@
++#ifndef __xos__
+@@ -2228,0 +2236,2 @@
++
++#endif
+--- a/src/makeint.h
++++ b/src/makeint.h
+@@ -309 +309 @@
+-#if !defined(HAVE_UMASK)
++#if !defined(HAVE_UMASK) && !defined(__xos__)
+--- a/src/misc.c
++++ b/src/misc.c
+@@ -567 +567 @@
+-#ifndef HAVE_UMASK
++#if !defined(HAVE_UMASK) && !defined(__xos__)
+--- a/src/read.c
++++ b/src/read.c
+@@ -36 +36 @@
+-#ifndef _AMIGA
++#if !defined(_AMIGA) && !defined(__xos__)
+@@ -3111 +3111 @@
+-# if !defined(_AMIGA) && !defined(WINDOWS32)
++# if !defined(_AMIGA) && !defined(WINDOWS32) && !defined(__xos__)
+@@ -3124 +3124 @@
+-      if (home_dir != 0)
++      if (home_dir != 0 && home_dir[0] != '\0')
+@@ -3132 +3132 @@
+-# if !defined(_AMIGA) && !defined(WINDOWS32)
++# if !defined(_AMIGA) && !defined(WINDOWS32) && !defined(__xos__)
+--- a/lib/glob.c
++++ b/lib/glob.c
+@@ -52 +52 @@
+-#elif defined __GNU_LIBRARY__ && __GNU_LIBRARY__ > 1
++#elif defined __GNU_LIBRARY__ && __GNU_LIBRARY__ > 1 && !defined(__xos__)
+@@ -74 +74 @@
+-#if !defined _AMIGA && !defined VMS && !defined WINDOWS32
++#if !defined _AMIGA && !defined VMS && !defined WINDOWS32 && !defined(__xos__)
+@@ -545,0 +546 @@
++#   ifndef __xos__
+@@ -596,0 +598 @@
++#   endif
+@@ -625 +627 @@
+-# if !defined _AMIGA && !defined WINDOWS32 && !defined VMS
++# if !defined _AMIGA && !defined WINDOWS32 && !defined VMS && !defined(__xos__)
+@@ -705 +707,4 @@
+-# endif	/* Not Amiga && not WINDOWS32 && not VMS.  */
++# elif defined(__xos__)
++      else if (flags & GLOB_TILDE_CHECK)
++        return GLOB_NOMATCH;
++# endif

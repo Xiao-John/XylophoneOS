@@ -376,6 +376,25 @@
       "wheel_sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c"
     },
     {
+      "name": "GNU Make for XOS",
+      "version": "4.4.1",
+      "path": "src/ports/gnu_make",
+      "source": "https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz",
+      "source_archive_sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+      "license": "GPL-3.0-or-later for GNU Make and its XOS port; preserve applicable upstream per-file notices",
+      "notices": [
+        "src/ports/gnu_make/upstream/COPYING"
+      ],
+      "artifact_sha256": {
+        "src/ports/gnu_make/upstream/COPYING": "e79e9c8a0c85d735ff98185918ec94ed7d175efc377012787aebcf3b80f0d90b"
+      },
+      "used_in": [
+        "explicit static glibc candidate /usr/bin/gmake on a private guest work disk"
+      ],
+      "modifications": "XOS launch, descriptor and supported-option adaptations in src/ports/gnu_make; source signature, SDK and tool binding recorded by scripts/build_gnu_make.py",
+      "distribution_status": "local guest qualification; retain corresponding source, build recipe, patches and upstream notices for a future release"
+    },
+    {
       "name": "sbase Make",
       "version": "c546c3a5724c81cee9a11d816a38ccdf17472129",
       "path": "src/ports/make",

@@ -20,6 +20,7 @@
 | QtBase 6.8.3、PCRE2、zlib、double-conversion、SHA3 | 已随 0.0.2-1103 `qt6_static` 资产分发；E16/E17 受限验收 | 来源锁定、13 文本、1522 成员映射、262 文本覆盖、B4/B5 门槛见 `src/ports/qt6/REDISTRIBUTION.md`；非法务意见 |
 | GCC/Binutils/NASM/QEMU | 构建/测试工具；GCC/Binutils Seed 另随工作盘 | NASM/QEMU 仅宿主、不随发行；GCC/Binutils Seed 与 GCC 运行库**已随 0.0.1-1024/1026 发行**（工作盘/SDK），GPL/LGPL/例外与对应源码材料登记见[分发审查](reports/gnu_seed_distribution_20261103/) |
 | GNU Binutils Seed 2.47 | 已在 XOS 验收的静态工具 | 原 GNU 条款；src/ports/binutils 保留源包锁定哈希、许可、移植补丁及构建方法，实际构建清单绑定SDK和工具；已随 0.0.1-1024/1026 工作盘分发，对应源码包随发行 |
+| GNU Make 4.4.1 | 显式 glibc 客体构建候选 | 保存 GNU 源包和签名摘要、原 GPLv3 文本、XOS 补丁及配套构建入口。二进制发行资格单独验收 |
 | Binutils 捆绑 zlib 1.3.1 | Seed 内部静态库 | Zlib 原许可保留，不是 XOS 自研 Apache 代码，不依赖宿主动态 zlib |
 | GCC 16.2.0 C Seed、host libstdc++/libsupc++、GMP/MPFR/MPC | 本地客体工具闭包 | src/ports/gcc/upstream 与 source_lock.json 保留实际版本和声明；components.json 登记材料哈希；**公开分发审查已交付**（[O1–O10 义务清单](reports/gnu_seed_distribution_20261103/)），目标 E08-5 库逐成员追溯未完成 |
 | sbase cat/cp/mkdir/mv/rm | dash B1的窄用户态工具 | 固定提交c546c3a；保留上游MIT LICENSE、源文件哈希及XOS适配文件清单；仅本地验收，未公开分发 |

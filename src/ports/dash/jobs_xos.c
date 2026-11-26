@@ -167,7 +167,6 @@ int xos_shell_execve(const char *path, char *const argv[], char *const envp[]) {
     return execve(path, argv, envp);
 #endif
 }
-#ifndef XOS_DASH_GLIBC_PREVIEW
 static int xos_spawn(pid_t *child, const char *path, char **argv, char **envp) {
     // SL2: single ordinary spawn path; inherit-create covers gcc/make/dash alike.
     int error = posix_spawn(child, path, NULL, NULL, argv, envp);
@@ -186,14 +185,8 @@ static int xos_spawn(pid_t *child, const char *path, char **argv, char **envp) {
 #endif
     return error;
 }
-#endif
 
 struct job *vforkexec(union node *node, char **argv, const char *path, int idx) {
-#ifdef XOS_DASH_GLIBC_PREVIEW
-    (void)node; (void)path; (void)idx;
-    sh_warnx("%s: external commands unavailable in the glibc dash preview", argv[0]);
-    exitstatus = 126;
-#else
     pid_t child;
     char **envp = environment();
     int error = ENOENT, saved_error = ENOENT, status;
@@ -227,7 +220,6 @@ struct job *vforkexec(union node *node, char **argv, const char *path, int idx) 
     } else {
         exitstatus = WIFEXITED(status) ? WEXITSTATUS(status) : 128 + WTERMSIG(status);
     }
-#endif
     return NULL;
 }
 int waitforjob(struct job *job) {

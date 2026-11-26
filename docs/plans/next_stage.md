@@ -147,3 +147,8 @@ ABI 表通过。普通配置验证与各专项配置的独立回执共同构成�
 材料和 ABI 核对。SDK 默认切换、Qt 正式发行、Pumpkin 部署凭据和 ClarkE 整页继续按各自
 配置验收。
 [本轮主线组合](../work_log/aece9965_next_stage_combined.md)
+
+主线 `56b3ada5` 纳入 Qt Quick 接收方替换与回退、统一 glibc 代表应用、工作区 SDK
+默认选择、Pumpkin 独立代际提供者和 GNU 解释器固定依赖闭包。该提交的新普通镜像
+通过 79 项客体、10 项许可材料和 ABI 检查。各模块的专项回执由对应构建维护。
+[普通组合](../work_log/56b3ada5_next_stage_combined.md)

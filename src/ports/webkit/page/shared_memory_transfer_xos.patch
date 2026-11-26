@@ -1,0 +1,419 @@
+--- a/Source/WebCore/platform/SharedMemory.h
++++ b/Source/WebCore/platform/SharedMemory.h
+@@ -31,6 +31,7 @@
+ #include <wtf/Forward.h>
+ #include <wtf/Platform.h>
+ #if OS(XOS)
++#include <atomic>
+ #include <wtf/RefPtr.h>
+ #endif
+ #include <wtf/ThreadSafeRefCounted.h>
+@@ -62,18 +63,28 @@
+ enum class SharedMemoryProtection : bool { ReadOnly, ReadWrite };
+
+ #if OS(XOS)
++class xos_memory_loan;
++class xos_memory_offer;
++
+ class xos_memory_grant final : public ThreadSafeRefCounted<xos_memory_grant> {
+ public:
+     ~xos_memory_grant();
+
+ private:
+     friend class SharedMemory;
+-    explicit xos_memory_grant(uint64_t handle)
++    friend class xos_memory_loan;
++    friend class xos_memory_offer;
++    explicit xos_memory_grant(uint64_t handle, bool managed, bool transferable)
+         : m_handle(handle)
++        , m_managed(managed)
++        , m_transferable(transferable)
+     {
+     }
+
+     uint64_t m_handle;
++    const bool m_managed;
++    const bool m_transferable;
++    std::atomic<bool> m_exported { false };
+ };
+
+ class xos_local_memory_handle final {
+@@ -82,6 +93,8 @@
+
+ private:
+     friend class SharedMemory;
++    friend class xos_memory_loan;
++    friend class xos_memory_offer;
+     xos_local_memory_handle(Ref<xos_memory_grant>&& grant, SharedMemoryProtection protection)
+         : m_grant(WTF::move(grant))
+         , m_protection(protection)
+@@ -142,6 +155,10 @@
+ #endif
+
+ private:
++#if OS(XOS)
++    friend class xos_memory_loan;
++    friend class xos_memory_offer;
++#endif
+     friend struct IPC::ArgumentCoder<SharedMemoryHandle>;
+     friend class SharedMemory;
+
+@@ -157,6 +174,9 @@
+
+     // FIXME: Change these factory functions to return Ref<SharedMemory> and crash on failure.
+     WEBCORE_EXPORT static RefPtr<SharedMemory> allocate(size_t);
++#if OS(XOS)
++    WEBCORE_EXPORT static RefPtr<SharedMemory> allocate_for_xos_transfer(size_t);
++#endif
+     WEBCORE_EXPORT static RefPtr<SharedMemory> copyBuffer(const WebCore::FragmentedSharedBuffer&);
+     WEBCORE_EXPORT static RefPtr<SharedMemory> map(Handle&&, Protection, CopyOnWrite = CopyOnWrite::No);
+ #if USE(UNIX_DOMAIN_SOCKETS) && !OS(XOS)
+@@ -193,7 +213,9 @@
+     WEBCORE_EXPORT Ref<WebCore::SharedBuffer> createSharedBuffer(size_t) const;
+
+ private:
+-#if OS(DARWIN)
++#if OS(XOS)
++    static RefPtr<SharedMemory> allocate_xos(size_t, bool transferable);
++#elif OS(DARWIN)
+     MachSendRight createSendRight(Protection) const;
+ #endif
+
+--- a/Source/WebCore/platform/xos/SharedMemoryXOS.cpp
++++ b/Source/WebCore/platform/xos/SharedMemoryXOS.cpp
+@@ -3,7 +3,10 @@
+ #include "SharedMemory.h"
+
+ #if OS(XOS)
++#include "SharedMemoryTransferXOS.h"
++#include <algorithm>
+ #include <xos/ipc_v1.hpp>
++#include <xos/thread_core.hpp>
+ #include <xos/vm_abi.hpp>
+ #include <wtf/Assertions.h>
+
+@@ -20,22 +23,38 @@
+
+ xos_memory_grant::~xos_memory_grant()
+ {
+-    // A live local mapping owns a strong reference. Destruction therefore has
+-    // no live users to keep pages pinned.
++    if (!m_managed || !m_handle)
++        return;
++    // A published loan requires an explicit completion. Never revoke a
++    // borrower’s active view as a side effect of forgetting the loan.
++    RELEASE_ASSERT(!m_exported.load());
+     RELEASE_ASSERT(!xos::ipc_v1::grant_close(m_handle));
+ }
+
+ RefPtr<SharedMemory> SharedMemory::allocate(size_t size)
++{
++    return allocate_xos(size, false);
++}
++
++RefPtr<SharedMemory> SharedMemory::allocate_for_xos_transfer(size_t size)
++{
++    return allocate_xos(size, true);
++}
++
++RefPtr<SharedMemory> SharedMemory::allocate_xos(size_t size, bool transferable)
+ {
+     if (!size || size > grant_limit)
+         return nullptr;
+
+     xos::u64 grant = 0;
+     xos::u64 length = 0;
+-    if (xos::ipc_v1::grant_create(0, size, local_rights, grant, length))
++    auto rights = local_rights;
++    if (transferable)
++        rights |= static_cast<uint32_t>(xos::ipc_v1_grant_right::delegate);
++    if (xos::ipc_v1::grant_create(0, size, rights, grant, length))
+         return nullptr;
+
+-    auto storage = adoptRef(*new xos_memory_grant(grant));
++    auto storage = adoptRef(*new xos_memory_grant(grant, true, transferable));
+     if (length != size)
+         return nullptr;
+
+@@ -82,7 +101,8 @@
+
+ SharedMemory::~SharedMemory()
+ {
+-    RELEASE_ASSERT(!xos::ipc_v1::grant_unmap(m_xos_grant->m_handle, m_xos_mapping));
++    const auto result = xos::ipc_v1::grant_unmap(m_xos_grant->m_handle, m_xos_mapping);
++    RELEASE_ASSERT(!result || (!m_xos_grant->m_managed && result == static_cast<xos::i64>(xos::ipc_v1_error::invalid_handle)));
+ }
+
+ std::optional<SharedMemory::Handle> SharedMemory::createHandle(Protection protection)
+@@ -90,6 +110,190 @@
+     if (protection == Protection::ReadWrite && m_xos_protection != Protection::ReadWrite)
+         return std::nullopt;
+     return Handle(Handle::Type(Ref { *m_xos_grant }, protection), size());
++}
++
++namespace {
++
++constexpr uint32_t transfer_magic = 0x314d5358; // XSM1
++enum class transfer_step : uint8_t { offer = 1, mapped, released, closed };
++
++struct transfer_record {
++    uint32_t magic;
++    uint8_t version;
++    uint8_t step;
++    uint8_t protection;
++    uint8_t reserved;
++    uint64_t exchange;
++    uint64_t grant;
++    uint64_t size;
++};
++static_assert(sizeof(transfer_record) == 32);
++
++bool authenticated_route(const xos_shared_memory_route& route)
++{
++    const auto [send, receive] = route.endpoints;
++    xos::u64 sender = 0, receiver = 0;
++    return send && receive && send != receive && route.expected_peer && route.exchange
++        && !xos::sdk::ipc_endpoint_peer(send, sender) && !xos::sdk::ipc_endpoint_peer(receive, receiver)
++        && sender == route.expected_peer && receiver == route.expected_peer;
++}
++
++bool send_record(const xos_shared_memory_route& route, transfer_step step, uint64_t grant, uint64_t size,
++    SharedMemoryProtection protection)
++{
++    const transfer_record packet { transfer_magic, 1, static_cast<uint8_t>(step), static_cast<uint8_t>(protection),
++        0, route.exchange, grant, size };
++    return authenticated_route(route) && !xos::sdk::ipc_send(route.endpoints.send, &packet, sizeof(packet));
++}
++
++bool receive_record(const xos_shared_memory_route& route, transfer_step step, uint64_t deadline, transfer_record& packet)
++{
++    while (authenticated_route(route)) {
++        const auto size = xos::sdk::ipc_recv(route.endpoints.receive, &packet, sizeof(packet));
++        if (size == static_cast<xos::i64>(sizeof(packet)))
++            return authenticated_route(route) && packet.magic == transfer_magic && packet.version == 1
++                && packet.step == static_cast<uint8_t>(step) && !packet.reserved && packet.exchange == route.exchange
++                && packet.grant && packet.size && packet.size <= grant_limit
++                && packet.protection <= static_cast<uint8_t>(SharedMemoryProtection::ReadWrite);
++        const auto now = xos::thread::clock();
++        if (size != xos::process_error_would_block || now >= deadline
++            || xos::thread::sleep_until(now + std::min(deadline - now, uint64_t { 1'000'000 })) != 0)
++            return false;
++    }
++    return false;
++}
++
++bool receive_reply(const xos_shared_memory_route& route, transfer_step step, uint64_t deadline,
++    uint64_t number, uint64_t length, SharedMemoryProtection protection)
++{
++    transfer_record reply { };
++    return receive_record(route, step, deadline, reply) && reply.grant == number && reply.size == length
++        && reply.protection == static_cast<uint8_t>(protection);
++}
++
++}
++
++xos_memory_offer::xos_memory_offer(RefPtr<xos_memory_grant>&& grant, const xos_shared_memory_route& route, size_t length,
++    SharedMemoryProtection protection, bool published)
++    : m_grant(WTF::move(grant))
++    , m_route(route)
++    , m_number(m_grant->m_handle)
++    , m_length(length)
++    , m_protection(protection)
++    , m_published(published)
++{
++}
++
++std::optional<xos_memory_offer> xos_memory_offer::send(SharedMemoryHandle&& handle, const xos_shared_memory_route& route)
++{
++    auto& storage = handle.m_handle;
++    if (!storage || !storage.m_grant->m_transferable || !authenticated_route(route))
++        return std::nullopt;
++    auto& grant = *storage.m_grant;
++    if (grant.m_exported.exchange(true))
++        return std::nullopt;
++
++    auto rights = static_cast<uint32_t>(xos::ipc_v1_grant_right::read_mapping);
++    if (storage.m_protection == SharedMemoryProtection::ReadWrite)
++        rights |= static_cast<uint32_t>(xos::ipc_v1_grant_right::write_mapping);
++    xos::u64 delegated = 0;
++    if (xos::ipc_v1::grant_delegate(grant.m_handle, route.expected_peer, rights, delegated)) {
++        grant.m_exported.store(false);
++        return std::nullopt;
++    }
++    RELEASE_ASSERT(delegated == grant.m_handle);
++
++    const auto published = send_record(route, transfer_step::offer, delegated, handle.size(), storage.m_protection);
++    return xos_memory_offer(WTF::move(storage.m_grant), route, handle.size(), storage.m_protection, published);
++}
++
++bool xos_memory_offer::confirm_map(uint64_t deadline)
++{
++    if (!m_grant || !m_published || m_confirmed)
++        return false;
++    m_confirmed = receive_reply(m_route, transfer_step::mapped, deadline, m_number, m_length, m_protection);
++    return m_confirmed;
++}
++
++xos_loan_result xos_memory_offer::revoke()
++{
++    if (!m_grant)
++        return xos_loan_result::exchange_unconfirmed;
++    if (!m_grant->hasOneRef())
++        return xos_loan_result::local_views_active;
++    if (xos::ipc_v1::grant_close(m_number))
++        return xos_loan_result::exchange_unconfirmed;
++    m_grant->m_handle = 0;
++    m_grant = nullptr;
++    m_closed = true;
++    return xos_loan_result::ok;
++}
++
++xos_loan_result xos_memory_offer::close_after_release(uint64_t deadline)
++{
++    if (m_close_reported)
++        return xos_loan_result::ok;
++    if (!m_confirmed)
++        return xos_loan_result::exchange_unconfirmed;
++    if (!m_peer_released)
++        m_peer_released = receive_reply(m_route, transfer_step::released, deadline, m_number, m_length, m_protection);
++    if (!m_peer_released)
++        return xos_loan_result::exchange_unconfirmed;
++    if (!m_closed) {
++        const auto result = revoke();
++        if (result != xos_loan_result::ok)
++            return result;
++    }
++    m_close_reported = send_record(m_route, transfer_step::closed, m_number, m_length, m_protection);
++    return m_close_reported ? xos_loan_result::ok : xos_loan_result::exchange_unconfirmed;
++}
++
++xos_memory_loan::xos_memory_loan(RefPtr<xos_memory_grant>&& grant, RefPtr<SharedMemory>&& view, const xos_shared_memory_route& route,
++    uint64_t number, uint64_t length, SharedMemoryProtection protection)
++    : m_grant(WTF::move(grant))
++    , m_view(WTF::move(view))
++    , m_route(route)
++    , m_number(number)
++    , m_length(length)
++    , m_protection(protection)
++{
++}
++
++std::optional<xos_memory_loan> xos_memory_loan::receive(const xos_shared_memory_route& route, SharedMemoryProtection protection,
++    uint64_t deadline)
++{
++    transfer_record packet { };
++    if (!receive_record(route, transfer_step::offer, deadline, packet)
++        || packet.protection != static_cast<uint8_t>(protection))
++        return std::nullopt;
++
++    RefPtr<xos_memory_grant> grant = adoptRef(*new xos_memory_grant(packet.grant, false, false));
++    auto handle = SharedMemoryHandle(SharedMemoryHandle::Type(Ref { *grant }, protection), packet.size);
++    auto view = SharedMemory::map(WTF::move(handle), protection);
++    if (!view || !send_record(route, transfer_step::mapped, packet.grant, packet.size, protection))
++        return std::nullopt;
++
++    return xos_memory_loan(WTF::move(grant), WTF::move(view), route, packet.grant, packet.size, protection);
++}
++
++xos_loan_result xos_memory_loan::release()
++{
++    if (!m_grant || m_released)
++        return xos_loan_result::exchange_unconfirmed;
++    m_view = nullptr;
++    if (!m_grant->hasOneRef())
++        return xos_loan_result::local_views_active;
++    m_released = send_record(m_route, transfer_step::released, m_number, m_length, m_protection);
++    return m_released ? xos_loan_result::ok : xos_loan_result::exchange_unconfirmed;
++}
++
++bool xos_memory_loan::confirm_close(uint64_t deadline)
++{
++    if (!m_grant || !m_released
++        || !receive_reply(m_route, transfer_step::closed, deadline, m_number, m_length, m_protection))
++        return false;
++    m_grant = nullptr;
++    return true;
+ }
+
+ } // namespace WebCore
+--- /dev/null
++++ b/Source/WebCore/platform/xos/SharedMemoryTransferXOS.h
+@@ -0,0 +1,78 @@
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++#include "SharedMemory.h"
++
++#if OS(XOS)
++#include <xos/process_abi.hpp>
++
++namespace WebCore {
++
++struct xos_shared_memory_route {
++    xos::ipc_channel endpoints;
++    uint64_t expected_peer;
++    uint64_t exchange;
++};
++
++enum class xos_loan_result {
++    ok,
++    local_views_active,
++    exchange_unconfirmed,
++};
++
++// The route is a dedicated lane between explicitly trusted processes. Callers
++// retain the offer until closure is confirmed or the supervised peer has exited.
++class xos_memory_offer final {
++public:
++    static std::optional<xos_memory_offer> send(SharedMemoryHandle&&, const xos_shared_memory_route&);
++
++    xos_memory_offer(xos_memory_offer&&) = default;
++    xos_memory_offer(const xos_memory_offer&) = delete;
++    bool published() const { return m_published; }
++
++    bool confirm_map(uint64_t deadline);
++    xos_loan_result close_after_release(uint64_t deadline);
++
++    // Management closure invalidates all mappings. Use after the borrower
++    // released, after its confirmed exit, or before any mapping was published.
++    xos_loan_result revoke();
++
++private:
++    xos_memory_offer(RefPtr<xos_memory_grant>&&, const xos_shared_memory_route&, size_t, SharedMemoryProtection, bool);
++    RefPtr<xos_memory_grant> m_grant;
++    xos_shared_memory_route m_route;
++    uint64_t m_number;
++    uint64_t m_length;
++    SharedMemoryProtection m_protection;
++    bool m_published;
++    bool m_confirmed { false };
++    bool m_peer_released { false };
++    bool m_closed { false };
++    bool m_close_reported { false };
++};
++
++class xos_memory_loan final {
++public:
++    static std::optional<xos_memory_loan> receive(const xos_shared_memory_route&, SharedMemoryProtection, uint64_t deadline);
++
++    xos_memory_loan(xos_memory_loan&&) = default;
++    xos_memory_loan(const xos_memory_loan&) = delete;
++
++    RefPtr<SharedMemory> view() const { return m_view; }
++    xos_loan_result release();
++    bool confirm_close(uint64_t deadline);
++
++private:
++    xos_memory_loan(RefPtr<xos_memory_grant>&&, RefPtr<SharedMemory>&&, const xos_shared_memory_route&,
++        uint64_t, uint64_t, SharedMemoryProtection);
++    RefPtr<xos_memory_grant> m_grant;
++    RefPtr<SharedMemory> m_view;
++    xos_shared_memory_route m_route;
++    uint64_t m_number;
++    uint64_t m_length;
++    SharedMemoryProtection m_protection;
++    bool m_released { false };
++};
++
++}
++#endif

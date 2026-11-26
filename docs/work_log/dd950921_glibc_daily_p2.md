@@ -55,11 +55,13 @@ ELF 转为 8,761,224 字节运行 ELF。具名节表的文件偏移、节数和�
 XOSBND1 为 16,092,552 字节。ISO 使用现有类型 3 暂存包及类型 5 提供
 xypm ELF，无需扩大容量或更改默认镜像。profile 核验宿主套件 45/45 通过。
 
-冷启动中，客体校验并暂存了三个 XOSBND1 成员。随后监督进程的自动安装
+在原启动顺序的冷启动中，客体校验并暂存了三个 XOSBND1 成员。随后监督进程的自动安装
 收到 `maintenance: busy or denied error=-11`，并报告会在下次启动重试。
 这一拒绝发生在包管理器启动前。内核的维护准入要求仅监督进程和文件服务
 存活，当前启动顺序会在自动维护前启动音频服务。手动 P2 门禁使用已有的
-`demo quiet` 与 `audio stop` 完成准入。自动安装仍有单独的启动顺序门禁。
+`demo quiet` 与 `audio stop` 完成准入。调整启动顺序后，同一 XOSBND1
+载荷冷启动通过自动安装和恢复清理，关机后核对 26 个文件及三个暂存成员。
+[冷启动复验](03c0fe80_install_bundle_before_audio.md)
 [监督进程启动顺序](../../src/user/programs/supervisor.cpp) ·
 [内核维护准入](../../src/kernel/arch/x86_64/tasks.cpp)
 

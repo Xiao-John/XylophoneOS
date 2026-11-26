@@ -7,6 +7,7 @@
 #include <atomic>
 #include <cassert>
 #include <cerrno>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -15,12 +16,14 @@
 #include <linux/futex.h>
 #include <mutex>
 #include <sys/ioctl.h>
+#include <sys/select.h>
 #include <sys/syscall.h>
 #include <thread>
 #include <unistd.h>
 
 extern "C" { const void *__xos_startup = nullptr; }
 extern "C" int xos_test_ioctl(int, unsigned long, ...);
+extern "C" int xos_test_select(int, fd_set*, fd_set*, fd_set*, timeval*);
 namespace {
 alignas(16) unsigned char startup_area[4096];
 std::mutex mock_lock;
@@ -31,6 +34,7 @@ xos::terminal::request pending;
 xos::terminal::mode mode = xos::terminal::default_mode;
 xos_file_response file_response;
 xos::u64 next_sequence = 1;
+xos::i64 readiness_reply;
 bool pending_reply, block_read, read_waiting, input_ready;
 const char *failure = "";
 bool fail_once;
@@ -74,6 +78,10 @@ extern "C" int __xos_file_test_startup_range(xos_u64 address, xos_u64 length) {
     const auto begin = reinterpret_cast<xos_u64>(startup_area);
     return address >= begin && address <= begin + sizeof(startup_area)
         && length <= begin + sizeof(startup_area) - address;
+}
+extern "C" long __xos_clock_test_trap(unsigned long number, unsigned long first) {
+    assert(number == 46 && first == 0);
+    return 1000;
 }
 extern "C" xos_i64 __xos_wait_word(xos_u32* address, xos_u32 expected, xos_u64) {
     const long result = syscall(SYS_futex, address, FUTEX_WAIT_PRIVATE, expected, nullptr, nullptr, 0);
@@ -125,6 +133,7 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
         else if (pending.operation == 12) {
             if (mode.vmin != 0 || block_read) { reply.result = 1; reply.length = 1; reply.data[0] = 'R'; }
         } else if (pending.operation == 7) reply.result = pending.length > 17 ? 17 : pending.length;
+        else if (pending.operation == 15) { assert(pending.length == 0); reply.result = readiness_reply; }
         else assert(pending.operation == 13 || pending.operation == 14);
         pending_reply = false;
         if (fail_once) {
@@ -187,6 +196,10 @@ int main(int argc, char **argv) {
             char byte = 0;
             std::thread reader([&] { assert(__xos_file_read(0, &byte, 1) == 1); });
             { std::unique_lock<std::mutex> lock(mock_lock); input_changed.wait(lock, [] { return read_waiting; }); }
+            fd_set readable; FD_ZERO(&readable); FD_SET(0,&readable);
+            timeval immediate{};
+            assert(xos_test_select(1,&readable,nullptr,nullptr,&immediate)==-1 && errno==EBUSY);
+            assert(FD_ISSET(0,&readable) && sends == 1);
             assert(__xos_file_close(0) == 0 && __xos_file_close(1) == 0 && __xos_file_close(2) == 0);
             assert(channel_closes == 0);
             const int fd = static_cast<int>(__xos_file_open("/independent", O_RDWR));
@@ -201,6 +214,23 @@ int main(int argc, char **argv) {
             for (auto& worker : workers) worker = std::thread([] { for (int n=0;n<100;++n) assert(__xos_file_write(1,"abc",3)==3); });
             for (auto& worker : workers) worker.join();
             assert(sends == 400 && next_sequence == 401 && channel_closes == 0);
+        } else if (is("readiness")) {
+            assert(__xos_file_isatty(0) == 1);
+            fd_set readable;
+            FD_ZERO(&readable); FD_SET(0,&readable);
+            timeval timeout{2,50};
+            readiness_reply = xos::thread_error_timeout;
+            assert(xos_test_select(1,&readable,nullptr,nullptr,&timeout) == 0 && !FD_ISSET(0,&readable));
+            assert(timeout.tv_sec == 2 && timeout.tv_usec == 50 && pending.deadline_ns == 2000051000);
+            readiness_reply = xos::terminal::interrupted;
+            FD_SET(0,&readable);
+            errno=0;
+            assert(xos_test_select(1,&readable,nullptr,nullptr,nullptr) == -1 && errno == EINTR);
+            assert(FD_ISSET(0,&readable) && pending.deadline_ns == xos::thread_deadline_infinite);
+            readiness_reply = 1;
+            timeout = {LONG_MAX,999999};
+            assert(xos_test_select(1,&readable,nullptr,nullptr,&timeout) == 1 && FD_ISSET(0,&readable));
+            assert(pending.deadline_ns == xos::thread_deadline_infinite-1 && sends == 3 && channel_closes == 0);
         } else if (is("basic")) {
             struct stat info{}; struct termios value{}, original{};
             assert(__xos_file_isatty(0)==1 && __xos_file_isatty(1)==1 && __xos_file_isatty(2)==1);

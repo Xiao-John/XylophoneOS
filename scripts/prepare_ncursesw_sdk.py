@@ -57,7 +57,7 @@ def main():
         check(path.is_file() and sha(path) == expected, 'SDK source differs: ' + name)
     check(target.get('archive_valid') is True and target.get('inputs_unchanged') is True and
           target.get('sdk_tree_sha256') == sdk_hash and target.get('source_lock_sha256') == sha(lock_path) and
-          target.get('source_sha256') == lock['archive_sha256'] and
+          target.get('source_sha256') == lock['sha256'] and
           target.get('archive_sha256') == sha(library) and sha(notice) == lock['notice_sha256'] and
           '--disable-sigwinch' in target['configure_command'] and
           '-D_XOPEN_SOURCE=700' in target['environment']['CPPFLAGS'], 'ncurses inputs do not match')
@@ -68,7 +68,7 @@ def main():
         check(path.is_file() and not path.is_symlink() and sha(path) == headers[name],
               'ncurses header differs: ' + name)
     check(term.get('status') == 'built_guest_not_run' and term.get('entry') == 'x/xterm' and
-          term.get('source_sha256') == lock['archive_sha256'] and
+          term.get('source_sha256') == lock['sha256'] and
           term.get('source_lock_sha256') == sha(lock_path) and
           term.get('target_report_sha256') == sha(probe / 'report.json') and
           term.get('target_config_sha256') == sha(probe / 'build/include/ncurses_cfg.h') and
@@ -97,7 +97,7 @@ def main():
           'inputs changed during composition')
     digest, files = tree_receipt(output)
     receipt = {'status': 'built_unverified', 'scope': 'single-thread ncursesw SDK candidate and xterm data',
-               'source_sha256': lock['archive_sha256'], 'base_sdk_tree_sha256': sdk_hash,
+               'source_sha256': lock['sha256'], 'base_sdk_tree_sha256': sdk_hash,
                'target_report_sha256': sha(probe / 'report.json'), 'terminfo_receipt_sha256': sha(terminfo / 'receipt.json'),
                'tree_sha256': digest, 'files': files}
     (output / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')

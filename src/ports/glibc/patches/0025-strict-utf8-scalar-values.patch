@@ -1,0 +1,180 @@
+--- a/iconv/gconv_builtin.h
++++ b/iconv/gconv_builtin.h
+@@ -49,11 +49,11 @@
+ BUILTIN_ALIAS ("ISO-10646/UTF-8/", "ISO-10646/UTF8/")
+ 
+ BUILTIN_TRANSFORMATION ("INTERNAL", "ISO-10646/UTF8/", 1, "=INTERNAL->utf8",
+-			__gconv_transform_internal_utf8, NULL, 4, 4, 1, 6)
++			__gconv_transform_internal_utf8, NULL, 4, 4, 1, 4)
+ 
+ BUILTIN_TRANSFORMATION ("ISO-10646/UTF8/", "INTERNAL", 1, "=utf8->INTERNAL",
+ 			__gconv_transform_utf8_internal, __gconv_btwoc_ascii,
+-			1, 6, 4, 4)
++			1, 4, 4, 4)
+ 
+ BUILTIN_ALIAS ("UCS2//", "ISO-10646/UCS2/")
+ BUILTIN_ALIAS ("UCS-2//", "ISO-10646/UCS2/")
+--- a/iconv/gconv_simple.c
++++ b/iconv/gconv_simple.c
+@@ -625,7 +625,7 @@
+ #define DEFINE_FINI		0
+ #define MIN_NEEDED_FROM		4
+ #define MIN_NEEDED_TO		1
+-#define MAX_NEEDED_TO		6
++#define MAX_NEEDED_TO		4
+ #define FROM_DIRECTION		1
+ #define FROM_LOOP		internal_utf8_loop
+ #define TO_LOOP			internal_utf8_loop /* This is not used.  */
+@@ -643,13 +643,13 @@
+     if (__glibc_likely (wc < 0x80))					      \
+       /* It's an one byte sequence.  */					      \
+       *outptr++ = (unsigned char) wc;					      \
+-    else if (__glibc_likely (wc <= 0x7fffffff				      \
++    else if (__glibc_likely (wc <= 0x10ffff				      \
+ 			     && (wc < 0xd800 || wc > 0xdfff)))		      \
+       {									      \
+ 	size_t step;							      \
+ 	unsigned char *start;						      \
+ 									      \
+-	for (step = 2; step < 6; ++step)				      \
++	for (step = 2; step < 4; ++step)				      \
+ 	  if ((wc & (~(uint32_t)0 << (5 * step + 1))) == 0)		      \
+ 	    break;							      \
+ 									      \
+@@ -687,7 +687,7 @@
+ #define DEFINE_INIT		0
+ #define DEFINE_FINI		0
+ #define MIN_NEEDED_FROM		1
+-#define MAX_NEEDED_FROM		6
++#define MAX_NEEDED_FROM		4
+ #define MIN_NEEDED_TO		4
+ #define FROM_DIRECTION		1
+ #define FROM_LOOP		utf8_internal_loop
+@@ -728,23 +728,11 @@
+ 	    cnt = 3;							      \
+ 	    ch &= 0x0f;							      \
+ 	  }								      \
+-	else if (__glibc_likely ((ch & 0xf8) == 0xf0))			      \
++	else if (__glibc_likely (ch >= 0xf0 && ch <= 0xf4))		      \
+ 	  {								      \
+ 	    /* We expect four bytes.  */				      \
+ 	    cnt = 4;							      \
+ 	    ch &= 0x07;							      \
+-	  }								      \
+-	else if (__glibc_likely ((ch & 0xfc) == 0xf8))			      \
+-	  {								      \
+-	    /* We expect five bytes.  */				      \
+-	    cnt = 5;							      \
+-	    ch &= 0x03;							      \
+-	  }								      \
+-	else if (__glibc_likely ((ch & 0xfe) == 0xfc))			      \
+-	  {								      \
+-	    /* We expect six bytes.  */					      \
+-	    cnt = 6;							      \
+-	    ch &= 0x01;							      \
+ 	  }								      \
+ 	else								      \
+ 	  {								      \
+@@ -761,45 +749,34 @@
+ 	    STANDARD_FROM_LOOP_ERR_HANDLER (i);				      \
+ 	  }								      \
+ 									      \
+-	if (__glibc_unlikely (inptr + cnt > inend))			      \
+-	  {								      \
+-	    /* We don't have enough input.  But before we report that check   \
+-	       that all the bytes are correct.  */			      \
+-	    for (i = 1; inptr + i < inend; ++i)				      \
+-	      if ((inptr[i] & 0xc0) != 0x80)				      \
+-		break;							      \
+-									      \
+-	    if (__glibc_likely (inptr + i == inend))			      \
+-	      {								      \
+-		result = __GCONV_INCOMPLETE_INPUT;			      \
+-		break;							      \
+-	      }								      \
+-									      \
+-	    goto errout;						      \
+-	  }								      \
+-									      \
+-	/* Read the possible remaining bytes.  */			      \
+-	for (i = 1; i < cnt; ++i)					      \
++	/* Read available continuation bytes, including when input is split.  */ \
++	size_t available = inend - inptr;				      \
++	for (i = 1; i < cnt && i < available; ++i)			      \
+ 	  {								      \
+ 	    uint32_t byte = inptr[i];					      \
+-									      \
+ 	    if ((byte & 0xc0) != 0x80)					      \
+-	      /* This is an illegal encoding.  */			      \
+-	      break;							      \
+-									      \
++	      goto errout;						      \
+ 	    ch <<= 6;							      \
+ 	    ch |= byte & 0x3f;						      \
+ 	  }								      \
+ 									      \
+-	/* If i < cnt, some trail byte was not >= 0x80, < 0xc0.		      \
+-	   If cnt > 2 and ch < 2^(5*cnt-4), the wide character ch could	      \
+-	   have been represented with fewer than cnt bytes.  */		      \
+-	if (i < cnt || (cnt > 2 && (ch >> (5 * cnt - 4)) == 0)		      \
+-	    /* Do not accept UTF-16 surrogates.  */			      \
+-	    || (ch >= 0xd800 && ch <= 0xdfff))				      \
++	/* Reject overlong forms, surrogates and values above U+10FFFF.	      \
++	   The first two bytes suffice, even for an incomplete sequence.  */  \
++	if (i > 1)							      \
+ 	  {								      \
+-	    /* This is an illegal encoding.  */				      \
+-	    goto errout;						      \
++	    unsigned char lead = inptr[0];				      \
++	    unsigned char trail = inptr[1];				      \
++	    if ((lead == 0xe0 && trail < 0xa0)				      \
++		|| (lead == 0xed && trail >= 0xa0)			      \
++		|| (lead == 0xf0 && trail < 0x90)			      \
++		|| (lead == 0xf4 && trail >= 0x90))			      \
++	      goto errout;						      \
++	  }								      \
++									      \
++	if (i < cnt)							      \
++	  {								      \
++	    result = __GCONV_INCOMPLETE_INPUT;				      \
++	    break;							      \
+ 	  }								      \
+ 									      \
+ 	inptr += cnt;							      \
+@@ -837,23 +814,12 @@
+ 	cnt = 3;							      \
+ 	ch &= 0x0f;							      \
+       }									      \
+-    else if (__glibc_likely ((ch & 0xf8) == 0xf0))			      \
+-      {									      \
+-	/* We expect four bytes.  */					      \
++    else								      \
++      {									      \
++	/* The loop only buffers valid prefixes, up to four bytes.  */	      \
++	assert (ch >= 0xf0 && ch <= 0xf4);				      \
+ 	cnt = 4;							      \
+ 	ch &= 0x07;							      \
+-      }									      \
+-    else if (__glibc_likely ((ch & 0xfc) == 0xf8))			      \
+-      {									      \
+-	/* We expect five bytes.  */					      \
+-	cnt = 5;							      \
+-	ch &= 0x03;							      \
+-      }									      \
+-    else								      \
+-      {									      \
+-	/* We expect six bytes.  */					      \
+-	cnt = 6;							      \
+-	ch &= 0x01;							      \
+       }									      \
+ 									      \
+     /* The first byte is already consumed.  */				      \
+@@ -877,7 +843,7 @@
+ 
+ #define UNPACK_BYTES \
+   {									      \
+-    static const unsigned char inmask[5] = { 0xc0, 0xe0, 0xf0, 0xf8, 0xfc };  \
++    static const unsigned char inmask[3] = { 0xc0, 0xe0, 0xf0 };  \
+     wint_t wch = state->__value.__wch;					      \
+     size_t ntotal = state->__count >> 8;				      \
+ 									      \

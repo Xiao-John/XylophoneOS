@@ -94,10 +94,10 @@ QEMU 中的完整 DU12 回执为 `passed`。原脚本覆盖全部 13 个工具�
 - 正常系统 SDK 仍从 newlib 装配。自动 dash 安装从既有 newlib 缓存选工件。
   默认切换需要成套绑定 SDK、发布 profile、安装镜像和可复验的回退工件。
   [系统 SDK 装配](../../scripts/user_build.py) · [dash 安装选择](../../scripts/install_dash.py)
-- 日用工具的 XPK 构建仍读取 newlib SDK 的许可证布局。对本 glibc sysroot
-  实测先在 `LICENSE` 路径返回缺失。XPK 同时要求 `stdio_transfer`，
-  当前 glibc 候选 profile 拒绝该 feature。发布路径仍需运行安装、使用与回退验收。
-  [日用工具打包](../../scripts/package_daily_utilities.py) · [SDK profile](../../scripts/xypm_sdk_profile.py)
+- 本次纵切使用的旧 glibc SDK 曾在打包器查找 `LICENSE` 时失败，也缺少
+  `stdio_transfer` 接收对象。后续候选已按运行时选择许可证，并绑定了接收对象。
+  该候选的真实生活周期和冻结 newlib 对照见[后续 XPK 验收](907ccb19_glibc_daily_xpk.md)。
+  默认切换与原生 P2 发布资格仍按各自回执验收。
 - 当前 glibc shell 范围保留预览限制。正常 `fork`、`exec` 替换、命令替换、
   复合管线，以及通用 spawn 文件动作和出站终端继承仍有明确失败入口。
   [glibc fork](../../src/ports/glibc/sysdeps/xos/fork.c) · [spawn 文件动作](../../src/ports/glibc/sysdeps/xos/spawni.c) · [终端契约](../contracts/glibc_terminal_v1.md)

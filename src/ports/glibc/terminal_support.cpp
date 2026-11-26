@@ -96,6 +96,15 @@ extern "C" long __xos_terminal_set_mode(const xos_terminal_mode* input, unsigned
     return exchange([&] { return xos::terminal::set_mode(terminal_session, value,
         static_cast<xos::terminal::mode_action>(action)); });
 }
+extern "C" long __xos_terminal_wait_readable(xos_u64 deadline) {
+    // The session has one response channel. An existing exchange can be an
+    // unbounded read, so it cannot hold up a readiness probe or yield a false
+    // timeout. A busy session returns an error without sending a request.
+    if (__atomic_exchange_n(&terminal_lock, 1, __ATOMIC_ACQUIRE) != 0) return -EBUSY;
+    const long result = result_errno(xos::terminal::wait_readable(terminal_session, deadline));
+    unlock_terminal();
+    return result;
+}
 extern "C" long __xos_terminal_drain() {
     return exchange([] { return xos::terminal::drain(terminal_session); });
 }

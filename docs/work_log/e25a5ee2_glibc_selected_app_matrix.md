@@ -24,3 +24,11 @@ python3 tests/glibc_selected_app_matrix_guest.py --candidate "$CANDIDATE" \
   --sdk-kit "$GLIBC_KIT" --c-xpk "$C_XPK" --cxx-xpk "$CXX_XPK" \
   --make-manifest "$GNU_MAKE_MANIFEST" --output "$OUTPUT"
 ```
+
+## 包构建回执审查复验
+
+测试以 `a73f568c` 对两个实际包分别校验包内声明的构建回执。回执必须绑定
+候选 SDK manifest、完整 SDK 树和 profile，测试报告保留包与回执摘要。给出错配
+SDK 摘要时在离线安装前拒绝。把两个包分别放在不同目录并都命名为 `app.xpk` 后，
+同一安装镜像重新通过两次启动、两组应用及 FAT 读回。
+[审查复验回执](../reports/glibc_selected_app_matrix_receipts_20261126/manifest.json)

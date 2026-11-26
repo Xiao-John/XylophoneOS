@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -16,7 +17,29 @@ from make_work_disk import create_fat32
 from process_smoke import command, resources
 from task_smoke import send_bytes
 from work_disk import transfer
-from xypm_format import load_json, require, sha_file
+from xypm_format import MAX_MANIFEST, load_json, require, sha_file, strict_json, verify_package
+
+
+def verify_build_receipt(package, profile, binding):
+    verified = verify_package(package, profile)
+    manifest = verified['manifest']
+    receipt = manifest['build_receipt']
+    data = bytearray()
+
+    def capture(event, item, content):
+        if item['path'] == receipt['path'] and event == 'begin':
+            require(item['size'] <= MAX_MANIFEST, 'build receipt exceeds the supported size')
+        if item['path'] == receipt['path'] and event == 'data':
+            data.extend(content)
+
+    verify_package(package, profile, expected_sha256=verified['sha256'], sink=capture)
+    record = strict_json(bytes(data))
+    require(record['runtime_family'] == 'glibc' and record['project_id'] == manifest['id']
+            and record['target_profile'] == binding['profile_id']
+            and all(record[key] == binding[key] for key in
+                    ('sdk_manifest_sha256', 'sdk_tree_sha256', 'profile_sha256')),
+            'XPK build receipt differs from the selected application SDK')
+    return {'xpk_sha256': verified['sha256'], 'build_receipt_sha256': receipt['sha256']}
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -28,6 +51,7 @@ def main():
     candidate = load_json(receipt)
     binding = candidate['application_sdk']
     profile = args.sdk_kit / 'profile.json'
+    profile_data = load_json(profile)
     image = args.candidate / 'system/xos-install-dash.iso'
     install_receipt = args.candidate / 'system/install_manifest.json'
     installed = load_json(install_receipt)
@@ -46,15 +70,18 @@ def main():
                'iso_sha256': sha_file(image), 'sdk_manifest_sha256': binding['sdk_manifest_sha256'],
                'profile_sha256': sha_file(profile), 'make_sha256': sha_file(make_elf),
                'make_manifest_sha256': sha_file(args.make_manifest),
-               'packages': {path.name: sha_file(path) for path in (args.c_xpk, args.cxx_xpk)},
+               'packages': {},
                'runner_sha256': sha_file(Path(__file__)), 'boots': []}
     try:
         with tempfile.TemporaryDirectory(prefix='xos_cold_matrix_') as lab:
             work = Path(lab)
             disk = work / 'initial.img'
             create_fat32(disk, 512)
-            for package in (args.c_xpk, args.cxx_xpk):
-                next_disk = work / (package.stem + '.img')
+            for label, source in [('c', args.c_xpk), ('cxx', args.cxx_xpk)]:
+                package = work / f'{label}.xpk'
+                shutil.copyfile(source, package)
+                report['packages'][label] = verify_build_receipt(package, profile_data, binding)
+                next_disk = work / f'{label}.img'
                 subprocess.run([sys.executable, str(ROOT / 'scripts/xypm.py'), 'install', str(package),
                                 '--offline', '--profile', str(profile), '--image', str(disk),
                                 '--output-image', str(next_disk)], check=True, stdout=subprocess.DEVNULL)

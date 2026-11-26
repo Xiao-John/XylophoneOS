@@ -1,0 +1,8 @@
+--- a/io/fstatfs.c
++++ b/io/fstatfs.c
+@@ -27,4 +27,5 @@ __fstatfs (int fd, struct statfs *buf)
+   __set_errno (ENOSYS);
+   return -1;
+ }
++libc_hidden_def (__fstatfs)
+ stub_warning (fstatfs)

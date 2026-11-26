@@ -5,7 +5,7 @@
 
 ```sh
 python3 -B scripts/probe_glibc_rtld.py --archive "$GLIBC_ARCHIVE" \
-  --jobs 2 --output build/glibc-rtld-diagnostic
+  --jobs 2 --output build/rtld-final-evidence
 ```
 
 从 `382fd564` 在断网 Linux arm64 容器干净复跑，使用 GCC 16.2.0、GNU binutils 2.47、
@@ -18,6 +18,9 @@ GNU Make 4.4.1 和两个构建任务。内存上限 1.5 GiB，未触发 OOM。
 这两次链接分别验证实际工具链选项传递和 ELF 类型。
 
 ## 实际构建结果
+
+下表的清单和日志摘要来自这次签名源复跑的归档。清单含构建路径与命令，
+复跑时先核对源码、目标工件和实际结果。
 
 - 首次从顶层执行 `make -j2 elf/subdir_lib`，依赖编译首先在原生 `fstatat.c` 报出
   `__EI___fstatat` 指向未定义的 `__GI___fstatat`。同轮 NPTL `lowlevellock.c` 的

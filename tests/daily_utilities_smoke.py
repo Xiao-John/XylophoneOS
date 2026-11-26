@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
+from process_smoke import resources
 from task_smoke import pump, send_bytes
 from work_disk import transfer
 
@@ -21,11 +22,14 @@ def main():
     p.add_argument('--tools', type=Path, required=True)
     p.add_argument('--dash', type=Path, required=True)
     p.add_argument('--report', type=Path, required=True)
+    p.add_argument('--foreground', action='store_true', help='exercise file operands without external pipes or redirects')
     a = p.parse_args()
     build = json.loads((a.tools / 'manifest.json').read_text())
     report = {'status': 'failed', 'image_sha256': hashlib.sha256(a.image.read_bytes()).hexdigest(),
               'tools_manifest_sha256': hashlib.sha256((a.tools / 'manifest.json').read_bytes()).hexdigest(),
               'dash_sha256': hashlib.sha256(a.dash.read_bytes()).hexdigest(), 'checks': []}
+    if a.foreground:
+        report['scope'] = 'foreground_without_external_stdio_transfer'
     try:
         with tempfile.TemporaryDirectory(prefix='xos_du12_') as tmp:
             folder = Path(tmp); disk = folder / 'disk.img'; create_fat32(disk, 512)
@@ -35,7 +39,8 @@ def main():
                 source = a.tools / entry['name']
                 assert hashlib.sha256(source.read_bytes()).hexdigest() == entry['elf_sha256']
                 transfer(disk, 'import', entry['guest_path'], source)
-            transfer(disk, 'import', '/tests/du12.sh', ROOT / 'tests/fixtures/daily_utilities/du12.sh')
+            fixture = 'du12_foreground.sh' if a.foreground else 'du12.sh'
+            transfer(disk, 'import', '/tests/du12.sh', ROOT / 'tests/fixtures/daily_utilities' / fixture)
             transfer(disk, 'import', '/tests/binary.dat', ROOT / 'tests/fixtures/daily_utilities/binary.dat')
             # A full retained line may be evicted before its successor; an
             # individually oversized final line must still fail closed.
@@ -48,21 +53,38 @@ def main():
                 guest.expect(b'xos64> ', timeout=30); start = len(guest.output); send_bytes(guest, b'run\r')
                 guest.expect_supervisor(start=start, timeout=40); pump(guest, .4)
                 send_bytes(guest, b'demo quiet\r'); pump(guest, .4)
+                baseline = resources(guest) if a.foreground else None
                 start = len(guest.output); send_bytes(guest, b'dash /tests/du12.sh\r')
                 guest.expect_supervisor(start=start, timeout=180)
                 output = bytes(guest.output[start:])
-                if b'DU12_OK' not in output:
+                marker = b'DU12_FOREGROUND_OK' if a.foreground else b'DU12_OK'
+                if marker not in output:
                     raise AssertionError('daily utility script failed: ' + output[-4000:].decode('utf-8', 'replace'))
-                start = len(guest.output); send_bytes(guest, b'exec-file /usr/bin/ls /tmp/du\r')
+                if a.foreground:
+                    assert b'3 3 14 /tmp/du_direct/moved' in output and b'one\ntwo\nthree\n' in output, output
+                    assert resources(guest) == baseline
+                directory = '/tmp/du_direct' if a.foreground else '/tmp/du'
+                start = len(guest.output); send_bytes(guest, f'exec-file /usr/bin/ls {directory}\r'.encode())
                 guest.expect_supervisor(start=start, timeout=30)
                 output = bytes(guest.output[start:])
-                if b'head.txt' not in output or b'moved' not in output:
+                if b'moved' not in output or (not a.foreground and b'head.txt' not in output):
                     raise AssertionError('xsh explicit ls failed: ' + output[-2000:].decode('utf-8', 'replace'))
+                if a.foreground:
+                    assert resources(guest) == baseline
+                    report['baseline'] = baseline
                 start = len(guest.output); send_bytes(guest, b'sync\r'); guest.expect_supervisor(start=start, timeout=30)
-                report['checks'].append('dash_operations_pipe_and_rejected_unsafe_cases')
+                report['checks'].append('dash_foreground_file_operands' if a.foreground else
+                                        'dash_operations_pipe_and_rejected_unsafe_cases')
                 report['checks'].append('xsh_exec_file_ls')
             finally:
                 guest.close()
+            if a.foreground:
+                result = folder / 'moved'
+                transfer(disk, 'export', '/tmp/du_direct/moved', result)
+                assert result.read_bytes() == b'one\ntwo\nthree\n'
+                report['checks'].append('offline_exact_output_bytes')
+                report['status'] = 'passed_subset'
+                return
             expected = {'ls.txt':b'data\n','all.txt':b'.\n..\n.secret\ndata\n',
                         'almost.txt':b'.secret\ndata\n','dir.txt':b'/tmp/du/a\n',
                         'cat.txt':b'one\ntwo\nthree\n','head.txt':b'one\ntwo\n',

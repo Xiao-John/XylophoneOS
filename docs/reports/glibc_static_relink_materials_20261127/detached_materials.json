@@ -1,0 +1,46 @@
+{
+  "archive": "glibc-static-relink-materials-20261127.tar",
+  "archive_input_hashes": {
+    "gcc": {
+      "archive": "gcc-16.2.0.tar.xz",
+      "archive_bytes": 107200820,
+      "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+      "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+      "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+      "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+      "status": "offline_verified_matching_sdk"
+    },
+    "glibc": {
+      "archive": "glibc-2.44.tar.xz",
+      "archive_bytes": 20620544,
+      "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+      "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+      "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+      "status": "offline_verified_matching_sdk"
+    }
+  },
+  "bytes": 190648320,
+  "outputs": {
+    "original": "e055a9937ce11690d0dba9ecde26d86e27db9108fc44eb715411870f7e0196bb",
+    "replacement": "84a36dcabc7ecf9eed2a33b32704acd82c1ccad93a59d77674553ecc8d161666"
+  },
+  "sha256": "9893756bb371de1a09f7e0d1dcbd4572c2ddbdee0aa4da6eddb728c06fb51b8d",
+  "source_inputs": {
+    "original": {
+      "detached_prepare_status": "configured",
+      "input_count": 308,
+      "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+      "source_signature_status": "upstream_signature_verified",
+      "upstream_archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+    },
+    "replacement": {
+      "detached_prepare_status": "configured",
+      "input_count": 316,
+      "sdk_manifest_sha256": "e0016a3a369d4ec4ae04d4a8afa6524ae3a7bbcaa8c8b730383427ba4bc7d307",
+      "source_signature_status": "upstream_signature_verified",
+      "upstream_archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+    }
+  },
+  "verified_payload_files": 1435
+}

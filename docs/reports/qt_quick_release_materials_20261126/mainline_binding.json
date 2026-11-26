@@ -1,0 +1,17 @@
+{
+  "abi": "passed",
+  "base_commit": "863946acf7079e4023c72e13533403ce4dd253ad",
+  "dash": {
+    "receipt_sha256": "d97884d4cc185e321d97b22f3e4a706033b4fefe1821b1bb0fb314d97011b6cc",
+    "scanout_sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1"
+  },
+  "head_at_build": "6196b02ea98b0aee105f0dc7eb4291a95ac50120",
+  "source_commit": "a1bdc89d8712d4f9d43be8961a3528f042a55380",
+  "source_tree": "4aefa1618c071b58838d847c368034634b488fc3",
+  "system_build_id": "20f8c42fae412943",
+  "system_image_sha256": "519204b244d0902f067b7a10f24a9906d17884932585d5c60b8ead6a3c3e2f10",
+  "xsh": {
+    "receipt_sha256": "af7ce3e5b9cf4790ab577855156c5bf4d51b40b68390067a465d9f31f4676703",
+    "scanout_sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1"
+  }
+}

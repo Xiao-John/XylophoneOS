@@ -157,10 +157,12 @@ def build(args):
             raise RuntimeError("layout generator did not emit the native x86-64 interpreter entry")
         status = "target_llint_assembly_generated"
     else:
-        if args.stage in ("wtf_stack", "wtf_pthread", "wtf_allocator"):
+        if args.stage in ("wtf_stack", "wtf_pthread", "wtf_allocator", "wtf_config"):
             object_dir = "Source/WTF/wtf/CMakeFiles/WTF.dir/"
             if args.stage == "wtf_allocator":
                 names = ("posix/OSAllocatorPOSIX.cpp.obj",)
+            elif args.stage == "wtf_config":
+                names = ("WTFConfig.cpp.obj",)
             else:
                 names = ("StackBounds.cpp.obj", "xos/xos_stack_bounds.cpp.obj", "Threading.cpp.obj")
             if args.stage == "wtf_pthread":
@@ -215,6 +217,8 @@ def main():
                         help="build the native WTF stack and pthread lifecycle objects")
     stages.add_argument("--wtf-allocator", dest="stage", action="store_const", const="wtf_allocator",
                         help="build the native WTF anonymous memory allocator object")
+    stages.add_argument("--wtf-config", dest="stage", action="store_const", const="wtf_config",
+                        help="build the native WTF configuration and protection object")
     stages.add_argument("--jsc-mutator", dest="stage", action="store_const", const="jsc_mutator",
                         help="build only the JSC mutator admission object")
     parser.set_defaults(stage="layout")

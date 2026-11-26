@@ -1,0 +1,22 @@
+{
+  "diagnostic_source_commit": "e1a6b9b83da33304a1ab8a2d62ad99e0785ab1cd",
+  "fontconfig_archive_sha256": "6a33dc555cc9ba8b10caf7695878ef134eeb36d0af366041f639b1da9b6ed220",
+  "guest": "not_run",
+  "historical_sdk_manifest_sha256": "a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e",
+  "old_sdk_link_missing_symbols": [
+    "__faccessat"
+  ],
+  "old_sdk_link_stderr_sha256": "3317f375894ed5c585cc68ab11a225f94e0fb1a68fb52a168b6f5d3a90ef3934",
+  "status": "target_archive_built_old_sdk_link_failed",
+  "target_libfontconfig_sha256": "5d510e676639891c82df0e00be48c414fb40d546cfb3802513d32fe797cb72b0",
+  "webcore_target_objects": {
+    "FontCacheSkia.cpp": {
+      "source_sha256": "67bc3a82ac5b10323d4fcf4f00b91351e0d63d88c5f12928174ff70f52d11ef0",
+      "target_sha256": "7a730734bdfff7056a3311634cd15d9a66c3e2cf55416ab373b4471322e80433"
+    },
+    "SkiaSystemFallbackFontCache.cpp": {
+      "source_sha256": "d380226a9679d3c5b27147c22387d260a8ba62e3d2c851b4d9391a2dbceab227",
+      "target_sha256": "a0535b79a4c8d665ca94eee99e4ab432feeb58e59ef1bddd2cb1ce15940adf03"
+    }
+  }
+}

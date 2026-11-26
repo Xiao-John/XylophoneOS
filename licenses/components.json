@@ -4,6 +4,23 @@
   "legacy_inventory": "legacy_mit_files.json",
   "components": [
     {
+      "name": "XOS loader image reader",
+      "path": "src/user/loader/image_reader.hpp",
+      "source": "src/user/loader/load.cpp",
+      "license": "MIT AND Apache-2.0",
+      "notices": [
+        "LICENSE",
+        "licenses/mit_legacy.txt"
+      ],
+      "used_in": [
+        "XOS user-space loader SDK archive"
+      ],
+      "source_files": {
+        "src/user/loader/image_reader.hpp": "MIT AND Apache-2.0"
+      },
+      "modifications": "The reader was extracted from the historical loader while retaining the original mixed-license notice."
+    },
+    {
       "name": "Open Adventure",
       "version": "1.12",
       "path": "src/ports/adventure",

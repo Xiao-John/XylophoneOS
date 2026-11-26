@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import tempfile
+from unittest.mock import patch
 
 from boot_smoke import Guest
 from process_smoke import resources
@@ -15,6 +16,7 @@ from task_smoke import pump, send_bytes
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from make_work_disk import create_fat32
+from xos_app import GLIBC_BUILDER, build
 from xypm_format import DEFAULT_PROFILE, canonical, load_json, require, sha_file
 from xypm_image import Disk, query_image, transact
 
@@ -30,6 +32,28 @@ def rejected_app(profile, diagnostic, *arguments):
                *map(str, arguments)]
     result = subprocess.run(command, capture_output=True, text=True)
     require(result.returncode != 0 and diagnostic in result.stderr, 'unexpected application command result')
+
+
+def build_while_header_changes(profile, sdk, project, header):
+    original = header.read_bytes()
+    run = subprocess.run
+    edited = False
+
+    def change_live_header(command, *args, **kwargs):
+        nonlocal edited
+        if isinstance(command, list) and len(command) > 1 and command[1] == str(GLIBC_BUILDER):
+            header.write_bytes(b'#error live project header reached the compiler\n')
+            edited = True
+            try:
+                return run(command, *args, **kwargs)
+            finally:
+                header.write_bytes(original)
+        return run(command, *args, **kwargs)
+
+    with patch.object(subprocess, 'run', side_effect=change_live_header):
+        receipt = build(project, sdk, load_json(profile))
+    require(edited, 'snapshot test did not execute the backend')
+    return receipt
 
 
 def package(work, profile, sdk, language, revision):
@@ -59,11 +83,13 @@ def package(work, profile, sdk, language, revision):
         header.write_bytes(b'#include "../untracked.hpp"\n' + original)
         rejected_app(profile, 'glibc application build failed', 'build', project, '--sdk', sdk)
         header.write_bytes(original)
-    receipt = app(profile, 'build', project, '--sdk', sdk)
     if language == 'cpp' and revision == 0:
+        receipt = build_while_header_changes(profile, sdk, project, header)
         header.write_bytes(original + b'// changed after compile\n')
         rejected_app(profile, 'project inputs changed', 'check', project, '--sdk', sdk)
         header.write_bytes(original)
+    else:
+        receipt = app(profile, 'build', project, '--sdk', sdk)
     app(profile, 'check', project, '--sdk', sdk)
     packed = app(profile, 'pack', project, '--sdk', sdk, '--output', destination)
     require(receipt['runtime_family'] == 'glibc' and receipt['output_sha256']
@@ -129,6 +155,7 @@ def main():
             update, update_elf = package(work, args.profile, args.sdk_build, 'cpp', 1)
             evidence['checks'].extend([
                 {'phase': 'host', 'check': 'untracked_include_rejected'},
+                {'phase': 'host', 'check': 'temporary_live_header_change_uses_snapshot'},
                 {'phase': 'host', 'check': 'changed_local_header_requires_rebuild'},
             ])
             evidence['packages'] = {p.name: {'xpk_sha256': sha_file(p), 'elf_sha256': elf}

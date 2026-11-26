@@ -10,8 +10,8 @@ Linux arm64 下使用 SDK 清单锁定的 GCC 16.2.0 与 binutils 2.47，QEMU 11
 将实际构建的 C 应用和调用 libstdc++ 的多翻译单元 C++ 应用打包。宿主在独立 FAT
 候选盘完成两次安装、一次 C++ 修订升级、两次卸载。三个独立客体启动分别验证初
 装、升级及卸载后的状态。xsh 和 dash 共 9 条命令通过，每条后恢复资源基线。
-四项宿主检查确认未登记的头文件被拒绝、改动后要求重建、冻结 newlib profile 拒绝
-glibc XPK，以及原盘和用户文件保持原摘要。使用的系统镜像由组合快照
+五项宿主检查确认编译使用私有快照、未登记的头文件被拒绝、改动后要求重建、
+冻结 newlib profile 拒绝 glibc XPK，以及原盘和用户文件保持原摘要。使用的系统镜像由组合快照
 `d87a1453` 构建。回执记录本次应用候选及独立系统 SDK 的身份。
 
 此轮验收覆盖宿主 xypm 候选盘事务和客体运行。客体内 glibc xypm 自身的维护事务、
@@ -35,7 +35,7 @@ python3 tests/glibc_xpk_guest.py --system "$XOS_SYSTEM_BUILD" --dash "$XOS_DASH_
 | glibc C/C++ SDK manifest | `a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e` |
 | glibc C/C++ SDK 树 | `2070dbad9ddd860a11dd1511f1268c1f62683df01d1a967bfa741e53df0799d6` |
 | 应用 profile | `5c4c478c52a2d9633365851f2a8849c3c758b11b926aa1c8f6b16ba318d385f7` |
-| `build_glibc_program.py` | `44e3772c4350c5dc2ac9852413f1786f5877f390b0f6db7098af4ddc9fd2d135` |
-| `xos_app.py` | `acc52a010150d59092bc570d6e33bc687de14dc2b4c58f908d21b37fbadcbdb4` |
-| `glibc_xpk_guest.py` | `d3f78c7e749247948425ac1df8b5f9dc47c682e247d2667c8677bda2ce775bc0` |
-| 生命周期回执 | `f8f6ddfb03c7df54cbab3bec9c74c98b98ef105bfe808f1cc0d67c7cc957d384` |
+| `build_glibc_program.py` | `9397e4ac9dc281a2c8c52585299a8d557178d2c217fbe3c388a3fe21a01e8669` |
+| `xos_app.py` | `0101feb204b9d6d8e0be50b235ee96603e6165733e4437f81ea29a3ee2323abd` |
+| `glibc_xpk_guest.py` | `4387d047683b32d85a787c07658ff772702b0fd29aece78b6b77471400428a9f` |
+| 生命周期回执 | `586bb5d34269806105a5da65be1e31c98847dbc1e89e2b4fbfa959dd1719dbf6` |

@@ -179,6 +179,8 @@ def main():
         flags += ['-isystem', str(sdk / 'usr/include'), '-isystem', str(private_headers)]
         for include in includes:
             flags += ['-I', str(include)]
+        if inputs is not None:
+            flags.append('-ffile-prefix-map=' + str(Path.cwd()) + '=/xos-app')
         flags.extend('-D' + item for item in args.define)
         objects = []
         for i, source in enumerate(sources):

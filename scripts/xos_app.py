@@ -113,6 +113,12 @@ def output_for(project, value):
 def build_glibc(project, value, sdk, profile, bound, inputs, output):
     with tempfile.TemporaryDirectory(prefix='glibc_app_', dir=output.parent) as folder:
         work = Path(folder)
+        source_root = work / 'project'
+        for name, expected in inputs.items():
+            staged = source_root / name
+            staged.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(confined(project, name), staged)
+            require(sha_file(staged) == expected, 'project inputs changed while creating the build snapshot')
         profile_path = work / 'profile.json'
         profile_path.write_bytes(canonical(profile))
         inputs_path = work / 'inputs.json'
@@ -120,13 +126,13 @@ def build_glibc(project, value, sdk, profile, bound, inputs, output):
         linked = work / 'application.elf'
         cmd = [sys.executable, str(GLIBC_BUILDER), '--sdk', str(sdk / 'sysroot'),
                '--profile', str(profile_path), '--project-inputs', str(inputs_path), '--output', str(linked)]
-        if (project / 'src').is_dir():
-            cmd += ['--include-dir', str(project / 'src')]
+        if (source_root / 'src').is_dir():
+            cmd += ['--include-dir', str(source_root / 'src')]
         if value['language'] == 'cpp':
             cmd.append('--cxx')
         for source in value['sources']:
-            cmd += ['--source', str(project / source)]
-        result = subprocess.run(cmd, cwd=project)
+            cmd += ['--source', str(source_root / source)]
+        result = subprocess.run(cmd, cwd=source_root)
         build_dir = work / 'application.elf.build'
         if result.returncode:
             for step in sorted(build_dir.glob('*.log')):

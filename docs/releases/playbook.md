@@ -66,6 +66,37 @@ python3 scripts/package_release.py \
 - Qt 资产独立打包（不动 `verify_sdk` 严格集）：库+头+配方+补丁+许可+源包 →
   `xylophoneos_revival_${V}_qt6_static.tar.gz`（脚本见 0203 或手工 tar）。
 
+### glibc 应用 SDK 发布预览
+
+普通系统构建应产生同一目录下的 `xos-install.iso` 与 `manifest.json`。用已经
+完成来源与 C/C++ SDK 绑定校验的候选 SDK，加上原样保存的 v0.0.1-1024 newlib
+SDK 发布资产，组装本地候选。独立 kit 的 `sdk/` 和 `profile.json` 也可作为输入。
+
+```bash
+scripts/release_pipeline.sh application-preview assemble \
+  --iso "$system_dir/xos-install.iso" \
+  --system-manifest "$system_dir/manifest.json" \
+  --glibc-sdk-build "$sdk_build" --glibc-profile "$profile" \
+  --frozen-newlib-sdk "$frozen_archive" --output "$preview"
+scripts/release_pipeline.sh application-preview verify "$preview"
+"$preview/application-sdk/xos-app" init ./hello --id example.hello --language cpp
+"$preview/application-sdk/xos-app" build ./hello
+"$preview/application-sdk/xos-app" check ./hello
+"$preview/application-sdk/xos-app" pack ./hello --output ./hello.xpk
+```
+
+预览清单绑定普通 ISO、系统 manifest、glibc SDK 树和 profile，以及原版 newlib
+资产和冻结 profile。回退时，在独立路径解包 `rollback/` 下的归档，选回原来
+的系统和包盘。对于 xypm 项目，可显式选用原 newlib SDK 与 profile。
+
+```bash
+python3 "$preview/application-sdk/scripts/xos_app.py" \
+  --profile "$preview/rollback/profile.json" build --sdk "$newlib_sdk" ./old-app
+```
+
+继续用冻结 profile 对原盘执行安装校验。普通 ISO 的客体验收、存量应用迁移和
+默认 SDK 切换各自需要 [glibc 迁移计划](../plans/glibc_port_scout.md) 对应的证据。
+
 ## 5. 冒烟与校验
 
 ```bash

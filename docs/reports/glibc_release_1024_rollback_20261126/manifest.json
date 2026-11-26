@@ -1,0 +1,11 @@
+{
+  "files": {
+    "frozen_install_receipt.json": "c8bfdb3ba87977449300148bf560ae796000601a3e62075d47e22383d3fb3d75",
+    "glibc-switch.serial.log.gz": "9a5a32380b3693dc5b641cfc47ae2029a73d49327046568637b8f6153292de4f",
+    "historical-after.serial.log.gz": "aeb744512e5e9cc32780cd4760ae5acfa3c44cdef3b2d9b79a95d9b071bf3910",
+    "historical-before.serial.log.gz": "8c9d1e18ae4b4481aca3de007d4d91b16cb7f6981212ac1165aaf85d16ba4fc4",
+    "historical_rollback.json": "df1a9ea48fb1b89e72c8df2f52cd30ce00095f9d4118944861a5c98f17ec48e4",
+    "preserved_data.txt": "222592d159c0fea276128c828e61d96a819626d5705d318a2ab8e4a2ff461aa1"
+  },
+  "version": 1
+}

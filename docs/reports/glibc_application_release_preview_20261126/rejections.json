@@ -1,0 +1,33 @@
+{
+  "changed_frozen_release_asset_rejected": {
+    "expected": "archive differs from the frozen release",
+    "returncode": 1
+  },
+  "changed_install_iso_rejected": {
+    "expected": "does not bind the ordinary install ISO",
+    "returncode": 1
+  },
+  "changed_launcher_bytes_rejected": {
+    "expected": "manifest differs from staged components",
+    "returncode": 1
+  },
+  "copied_preview_verifies": "passed",
+  "existing_candidate_immutable": {
+    "expected": "File exists",
+    "returncode": 1
+  },
+  "existing_candidate_still_verifies": "passed",
+  "foreign_profile_rejected": {
+    "expected": "profile runtime family mismatch",
+    "returncode": 1
+  },
+  "guest_status_forgery_rejected": {
+    "expected": "manifest differs from staged components",
+    "returncode": 1
+  },
+  "nonexecutable_launcher_rejected": {
+    "expected": "launcher is not executable",
+    "returncode": 1
+  },
+  "partial_candidate_cleaned": "passed"
+}

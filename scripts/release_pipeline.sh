@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 # XOS release pipeline — stages for 0.0.2-1103+ releases (see docs/releases/playbook.md).
-# Usage: scripts/release_pipeline.sh <stage>
-# Stages: build | gates | freeze | package | smoke | materials | checksums | status
+# Usage: scripts/release_pipeline.sh <stage> [args]
+# Stages: build | gates | freeze | package | application-preview | smoke | materials | checksums | status
 # Publish (tag/upload) is intentionally NOT automated; run manually after user order.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -84,9 +84,10 @@ case "${1:-}" in
   gates) stage_gates ;;
   freeze) stage_freeze ;;
   package) stage_package ;;
+  application-preview) shift; "$PYTHON" scripts/package_application_preview.py "$@" ;;
   smoke) stage_smoke ;;
   materials) stage_materials ;;
   checksums) stage_checksums ;;
   status) stage_status ;;
-  *) echo "usage: $0 {build|gates|freeze|package|smoke|materials|checksums|status}" >&2; exit 2 ;;
+  *) echo "usage: $0 {build|gates|freeze|package|application-preview|smoke|materials|checksums|status} [args]" >&2; exit 2 ;;
 esac

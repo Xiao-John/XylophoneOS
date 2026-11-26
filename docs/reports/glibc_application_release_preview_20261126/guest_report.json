@@ -1,0 +1,84 @@
+{
+  "build_id": "72a8c0f9fbad15a8",
+  "checks": {
+    "frozen_after": {
+      "boot_demo_tasks_reclaimed": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "markers": [
+        "FROZEN_RUNTIME_OK after"
+      ],
+      "resources_after": [
+        129709,
+        3,
+        1
+      ],
+      "resources_before": [
+        129665,
+        7,
+        1
+      ]
+    },
+    "frozen_before": {
+      "boot_demo_tasks_reclaimed": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "markers": [
+        "FROZEN_RUNTIME_OK before"
+      ],
+      "resources_after": [
+        129709,
+        3,
+        1
+      ],
+      "resources_before": [
+        129665,
+        7,
+        1
+      ]
+    },
+    "glibc_dash": {
+      "boot_demo_tasks_reclaimed": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "markers": [
+        "GLIBC_KIT_C_OK 2.44",
+        "GLIBC_KIT_CPP_OK vector thread exception",
+        "GLIBC_KIT_DASH_OK"
+      ],
+      "resources_after": [
+        129709,
+        3,
+        1
+      ],
+      "resources_before": [
+        129665,
+        7,
+        1
+      ]
+    },
+    "profile_isolation": "failed installs left frozen disk unchanged",
+    "rollback_data": "before and after content verified"
+  },
+  "digests": {
+    "application-sdk/profile.json": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+    "dash.elf": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+    "external-c.xpk": "d7aeef8b75b2186236694ed67a2da81de3ff7bd07be260181faa85cd623706e2",
+    "external-cpp.xpk": "256709dbfa82361ba178861dbb6e847eccda0e01329a926113167443e2d7a57c",
+    "frozen.xpk": "e0b0c134d4beec862a2e6647363755df6cc5263f250e6374064c38fa44195819",
+    "rollback/profile.json": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+    "xos-install.iso": "ec3e75d7a3d2a7508ab4f696bd31606239cbccff0874386acae509c9ae5a8aaf"
+  },
+  "qemu": "QEMU emulator version 11.1.2",
+  "source_commit": "0a9fa0111de7b8957cc30d65f513d7d140f08ef0",
+  "status": "passed"
+}

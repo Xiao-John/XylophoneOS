@@ -1,0 +1,12 @@
+{
+  "files": {
+    "assembly_receipt.json": "07082688c6f05c76fd1f1c303da610a2a6ea427eb6e9dcf8b2bb67d688a7d95d",
+    "frozen-preserved-user-data.txt": "222592d159c0fea276128c828e61d96a819626d5705d318a2ab8e4a2ff461aa1",
+    "frozen_after.serial.log.gz": "13d597fc6d6b99ac7b604ec31325f4826941001a2a54e3aa70263fb0c441d58d",
+    "frozen_before.serial.log.gz": "53ceafa3ba8a0ec3a6ae68fc8558459550c5c5434487bc0dcc8f34b4759c701d",
+    "glibc_dash.serial.log.gz": "375560fa9389b4f1245d4dfc5bb531fa999bc24020fe7c8666927ac457552d0f",
+    "guest_report.json": "839d69fd5070ea7044a8f89e66dcfac20f0e89ca16f8009f99bb6e01298cd369",
+    "rejections.json": "46a4e0d5316c0a80e996976e67295f786222e078deac5ab8cf835bf51d53e21f"
+  },
+  "version": 1
+}

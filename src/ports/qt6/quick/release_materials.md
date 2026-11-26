@@ -102,8 +102,9 @@ python3 -B src/ports/qt6/quick/verify_release_provenance.py --kit "$KIT" \
 独立核验从可搬移套件读回静态库与生成器，使用早期成员清单判断目标生成成员覆盖范围，并从
 实际 ELF 对象读取嵌入内容。`PROVENANCE_SHA256` 取已冻结证据根清单记录的 gzip 字节摘要。
 
-资源的 `declaration_evidence` 指向直接原始输入或生成链中的声明。上游预编译着色器仍缺原始
-生成器和参数，已保留嵌入字节、上游归属及同名着色器源。成品传递许可与选择的许可分支、
+资源的 `declaration_evidence` 指向直接原始输入或生成链中的声明。两份 QtBase 预编译
+着色器可从官方 GLSL 字节级重生成，详见[配方与分发声明](backingstore_shader_distribution.md)。
+成品传递许可与选择的许可分支、
 SDK 继承的工具链 seed 重建、最终产品安装信息和发布方式仍按发行组成核对。
 `notices/runtime/` 标识此次链接采用的 SDK 清单与 profile。各应用分发需要自己的应用对象
 或源码及重链接材料。

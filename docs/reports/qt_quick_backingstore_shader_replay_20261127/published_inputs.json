@@ -1,0 +1,68 @@
+{
+  "qt_6_4_amd64_binary_archives": {
+    "6.4.0-0-202209270704icu-linux-Rhel7.2-x64.7z": {
+      "bytes": 7822642,
+      "observed_sha256": "2ca8e8fb1af43cfd654bf89f82b1cc8d3d7bcb30db52ee0181231f7a2692a5d3",
+      "publisher_sha256": "2ca8e8fb1af43cfd654bf89f82b1cc8d3d7bcb30db52ee0181231f7a2692a5d3",
+      "url": "https://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt6_640/qt.qt6.640.gcc_64/6.4.0-0-202209270704icu-linux-Rhel7.2-x64.7z"
+    },
+    "6.4.0-0-202209270704qtbase-Linux-RHEL_8_4-GCC-Linux-RHEL_8_4-X86_64.7z": {
+      "bytes": 18169272,
+      "observed_sha256": "247952825916fab207d258c41ddf1a5c0ab0007c7c02940fa995a4ead5cc03ea",
+      "publisher_sha256": "247952825916fab207d258c41ddf1a5c0ab0007c7c02940fa995a4ead5cc03ea",
+      "url": "https://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt6_640/qt.qt6.640.gcc_64/6.4.0-0-202209270704qtbase-Linux-RHEL_8_4-GCC-Linux-RHEL_8_4-X86_64.7z"
+    },
+    "6.4.0-0-202209270704qtshadertools-Linux-RHEL_8_4-GCC-Linux-RHEL_8_4-X86_64.7z": {
+      "bytes": 1267816,
+      "observed_sha256": "23e7231917cee000350c85c3f7d6018df6f7a67ebe4ef3c0bbff51c69bbd118d",
+      "publisher_sha256": "23e7231917cee000350c85c3f7d6018df6f7a67ebe4ef3c0bbff51c69bbd118d",
+      "url": "https://download.qt.io/online/qtsdkrepository/linux_x64/desktop/qt6_640/qt.qt6.640.qtshadertools.gcc_64/6.4.0-0-202209270704qtshadertools-Linux-RHEL_8_4-GCC-Linux-RHEL_8_4-X86_64.7z"
+    }
+  },
+  "qt_6_4_shader_tools_source": {
+    "archive": "qtshadertools-everywhere-src-6.4.0.tar.xz",
+    "bytes": 1001332,
+    "publisher": "https://download.qt.io/archive/qt/6.4/6.4.0/submodules/qtshadertools-everywhere-src-6.4.0.tar.xz",
+    "publisher_manifest": "https://download.qt.io/archive/qt/6.4/6.4.0/submodules/qtshadertools-everywhere-src-6.4.0.tar.xz.mirrorlist",
+    "sha256": "dbd6a5f00e8178cd2fea7e84c4eef3818de5287d34e20a68383929c754ae3b90",
+    "spirv_generator_version": 10,
+    "translator_source_sha256": "dc1a5809b50294181c1492c14675672ee4faeefa7b967397ded23b837071b05b",
+    "vendored_glslang_versions": [
+      "11.1.0"
+    ]
+  },
+  "qtbase_release": {
+    "last_asset_update": "d2fcccd3f1c5e3729c280a6f0a3e12dc9835477b",
+    "publisher_archive": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+    "publisher_sha256_url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz.sha256",
+    "qtbase_release_commit": "c07c2d5a527a644d36e7853d55132ae38921682f",
+    "sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+    "shader_sources_and_release_binaries": {
+      "REUSE.toml": {
+        "bytes": 233,
+        "sha256": "c5977e0e938eb154d0b3076919900ae9e21ada0943a770e595c6a84222cf095a",
+        "upstream_git_blob": "ee4e083dc8ff08b25ee0e5eaa1905e271fb68534"
+      },
+      "backingstorecompose.frag": {
+        "bytes": 585,
+        "sha256": "29af05d4fc9b3abc7bac0596e9959e53aede213c259b74e90b1f0bb35d2dc5dd",
+        "upstream_git_blob": "3b08ade03520b00fa969551791a2b006fd4c71a9"
+      },
+      "backingstorecompose.frag.qsb": {
+        "bytes": 1657,
+        "sha256": "2c4b5b7415b6dfa562615ed9a836e2c8f16087ca2e381faa1b1a05972ce06c1b",
+        "upstream_git_blob": "63ba55eed8d5a664fe0f91e42ded127150130c37"
+      },
+      "backingstorecompose.vert": {
+        "bytes": 413,
+        "sha256": "4ae73bf326c4d934babd8df4da2bb756d9080fcca4b088c02130576b9ffad5fe",
+        "upstream_git_blob": "0c72c9741964c7b14279c62cd62494231c9db002"
+      },
+      "backingstorecompose.vert.qsb": {
+        "bytes": 1408,
+        "sha256": "e5e191ff1f94085d082b5d73417945fc312f178a27dbce884390f9d838fb5231",
+        "upstream_git_blob": "1aa6e661f8e9383739882675a516918150f1bb96"
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "files": {
+    "distribution_declarations.json": "066e69fc17ca8f159bd7636a27a62a5778a55e50bcc102c4904a87c300bedf0a",
+    "finished_asset_readback.json": "6afc9dd2b2d33bbe40e01412c9bf37754a224d5c02dc91ce1ba560f9046d5f7f",
+    "published_inputs.json": "988fdb039b1494d50b6a06d2eabac22a39b604ad7498bef4f54946ea73da3e71",
+    "shader_rebuild.json": "862d7599516921dc970a8d8dd835a92b1654d3017b4d13e793d7998e9794f1d8"
+  },
+  "source_commit": "7698198af8cf9a580707ada695ed9fdcd7effe83",
+  "source_tree": "b161329f2fc4ee1d081e3b669dfe02e77e620cb0",
+  "version": 1
+}

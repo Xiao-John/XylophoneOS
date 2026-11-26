@@ -45,7 +45,8 @@ python3 -B src/ports/qt6/quick/audit_release_provenance.py \
 
 在原生成器可以运行的隔离 Linux arm64 环境中执行，复演输出位于新目录。证据从已搬移的
 Qt Quick 套件独立读回 42 个目标成员、823 个宿主成员和 314 次资源出现，核对本地已匹配
-的 5 个套件生成器。故意更改成员摘要后校验拒绝。`kit_readback.json` 保存验证结果，根清单
+的 5 个套件生成器。故意更改成员摘要、遗漏目标生成成员或改动嵌入资源摘要时，
+`verify_release_provenance.py` 均拒绝。`kit_readback.json` 保存验证结果，根清单
 固定 gzip 字节。成员的 `generation.source.present` 和 `generation.replay.status` 标识原
 文件留存与复演结果。`declaration_evidence` 记录输入或生成链的来源声明。QML、静态库和
 资源证据均可从 [报告根清单](../reports/qt_quick_release_member_provenance_20261127/manifest.json) 读取。

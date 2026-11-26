@@ -93,6 +93,15 @@ python3 -B src/ports/qt6/quick/stage_sdk_sources.py --kit "$KIT" \
 `.generation.source.present` 与 `.generation.replay.status` 分别表示留存和复演观测。
 实际复演的对象必须为 `byte_identical` 才能关联到历史归档字节。
 
+```sh
+python3 -B src/ports/qt6/quick/verify_release_provenance.py --kit "$KIT" \
+  --inventory "$PROVENANCE" --inventory-sha256 "$PROVENANCE_SHA256" \
+  --target-members "$TARGET_MEMBER_SOURCES"
+```
+
+独立核验从可搬移套件读回静态库与生成器，使用早期成员清单判断目标生成成员覆盖范围，并从
+实际 ELF 对象读取嵌入内容。`PROVENANCE_SHA256` 取已冻结证据根清单记录的 gzip 字节摘要。
+
 资源的 `declaration_evidence` 指向直接原始输入或生成链中的声明。上游预编译着色器仍缺原始
 生成器和参数，已保留嵌入字节、上游归属及同名着色器源。成品传递许可与选择的许可分支、
 SDK 继承的工具链 seed 重建、最终产品安装信息和发布方式仍按发行组成核对。

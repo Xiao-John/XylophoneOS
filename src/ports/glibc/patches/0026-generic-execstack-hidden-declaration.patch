@@ -1,0 +1,9 @@
+--- a/elf/dl-execstack.c
++++ b/elf/dl-execstack.c
+@@ -19,4 +19,6 @@
+ #include <ldsodefs.h>
+ #include <errno.h>
++
++rtld_hidden_proto (_dl_make_stack_executable)
+
+ /* There is no portable way to know the bounds of the initial thread's stack

@@ -1,0 +1,38 @@
+{
+  "status": "passed_subset",
+  "build_id": "dde02bd84f21aaac",
+  "iso_sha256": "33972a5d0547737efbc835a143abd58b8d35c87bcf1884b061384205a8bfedf1",
+  "system_manifest_sha256": "96fc640d444f7ba24a94f2abb7502ff58ebd56cb8571a24a1d5ce37ba32b214e",
+  "target_manifest_sha256": "e29669246cd3c2587291cafb18f2536fa1f02d4ebb65f8b5d81cf56176ad9952",
+  "runner_sha256": "424a39cbca13eeeecfba7bca8f6e842b4c414a7a8d96f8b4c6d4a8f336ae3eb7",
+  "discovery": {
+    "version": "2.15.4",
+    "fixture_sha256": "f88fc194be2f1621f3be06908f6e3241d3d050fd90c6f9b9c82f3985ec628290",
+    "extra_include_fixture_sha256": "8a50009a928d61c058698d9e6ca5ec64b748f17419f069b4e3dcb763a2d2c900",
+    "duplicate_include": "accepted",
+    "foreign_include": "rejected"
+  },
+  "guest_probe_sha256": "8c43820efd2aee774b58be13f82535dc35b55451be33fe5010f74305c65dc091",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "valid": {
+    "exit_code": 0,
+    "resources_after": [
+      129696,
+      3,
+      1
+    ]
+  },
+  "malformed": {
+    "exit_code": 2,
+    "resources_after": [
+      129696,
+      3,
+      1
+    ]
+  }
+}

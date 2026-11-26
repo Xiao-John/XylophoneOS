@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "implementation_commit": "0390b1b49fe6f47370af2c18ed9b52a5a50567dd",
+  "implementation_tree": "c3c684e0ddb32ba016efbfe8b21b0a0d06e48e6e",
+  "serial_raw_sha256": "7e14475f55b3a30f89a1b966c236af30299150d72fb6a0144d406fc1d24319ee",
+  "files": {
+    "guest.json": "4628163c9b65c6eb02c2ecb6ae0473d09ef9021ebdad16eb0fcf5ec6d567e475",
+    "guest.serial.log.gz": "958df44e6c17bdd55f7ede5fcfa3c91e385adb6952c1bd7560cbf3a781dd9e88",
+    "target.json": "e29669246cd3c2587291cafb18f2536fa1f02d4ebb65f8b5d81cf56176ad9952",
+    "discovery_review.json": "69ca3da2b922e23a9fcff10c5144108afc05df74da02355c9295566ec594f2d8"
+  }
+}

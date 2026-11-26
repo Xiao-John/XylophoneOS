@@ -25,6 +25,35 @@ def digest(path):
         return file_digest(stream, 'sha256').hexdigest()
 
 
+def discover(target, output):
+    fixture = root / 'tests/fixtures/webkit/xml_package'
+    prefix = target / 'prefix'
+    override = fixture / 'extra_include.cmake'
+    common = ['cmake', '-S', fixture, f'-DXOS_XML_PREFIX={prefix}']
+    scenarios = (('discovery', None), ('duplicate_include', prefix / 'include/libxml2'),
+                 ('foreign_include', fixture))
+    for name, extra in scenarios:
+        args = [*common, '-B', output / name]
+        if extra is not None:
+            args.extend((f'-DCMAKE_PROJECT_INCLUDE={override}', f'-DXOS_XML_EXTRA_INCLUDE={extra}'))
+        log_path = output / (name + '.log')
+        with log_path.open('w') as log:
+            result = subprocess.run(args, stdout=log, stderr=subprocess.STDOUT)
+        if name == 'foreign_include':
+            expected = b'LibXml2 resolved outside the verified XOS target prefix'
+            if result.returncode != 1 or expected not in log_path.read_bytes():
+                raise RuntimeError(f'Foreign LibXml2 include was not rejected by the path check: {log_path}')
+        else:
+            result.check_returncode()
+    version = (output / 'discovery/target-version.txt').read_text().strip()
+    duplicate_version = (output / 'duplicate_include/target-version.txt').read_text().strip()
+    if duplicate_version != version:
+        raise ValueError('Repeated headers changed the detected LibXml2 version')
+    return {'version': version, 'fixture_sha256': digest(fixture / 'CMakeLists.txt'),
+            'extra_include_fixture_sha256': digest(override),
+            'duplicate_include': 'accepted', 'foreign_include': 'rejected'}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('target', 'system', 'output'):
@@ -49,14 +78,7 @@ def main():
               'runner_sha256': digest(Path(__file__))}
     guest = None
     try:
-        fixture = root / 'tests/fixtures/webkit/xml_package'
-        cmake = args.output / 'cmake'
-        with (args.output / 'discovery.log').open('w') as log:
-            subprocess.run(['cmake', '-S', fixture, '-B', cmake,
-                            f'-DXOS_XML_PREFIX={args.target / "prefix"}'],
-                           stdout=log, stderr=subprocess.STDOUT, check=True)
-        report['discovery'] = {'version': (cmake / 'target-version.txt').read_text().strip(),
-                               'fixture_sha256': digest(fixture / 'CMakeLists.txt')}
+        report['discovery'] = discover(args.target, args.output)
         with tempfile.TemporaryDirectory(prefix='xos_webkit_xml_') as temporary:
             disk = Path(temporary) / 'work.img'
             readback = Path(temporary) / 'readback.elf'

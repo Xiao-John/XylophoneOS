@@ -14,6 +14,7 @@ find_package(LibXml2 2.9.13 MODULE REQUIRED)
 
 get_target_property(xml_archive LibXml2::LibXml2 IMPORTED_LOCATION)
 get_target_property(xml_headers LibXml2::LibXml2 INTERFACE_INCLUDE_DIRECTORIES)
+list(REMOVE_DUPLICATES xml_headers)
 cmake_path(SET expected_archive NORMALIZE "${XOS_XML_PREFIX}/lib/libxml2.a")
 cmake_path(SET expected_headers NORMALIZE "${XOS_XML_PREFIX}/include/libxml2")
 if(NOT "${xml_archive}" STREQUAL "${expected_archive}" OR

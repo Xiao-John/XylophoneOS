@@ -1,0 +1,43 @@
+{
+  "status": "passed_subset",
+  "build_id": "c85c7bc6f1c0a937",
+  "iso_sha256": "50145a341107e18fa89751d4a2239de1bf91007963070f2f304b87ad50b9a204",
+  "system_manifest_sha256": "87454909e636aa52e64c02f7ad5b5ed68ee41a2df5cf93869e29b3f6a9eb22d9",
+  "target_manifest_sha256": "74a91f0d68633442f28e2e893d0206430df46365cc9c5dae2a86106c9f4c78f6",
+  "probe_sha256": "af0ab31a39d8ec9f207d904729d1d46acb6f67df8093468dd9d00d9a808d4446",
+  "font_sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+  "fixture_sha256": "38157e6d125fa0d7a9a772297023e2dec2e9d46829e9a9215458ee105a27dc3b",
+  "runner_sha256": "a37f0297793adafa89a3303ddb483fa86e80650633639752c43109d12918cb3b",
+  "cases": [
+    {
+      "directory": "/fc-fonts",
+      "exits": [
+        0
+      ],
+      "marker_count": 1,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    {
+      "directory": "/fc-empty",
+      "exits": [
+        5
+      ],
+      "marker_count": 1,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    }
+  ],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ]
+}

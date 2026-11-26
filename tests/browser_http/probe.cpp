@@ -71,6 +71,10 @@ int main() {
         ok &= check(parse_response(reinterpret_cast<const unsigned char*>(full),i,true,r) == error::truncated,"premature_eof");
     }
     ok &= check(response_for(full,true,r) == error::ok && r.status == 200 && r.body_length == 5 && !memcmp(full+r.body_offset,"Hello",5),"complete_body");
+    const char* fields_wire = "Content-Length: 5\r\nContent-Type: text/html\r\n";
+    ok &= check(r.headers_offset == strlen("HTTP/1.1 200 OK\r\n") && r.headers_length == strlen(fields_wire) &&
+                !memcmp(full + r.headers_offset, fields_wire, r.headers_length) &&
+                r.headers_offset + r.headers_length + 2 == r.body_offset, "verified_header_bytes");
     const char* bad[] = {
         "HTTP/1.1 200 OK\r\nContent-Length: 1\r\nContent-Length: 1\r\n\r\nx",
         "HTTP/1.1 200 OK\r\nContent-Length : 1\r\n\r\nx",
@@ -90,7 +94,8 @@ int main() {
         "HTTP/1.1 100 Continue\r\n\r\n"
     };
     for (const auto* p : unsupported) ok &= check(response_for(p,true,r)==error::unsupported,"unsupported_framing");
-    ok &= check(response_for("HTTP/1.0 204 Empty\r\n\r\n",true,r)==error::ok && r.body_length==0,"204");
+    ok &= check(response_for("HTTP/1.0 204 Empty\r\n\r\n",true,r)==error::ok && r.body_length==0 &&
+                r.headers_length==0 && r.headers_offset+2==r.body_offset,"204");
     ok &= check(response_for("HTTP/1.1 304 Cached\r\nContent-Length: 100\r\n\r\n",true,r)==error::ok && r.body_length==0,"304_metadata");
     ok &= check(response_for("HTTP/1.1 200 OK\r\nContent-Length: 999999999999999999999999\r\n\r\n",true,r)==error::too_large,"length_overflow");
     ok &= check(response_for("HTTP/1.1 302 Found\r\nContent-Length: 0\r\nLocation: ../next\r\n\r\n",true,r)==error::ok,"redirect_response");

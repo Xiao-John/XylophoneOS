@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "entry_stack.hpp"
+#include "../../../ports/glibc/sysdeps/xos/xos_d1_environment.h"
 #include <elf.h>
 #include <xos/vm_abi.hpp>
 
@@ -21,15 +22,7 @@ bool startup_string(u64 address, bool environment) {
     const auto* string = reinterpret_cast<const char*>(address);
     for (u64 length = 0; length < process_max_exec_arg_bytes && length < process_stack_top - address; ++length) {
         if (string[length] != '\0') { continue; }
-        if (!environment) { return true; }
-        if (length >= 3 && string[0] == 'L' && string[1] == 'D' && string[2] == '_') { return false; }
-        constexpr char tunables[] = "GLIBC_TUNABLES";
-        constexpr u64 name_length = sizeof(tunables) - 1;
-        if (length < name_length || (length != name_length && string[name_length] != '=')) { return true; }
-        for (u64 i = 0; i < name_length; ++i) {
-            if (string[i] != tunables[i]) { return true; }
-        }
-        return false;
+        return !environment || xos_d1_environment_allowed(string);
     }
     return false;
 }

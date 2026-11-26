@@ -49,6 +49,13 @@ long __xos_file_service_error (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_adopt_early_session (struct xos_file_session *)
   __attribute__ ((visibility ("hidden")));
 
+/* Shared libc takes the existing session and validates the fixed native
+   startup descriptors before allowing any operation on its own FD table. */
+typedef long (*xos_file_startup_receiver) (struct xos_file_session *, xos_u64);
+#ifdef SHARED
+long __xos_file_adopt_startup (struct xos_file_session *, xos_u64);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

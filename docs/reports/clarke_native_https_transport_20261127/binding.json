@@ -1,0 +1,35 @@
+{
+  "browser_elf_sha256": "1873e8284a40e6497465894c6ad9f2b99aa567a423d256f8ba4a5100f7062a2e",
+  "browser_receipt_sha256": "133f19c26299712fd6d88397c4997a4862eb983d952e1207a64a2eb132ff4447",
+  "browser_sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "browser_sdk_tree_sha256": "b0d6dc0e59ad68ce22b4b98d03f6df26e85aa1046bc833ee1c92d04ff1652125",
+  "host_http_assertions": 212,
+  "host_http_vectors": 4096,
+  "initial_guest_preflight": "output path was outside the guest runner workspace",
+  "initial_host_transport_attempt": "ARM64 host could not assemble the x86-64 freestanding entry",
+  "mbedtls_source_sha256": "3359a349e23db3d5536fcee032ae7b2ecbfc08972fab643089b5cbf2a375c98c",
+  "native_tls_receipt_sha256": "916b300d68847798b043a38300a1bdb4e5e021c2662526a427998d8978a5a640",
+  "package_sha256": "f3701758b90e03aa048a69ab5880551ec073dd84b91a63740077bef017aad93a",
+  "profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "source_commit": "3f11e613a3a23c3efa160b3c936685e1f36ef779",
+  "source_tree": "cf86afb25c23630fdb89a4a8380f0d2f6f98d995",
+  "system_build_id": "42cb6714fdf39ede",
+  "system_iso_sha256": "b34e4c340c30a90700d0dcc209147988db47e606584e1ac3ac792a87756d84e3",
+  "system_manifest_sha256": "21d92eb7ddebe63c0c558d9490763acb5f7a9875dbd5c1e39365b4cddd0cce7b",
+  "target_tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d"
+  },
+  "tracked_browser_inputs": {
+    "src/ports/aurora_browser/glibc/CMakeLists.txt": "e956b5f6d8fbc1404a784e70eae52a6fa3573836a56d79cb805767cf4d5ac4e8",
+    "src/ports/aurora_browser/glibc/https.cpp": "3733fe44a16c5586083ea4af49ef6f3e8e4333a3a8ed1e606dc0eca9caa5cd41",
+    "src/ports/browser_http/http.cpp": "7c3b7c8afb3fa76ae8471e14061452e4e70ad581762dd15560963e6ac91be3a5",
+    "src/ports/browser_http/http.hpp": "aa47d931bcab49d5906c844e9c83d109f2c7ca2f5292e1142a65370dde1ba2b1",
+    "src/ports/browser_http/https_transport.cpp": "0bb57f4e36559b89c166647960df68d66e8a71c20a995fe371be514160b0acc1",
+    "src/ports/browser_http/https_transport.hpp": "af9cad9bfb66f311767fbee64851dafbc53fbf3c5570bba1f0247a5eb432aee0"
+  }
+}

@@ -211,6 +211,7 @@ error parse_response(const unsigned char* data, size_t n, bool eof, response& ou
         if ((c < 32 && c != 9) || c == 127) return error::invalid;
     }
     pos += 2;
+    const size_t headers_offset = pos;
     bool have_length = false, have_location = false;
     size_t body = 0, fields = 0;
     while (pos + 2 < end) {
@@ -251,6 +252,8 @@ error parse_response(const unsigned char* data, size_t n, bool eof, response& ou
         if (out.status == 204 && have_length) return error::invalid;
         body = 0;
     } else if (!have_length) return error::unsupported;
+    out.headers_offset = headers_offset;
+    out.headers_length = end - headers_offset - 2;
     out.body_offset = end; out.body_length = body;
     if (n - end < body) return eof ? error::truncated : error::need_more;
     return n - end == body ? error::ok : error::invalid;

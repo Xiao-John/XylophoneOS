@@ -1,0 +1,13 @@
+{
+  "directory_removal_protocol_commit": "fb5f5331",
+  "glibc_maintenance_client_commit": "7330524046d6e78813f424d9da3799488766036c",
+  "release_build_commit": "6fe330ce2dd9441d72da611c1f87b80dad8e3b03",
+  "release_build_recipe_sha256": "bdd28edd2bf9fff57ebc6d268688ae1cf1e33602fd7fcbc74542fce1327603ee",
+  "release_inputs_sha256": {
+    "xypm.cpp": "1bb54977338dc780dacb858cbbf8841d692948b7b91ec72d9122ecac051f622f",
+    "xypm_journal.hpp": "dfb2b1393c1832e281f4fdf80e100434ae4abbda958fe6a7a654f210057e09cc",
+    "xypm_native.hpp": "61c4a85e31e5d442d35b10ded40d1b152458759eb0c8e72cca05bba076512676",
+    "xypm_recover.cpp": "70473e717473eb0ae1c335e1d862241426bfa5d835dcfc33934aa3fc9d140342",
+    "xypm_transaction_impl.hpp": "a5cd549c811ecc65bf684ec8bf7b372237495495b1ef3869fdb666db74de204f"
+  }
+}

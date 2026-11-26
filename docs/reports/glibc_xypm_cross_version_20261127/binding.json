@@ -1,0 +1,62 @@
+{
+  "glibc_sdk": {
+    "manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+    "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25"
+  },
+  "legacy_sdk": {
+    "archive_receipt_sha256_listed_in_repository": "9c591f8b7ce55c8a7b87035f4bbf8d2c9be279579a77663252af313b2beec9eb",
+    "archive_sha256": "cfcec9812a7e592cc820f307e109f38719b03de10be4f658957f916ba8c82209",
+    "archived_manifest_sha256": "8288138e416394f69111ca48c939f4d19f8cf6289c24e46973073648159e2bfe",
+    "cached_checksums_file_sha256": "2b1012803b9cb663b502bd650f86edc032b50a0b68ab67bb26fd08c5589311a7",
+    "compiler_inputs_matching_archive_release_manifest": {
+      "cpp/": 862,
+      "crt0": 3,
+      "include/": 158,
+      "lib/": 4,
+      "manifest.json": 1,
+      "user.ld": 1
+    },
+    "directory_profile_binding": {
+      "file_count": 1154,
+      "previous": [
+        "e0fa2330a1c38c162f40857609ef88f97673d66e080069018ac26b85d4a5f110"
+      ],
+      "tree_sha256": "d60552ff61876ad514c812ae23cf8e34545a927216ecaedf37f1fc86ed10f189"
+    },
+    "release_build_id": "8356e45af316fc93",
+    "release_guest_xypm_elf_sha256": "ddd13972b4a72d70e5e177ffe3fc180c29853e43c523b2f77874410d15a9c7b5",
+    "release_install_iso_sha256": "d7917c5374d82ec2098e95b8649fb80013052d9c53fc3f381b97ffabfc3c766c"
+  },
+  "normal_system_and_xypm_source_commit": "aa267bfee380d671d1a823115f5490e9c1608e16",
+  "not_run": [
+    "downloaded_1103_installation_media",
+    "power_loss",
+    "sector_tearing",
+    "unknown_database_or_journal_versions"
+  ],
+  "package_build_receipts": {
+    "current": {
+      "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+      "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+      "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262"
+    },
+    "fault_fixture": {
+      "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+      "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+      "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262"
+    },
+    "historical_glibc_replay": {
+      "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+      "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+      "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262"
+    },
+    "historical_newlib": {
+      "profile_sha256": "1ffb91621d4bcd31fbf6abb565751a7dee4e0938451d49be3f32def17405c5bc",
+      "sdk_build_id": "8356e45af316fc93",
+      "sdk_tree_sha256": "d60552ff61876ad514c812ae23cf8e34545a927216ecaedf37f1fc86ed10f189"
+    }
+  },
+  "release_build_source_commit": "6fe330ce2dd9441d72da611c1f87b80dad8e3b03",
+  "release_tag_commit": "071330f3b196d357c4a823f1719793b449513b86",
+  "scope": "passed_subset"
+}

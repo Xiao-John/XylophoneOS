@@ -1,0 +1,30 @@
+From: XOS contributors
+Subject: [PATCH] use the glibc clock ID and available CPU time sources
+
+The newlib XOS ABI uses an unsigned long clock ID. Preserve the regular
+int path on glibc, and only compile the process-time fallback when the
+configured libc provides clock().
+
+--- a/Modules/timemodule.c
++++ b/Modules/timemodule.c
+@@ -195,7 +195,7 @@
+     long long clk_id = PyLong_AsLongLong(obj);
+ #elif defined(__DragonFly__)
+     long clk_id = PyLong_AsLong(obj);
+-#elif defined(__xos__)
++#elif defined(__xos__) && !defined(__GLIBC__)
+     unsigned long clk_id = PyLong_AsUnsignedLong(obj);
+ #else
+     int clk_id = PyLong_AsInt(obj);
+@@ -1429,4 +1429,10 @@ py_process_time
+-    /* clock(). Python 3 requires clock() to build (see gh-66814) */
++    /* XOS glibc provides the native process CPU clock above. Its
++       clock() fallback may be a libc stub. */
++#ifdef HAVE_CLOCK
+     return py_clock(state, tp, info);
++#else
++    PyErr_SetString(PyExc_OSError, "no process CPU time source available");
++    return -1;
++#endif
+ #endif
+ }

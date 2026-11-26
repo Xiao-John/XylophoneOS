@@ -4,13 +4,15 @@
 #include <errno.h>
 #include <sys/times.h>
 
+#ifndef __GLIBC__
 extern "C" clock_t _times(struct tms*);
 
-// Older SDKs have no public times() wrapper. Keep a weak fallback so SDKs
+// Older newlib SDKs have no public times() wrapper. Keep a weak fallback so SDKs
 // that supply the wrapper can provide their own definition.
 extern "C" __attribute__((weak)) clock_t times(struct tms* buffer) {
     return _times(buffer);
 }
+#endif
 
 extern "C" int xos_cpython_sleep_ns(long long nanoseconds) {
     if (nanoseconds < 0) { errno = EINVAL; return -1; }

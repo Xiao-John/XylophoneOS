@@ -4,3 +4,4 @@
 0004_xos_basic_repl.patch
 0005_xos_zoneinfo_tzdata_fallback.patch
 0006_xos_blocking_time.patch
+0007_glibc_clock_types.patch

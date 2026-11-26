@@ -1,0 +1,26 @@
+{
+  "artifacts": {
+    "SkFontMgr_fontconfig.o": "50ccd49fb65847aa368f0b635e4df1c51b8492991618ed559c3c9e3324102762",
+    "libskia_fontconfig.a": "13183b7698039c4a30438e3293e32459dc1d63899b57887ea05a164a178ddfa5",
+    "skia_fontconfig.elf": "e91d46b56407b08bcd5f88b660ebfabb2d0c6fd981e1fe2afe615c6ddc221ea6"
+  },
+  "build_recipe_sha256": "ff7e075c25cc473e260e7f4a6c22baeef23b616e08b10fd015516bf32373e4b3",
+  "c_sdk_manifest_sha256": "e0016a3a369d4ec4ae04d4a8afa6524ae3a7bbcaa8c8b730383427ba4bc7d307",
+  "fixture_sha256": "cf1af70f1cde4125ee7b34efb276e1e3a7a13c29a3d426f4e0b180b608b822fc",
+  "font_manager_source_sha256": "f9bc268a0540c566ee149664e2e2312296469f62c3da869ee2313799dd25a3a4",
+  "font_target_manifest_sha256": "f01641dbffd07bb185d37de8cc7f72e1875edb1f6462af41201aa6ee2957b334",
+  "fontconfig_target_manifest_sha256": "74a91f0d68633442f28e2e893d0206430df46365cc9c5dae2a86106c9f4c78f6",
+  "libc_sha256": "7ee8563f97b4906e03818868cba9fef6c6e570058112e4993010d78a2fc07a1e",
+  "original_font_manager_sha256": "0f6cd76e0ab2a27f0e3350499cab0e3fc5a1932ea06e693d256c3faac49de9a1",
+  "raster_cxx_sdk_manifest_sha256": "a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e",
+  "raster_target_manifest_sha256": "813c355df6c3234c46959d9ef03c7205496077ca939876113683d1a93a871b42",
+  "status": "target_skia_fontconfig_linked",
+  "stream_patch_sha256": "1d998d399119e8cfcbb5dc7aced20f945c7e3f880c0b3f6dd723f847924f3c87",
+  "tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1"
+  },
+  "xml_target_manifest_sha256": "27e42ccd31c19652a4184d7e36bede15cc056ec2d6605a66b77e4d30300ad87d"
+}

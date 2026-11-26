@@ -37,6 +37,10 @@ libstdc++ 与 unwind 运行库。回执同时记录两个 SDK。完整 WebCore �
 并统一绑定的 C/C++ SDK 作为交付输入。
 
 ```sh
+python3 src/ports/webkit/raster/build_font_backend.py --webkit-archive "$WPE_ARCHIVE" \
+  --raster "$RASTER_TARGET" --fontconfig "$FONTCONFIG_TARGET" --fonts "$FONT_TARGET" \
+  --xml "$LIBXML2_TARGET" --cxx-sdk "$RASTER_GLIBC_SDK" --c-sdk "$FONTCONFIG_GLIBC_SDK" \
+  --output "$FONT_BACKEND"
 python3 tests/webkit_fontconfig_guest.py --target "$FONT_BACKEND" \
   --font-target "$FONT_TARGET" --system "$SYSTEM" --output "$GUEST_PROOF"
 ```

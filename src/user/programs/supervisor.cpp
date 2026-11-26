@@ -26,6 +26,9 @@
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #include "../pumpkin/native_login.hpp"
 #endif
+#if XOS_PUMPKIN_MOBIUS
+#include "pumpkin_desktop_binding.hpp"
+#endif
 #endif
 
 namespace {
@@ -40,6 +43,9 @@ xos::audio::client audio_session;
 u64 audio_service_pid, audio_retry_after_ns;
 bool audio_autostart = true;
 u64 network_service_pid;
+#ifdef XOS_NET_STATIC_INSTANCE
+bool network_service_configured;
+#endif
 
 // The transaction directory is a durable recovery marker. Only a definite
 // not-found result permits ordinary startup or release of the admission guard.
@@ -309,6 +315,11 @@ i64 prepare_network_driver(u64 child, void* context) {
 }
 void start_network(u64 instance, const char* mode) {
     if (instance == 0 || instance > 65536) { print("net: instance must be 1 + PCI BDF\n"); return; }
+#ifdef XOS_NET_STATIC_INSTANCE
+    if (equal(mode, "serve") && instance != XOS_NET_STATIC_INSTANCE) {
+        print("net: device differs from installed static profile\n"); return;
+    }
+#endif
     const bool probe = equal(mode, "probe") || equal(mode, "probe_dns");
     if (!probe && network_service_pid) {
         process_status status{};
@@ -340,6 +351,9 @@ void start_network(u64 instance, const char* mode) {
     if (probe) result_line(static_cast<u64>(child));
     else {
         network_service_pid = static_cast<u64>(child);
+#ifdef XOS_NET_STATIC_INSTANCE
+        network_service_configured = equal(mode, "serve");
+#endif
         // Publish the whole line in one write so the service's ready message
         // cannot land between the label and its PID.
         char line[sizeof("[net-start] pid=") + 21] = "[net-start] pid=";
@@ -684,15 +698,28 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
     fault_bundle::receipt diagnostic_receipt{};
     options.grant_spawn = spawn_depth == 1;
     options.delegate_spawn_depth = spawn_depth > 1 ? spawn_depth : 0;
-    options.environment = kChildPath;
-    options.environment_count = 1;
-    const char* terminal_environment[] = {"PATH=/usr/bin:/bin:/", "TERM=xterm",
-        "TERMINFO=/usr/local/share/terminfo", "LINES=24", "COLUMNS=80"};
+    const char* environment[] = {kChildPath[0], "TERM=xterm",
+        "TERMINFO=/usr/local/share/terminfo", "LINES=24", "COLUMNS=80", nullptr};
+    options.environment = environment;
+    options.environment_count = terminal_session ? 5 : 1;
+#ifdef XOS_NET_STATIC_INSTANCE
+    char network_binding[sizeof(net2::service_pid_variable) + 21]{};
+    if (network_service_pid && network_service_configured) {
+        constexpr usize prefix = sizeof(net2::service_pid_variable);
+        memcpy(network_binding, net2::service_pid_variable, prefix - 1);
+        network_binding[prefix - 1] = '=';
+        usize digits = 1;
+        for (u64 remaining = network_service_pid; remaining >= 10; remaining /= 10) ++digits;
+        u64 remaining = network_service_pid;
+        for (usize cursor = prefix + digits; cursor > prefix; remaining /= 10)
+            network_binding[--cursor] = static_cast<char>('0' + remaining % 10);
+        environment[options.environment_count++] = network_binding;
+    }
+#endif
     launch_prepare_ctx prepare_ctx{terminal_session};
     if (terminal_session) {
         for (u32 fd = 0; fd < 3; ++fd) options.stdio[fd] = -2;
         options.terminal_send_handle = user::shell_terminal::application_send_handle();
-        options.environment = terminal_environment; options.environment_count = 5;
     }
     if (inherit_create || terminal_session) {
         options.prepare_child = launch_prepare_child;
@@ -1103,8 +1130,15 @@ extern "C" int xos_user_main(const xos::startup_info*) {
 #if XOS_PUMPKIN_USER_RESOURCE
     broker = image_named(user::pumpkin::native_login::broker_image_name);
 #endif
+#if XOS_PUMPKIN_MOBIUS
+    const user::pumpkin::native_login::desktop_session desktop{
+        image_named("display"), image_named("interactiumd"), pumpkin_mobius_executable};
+    return user::pumpkin::durable_probe::run_anchored(image_named("pumpkin_durable"),
+        image_named("p2_anchor_proxy"), private_storage_grant, holder, broker, &desktop);
+#else
     return user::pumpkin::durable_probe::run_anchored(image_named("pumpkin_durable"),
         image_named("p2_anchor_proxy"), private_storage_grant, holder, broker);
+#endif
 #endif
     // Bootstrap installation must not run when marker inspection or guard
     // establishment fails; doing so could modify a disk awaiting recovery.
@@ -1142,6 +1176,9 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             print("[files] bundle package install incomplete; will retry next boot\n");
         }
     }
+#ifdef XOS_NET_STATIC_INSTANCE
+    if (!persistent_recovery_gate) start_network(XOS_NET_STATIC_INSTANCE, "serve");
+#endif
     (void)ensure_audio_service();
     bool last_cr = false;
     for (;;) {

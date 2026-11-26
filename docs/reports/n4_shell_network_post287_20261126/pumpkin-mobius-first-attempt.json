@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "build_id": "07c5e448431211be",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "stage": "QMP handshake timed out while the observation socket was open",
+  "raw_report_sha256": "46f87cf8aca6ee9fb0361b01cb558aa36af02a2b0cda04f100e3c0901603339c",
+  "raw_trace_sha256": "deda1045cd58736ae26ef93676318f57885a9ccc9a7c90f72368097e17bc124c"
+}

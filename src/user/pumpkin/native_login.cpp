@@ -8,6 +8,9 @@
 #if XOS_PUMPKIN_USER_RESOURCE
 #include "resource_broker_client.hpp"
 #endif
+#if XOS_PUMPKIN_MOBIUS
+#include <xos/display_client.hpp>
+#endif
 
 namespace xos::user::pumpkin::native_login {
 namespace {
@@ -15,7 +18,7 @@ constexpr char rendezvous[] = "pumpkin-holder-bootstrap";
 constexpr u32 version = 1;
 enum class step : u32 {
     received = 1, delivery_closed, connected, use_resource, accessed, check_revoked, revoked, finish,
-    signed_out, rejected, resource_denied,
+    signed_out, rejected, resource_denied, desktop_live, desktop_check, desktop_exit,
 };
 
 struct delivery {
@@ -168,7 +171,8 @@ result connect_holder(u32 image, child_process& holder, endpoints& protected_lan
     struct unpublish { ~unpublish() { (void)sdk::ipc_name_unpublish(rendezvous); } } registration;
     sdk::spawn_options options{};
     for (auto& fd : options.stdio) { fd = -2; }
-    const char* args[]{holder_image, mode == holder_mode::resource ? "resource" : "submit"};
+    const char* args[]{holder_image, mode == holder_mode::desktop ? "desktop" :
+                                  mode == holder_mode::resource ? "resource" : "submit"};
     const i64 child = sdk::spawn_image_options(image, mode == holder_mode::cycle ? 1 : 2, args, options);
     if (child <= 0) { return result::holder_start; }
     holder.pid = static_cast<u64>(child);
@@ -299,7 +303,90 @@ bool read_owned_resource(const ipc_channel& parental, ipc_client& owner, wire_id
 }
 #endif
 
-int submit_and_logout(const ipc_channel& parental, delivery& enrollment, [[maybe_unused]] bool with_resource) {
+bool logout_user(ipc_client& owner, wire_id session, wire_id identity) {
+    auto logout = request(wire_operation::logout, session);
+    wire_reply reply{};
+    return expect(owner, logout, reply, wire_status::ok) &&
+        current_identity(owner, session, identity, wire_status::denied);
+}
+
+#if XOS_PUMPKIN_MOBIUS
+int hold_desktop(const ipc_channel& parental, ipc_client& owner, wire_id session, wire_id identity) {
+    const auto now = monotonic_now();
+    if (now < 0 || !send(parental, signal{version, step::desktop_live})) return 14;
+    const auto end = static_cast<u64>(now) + connection_lifetime_ns;
+    for (;;) {
+        signal packet{};
+        if (!receive(parental, packet, end) || packet.format != version) return 14;
+        if (packet.stage == step::desktop_exit) {
+            if (!logout_user(owner, session, identity)) return 14;
+            owner.close();
+            return send(parental, signal{version, step::signed_out}) &&
+                signal_received(parental, step::finish) ? 0 : 15;
+        }
+        if (packet.stage != step::desktop_check || !current_identity(owner, session, identity, wire_status::ok) ||
+            !send(parental, signal{version, step::desktop_live})) return 14;
+    }
+}
+
+bool compositor_ready(u64 compositor) {
+    const auto end = deadline();
+    do {
+        endpoints peer;
+        if (sdk::ipc_name_connect("interactium", peer.pair) == 0) {
+            return authenticated_peer(peer.pair) == compositor;
+        }
+    } while (wait_tick(end));
+    return false;
+}
+
+bool monitor_desktop(child_process& desktop, const ipc_channel& owner) {
+    constexpr u64 identity_interval_ns = 1'000'000'000;
+    constexpr u64 wait_interval_ns = 20'000'000;
+    u64 next = 0;
+    while (desktop.pid != 0) {
+        const auto now = monotonic_now();
+        if (now < 0) return false;
+        if (static_cast<u64>(now) >= next) {
+            if (!send(owner, signal{version, step::desktop_check}) || !signal_received(owner, step::desktop_live)) {
+                return false;
+            }
+            next = static_cast<u64>(now) + identity_interval_ns;
+        }
+        if (desktop.wait_clean()) return true;
+        if (desktop.pid != 0 && sdk::syscall(sys_sleep_until, static_cast<u64>(now) + wait_interval_ns) != 0) {
+            return false;
+        }
+    }
+    return false;
+}
+
+bool run_desktop(const desktop_session& configuration, const ipc_channel& owner) {
+    child_process display, compositor, desktop;
+    sdk::spawn_options options{};
+    for (auto& fd : options.stdio) { fd = -2; }
+    const char* display_args[]{"display", "normal"};
+    const auto display_pid = sdk::spawn_image_options(configuration.display_image, 2, display_args, options);
+    if (display_pid <= 0) return false;
+    display.pid = static_cast<u64>(display_pid);
+    if (sdk::display_control(display_action::grant_service, display.pid) != 0) return false;
+    const char* compositor_args[]{"interactiumd"};
+    const auto compositor_pid = sdk::spawn_image_options(configuration.compositor_image, 1, compositor_args, options);
+    if (compositor_pid <= 0) return false;
+    compositor.pid = static_cast<u64>(compositor_pid);
+    if (!compositor_ready(compositor.pid)) return false;
+
+    static constexpr char path[] = "/usr/bin/mobius.elf";
+    const char* desktop_args[]{path};
+    const auto desktop_pid = execution::spawn_verified_file(path, 1, desktop_args, options, configuration.executable);
+    if (desktop_pid <= 0) return false;
+    desktop.pid = static_cast<u64>(desktop_pid);
+    return monitor_desktop(desktop, owner);
+}
+#endif
+
+int submit_and_logout(const ipc_channel& parental, delivery& enrollment, holder_mode mode) {
+    [[maybe_unused]] const bool with_resource = mode == holder_mode::resource;
     ipc_client owner;
     if (!ordinary(owner, enrollment.daemon)) { return 14; }
     const account_name account{enrollment.name, enrollment.name_length};
@@ -312,6 +399,9 @@ int submit_and_logout(const ipc_channel& parental, delivery& enrollment, [[maybe
 #endif
     if (result == wire_status::ok) {
         if (!current_identity(owner, session, enrollment.identity, wire_status::ok)) { return 14; }
+#if XOS_PUMPKIN_MOBIUS
+        if (mode == holder_mode::desktop) return hold_desktop(parental, owner, session, enrollment.identity);
+#endif
 #if XOS_PUMPKIN_USER_RESOURCE
         broker_read_client pending;
         wire_id pending_ticket{};
@@ -327,10 +417,7 @@ int submit_and_logout(const ipc_channel& parental, delivery& enrollment, [[maybe
             }
         }
 #endif
-        auto logout = request(wire_operation::logout, session);
-        wire_reply reply{};
-        if (!expect(owner, logout, reply, wire_status::ok) ||
-            !current_identity(owner, session, enrollment.identity, wire_status::denied)) return 14;
+        if (!logout_user(owner, session, enrollment.identity)) return 14;
 #if XOS_PUMPKIN_USER_RESOURCE
         if (check_logout) {
             broker_data denied{};
@@ -434,7 +521,7 @@ int holder_main([[maybe_unused]] holder_mode mode) {
         closed.message.format != version || closed.message.stage != step::delivery_closed ||
         has_bytes(closed.zero, sizeof(closed.zero))) { return 11; }
 #if XOS_PUMPKIN_USER_LOGIN
-    if (mode != holder_mode::cycle) return submit_and_logout(channel.pair, enrollment, mode == holder_mode::resource);
+    if (mode != holder_mode::cycle) return submit_and_logout(channel.pair, enrollment, mode);
 #endif
 
     ipc_client owner;
@@ -477,11 +564,12 @@ u8 enroll_user(ipc_client& registrar, account_name account, const anchor_guest::
 }
 
 u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy,
-              [[maybe_unused]] u32 broker_image, [[maybe_unused]] named_read* named) {
+              [[maybe_unused]] u32 broker_image, [[maybe_unused]] named_read* named,
+              const desktop_session* desktop) {
     wire_reply found{};
     child_process holder;
     endpoints channel;
-    const auto mode = broker_image ? holder_mode::resource : holder_mode::submit;
+    const auto mode = desktop ? holder_mode::desktop : broker_image ? holder_mode::resource : holder_mode::submit;
     if (!lookup_user(registrar, account, found) || connect_holder(image, holder, channel, mode) != result::passed) return 0;
     {
         user_login::packet request{}, reply{};
@@ -497,6 +585,24 @@ u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account
         if (!send(channel.pair, enrollment)) return 0;
     }
     if (!signal_received(channel.pair, step::received) || !send(channel.pair, delivery_closed{})) { return 0; }
+#if XOS_PUMPKIN_MOBIUS
+    if (desktop != nullptr) {
+        signal outcome{};
+        if (!receive(channel.pair, outcome, deadline()) || outcome.format != version) {
+            return static_cast<u8>(result::desktop_failed);
+        }
+        if (outcome.stage == step::rejected) {
+            return send(channel.pair, signal{version, step::finish}) && reap_child(holder, channel.pair)
+                ? user_login::denied : 0;
+        }
+        if (outcome.stage != step::desktop_live) return static_cast<u8>(result::desktop_failed);
+        const bool clean_desktop = run_desktop(*desktop, channel.pair);
+        const bool logout = send(channel.pair, signal{version, step::desktop_exit}) &&
+            signal_received(channel.pair, step::signed_out) && send(channel.pair, signal{version, step::finish}) &&
+            reap_child(holder, channel.pair);
+        return clean_desktop && logout ? 1 : static_cast<u8>(result::desktop_failed);
+    }
+#endif
 #if XOS_PUMPKIN_USER_RESOURCE
     child_process broker;
     endpoints broker_control;

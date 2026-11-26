@@ -1,0 +1,32 @@
+{
+  "skia_license.txt": {
+    "archive": "webkit",
+    "member": "Source/ThirdParty/skia/LICENSE",
+    "member_sha256": "5f787c1dee3c56547f09ccc2906ab5f5293c4d8dd6c8654e573216c38e908dbd",
+    "notice_sha256": "5f787c1dee3c56547f09ccc2906ab5f5293c4d8dd6c8654e573216c38e908dbd"
+  },
+  "libpng_license.txt": {
+    "archive": "qtbase",
+    "member": "src/3rdparty/libpng/LICENSE",
+    "member_sha256": "16d9daaafbf63a31a5bdc91d4600972548fef5aaa1244202393288dbd079c49a",
+    "notice_sha256": "16d9daaafbf63a31a5bdc91d4600972548fef5aaa1244202393288dbd079c49a"
+  },
+  "libjpeg_license.txt": {
+    "archive": "qtbase",
+    "member": "src/3rdparty/libjpeg/LICENSE",
+    "member_sha256": "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430",
+    "notice_sha256": "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430"
+  },
+  "libjpeg_copyright.txt": {
+    "archive": "qtbase",
+    "member": "src/3rdparty/libjpeg/COPYRIGHT.txt",
+    "member_sha256": "f26a2c0b6c1ab7e40444de31cc5b112a534cc589d6fd9b93620054e9692b81c6",
+    "notice_sha256": "f26a2c0b6c1ab7e40444de31cc5b112a534cc589d6fd9b93620054e9692b81c6"
+  },
+  "libjpeg_ijg.txt": {
+    "archive": "qtbase",
+    "member": "src/3rdparty/libjpeg/ijg-license.txt",
+    "member_sha256": "1cb448f5e2e6d3aca60943f4eee1a04675628dc0266a074a42bc1560ebc28d61",
+    "notice_sha256": "1cb448f5e2e6d3aca60943f4eee1a04675628dc0266a074a42bc1560ebc28d61"
+  }
+}

@@ -27,3 +27,18 @@ SDK、共享目标、dash 和普通系统 `cb0694f73256d04f`。新的 QEMU 11.1.
 空堆计划，GNU 入口在认证序号未改变时拒绝缺失堆计划。恢复计划后两种入口均能
 提交和封存堆区，两个客体门均回到 `129696 / 3 / 1`。
 [必需堆计划的客体回执](../reports/glibc_d1_early_heap_required_20261126/manifest.json)
+
+## Pumpkin 登录合入后的普通镜像
+
+基于 #285 合成 `b309689d`，旧 SDK 及对象被前置校验拒绝。`execution.hpp`、
+`net_transport.hpp` 和 loader 源已变化。用同一签名源重建 SDK、GNU 对象和普通
+镜像 `5e3a3609c39a5f71`。两个 QEMU 门再次通过，均恢复至 `129709 / 3 / 1`，
+固定依赖和空依赖入口均确认缺少堆计划时拒绝继续。
+[这次组合的客体回执](../reports/glibc_d1_early_heap_post285_20261126/manifest.json)
+
+## 与安装 Shell 网络入口组合
+
+`07491507` 的源码树合成了最终验收后的 #286。重新绑定签名 C SDK 和真实 GNU 对象后，
+普通镜像 `5f4c5cbdde444993` 的 GNU 入口和映射器检查均通过。两种依赖模式仍要求
+堆计划，两个门均回到 `129709 / 3 / 1`。
+[网络组合后的客体回执](../reports/glibc_d1_early_heap_post286_20261126/manifest.json)

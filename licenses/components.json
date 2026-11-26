@@ -668,6 +668,84 @@
       "distribution_status": "Local qualification only; member-level review and binary distribution acceptance pending"
     },
     {
+      "name": "LibXml2 for WebCore qualification",
+      "version": "2.15.4",
+      "path": "src/ports/webkit/libxml2",
+      "source": "https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.4.tar.xz",
+      "source_archive_sha256": "98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821",
+      "license": "MIT and per-file copyright notices identified in Copyright",
+      "notices": ["src/ports/webkit/libxml2/LICENSE.upstream"],
+      "artifact_sha256": {
+        "src/ports/webkit/libxml2/LICENSE.upstream": "5d4873884a890122a4b9b20ad56ac6f7da1d796a5bfcf04a427970ac96217626"
+      },
+      "used_in": ["WebCore static target dependency qualification and XML SAX2 push-parser guest probe"],
+      "distribution_status": "Local qualification; complete binary distribution acceptance pending"
+    },
+    {
+      "name": "WebCore tokenizer qualification",
+      "version": "WPE WebKit 2.54.2",
+      "path": "src/ports/webkit/tokenizer",
+      "source": "https://wpewebkit.org/releases/wpewebkit-2.54.2.tar.xz",
+      "source_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+      "license": "Per-file terms, including BSD-style and LGPL 2.x notices in the upstream WebCore archive",
+      "notices": [
+        "src/ports/webkit/tokenizer/notices/webcore_apple.txt",
+        "src/ports/webkit/tokenizer/notices/webcore_lgpl_2.txt",
+        "src/ports/webkit/tokenizer/notices/webcore_lgpl_2_1.txt"
+      ],
+      "artifact_sha256": {
+        "src/ports/webkit/tokenizer/notices/webcore_apple.txt": "0b5d3a7cc325942567373b0ecd757d07c132e0ebd7c97bfc63f7e1a76094edb4",
+        "src/ports/webkit/tokenizer/notices/webcore_lgpl_2.txt": "45decd245a7c2fddf18e215359a3c1892c1770438f7f81a1b21bdd525a942fa7",
+        "src/ports/webkit/tokenizer/notices/webcore_lgpl_2_1.txt": "a4e64e3963a1a06aad897420a99134969a4a1acba8c90b2a05fabe777475ecd5"
+      },
+      "used_in": [
+        "static WebCore HTML tokenizer guest qualification"
+      ],
+      "distribution_status": "Local qualification; full member-level review and binary distribution acceptance pending"
+    },
+    {
+      "name": "Skia for ClarkE CPU raster qualification",
+      "version": "WPE WebKit 2.54.2 snapshot",
+      "path": "src/ports/webkit/raster",
+      "source": "https://wpewebkit.org/releases/wpewebkit-2.54.2.tar.xz",
+      "source_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+      "license": "Skia LICENSE (BSD-style) and per-file upstream notices",
+      "notices": [
+        "src/ports/webkit/raster/notices/skia_license.txt"
+      ],
+      "artifact_sha256": {
+        "src/ports/webkit/raster/notices/skia_license.txt": "5f787c1dee3c56547f09ccc2906ab5f5293c4d8dd6c8654e573216c38e908dbd"
+      },
+      "used_in": [
+        "local XOS glibc CPU raster dependency qualification"
+      ],
+      "distribution_status": "Local qualification; member-level and binary distribution acceptance pending"
+    },
+    {
+      "name": "QtBase image codecs for the ClarkE CPU raster qualification",
+      "version": "QtBase 6.8.3; libpng 1.6.47; libjpeg-turbo 3.0.3",
+      "path": "src/ports/webkit/raster",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtbase-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+      "license": "libpng-2.0; IJG, BSD and zlib terms tracked by libjpeg-turbo",
+      "notices": [
+        "src/ports/webkit/raster/notices/libpng_license.txt",
+        "src/ports/webkit/raster/notices/libjpeg_license.txt",
+        "src/ports/webkit/raster/notices/libjpeg_copyright.txt",
+        "src/ports/webkit/raster/notices/libjpeg_ijg.txt"
+      ],
+      "artifact_sha256": {
+        "src/ports/webkit/raster/notices/libpng_license.txt": "16d9daaafbf63a31a5bdc91d4600972548fef5aaa1244202393288dbd079c49a",
+        "src/ports/webkit/raster/notices/libjpeg_license.txt": "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430",
+        "src/ports/webkit/raster/notices/libjpeg_copyright.txt": "f26a2c0b6c1ab7e40444de31cc5b112a534cc589d6fd9b93620054e9692b81c6",
+        "src/ports/webkit/raster/notices/libjpeg_ijg.txt": "1cb448f5e2e6d3aca60943f4eee1a04675628dc0266a074a42bc1560ebc28d61"
+      },
+      "used_in": [
+        "local XOS glibc CPU raster dependency qualification"
+      ],
+      "distribution_status": "Local qualification; member-level and binary distribution acceptance pending"
+    },
+    {
       "name": "Qt Widgets E17 and Xylophone Aurora Glass",
       "version": "QtBase 6.8.3; Aurora 1 (local qualification)",
       "path": "src/ports/qt6",

@@ -17,7 +17,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 files_private_storage_probe=False, files_private_client_probe=False, pumpkin_durable_probe=False,
                 pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False,
                 pumpkin_user_resource=False, pumpkin_named_resource_store=False,
-                quiet_demos_on_launch=False, net_dns_probe=False):
+                quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
+                net_static_profile=None):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -95,6 +96,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     login_flags = ("-DXOS_PUMPKIN_NATIVE_LOGIN=1",) if pumpkin_native_login else ()
     if pumpkin_user_login:
         login_flags += ("-DXOS_PUMPKIN_USER_LOGIN=1",)
+    if pumpkin_mobius:
+        login_flags += ("-DXOS_PUMPKIN_MOBIUS=1", "-I", str(build))
     if pumpkin_user_resource:
         login_flags += ("-DXOS_PUMPKIN_USER_RESOURCE=1", "-DXOS_PUMPKIN_RESOURCE_BRIDGE=1")
     if pumpkin_named_resource_store:
@@ -132,7 +135,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                           for name in ("window_manager.cpp", "service.cpp", "dispatcher.cpp",
                                        "service_loop.cpp", "ipc_transport.cpp")]
     net_objects, net_includes, net_configuration = build_lwip_service(root, build, sdk, run, tool, X86_FLAGS,
-                                                                     net_dns_probe)
+                                                                     net_dns_probe, net_static_profile)
     if net_configuration["enabled"]:
         net_objects += [compile_source(root / "src/user/network" / name,
                                       (*net_includes, "-Os", "-ffunction-sections", "-fdata-sections"))
@@ -212,6 +215,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 extra_flags += ("-DXOS_QUIET_DEMOS_ON_LAUNCH=1",)
             if net_dns_probe:
                 extra_flags += ("-DXOS_NET_DNS_PROBE=1",)
+            if net_static_profile:
+                extra_flags += (f"-DXOS_NET_STATIC_INSTANCE={net_static_profile['pci_instance']}u",)
         if name == "files" and glibc_files_death_probe:
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "files":

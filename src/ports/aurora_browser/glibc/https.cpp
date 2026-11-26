@@ -20,8 +20,9 @@ xos::i64 fetch_https(xos::u64 service, const browser_http::url& target,
         return net2::invalid;
 
     native_tls::stream stream;
+    const auto route = clarke_tls_resolve_net2 ? native_tls::route_source::net2_dns : native_tls::route_source::pinned;
     const auto connected = stream.connect(service, address, target.port, target.host,
-                                          tls_test_root, sizeof(tls_test_root), deadline);
+                                          tls_test_root, sizeof(tls_test_root), deadline, route);
     if (connected) return connected;
     for (size_t sent = 0; sent < length;) {
         const int count = stream.write(reinterpret_cast<const unsigned char*>(request) + sent, length - sent);

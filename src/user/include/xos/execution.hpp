@@ -43,5 +43,7 @@ i64 spawn_file_diagnosed(const char* path, u32 argc, const char* const* argv,
 i64 spawn_file_diagnosed_receipt(const char* path, u32 argc, const char* const* argv,
                                  const sdk::spawn_options& options,
                                  launch_diagnostic& diagnostic, image_receipt& receipt);
+i64 spawn_verified_file(const char* path, u32 argc, const char* const* argv,
+                        const sdk::spawn_options& options, const image_receipt& expected);
 
 }

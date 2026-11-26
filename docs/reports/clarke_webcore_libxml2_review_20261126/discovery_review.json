@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "review_thread": "PRRT_kwDOVU8IlM68VGUh",
+  "before": {
+    "source_commit": "61d2cbbad51acdad407fbb877933bdc4c25251b9",
+    "fixture_sha256": "877743d0cc7df338f41874e9549e74ce920b75fc5174da65d04d5ca101e881db",
+    "normal": "accepted",
+    "duplicate_include": "rejected",
+    "duplicate_diagnostic": "LibXml2 resolved outside the verified XOS target prefix"
+  },
+  "after": {
+    "version": "2.15.4",
+    "fixture_sha256": "f88fc194be2f1621f3be06908f6e3241d3d050fd90c6f9b9c82f3985ec628290",
+    "extra_include_fixture_sha256": "8a50009a928d61c058698d9e6ca5ec64b748f17419f069b4e3dcb763a2d2c900",
+    "duplicate_include": "accepted",
+    "foreign_include": "rejected"
+  },
+  "cmake_version": "cmake version 4.4.4",
+  "license_materials": {
+    "status": "passed",
+    "scope": "registered_materials_and_sdk_copies",
+    "checked": 10
+  }
+}

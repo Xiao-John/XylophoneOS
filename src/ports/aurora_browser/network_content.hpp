@@ -71,7 +71,7 @@ public:
     bool load(QString& location, QByteArray& bytes, int limit, QString& error) {
         if (!remote(location)) return read(location, bytes, limit, error);
         bytes.clear();
-        if (!service_pid_) { error = QStringLiteral("Start with --network-service-pid to use the network"); return false; }
+        if (!service_pid_) { error = QStringLiteral("Start with --network from a configured shell"); return false; }
         if (finished_) { error = QStringLiteral("Resource was not loaded during navigation"); return false; }
         const auto now = xos::sdk::syscall(xos::sys_clock_monotonic);
         if ((!budget_.deadline && !budget_.begin(now)) || !budget_.request(now)) {

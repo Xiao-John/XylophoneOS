@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "implementation_commit": "dca3110265e4ced94dbd00abdcdd31b65f667d9b",
+  "implementation_tree": "ab06bfc0fc211ae414319057c003ee96899da14a",
+  "review_thread": "PRRT_kwDOVU8IlM68V1x5",
+  "serial_raw_sha256": "1aafa6ec70ad7faf4cf6b48e9b8f0977b28b073a40c9a783f10f7ad774bb9e8f",
+  "files": {
+    "guest.json": "efeac51f00b871f5597f0ef955acdf2bb67f1f40f04e931daa587ebc5aa07788",
+    "guest.serial.log.gz": "9cb88646769ad6d72d19b97a7a6ffcded9cf1643db9da8c25b6f14a4e7557dc9",
+    "target.json": "464377d609d9f3ca5c15693594a75266d22fad03d027e65d5a109e3bf5c53bab",
+    "late_source_edit.json": "684a153b12e1ce12adc8090f905451e5d0eecaac402e1fc4c072324f667d5e65"
+  }
+}

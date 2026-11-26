@@ -18,7 +18,7 @@ constexpr char rendezvous[] = "pumpkin-holder-bootstrap";
 constexpr u32 version = 1;
 enum class step : u32 {
     received = 1, delivery_closed, connected, use_resource, accessed, check_revoked, revoked, finish,
-    signed_out, rejected, resource_denied, desktop_live, desktop_check, desktop_exit,
+    signed_out, rejected, resource_denied, desktop_live, desktop_check, desktop_exit, desktop_revoked,
 };
 
 struct delivery {
@@ -318,10 +318,12 @@ int hold_desktop(const ipc_channel& parental, ipc_client& owner, wire_id session
     for (;;) {
         signal packet{};
         if (!receive(parental, packet, end) || packet.format != version) return 14;
-        if (packet.stage == step::desktop_exit) {
-            if (!logout_user(owner, session, identity)) return 14;
+        if (packet.stage == step::desktop_exit || packet.stage == step::desktop_revoked) {
+            const bool revoked = packet.stage == step::desktop_revoked;
+            if (revoked ? !current_identity(owner, session, identity, wire_status::denied)
+                        : !logout_user(owner, session, identity)) return 14;
             owner.close();
-            return send(parental, signal{version, step::signed_out}) &&
+            return send(parental, signal{version, revoked ? step::revoked : step::signed_out}) &&
                 signal_received(parental, step::finish) ? 0 : 15;
         }
         if (packet.stage != step::desktop_check || !current_identity(owner, session, identity, wire_status::ok) ||
@@ -340,48 +342,61 @@ bool compositor_ready(u64 compositor) {
     return false;
 }
 
-bool monitor_desktop(child_process& desktop, const ipc_channel& owner) {
+enum class desktop_outcome { failed, closed, revoked };
+
+desktop_outcome monitor_desktop(child_process& desktop, const ipc_channel& owner,
+                                const anchor_guest::pair* admin, ipc_client& registrar, account_name account) {
     constexpr u64 identity_interval_ns = 1'000'000'000;
     constexpr u64 wait_interval_ns = 20'000'000;
     u64 next = 0;
+    u64 sequence = 0;
     while (desktop.pid != 0) {
+        if (desktop.wait_clean()) return desktop_outcome::closed;
+        if (!desktop.pid) break;
         const auto now = monotonic_now();
-        if (now < 0) return false;
+        if (now < 0) return desktop_outcome::failed;
         if (static_cast<u64>(now) >= next) {
             if (!send(owner, signal{version, step::desktop_check}) || !signal_received(owner, step::desktop_live)) {
-                return false;
+                return desktop_outcome::failed;
+            }
+            if (admin != nullptr) {
+                bool revoke = false;
+                if (!user_login::poll_desktop_admin(*admin, ++sequence, revoke)) return desktop_outcome::failed;
+                if (revoke) {
+                    return revoke_user(registrar, account) ? desktop_outcome::revoked : desktop_outcome::failed;
+                }
             }
             next = static_cast<u64>(now) + identity_interval_ns;
         }
-        if (desktop.wait_clean()) return true;
-        if (desktop.pid != 0 && sdk::syscall(sys_sleep_until, static_cast<u64>(now) + wait_interval_ns) != 0) {
-            return false;
+        if (sdk::syscall(sys_sleep_until, static_cast<u64>(now) + wait_interval_ns) != 0) {
+            return desktop_outcome::failed;
         }
     }
-    return false;
+    return desktop_outcome::failed;
 }
 
-bool run_desktop(const desktop_session& configuration, const ipc_channel& owner) {
+desktop_outcome run_desktop(const desktop_session& configuration, const ipc_channel& owner,
+                            const anchor_guest::pair& proxy, ipc_client& registrar, account_name account) {
     child_process display, compositor, desktop;
     sdk::spawn_options options{};
     for (auto& fd : options.stdio) { fd = -2; }
     const char* display_args[]{"display", "normal"};
     const auto display_pid = sdk::spawn_image_options(configuration.display_image, 2, display_args, options);
-    if (display_pid <= 0) return false;
+    if (display_pid <= 0) return desktop_outcome::failed;
     display.pid = static_cast<u64>(display_pid);
-    if (sdk::display_control(display_action::grant_service, display.pid) != 0) return false;
+    if (sdk::display_control(display_action::grant_service, display.pid) != 0) return desktop_outcome::failed;
     const char* compositor_args[]{"interactiumd"};
     const auto compositor_pid = sdk::spawn_image_options(configuration.compositor_image, 1, compositor_args, options);
-    if (compositor_pid <= 0) return false;
+    if (compositor_pid <= 0) return desktop_outcome::failed;
     compositor.pid = static_cast<u64>(compositor_pid);
-    if (!compositor_ready(compositor.pid)) return false;
+    if (!compositor_ready(compositor.pid)) return desktop_outcome::failed;
 
     static constexpr char path[] = "/usr/bin/mobius.elf";
     const char* desktop_args[]{path};
     const auto desktop_pid = execution::spawn_verified_file(path, 1, desktop_args, options, configuration.executable);
-    if (desktop_pid <= 0) return false;
+    if (desktop_pid <= 0) return desktop_outcome::failed;
     desktop.pid = static_cast<u64>(desktop_pid);
-    return monitor_desktop(desktop, owner);
+    return monitor_desktop(desktop, owner, configuration.managed ? &proxy : nullptr, registrar, account);
 }
 #endif
 
@@ -596,11 +611,14 @@ u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account
                 ? user_login::denied : 0;
         }
         if (outcome.stage != step::desktop_live) return static_cast<u8>(result::desktop_failed);
-        const bool clean_desktop = run_desktop(*desktop, channel.pair);
-        const bool logout = send(channel.pair, signal{version, step::desktop_exit}) &&
-            signal_received(channel.pair, step::signed_out) && send(channel.pair, signal{version, step::finish}) &&
+        const auto end = run_desktop(*desktop, channel.pair, proxy, registrar, account);
+        const bool revoked = end == desktop_outcome::revoked;
+        const bool released = send(channel.pair, signal{version, revoked ? step::desktop_revoked : step::desktop_exit}) &&
+            signal_received(channel.pair, revoked ? step::revoked : step::signed_out) &&
+            send(channel.pair, signal{version, step::finish}) &&
             reap_child(holder, channel.pair);
-        return clean_desktop && logout ? 1 : static_cast<u8>(result::desktop_failed);
+        if (!released || end == desktop_outcome::failed) return static_cast<u8>(result::desktop_failed);
+        return revoked ? user_login::desktop_revoked : 1;
     }
 #endif
 #if XOS_PUMPKIN_USER_RESOURCE

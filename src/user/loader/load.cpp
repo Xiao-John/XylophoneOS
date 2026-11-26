@@ -7,6 +7,7 @@
 #include <xos/execution.hpp>
 #include <xos/thread_abi.hpp>
 #include <xos/fault_sha256.hpp>
+#include <xos/vm.hpp>
 #include "image_reader.hpp"
 
 namespace xos::sdk {
@@ -28,6 +29,56 @@ bool buffer_read(void* context, u64 offset, u8* destination, u32 length) {
 
 using loader::file_read;
 using loader::opened_file;
+
+class verified_image_snapshot {
+public:
+    ~verified_image_snapshot() { (void)release(); }
+
+    // VM pressure or an older kernel can retain the streaming reader. A
+    // failed cleanup must stop the launch rather than fall back with a leak.
+    i64 prepare(u32 size) {
+        const u64 rounded = (static_cast<u64>(size) + vm_page_size - 1) & ~(vm_page_size - 1);
+        const u64 pages = rounded / vm_page_size;
+        if (pages == 0 || pages > process_max_pages) { return 0; }
+        process_stats available{};
+        // The extra copy must leave the budget of a full child address space.
+        if (syscall(sys_process_stats, reinterpret_cast<u64>(&available)) != 0 ||
+            available.free_pages <= pages + process_max_pages) { return 0; }
+        const i64 address = vm_reserve(0, rounded);
+        if (address <= 0) { return 0; }
+        address_ = static_cast<u64>(address);
+        length_ = rounded;
+        for (u64 offset = 0; offset < length_;) {
+            const u64 remaining = length_ - offset;
+            const u64 batch = remaining > vm_batch ? vm_batch : remaining;
+            if (vm_change(vm_operation::commit, address_ + offset, batch, vm_protection::read_write) != 0) {
+                return release();
+            }
+            offset += batch;
+        }
+        return 0;
+    }
+
+    u8* data() const { return reinterpret_cast<u8*>(address_); }
+
+    i64 release() {
+        while (length_ != 0) {
+            const u64 batch = length_ > vm_batch ? vm_batch : length_;
+            const i64 result = vm_change(vm_operation::unmap, address_, batch);
+            if (result != 0) { return result; }
+            address_ += batch;
+            length_ -= batch;
+        }
+        address_ = 0;
+        return 0;
+    }
+
+private:
+    // The VM continuation can stage at most this many pages in an operation.
+    static constexpr u64 vm_batch = 4096 * vm_page_size;
+    u64 address_ = 0;
+    u64 length_ = 0;
+};
 
 // Only a CRT declaring the read-only .xos.exec opt-in can restore v3 FDs.
 // Ordinary spawn stays compatible with existing static v1/v2 applications.
@@ -74,7 +125,8 @@ bool image_opt_in(elf::read_exact_fn read, void* context, u64 size,
 i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                  void* read_context, u32 argc, const char* const* argv,
                  bool close_file, u32 file_handle, const spawn_options* options = nullptr,
-                 execution::launch_diagnostic* diagnostic = nullptr) {
+                 execution::launch_diagnostic* diagnostic = nullptr,
+                 verified_image_snapshot* snapshot = nullptr) {
     if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::none, 0, elf::error::none}; }
     if (argc == 0 || argc > process_max_args || argv == nullptr ||
         read_exact == nullptr || name == nullptr) {
@@ -324,6 +376,15 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             }
         }
     }
+    if (snapshot != nullptr) {
+        const i64 released = snapshot->release();
+        if (result >= 0 && released != 0) {
+            result = released;
+            if (diagnostic != nullptr) {
+                *diagnostic = {execution::launch_stage::file_setup, result, elf::error::none};
+            }
+        }
+    }
     if (result >= 0 && options != nullptr && options->prepare_child != nullptr) {
         result = options->prepare_child(static_cast<u64>(child), options->prepare_context);
     }
@@ -438,17 +499,28 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
         (void)file_client.close(handle);
         return process_error_denied;
     }
+    verified_image_snapshot snapshot;
+    if (expected != nullptr) {
+        const i64 prepared = snapshot.prepare(size);
+        if (prepared != 0) {
+            (void)file_client.close(handle);
+            diagnostic = {execution::launch_stage::file_setup, prepared, elf::error::none};
+            return prepared;
+        }
+    }
+    u8* const captured = snapshot.data();
     if (receipt != nullptr) {
         sha256 digest;
         for (u32 offset = 0; offset < size;) {
             const u32 remaining = size - offset;
             const u32 amount = remaining > sizeof(page_buffer) ? sizeof(page_buffer) : remaining;
-            if (!file_read(&source, offset, page_buffer, amount)) {
+            u8* destination = captured == nullptr ? page_buffer : captured + offset;
+            if (!file_read(&source, offset, destination, amount)) {
                 (void)file_client.close(handle);
                 diagnostic = {execution::launch_stage::inspect, process_error_invalid, elf::error::none};
                 return process_error_invalid;
             }
-            digest.update(page_buffer, amount);
+            digest.update(destination, amount);
             offset += amount;
         }
         digest.finish(receipt->digest);
@@ -458,8 +530,12 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
             return process_error_denied;
         }
     }
-    const i64 child = spawn_reader(path, size, file_read, &source, argc, argv, true, handle,
-                                   &options, &diagnostic);
+    // A verified snapshot and the original pin name the same bytes. Map
+    // them directly, still holding the pin through completion of all copies.
+    const i64 child = captured == nullptr
+        ? spawn_reader(path, size, file_read, &source, argc, argv, true, handle, &options, &diagnostic)
+        : spawn_reader(path, size, buffer_read, captured, argc, argv, true, handle,
+                       &options, &diagnostic, &snapshot);
     if (child < 0 && receipt != nullptr) {
         for (u32 i = 0; i < sizeof(receipt->digest); ++i) receipt->digest[i] = 0;
         receipt->size = 0;

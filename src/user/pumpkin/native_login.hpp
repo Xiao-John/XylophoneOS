@@ -40,6 +40,7 @@ struct desktop_session {
     u32 display_image;
     u32 compositor_image;
     execution::image_receipt executable;
+    bool managed = false;
 };
 #endif
 bool revoke_user(ipc_client& registrar, account_name account);

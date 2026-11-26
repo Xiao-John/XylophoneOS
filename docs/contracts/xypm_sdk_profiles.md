@@ -187,6 +187,43 @@ python3 scripts/build_candidate.py --output build/candidates/glibc_stock \
 编译、汇编与链接工具仍按现有规则核验。工具启动按单次调用选定运行库，切回
 newlib 时重新使用冻结 SDK 的原入口、项目与工作盘。新旧盘继续遵循单 profile 规则。
 
+### 工作区的应用 SDK 默认选择
+
+`scripts/xos_sdk.py` 为应用开发和宿主包工具保存同一选择。初始化时验证已部署的
+glibc C/C++ kit 和 1024 发行冻结 newlib SDK，并将 glibc 设为该工作区的默认值。
+选择保存在本地 `build/application_sdk_selection.json`，`--state` 可显式使用另一份
+选择文件。每项选择都绑定 SDK 树、manifest 和 profile。应用工具继续验证工程的
+`target_profile`，包工具将选择的 profile 交给既有 XPK、仓库锁和工作盘检查。
+
+```sh
+python3 scripts/xos_sdk.py setup --glibc-kit "$GLIBC_KIT" --newlib-sdk "$FROZEN_NEWLIB_SDK"
+python3 scripts/xos_sdk.py status
+python3 scripts/xos_sdk.py app init build/example --id example.hello --language cpp
+python3 scripts/xos_sdk.py app build build/example
+python3 scripts/xos_sdk.py app pack build/example --output build/example.xpk
+python3 scripts/xos_sdk.py xypm verify build/example.xpk
+```
+
+切回冻结 newlib 时运行 `python3 scripts/xos_sdk.py use newlib`，再对原工程和
+原工作盘使用同一入口。`use glibc` 恢复 glibc 的选择。切换只原子替换选择文件。
+选择的套件缺失或摘要变化时命令报告错误。切回 newlib 只需要原 newlib SDK 与
+profile 可用。两种选择均要求操作者为包事务显式指定输入和输出盘，现有工程、
+数据库和包归属沿单 profile 规则。需要不同绑定时初始化独立的选择文件。
+
+默认入口只在已有对应 profile 的工作盘上运行查询与事务。未登记的工作盘无法仅
+从缺少数据库确定其 ABI。第一次安装时用新建的专用盘，并由既有 `xypm.py` 的
+显式 `--profile` 入口生成初始数据库，之后可继续通过默认入口处理该盘。
+
+```sh
+python3 scripts/xypm.py install build/example.xpk --offline --profile "$GLIBC_KIT/profile.json" \
+  --image "$blank" --output-image "$glibc_work"
+python3 scripts/xos_sdk.py xypm verify-installed --image "$glibc_work"
+```
+
+该入口的默认作用域是已配置工作区的应用与宿主包命令。安装候选、系统自举、原
+显式工具入口与发布材料仍采用独立的既有路径。整个 SDK 的发行默认项、生产许可
+及 newlib 退役继续使用发布门。[发布手册](../releases/playbook.md#glibc-应用-sdk-发布预览)
+
 发布为 glibc XPK 时，`xos_app.py` 的 `--sdk` 指向包含 `manifest.json` 和
 `sysroot/` 的完整构建目录。现有项目的 `target_profile` 应与候选 ID 一致，
 并使用独立项目目录。以下命令建立一个新的 C++ 应用，C 应用使用 `--language c`。

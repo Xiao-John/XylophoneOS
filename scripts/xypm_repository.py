@@ -233,7 +233,7 @@ def create_repository(packages, output, profile):
 
 
 def transact_locked(repository, lock, package_id, image, output, profile, operation,
-                    expected_lock_sha256=None):
+                    expected_lock_sha256=None, *, require_initialized=False):
     """One explicit P1 transaction after complete offline closure verification.
 
     P1 reopens the selected package, verifies the pinned digest while staging its
@@ -248,5 +248,5 @@ def transact_locked(repository, lock, package_id, image, output, profile, operat
     from xypm_image import transact
     result = transact(image, output, profile, operation,
                       package=Path(repository) / (entry['sha256'] + '.xpk'),
-                      expected_sha256=entry['sha256'])
+                      expected_sha256=entry['sha256'], require_initialized=require_initialized)
     return dict(result, index_sha256=verified['index_sha256'], lock_sha256=verified['lock_sha256'])

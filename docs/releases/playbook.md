@@ -94,8 +94,11 @@ python3 "$preview/application-sdk/scripts/xos_app.py" \
   --profile "$preview/rollback/profile.json" build --sdk "$newlib_sdk" ./old-app
 ```
 
-继续用冻结 profile 对原盘执行安装校验。普通 ISO 的客体验收、存量应用迁移和
-默认 SDK 切换各自需要 [glibc 迁移计划](../plans/glibc_port_scout.md) 对应的证据。
+继续用冻结 profile 对原盘执行安装校验。应用开发者也可以在工作区设置默认 glibc
+并显式选回原 SDK 和独立工作盘。[工作区设置](../contracts/xypm_sdk_profiles.md#工作区的应用-sdk-默认选择)
+
+普通 ISO 的客体验收、存量应用迁移和发行默认 SDK 切换各自需要对应证据。
+[glibc 迁移计划](../plans/glibc_port_scout.md)
 
 ## 5. 冒烟与校验
 

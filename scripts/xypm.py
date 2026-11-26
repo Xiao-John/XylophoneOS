@@ -9,7 +9,7 @@ from xypm_format import (DEFAULT_PROFILE, PackageError, check_profile, load_json
                          pack_package, verify_package)
 
 
-def main():
+def main(argv=None, *, require_initialized_image=False):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
     for name in ('inspect', 'verify'):
@@ -55,7 +55,7 @@ def main():
             command.add_argument('--image', type=Path, required=True)
             command.add_argument('--output-image', type=Path, required=True)
             command.add_argument('--offline', action='store_true', required=True)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     try:
         if args.command.startswith('repo-'):
             from xypm_repository import (create_repository, make_lock, transact_locked,
@@ -69,7 +69,7 @@ def main():
             elif args.command in ('repo-install', 'repo-upgrade'):
                 result = transact_locked(args.repository, args.lock, args.id, args.image,
                                          args.output_image, profile, args.command[5:],
-                                         args.lock_sha256)
+                                         args.lock_sha256, require_initialized=require_initialized_image)
             else:
                 result = verify_repository(args.repository, args.lock, profile, args.lock_sha256)
                 if args.command == 'repo-plan':
@@ -79,10 +79,12 @@ def main():
             result=transact(args.image,args.output_image,load_json(args.profile),args.command,
                             package=args.target if args.command!='remove' else None,
                             package_id=args.target if args.command=='remove' else None,
-                            expected_sha256=getattr(args,'sha256',None))
+                            expected_sha256=getattr(args,'sha256',None),
+                            require_initialized=require_initialized_image)
         elif args.command in ('list','info','verify-installed'):
             from xypm_image import query_image
-            result=query_image(args.image,load_json(args.profile),args.command,getattr(args,'id',None))
+            result=query_image(args.image,load_json(args.profile),args.command,getattr(args,'id',None),
+                               require_initialized=require_initialized_image)
         elif args.command == 'pack':
             manifest = load_json(args.manifest)
             check_profile(manifest, load_json(args.profile))

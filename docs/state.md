@@ -17,6 +17,10 @@ stock 安装及应用组合。签名 C/C++ 候选 `3bbbf73984b95c20` 通过冷�
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)
 [本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
 
+Qt Quick 外部示例已用普通 xypm 离线工作盘完成原包安装、重编库替换和原包回退。
+三次冷启渲染相同画面，回退保留替换后新增的用户文件。
+[接收者安装验证](work_log/4d6f124f_qt_quick_receiver_install.md)
+
 按 [Discipline](Discipline.md) 在合并、发行或里程碑更新。过程与证据见
 [work_log](work_log/) 和 [history](history/)，设计原则见
 [xos_plan.md 第一部分](xos_plan.md#第一部分设计原则)。本线活记忆写工作区根的

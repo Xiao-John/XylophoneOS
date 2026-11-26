@@ -1,0 +1,23 @@
+{
+  "copied_disk_sha256": "a2b76b91af7a7e8b43264503a072d2d67be1e2bf51fdc2e088de860f782b1e61",
+  "frozen_boot_sha256": "1c2cfa90d65b9a9585ac3d5cef32c8376b1806e65f7502321912b2e15b54454c",
+  "frozen_disk_unchanged": true,
+  "frozen_profile_sha256": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+  "frozen_source_disk_sha256": "f556f6cf14017e559fae201bac2f2bb95c9fb63e43c52f4bef132d46078a6681",
+  "frozen_xpk_sha256": "e0b0c134d4beec862a2e6647363755df6cc5263f250e6374064c38fa44195819",
+  "guest": {
+    "app_markers": [
+      "FROZEN_RUNTIME_OK matrix"
+    ],
+    "build_id": "2c3876e640840ff5",
+    "resources_before_and_after": [
+      130342,
+      2,
+      0
+    ]
+  },
+  "status": "passed",
+  "unified_xpk_sha256": "859bd9e9dcdc76beb00b17387ab773a79ef9fef0fecd8ea06ea26cc486ab80c6",
+  "verified_owned_files": 28,
+  "verified_profile_refusals": 2
+}

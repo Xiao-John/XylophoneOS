@@ -84,6 +84,46 @@ python3 -B src/ports/qt6/quick/stage_sdk_sources.py --kit "$KIT" \
   --sdk-revision bac10c6d08bbc454e4068360e04e3058efd14855 --output "$SDK_SOURCES"
 ```
 
+## 安装、替换与回退示例
+
+外部示例使用单独的 XPK，入口为 `/usr/bin/qt-quick-example.elf`。从 XOS
+工作树调用示例打包器，为原样重链接输出和替换输出使用不同的包修订。
+包内保留应用和运行库声明及重链接回执。对应源码和实际重链接材料继续由上文的
+完整材料包提供。使用套件的 SDK 目录 `runtime/sdk`，其绑定必须与材料中
+`notices/runtime/profile.json` 一致。
+
+```sh
+python3 -B src/ports/qt6/quick/pack_relinked_app.py --materials "$MATERIALS" \
+  --expected-materials-sha256 "$MATERIALS_SHA256" --sdk "$KIT/runtime/sdk" \
+  --receipt "$ORIGINAL_RELINK/receipt.json" --revision 0 --output original.xpk
+python3 -B src/ports/qt6/quick/pack_relinked_app.py --materials "$MATERIALS" \
+  --expected-materials-sha256 "$MATERIALS_SHA256" --sdk "$KIT/runtime/sdk" \
+  --receipt "$APP_RELINK/receipt.json" --revision 1 --output replacement.xpk
+```
+
+将输出的两个包摘要分别保存为 `ORIGINAL_SHA256` 与 `REPLACEMENT_SHA256`，并把材料
+里的 profile 路径保存为 `PROFILE`。以下操作使用普通 xypm 离线事务。先关停使用
+该工作盘的虚机。初装选择专用的已格式化工作盘，每个操作的输出盘必须使用新路径。
+
+```sh
+python3 -B scripts/xypm.py install original.xpk --offline --profile "$PROFILE" \
+  --sha256 "$ORIGINAL_SHA256" --image empty.img --output-image installed.img
+python3 -B scripts/xypm.py upgrade replacement.xpk --offline --profile "$PROFILE" \
+  --sha256 "$REPLACEMENT_SHA256" --image installed.img --output-image replaced.img
+python3 -B scripts/xypm.py verify-installed --profile "$PROFILE" --image replaced.img
+```
+
+使用已启动显示与 Interactium 服务的 XOS 会话，在 Xsh 中运行
+`exec-file /usr/bin/qt-quick-example.elf`。需要退回原版且保留替换之后的用户文件时，
+从当前工作盘卸下该包，再把已核对的原版 XPK 安装到新盘。原、替换与回退盘可分别启动。
+
+```sh
+python3 -B scripts/xypm.py remove xos.qt-quick-example --offline --profile "$PROFILE" \
+  --image replaced.img --output-image removed.img
+python3 -B scripts/xypm.py install original.xpk --offline --profile "$PROFILE" \
+  --sha256 "$ORIGINAL_SHA256" --image removed.img --output-image restored.img
+```
+
 ## 发行范围
 
 此材料覆盖 Qt 源码、修改、来源与声明记录，以及本外部应用的静态重链接。目标静态库的

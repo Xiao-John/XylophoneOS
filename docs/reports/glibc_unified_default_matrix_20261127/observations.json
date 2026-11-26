@@ -1,0 +1,7 @@
+{
+  "browser_artifact_scope": "The frozen ClarkE SDK built an external C control XPK for profile testing. The browser was not rebuilt here.",
+  "first_comparison_failure": "The first profile checks passed native refusal and one-boot disk equality, then compared a one-boot disk to a two-boot disk. The final test preserved each stage and used equally booted copies on both sides.",
+  "general_candidate_guest_field": "not_run",
+  "manager_bootstrapping": "Each profile exclusion control begins with its own package installed using the offline host transaction and its own real manager. Original installed package reads and foreign package refusal run in the guest.",
+  "stock_installer_qemu_qualification": "passed"
+}

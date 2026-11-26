@@ -1,0 +1,27 @@
+{
+  "status": "passed_subset",
+  "build_id": "8acc1ba84d2434de",
+  "iso_sha256": "369fe4ae7370a1990a28bc98574feb49bb96a3ff8e06e53d8165c7ce1b7ec9e8",
+  "system_manifest_sha256": "8a2616835ca66144b6c68c341b9f9c2dde55e4f0704a83a7577eee0ea129722b",
+  "target_manifest_sha256": "a8d2d53d63649b1b9d48663a62da3138030eec93b4ce63203549b5cbf5ea6802",
+  "runner_sha256": "4bcdee11c2a4fa220638d5e3a9312e3bee38cb1787ffc88b4633740319b6080c",
+  "guest_probe_sha256": "461961a87725441e57a72c375d0bc47a15113607acc65d955fc5a5a088951328",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "sample": {
+    "width": 12,
+    "height": 10,
+    "background": "white",
+    "clipped": "blue",
+    "overlap": "red"
+  }
+}

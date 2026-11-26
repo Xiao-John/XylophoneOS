@@ -23,3 +23,6 @@ headless 平台、Skia 和最小的本地页面特性，实测 GLib、Soup、图
 当前客体已完成共用 [LibXml2 前置](../work_log/d1cdb8f2_clarke_webcore_libxml2.md) 和
 真实 [WebCore HTML 分词](../work_log/4cc23087_clarke_webcore_html_tokenizer.md)。
 WPE headless 目标配置明确停在 GLib，DOM 与整页验收尚在推进。
+
+[Skia 软件栅格](../work_log/4cc10377_clarke_skia_raster.md) 已在 QEMU 校验实际像素。
+适配所属页面的 DOM、CSS 布局、绘制调用与 Qt 视口继续按组合验收推进。

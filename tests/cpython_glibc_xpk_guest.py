@@ -137,7 +137,13 @@ def main():
                     and sha_file(installer) == artifacts['system/xos-install-dash.iso']
                     and sha_file(install_receipt) == artifacts['system/install_manifest.json'],
                     'stock installer does not match the candidate')
-            stock = stock_installer(candidate, stock_build, install, profile, stock_build['application_sdk'])
+            application_sdk = stock_build['application_sdk']
+            require(application_sdk['profile_file_sha256'] == profile_digest
+                    and application_sdk['profile_sha256'] == binding['profile_sha256']
+                    and application_sdk['sdk_manifest_sha256'] == sdk_digest
+                    and application_sdk['sdk_tree_sha256'] == binding['sdk_tree_sha256'],
+                    'stock installer and CPython package use distinct SDKs')
+            stock = stock_installer(candidate, stock_build, install, profile, application_sdk)
             require(stock and stock['xypm_sha256'] == report['xypm_elf_sha256'], 'stock xypm differs from test input')
             iso = iso_files(installer)
             require(iso['KERNEL.BIN'] == sysmeta['artifacts']['kernel.bin']['sha256']
@@ -225,6 +231,7 @@ def main():
                 (output / 'previous_profile.log').write_bytes(guest.output)
                 guest = None
                 require(rejection_state() == original, 'wrong-profile rejection changed ownership or user data')
+                check_packages(disk, profile, expected_packages)
                 report['previous_package']['unchanged_files'] = original
                 report['previous_package']['resources'] = baseline
                 report['checks'].append('native_previous_profile_install_rejected')

@@ -6,16 +6,42 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shlex
 import shutil
 import subprocess
 import sys
 import tarfile
+
+from glibc_g1_probe import clean_build_environment, select_gnu_make, tool_identity
+from xypm_format import load_json, require, sha_file
+from xypm_sdk_profile import metadata_snapshot, relative_file, verify_profile
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT / "src/ports/cpython"
 DEFAULT_ARCHIVE = ROOT / ".cache/xos_seed/cpython/sources/zlib-1.3.2.tar.xz"
 DEFAULT_SDK = ROOT / "build/threading_sdk"
+GLIBC_ARTIFACTS = ('include/zlib.h', 'include/zconf.h', 'lib/libz.a')
+
+
+def glibc_zlib_binding(prefix, sdk_binding, sdk_digest, profile_digest):
+    prefix = prefix.resolve(strict=True)
+    report, report_digest = metadata_snapshot(prefix.parent / 'report.json')
+    lock = load_json(PORT / 'zlib_lock.json')
+    require(prefix.name == 'prefix' and report['status'] == 'built' and report['runtime_family'] == 'glibc'
+            and report['version'] == lock['version'] and report['source_archive_sha256'] == lock['sha256']
+            and report['license_sha256'] == lock['license_sha256'] and report['sdk_binding'] == sdk_binding
+            and report['sdk_manifest_sha256'] == sdk_digest and report['profile_file_sha256'] == profile_digest
+            and report['inputs']['build_script_sha256'] == sha_file(__file__)
+            and report['inputs']['zlib_lock_sha256'] == sha_file(PORT / 'zlib_lock.json')
+            and report['inputs']['xos_patch_sha256'] == sha_file(PORT / 'zlib_patches/0001_xos_errno_header.patch'),
+            'zlib build is not bound to the selected static glibc SDK and source lock')
+    artifacts = {name: sha_file(relative_file(prefix, name)) for name in GLIBC_ARTIFACTS}
+    require(artifacts == {'include/' + name: digest for name, digest in report['header_sha256'].items()}
+            | {'lib/libz.a': report['libz_sha256']}, 'zlib build artifacts changed')
+    return {'version': lock['version'], 'source_archive_sha256': lock['sha256'],
+            'license_sha256': lock['license_sha256'], 'build_receipt_sha256': report_digest,
+            'builder_sha256': sha_file(__file__), 'artifacts': artifacts}
 
 
 def sha256(path):
@@ -79,6 +105,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, default=DEFAULT_ARCHIVE)
     parser.add_argument("--sdk", type=Path, default=DEFAULT_SDK)
+    parser.add_argument('--glibc-profile', type=Path, help='bind an explicit static glibc SDK profile')
+    parser.add_argument('--output-dir', type=Path, help='new isolated zlib build directory')
     args = parser.parse_args()
 
     archive = args.archive.resolve(strict=True)
@@ -96,6 +124,30 @@ def main():
     ranlib = os.environ.get("XOS_RANLIB") or executable("x86_64-elf-ranlib")
     sdk_manifest = sdk / "manifest.json"
     sdk_hash = sha256(sdk_manifest)
+    glibc = {}
+    env = dict(os.environ)
+    make = 'make'
+    cflags = ['-O2', '-mno-red-zone', '-fno-pie', '-fno-pic', '-fno-stack-protector',
+              '-ffunction-sections', '-fdata-sections', '-D__xos__=1']
+    if args.glibc_profile:
+        profile, profile_digest = metadata_snapshot(args.glibc_profile)
+        binding = verify_profile(profile, 'glibc', sdk)
+        metadata, _ = metadata_snapshot(sdk_manifest, profile['sdk_binding']['sdk_manifest_sha256'])
+        tools = {name: tool_identity('x86_64-elf-' + name) for name in ('gcc', 'ar', 'ranlib')}
+        for name, tool in tools.items():
+            require(tool.get('available') and tool['sha256'] == metadata['tools']['x86_64-elf-' + name]['sha256'],
+                    'zlib cross tool differs from the SDK build: ' + name)
+        cc, ar, ranlib = (tools[name]['path'] for name in ('gcc', 'ar', 'ranlib'))
+        env, _ = clean_build_environment(os.environ)
+        env.update(CHOST='x86_64-elf', LC_ALL='C')
+        make = select_gnu_make()['path']
+        sysroot = sdk / 'sysroot'
+        cflags.extend(['--sysroot=' + str(sysroot), '-nostdinc', '-isystem', str(sysroot / 'usr/include'),
+                       '-isystem', str(sysroot / 'usr/lib/compiler-include')])
+        glibc = {'runtime_family': 'glibc', 'sdk_binding': binding, 'profile_file_sha256': profile_digest,
+                 'tool_sha256': {name: tool['sha256'] for name, tool in tools.items()}}
+    else:
+        cflags.extend(['-isystem', str(sdk / 'include')])
     fingerprint_inputs = {
         "archive_sha256": archive_hash,
         "build_script_sha256": sha256(__file__),
@@ -105,17 +157,21 @@ def main():
         "sdk_manifest_sha256": sdk_hash,
         "zlib_lock_sha256": sha256(PORT / "zlib_lock.json"),
         "xos_patch_sha256": sha256(PORT / "zlib_patches/0001_xos_errno_header.patch"),
+        **glibc,
     }
     fingerprint = hashlib.sha256(
         json.dumps(fingerprint_inputs, sort_keys=True).encode()
     ).hexdigest()[:20]
-    work = ROOT / ".cache/xos_seed/cpython/zlib" / fingerprint
+    work = args.output_dir.resolve() if args.output_dir else ROOT / ".cache/xos_seed/cpython/zlib" / fingerprint
+    require(not work.is_relative_to(sdk) and not work.is_relative_to(PORT), 'zlib output must be outside build inputs')
     if work.exists():
         report_path = work / "report.json"
-        if report_path.is_file():
+        if args.output_dir is None and report_path.is_file():
             report = json.loads(report_path.read_text())
             if report.get("status") == "built" and report.get("fingerprint") == fingerprint:
                 print(json.dumps(report, indent=2, sort_keys=True))
+                if glibc:
+                    glibc_zlib_binding(work / 'prefix', binding, sdk_hash, profile_digest)
                 return
         raise FileExistsError(f"partial zlib work directory exists; inspect it: {work}")
 
@@ -126,16 +182,11 @@ def main():
     build.mkdir()
     extract_source(archive, source, f"zlib-{lock['version']}")
 
-    env = dict(os.environ)
     env.update(
         CC=cc,
         AR=ar,
         RANLIB=ranlib,
-        CFLAGS=" ".join([
-            "-O2", "-mno-red-zone", "-fno-pie", "-fno-pic",
-            "-fno-stack-protector", "-ffunction-sections", "-fdata-sections",
-            "-D__xos__=1", "-isystem", str(sdk / "include"),
-        ]),
+        CFLAGS=shlex.join(cflags),
     )
     run(
         [
@@ -157,6 +208,7 @@ def main():
         "sdk_path": str(sdk),
         "sdk_manifest_sha256": sdk_hash,
         "prefix": str(prefix),
+        **glibc,
     }
     try:
         run(
@@ -166,7 +218,7 @@ def main():
             log=work / "configure.log",
         )
         run(
-            ["make", "-j2", f"AR={ar}", "ARFLAGS=rc", "libz.a"],
+            [make, "-j2", f"AR={ar}", "ARFLAGS=rc", "libz.a"],
             cwd=build,
             env=env,
             log=work / "make.log",
@@ -183,6 +235,12 @@ def main():
         ).splitlines()
         if len(archive_members) < 10 or (library / "libz.a").stat().st_size < 1000:
             raise ValueError("libz.a does not contain the expected object members")
+        if glibc:
+            require(sha_file(archive) == archive_hash and sha_file(sdk_manifest) == sdk_hash
+                    and sha_file(args.glibc_profile) == profile_digest
+                    and verify_profile(profile, 'glibc', sdk) == binding
+                    and all(sha_file(tool['path']) == tool['sha256'] for tool in tools.values()),
+                    'zlib source, glibc SDK or cross tools changed during compilation')
         report.update({
             "status": "built",
             "header_sha256": {

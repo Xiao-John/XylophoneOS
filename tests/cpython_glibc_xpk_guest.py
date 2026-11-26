@@ -2,6 +2,7 @@
 """Qualify native XPK install, disk stdlib, reboot and removal of glibc CPython."""
 
 import argparse
+import gzip
 from io import BytesIO
 from pathlib import Path
 import re
@@ -73,6 +74,7 @@ def main():
     manager_receipt = load_json(manager_receipt_path)
     cli_build = args.cpython_build / 'py0a_report.json'
     package, receipt = package_receipt(args.package, profile)
+    zlib = receipt.get('zlib')
 
     def verify_inputs():
         require(system_sources() == sysmeta['sources']
@@ -91,6 +93,7 @@ def main():
                 and sha_file(args.profile) == profile_digest
                 and verify_profile(profile, 'glibc', args.sdk) == binding,
                 'CPython package inputs differ')
+        require(zlib == load_json(cli_build).get('zlib'), 'CPython zlib package and CLI build differ')
 
     verify_inputs()
     report = {'status': 'failed', 'system_build_id': sysmeta['build_id'],
@@ -101,6 +104,8 @@ def main():
               'cli_build_receipt_sha256': sha_file(cli_build), 'interpreter': receipt['interpreter'],
               'library_sha256': receipt['library']['sha256'], 'test_sha256': sha_file(Path(__file__)),
               'stdlib_members': len(receipt['library']['members']), 'checks': []}
+    if zlib:
+        report['zlib'] = zlib
     guest = None
     try:
         def reject(other_package, other_profile):
@@ -172,9 +177,13 @@ def main():
                 files['/usr/bin/xypm'] = manager
             if args.previous_package:
                 files['/out/old-python.xpk'] = args.previous_package
+            if zlib:
+                files['/tests/zlib.py'] = fixtures / 'cpython_py3_a2/zlib_probe.py'
             with Disk(disk, work) as fat:
                 for path in ('/usr', '/usr/bin', '/out', '/work', '/work/py3a1', '/tests'):
                     fat.command('mkdir', path)
+                if zlib:
+                    fat.command('mkdir', '/work/py3a2')
                 for path, source in files.items():
                     fat.command('import', path, source)
 
@@ -277,6 +286,12 @@ def main():
                     'missing module exit differs')
             require(resources(guest) == baseline, 'resource drift after missing module')
             report['checks'].append('reboot_exec_disk_stdlib_and_real_module_operations')
+            if zlib:
+                data = command('exec-file /usr/bin/python3 -B /tests/zlib.py', b'kind=exited code=', 180)
+                require(b'PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc' in data
+                        and re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', data) == [b'0']
+                        and resources(guest) == baseline, 'installed zlib regression or resource drift')
+                report['checks'].append('reboot_exec_zlib_gzip_deflated_zip_and_import')
             data = command('maint-run /usr/bin/xypm remove ' + PACKAGE,
                            b'maintenance: completed', args.maintenance_timeout)
             require(b'committed transaction cleaned' in data and resources(guest) == baseline,
@@ -300,6 +315,18 @@ def main():
                 report['preserved_data'] = {path: sha_file(fat.export(path)) for path in
                                             ('/work/user.txt', '/work/py3a1/data/note.txt',
                                              '/work/py3a1/data/stored.zip')}
+                if zlib:
+                    payload = (b'XOS zlib static profile / deflate / CRC / ' + bytes(range(64))) * 300
+                    gzip_path, zip_path = '/work/py3a2/payload.gz', '/work/py3a2/payload.zip'
+                    compressed = fat.export(gzip_path).read_bytes()
+                    archived = fat.export(zip_path).read_bytes()
+                    require(gzip.decompress(compressed) == payload, 'user gzip output changed')
+                    with zipfile.ZipFile(BytesIO(archived)) as bundle:
+                        require(all(entry.compress_type == zipfile.ZIP_DEFLATED for entry in bundle.infolist())
+                                and bundle.read('payload.bin') == payload
+                                and bundle.read('py3a2_zipmod.py') == b"VALUE = 'zipimport works'\n",
+                                'user deflated ZIP output changed')
+                    report['preserved_data'].update({path: sha_file(fat.export(path)) for path in (gzip_path, zip_path)})
             if stock:
                 report['final_disk_sha256'] = sha_file(disk)
             report['checks'].append('native_p2_remove_preserves_user_and_python_outputs')

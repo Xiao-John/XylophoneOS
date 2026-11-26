@@ -38,8 +38,18 @@ python3 tests/cpython_glibc_guest.py --system-build build/system \
 输出 `py0a_report.json` 绑定源码、官方签名核验过的 glibc SDK、profile、
 编译工具和实际解释器 ELF。现有普通系统镜像用 `scripts/build.py` 构建。
 
-本候选覆盖静态解释器核心。动态扩展、Pillow、zlib、SQLite、额外压缩库、
-全量标准库和交互 REPL 需要各自的资格。glibc 候选命令拒绝旧的外部扩展参数。
+静态解释器可显式接入同 SDK 构建的 zlib。从 `zlib_lock.json` 所固定的
+1.3.2 归档重建后，将该构建的 `prefix` 作为上面 CPython 命令的
+`--zlib-prefix`。构建器核对目标工具、SDK、profile、两个头文件和静态归档。
+
+```sh
+python3 scripts/build_cpython_zlib.py --archive path/to/zlib-1.3.2.tar.xz \
+  --sdk path/to/glibc-build --glibc-profile build/cpython-glibc-profile.json \
+  --output-dir build/cpython-zlib
+# 给 build_cpython.py 加 --zlib-prefix build/cpython-zlib/prefix
+```
+
+SSL、Pillow、SQLite、其余压缩库、全量标准库、交互 REPL 和动态扩展继续各验。
 
 ## glibc XPK 候选
 
@@ -73,8 +83,10 @@ exec-file /usr/bin/python3 /work/example.py
 maint-run /usr/bin/xypm remove xos.cpython
 ```
 
-候选以静态解释器和已验收标准库操作为范围。没有动态扩展和附加压缩依赖。
-启动时 CPython 可能报告缺少平台相关动态模块目录。
+有 zlib 的解释器打包为同版本 revision 1，原静态核心为 revision 0。包回执绑定
+实际编入的 zlib、锁定源和许可证。标准库 ZIP 保持原样。显式 zlib 候选可读写
+gzip、生成和导入压缩 ZIP，由 stock 客体覆验。启动时 CPython 可能报告缺少
+平台相关动态模块目录。
 
 ## 安装与运行契约
 

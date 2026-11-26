@@ -4,6 +4,16 @@
 一起构成 **LGPLv3 §4d0/§6 与 GPLv3 §5(b)** 的工程规格与自查清单。**它不是法律意见**；
 最终以适用许可原文与法律判断为准。
 
+## Qt Quick 6.8.3 glibc 套件
+
+Linux arm64 宿主的 Qt Quick 套件采用独立的[材料清单与重链接配方](quick/release_materials.md)。
+`quick/release_materials.py` 从可验证的套件及外部示例输出生成离线材料，`quick/relink.py`
+校验逐文件清单并执行示例的静态重链接。材料包含 QtBase、Qt Declarative 与 Qt Shader
+Tools 对应源、XOS 修改与构建配方、应用对象及目标归档的逐成员摘要。
+
+目标归档的逐成员许可、宿主工具的对应源与许可范围、独立 C/C++ SDK 的对应源和实际发布渠道
+仍须按发行清单审核。本文件下方记录的是 0.0.2-1103 的 Qt Widgets 发行范围。
+
 ## 0. 当前状态（先读）
 
 - **XylophoneOS 0.0.2-1103 按用户指令（2026-11-04）随包分发 Qt 静态交付物**：

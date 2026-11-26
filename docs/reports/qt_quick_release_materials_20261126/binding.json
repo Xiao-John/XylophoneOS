@@ -1,0 +1,52 @@
+{
+  "status": "materials_relinked_and_guest_verified",
+  "source_commit": "53ac8baf0502addd8601268a645e17bb81536bdd",
+  "source_tree": "d880f12ae773201684cbd2f20089fbc3e928202f",
+  "baseline_mainline": "3dbc304e32024c535b53549ade0aaab3c13841cc",
+  "materials_archive": {
+    "file": "xos_qt_quick_release_materials_final.tar.zst",
+    "bytes": 125086915,
+    "sha256": "0c585b26e8fc93d863083a447f49a6a4617fa6a289ca3e55bb35eea98c0db654"
+  },
+  "materials_files": 361,
+  "materials_manifest_sha256": "28566ca68b6d902dafa62bb90f60de1fa30631dd189977c3777ad361446ae676",
+  "source_provenance": {
+    "qtbase": {
+      "mode": "locked_upstream_archive",
+      "sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80"
+    },
+    "qtdeclarative": {
+      "locked_upstream_sha256": "1f03a2b8f5588b4face7da87926e9b2c1372b3a32157c52df07a75067a9db1af",
+      "mode": "observed_patched_source_tree",
+      "sha256": "d7c47626d5c2bf82f672472c594ccd39757a54e398091e8bbe41a5a98b6a5e0a",
+      "snapshot_members": 56738
+    },
+    "qtshadertools": {
+      "mode": "locked_upstream_archive",
+      "sha256": "f6ec88bf42deba84d8f6b5d0914636ceed4749ccb51d1945b2f79b322b7ecf47"
+    }
+  },
+  "build_record_sha256": "d99b893217079ddee3fa15d1d1aacb0a4fbe82b2a9a64542060d5e282330809a",
+  "observed_target_declarative_archives": {
+    "libQt6Qml.a": "0f5bdbf3e0ccc9e7d2d1906df5be5ab51851ae67ee68321e9752ba4014146a5d",
+    "libQt6Quick.a": "5fb56984fab0bf937ae48de7bb900fb39f7f56222c216154a5f28b1c6dae2ec8"
+  },
+  "reference_elf_sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+  "modified_elf_sha256": "6a1d6bf15a1814e5f20bc4876803e695a5bfb0d1bfba4548a0f7d1de692b7a3e",
+  "system_build_id": "f129209799d58b4b",
+  "system_manifest_sha256": "014f23573d8df8bfb959353f1865a2282dabf6735f5359f60e0984801c50be3e",
+  "image_sha256": "88d10f135f094b0ee9effd140d42bbfe74623c8b3d40f3f86903ddeb572ea0d1",
+  "release_open": [
+    "target_member_license_expressions",
+    "host_tool_licensing_and_source_closure",
+    "runtime_sdk_source_distribution",
+    "release_channel_inventory_and_installation_information"
+  ],
+  "guest": {
+    "launcher": "xsh",
+    "status": "passed_subset",
+    "report_sha256": "f66846aa1d08c70fc289495cb19a5eed4fbfa59f64fa10bd9a9e7511487fb8e6",
+    "raw_serial_sha256": "8eae55c816892ade60f006b14d4293314f0d3ead5815f8cbdbca9536b0d612fc",
+    "raw_scanout_sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1"
+  }
+}

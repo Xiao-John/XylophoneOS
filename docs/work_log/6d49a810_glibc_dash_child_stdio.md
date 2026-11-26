@@ -41,3 +41,20 @@ glibc dash 预览通过当前 `pipe2(O_CLOEXEC)` 创建管线。每段用于标�
 | 资源回收 | 40 个用例全部恢复至 `[129698, 3, 1]`，FAT 保留名集合为 `{}` |
 | 文件校验 | 混合管线及追加输出逐字节相符，现有 newlib dash 实际接收文件流，未声明接收资格的 ELF 返回 126 |
 | 宿主回归 | 49 项文件运行时检查、15 组真实 files/FatFs 组合检查及管线描述符恢复通过 |
+
+## 内建 here-document 与路径变更合流后
+
+从 `90d5adc81559228911b4ff264411526f42ef838c` 重建普通系统及签名 glibc C SDK。
+组合同时包含后续的内建 `printf` 管线案，两个入口各通过 21 项。允许的内建和原生
+外部命令都验证前置赋值前的 here-document 展开，外部路径另核对真实 stdout/stderr
+文件。每项恢复 `129698 / 3 / 1`，保留 FAT 名集合不变。普通路径变更 2 次、
+管道 2 次、启动等待与回收 6 次亦通过。
+
+| 工件 | SHA-256 |
+| --- | --- |
+| 系统 `80b164b2277c9b9b` 清单 | `b0d84d6ad40dcb9afe4ed8443faabee94f68c2e1533d402f370667a85e026a5e` |
+| 系统 ISO | `0a1aae0a324ca2858fbb8014e063c62b17728de2f292b8b81a1f8f234d8ab9bb` |
+| glibc C SDK 清单 | `61e9f2864a50d61c2fbc43c964909f4e07f526aa6184f8d9a7eda9e5c471f54a` |
+| 显式 glibc profile | `c68e5e4cf59acfacfd75302033d2584cd02b8228be59c79d813fbfa2d6f510fc` |
+| dash 双入口报告 | `dd98a596707fcaf305faf0defecbfb4fb1bfa19ff70bdc262998cf4266524e57` |
+| 路径、管道、进程报告 | `0216bb489fbccfa4d043a35a2af7b3bde13df8bf92b4cd8a4fa1d508fb57a681`、`53ed724f611c959e37c58405e85e8aaf42710e96cbda6a148b4326cc305af4be`、`7c1a2d2fc4284c49524b11115e3708e0ff849a9d089a53270575d9efb5f9b257` |

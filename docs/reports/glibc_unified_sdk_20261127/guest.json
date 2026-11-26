@@ -1,0 +1,85 @@
+{
+  "baseline": [
+    129806,
+    2,
+    0
+  ],
+  "dash": {
+    "elf_sha256": "9a57e9eff7ee80311c4f5104f4740555a2a731c7a31134ce3b6cc2f48fb6c714",
+    "profile": {
+      "guest_qualification": "not_run",
+      "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+      "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+      "runtime_family": "glibc",
+      "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+      "status": "candidate_binding_verified"
+    },
+    "receipt_sha256": "0cbd154890eda6197ccd0ba31e4d49138fe90ff145f08cbc63b28bbbcb795d42",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f"
+  },
+  "disk_sha256": "116ea02231ddc9e45500ed95a1fdfcf2d144d9af38efcac782eea247510ff47f",
+  "fat_readback": {
+    "dash_glibc": "9a57e9eff7ee80311c4f5104f4740555a2a731c7a31134ce3b6cc2f48fb6c714",
+    "g3_cwd": "f3d11dd029b149f660a97509166c6f78539e6598d4db4b22e725a0a4a5fe3fe7",
+    "g3_cwd_setup": "5d6d559836fe6b32ba7d7345e098ffd94fbefd176ee651ceff03494e9c924d8d",
+    "unified_cxx": "dbd31f2ccf309683fbc86dd3d4af0961293dfe1ee6e98cbfeaa554548fda7b4e",
+    "xypm": "fa6200f98a80f3f939ee0fdc8cb159f54e7e6be85359786aa9bd0fbed529f25d"
+  },
+  "fat_setup": {
+    "elf_sha256": "5d6d559836fe6b32ba7d7345e098ffd94fbefd176ee651ceff03494e9c924d8d",
+    "libc": "system_newlib"
+  },
+  "iso_sha256": "406ccfeb55ea85d3decd47eb75268f6d98732e4d2e6a8bc16fb1f65b001614e1",
+  "programs": {
+    "cwd": {
+      "elf_sha256": "f3d11dd029b149f660a97509166c6f78539e6598d4db4b22e725a0a4a5fe3fe7",
+      "receipt_sha256": "a35e9f7980c895ccb5291eb6ab3005aa3fb7c4aeaf7c27f38db862d4186cec54",
+      "sources_sha256": {
+        "tests/fixtures/glibc_g3/cwd_probe.c": "469d595e1293f1b0c14d12163edbc13d8a4d156c9d2b7af6f8605c5bc541f7c1"
+      },
+      "xpk_sha256": "c9035acbef5cea3c7fecf3c3726852874de25eab5b222c688576b120e20bee26"
+    },
+    "cxx": {
+      "elf_sha256": "dbd31f2ccf309683fbc86dd3d4af0961293dfe1ee6e98cbfeaa554548fda7b4e",
+      "receipt_sha256": "571eabbfabc015824fd82c56667592a4f621327ad48bc1536259fe02a18ca253",
+      "sources_sha256": {
+        "src/ports/webkit/threading/xos_stack_bounds.cpp": "af13b958043e3b1fccec59a1b9e4796c6127d3d806d1f64dd1c1fe19eb122b03",
+        "src/ports/webkit/threading/xos_stack_bounds.hpp": "265d42ea59bed1c1a947d40e2568fee3fd1b544ea82b2ad1bf0690115f7581b6",
+        "tests/fixtures/glibc_g3/unified_cpp_probe.cpp": "ec381f375325a5f1d6faba2c328ae7caa470804e55cda813c446069e22559b18"
+      },
+      "xpk_sha256": "b48f8e5c3e1f9bc113cf690d2974329d543b010f5d4221e712898e5500cd43b8"
+    },
+    "xypm": {
+      "elf_sha256": "fa6200f98a80f3f939ee0fdc8cb159f54e7e6be85359786aa9bd0fbed529f25d",
+      "xpk_sha256": "af6b0bd68b971561cafe5fc2aba4e1caac516dcf16c8577a7352126ebd14f6ac"
+    }
+  },
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "runs": [
+    "fat_setup",
+    "stock_xypm",
+    "xsh_cxx",
+    "xsh_cwd",
+    "dash_combination",
+    "xsh_cxx",
+    "xsh_cwd",
+    "dash_combination",
+    "xsh_cxx",
+    "xsh_cwd",
+    "dash_combination"
+  ],
+  "script_sha256": "9b81250ad6a43f7ceceabcbc74289b76010a2e5084222ec2c25e70278ffcbbc5",
+  "sdk": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "runtime_family": "glibc",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+    "status": "candidate_binding_verified"
+  },
+  "status": "passed",
+  "system_build_id": "87aaa022d9b21c60",
+  "system_manifest_sha256": "aac63f847bde7af435cca6c4dc15e91322f46ff1ef2f86395aa34add102d7387",
+  "test_sha256": "12fe10c53c03c5fb4f3e58aeb330d973adf6b47ae4088b9a284a6198c9a59e72"
+}

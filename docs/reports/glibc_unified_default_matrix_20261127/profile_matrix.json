@@ -1,0 +1,123 @@
+{
+  "cases": {
+    "browser": {
+      "accepted_readback": {
+        "file_sha256": {
+          "/out/user.txt": "53a3b2598ae54bdffe16d1c6acb4eb559ee56bbdbd4a7c1461a98172e7fdbcb4",
+          "/out/xypm": "2fa138c83839f97fa5857868bfdec1a9140f1de69f44c4fcbbd0d575a090623e",
+          "/var/lib/xypm/db.json": "ec270f54d5a43954f67192c40a59dd87bbc6fd2714cd7470651309a0bd1c46f2",
+          "/var/lib/xypm/index.tsv": "4202e6f461b56d0fa274445daba1fdfeb4e9c40407c57b1cad08e65be47ec331"
+        },
+        "packages": [
+          {
+            "id": "selection.browser_profile_control",
+            "revision": 0,
+            "sha256": "e6f9d4746097edf4ad73871b205e3e82569a7e65331c23d6939020b71fbd563c",
+            "upstream_version": "0.1.0"
+          }
+        ],
+        "verified_files": 11
+      },
+      "boot_only_and_refusal_disk_sha256": "2b0b542ced40883a7c65786fc99896b99f83b3cabe33dd00b5151461e0753eef",
+      "build_receipt_sha256": "40f4ab89a196ee74a4cb3ece74e4fd4daa78911114e0fdacad9009afac017184",
+      "cold_boot_control_and_refusal_disk_sha256": "a071f526ff82e5a949a1d8288b9790ab4fac0eadfd6f3f274d988a030ef34487",
+      "id": "selection.browser_profile_control",
+      "profile": {
+        "kit_tree_sha256": "5d66f2f762984081503823996110fd7194bd0c2e66fe5ef892ea47de53124b00",
+        "profile_file_sha256": "3aa343495c26d715460fed84480014ab505c1a6f92976a3c6eb617341ef6562c",
+        "profile_id": "xos-x86_64-glibc-clarke-llint",
+        "profile_sha256": "3aa343495c26d715460fed84480014ab505c1a6f92976a3c6eb617341ef6562c",
+        "sdk_manifest_sha256": "a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e",
+        "sdk_tree_sha256": "2070dbad9ddd860a11dd1511f1268c1f62683df01d1a967bfa741e53df0799d6"
+      },
+      "rejected_profiles": {
+        "stock": "xos-x86_64-glibc-stock-fork-v1",
+        "unified": "xos-x86_64-glibc-unified-cxx-v1"
+      },
+      "source_disk_sha256": "4fcf5f36b55819e0ccdd33724c3e3b41c64f1e8636b3aac7158fb0a4fcbd1691",
+      "xpk_sha256": "e6f9d4746097edf4ad73871b205e3e82569a7e65331c23d6939020b71fbd563c",
+      "xypm_elf_sha256": "2fa138c83839f97fa5857868bfdec1a9140f1de69f44c4fcbbd0d575a090623e"
+    },
+    "stock": {
+      "accepted_readback": {
+        "file_sha256": {
+          "/out/user.txt": "0f1b65671e092cfeb1acfa3511db2f5e650035551e8c38fc9ba078ad6d41c8ca",
+          "/out/xypm": "74ce94c90b42ee4c565655f5f7e18c3c3d84b003a612b2db38c2c425ea3a0fdf",
+          "/var/lib/xypm/db.json": "2ffeda38b1961886113b3378d17c7973ed003bb384fa4a44a2d88dd59bf470b0",
+          "/var/lib/xypm/index.tsv": "ddb51d1e5989158dc8eed5a79aac8838fdbcb90485fa4e299abba7c6d7406394"
+        },
+        "packages": [
+          {
+            "id": "xos.daily_utilities",
+            "revision": 0,
+            "sha256": "80176779cb58f6e598389aee4acfe65e9870fd37ea66938c9873bdd2f2fec013",
+            "upstream_version": "0.1.0"
+          }
+        ],
+        "verified_files": 26
+      },
+      "boot_only_and_refusal_disk_sha256": "b68fb7b1de4f0fc82951c30dfc44171ac3899ee3622e9f77b8313da94b6cff8b",
+      "build_receipt_sha256": "4c0e5db0a3416a3ec278b2ee290ea5db20361bf9bf2f28b92fa3b37a88aa81da",
+      "cold_boot_control_and_refusal_disk_sha256": "38aa212dc99e59c07d257f5014a15376d1128c65a23ba402ce207d8d9e654022",
+      "id": "xos.daily_utilities",
+      "profile": {
+        "kit_tree_sha256": "8b67e1b967013a4b31f2289461af9eebf39eba27f2cf36c66b4de650291266a8",
+        "profile_file_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+        "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+        "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+        "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+        "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262"
+      },
+      "rejected_profiles": {
+        "browser": "xos-x86_64-glibc-clarke-llint",
+        "unified": "xos-x86_64-glibc-unified-cxx-v1"
+      },
+      "source_disk_sha256": "2df0a7edb8e84ddfce07f9f365fd32395e0c02de5905a68d980404b3a7b1dcc4",
+      "xpk_sha256": "80176779cb58f6e598389aee4acfe65e9870fd37ea66938c9873bdd2f2fec013",
+      "xypm_elf_sha256": "74ce94c90b42ee4c565655f5f7e18c3c3d84b003a612b2db38c2c425ea3a0fdf"
+    },
+    "unified": {
+      "accepted_readback": {
+        "file_sha256": {
+          "/out/user.txt": "0605a9d5d67bcb7e3af66733dfacb6cf8b6056af57efd5f2b803129a2053469d",
+          "/out/xypm": "5cac616937f6b4c28460c48942fda3885a16b2318388e91b2a892b7de24c5e0a",
+          "/var/lib/xypm/db.json": "fa4469867c8c7a29cd3e1fa5c5212be7c0fac2096f1aeeba569c1d2ffe3ae890",
+          "/var/lib/xypm/index.tsv": "8c99aa2950d17a9654b96b5fa35021336735db6e99d74b211e7880728269c0c0"
+        },
+        "packages": [
+          {
+            "id": "xos.daily_utilities",
+            "revision": 0,
+            "sha256": "859bd9e9dcdc76beb00b17387ab773a79ef9fef0fecd8ea06ea26cc486ab80c6",
+            "upstream_version": "0.1.0"
+          }
+        ],
+        "verified_files": 26
+      },
+      "boot_only_and_refusal_disk_sha256": "4f590e397b279970beac3f29a79e28fe241981eac47de4129660e10dbe07505d",
+      "build_receipt_sha256": "e070cd64e0a9c21e2783bcd21c4ecf675e986b6956292adbad71d6448abd827a",
+      "cold_boot_control_and_refusal_disk_sha256": "fba84a8047be2bf7e91d94cbbc2750f448905174ac921091d06d100ace01b91b",
+      "id": "xos.daily_utilities",
+      "profile": {
+        "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+        "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+        "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+        "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+        "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+        "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+      },
+      "rejected_profiles": {
+        "browser": "xos-x86_64-glibc-clarke-llint",
+        "stock": "xos-x86_64-glibc-stock-fork-v1"
+      },
+      "source_disk_sha256": "279fc16921d71ced273886dd8b869822cb33b244b5e52f12ec490e30b814c51f",
+      "xpk_sha256": "859bd9e9dcdc76beb00b17387ab773a79ef9fef0fecd8ea06ea26cc486ab80c6",
+      "xypm_elf_sha256": "5cac616937f6b4c28460c48942fda3885a16b2318388e91b2a892b7de24c5e0a"
+    }
+  },
+  "image_sha256": "091bc0424e67d0fab23d0ca5349a524ffc24b60aaa005aa88377f0c3783d9887",
+  "status": "passed",
+  "system_build_id": "b210965441f899cc",
+  "system_manifest_sha256": "98051fbb6f048739f26728bc5284f08db87b1fbefd5c6dc4b0738e85dcd18de1",
+  "test_sha256": "db3285ef1399ff295f1b983c1d228625679ee52065c68ab0ac3410b15b719f4b"
+}

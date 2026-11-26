@@ -1,0 +1,12 @@
+{
+  "initial_guest_harness": "Application receipt check expected sdk_manifest_sha256 directly in the compact verify_profile return value. The harness was corrected to bind the SDK manifest file digest.",
+  "not_run": [
+    "full_ClarkE_product",
+    "bulk_stock_package_migration",
+    "shared_glibc_CXX",
+    "release_archive_signature"
+  ],
+  "restricted_launch": "The initial guest reached C/C++ direct execution. Explicit exec-file on dash correctly denied creation of a child process. The ordinary Xsh command route supplied its established create authority for the final run.",
+  "sdk_profile_45_host_checks": "passed",
+  "source_preparation": "The staged terminal link group and configure link probe matched the executed recipe byte-for-byte."
+}

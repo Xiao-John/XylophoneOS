@@ -1,0 +1,205 @@
+{
+  "builds": [
+    {
+      "elf_sha256": "d99e2d0ac820ae7a0dea02cf93375c5f6fd7ce71c3d0dbf121006d31610f020c",
+      "files": 30,
+      "revision": 0,
+      "sha256": "0b194e746f73132fb9cac3883d9321a5d142621f8eb99ef1a7420d5815ecb347",
+      "target_profile": "xos-x86_64-glibc-stock-fork-v1",
+      "upstream_version": "0.1.0"
+    },
+    {
+      "elf_sha256": "e11c05601ee281b88ee2785e65fda6b478d8db91ba4b081cae7db83378ad45cc",
+      "files": 32,
+      "revision": 0,
+      "sha256": "abbeb22ca4f5490747f06f92378bff5f8159f657560e6b494709f325ba46678a",
+      "target_profile": "xos-x86_64-glibc-stock-fork-v1",
+      "upstream_version": "0.4.0"
+    },
+    {
+      "elf_sha256": "ef95dcb46d7be9a62ee37ed42d133f8995a7fadad795c506cc61097c6596baf1",
+      "files": 32,
+      "revision": 0,
+      "sha256": "090b265462adc6df402cbfef578fb603c59bccd378954463149dcb56263b7b5a",
+      "target_profile": "xos-x86_64-glibc-stock-fork-v1",
+      "upstream_version": "0.4.0"
+    }
+  ],
+  "created_by_old": {
+    "dependency_lock": [
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c2e1e71b70b4f2fb97e5ee5df45dc2af0e8d078d98d6443500e8f3e795713589",
+        "upstream_version": "1.0"
+      }
+    ],
+    "disk_sha256": "8568177a443d615657b41dadc58af9a54b286b19d6585480929d0fe533100e2b",
+    "file_sha256": {
+      "/out/user.txt": "d23bb6f19522072d41b6ddd3bc099eafc0fba8f7eebd43076496ecfc66712bcb",
+      "/var/lib/xypm/db.json": "b0b6f8215a3a233499957f81696535b2e94f48554d0e40abd25fa2f0a65b418f",
+      "/var/lib/xypm/index.tsv": "1c2833d4f7912dc29f511c8f11f922cc6297ce1473a0a3263a811b4ed36745e6"
+    },
+    "package_rows": [
+      {
+        "id": "friends.dependent",
+        "revision": 2147483647,
+        "sha256": "0a1e936e2af9234fd12a1a8a953b964261d46b2807b570511020fdddbd09f90d",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c2e1e71b70b4f2fb97e5ee5df45dc2af0e8d078d98d6443500e8f3e795713589",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "xos.xypm",
+        "revision": 0,
+        "sha256": "0b194e746f73132fb9cac3883d9321a5d142621f8eb99ef1a7420d5815ecb347",
+        "upstream_version": "0.1.0"
+      }
+    ],
+    "verified_files": 36
+  },
+  "initial_disk_sha256": "ed84eef2baf85fcd08fea3a68e8110beef04908f9fef89bdc793d20256dc9ce6",
+  "interrupted": {
+    "checkpoint": 146,
+    "disk_sha256": "142fc84f69838de86a37d42bbff31b64bbcfca6f9339c3c8f9ca817714b95482"
+  },
+  "mode": "same_glibc_profile_upgrade",
+  "profile_sha256": {
+    "new": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "old": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25"
+  },
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "recovered": {
+    "dependency_lock": [
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c2e1e71b70b4f2fb97e5ee5df45dc2af0e8d078d98d6443500e8f3e795713589",
+        "upstream_version": "1.0"
+      }
+    ],
+    "disk_sha256": "0e32d084845ee1d991efcac285945d620eafdb04fa9707bb5edd85049775934e",
+    "file_sha256": {
+      "/out/user.txt": "d23bb6f19522072d41b6ddd3bc099eafc0fba8f7eebd43076496ecfc66712bcb",
+      "/var/lib/xypm/db.json": "b0b6f8215a3a233499957f81696535b2e94f48554d0e40abd25fa2f0a65b418f",
+      "/var/lib/xypm/index.tsv": "1c2833d4f7912dc29f511c8f11f922cc6297ce1473a0a3263a811b4ed36745e6"
+    },
+    "package_rows": [
+      {
+        "id": "friends.dependent",
+        "revision": 2147483647,
+        "sha256": "0a1e936e2af9234fd12a1a8a953b964261d46b2807b570511020fdddbd09f90d",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c2e1e71b70b4f2fb97e5ee5df45dc2af0e8d078d98d6443500e8f3e795713589",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "xos.xypm",
+        "revision": 0,
+        "sha256": "0b194e746f73132fb9cac3883d9321a5d142621f8eb99ef1a7420d5815ecb347",
+        "upstream_version": "0.1.0"
+      }
+    ],
+    "verified_files": 36
+  },
+  "repository": {
+    "index_sha256": "2d76527d6c7b7447c9871b65bf77a040f20e825be5c25b648beebf23f9828955",
+    "lock_sha256": "4a9100d5dac4f88d7aa33a98cadff81625f0b2a5022b330b08a51dfc84f3c3a9"
+  },
+  "retry_after_cold_boot": {
+    "dependency_lock": [
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c2e1e71b70b4f2fb97e5ee5df45dc2af0e8d078d98d6443500e8f3e795713589",
+        "upstream_version": "1.0"
+      }
+    ],
+    "disk_sha256": "1d65d55a2a98171afa60781b0e69fe29c5bf235e0089c61a2e06e762536d0c63",
+    "file_sha256": {
+      "/out/user.txt": "d23bb6f19522072d41b6ddd3bc099eafc0fba8f7eebd43076496ecfc66712bcb",
+      "/var/lib/xypm/db.json": "32866774ee512fc508aeb32116e8bd859e5f684d5717423af6010c13cdf568a6",
+      "/var/lib/xypm/index.tsv": "c249e89156cc61fb347df6d984f6c7ec9eab6b7c66ca59ad0d59d5e573e7584c"
+    },
+    "package_rows": [
+      {
+        "id": "friends.dependent",
+        "revision": 2147483647,
+        "sha256": "0a1e936e2af9234fd12a1a8a953b964261d46b2807b570511020fdddbd09f90d",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c2e1e71b70b4f2fb97e5ee5df45dc2af0e8d078d98d6443500e8f3e795713589",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "xos.xypm",
+        "revision": 0,
+        "sha256": "abbeb22ca4f5490747f06f92378bff5f8159f657560e6b494709f325ba46678a",
+        "upstream_version": "0.4.0"
+      }
+    ],
+    "verified_files": 38
+  },
+  "status": "passed",
+  "system": [
+    {
+      "build_id": "b74c9dec2c92c9bd",
+      "image_sha256": "453288f1744c75ae8d6e0da1bcfcb05ef1266a5581949b9f7063109876c177f6",
+      "manifest_sha256": "f11a15e9d0d7e15d759214ee9915d0424d0ffea7cae7872663f08ff9302f89e9"
+    },
+    {
+      "build_id": "b74c9dec2c92c9bd",
+      "image_sha256": "453288f1744c75ae8d6e0da1bcfcb05ef1266a5581949b9f7063109876c177f6",
+      "manifest_sha256": "f11a15e9d0d7e15d759214ee9915d0424d0ffea7cae7872663f08ff9302f89e9"
+    }
+  ],
+  "test_sha256": "6d0238867824c61775a7957c732033e200800f53fd515711c833152ed4bc082b",
+  "upgraded_after_cold_boot": {
+    "dependency_lock": [
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c2e1e71b70b4f2fb97e5ee5df45dc2af0e8d078d98d6443500e8f3e795713589",
+        "upstream_version": "1.0"
+      }
+    ],
+    "disk_sha256": "57d338ef7b77d5f680f6ade0760e0ede7451c85b33c110b79eacd1161ff9af1a",
+    "file_sha256": {
+      "/out/user.txt": "d23bb6f19522072d41b6ddd3bc099eafc0fba8f7eebd43076496ecfc66712bcb",
+      "/var/lib/xypm/db.json": "32866774ee512fc508aeb32116e8bd859e5f684d5717423af6010c13cdf568a6",
+      "/var/lib/xypm/index.tsv": "c249e89156cc61fb347df6d984f6c7ec9eab6b7c66ca59ad0d59d5e573e7584c"
+    },
+    "package_rows": [
+      {
+        "id": "friends.dependent",
+        "revision": 2147483647,
+        "sha256": "0a1e936e2af9234fd12a1a8a953b964261d46b2807b570511020fdddbd09f90d",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c2e1e71b70b4f2fb97e5ee5df45dc2af0e8d078d98d6443500e8f3e795713589",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "xos.xypm",
+        "revision": 0,
+        "sha256": "abbeb22ca4f5490747f06f92378bff5f8159f657560e6b494709f325ba46678a",
+        "upstream_version": "0.4.0"
+      }
+    ],
+    "verified_files": 38
+  }
+}

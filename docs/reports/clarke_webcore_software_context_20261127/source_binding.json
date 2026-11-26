@@ -1,0 +1,53 @@
+{
+  "clean_apply": {
+    "fuzz": 0,
+    "strip": 1
+  },
+  "compiler_sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+  "source_commit": "1450482e439e2c51d0b89ff535a01b5d32f366d1",
+  "source_lock_sha256": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030",
+  "target_objects": {
+    "ColorSkia.cpp.o": "497d2b57f41225205164400d9bae2899d59d594ebeea9ad978a49e8f9115c1a6",
+    "GraphicsContext.cpp.o": "5569e0bac1e0e6ea4eea010dffc08ce879efee015b088c1341f8ef55707922da",
+    "GraphicsContextSkia.cpp.o": "15f65595051391b83170385c4c953985354b49d85a016df71d16746902e449d6",
+    "GraphicsContextState.cpp.o": "6a365e45a1e46c31b91ea1ae88a92998d8aecbb8551828b7dbe4246ca087adbb",
+    "ImageBufferSkiaSurfaceBackend.cpp.o": "699cb545aba54a2ca0dd6ba286bb1de21abaa5184dd692ea2a2d11ac35c4fad6",
+    "ImageBufferSkiaUnacceleratedBackend.cpp.o": "f2e85e33ffc89b17b8ec53d2e1fb00a53cde72540536c192dec3fdbfd16ca267",
+    "NativeImageSkia.cpp.o": "4c2dfbb4724bdd536f2a92538fa2294427871fed9f5d2085277bb2fb253d4c18",
+    "PatternSkia.cpp.o": "433ad4913fa07b7fdaa21b1a0c86e2f5b2831c54f8749c516cfa847f957d0102",
+    "SkiaRecordingResult.cpp.o": "9199dfd60ca8c9b5b705e35536e029bf1d1926b2ff0783928cfdd821084fccff",
+    "SkiaUtilities.cpp.o": "2d6f9541420f6fa0667ad1530089f9ff9414fff2c33fe4a757d597b29a32fc56"
+  },
+  "upstream_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+  "upstream_patched_files": {
+    "Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp": {
+      "compiled_sha256": "42b37631987e74d04a7407746e0ed29e4169a71cd40eb07a184bbcf186409850",
+      "original_sha256": "f603c3f08bae487cd6de14d557681637e16b8f8c3ca319d28bb9978eb12ea7ee"
+    },
+    "Source/WebCore/platform/graphics/skia/GraphicsContextSkia.h": {
+      "compiled_sha256": "b0614600b1a5beab30012a6d6832f05d7b427a5a08174864d617af8002edd1dc",
+      "original_sha256": "3374b48f4abc5dba02d8af3fbe7006f4ec510d4abe88a7bbf44cf2244fb0f9e5"
+    },
+    "Source/WebCore/platform/graphics/skia/NativeImageSkia.cpp": {
+      "compiled_sha256": "ea7c097c88e11a2b440271d251942732905546793739c0cf349ebcf449485173",
+      "original_sha256": "7dc07916e6f36b5624fea32866423a19ec14a41401eaa7c2f83a95c2303011db"
+    },
+    "Source/WebCore/platform/graphics/skia/PatternSkia.cpp": {
+      "compiled_sha256": "6661133df6af43065db43eb7c42150b6f3a416260cc176ad075c307e88dacb73",
+      "original_sha256": "c2eef02e4832b23b7afcf02b61ef19ee47b3b433a0809c56950b10c1e4565562"
+    },
+    "Source/WebCore/platform/graphics/skia/SkiaRecordingResult.cpp": {
+      "compiled_sha256": "f3364209cac60839e493679c978856663701befa24cd0eb95b0b1b18170f3a0c",
+      "original_sha256": "544ee5214636239f7db45d92777a820a837205c77ab6eba68bee7768be118bb3"
+    },
+    "Source/WebCore/platform/graphics/skia/SkiaRecordingResult.h": {
+      "compiled_sha256": "383acfa217833c1119f9553decb764b028839734f9e29c7249da937d52cc1b9d",
+      "original_sha256": "48fc4d994fddc8f67a4a498784ed1c3f5754dff3d1b0197243b91eaf473fbcfc"
+    },
+    "Source/WebCore/platform/graphics/skia/SkiaUtilities.cpp": {
+      "compiled_sha256": "5925bc9640aa60c46328c65c8931fe4e98ec9ef8638e5404f927115dddffd46f",
+      "original_sha256": "1ee7c483d4003b44c224e82e05c8589d81fa786f77371a48f136f80214d6f14e"
+    }
+  },
+  "version": "2.54.2"
+}

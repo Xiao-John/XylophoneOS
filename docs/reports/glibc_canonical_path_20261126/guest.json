@@ -1,0 +1,110 @@
+{
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "dash_entry": "passed",
+  "glibc_manifest_sha256": "e0016a3a369d4ec4ae04d4a8afa6524ae3a7bbcaa8c8b730383427ba4bc7d307",
+  "image_sha256": "5bdf996623c96d0ee286fbc3c32f77cc8520a4ae5612c0fa4be14f58994ee73d",
+  "original_report_sha256": "4304f72e220e3bcd1a9de6d3fddf85da0a6629b44359fd3f0f878b008a265b19",
+  "probe_elf_sha256": "d5e862bde8cdca225e08bd9dc954388f6fe66c87807a83d66a73a4ade279fc4f",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+  "runs": [
+    {
+      "case": "g3_cwd",
+      "elapsed_seconds": 1.3812184730049921,
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "output": "exec-file /bin/g3_cwd /\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000360000\r\n[loader] started pid=11 file=/bin/g3_cwd\n[process] event=wait_blocked parent=7 child=11\r\nGLIBC_CWD_ACCESS_PASS\n[task] event=reclaimed pid=11 pages=230\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "repetition": 1,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "g3_cwd_dash",
+      "elapsed_seconds": 1.6653626409970457,
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "output": "dash /g3_cwd/cwd_via_dash.sh\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x0000000000360000\r\n[loader] started pid=12 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=12\r\n[process] event=started pid=13 parent=12\r\n[process] pid=13 address_space=0x00000000005e5000\r\n[process] event=wait_blocked parent=12 child=13\r\nGLIBC_CWD_ACCESS_PASS\n[task] event=reclaimed pid=13 pages=230\r\nGLIBC_CWD_DASH_RC=0\n[task] event=reclaimed pid=12 pages=165\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+      "repetition": 1,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "g3_cwd",
+      "elapsed_seconds": 1.4147717830055626,
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "output": "exec-file /bin/g3_cwd /\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x0000000000360000\r\n[loader] started pid=14 file=/bin/g3_cwd\n[process] event=wait_blocked parent=7 child=14\r\nGLIBC_CWD_ACCESS_PASS\n[task] event=reclaimed pid=14 pages=230\r\n[wait] pid=14 kind=exited code=0\nxsh> ",
+      "repetition": 2,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "g3_cwd_dash",
+      "elapsed_seconds": 1.550162236992037,
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "output": "dash /g3_cwd/cwd_via_dash.sh\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x0000000000360000\r\n[loader] started pid=15 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=15\r\n[process] event=started pid=16 parent=15\r\n[process] pid=16 address_space=0x00000000005e5000\r\n[process] event=wait_blocked parent=15 child=16\r\nGLIBC_CWD_ACCESS_PASS\n[task] event=reclaimed pid=16 pages=230\r\nGLIBC_CWD_DASH_RC=0\n[task] event=reclaimed pid=15 pages=165\r\n[wait] pid=15 kind=exited code=0\nxsh> ",
+      "repetition": 2,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "g3_cwd",
+      "elapsed_seconds": 1.3553342450031778,
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "output": "exec-file /bin/g3_cwd /\n[process] event=started pid=17 parent=7\r\n[process] pid=17 address_space=0x0000000000360000\r\n[loader] started pid=17 file=/bin/g3_cwd\n[process] event=wait_blocked parent=7 child=17\r\nGLIBC_CWD_ACCESS_PASS\n[task] event=reclaimed pid=17 pages=230\r\n[wait] pid=17 kind=exited code=0\nxsh> ",
+      "repetition": 3,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "case": "g3_cwd_dash",
+      "elapsed_seconds": 1.597222045995295,
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "output": "dash /g3_cwd/cwd_via_dash.sh\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x0000000000360000\r\n[loader] started pid=18 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=18\r\n[process] event=started pid=19 parent=18\r\n[process] pid=19 address_space=0x00000000005e5000\r\n[process] event=wait_blocked parent=18 child=19\r\nGLIBC_CWD_ACCESS_PASS\n[task] event=reclaimed pid=19 pages=230\r\nGLIBC_CWD_DASH_RC=0\n[task] event=reclaimed pid=18 pages=165\r\n[wait] pid=18 kind=exited code=0\nxsh> ",
+      "repetition": 3,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    }
+  ],
+  "serial_sha256": "fa5487f8169f4017f785794e7af08f63e1f0845db1f45347423f7a063c01179e",
+  "signed_sdk_source_commit": "ab3628db5d489b3f6025de13b78d2496a0b256b3",
+  "signed_sdk_source_tree": "c40fd14799474030c919e866dcce5bfbf74928d7",
+  "signed_sdk_verification_sha256": "dc8e83ad12ec67945bdd3f35979b32756c1297de89f06a09c2232f1458de1cd6",
+  "status": "passed_subset",
+  "suite": "cwd",
+  "system_build_id": "17cebdf4873d898e",
+  "system_manifest_sha256": "0f1e35f6632f21e14013f82a19d3b33d19a6fffb16d84826ac2022a95fb0a5bd",
+  "system_source_commit": "ba82cf88e672a0ec83f24fcdf0fc29cf8f7915c0",
+  "system_source_tree": "58648459f004ab82b3aeb862671ae95b4498ee32"
+}

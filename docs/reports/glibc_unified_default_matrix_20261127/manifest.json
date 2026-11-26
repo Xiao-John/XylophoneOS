@@ -1,0 +1,30 @@
+{
+  "files": {
+    "app_matrix.json": "37dcf171da3938c78cd2741e7e640b6e4ccd1ff3723b9d6c00cec789bb4e1673",
+    "binding.json": "96114f5df0d1ff4e966c2d1f5605036abf16a3250a32bd1c9ff5f55e2710e273",
+    "browser_control.serial.log.gz": "f687abf40372870beddeae6992992128dea5bf6ca59ac131f28acdf6ab67cc8a",
+    "browser_control_cold.serial.log.gz": "2d0b47a8fa5e19c31907c97825541f72bdf4a27a5d370ec393e8c96df3331927",
+    "browser_rejected.serial.log.gz": "59d22a7021ed46de617c95247586e163d9f253d2f5623a3e8720c14a5be0c566",
+    "browser_rejected_cold.serial.log.gz": "1893893fbd07b5d86ee7b5b438bc46e7e3b5b81d3d6e2d0a3f191993478ae5af",
+    "frozen_newlib.json": "0737e79a8bd8f41fa916b875f4a0474d747325e34a665f4690aefdc0267d29e0",
+    "frozen_newlib.serial.log.gz": "3cbcc2f172b7d04b0206126933d3b87f3ab18d968fe9589807e51a76a4330721",
+    "initial_unmatched_boot_count.serial.log.gz": "1ade3add00fc12aedcd2e3663cdead82176fb097025c02fd50d5b21316a39b02",
+    "installer.json": "7e01de066635d3c2221a3980f018b8aaa6cece81ba6a5b91489ebf4a86306a42",
+    "matrix_cold_1.serial.log.gz": "ac5dfc6b2b217f66289eeefdcf5abe53638d5294fe213aa467be035c681b1b02",
+    "matrix_cold_2.serial.log.gz": "e7a8dc2b0296801393c33923a4461023043e9a2a363eeae27d5ebb0bc9f64356",
+    "observations.json": "0961127fdaff9afe07d1a8b4e136a107422205c0e079c28dd1c5878ea624f8f0",
+    "profile_matrix.json": "7537444a2a59a42a5f3caf8f167a4cc177b794ac86b4dd526dfd2ee4338c838b",
+    "stock_control.serial.log.gz": "5d12ed6d7f4b7f2d355b8318d4ac15974f2c9f7e98d484a8863e37f314957574",
+    "stock_control_cold.serial.log.gz": "c4c65441b74610a1990c3b3e063939bf534a562d9873e42d57155e057fc996b6",
+    "stock_install.serial.log.gz": "369cc84f87b97724906a361c4870083354751e5a07feb0df2ea2cd435ce3d658",
+    "stock_lifecycle.json": "3db30d92fc91f4d746de893412132047a2d604a4329de4c0993420610ae886d7",
+    "stock_reboot_remove.serial.log.gz": "76316b6c0334912f000ed99744100421ac062edb5740bf87fad01fa6f044ce1b",
+    "stock_rejected.serial.log.gz": "1bc47a400ce6ce2ed81726a9d9b3bdb2bced40bcb5de5848e6ae032802e5d74a",
+    "stock_rejected_cold.serial.log.gz": "aa4a74650fe63a523be979b2a0c2a0d67f73357528ee1ad27111f28b5b5b030b",
+    "unified_control.serial.log.gz": "8f1406cef851f2d8faecae1cab93f1de6956189d5edc235278e68d8938ecc276",
+    "unified_control_cold.serial.log.gz": "fe626c7dc68eaeecb917fe2683c22d0746aabab287fca03e75ba4ec2eeb00096",
+    "unified_rejected.serial.log.gz": "7a9dab48d1f10bf1de35e6f6a5b212603878aa64da7d7e3445ff34132974eaeb",
+    "unified_rejected_cold.serial.log.gz": "cb0de31a031a5d09f81b4c877918686a107964052c9d729aba453c47d06a62c8"
+  },
+  "version": 1
+}

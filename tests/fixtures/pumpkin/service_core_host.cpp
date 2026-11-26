@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "pumpkin/service_core.hpp"
 #include "pumpkin/daemon_protocol.hpp"
+#include "pumpkin/resource_dispatch.hpp"
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -443,6 +444,102 @@ void test_wire_protocol() {
     assert(!valid_reply(request, reply));
 }
 
+struct resource_backend {
+    static constexpr u64 handle = 81;
+    static constexpr u64 second_handle = 82;
+    connection_id first, second;
+    resource_key opened, live;
+    owner_record label;
+    bool labelled = true;
+    u32 rights = resource_read | resource_write;
+    u32 reads = 0;
+    u32 writes = 0;
+    u64 last_description = 0;
+
+    resource_dispatch_io io() {
+        return {
+            this,
+            [](void* context, const connection_id& connection, u64 supplied, resolved_resource& result) {
+                auto& service = *static_cast<resource_backend*>(context);
+                if (!service.labelled || (connection != service.first && connection != service.second) ||
+                    (supplied != handle && supplied != second_handle)) {
+                    return false;
+                }
+                const u64 description = supplied == handle ? 101u : 102u;
+                result = {{connection, service.opened, service.rights}, service.label, description};
+                return true;
+            },
+            [](void* context, const resource_key& object, u64 description, u32 operation) {
+                auto& service = *static_cast<resource_backend*>(context);
+                assert(object == service.live);
+                service.last_description = description;
+                if (operation == resource_read) {
+                    ++service.reads;
+                } else {
+                    assert(operation == resource_write);
+                    ++service.writes;
+                }
+                return status::ok;
+            },
+        };
+    }
+};
+
+void test_resource_dispatch() {
+    fixture data;
+    const auto alice = data.issue("alice");
+    const auto bob = data.issue("bob");
+    const auto first = data.client();
+    const auto second = data.client();
+    session_id first_session, second_session;
+    assert(data.core.authenticate(first, 0, name("alice"), alice.key, first_session) == status::ok);
+    assert(data.core.authenticate(second, 0, name("bob"), bob.key, second_session) == status::ok);
+
+    const resource_key object{other_realm, 7, 1};
+    resource_backend service{first, second, object, object, {object, alice.id, resource_read}};
+    const auto io = service.io();
+    resource_request request{first_session, resource_backend::handle, resource_read};
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::ok);
+    assert(service.last_description == 101);
+    request.handle = resource_backend::second_handle;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::ok);
+    assert(service.last_description == 102);
+    assert(dispatch_resource(data.core, second, 0, request, io) == status::denied); // borrowed session
+    request.session = second_session;
+    assert(dispatch_resource(data.core, second, 0, request, io) == status::denied); // native right, other owner
+    request.session = first_session;
+    request.operation = resource_write;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::denied); // owner policy
+    service.label.permitted |= resource_write;
+    service.rights = resource_read;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::denied); // object rights
+    service.rights |= resource_write;
+    service.labelled = false;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::denied);
+    service.labelled = true;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::ok);
+
+    // Reused backend slot receives a distinct object key. The previously
+    // opened authority still points to the old object and can do no I/O.
+    service.live.generation++;
+    service.label.object = service.live;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::denied);
+    service.opened = service.live;
+    request.handle = 99;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::denied);
+    request.handle = resource_backend::handle;
+    assert(data.core.logout(first, 0, first_session) == status::ok);
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::denied);
+    assert(data.core.authenticate(first, 0, name("alice"), alice.key, first_session) == status::ok);
+    request.session = first_session;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::ok);
+    assert(data.core.revoke_account(data.registrar, 0, alice.id) == status::ok);
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::denied);
+    request.operation = resource_read | resource_write;
+    assert(dispatch_resource(data.core, first, 0, request, io) == status::invalid);
+    assert(service.reads == 2 && service.writes == 2);
+}
+
 }
 
 int main() {
@@ -464,4 +561,6 @@ int main() {
     std::puts("PASS bounded resources and failed enrollment");
     test_wire_protocol();
     std::puts("PASS daemon protocol request, replay, deadline and reply validation");
+    test_resource_dispatch();
+    std::puts("PASS resource execution uses server-owned rights, labels and live sessions");
 }

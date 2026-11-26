@@ -60,6 +60,7 @@
 设备错误和仅更换数据卷的恢复验证。
 
 [files 私有存储区域](pumpkin_files_private_region.md) ·
+[开发配置宿主代际](pumpkin_host_generation_authority.md) ·
 [验证记录](../work_log/d1cc3ab7_pumpkin_snapshot_publication.md) ·
 [文件身份契约](file_identity.md) · [设备授权](device_authorization_v1.md) ·
 [端点生命周期](ipc_endpoint_lifecycle.md)

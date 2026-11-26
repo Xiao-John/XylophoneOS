@@ -31,9 +31,19 @@ WebCore 目标前，还需要在 `SourcesSkia.txt` 中处理 `SkiaPaintingEngine
 
 ## WebCore 软件构建目标
 
-为整个静态目标应用 `software_context.patch`、`software_buffers.patch` 和
-`software_graph.patch`。在通常的 XOS JSCOnly 交叉配置上启用
-`XOS_WEBCORE_SOFTWARE=ON`。该选项启用静态 WebCore、软件 Skia 和 WebCore 的原生
+[软件源锁](source_lock.json) 引用 WebKit 基础源锁，并固定三个软件补丁的顺序和
+SHA-256。准备工具在新目录中验证并展开原档，按顺序零 fuzz 应用补丁，然后安放
+基础源锁中的 WTF 平台文件。使用 GNU patch，必要时以 `--patch` 指定其位置。
+在大小写敏感的构建卷运行下列命令。
+
+```sh
+python3 src/ports/webkit/page/prepare_source.py --archive "$WPE_ARCHIVE" --output "$PREPARED_OUT"
+WEBKIT_SOURCE="$PREPARED_OUT/source/wpewebkit-2.54.2"
+```
+
+`manifest.json` 绑定源档、各补丁、平台文件和应用日志，成功准备源码后才写入。
+在通常的 XOS JSCOnly 交叉配置上启用 `XOS_WEBCORE_SOFTWARE=ON`。
+该选项启用静态 WebCore、软件 Skia 和 WebCore 的原生
 请求值类型。软件缓冲区的创建和转移沿用上游对象，Canvas 请求加速缓冲区时沿用
 WebCore 的软件回退。整页构建的源表选入软件字体、滤镜、绘制和缓冲区对象。GL、
 Ganesh、纹理图集及协调合成器由其各自后端处理。

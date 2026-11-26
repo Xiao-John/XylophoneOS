@@ -1,0 +1,105 @@
+{
+  "archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+  "base_lock_sha256": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030",
+  "claimed_scope": "Software tree with locked base and software patches. Optional shared pages are qualified separately.",
+  "cmake_config_header_sha256": "a0c85b99f4902ffcf33f8c69857276c331d376be368e43715c57ae3a2fc22eee",
+  "cmake_configure_log_sha256": "e72d73fa2f2daca15aa5ba203f8f06f5b0bfa04cfa44ef60ebc2502cad085a02",
+  "compile_commands_sha256": "599e9eea1b822b2e3c673c28752a39f686214f6c70bc54dc268df9fe7ed7ecdb",
+  "generated_webcore_units": 2170,
+  "invalid_archive_rejected_before_extraction": true,
+  "invalid_patch_rejected_before_extraction": true,
+  "patch_log_sha256": "51906bae34f27706b3c427748f25c5d48292006365c8bfbb7c398d7bb352368b",
+  "patches": [
+    {
+      "path": "patches/0001_xos_platform_identity.patch",
+      "sha256": "c1ad5c8a85833fe1c59d94dac9290bad58e5ad3f4516d15c148650aa03a52bbf"
+    },
+    {
+      "path": "patches/0002_xos_pthread_types.patch",
+      "sha256": "1482e044f91027faeb09e61df8b808e7df8e970d1ef6b6a1d37b74e01dda21cf"
+    },
+    {
+      "path": "patches/0003_xos_stack_runtime.patch",
+      "sha256": "88bbd9b8f7523a968f3c9bec5714b150da4d8d832c6ddcba86eafdb0a4691220"
+    },
+    {
+      "path": "patches/0004_xos_jsc_mutator_owner.patch",
+      "sha256": "1b2d96184b932345016348f5e838a6f434f85b72ed00d7e31999ac9b47a7432d"
+    },
+    {
+      "path": "patches/0005_xos_wtf_pthread_lifecycle.patch",
+      "sha256": "b573cb0a85ee2e5ac35b8ece593a2d8404665a7e281a673985a526e2bbe76417"
+    },
+    {
+      "path": "patches/0006_xos_wtf_process_id_header.patch",
+      "sha256": "32e951a85a90953415c6f4ad15a4fc7abf6886c6afae7a89335921a2c1953c94"
+    },
+    {
+      "path": "patches/0007_xos_wtf_native_entropy.patch",
+      "sha256": "11582af4dba7c3304a6933f9bf3887e3f5cdba6bf3ad0ccd24a3b17c383ccf8e"
+    },
+    {
+      "path": "patches/0008_xos_wtf_page_size.patch",
+      "sha256": "e305ec2ff038b4022264307172e02be0c3c3575f4030cb3db67ea1dece8bcccb"
+    },
+    {
+      "path": "patches/0009_xos_wtf_memory_services.patch",
+      "sha256": "935b105ed11d3290027e3385618390600d39bd45fbca25d8b3cf95b4ec9c2090"
+    },
+    {
+      "path": "patches/0010_xos_wtf_config_platform.patch",
+      "sha256": "a0edf20bbc8d50ac78dea1e2908ce5180030eaaeb7bf62fc3d4b8e6bda73f693"
+    },
+    {
+      "path": "patches/0011_xos_wtf_os_allocator.patch",
+      "sha256": "0b5fcfb18d461b134d86178e257aaa7f98c4555f81f457b2b9b100eaa4795239"
+    },
+    {
+      "path": "patches/0012_xos_jsc_config_mapping.patch",
+      "sha256": "b26f09ab0e9f438f3894ed358e4cf28ba2015fd3db56f72d72bc8bfaa0f29006"
+    },
+    {
+      "path": "patches/0013_xos_llint_elf_labels.patch",
+      "sha256": "f6bea628a705797610e36e101489ec501afceae480bfdad7fb473ae1c87530a1"
+    },
+    {
+      "path": "patches/0014_xos_static_crt_link.patch",
+      "sha256": "e763171e0dc7001cd1a3cec30c6fc7e7d757805d5f0c99f788f03c2843ade3fc"
+    },
+    {
+      "path": "patches/0015_static_icu_dependency_order.patch",
+      "sha256": "600ba61a4c81ea2abfc3e123de0f54b6e17a68f8a2b6cfb966f31a7f7d198140"
+    },
+    {
+      "path": "patches/0016_xos_llint_opcode_mapping.patch",
+      "sha256": "519e47b538e7b09ed4efd03d57cf11c1a2ddae20dabfc2ee19091dbf84d1723c"
+    },
+    {
+      "path": "patches/0017_xos_jsc_shell_thread.patch",
+      "sha256": "cc60b626190103ed99e19883bc0208bb787ad93731b2f2344db0a392d9b78673"
+    },
+    {
+      "path": "page/software_context.patch",
+      "sha256": "56def73ed3a4ffcb2a4e6d6ddc54130582d3e4e33c5cb49b3ade83f93877f2f9"
+    },
+    {
+      "path": "page/software_buffers.patch",
+      "sha256": "46b6eb27de8e5f1f2f3c8a90030659e2d6820e67a3de8634c8ff09711a45f1b3"
+    },
+    {
+      "path": "page/software_graph.patch",
+      "sha256": "1b23f5f237f79d78f47deac90fd499801d31bde7bd4ed3194875deab6107fb88"
+    }
+  ],
+  "platform_sources": {
+    "memory/xos_memory_footprint.cpp": "16bbd136f5a83f6386dd23dcb0f918aca3abd523142af2e53fc4ce9c5c83a748",
+    "threading/xos_stack_bounds.cpp": "af13b958043e3b1fccec59a1b9e4796c6127d3d806d1f64dd1c1fe19eb122b03",
+    "threading/xos_stack_bounds.hpp": "265d42ea59bed1c1a947d40e2568fee3fd1b544ea82b2ad1bf0690115f7581b6"
+  },
+  "prepared_manifest_sha256": "807c3c7121f1c7c97b6287726d3be6fcdcc6aa1734b93f0d61cc3813362e22a8",
+  "recipe_sha256": "da0a2469a1d34619f9bf2be1e4920d68d2011ddcc939f203e4b1176e856f05d4",
+  "software_lock_sha256": "8816f5639729f67e183803ccb505baa0c74a699726946cf1e5241b8d4fe9d667",
+  "source": "source/wpewebkit-2.54.2",
+  "source_replay_comparison_files": 51,
+  "status": "source_prepared_and_cmake_configured"
+}

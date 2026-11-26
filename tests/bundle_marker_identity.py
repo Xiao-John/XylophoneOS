@@ -10,8 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "tests")]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
+from process_smoke import command
 from task_smoke import pump, send_bytes
 from dash_b2_smoke import build_probe
+
+audio_task = b"name=audio_servi state="
 
 
 def build_iso(output, manifest, members):
@@ -44,6 +47,7 @@ def main():
             send_bytes(first, b"run\r")
             first.expect_supervisor(start=start, timeout=120)
             first.expect(b"[files] bundle packages installed", start=start, timeout=300)
+            command(first, "ps", audio_task, timeout=30)
             begin = len(first.output)
             send_bytes(first, b"cat /var/cache/xypm/du4_bundle.installed\r")
             first.expect(b"xsh> ", start=begin, timeout=30)
@@ -61,6 +65,7 @@ def main():
             # the marker must be rewritten for bundles B's payload.
             second.expect(b"[files] XOSBND1 bundle processed members=", start=start, timeout=300)
             second.expect(b"[files] bundle packages installed", start=start, timeout=300)
+            command(second, "ps", audio_task, timeout=30)
             begin = len(second.output)
             send_bytes(second, b"cat /var/cache/xypm/du4_bundle.installed\r")
             second.expect(b"xsh> ", start=begin, timeout=30)

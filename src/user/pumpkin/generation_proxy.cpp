@@ -56,7 +56,9 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
         response.value != generation_mark{}) return false;
     const auto mode = static_cast<scenario>(response.result);
 #if XOS_PUMPKIN_MOBIUS
-    const bool desktop = mode == scenario::user_desktop;
+    const bool desktop = desktop_scenario(mode);
+    u64 desktop_admin_sequence = 0;
+    bool desktop_revocation_requested = false;
 #else
     constexpr bool desktop = false;
 #endif
@@ -135,6 +137,18 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
                 destination_reserved = true;
                 continue;
             }
+#if XOS_PUMPKIN_MOBIUS
+            if (credentials.tag == user_login::desktop_admin_magic) {
+                user_login::desktop_admin_poll request{}, reply{};
+                __builtin_memcpy(&request, static_cast<const void*>(&credentials), sizeof(request));
+                if (mode != scenario::user_desktop_admin || !credential_slots_cleared || desktop_revocation_requested ||
+                    !user_login::header(request, mode, ++desktop_admin_sequence) || request.revoke ||
+                    !serial_exchange(uart, request, reply) ||
+                    sdk::channel_send_wait(supervisor.transmit, &reply, sizeof(reply), deadline()) != 0) return false;
+                desktop_revocation_requested = reply.revoke == 1;
+                continue;
+            }
+#endif
 #if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
             if (credentials.tag == named_operator::magic) {
                 named_operator::packet returned{}, ack{};
@@ -178,6 +192,12 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
         bool valid = finish.pass <= 1;
         bool completed = finish.pass == 1;
 #if XOS_PUMPKIN_USER_LOGIN
+#if XOS_PUMPKIN_MOBIUS
+        if (finish.pass == user_login::desktop_revoked && desktop_revocation_requested) {
+            valid = true;
+            completed = true;
+        }
+#endif
         if (finish.pass == user_login::denied && submitting && credential_exchanged) {
             valid = true;
             completed = true;

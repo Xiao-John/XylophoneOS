@@ -1,0 +1,234 @@
+{
+  "status": "failed",
+  "build_id": "c1c9938521a53190",
+  "frames": [
+    [
+      0.555,
+      "host",
+      "PKA1",
+      1,
+      14,
+      0
+    ],
+    [
+      1.066,
+      "guest",
+      "PKO1",
+      14,
+      0,
+      1
+    ],
+    [
+      1.066,
+      "host",
+      "PKO1",
+      14,
+      0,
+      1
+    ],
+    [
+      1.616,
+      "guest",
+      "PKA1",
+      2,
+      0,
+      1
+    ],
+    [
+      1.616,
+      "host",
+      "PKA1",
+      2,
+      0,
+      1
+    ],
+    [
+      2.176,
+      "guest",
+      "PKU1",
+      2,
+      0,
+      1
+    ],
+    [
+      2.176,
+      "host",
+      "PKU1",
+      2,
+      0,
+      1
+    ],
+    [
+      21.225,
+      "guest",
+      "PKA1",
+      4,
+      0,
+      2
+    ],
+    [
+      21.225,
+      "host",
+      "PKA1",
+      4,
+      0,
+      2
+    ]
+  ],
+  "video_runtime": [
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 0,
+      "display_service_pid": 0,
+      "display_focus_pid": 0,
+      "task_pids": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "current_pid": 0,
+      "rip": "000089aa",
+      "since_boot": 0.227,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 0,
+      "display_service_pid": 0,
+      "display_focus_pid": 0,
+      "since_boot": 2.242,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 4.258,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        0,
+        7,
+        8
+      ],
+      "supervisor_user_pages": 8078,
+      "current_pid": 7,
+      "rip": "000000000011e905",
+      "since_boot": 6.285,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 8.297,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 10.309,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 1,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        0,
+        7,
+        8
+      ],
+      "supervisor_user_pages": 8078,
+      "current_pid": 7,
+      "rip": "000000004000eeac",
+      "since_boot": 12.332,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 14.344,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 16.356,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        0,
+        7,
+        8
+      ],
+      "supervisor_user_pages": 8078,
+      "current_pid": 8,
+      "rip": "000000004000bdbc",
+      "since_boot": 18.384,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 20.395,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    }
+  ],
+  "error": "Private login did not complete; check the account before retrying enrollment",
+  "qemu_exits": [
+    0
+  ]
+}

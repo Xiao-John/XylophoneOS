@@ -56,6 +56,10 @@ XOS 平台标识补丁已用同一锁定归档实测。CMake 在 `CMAKE_SYSTEM_N
 原先的平台检查并进入 JSCOnly 依赖检测，当前明确停在目标 ICU
 的 `data`、`i18n` 和 `uc` 组件。复现见 [目标配置记录](../../src/ports/webkit/README.md)。
 
+ICU4C 79.1 的三个 XOS 静态组件已经构建并在客体测试，覆盖 NFC、大小写、词边界和
+排序。将已验证的 ICU 目标前缀纳入 JSCOnly 配置后，继续解释器的构建与客体验收。
+[ICU 构建器](../../src/ports/webkit/icu/README.md) · [ICU 客体记录](../work_log/4df1ab2c_clarke_icu4c_xos.md)
+
 现有 VirtIO-Net、N2/N3 已通过独立实测，ClarkE 的受控 HTTP 可作为网络对照。
 M3 仍须证明所选引擎的 NetworkProcess 走原生网络服务，并补真实 TLS、证书和失败路径。
 

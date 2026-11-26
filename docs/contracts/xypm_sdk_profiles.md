@@ -144,13 +144,14 @@ python3 scripts/build_glibc_program.py --cxx \
 部署目录作为一个单元，保留 `xos-app` 的执行权限。
 
 ```sh
+kit="$PWD/build/xos-glibc-sdk"
+project=build/hello
 python3 scripts/package_glibc_sdk.py --sdk-build "$XOS_GLIBC_CXX_SDK_BUILD" \
-  --profile build/xypm_profiles/glibc_cxx_candidate.json --output ./xos-glibc-sdk
-kit="$PWD/xos-glibc-sdk"
-"$kit/xos-app" init ./hello --id example.hello --language cpp
-"$kit/xos-app" build ./hello
-"$kit/xos-app" check ./hello
-"$kit/xos-app" pack ./hello --output ./hello.xpk
+  --profile build/xypm_profiles/glibc_cxx_candidate.json --output "$kit"
+"$kit/xos-app" init "$project" --id example.hello --language cpp
+"$kit/xos-app" build "$project"
+"$kit/xos-app" check "$project"
+"$kit/xos-app" pack "$project" --output build/hello.xpk
 ```
 
 在同一配套工具链下，用该目录构建带 glibc dash 的安装候选。

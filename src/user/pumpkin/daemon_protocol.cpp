@@ -17,15 +17,18 @@ bool uses_name(wire_operation operation) {
         operation == wire_operation::lookup_account;
 }
 
-bool valid_request(const wire_request& request) {
+bool valid_request(const wire_request& request, bool login_resources) {
     const auto operation = request.operation;
     if (request.version != wire_version || request.reserved != 0 ||
-        operation < wire_operation::authenticate || operation > wire_operation::revoke_account ||
+        operation < wire_operation::authenticate || operation > (login_resources ?
+            wire_operation::read_login_resource : wire_operation::revoke_account) ||
         request.name_length > name_limit) {
         return false;
     }
-    if (uses_name(operation) ? request.name_length == 0 || !zero_id(request.token)
-                             : request.name_length != 0 || !valid_id(request.token)) {
+    if (operation == wire_operation::grant_login_resource) {
+        if (request.name_length != sizeof(login_resource_grant) || !valid_id(request.token)) { return false; }
+    } else if (uses_name(operation) ? request.name_length == 0 || !zero_id(request.token)
+                                    : request.name_length != 0 || !valid_id(request.token)) {
         return false;
     }
     for (usize index = request.name_length; index < name_limit; ++index) {
@@ -88,6 +91,9 @@ status invoke(service_core& core, const connection_id& connection, const wire_re
         return core.rotate_credential(connection, now, identity, reply.key);
     case wire_operation::revoke_account:
         return core.revoke_account(connection, now, identity);
+    case wire_operation::grant_login_resource:
+    case wire_operation::read_login_resource:
+        break;
     }
     return status::invalid;
 }
@@ -95,10 +101,12 @@ status invoke(service_core& core, const connection_id& connection, const wire_re
 }
 
 bool dispatch_request(service_core& core, const connection_id& connection, u64& last_sequence,
-                      const wire_request& request, u64 now, wire_reply& reply) {
+                      const wire_request& request, u64 now, wire_reply& reply,
+                      const wire_extension* extension) {
     wipe_bytes(&reply, sizeof(reply));
     reply = {};
-    if (!valid_request(request) || request.sequence == 0 || request.sequence != last_sequence + 1) {
+    if (!valid_request(request, extension != nullptr && extension->invoke != nullptr) ||
+        request.sequence == 0 || request.sequence != last_sequence + 1) {
         return false;
     }
     last_sequence = request.sequence;
@@ -108,7 +116,10 @@ bool dispatch_request(service_core& core, const connection_id& connection, u64& 
         reply.result = wire_status::expired;
         return true;
     }
-    reply.result = to_wire_status(invoke(core, connection, request, now, reply));
+    const auto result = request.operation > wire_operation::revoke_account
+        ? extension->invoke(extension->context, core, connection, request, now, reply)
+        : invoke(core, connection, request, now, reply);
+    reply.result = to_wire_status(result);
     return true;
 }
 
@@ -125,7 +136,8 @@ bool valid_reply(const wire_request& request, const wire_reply& reply) {
     const bool expects_key = request.operation == wire_operation::create_account ||
         request.operation == wire_operation::rotate_credential;
     return (expects_token ? valid_id(reply.token) : zero_id(reply.token)) && expects_key == has_key &&
-        (request.operation == wire_operation::lookup_account ? reply.flags <= 1 : reply.flags == 0);
+        (request.operation == wire_operation::lookup_account ? reply.flags <= 1 :
+            request.operation == wire_operation::read_login_resource || reply.flags == 0);
 }
 
 }

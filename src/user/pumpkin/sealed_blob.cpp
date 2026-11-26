@@ -39,9 +39,9 @@ status sealed_blob::read(service_core& core, const blob_peer& peer, u64 now,
         sealed_blob& blob;
         const blob_peer& peer;
         sealed_blob_reply& reply;
-    } access{*this, peer, reply};
+    } call{*this, peer, reply};
     const resource_dispatch_io io{
-        &access,
+        &call,
         [](void* context, const connection_id& caller, u64 object, resolved_resource& resolved) {
             auto& access = *static_cast<dispatch_context*>(context);
             const auto& blob = access.blob;

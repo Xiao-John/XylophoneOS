@@ -63,8 +63,9 @@ struct backing_liveness {
     void* context = nullptr;
     bool (*live)(void*) = nullptr;
 };
+class login_resource;
 int serve_native(const store_api& store, const nonce& realm, const entropy_api& entropy,
                  ipc_channel control, u64 controller, const char* service_name,
-                 backing_liveness backing = {});
+                 backing_liveness backing = {}, login_resource* resource = nullptr);
 
 }

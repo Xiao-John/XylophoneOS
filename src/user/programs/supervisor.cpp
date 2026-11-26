@@ -23,6 +23,9 @@
 #endif
 #if XOS_PUMPKIN_DURABLE_PROBE
 #include "../../../tests/fixtures/pumpkin/durable_probe_supervisor.hpp"
+#if XOS_PUMPKIN_NATIVE_LOGIN
+#include "../pumpkin/native_login.hpp"
+#endif
 #endif
 
 namespace {
@@ -53,12 +56,16 @@ bool marker_is_absent() {
            persistent_marker_status("/var/lib/xypm/transaction_commit") == static_cast<i64>(file::status::not_found);
 }
 
+void quiet_boot_demos() {
+    for (u64 demo = 1; demo <= 4; ++demo) { (void)syscall(10, demo); }
+    demo_quiet = true;
+}
+
 void start_persistent_recovery_gate() {
     if (marker_is_absent()) { return; }
     persistent_recovery_gate = true;
     // The boot demos are the only ordinary tasks allowed before Xsh starts.
-    for (u64 demo = 1; demo <= 4; ++demo) { (void)syscall(10, demo); }
-    demo_quiet = true;
+    quiet_boot_demos();
     const i64 guarded = syscall(sys_process_guard, static_cast<u64>(process_guard_action::begin));
     print(guarded == 0 ? "maintenance: persistent recovery required\n"
                        : "maintenance: recovery check failed; startup locked\n");
@@ -1056,8 +1063,15 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     // The dedicated serial owner must start before UI, bundle or shell paths
     // can launch anything from the disposable work disk.
     if (persistent_recovery_gate) return 21;
+    u32 holder = 0;
+#if XOS_PUMPKIN_NATIVE_LOGIN
+    // The headless login run needs one more process than the generation-only
+    // probe. Release the boot demos before creating any protected endpoints.
+    quiet_boot_demos();
+    holder = image_named(user::pumpkin::native_login::holder_image);
+#endif
     return user::pumpkin::durable_probe::run_anchored(image_named("pumpkin_durable"),
-        image_named("p2_anchor_proxy"), private_storage_grant);
+        image_named("p2_anchor_proxy"), private_storage_grant, holder);
 #endif
     // Bootstrap installation must not run when marker inspection or guard
     // establishment fails; doing so could modify a disk awaiting recovery.

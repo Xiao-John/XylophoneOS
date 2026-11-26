@@ -84,12 +84,15 @@ def receive(guest, offset, expected_sequence):
     return operation, result, data[header.size:header.size + mark_struct.size], data[-mark_struct.size:]
 
 
-def binding(system):
+def binding(system, native_login=False):
     manifest = json.loads((system / "manifest.json").read_bytes())
     assert manifest.get("pumpkin_anchored_probe"), "dedicated anchored developer image required"
+    assert manifest.get("pumpkin_native_login", False) == native_login, "native login profile mismatch"
     assert all(digest(root / name) == expected for name, expected in manifest["sources"].items()), "source mismatch"
     names = ("xos-install.iso", "user_files.image.elf", "user_supervisor.image.elf",
              "user_pumpkin_durable.image.elf", "user_p2_anchor_proxy.image.elf")
+    if native_login:
+        names += ("user_pumpkin_holder.image.elf",)
     artifacts = {name: digest(system / name) for name in names}
     assert all(value == manifest["artifacts"][name]["sha256"] for name, value in artifacts.items()), "artifact mismatch"
     return {"build_id": manifest["build_id"], "manifest_sha256": digest(system / "manifest.json"),
@@ -141,11 +144,12 @@ def boot(system, disk, output, phase, scenario, authority, stale_image, evidence
                 reply = packet(publish, result_codes[published], current_sequence)
             else:
                 assert operation == finish and expected == blank and value == blank
-                assert result == 1, f"{phase}: supervisor reported failure"
+                evidence["finish_code"] = result
                 send_bytes(guest, packet(finish, 0, current_sequence))
                 pump(guest, 0.15)
                 guest.qmp("quit")
                 assert guest.process.wait(timeout=10) == 0
+                assert result == 1, f"{phase}: supervisor reported failure {result}"
                 return
             send_bytes(guest, reply)
             current_sequence += 1
@@ -154,9 +158,10 @@ def boot(system, disk, output, phase, scenario, authority, stale_image, evidence
         guest.close()
 
 
-def run(system, output, snapshot_delay_ns):
+def run(system, output, snapshot_delay_ns, native_login=False):
     output.mkdir(parents=True)
-    report = {"status": "failed", "system": binding(system), "runner_sha256": digest(Path(__file__)), "boots": {}}
+    report = {"status": "failed", "system": binding(system, native_login),
+              "native_login": native_login, "runner_sha256": digest(Path(__file__)), "boots": {}}
     try:
         with tempfile.TemporaryDirectory(prefix="pumpkin_anchor_vm_") as directory:
             scratch = Path(directory)
@@ -182,10 +187,11 @@ def run(system, output, snapshot_delay_ns):
                 else:
                     assert events == [{"read": 3}] and checks["input_disk_sha256"] == checks["output_disk_sha256"]
                 checks["status"] = "passed"
-                print(f"PASS anchored Pumpkin {phase}", flush=True)
+                profile = "anchored native login" if native_login else "anchored"
+                print(f"PASS {profile} Pumpkin {phase}", flush=True)
             assert report["boots"]["cycle"]["offline_stale_copy_sha256"] == report["boots"]["stale"]["input_disk_sha256"]
             assert report["boots"]["cycle"]["output_disk_sha256"] == report["boots"]["healthy"]["input_disk_sha256"]
-        assert binding(system) == report["system"]
+        assert binding(system, native_login) == report["system"]
         report["status"] = "passed_subset"
     except BaseException as error:
         report["error"] = str(error)
@@ -201,8 +207,10 @@ def main():
     parser.add_argument("--system", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--slow-snapshot", action="store_true", help="hold the paused revision-2 copy for seven seconds")
+    parser.add_argument("--native-login", action="store_true", help="require the independent holder and sealed resource profile")
     arguments = parser.parse_args()
-    run(arguments.system.resolve(), arguments.output.resolve(), slow_snapshot_delay_ns if arguments.slow_snapshot else 0)
+    run(arguments.system.resolve(), arguments.output.resolve(), slow_snapshot_delay_ns if arguments.slow_snapshot else 0,
+        arguments.native_login)
 
 
 if __name__ == "__main__":

@@ -92,6 +92,7 @@ extern "C" xos_i64 __xos_wake_word(xos_u32* address, xos_u32 count) {
 }
 extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 second, xos_u64 third) {
     std::unique_lock<std::mutex> guard(mock_lock);
+    if (number == 6) return 77;
     if (number == 22) { auto *handles = reinterpret_cast<xos_u32*>(first); handles[0]=100; handles[1]=101; return 0; }
     if (number == 46) return 1000;
     if (number == 4 && first == 100) { file_request(*reinterpret_cast<const xos_file_request*>(second)); return 0; }

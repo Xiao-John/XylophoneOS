@@ -10,20 +10,7 @@
 #include "xos_file_runtime.h"
 #include "xos_terminal_runtime.h"
 
-#ifdef XOS_GLIBC_FILE_TEST
-extern long __xos_file_test_trap (xos_u64, xos_u64, xos_u64, xos_u64);
-# define file_trap __xos_file_test_trap
-#else
-static inline long
-file_trap (xos_u64 number, xos_u64 first, xos_u64 second, xos_u64 third)
-{
-  long result;
-  __asm__ volatile ("int $0x80" : "=a" (result)
-                    : "a" (number), "D" (first), "S" (second), "d" (third)
-                    : "memory", "cc");
-  return result;
-}
-#endif
+#include "xos_file_trap.h"
 
 extern const void *__xos_startup __attribute__ ((weak, visibility ("hidden")));
 /* The backend and its strongly linked terminal adapter provide file (bit0)
@@ -37,12 +24,10 @@ struct open_object { unsigned int kind, handle, flags, references; };
 static struct fd_slot descriptors[fd_limit];
 static struct open_object objects[object_limit];
 static xos_u32 session_lock, spawn_cwd_lock;
-static int initialized, initialization_error, session_failed;
-static xos_u32 request_sequence, send_handle, receive_handle;
+static int initialized, initialization_error;
+static struct xos_file_session session;
 static struct xos_file_request request;
 static struct xos_file_response response;
-enum { file_stat = 3, file_open = 4, file_fstat = 18, file_anonymous = 21,
-       file_anonymous_seal = 22, file_cwd_set = 26, file_cwd_get = 27 };
 enum { pipe_create = 30, pipe_read = 31, pipe_write = 32, pipe_close = 33,
        pipe_wait = 54, pipe_token_min = 65536, pipe_capacity = 4096 };
 /* The files service reserves this identity for its synthetic /dev namespace. */
@@ -70,32 +55,6 @@ unlock_runtime (xos_u32 *lock)
 static int lock_session (void) { return lock_runtime (&session_lock); }
 static void unlock_session (void) { unlock_runtime (&session_lock); }
 
-long
-__xos_file_service_error (int value)
-{
-  switch (value)
-    {
-    case 0: return 0;
-    case -1: return -ENOENT;
-    case -2: return -EINVAL;
-    case -3: return -EMFILE;
-    case -4: return -ENOSPC;
-    case -5: return -EBUSY;
-    case -6: return -EBADF;
-    case -7: return -EIO;
-    case -8: return -EAGAIN;
-    case -9: return -EEXIST;
-    case -10: return -ENOTDIR;
-    case -11: return -EISDIR;
-    case -12: return -ENOTEMPTY;
-    case -13: return -ENAMETOOLONG;
-    case -14: return -ENOTSUP;
-    case -15: return -EROFS;
-    case -16: return -EACCES;
-    default: return -EIO;
-    }
-}
-
 static long
 kernel_error (long value)
 {
@@ -115,168 +74,24 @@ kernel_error (long value)
 static long
 session_fault (int error)
 {
-  /* A delivered write may have committed. Never replay or attach its old
-     handle to another service instance after timeout or malformed reply. */
-  session_failed = 1;
-  return -error;
-}
-
-static int
-valid_text (const unsigned char *data, unsigned int length, int component)
-{
-  unsigned int at = 0;
-  while (at < length)
-    {
-      unsigned int value = data[at++], continuation = 0, minimum = 0;
-      if (value < 0x20 || value == 0x7f || (component && value == '/')) return 0;
-      if (value < 0x80) continue;
-      if (value >= 0xc2 && value <= 0xdf) { continuation = 1; minimum = 0x80; value &= 31; }
-      else if (value >= 0xe0 && value <= 0xef) { continuation = 2; minimum = 0x800; value &= 15; }
-      else if (value >= 0xf0 && value <= 0xf4) { continuation = 3; minimum = 0x10000; value &= 7; }
-      else return 0;
-      if (continuation > length - at) return 0;
-      while (continuation-- != 0)
-        {
-          unsigned int next = data[at++];
-          if ((next & 0xc0) != 0x80) return 0;
-          value = (value << 6) | (next & 63);
-        }
-      if (value < minimum || value > 0x10ffff || (value >= 0xd800 && value <= 0xdfff)) return 0;
-    }
-  return 1;
-}
-
-static int
-valid_directory_response (void)
-{
-  const unsigned int identity = request.flags & (1U << 12);
-  const unsigned int header = identity ? 13U : 7U;
-  const unsigned int limit = request.length ? request.length : 64U;
-  if (response.handle != 0 || response.reserved != 0 || response.flags != identity
-      || response.value > 0xffffffffULL
-      || (response.length == 0 && response.value != 0)
-      || (response.value != 0 && response.value <= request.offset)) return 0;
-  unsigned int at = 0, count = 0;
-  xos_u64 previous = request.offset;
-  while (at < response.length)
-    {
-      if (response.length - at < header || ++count > limit) return 0;
-      const unsigned char *record = response.data + at;
-      unsigned int length = (unsigned int) record[0] | ((unsigned int) record[1] << 8);
-      if (length == 0 || length >= 256 || (record[2] & ~1U) != 0
-          || length > response.length - at - header) return 0;
-      if (identity)
-        {
-          unsigned int inode = (unsigned int) record[7] | ((unsigned int) record[8] << 8);
-          xos_u32 next = (xos_u32) record[9] | ((xos_u32) record[10] << 8)
-            | ((xos_u32) record[11] << 16) | ((xos_u32) record[12] << 24);
-          if (inode == 0 || next <= previous) return 0;
-          previous = next;
-        }
-      if (!valid_text (record + header, length, 1)) return 0;
-      at += header + length;
-    }
-  return !identity || response.value == 0 || previous <= response.value;
-}
-
-static int
-valid_response_shape (unsigned int operation)
-{
-  if (response.status_code != 0) return response.name_length == 0;
-  if (operation == 27 || operation == 28)
-    return response.handle == 0 && response.flags == 0 && response.reserved == 0
-      && response.length == 0 && response.value == 0 && response.name_length > 0
-      && response.name_length < sizeof (response.name) && response.name[0] == '/'
-      && response.name[response.name_length] == 0
-      && valid_text ((const unsigned char *) response.name, response.name_length, 0);
-  if (response.name_length != 0) return 0;
-  if (operation == 2) return valid_directory_response ();
-  if (operation == 19)
-    return response.handle != 0 && response.flags == 0 && response.reserved == 0
-      && response.length == 0 && response.value == 0;
-  /* anonymous creates a fresh empty regular file and returns the same handle
-     and identity fields as open; it must not poison the shared session. */
-  if (operation == file_open || operation == file_anonymous)
-    return response.length == 0 && response.handle != 0
-      && (response.flags & ~1U) == 0 && response.reserved != 0
-      && response.reserved <= 65535 && response.value <= 0xfffffffeULL
-      && (operation != file_anonymous || (response.flags == 0 && response.value == 0));
-  if (operation == file_stat || operation == file_fstat)
-    {
-      unsigned int allowed_flags = 7U;
-      if (operation == file_stat && (request.flags & xos_file_stat_check_exec) != 0)
-        allowed_flags |= xos_file_stat_exec_checked;
-      return response.handle == 0 && (response.flags & ~allowed_flags) == 0
-      && response.reserved != 0 && response.reserved <= 65535
-      && response.value <= 0xfffffffeULL
-      && (response.length == 0 || response.length == 24);
-    }
-  if (response.handle != 0 || response.flags != 0 || response.reserved != 0)
-    return 0;
-  if (operation == 5 || operation == 30)
-    return (operation != 30 || request.length <= sizeof (response.data))
-      && response.value == response.length && response.length <= request.length;
-  if (response.length != 0) return 0;
-  if (operation == 6 || operation == 31)
-    return request.length <= sizeof (request.data) && response.value <= request.length
-      && (response.value != 0 || request.length == 0);
-  if (operation == 7) return response.value <= 0xfffffffeULL;
-  /* Native block_bench reports the exact completed request, with no payload.
-     Its limit is an ABI constant shared with file_abi.hpp, not an IPC length. */
-  if (operation == 17)
-    return request.length != 0 && request.length <= 8U * 1024U * 1024U
-      && response.value == request.length;
-  return response.value == 0;
+  return __xos_file_session_poison (&session, error);
 }
 
 static long
 call_service (unsigned int operation)
 {
-  if (session_failed) return -EIO;
-  if (send_handle == 0)
-    {
-      xos_u32 handles[2] = { 0, 0 };
-      if (file_trap (22, (xos_u64) handles, 0, 0) != 0
-          || handles[0] == 0 || handles[1] == 0 || handles[0] == handles[1])
-        return session_fault (EIO);
-      send_handle = handles[0];
-      receive_handle = handles[1];
-    }
-  if (request_sequence == ~(xos_u32) 0) return session_fault (EOVERFLOW);
-  long now = file_trap (46, 0, 0, 0);
-  if (now < 0 || (xos_u64) now > (xos_u64) LONG_MAX - 5000000000ULL)
-    return session_fault (EIO);
-  const xos_u64 deadline = (xos_u64) now + 5000000000ULL;
-  request.magic = 0x51455246;
-  request.version = 2;
   request.operation = (xos_file_u16) operation;
-  request.request_id = ++request_sequence;
-  if (file_trap (4, send_handle, (xos_u64) &request, sizeof (request)) != 0)
-    return session_fault (EIO);
-  for (;;)
-    {
-      const long received = file_trap (5, receive_handle, (xos_u64) &response,
-                                      sizeof (response));
-      now = file_trap (46, 0, 0, 0);
-      if (now < 0) return session_fault (EIO);
-      if ((xos_u64) now >= deadline) return session_fault (ETIMEDOUT);
-      if (received >= 0)
-        {
-          if (received != sizeof (response) || response.magic != 0x53455246
-              || response.version != 2 || response.request_id != request.request_id
-              || response.length > sizeof (response.data)
-              || response.name_length >= sizeof (response.name) || response.status_code > 0
-              || response.status_code < -16 || !valid_response_shape (operation))
-            return session_fault (EIO);
-          return __xos_file_service_error (response.status_code);
-        }
-      if (received != -3) return session_fault (EIO);
-      /* Legacy files endpoints have no deadline-capable readiness wait.
-         Sleep on the system monotonic clock; do not invent a retry-count clock. */
-      xos_u64 next = (xos_u64) now + 1000000;
-      if (next > deadline) next = deadline;
-      if (file_trap (47, next, 0, 0) != 0) return session_fault (EIO);
-    }
+  return __xos_file_session_call (&session, &request, &response);
+}
+
+long
+__xos_file_adopt_early_session (struct xos_file_session *early)
+{
+  long result = lock_session ();
+  if (result != 0) return result;
+  result = initialized ? -EBUSY : __xos_file_session_take (&session, early);
+  unlock_session ();
+  return result;
 }
 
 static int

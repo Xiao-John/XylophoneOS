@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #ifndef XOS_GLIBC_FILE_RUNTIME_H
 #define XOS_GLIBC_FILE_RUNTIME_H 1
-#include "xos_file_wire.h"
+#include "xos_file_session.h"
 #include <stddef.h>
 #include <sys/stat.h>
 #ifdef __cplusplus
@@ -27,7 +27,6 @@ long __xos_file_path_op (const char *, int) __attribute__ ((visibility ("hidden"
 long __xos_file_truncate (int, long) __attribute__ ((visibility ("hidden")));
 long __xos_file_sync (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_isatty (int) __attribute__ ((visibility ("hidden")));
-long __xos_file_service_error (int) __attribute__ ((visibility ("hidden")));
 
 /* Keep the native stdio routes and cwd stable until loader commit or abort. */
 struct xos_spawn_stdio

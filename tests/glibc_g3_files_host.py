@@ -60,16 +60,20 @@ def main():
         flags += ["-fsanitize=address,undefined", "-fno-sanitize-recover=all",
                   "-fno-omit-frame-pointer"]
     cc, cxx = os.environ.get("CC", "gcc"), os.environ.get("CXX", "g++")
-    obj, exe = output / "runtime.o", output / "runtime_test"
-    subprocess.run([cc, "-std=c11", "-DXOS_GLIBC_FILE_TEST", *flags, "-c",
-                    str(overlay / "xos_file_runtime.c"), "-o", str(obj)], check=True)
+    exe = output / "runtime_test"
+    runtime_objects = []
+    for name in ("xos_file_runtime", "xos_file_session"):
+        obj = output / (name + ".o")
+        subprocess.run([cc, "-std=c11", "-DXOS_GLIBC_FILE_TEST", *flags, "-c",
+                        str(overlay / (name + ".c")), "-o", str(obj)], check=True)
+        runtime_objects.append(str(obj))
     writev = output / "writev.o"
     subprocess.run([cc, "-std=c11", *flags, "-include",
                     str(ROOT / "tests/fixtures/glibc_g3/host_aliases.h"), "-c",
                     str(overlay / "writev.c"), "-o", str(writev)], check=True)
     subprocess.run([cxx, "-std=c++17", *flags, "-I", str(ROOT / "src/shared/include"),
                     "-I", str(ROOT / "src/user/include"),
-                    str(ROOT / "tests/fixtures/glibc_g3/files_runtime.cpp"), str(obj), str(writev),
+                    str(ROOT / "tests/fixtures/glibc_g3/files_runtime.cpp"), *runtime_objects, str(writev),
                     str(ROOT / "src/user/sdk/file_client.cpp"),
                     *terminal_sources,
                     "-pthread", "-o", str(exe)], check=True)
@@ -116,7 +120,7 @@ def main():
     service_exe = output / "service_test"
     subprocess.run([cxx, "-std=c++20", *flags, "-I", str(ROOT / "src/shared/include"),
                     "-I", str(ROOT / "src/user/include"),
-                    str(ROOT / "tests/fixtures/glibc_g3/files_service.cpp"), str(obj),
+                    str(ROOT / "tests/fixtures/glibc_g3/files_service.cpp"), *runtime_objects,
                     *terminal_sources,
                     *service_objects, "-Wl,--gc-sections", "-o", str(service_exe)], check=True)
     sys.path.insert(0, str(ROOT / "scripts"))

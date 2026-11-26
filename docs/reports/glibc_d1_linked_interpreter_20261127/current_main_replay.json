@@ -352,5 +352,19 @@
     "glibc-c.tar.zst": "8c2c26cf69a319fbf516e5d43700a493ef914b3cfd80b704e9edb9fb19117b2b",
     "gnu-link-and-replay.tar.zst": "32481cd9acea1a10907e6ed2f3de9188caaf17a4e2b15cbd8d740bc336a54a37",
     "guest-and-controls.tar.zst": "b6d194a0d0cfebeb45e71204f8b0c220e38cbcacea9d5f7ee82d8d3cb22d06c5"
+  },
+  "later_main_source_review": {
+    "main_head": "643d9de28ba7252bb5437f8fbc90a16a4b3c90ea",
+    "composition_head": "882ddd6ddfd557864c9a1a5d7c05d851d9c21672",
+    "composition_tree": "b762864563fc2b481c624a711daeeac074b56cdf",
+    "static_sdk_manifest_inputs_identical": 337,
+    "native_loader_kernel_shared_service_and_libc_sources_equal_to_replay": true,
+    "normal_pumpkin_profile_default": "private flags omitted",
+    "workspace_sdk_selection_and_recovery_tools_equal_to_latest_main": true,
+    "sdk_profile_host_cases": 45,
+    "sdk_profile_host_log_sha256": "876fa80f0fb77ccb11b6852d0733e0c1060f2b807143605dc80f043618e6cc2e",
+    "p3_repository_host_cases": 50,
+    "p3_repository_host_log_sha256": "a919f3de31173d99fd08d3705e3272482629606244cf9046e50c04ef4a52df21",
+    "guest_replay_scope": "exact source pinned above"
   }
 }

@@ -75,3 +75,6 @@ QEMU 11.1.3，TCG 单核、512 MiB、无网络。xsh 启动真实 Display 和 In
 本地证据在 `build/qt_glibc/quick_e19/`。验收范围为 QML 文本、矩形、计时器、键盘、
 两轮窗口与服务回收。Controls/Layouts、复杂场景、触控、IME、GPU、首次启动和空闲预算、
 绝对内存峰值、长时压力与静态分发待验。
+
+同一镜像与 Qt Quick ELF 随后经 [既有 Dash C3 启动路径](13a6b397_qt_e19_quick_through_legacy_dash.md)
+再次完成场景、输入和回收检查。

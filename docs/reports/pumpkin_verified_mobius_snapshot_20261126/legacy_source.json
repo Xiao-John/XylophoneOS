@@ -1,0 +1,20 @@
+{
+  "source_commit": "7d205c988c45a2990e24cb0caf73fdc860198135",
+  "source_tree": "d67a5ffd3bd70a486f95e71349accfc500e91e0c",
+  "source_sha256": "1e85a6e85906dd856389acf000c355b0783b5ffda9ecf955f19ce1faa99d5912",
+  "build_id": "1e85a6e85906dd85",
+  "manifest_sha256": "6865e577f3692537f1fa7169c5887beaa35769a66795d2dd690bf74757ae8698",
+  "installer_sha256": "1c20d2e81a84cb5ff308a02c1afe2aea38e6352136c7884ffad610582d02b8eb",
+  "kernel_sha256": "24ad73de57ae6ad81961a001f1f07f83f6302f2daf92a96f84fd22bc4d1c7049",
+  "files_image_elf_sha256": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+  "supervisor_image_elf_sha256": "48130fce92b248aebcf86c69e5ef23a01e667ce9b2628d442b6d04ba09e340b3",
+  "toolchain": {
+    "target": "x86_64-elf",
+    "gcc": "16.2.0",
+    "binutils_release": "2.47",
+    "binutils": "2.47.20260726",
+    "nasm": "3.02",
+    "qemu": "11.1.2",
+    "cpp_standard": "c++20"
+  }
+}

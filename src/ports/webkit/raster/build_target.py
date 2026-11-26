@@ -135,9 +135,13 @@ def build(args):
         directory.mkdir(parents=True)
     fixture = project / 'raster_probe.cpp'
     fixture.write_bytes((root / 'tests/fixtures/webkit/skia_raster.cpp').read_bytes())
+    stream_fixture = project / 'file_stream_probe.cpp'
+    stream_fixture.write_bytes((root / 'tests/fixtures/webkit/skia_file_stream.cpp').read_bytes())
+    stream_patch = project / 'file_stream.patch'
+    stream_patch.write_bytes((port / 'file_stream.patch').read_bytes())
     recipe = project / 'CMakeLists.txt'
     recipe.write_bytes((port / 'CMakeLists.txt').read_bytes())
-    fixture_hash, recipe_hash = digest(fixture), digest(recipe)
+    project_inputs = {path: digest(path) for path in (fixture, stream_fixture, stream_patch, recipe)}
     for key in ('cc', 'cxx'):
         (drivers / key).symlink_to(port.parent / 'icu/xos-compiler')
     for key in ('as', 'ld'):
@@ -200,6 +204,9 @@ def build(args):
                              tools['ar']['path'], args.jobs, run)
 
     skia = roots['webkit'] / 'Source/ThirdParty/skia'
+    run('apply_file_stream_patch', ['patch', '--batch', '--fuzz=0', '-d', skia, '-p1', '-i', stream_patch])
+    stream_source = skia / 'src/ports/SkOSFile_posix.cpp'
+    stream_source_hash = digest(stream_source)
     sources = project / 'skia_sources.cmake'
     count = write_sources(skia, sources)
     cmake = output / 'cmake'
@@ -214,19 +221,23 @@ def build(args):
                            f'-DFREETYPE_INCLUDE_DIR_freetype2={ft / "include/freetype2"}'])
     run('build_skia', ['cmake', '--build', cmake, '--parallel', str(args.jobs)])
     probe = cmake / 'skia_raster_probe'
+    stream_probe = cmake / 'skia_file_stream_probe'
     verify_elf(probe)
-    require_digest(fixture, fixture_hash)
-    require_digest(recipe, recipe_hash)
+    verify_elf(stream_probe)
+    require_digest(stream_source, stream_source_hash)
+    for path, expected in project_inputs.items():
+        require_digest(path, expected)
     for name, archive in archives.items():
         require_digest(archive, locks[name]['sha256'])
-    exported = [probe, cmake / 'libskia_raster.a', png / 'lib/libpng.a', jpeg / 'lib/libjpeg.a',
-                zlib / 'lib/libz.a', fixture, recipe, sources, *(p for p in sorted(notices.iterdir()) if p.is_file())]
+    exported = [probe, stream_probe, cmake / 'libskia_raster.a', png / 'lib/libpng.a', jpeg / 'lib/libjpeg.a',
+                zlib / 'lib/libz.a', *project_inputs, sources, *(p for p in sorted(notices.iterdir()) if p.is_file())]
     receipt = {'status': 'target_skia_raster_linked', 'builder_sha256': digest(Path(__file__)),
                'source_locks': {k: digest(v) for k, v in source_locks.items()},
                'source_archives': {k: v['sha256'] for k, v in locks.items()},
                'sdk_manifest_sha256': sdk_hash, 'profile_binding': binding,
                'freetype_target_manifest_sha256': digest(font_manifest), 'notice_lock_sha256': digest(notices_path),
                'target_tools': {key: value['sha256'] for key, value in tools.items()}, 'skia_source_count': count,
+               'skia_file_stream_source_sha256': stream_source_hash,
                'artifacts': {path.relative_to(output).as_posix(): digest(path) for path in exported}}
     (output / 'manifest.json').write_text(json.dumps(receipt, indent=2, sort_keys=True)+'\n')
 

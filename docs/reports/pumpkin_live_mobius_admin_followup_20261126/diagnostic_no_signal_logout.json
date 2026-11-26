@@ -1,0 +1,23 @@
+{
+  "status": "passed_subset",
+  "build_id": "2aadb2137af846f2",
+  "manifest_sha256": "fe71a68ba4c31783fc13ae341ea3c2c52a80b14c662ffa623f47e732ea1f2f67",
+  "output": "admin-enabled desktop declined every revocation poll, then confirmed ordinary logout",
+  "declined_polls": 6,
+  "unchanged_revision": 2,
+  "scanout": {
+    "before": {
+      "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6",
+      "colors": 16273,
+      "bright_pixels": 10293
+    },
+    "after": {
+      "sha256": "e6ec2619a800a5a600f49371f4a05ad5d7b62d735344c5e25c9ac7faaa6f3329",
+      "colors": 10715,
+      "bright_pixels": 426623
+    }
+  },
+  "diagnostic_source": "3c948829",
+  "source_receipt_sha256": "da48e6c84e5b60da1e3f7f751e227b19ebdae412fe1653fb2c21eebe93ce7f90",
+  "scope": "separate diagnostic build"
+}

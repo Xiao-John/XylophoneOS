@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "active-desktop.ppm.gz": "4885368343f1956b2bf6bbf6506e374c6dcc93e5f5ae5a47e9dfe7f667e4be80",
+    "desktop.json": "497e798feb8117f1c94f127659b337df11e51e81e3b6e5e1e91148cb74150e31",
+    "first_attempt.json": "d94364867a557614563ceb6f9c3309e8c9bf347eba9aae773ddfbc406c9cef1d",
+    "historical_replay_attempt.json": "a4056321dabfff9ed20cd339d65a534e607758ad61b0dc95f0d0bfb4d8b1b281",
+    "host_core.log": "fc0597e57dca300a964ed1f9a26910316e451dc058f52fe152a910845406021a",
+    "host_daemon.log": "07bfcbe02723f6fc91d739135769f17ba75931b3deaec74068d41e5cf0e559bf",
+    "legacy.json": "df0eb7899a58aa1a1014d091d2f8423eef3e4f22120155cc6d5afdef7fe58cd4",
+    "mobius_sdk_binding.json": "d4cd27a8a521638d6c501339221702896fe59c3ba3fb632609e3f4a5a1ee83a5",
+    "source.json": "d7937ae5e0f7ab78f8d334255fa40855e986ea8fb1f5ade5ad0d2402500ebf73"
+  }
+}

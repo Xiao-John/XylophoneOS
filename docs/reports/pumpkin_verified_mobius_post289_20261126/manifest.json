@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "active-before-revocation.ppm.gz": "4885368343f1956b2bf6bbf6506e374c6dcc93e5f5ae5a47e9dfe7f667e4be80",
+    "binding.json": "bd4bed1fee546d77ba124c0200b592a54e5d4dee99534641534cdedeecc78fe7",
+    "desktop.json": "df5fe930e01bdfe5e8725c740809f09921cd9f735d631c7961de002f1591d454",
+    "headless.json": "859933e8a15ed96c765484f601a7a0260cd3544e1f7427488538bed34e04e051"
+  }
+}

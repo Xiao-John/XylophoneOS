@@ -1,0 +1,17 @@
+{
+  "elfs": {
+    "usr/bin/mobius-session.elf": {
+      "build_receipt_sha256": "efb141656b828823d5ffcd49f1c29679608ea3e1902e0eb49e7efebe9051ddf5",
+      "elf_sha256": "63ae70d23458697d6d971d780b13382765e601182fec899a5905d0b528a9fdc4"
+    },
+    "usr/bin/mobius.elf": {
+      "build_receipt_sha256": "3f6ffda5f68f839cab3c590a2656c9de61e6376da4345efddff83018577c8483",
+      "elf_sha256": "9fdacb77d2dc935a83150d68f6275cc355f50cd3c8b693b7eb2e7529a612a413"
+    }
+  },
+  "profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "runtime_family": "glibc",
+  "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "sdk_tree_sha256": "b0d6dc0e59ad68ce22b4b98d03f6df26e85aa1046bc833ee1c92d04ff1652125",
+  "status": "private_candidate"
+}

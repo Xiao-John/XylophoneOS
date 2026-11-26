@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "binding.json": "4f2bc58e4f2ce00c9811ccdda1bc85469e73e1a508b3c2e57d904df6269fd07a",
+    "core-host.log": "36d8d7fe726e41f26aa74c8066f18bc0340af5c368b39beb629b0ddeb80a3155",
+    "deployment.guest.json": "a06387f92919e88bace0bdf6a3a4d4b1180b0bffc5f2f41afab9f12c31f1444b",
+    "generation-host.log": "d20b055f527553a95e5e4e84e198d8901ef515a08cadd979ef15567aedf6b556",
+    "legacy.guest.json": "fe2e1a0b2cf561b780fdd358cf5835da4407081d0926958a78dba6f057654b08",
+    "ordinary.guest.json": "2315b116668bd07acb1976f0cf80c41e329cccb357f1e08821a09d8e295116b2",
+    "ordinary.serial.log.gz": "874647a4588211855b08b9eb20cdb19466b2df30e8b12be076ab4d73c005c3f9"
+  }
+}

@@ -9,7 +9,8 @@ import tempfile
 
 
 root = Path(__file__).resolve().parents[1]
-sources = [root / "src/user/pumpkin" / name for name in ("account_store.cpp", "service_core.cpp")]
+sources = [root / "src/user/pumpkin" / name for name in
+           ("account_store.cpp", "service_core.cpp", "daemon_protocol.cpp")]
 fixture = root / "tests/fixtures/pumpkin/service_core_host.cpp"
 common = ["-std=c++20", "-Wall", "-Wextra", "-Werror",
           "-I", str(root / "src/shared/include"), "-I", str(root / "src/user/include"),

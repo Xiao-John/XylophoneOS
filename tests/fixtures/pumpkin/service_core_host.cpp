@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "pumpkin/service_core.hpp"
+#include "pumpkin/daemon_protocol.hpp"
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -394,6 +395,54 @@ void test_quotas_and_failed_enrollment() {
     assert(data.core.attach(admission_role::client, 0, refused) == status::unavailable);
 }
 
+void test_wire_protocol() {
+    fixture data;
+    u64 sequence = 0;
+    wire_request request;
+    wire_reply reply;
+    request.operation = wire_operation::create_account;
+    request.name[0] = 'a';
+    request.name_length = 1;
+    request.deadline = 1;
+    request.sequence = 1;
+    request.name[1] = 'x';
+    assert(!dispatch_request(data.core, data.registrar, sequence, request, 0, reply));
+    request.name[1] = 0;
+    request.reserved = 1;
+    assert(!dispatch_request(data.core, data.registrar, sequence, request, 0, reply));
+    request.reserved = 0;
+    request.key.bytes[0] = 1;
+    assert(!dispatch_request(data.core, data.registrar, sequence, request, 0, reply));
+    request.key = {};
+    assert(dispatch_request(data.core, data.registrar, sequence, request, 1, reply));
+    assert(reply.result == wire_status::expired && valid_reply(request, reply));
+    assert(!dispatch_request(data.core, data.registrar, sequence, request, 1, reply));
+    assert(data.disk.revision == 1);
+    request.sequence = 3;
+    assert(!dispatch_request(data.core, data.registrar, sequence, request, 1, reply));
+    assert(sequence == 1);
+    request.sequence = 2;
+    request.deadline = 2;
+    assert(dispatch_request(data.core, data.registrar, sequence, request, 1, reply));
+    assert(reply.result == wire_status::ok && valid_reply(request, reply));
+    assert(data.disk.revision == 2);
+    reply.flags = 1;
+    assert(!valid_reply(request, reply));
+    reply.flags = 0;
+    reply.result = wire_status::denied;
+    assert(!valid_reply(request, reply)); // extra key and token on failure
+    request.sequence = 3;
+    request.operation = wire_operation::lookup_account;
+    assert(dispatch_request(data.core, data.registrar, sequence, request, 1, reply));
+    assert(reply.result == wire_status::ok && valid_reply(request, reply) &&
+           !has_bytes(reply.key.bytes, secret_bytes));
+    reply.sequence++;
+    assert(!valid_reply(request, reply));
+    reply.sequence--;
+    reply.result = static_cast<wire_status>(0xffff);
+    assert(!valid_reply(request, reply));
+}
+
 }
 
 int main() {
@@ -413,4 +462,6 @@ int main() {
     std::puts("PASS uncertain storage outcomes and fail-closed recovery");
     test_quotas_and_failed_enrollment();
     std::puts("PASS bounded resources and failed enrollment");
+    test_wire_protocol();
+    std::puts("PASS daemon protocol request, replay, deadline and reply validation");
 }

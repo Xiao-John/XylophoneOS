@@ -181,8 +181,7 @@ def assemble(output, candidate, kit, daily, cpython, wheel, archive):
         release = {'schema_version': 1, 'status': 'assembled_glibc_candidate', **proof,
                    'work_disk': artifact(disk), 'packages': records,
                    'launcher_sha256': sha_file(images / 'launch.py')}
-        for folder in (images, output / KIT):
-            (folder / 'release.json').write_bytes(canonical(release))
+        (images / 'release.json').write_bytes(canonical(release))
         archive(images, output / 'images.tar.gz')
         archive(output / KIT, output / 'application-sdk.tar.gz')
         release['archives'] = {name: artifact(output / name) for name in ('images.tar.gz', 'application-sdk.tar.gz')}
@@ -225,9 +224,8 @@ def verify_assembled(root):
     for name, record in release['packages'].items():
         require(sha_file(relative_file(root, 'packages/' + name + '.xpk')) == record['sha256'],
                 'release package differs: ' + name)
-    for folder in (IMAGES, KIT):
-        inside = load_json(relative_file(root, folder + '/release.json'))
-        require(inside == {name: value for name, value in release.items() if name != 'archives'},
-                'embedded release receipt differs: ' + folder)
+    inside = load_json(relative_file(root, IMAGES + '/release.json'))
+    require(inside == {name: value for name, value in release.items() if name != 'archives'},
+            'embedded image release receipt differs')
     verify_disk(relative_file(root, IMAGES + '/work_disk.img'), profile, release['packages'])
     return release, profile

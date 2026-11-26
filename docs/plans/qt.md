@@ -48,6 +48,8 @@ G06 的静态资源解释执行和虚拟内存配额负向已通过限定客体�
 E19/G07 的 Qt 6.8.3 glibc 软件场景经客体限定复验，覆盖真实 scanout、QML 文本和
 计时动画、键盘以及窗口和服务回收。见
 [c8f43a1f](../work_log/c8f43a1f_qt_e19_software_quick_guest_smoke.md)。
+独立 Quick 应用可用安装后的 Qt 目标前缀交叉构建，已在客体完成软件首帧和回收检查。
+构建入口和最小模块闭包见 [b9673c26](../work_log/b9673c26_qt_e19_external_quick_application_builder.md)。
 
 E17/G05 已在冻结输入上实现真实 Widgets 与 Aurora Notes，受限功能资格见
 [0078](../work_log/0078_qt_e17_aurora_qualification.md)，构建/保存/复现见

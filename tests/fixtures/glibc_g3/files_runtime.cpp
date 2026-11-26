@@ -25,6 +25,8 @@ static_assert(sizeof(xos_file_response) == sizeof(xos::file::response));
 static_assert(offsetof(xos_file_request, data) == offsetof(xos::file::request, data));
 static_assert(offsetof(xos_file_response, data) == offsetof(xos::file::response, data));
 static_assert(offsetof(xos_file_response, value) == offsetof(xos::file::response, value));
+static_assert(static_cast<unsigned int>(xos_file_stat_check_exec) == xos::file::stat_check_exec);
+static_assert(static_cast<unsigned int>(xos_file_stat_exec_checked) == xos::file::stat_exec_checked);
 static_assert(sizeof(xos_file_startup) == sizeof(xos::startup_info));
 static_assert(sizeof(xos_file_startup_extension) == sizeof(xos::startup_extension));
 static_assert(sizeof(xos_file_startup_exec) == sizeof(xos::startup_exec_extension));
@@ -37,6 +39,7 @@ static std::mutex mock_lock;
 static xos_file_response pending;
 static bool has_pending;
 static unsigned int last_sequence, sends, opens, closes, pipe_closes;
+static unsigned int last_stat_flags;
 static long now_ns = 100;
 static const char* failure;
 static bool failure_armed;
@@ -132,6 +135,8 @@ static void process_request(const xos_file_request& input) {
             }
         }
     } else if (operation == xos::file::op::stat) {
+        assert(input.flags == 0 || input.flags == xos::file::stat_check_exec);
+        last_stat_flags = input.flags;
         if (!exists) pending.status_code = -1;
         else metadata();
     } else if (operation == xos::file::op::remove) {
@@ -577,10 +582,19 @@ static void error_case(const char* scenario) {
     assert(content_size <= 1);
 }
 
+static void access_legacy_stat() {
+    // The old service understands stat but omits the executable-probe bit.
+    assert(__xos_file_access("/fixture", X_OK) == -ENOTSUP);
+    assert(last_stat_flags == xos::file::stat_check_exec);
+    assert(__xos_file_access("/fixture", R_OK | W_OK) == 0);
+    assert(last_stat_flags == 0 && sends == 2 && opens == 0 && closes == 0);
+}
+
 int main(int argc, char** argv) {
     assert(argc == 2);
     if (!std::strcmp(argv[1], "basic")) basic();
     else if (!std::strcmp(argv[1], "bounds")) bounds();
+    else if (!std::strcmp(argv[1], "access_legacy_stat")) access_legacy_stat();
     else if (!std::strcmp(argv[1], "concurrent")) concurrent();
     else if (!std::strcmp(argv[1], "inheritance") || !std::strcmp(argv[1], "invalid_inheritance")
              || !std::strcmp(argv[1], "duplicate_cleanup")) inheritance(argv[1]);

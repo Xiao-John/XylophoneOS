@@ -16,6 +16,7 @@ from make_work_disk import make_image
 NATIVE_SOURCES = (
     ('fatfs', 'src/third_party/fatfs/ff.c'),
     ('unicode', 'src/user/services/fatfs_unicode.cpp'),
+    ('elf', 'src/user/loader/elf.cpp'),
     ('client', 'src/user/sdk/file_client.cpp'),
     ('text', 'src/user/sdk/text.cpp'),
     ('terminal_support', 'src/ports/glibc/terminal_support.cpp'),

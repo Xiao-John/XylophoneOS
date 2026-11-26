@@ -41,6 +41,9 @@ static int initialized, initialization_error, session_failed;
 static xos_u32 request_sequence, send_handle, receive_handle;
 static struct xos_file_request request;
 static struct xos_file_response response;
+enum { file_stat = 3, file_fstat = 18, file_cwd_get = 27 };
+/* The files service reserves this identity for its synthetic /dev namespace. */
+enum { file_device_directory_inode = 0xfffe };
 
 static int
 lock_session (void)
@@ -192,11 +195,16 @@ valid_response_shape (unsigned int operation)
       && (response.flags & ~1U) == 0 && response.reserved != 0
       && response.reserved <= 65535 && response.value <= 0xfffffffeULL
       && (operation != 21 || (response.flags == 0 && response.value == 0));
-  if (operation == 3 || operation == 18)
-    return response.handle == 0 && (response.flags & ~7U) == 0
+  if (operation == file_stat || operation == file_fstat)
+    {
+      unsigned int allowed_flags = 7U;
+      if (operation == file_stat && (request.flags & xos_file_stat_check_exec) != 0)
+        allowed_flags |= xos_file_stat_exec_checked;
+      return response.handle == 0 && (response.flags & ~allowed_flags) == 0
       && response.reserved != 0 && response.reserved <= 65535
       && response.value <= 0xfffffffeULL
       && (response.length == 0 || response.length == 24);
+    }
   if (response.handle != 0 || response.flags != 0 || response.reserved != 0)
     return 0;
   if (operation == 5 || operation == 30)
@@ -710,7 +718,7 @@ done:
 static long
 decode_stat (struct stat *output)
 {
-  if (response.value > 0xfffffffeULL || (response.flags & ~7U) != 0
+  if (response.value > 0xfffffffeULL || (response.flags & ~(7U | xos_file_stat_exec_checked)) != 0
       || response.reserved > 65535)
     return session_fault (EIO);
   struct stat value;
@@ -746,6 +754,18 @@ decode_stat (struct stat *output)
   return 0;
 }
 
+static long
+stat_path (const char *path, struct stat *output, unsigned int flags)
+{
+  long result = prepare_path (path);
+  request.flags = flags;
+  if (result == 0) result = call_service (file_stat);
+  if (result == 0 && (flags & xos_file_stat_check_exec) != 0
+      && (response.flags & xos_file_stat_exec_checked) == 0)
+    return -ENOTSUP;
+  return result == 0 ? decode_stat (output) : result;
+}
+
 long
 __xos_file_stat (int fd, const char *path, struct stat *output)
 {
@@ -776,12 +796,59 @@ __xos_file_stat (int fd, const char *path, struct stat *output)
     }
   else
     {
-      result = prepare_path (path);
-      if (result != 0) goto done;
+      result = stat_path (path, output, 0);
+      goto done;
     }
-  result = call_service (path == 0 ? 18 : 3);
+  result = call_service (file_fstat);
   if (result == 0) result = decode_stat (output);
 done:
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_getcwd (char *output, size_t capacity)
+{
+  int error = begin ();
+  if (error != 0) return error;
+  memset (&request, 0, sizeof (request));
+  long result = call_service (file_cwd_get);
+  if (result == 0)
+    {
+      size_t length = response.name_length + 1;
+      if (length > capacity) result = -ERANGE;
+      else
+        {
+          memcpy (output, response.name, length);
+          result = (long) length;
+        }
+    }
+  unlock_session ();
+  return result;
+}
+
+static long
+access_mode (const struct stat *status, int mode)
+{
+  if ((mode & R_OK) != 0 && (status->st_mode & S_IRUSR) == 0) return -EACCES;
+  if ((mode & W_OK) != 0 && ((status->st_mode & S_IWUSR) == 0
+                            || status->st_ino == file_device_directory_inode))
+    return -EACCES;
+  if ((mode & X_OK) != 0 && S_ISDIR (status->st_mode)
+      && (status->st_mode & S_IXUSR) == 0) return -EACCES;
+  return 0;
+}
+
+long
+__xos_file_access (const char *path, int mode)
+{
+  if ((mode & ~(R_OK | W_OK | X_OK)) != 0) return -EINVAL;
+  int error = begin ();
+  if (error != 0) return error;
+  struct stat status;
+  memset (&request, 0, sizeof (request));
+  long result = stat_path (path, &status, (mode & X_OK) != 0 ? xos_file_stat_check_exec : 0);
+  if (result == 0) result = access_mode (&status, mode);
   unlock_session ();
   return result;
 }

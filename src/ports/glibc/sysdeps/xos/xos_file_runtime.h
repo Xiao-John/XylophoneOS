@@ -15,6 +15,8 @@ long __xos_file_read (int, void *, size_t) __attribute__ ((visibility ("hidden")
 long __xos_file_write (int, const void *, size_t) __attribute__ ((visibility ("hidden")));
 long __xos_file_seek (int, long, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_stat (int, const char *, struct stat *) __attribute__ ((visibility ("hidden")));
+long __xos_file_getcwd (char *, size_t) __attribute__ ((visibility ("hidden")));
+long __xos_file_access (const char *, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_dup (int, int, int, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_fcntl (int, int, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_path_op (const char *, int) __attribute__ ((visibility ("hidden")));

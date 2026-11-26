@@ -52,6 +52,7 @@ enum flags : u32 {
     open_valid_mask = open_access_mask | open_option_mask | open_directory | open_pin,
     list_directories = 1u << 8,
     list_identity = 1u << 12, // op::list, owned directory handle; extended records below.
+    stat_check_exec = 1u << 13, // op::stat, check native image within the request.
     // op::remove: permit deleting a directory (rmdir semantics). Absent — the
     // default, since every existing client zeroes the request — a directory is
     // refused before f_unlink, so rm/unlink can never delete one.
@@ -102,6 +103,8 @@ inline constexpr u8 entry_is_directory = 1;
 inline constexpr u32 stat_is_directory = entry_is_directory;
 inline constexpr u32 stat_unlinked = 1u << 1;
 inline constexpr u32 stat_read_only = 1u << 2;
+// Returned on successful stat_check_exec only. An old service omits this bit.
+inline constexpr u32 stat_exec_checked = 1u << 3;
 // op::stat/fstat: first 8 bytes of response.data carry mtime seconds (0 = unknown).
 inline constexpr u32 stat_metadata_bytes = 8;
 inline constexpr u32 list_record_header_size = 7;

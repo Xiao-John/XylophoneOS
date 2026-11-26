@@ -2,6 +2,7 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #include <xos/sdk.hpp>
 #include <xos/file_abi.hpp>
+#include <xos/elf.hpp>
 #include <xos/text.hpp>
 #include <stddef.h>
 #include "ff.h"
@@ -491,6 +492,39 @@ u32 find_object(file_identity_key key) {
         }
     }
     return 0;
+}
+
+bool read_image_bytes(void* context, u64 offset, u8* data, u32 length) {
+    auto& file = *static_cast<FIL*>(context);
+    UINT count = 0;
+    return offset <= fat32_max_file_bytes &&
+        f_lseek(&file, static_cast<FSIZE_t>(offset)) == FR_OK &&
+        f_read(&file, data, length, &count) == FR_OK && count == length;
+}
+
+status inspect_image(FIL& file) {
+    elf::load_plan plan{};
+    const auto result = elf::inspect_reader(read_image_bytes, &file, f_size(&file),
+                                            elf::machine_x86_64, plan);
+    if (result == elf::error::none) { return status::ok; }
+    return result == elf::error::io ? status::io : status::access_denied;
+}
+
+status inspect_path_image(const char* path, u32 object) {
+    // Reuse the physical FIL if someone already has the file open. All
+    // service operations have exclusive use of it for one request, and
+    // logical offsets live in open_description, never in the FIL cursor.
+    if (object != 0 && !file_objects[object - 1].closed) {
+        return inspect_image(file_objects[object - 1].file);
+    }
+    FIL local{};
+    const FRESULT opened = f_open(&local, path, FA_READ);
+    if (opened != FR_OK) { return from_fr(opened); }
+    const status result = inspect_image(local);
+    const FRESULT closed = f_close(&local);
+    // No session open or pin survives this request, even if its reply cannot
+    // be delivered. The native loader still validates the object it opens.
+    return closed == FR_OK ? result : from_fr(closed);
 }
 
 status cleanup_object(u32 index) {
@@ -1429,10 +1463,11 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     case op::stat: {
         path_reference resolved;
         if (!request_path(in, session, resolved, true, true)) { reply(out, in, resolved.error); break; }
+        const u32 checked = (in.flags & stat_check_exec) != 0 ? stat_exec_checked : 0;
         const char* path = resolved.path;
         if (path[0] == '\0') {
             reply(out, in, status::ok);
-            out.flags = stat_is_directory;
+            out.flags = stat_is_directory | checked;
             out.reserved = 1;
             break;
         }
@@ -1440,10 +1475,11 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             reply(out, in, status::ok);
             out.value = 0;
             out.reserved = dev_directory_inode;
-            out.flags = stat_is_directory;
+            out.flags = stat_is_directory | checked;
             break;
         }
         if (is_null_device(path)) {
+            if (checked != 0) { reply(out, in, status::access_denied); break; }
             reply(out, in, status::ok);
             out.value = 0;
             out.reserved = null_device_inode;
@@ -1452,15 +1488,19 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         FILINFO info{};
         const FRESULT result = f_stat(path, &info);
         if (result != FR_OK) { reply(out, in, from_fr(result)); break; }
+        const bool directory = (info.fattrib & AM_DIR) != 0;
+        const u32 object = find_object(identity_key(info));
+        if (checked != 0 && !directory) {
+            const status inspected = inspect_path_image(path, object);
+            if (inspected != status::ok) { reply(out, in, inspected); break; }
+        }
         u16 inode = 0;
         if (!identity_for_info(info, inode)) { reply(out, in, status::full); break; }
         reply(out, in, status::ok);
         out.value = info.fsize;
         out.reserved = inode;
-        if ((info.fattrib & AM_DIR) != 0) { out.flags = stat_is_directory; }
-        write_stat_metadata(out, (info.fattrib & AM_DIR) != 0, info.fattrib,
-                            fat_to_unix(info.fdate, info.ftime));
-        const u32 object = find_object(identity_key(info));
+        out.flags = (directory ? stat_is_directory : 0) | checked;
+        write_stat_metadata(out, directory, info.fattrib, fat_to_unix(info.fdate, info.ftime));
         if (object != 0) {
             const file_object& retained = file_objects[object - 1];
             if (!retained.directory && !retained.closed) { out.value = f_size(&retained.file); }

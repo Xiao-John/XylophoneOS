@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "materials_manifest_sha256": "28566ca68b6d902dafa62bb90f60de1fa30631dd189977c3777ad361446ae676",
+  "rejections": [
+    "materials content differs: README.md",
+    "materials file inventory differs",
+    "special file in materials"
+  ],
+  "verified_after_restoring": true
+}

@@ -1,0 +1,41 @@
+{
+  "status": "passed_subset",
+  "launcher": "dash",
+  "system_build_id": "20f8c42fae412943",
+  "system_manifest_sha256": "d6d4da05b0bec5ff3e8eda9f9fecff77afeec3f72961025b661c3eb7cba53218",
+  "image_sha256": "519204b244d0902f067b7a10f24a9906d17884932585d5c60b8ead6a3c3e2f10",
+  "elf_sha256": "6a1d6bf15a1814e5f20bc4876803e695a5bfb0d1bfba4548a0f7d1de692b7a3e",
+  "app_receipt_sha256": "4bed1855737fce04742d2922b98cc52bf3d3da3c6cb678159a5c50f497dde1c1",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "dash_manifest_sha256": "29a4c28ee614ee0070f8ac3ed80000fe50380be8c850e17e2ef394ff20e45c22",
+  "dash_elf_sha256": "c482a3f53fe1fcc18311826bfac4c3442809afa17e0501269234f301eeef75a1",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "with_graphics": [
+    121620,
+    5,
+    3
+  ],
+  "scanout": {
+    "mode": [
+      800,
+      600
+    ],
+    "text_ink_pixels": 475,
+    "sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1"
+  },
+  "after_payload": [
+    121620,
+    5,
+    3
+  ],
+  "after_services": [
+    129696,
+    3,
+    1
+  ]
+}

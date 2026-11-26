@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import selectors
+import signal
 import socket
 import stat
 import struct
@@ -28,6 +29,7 @@ header = struct.Struct("<4sHBBQ")
 account_selection = struct.Struct("<I32s92x")
 empty_account = bytes(account_selection.size)
 duplicate_enrollment = 6
+desktop_revoked = 7
 mark_layout = struct.Struct("<16sQQ32s")
 credential_file_header = struct.Struct("<8s16sQ")
 file_magic = b"PUMKEY\0\1"
@@ -43,9 +45,10 @@ issue, submit = range(1, 3)
 scenarios = {"enroll": 4, "login": 5, "revoke": 6, "read-resource": 7}
 named_operations = {"read-named": 1, "publish-named": 2, "erase-named": 3, "import-fat": 4}
 scenarios.update({"read-named": 9, "publish-named": 10, "erase-named": 11, "import-fat": 12})
-scenarios["desktop"] = 13
+scenarios.update({"desktop": 13, "desktop-admin": 14})
 named_writes = ("publish-named", "erase-named", "import-fat")
-submission_commands = ("login", "read-resource", "read-named", "desktop")
+desktop_commands = ("desktop", "desktop-admin")
+submission_commands = ("login", "read-resource", "read-named", *desktop_commands)
 credential_operations = {"enroll": issue, **dict.fromkeys(submission_commands, submit)}
 named_layout = struct.Struct("<QIB3x16s")
 named_empty = bytes(frame_size - header.size)
@@ -330,7 +333,7 @@ def named_exchange(vm, command, frame, selection, selection_sent):
     return status, actual, returned
 
 
-def boot(system, state, command, authority, previous, path, stored, account, selection, display):
+def boot(system, state, command, authority, previous, path, stored, account, selection, display, revoke_requested):
     with tempfile.TemporaryDirectory(prefix="pumpkin_user_") as private, ExitStack() as close_wallet:
         monitor = Path(private) / "qmp"
         drive = str(state / "work.img").replace(",", ",,")
@@ -351,12 +354,26 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
             wallet = None
             selection_sent = False
             named_result = None
-            for _ in range(20):
+            desktop_end = None
+            admin_polls = 0
+            revocation_sent = revocation_attempted = revocation_published = False
+            remaining_frames = 20
+            while remaining_frames:
                 frame = bytearray(frame_size)
                 try:
-                    timeout = 31 * 60 if command == "desktop" and credential_seen else 12
-                    vm.receive(frame, time.monotonic() + timeout)
+                    vm.receive(frame, desktop_end if desktop_end is not None else time.monotonic() + 12)
                     tag, version, operation, status, serial = header.unpack_from(frame)
+                    if tag == b"PKD1":
+                        admin_polls += 1
+                        require(command == "desktop-admin" and account_seen and credential_seen and
+                                not revocation_sent and 1 <= admin_polls <= 1800 and serial == admin_polls and
+                                version == 1 and operation == scenarios[command] and status == 0 and
+                                not any(frame[header.size:]), "Invalid live desktop administration frame")
+                        revocation_sent = bool(revoke_requested())
+                        header.pack_into(frame, 0, tag, version, operation, int(revocation_sent), serial)
+                        vm.send(frame)
+                        continue
+                    remaining_frames -= 1
                     if tag == b"PKO1":
                         require(version == 1 and operation == scenarios[command] and status == 0 and
                                 frame[header.size:] == empty_account, "Invalid private account selection prompt")
@@ -385,6 +402,8 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
                         finally:
                             wipe(stored)
                         credential_seen = True
+                        if command in desktop_commands:
+                            desktop_end = time.monotonic() + 31 * 60
                         continue
                     if tag == b"PKN1":
                         require(selection is not None and named_result is None, "Unexpected named resource frame")
@@ -402,11 +421,15 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
                             selected.realm, selected.revision, selected.length, selected.checksum)
                         reply = generation_packet(read, int(selected is None), sequence, encoded)
                     elif operation == publish:
-                        require(status == 0 and command in ("enroll", "revoke", *named_writes),
+                        live_revoke = command == "desktop-admin" and revocation_sent and not revocation_attempted
+                        require(status == 0 and (command in ("enroll", "revoke", *named_writes) or live_revoke),
                                 "Generation publication is unavailable in this operation")
                         candidate = decode_mark(value, authority.named_resources)
                         require(candidate is not None, "Missing generation publication")
+                        revocation_attempted = revocation_attempted or live_revoke
                         result = authority.publish(decode_mark(expected, authority.named_resources), candidate)
+                        if live_revoke:
+                            revocation_published = result == publish_result.committed
                         codes = {publish_result.committed: 0, publish_result.conflict: 1,
                                  publish_result.unchanged: 2, publish_result.outcome_unknown: 3}
                         reply = generation_packet(publish, codes[result], sequence)
@@ -419,7 +442,7 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
                         require(vm.process.wait(timeout=8) == 0, "Private guest shutdown failed")
                         if command in ("read-resource", "read-named") and status in resource_errors:
                             raise login_error(resource_errors[status])
-                        if command == "desktop" and status == 36:
+                        if command in desktop_commands and status == 36 and not revocation_sent:
                             raise login_error("Pumpkin desktop could not start or its logout was not confirmed")
                         if command == "enroll" and status == duplicate_enrollment:
                             require(not credential_seen and wallet is None, "Duplicate enrollment attempted credential issue")
@@ -429,6 +452,10 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
                             require(named_result is not None and status == named_result[0],
                                     "Named resource result was not confirmed")
                             return named_result
+                        if command == "desktop-admin" and revocation_sent:
+                            require(status == desktop_revoked and revocation_published,
+                                    "Pumpkin live revocation could not be confirmed; check durable state before retrying")
+                            return status
                         require(status == 1 or (status == 2 and command in submission_commands),
                                 "Private login did not complete; check the account before retrying enrollment")
                         return status
@@ -445,10 +472,12 @@ def named_profile(system):
     return json.loads((system / "manifest.json").read_bytes()).get("pumpkin_named_resource_store") is True
 
 
-def operate(system, state, command, path, selection=None, account=b"alice", *, display=None):
+def operate(system, state, command, path, selection=None, account=b"alice", *, display=None, revoke_requested=None):
     binding = bind_system(system)
-    require(command != "desktop" or "user_interactiumd.image.elf" in binding[2],
+    require(command not in desktop_commands or "user_interactiumd.image.elf" in binding[2],
             "Select a private login image with a bound Mobius executable")
+    require((revoke_requested is not None) == (command == "desktop-admin"),
+            "Live revocation requires an explicit administration source")
     named = named_profile(system)
     require(command != "read-resource" or (broker_artifact in binding[2] and not named),
             "Select the private Pumpkin sealed resource image")
@@ -469,14 +498,16 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
             elif command in submission_commands:
                 with credential_file(path, False) as wallet:
                     read_credential(wallet[0], stored)
-            result = boot(system, state, command, authority, previous, path, stored, account, selection, display)
+            result = boot(system, state, command, authority, previous, path, stored, account, selection, display,
+                          revoke_requested)
             require(bind_system(system) == binding, "Login image receipt changed during operation")
             final = authority.read()
             if command == "enroll" and result == duplicate_enrollment:
                 require(previous is not None and final == previous, "Duplicate enrollment changed the account store")
                 raise login_error("The selected account is already enrolled")
             mutation = command in named_writes and result[0] == 1
-            expected = 2 if previous is None else previous.revision + (command in ("enroll", "revoke") or mutation)
+            revoked = command == "desktop-admin" and result == desktop_revoked
+            expected = 2 if previous is None else previous.revision + (command in ("enroll", "revoke") or mutation or revoked)
             require(final is not None and final.revision == expected,
                     "Independent account generation did not confirm the expected state")
             require(previous is None or expected != previous.revision or final == previous,
@@ -490,7 +521,7 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("prepare", *scenarios))
+    parser.add_argument("operation", choices=("prepare", *(item for item in scenarios if item != "desktop-admin")))
     parser.add_argument("--system", type=Path)
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--credential-file", type=Path)
@@ -500,6 +531,7 @@ def main():
     parser.add_argument("--resource-value", type=int, help="unsigned 32-bit value for publish-named")
     parser.add_argument("--fat-source", help="absolute guest source file for import-fat")
     parser.add_argument("--display", help="QEMU display backend for the desktop operation")
+    parser.add_argument("--revoke-on-signal", action="store_true", help="enable same-owner host SIGUSR1 to revoke the live desktop login")
     args = parser.parse_args()
     if args.operation != "prepare" and args.system is None:
         parser.error("a matching --system is required")
@@ -507,6 +539,8 @@ def main():
         parser.error("--credential-file is required for credential submission and enrollment")
     if args.display is not None and args.operation != "desktop":
         parser.error("--display requires the desktop operation")
+    if args.revoke_on_signal and args.operation != "desktop":
+        parser.error("--revoke-on-signal requires the desktop operation")
     account = "alice" if args.account is None else args.account
     if (args.operation == "prepare" and args.account is not None) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,31}", account) is None:
         parser.error("select an account name of 1 to 32 characters for an account operation")
@@ -541,8 +575,22 @@ def main():
             print("Private Pumpkin installation prepared")
             return 0
         path = args.credential_file.absolute() if args.credential_file is not None else None
-        result = operate(args.system.absolute(), state, args.operation, path, selected, account.encode("ascii"),
-                         display=args.display)
+        requested = False
+        if args.revoke_on_signal:
+            def request_revocation(signum, frame):
+                nonlocal requested
+                requested = True
+
+            old_handler = signal.signal(signal.SIGUSR1, request_revocation)
+            try:
+                print(f"Live Pumpkin administration enabled for process {os.getpid()}", flush=True)
+                result = operate(args.system.absolute(), state, "desktop-admin", path, account=account.encode("ascii"),
+                                 display=args.display, revoke_requested=lambda: requested)
+            finally:
+                signal.signal(signal.SIGUSR1, old_handler)
+        else:
+            result = operate(args.system.absolute(), state, args.operation, path, selected, account.encode("ascii"),
+                             display=args.display)
         if selected is not None:
             result, generation, data = result
             if result == 1:
@@ -561,6 +609,9 @@ def main():
         if result == 2:
             print("Pumpkin login denied")
             return 3
+        if args.revoke_on_signal and result == desktop_revoked:
+            print("Pumpkin revoked the account and retired the active Mobius session")
+            return 0
         print({"enroll": "Pumpkin credential issued to your private file",
                "login": "Pumpkin login confirmed and session logged out",
                "desktop": "Mobius closed and Pumpkin confirmed logout",

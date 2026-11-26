@@ -1,0 +1,74 @@
+{
+  "baseline_commit": "d7c56292f191d9b43b43429eae5a3774a689fc15",
+  "source_commit": "9c35f71544ab8e0aa0dc656e958cdc7625c8df7e",
+  "source_tree": "43068ea782513af5bb68ee4a4f4a6c5b47ee3d28",
+  "prior_verified_source_commit": "05c11d52792970f27199e787e05d4de1255cf984",
+  "prior_run_manifest_sha256": "5cf40e6acd6160f9016917fba8ecec84aae35953929eee71f5b85008b8348032",
+  "changed_source_inputs_since_prior_guest_builds": [
+    "scripts/build_candidate.py",
+    "scripts/build_glibc_daily_bundle.py",
+    "src/user/include/xos/file_ui.hpp",
+    "src/user/programs/supervisor.cpp",
+    "src/user/services/file_ui.cpp",
+    "tests/daily_utilities_p2_guest.py",
+    "tests/glibc_selected_app_matrix_guest.py",
+    "tests/iso_dash_install.py"
+  ],
+  "mobius_previous_glibc_sdk": {
+    "binding_file_sha256": "d4cd27a8a521638d6c501339221702896fe59c3ba3fb632609e3f4a5a1ee83a5",
+    "application_profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+    "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+    "sdk_tree_sha256": "b0d6dc0e59ad68ce22b4b98d03f6df26e85aa1046bc833ee1c92d04ff1652125",
+    "build_receipt_sha256": "3f6ffda5f68f839cab3c590a2656c9de61e6376da4345efddff83018577c8483",
+    "elf_sha256": "9fdacb77d2dc935a83150d68f6275cc355f50cd3c8b693b7eb2e7529a612a413",
+    "elf_bytes": 32670232
+  },
+  "execution_profiles": {
+    "desktop": {
+      "build_id": "49e0540aae2906af",
+      "source_inputs_sha256": "49e0540aae2906af4b5581dfd1c395bb10f4a4db49b9724aa2dc46f4343c3aa2",
+      "system_manifest_sha256": "7dbd8eaa13ef40e6ebbe4214ecd452e608c81441064f824f137ffd715bc8cb90",
+      "installer_sha256": "bf98801f6afc9d2e1da11fed9df188577cdaacf3658ad1dffc6602971398a304",
+      "real_mode_image_sha256": "6dc75e093aa5cddfa09a00e5560789a481b54017cd0bdc3d8f9c15c563a3e86f",
+      "kernel_sha256": "89907bb7f4dfcfe5d9e5213cf2f95e7756dc454b26b2650e3597adc8024d9113",
+      "system_generated_sdk_manifest_sha256": "385e76106e5e0c395088a8329b7b3c31c95df6744303d4a28b6e93ae4783646a",
+      "pumpkin_operator_protocol": 2,
+      "toolchain": {
+        "target": "x86_64-elf",
+        "gcc": "16.2.0",
+        "binutils_release": "2.47",
+        "binutils": "2.47.20260726",
+        "nasm": "3.02",
+        "qemu": "11.1.2",
+        "cpp_standard": "c++20"
+      },
+      "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+      "guest_report_sha256": "df5fe930e01bdfe5e8725c740809f09921cd9f735d631c7961de002f1591d454",
+      "guest_checks_passed": 8,
+      "embedded_runtime_images_matching_prior_build": 33
+    },
+    "headless": {
+      "build_id": "412e44eb2bbbecc7",
+      "source_inputs_sha256": "412e44eb2bbbecc7127d2c0cc2b4ecd895813feb74aa27d1f4affb8de1a0582d",
+      "system_manifest_sha256": "b9f6a1ca89a3c8340d9bf7111e35ff9d145aef9b92a3085c725129bb392bf83b",
+      "installer_sha256": "e8e555bfde1ddefdcbd02a837961f983c2a1792609a924422d556017a0a26c64",
+      "real_mode_image_sha256": "ff20b559928f0a5f9cc8c830d8efde3e85c08a7c0d1be4164c5cee1a8d738cdb",
+      "kernel_sha256": "ade9a2ff862417e4a9a7c4df8f14e1083a1c10374af7e66df953dc275830af8a",
+      "system_generated_sdk_manifest_sha256": "07e855df6e6838ac1ae9c6dd41f7a345e5020ecf20bda94da696051eed8e1830",
+      "pumpkin_operator_protocol": 2,
+      "toolchain": {
+        "target": "x86_64-elf",
+        "gcc": "16.2.0",
+        "binutils_release": "2.47",
+        "binutils": "2.47.20260726",
+        "nasm": "3.02",
+        "qemu": "11.1.2",
+        "cpp_standard": "c++20"
+      },
+      "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+      "guest_report_sha256": "859933e8a15ed96c765484f601a7a0260cd3544e1f7427488538bed34e04e051",
+      "guest_checks_passed": 13,
+      "embedded_runtime_images_matching_prior_build": 33
+    }
+  }
+}

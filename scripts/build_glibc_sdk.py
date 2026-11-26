@@ -18,6 +18,11 @@ from build_glibc_terminal_support import input_paths as terminal_inputs
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT / 'src/ports/glibc'
+SDK_SCRIPTS = (
+    'archive_member_map.py', 'build_glibc_program.py', 'build_glibc_sdk.py',
+    'build_glibc_terminal_support.py', 'glibc_g1_deps.py', 'glibc_g1_probe.py',
+    'verify_glibc_source.py', 'xos_app.py', 'xypm_format.py', 'xypm_sdk_profile.py',
+)
 
 
 def sha(path):
@@ -27,9 +32,7 @@ def sha(path):
 
 def inputs():
     paths = [p for p in sorted(PORT.rglob('*')) if p.is_file()]
-    paths.extend(ROOT / 'scripts' / name for name in
-                 ('build_glibc_sdk.py', 'build_glibc_program.py',
-                  'glibc_g1_probe.py', 'glibc_g1_deps.py', 'verify_glibc_source.py'))
+    paths.extend(ROOT / 'scripts' / name for name in SDK_SCRIPTS)
     paths.extend(terminal_inputs())
     return {str(p.relative_to(ROOT)): sha(p) for p in sorted(set(paths))}
 
@@ -214,9 +217,7 @@ def main():
             shutil.copyfile(origin, compiler_licenses / name)
         shutil.copytree(PORT, materials / 'port')
         (materials / 'scripts').mkdir()
-        for name in ('build_glibc_sdk.py', 'build_glibc_program.py',
-                     'glibc_g1_probe.py', 'glibc_g1_deps.py', 'verify_glibc_source.py',
-                     'build_glibc_terminal_support.py'):
+        for name in SDK_SCRIPTS:
             shutil.copyfile(ROOT / 'scripts' / name, materials / 'scripts' / name)
         (materials / 'provenance.json').write_text(json.dumps({
             'source': lock, 'source_verification': report['source_verification'],

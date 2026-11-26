@@ -37,3 +37,24 @@ xsh 权限负向走普通 `exec-file` 入口。现行 dash 权限负向通过测
 | 普通安装回执 | `518b76238dfbaaf45712adcffbe6ab72213caefa12728c3a6d609fe3cb9ed41a` |
 | 来宾报告 | `8459bd734b60b33dfb1fbea83cb3012be934afdaa0d63f454ab2503359088722` |
 | 串口 | `c384204dffb8d7703ed0a9df212d5a160ab30d36b6949814cd141fe43f600957` |
+
+## 主线冲突复验
+
+切换到合入进程修复后的主线 `db8e15dd` 时，自动合并保留了旧预览的
+外部命令拒绝分支。真实客体验证在首条外部命令返回 126。保留常规 newlib 入口并
+恢复预览的原生 spawn 后，从 `fff643bb` 的源码重建正常镜像。xsh 和 dash 共
+22 项通过，每项恢复 `129698 / 3 / 1`。常规 dash ELF 摘要仍为上表所列。
+此次针对进程变更的新签名 SDK manifest 为
+`1d516751a2169d525a6f3328a7904a1d248d7b2d4d739b5752dd3af6bed27335`。
+
+| 复验输入 | SHA-256 |
+| --- | --- |
+| 系统 `fb33ca87475cd129` manifest | `02145f1f82c6dd7ad1bce564bb8bec473f0a2aa5f5069fb2734dc1ac97a90b79` |
+| ISO | `58886f902f18fb4ad6c64807580cac2c7d9aeedfd806ff2a270a38b77db933cf` |
+| 系统 SDK manifest | `09e592e86e99cb29e45afeb95fba9289ef19c0789c914573d7eac827863402e2` |
+| glibc profile | `dd863ea5c10d8799db7cf498a36dab8ec8121e2a0c847ebb01c7ca92d9b3e9a6` |
+| glibc dash 构建回执 | `3603d424453738286b62dbe472ad2a61bba269422f067028488abb5deb8a7d59` |
+| QEMU 报告 | `ca5539727292324b2ad1d200281dd500d7426c465e54fbeb8b645a247329664a` |
+
+一轮并行构建期间的独立启动门禁未在时限内观察到损坏引导拒绝标记。
+本表只记录启动到正常 xsh 后的 dash 复验结果。

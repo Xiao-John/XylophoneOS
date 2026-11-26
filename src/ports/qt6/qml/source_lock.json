@@ -1,0 +1,9 @@
+{
+  "component": "qtdeclarative",
+  "version": "6.8.3",
+  "tag": "v6.8.3",
+  "tag_commit": "2ec235a2235a119887683e55787b93f99dc5f12f",
+  "url": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtdeclarative-everywhere-src-6.8.3.tar.xz",
+  "sha256": "1f03a2b8f5588b4face7da87926e9b2c1372b3a32157c52df07a75067a9db1af",
+  "qtbase_commit": "c07c2d5a527a644d36e7853d55132ae38921682f"
+}

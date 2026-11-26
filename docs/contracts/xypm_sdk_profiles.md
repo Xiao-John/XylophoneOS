@@ -17,8 +17,8 @@
 当前 `xos_app.py` 的应用构建后端服务于 newlib：历史 profile 未写
 `runtime_family` 时按其既有 newlib 语义处理，明确标为 glibc 的候选会在读取 SDK
 材料前失败。glibc 程序使用独立的 `build_glibc_program.py` 及其成套 sysroot。
-glibc xypm 构建、安装和客体运行由后续应用迁移模块接入；本入口生成的候选用于
-锁定和审查 SDK，便于该模块复用。
+该入口可显式加载由本契约生成的 glibc 候选，静态编译 C 或 C++ 应用。xypm 安装
+支持仍待应用迁移模块接入。
 
 ## SDK 准入
 
@@ -104,3 +104,37 @@ python3 tests/xypm_sdk_profile_host.py
 
 glibc C++ 使用完成的独立 C++ SDK，创建时另加 `--cxx` 和独立候选 ID/输出。
 模板、生成器和测试不改动已有 SDK，也不自动写入冻结 profile 目录。
+
+## 静态应用构建与回退
+
+使用与候选 SDK 绑定的工具链，选择对应的完整 SDK、候选 JSON 和独立输出目录。
+
+```sh
+python3 scripts/build_glibc_program.py \
+  --sdk "$XOS_GLIBC_SDK_BUILD/sysroot" \
+  --profile build/xypm_profiles/glibc_candidate.json \
+  --source tests/fixtures/glibc_g2/static_main.c \
+  --output build/application_glibc/static_main.elf
+
+python3 scripts/build_glibc_program.py --cxx \
+  --sdk "$XOS_GLIBC_CXX_SDK_BUILD/sysroot" \
+  --profile build/xypm_profiles/glibc_cxx_candidate.json \
+  --source tests/fixtures/cpp_abi/string_vector_probe.cpp \
+  --output build/application_glibc/string_vector.elf
+```
+
+`--profile` 使用完整绑定核验，并在链接后再次核验。工具链对应的汇编器和链接器
+按 SDK 清单校验并显式选择。头文件、CRT、libc、libm、libgcc 及 C++ 归档均来自
+被核验的 sysroot。应用回执记录 profile、编译工具及 ELF 摘要，客体资格为
+`not_run`。既有 C 构建入口仍接受 SDK 和源文件；`--diagnostic` 用于诊断构建。
+
+回退时使用原来绑定冻结 newlib SDK 的 `xos_app.json`、新旧隔离的项目输出和原
+profile、工作盘。以下命令使用 `0.0.1-1024` 冻结 SDK 对应的 profile。
+`XOS_NEWLIB_PROJECT` 应指向原项目或保留目标 profile 的独立副本。
+
+```sh
+python3 scripts/xos_app.py --profile config/package/xos_x86_64_static_single_v1.json \
+  build "$XOS_NEWLIB_PROJECT" --sdk "$XOS_FROZEN_NEWLIB_SDK"
+python3 scripts/xos_app.py --profile config/package/xos_x86_64_static_single_v1.json \
+  check "$XOS_NEWLIB_PROJECT" --sdk "$XOS_FROZEN_NEWLIB_SDK"
+```

@@ -1,7 +1,8 @@
 # XOS 当前状态（全局快照）
 
-2026-11-26 · 整合阶段快照。主线代码与契约已收口至 #172。
-最终主线重建、整体验收与发行准备裁决待填。[阶段记录](work_log/efc3a5ff_xos_integration_campaign.md)
+2026-11-26 · 下一阶段里程碑。主线已合入静态 glibc 迁移基线、QtCore 的 glibc 构建、
+Mobius/ClarkE 开发包及 Pumpkin 原生 IPC。各模块的客体结果与全量组合验收分别登记。
+[本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
 
 按 [Discipline](Discipline.md) 在合并、发行或里程碑更新。过程与证据见
 [work_log](work_log/) 和 [history](history/)，设计原则见
@@ -31,7 +32,9 @@
 | 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
 | VirtIO-Net / N2–N3 | sys112 授权的用户态驱动和 lwIP v2 已合入。传输、多应用隔离、生命周期和撤销有绑定客体结果。raw 诊断保持隔离。 | [原始帧纵切](contracts/net_user_driver.md)、[v2 契约](contracts/net_service_v2.md)、[多应用复验](work_log/69b0e274_network_guest_readiness_and_window.md) |
 | N4 DNS/DHCP | 配置与名称契约以及 DNS 回包收紧已合入。生产 DNS/DHCP 保持关闭。 | [N4 契约](contracts/network_n4_v1_proposal.md)、[DNS 记录](work_log/4e29c6b1_network_dns_hardening.md) |
-| Aurora 浏览器 | 本地 HTML/CSS 和受控 HTTP 路径有匹配 SDK、浏览器及镜像的客体证据。最终组合复验待收口。 | [浏览器契约](contracts/aurora_browser.md)、[N3 TCP/UDP 与 HTTP](work_log/e8f504b1_n3_native_tcp_udp_and_http_clients.md) |
+| ClarkE 浏览器 | 原有本地 HTML/CSS 和受控 HTTP 路径有客体证据。独立开发包的安装、升级、双入口启动和卸载通过。WebKit 已具备独立 XOS 平台识别。 | [产品包复验](work_log/af27a498_desktop_product_packages.md)、[WebKit 计划](plans/webengine_port.md) |
+| Mobius 系统 UI | 产品入口和独立开发包已合入。xsh 与 dash 客体启动均通过，卸载保留原用户文件。 | [产品包复验](work_log/af27a498_desktop_product_packages.md) |
+| Pumpkin | 身份核心、原生 IPC、私有存储区和受信测试客户端已合入。易失会话通过双 Shell 复验。可重启守护进程的测试配置已合入并重验。 | [身份核心](work_log/c6198fee_pumpkin_identity_core.md)、[授权客户端](work_log/eaf8370d_pumpkin_authenticated_files_client.md)、[重启复验](work_log/d1c062ce_next_stage_combination.md#持久守护进程合入后) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |
 | Semantic Broker / 时间语义 / G3 复核 | #30/#31/#32 已合（勘查与限定模型） | [0108](work_log/0108_semantic_pipe_probe.md)、[0109](work_log/0109_temporal_semantics.md)、[0110](work_log/0110_aurora_g3_review.md) |
 | 现代应用兼容 Phase 1 | 已合，探针级；完整浏览器/Core/HTTPS 未通过 | [0085](work_log/0085_modern_app_compatibility_phase1.md) |
@@ -53,18 +56,29 @@
 | 显示/ISO | sys65/66 在 buildef83c9fc92217380 重验 G02 19组通过 | [当前报告](reports/qt_e16_qualified_20261028/g02/report.json)、[显示历史](history/boot_display.md)；QtGui/QPA 单全屏 raster 已验 |
 | CPython | PY0–PY2/T3-PY、A1–A3、B1–B4专项通过 | [用户态摘要](history/userland.md)；B2–B4系统6251d26b611a388d，Python11c39c52e451a9499450 |
 | xypm | P2 验证、事务与启动恢复有客体记录。P3 离线仓库、锁、拒绝路径及重启后回读已合入并在匹配的 newlib SDK 客体复验。 | [P2](work_log/0066_xypm_p2_validation.md)、[P3](work_log/7c2de8a4_xypm_p3_preview_guest.md)、[包计划](plans/packages.md) |
-| glibc | G1–G3 与上游认证已合入，覆盖静态 CRT/TLS、pthread、文件服务及共享退出机制。#168 的 wait-any 保留 #161 原提交。 | [线程契约](contracts/glibc_static_threads.md)、[文件契约](contracts/glibc_files_v1.md)、[共享整合](work_log/efc3a5ff_xos_integration_campaign.md) |
+| glibc | 静态 C/C++ 构建、分配器锁修复和 dash 预览已合入。新预览在两种 Shell 各通过七项。完整 C3、D1–D4 和 SDK 默认切换待验。 | [迁移基线](work_log/c7442fa6_glibc_application_migration.md)、[分配器](work_log/54ff4de4_glibc_allocator_locking.md)、[dash](work_log/aff51323_dash_glibc_preview.md) |
 | SDK 过渡 | newlib 是现行默认。glibc C/C++ 使用隔离候选与配套验收，候选准入和激活分别登记。普通及线程 newlib 的文件能力清单已有同源阶段复验。 | [SDK profile 契约](contracts/xypm_sdk_profiles.md)、[glibc 源认证](work_log/53bc719e_glibc_source_authentication.md)、[阶段记录](work_log/efc3a5ff_xos_integration_campaign.md) |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
-| POSIX/Qt | PX0子集文档已有；QtCore 6.8.3 G01/G03 与 QtGui/QPA G04 受限客体功能通过 | [PX路线](plans/posix.md)、[E16资格](reports/qt_e16_qualified_20261028/qualification.json)；Widgets/G05 已受限客体验证，见0078；QML/Quick 未实现，绝对峰值未验 |
+| POSIX/Qt | QtCore 和静态 QtQml 已合入。QtQml 已在独立客体通过脚本、绑定、回收和虚拟内存配额失败检查。Qt Quick 图形路径待验。 | [QtCore 复验](work_log/8d6f3d2c_qt_e18_glibc_qtcore_target_build.md)、[QtQml 复验](work_log/d8bd3467_qt_e18_target_qml_and_vm.md)、[Qt 专项进展](plans/qt.md) |
 | 许可 | 材料检查通过；newlib 1053/1053、GCC 运行库 397/407 成员映射、GNU Seed 分发审查、Qt 静态分发审查与收口材料（文本/§4d0/补丁标注）已交付 | [许可证管理](licensing.md)、[0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)；均为映射/材料审查，**非法务意见**，Qt 静态交付物已按 B4/B5 门槛随 0.0.2-1103 分发（非法务意见） |
 
 每项资格绑定各自冻结的源码、SDK、镜像和配置。逐成员许可范围按各自审查记录追溯。
 
+## 正在进行
+
+| 负责线 | 范围 |
+| --- | --- |
+| 总协调 | 阶段计划、产品标识、公共 ABI、SDK 默认和组合验收 |
+| 运行库 | 旧阻塞复核、C/C++ SDK 和存量应用迁移 |
+| Qt 与浏览器 | QML/Quick 构建和平台勘查，ClarkE 引擎纵切 |
+| 身份 | Pumpkin 用户态协议、权限和持久化边界 |
+
+[阶段计划](plans/next_stage.md)
+
 ## 下一步
 
-- 按 [阶段记录](work_log/efc3a5ff_xos_integration_campaign.md) 核对剩余 PR 和实际合并树，
-  从最终提交重建系统及两套 SDK，再执行整体验收和发行准备裁决。
+- 首次组合快照复验通过启动、内核、文件、运行时及三个用户态模块。后续接口合入后
+  需再次绑定最终提交，重建两套 SDK 并运行全量组合门禁。[组合复验](work_log/d1c062ce_next_stage_combination.md)
 - N4 生产启用、glibc 默认 SDK 切换、动态链接 D1–D4、显示/ps2/ata 后续设备迁移、
   系统重建/自举（D6）与 Qt QML/Quick 各按专项计划推进。
 - 按 Discipline → 本页 → 宪法 → 专项契约/登记接手；新开发独立分支/PR 交付，

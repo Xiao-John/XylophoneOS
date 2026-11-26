@@ -7,6 +7,12 @@
 #include <stddef.h>
 #include "ff.h"
 #include "diskio.h"
+#if XOS_FILES_PRIVATE_STORAGE_PROBE
+#include "files_private_storage.hpp"
+#endif
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+#include "files_private_broker.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -1379,10 +1385,19 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
             return;
         }
         u64 sectors_available = 0;
+#if XOS_FILES_PRIVATE_STORAGE_PROBE
+        LBA_t public_sectors = 0;
+        if (disk_status(0) != 0 || disk_ioctl(0, GET_SECTOR_COUNT, &public_sectors) != RES_OK) {
+            reply(out, in, status::io);
+            return;
+        }
+        sectors_available = public_sectors;
+#else
         if (sdk::syscall(sys_block_info, reinterpret_cast<u64>(&sectors_available)) != 0) {
             reply(out, in, status::io);
             return;
         }
+#endif
         u32 remaining = (in.length + 511u) / 512u;
         if (static_cast<u64>(remaining) > sectors_available) {
             reply(out, in, status::no_space);
@@ -2171,6 +2186,16 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     const FRESULT mounted_result = f_mount(&fs, "", 1);
     mounted = mounted_result == FR_OK;
     if (mounted) { recover(); if (!recovery_failed) { recover_orphans(); } }
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+    user::files_private_storage::broker private_broker(user::files_private_storage::private_slot_io());
+    if (!private_broker.establish_bootstrap()) {
+        recovery_failed = true;
+    }
+#elif XOS_FILES_PRIVATE_STORAGE_PROBE
+    if (mounted && !recovery_failed && !xos::user::files_private_storage::verify_test_slots()) {
+        recovery_failed = true;
+    }
+#endif
     const u64 own_pid = sdk::pid();
     for (;;) {
         retry_description_cleanup();
@@ -2194,6 +2219,19 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             request& in = request_buffer;
             const i64 received = sdk::ipc_recv(session.request_handle, &in, sizeof(in));
             if (received <= 0) { continue; }
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+            namespace storage = user::files_private_storage;
+            if (received == sizeof(storage::grant_request) && private_broker.bootstrap_session(info)) {
+                storage::grant_request grant;
+                __builtin_memcpy(static_cast<void*>(&grant), &in, sizeof(grant));
+                const auto offered = private_broker.grant(grant, info, index, mounted && !recovery_failed);
+                if (sdk::ipc_send(session.response_handle, &offered, sizeof(offered)) != 0 &&
+                    offered.status == storage::result::ok) {
+                    private_broker.revoke();
+                }
+                continue;
+            }
+#endif
             response& out = response_buffer;
             out = response{};
             if (received != static_cast<i64>(sizeof(in))) {
@@ -2205,6 +2243,9 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             }
             (void)sdk::ipc_send(session.response_handle, &out, sizeof(out));
         }
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+        private_broker.poll(mounted && !recovery_failed);
+#endif
         sdk::yield();
     }
 }

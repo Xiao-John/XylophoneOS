@@ -1,0 +1,37 @@
+--- a/src/qml/memory/qv4stacklimits.cpp
++++ b/src/qml/memory/qv4stacklimits.cpp
+@@ -98,0 +99,7 @@
++    qsizetype safetyMargin = PlatformSafetyMargin;
++#ifdef Q_OS_XOS
++    // XOS has fixed pthread stack extents. Keep half of a small stack as headroom.
++    if (size <= 0)
++        qFatal("Cannot find XOS stack extent");
++    safetyMargin = qMin(safetyMargin, size / 2);
++#endif
+@@ -101 +108 @@
+-        incrementStackPointer(base, size - PlatformSafetyMargin),
++        incrementStackPointer(base, size - safetyMargin),
+@@ -258,0 +266,5 @@
++#    ifdef Q_OS_XOS
++    const int attrError = pthread_getattr_np(thread, &sattr);
++    if (attrError)
++        qFatal("Cannot read XOS pthread stack attributes (%d)", attrError);
++#    else
+@@ -259,0 +272 @@
++#    endif
+--- a/src/qml/qml/ftw/qqmlthread.cpp
++++ b/src/qml/qml/ftw/qqmlthread.cpp
+@@ -96,0 +97,2 @@
++    // XOS uses the SDK default stack and its reduced AST recursion limit.
++#ifndef Q_OS_XOS
+@@ -99,0 +102 @@
++#endif
+--- a/src/qml/parser/qqmljsastvisitor_p.h
++++ b/src/qml/parser/qqmljsastvisitor_p.h
+@@ -172,0 +173,4 @@
++#ifdef Q_OS_XOS
++        // Bound recursive AST walks for the small fixed native stacks.
++        static const quint16 s_recursionLimit = 64;
++#else
+@@ -173,0 +178 @@
++#endif

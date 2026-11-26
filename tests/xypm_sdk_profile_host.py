@@ -472,12 +472,31 @@ class profile_cases(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse(output.exists())
 
+    def test_glibc_builder_rejects_newlib_profile(self):
+        profile = module.candidate_profile('newlib', self.newlib, 'xos-x86_64-newlib-test-v1', cxx=True)
+        self.check_glibc_build_rejection(profile, 'profile runtime family mismatch')
+
+    def test_glibc_builder_rejects_c_only_profile_for_cpp(self):
+        self.check_glibc_build_rejection(self.create(cxx=False), 'candidate cxx_runtime feature')
+
+    def check_glibc_build_rejection(self, profile, message):
+        profile_path = put(self.root, 'program-profile.json', canonical(profile))
+        source = ROOT / 'tests/fixtures/xypm/glibc_profile_program.cpp'
+        output = self.root / 'program.elf'
+        result = subprocess.run([sys.executable, str(ROOT / 'scripts/build_glibc_program.py'),
+                                 '--sdk', str(self.sysroot), '--profile', str(profile_path), '--cxx',
+                                 '--source', str(source), '--output', str(output)], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(message, result.stderr)
+        self.assertFalse(output.exists())
+        self.assertFalse(output.with_suffix('.elf.build').exists())
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, default=ROOT / 'build/xypm_profiles_host')
     args = parser.parse_args()
-    source_names = ('scripts/create_xypm_profile.py', 'scripts/xypm_sdk_profile.py',
+    source_names = ('scripts/create_xypm_profile.py', 'scripts/xypm_sdk_profile.py', 'scripts/build_glibc_program.py',
                     'scripts/xos_app.py', 'tests/xypm_sdk_profile_host.py')
     source_inputs = {name: sha_file(ROOT / name) for name in source_names}
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(profile_cases)

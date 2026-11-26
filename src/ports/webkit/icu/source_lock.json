@@ -1,0 +1,14 @@
+{
+  "upstream": "https://github.com/unicode-org/icu",
+  "version": "79.1",
+  "release": "https://github.com/unicode-org/icu/releases/tag/release-79.1",
+  "archive": "icu4c-79.1-sources.tgz",
+  "archive_root": "icu",
+  "archive_bytes": 28162455,
+  "archive_sha256": "06fa63ecb521048f8082f12ad988f6b678d90cbd88aafce24cbc94902b191d99",
+  "signature_sha256": "f0377e8def38c8b717ba54a072b4e64fe18a7f9cbf15171a98f5d01b778524b6",
+  "keys_revision": "ddc6b66926bfac6036144ca9902992a0d6d50af9",
+  "keys_sha256": "17e95e9720e30c4e6ddee9967ef293c8c3c7647923ea89f94f1eee590c4c9670",
+  "signing_fingerprint": "E52F07877A5805F9AF4AB0ACD46C5610D06E7001",
+  "license_path": "icu/LICENSE"
+}

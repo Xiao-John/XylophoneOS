@@ -104,3 +104,9 @@ C SDK 和真实 GNU 对象重建系统 `97cce681943c3eb2`。QEMU 中首线程门
 用同一 SDK 和 rtld 为新树构建正常系统 `ac319c480d42ed5b`，再次通过首线程
 两轮和固定闭包两轮。普通及堆不足分别退出 0、127，四轮资源均回到
 `129696 / 3 / 1`。[更新后的验收回执](../reports/glibc_d1_fixed_closure_getpid_20261126/manifest.json)
+
+#294 修改了 SDK 使用的加载器源码。保留前次证据，在 #296 合入后的基线
+`bbf38ffb` 建立合并树 `77777d95`，从源码归档重新验签并构建 C SDK 和 GNU
+rtld 对象，再构建正常系统 `1b8eae24b1902913`。QEMU 两次首线程启动及固定
+闭包的普通和堆不足路径均通过，四轮恢复 `129696 / 3 / 1`。
+[当前绑定与原始回执摘要](../reports/glibc_d1_fixed_closure_post296_20261126/manifest.json)

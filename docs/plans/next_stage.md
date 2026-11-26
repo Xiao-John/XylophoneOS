@@ -23,6 +23,19 @@ glibc C/C++ 已有 Linux arm64 实构建和静态客体证据，并发 C++ 普�
 - 并行启动顺序为运行库旧阻塞复核、Qt 依赖勘查、Pumpkin 服务设计。总协调推进产品标识与兼容面，Qt 勘查结束后独立展开 ClarkE 引擎选型与构建。各条线最终在同一主线验收。
 - 只有每条线的交付和组合验收均有证据，本阶段才收口。默认切换、回退演练、存量迁移和 newlib 退役各有独立验收记录。
 
+## 2026-11-26 里程碑
+
+| 任务 | 现有证据 | 下个验收门 |
+| --- | --- | --- |
+| glibc 迁移 | 分配器修复后，静态 C/C++ SDK 在 xsh 和 dash 各通过 15 项普通运行。隔离的 glibc dash 预览在两个启动入口各通过七项。 | 路径及启动接口的独立评审，继而验收实际外部程序、管道、here-document 与默认切换回退。 [分配器](../work_log/54ff4de4_glibc_allocator_locking.md) · [dash](../work_log/aff51323_dash_glibc_preview.md) |
+| QML/Qt Quick | 静态 glibc QtCore 与 QtQml 已合入。目标 QtQml 在独立客体执行 JS、绑定重算及三轮引擎回收，同一版本通过 VM 配额失败验证。 | glibc QtGui 和宿主 `qsb` 已构建。继续验证目标 Quick 软件渲染和显示/输入闭环。 [QtCore](../work_log/8d6f3d2c_qt_e18_glibc_qtcore_target_build.md) · [QtQml](../work_log/d8bd3467_qt_e18_target_qml_and_vm.md) |
+| Mobius/ClarkE | 各自打包后通过两次安装、ClarkE 升级、各在 xsh 和 dash 客体启动、两次卸载及原用户文件回读。ELF 回执核对完整 SDK 树。 | glibc Qt 产品迁移、正式发行材料与旧工作盘迁移组合验证。 [产品包复验](../work_log/af27a498_desktop_product_packages.md) |
+| Pumpkin | 原生服务、私有槽和独占授权客户端已合入。测试配置下的真实持久守护进程通过双 Shell 认证、吊销及重启读回。 | 复核持久守护进程，接入独立代际来源、生产凭据发放和资源服务。 [IPC 复验](../work_log/cbf3d657_pumpkin_daemon_review_fixes.md) · [持久守护进程 PR #195](https://github.com/Xiao-John/XylophoneOS/pull/195) |
+| ClarkE 引擎 | 静态 ICU 已在目标实测标准化、大小写、分词和排序。WebKit JSCOnly 配置实际选中三个目标 ICU 归档。 | 继续 JSCOnly 编译、链接与客体执行，再推进 WebCore 和原生网络。 [ICU PR #194](https://github.com/Xiao-John/XylophoneOS/pull/194) |
+
+首个主线快照已完成内核、存储、运行时、包流程和易失身份会话的组合复验。
+[组合证据](../work_log/d1c062ce_next_stage_combination.md)
+
 ## 专项依据
 
 [开发纪律](../Discipline.md) · [宪法](../xos_plan.md) · [ABI](../contracts/abi_registry.md) · [glibc](glibc_port_scout.md) · [动态链接 D0](../contracts/dynamic_linking_d0.md) · [SDK profile](../contracts/xypm_sdk_profiles.md) · [Qt](qt.md) · [Qt 平台](../contracts/qt_platform.md) · [权限模型](permission_model_glibc.md) · [网络](network_development.md) · [浏览器](webengine_port.md)

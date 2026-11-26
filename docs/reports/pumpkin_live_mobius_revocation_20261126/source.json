@@ -1,0 +1,15 @@
+{
+  "source_commit": "e4a80e9219ee6dfa4bbe4dd6ff7ea1eabf125b76",
+  "source_tree": "f46974609e7fa30907f5e4233953476087eae67b",
+  "baseline": "2a89b08fbe74e6358d7691790948af6b3f632533",
+  "desktop_build": "e9481e988cda2385",
+  "legacy_build": "39354711116f4039",
+  "first_attempt": {
+    "outcome": "desktop stopped during scanout and QMP shutdown handshake timed out",
+    "raw_log_sha256": "0313f33c28cb1e7c75ead84c1f2a183ebca4ff1bc978bb57beef62889958ec67"
+  },
+  "historical_replay": {
+    "outcome": "previously accepted frozen Mobius image and runner also stopped during scanout",
+    "raw_log_sha256": "341c9023887c1b24baf5bb19f3c98278afa3f3e9092a1dbcce3537629869bb6d"
+  }
+}

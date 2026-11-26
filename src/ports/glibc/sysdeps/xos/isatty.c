@@ -1,6 +1,9 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <unistd.h>
 #include "xos_file_result.h"
+
+libc_hidden_proto (__isatty)
+
 int __isatty (int fd)
 {
   long result = __xos_file_isatty (fd);

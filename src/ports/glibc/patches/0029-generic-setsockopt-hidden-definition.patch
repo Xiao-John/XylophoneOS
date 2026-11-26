@@ -1,0 +1,6 @@
+--- a/socket/setsockopt.c
++++ b/socket/setsockopt.c
+@@ -32 +32,2 @@ __setsockopt (int fd, int level, int optname, const void *optval,
+-weak_alias (__setsockopt, setsockopt)
++libc_hidden_def (__setsockopt)
++weak_alias (__setsockopt, setsockopt)

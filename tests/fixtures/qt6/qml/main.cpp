@@ -26,8 +26,10 @@ int run_qml()
                               QStringLiteral("qrc:/qt-project.org/imports")});
     const QJSValue script = engine.evaluate(QStringLiteral(
         "[1, 2, 3, 4].map(n => n * n).reduce((a, b) => a + b, 0)"));
-    if (script.isError() || !script.isNumber() || script.toInt() != 30)
+    if (script.isError() || !script.isNumber() || script.toInt() != 30) {
+        std::fprintf(stderr, "JavaScript result: %s\n", qPrintable(script.toString()));
         return fail(1, "QML_PROBE_FAIL: JavaScript evaluation");
+    }
 
     QQmlComponent component(&engine, QUrl(QStringLiteral("qrc:/e18/entry.qml")));
     std::unique_ptr<QObject> root(component.create());

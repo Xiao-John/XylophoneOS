@@ -26,3 +26,8 @@ qt_add_resources(qml_probe qml_probe_resources
     FILES entry.qml
 )
 target_link_libraries(qml_probe PRIVATE Qt6::Qml probe_typesplugin)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "XOS")
+    add_executable(qml_quota_probe quota.cpp)
+    target_link_libraries(qml_quota_probe PRIVATE Qt6::Qml)
+endif()

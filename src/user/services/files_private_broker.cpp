@@ -82,7 +82,7 @@ grant_reply broker::grant(const grant_request& request, const file_session_info&
     client_ = pair;
     controller_index_ = source_index;
     controller_ = source.pid;
-    deadline_ = now + lease_ns;
+    deadline_ = now + lease_duration_;
     reply.files = sdk::pid();
     reply.channel = sdk::ipc_channel_for_peer(pair);
     reply.status = result::ok;

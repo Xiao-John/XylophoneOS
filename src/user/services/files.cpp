@@ -2215,7 +2215,14 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     mounted = mounted_result == FR_OK;
     if (mounted) { recover(); if (!recovery_failed) { recover_orphans(); } }
 #if XOS_FILES_PRIVATE_CLIENT_PROBE
-    user::files_private_storage::broker private_broker(user::files_private_storage::private_slot_io());
+    namespace storage = user::files_private_storage;
+#if XOS_FILES_PRIVATE_DESKTOP_LEASE
+    // The authenticated desktop supervisor owns the backing store for its full session.
+    constexpr auto lease = storage::lease_profile::desktop;
+#else
+    constexpr auto lease = storage::lease_profile::short_operation;
+#endif
+    storage::broker private_broker(storage::private_slot_io(), lease);
     if (!private_broker.establish_bootstrap()) {
         recovery_failed = true;
     }

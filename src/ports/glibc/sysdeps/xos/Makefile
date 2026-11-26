@@ -14,6 +14,7 @@ CFLAGS-dl-minimal.os += -ffunction-sections
 CFLAGS-dl-catch.os += -ffunction-sections
 CFLAGS-dl-tunables.os += -ffunction-sections
 CFLAGS-dl-mutex.os += -ffunction-sections
+CFLAGS-dl-misc.os += -ffunction-sections
 endif
 ifeq ($(subdir),stdlib)
 sysdep_routines += xos_process_exit

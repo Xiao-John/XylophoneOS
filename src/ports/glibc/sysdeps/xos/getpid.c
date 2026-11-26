@@ -4,6 +4,12 @@
 #include <limits.h>
 #include <unistd.h>
 
+#ifdef SHARED
+# if IS_IN (rtld)
+#  define XOS_GETPID_BEFORE_TLS 1
+# endif
+#endif
+
 _Static_assert (sizeof (pid_t) == sizeof (int), "revisit XOS pid_t range");
 
 pid_t
@@ -26,14 +32,14 @@ __getpid (void)
      to aliasing another process; the final pid_t ABI is not yet decided. */
   if (value > INT_MAX)
     {
-#if !defined SHARED || !IS_IN (rtld)
+#ifndef XOS_GETPID_BEFORE_TLS
       __set_errno (EOVERFLOW);
 #endif
       return (pid_t) -1;
     }
   if (value <= 0)
     {
-#if !defined SHARED || !IS_IN (rtld)
+#ifndef XOS_GETPID_BEFORE_TLS
       __set_errno (EIO);
 #endif
       return (pid_t) -1;

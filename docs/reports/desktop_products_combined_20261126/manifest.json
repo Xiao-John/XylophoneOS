@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "files": {
+    "clarke-after-removal.serial.log.gz": "c7fe318113999a63d52fa66f8ef817ad6e65d5f38e704ee045542bc816dff0f7",
+    "clarke.serial.log.gz": "c47749f4e6c303738ddf24eb5f25c1182b76e0de032bf3547df07aedcc08adce",
+    "mobius.serial.log.gz": "95857ef546ead119a6fc0cb81e52ef623ec14f329a7feab2ace656858146c4bf",
+    "quick.serial.log.gz": "69dee0b46663a7cb66aedcb38050c4dab9bda80a4c889aade1cb744e66598747",
+    "report.json": "36947258fde265e9abe37fc1f3a23d7c3511d4136d2ba5ba6b8ba32b1875b9b8"
+  },
+  "raw_report_sha256": "6f982b7fe460da1e6165e84f83634d11f07156c11a068d9bd98851cdf43ae087"
+}

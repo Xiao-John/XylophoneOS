@@ -74,3 +74,10 @@ GNU 动态重定位及 `_dl_call_libc_early_init`。共享构建的真实
 `R_X86_64_TPOFF64`，目标指向 libc errno 槽。普通动态装载这一对象仍需要实际
 完成该 relocation，其他共享 libc 初始化、工作线程 TLS 与 D2 生命周期也需
 原生验收。
+
+## 合入初始线程后的组合复验
+
+`98ee1f22` 在 #291 上接入独立早期堆期限，固定两个 GNU 夹具的编译输入与摘要。用签名
+C SDK 和真实 GNU 对象重建系统 `97cce681943c3eb2`。QEMU 中首线程门两轮通过，固定
+依赖门的普通布局及堆容量不足两条路径通过，均回到 `129709 / 3 / 1`。ABI 对照通过。
+[组合回执](../reports/glibc_d1_fixed_closure_post291_20261126/manifest.json)

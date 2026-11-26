@@ -1,0 +1,116 @@
+{
+  "build_xypm_script_sha256": "79039a23523a9c1204190cfcb8ac73e630a0907a7171d9f28da868231fd0dee1",
+  "container_image_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "guest": {
+    "checks": [
+      "normal_self_upgrade",
+      "boot_recovery_restores_missing_xypm",
+      "self_upgrade_retry"
+    ],
+    "fault_package_sha256": "090b265462adc6df402cbfef578fb603c59bccd378954463149dcb56263b7b5a",
+    "image_sha256": "85c6eec657ff42383c8e9174825b1981958988399b39515f562f4fdb514aaebe",
+    "normal_package_sha256": "abbeb22ca4f5490747f06f92378bff5f8159f657560e6b494709f325ba46678a",
+    "not_run": [
+      "power_loss",
+      "sector_tearing"
+    ],
+    "self_removal_checkpoint": 150,
+    "status": "passed",
+    "system_build_id": "1658dee772d30bea",
+    "test_sha256": "92ff5595af92f8d6fdf2bc29c85151f2fa174283c424a0fa99a9e43b2a8c799c"
+  },
+  "packages": {
+    "fault": {
+      "build_receipt_sha256": "9a0dcc972e7a20a423eeeb08591a3ec594634b020502ac44d34473de98861b27",
+      "compiler": {
+        "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+        "version": "x86_64-elf-g++ (GCC) 16.2.0"
+      },
+      "elf_sha256": "ef95dcb46d7be9a62ee37ed42d133f8995a7fadad795c506cc61097c6596baf1",
+      "id": "xos.xypm",
+      "managed_files": 32,
+      "revision": 0,
+      "version": "0.4.0",
+      "xpk_sha256": "090b265462adc6df402cbfef578fb603c59bccd378954463149dcb56263b7b5a"
+    },
+    "normal": {
+      "build_receipt_sha256": "852ea87ad15cc197a82a87a9017a834ce8a1af60f48f40e172ecd535aa872657",
+      "compiler": {
+        "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+        "version": "x86_64-elf-g++ (GCC) 16.2.0"
+      },
+      "elf_sha256": "e11c05601ee281b88ee2785e65fda6b478d8db91ba4b081cae7db83378ad45cc",
+      "id": "xos.xypm",
+      "managed_files": 32,
+      "revision": 0,
+      "version": "0.4.0",
+      "xpk_sha256": "abbeb22ca4f5490747f06f92378bff5f8159f657560e6b494709f325ba46678a"
+    }
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources": {
+    "interrupted": [
+      [
+        129806,
+        2,
+        0
+      ],
+      [
+        129806,
+        2,
+        0
+      ]
+    ],
+    "normal": [
+      [
+        129806,
+        2,
+        0
+      ],
+      [
+        129806,
+        2,
+        0
+      ]
+    ],
+    "recovered": [
+      [
+        129806,
+        2,
+        0
+      ]
+    ],
+    "retry": [
+      [
+        129806,
+        2,
+        0
+      ],
+      [
+        129806,
+        2,
+        0
+      ]
+    ]
+  },
+  "sdk_binding": {
+    "kit_tree_sha256": "8b67e1b967013a4b31f2289461af9eebf39eba27f2cf36c66b4de650291266a8",
+    "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+    "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+    "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262"
+  },
+  "source_commit": "1ea5a358b70f6deeee368f643f7566e5f2ffac16",
+  "source_tree": "e88d6dede92c7e6e6e53e776436aa918add50be6",
+  "status": "passed_subset",
+  "system": {
+    "boot_recovery_image_sha256": "ba88420b32b7aadfcdbe88b7a3c5d2446ac2c1019fa19856ff44ef9238ec5e9a",
+    "build_id": "1658dee772d30bea",
+    "iso": {
+      "bytes": 913408,
+      "sha256": "85c6eec657ff42383c8e9174825b1981958988399b39515f562f4fdb514aaebe"
+    },
+    "manifest_sha256": "9fb3a1a966de78e1625c861721189eac2400e9f877b1c367559593c687be4d68",
+    "source_sha256": "1658dee772d30bea35661b37b6a50f81ae7b7f2b2b4012f198b5b33de59b9866"
+  }
+}

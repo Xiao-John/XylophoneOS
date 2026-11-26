@@ -1,0 +1,12 @@
+{
+  "files": {
+    "interrupted.serial.log.gz": "ccddb8ccb27d8550fa8eb9efd5b1fb1c2b7c14c4d6da990d3ba69da9c28e01f1",
+    "normal.serial.log.gz": "ed7dd094c38cafa32be73eb891b8ede315c03a0bb3bf996a0113333a8361e508",
+    "preview_verified.json": "d343d8542256e867e6aa517e271e5c653d7dea54b33516ba707f10976d5d795b",
+    "recovered.serial.log.gz": "9218bb3a99a188b5441c08fb986f4872243937ba366f7b8dccd6369050cdd9ef",
+    "report.json": "64c2dc94345711705d413000b826e61127d186cf86f762046bc9f230c8299def",
+    "retry.serial.log.gz": "4cd065252f6cd1eb126e6e560cf6a4c6a64e496aeed8b45e3646c9fced14562a",
+    "system_license_audit.txt": "ba570e7cf21da1023ee005f686558de27ecec3f3e45c24fa49a6a22f1b2b9240"
+  },
+  "version": 1
+}

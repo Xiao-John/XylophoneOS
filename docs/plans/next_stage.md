@@ -120,6 +120,15 @@ Shell 输出相同实际帧。正式分发和静态重链接仍按许可范围�
 主线 `d7c56292` 已纳入同一签名 C/C++ kit 的 stock 安装和应用组合。`3bbbf73984b95c20`
 从空盘安装到可用 shell 为 170.801 秒，13 项日用工具、卸载和用户数据保留均通过。
 同盘两次客体启动运行 C、C++、GNU Make、日用工具和命令替换。各次核对三个包及
-50 个登记文件。冻结 newlib 回退仍按原 SDK、原 profile 和原盘复验。
+50 个登记文件。SDK 默认切换还需独立的跨启动升级、许可与回退材料验收。
 [安装回执](../work_log/843260b2_glibc_stock_installer.md) ·
 [应用组合](../work_log/cc71c241_glibc_stock_apps.md)
+
+主线 `6bd530bf` 纳入 ClarkE 的 Skia 原生定位读取补齐和 Pumpkin 的 Mobius 活动会话
+管理员吊销。ClarkE 合成普通镜像 `0b924a05c940fbe0` 验证真实 FAT 字体、确定像素、
+EOF、偏移边界、缺失文件及资源回收。Pumpkin 基于安装器/应用组合重建桌面和无桌面配置，
+通过 8 项和 13 项检查，覆盖注销、活动吊销、已吊销会话拒用和资源回收。生产初始账户
+发放应验证独立代际、空状态、不当操作者拒绝及跨重启持久化。完整 WebCore 页面和 Qt
+视口需在独立用户进程组合验收。
+[ClarkE 字体流](../work_log/e55d60c9_clarke_skia_file_stream.md) ·
+[Pumpkin 会话撤销](../work_log/7d205c98_pumpkin_verified_desktop_snapshot.md)

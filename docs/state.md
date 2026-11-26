@@ -8,6 +8,9 @@ HTTPS、JavaScriptCore 静态 shell、真实 HTML 分词和 Skia 软件栅格。
 已合入 glibc dash 命令替换、GNU rtld 首线程 TLS、可搬移 Qt Quick 工具包和 glibc
 stock 安装及应用组合。签名 C/C++ 候选 `3bbbf73984b95c20` 通过冷装、重启和卸载，
 同盘应用组合两次启动均覆盖命令替换。普通镜像的 79 项、10 项许可材料和 ABI 通过。
+主线 `6bd530bf` 随后纳入 ClarkE 的 FAT 字体流修复，以及 Pumpkin 正在使用的 Mobius
+会话的管理员撤销。前者实测应用从 FAT 加载字形并恢复资源，后者通过 8 项桌面和
+13 项无桌面检查。Pumpkin 首次账户发放、完整 WebCore 页面和 SDK 默认切换继续按各自门验收。
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)
 [本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
 

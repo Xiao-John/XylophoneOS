@@ -29,3 +29,8 @@ QEMU 11.1.2 在专用 FAT32 盘上通过两次安装、一次 ClarkE 升级、xs
 结束后恢复为 `129700 / 3 / 1`。首份成功报告 SHA-256 为
 `56e09f4a8591c01eb7f53bc6174dd562d9427facc87ce5838b95cedbe1f1bb40`。
 本轮复用现有线程 SDK，glibc Qt 产品迁移、签名仓库和正式发行材料各自待验。
+
+提交 `d129f34b` 后空目录重建得到系统 `caa77bcfffcc327c`，同系统 SDK 重建 dash。
+组合复验再次通过六组检查和五次离线事务。报告 SHA-256 为
+`799e4782d5bf0930caf5abbfa738dbc55b5aa5775e746f9ad8a56bb921dccc94`，串口为
+`056c8fec3abc8fd13b9c9e7f5b3e9b573c3c6d5b75eb56449d1b270f0ea1f2e4`。

@@ -42,3 +42,27 @@ configure 保留真实 pthread 和原生时钟，动态模块加载选择
 线程头文件处返回 `Require native threads`。pr147 线程 SDK 在
 `getpath.c` 处缺少可见的 `lstat` 声明。本次对照的这两个输入没有产生
 新的 legacy ELF。
+
+## 评审修订复验
+
+源码树 `a0b58ecd2b18a6a32f73545c18382f6e08c2ed1e` 从主线 `49e5d74b`
+组合公开入口的修订。运行命令省略 `--build-python`，在 Linux arm64 重建宿主
+解释器。调用方环境设置失效 `CC`、`CFLAGS`、`LDFLAGS`、`CONFIG_SITE` 和
+`MAKEFLAGS`。五个变量均在工具发现和宿主构建前清理，宿主 configure 与
+make 以及目标静态 ELF 全部构建通过。链接以 profile 决定是否加入终端归档。
+旧构建驱动字节和默认入口帮助输出均通过 `cmp`。
+
+来宾门禁将已核验的 ISO、ELF、上游归档和夹具保存到本次私有暂存目录，
+构建回执、系统 manifest 和 profile 的摘要均来自校验所用的原始字节。
+QEMU 11.1.3 的常规系统 `19a6d93ff83db048` 通过原先三项检查。工作线程的
+CPU 时钟必须在限量计算中实际增加，线程完成仍受超时约束。进程退出 0，
+资源前后为 `129795 / 2 / 0`。错误 SDK、错误 profile 和旧 zlib 参数三项
+拒绝也复验通过。
+
+| 修订工件 | SHA-256 |
+| --- | --- |
+| 宿主 configure 日志 | `b65c4f1ba46162772d0d365be059b5c55b80b6340fc0236a0b9e9889e7672834` |
+| 解释器 ELF | `bbad2bfcc9b3ea18e958718c9a1fe8151b5e8c695bac3808c68df4f1ff78e7ad` |
+| 构建回执 | `7eb18da7678da8dc9959d3f70614422d0f71c5fb695af2984b1927fabef1ff03` |
+| 普通系统 ISO | `91ef7e88bfa233cc4675f66703628a7bf5fd6972bcee23c884834711167d2b79` |
+| 客体运行回执 | `7a7f328f108d3aeefac9fb99d83bdb3853ba301bd0a2a15e6e839e0d9f627857` |

@@ -4,6 +4,7 @@
 import argparse
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -18,7 +19,7 @@ from process_smoke import command, resources
 from task_smoke import send_bytes
 from xypm_format import canonical, load_json, require, sha_file
 from xypm_image import Disk
-from xypm_sdk_profile import verify_profile
+from xypm_sdk_profile import metadata_snapshot, verify_profile
 
 FIXTURE = ROOT / 'tests/fixtures/cpython_glibc/startup_probe.py'
 MARKERS = ('CPYTHON_G4_START 3.14.9 xos', 'CPYTHON_G4_CLOCK_PASS', 'CPYTHON_G4_THREADS_PASS')
@@ -49,6 +50,12 @@ def stage_lib(archive, version, temporary, fat):
     return result
 
 
+def stage_input(source, target, expected):
+    shutil.copyfile(source, target)
+    require(sha_file(target) == expected, 'guest input changed before staging: ' + str(source))
+    return target
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--system-build', type=Path, required=True)
@@ -61,13 +68,13 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     sys_path = args.system_build / 'manifest.json'
-    sysmeta = load_json(sys_path)
+    sysmeta, sys_digest = metadata_snapshot(sys_path)
     image = args.system_build / 'xos-install.iso'
     build_path = args.cpython_build / 'py0a_report.json'
-    build = load_json(build_path)
+    build, build_digest = metadata_snapshot(build_path)
     elf = args.cpython_build / 'target_build/python.exe'
     lock = load_json(ROOT / 'src/ports/cpython/source_lock.json')
-    profile = load_json(args.glibc_profile)
+    profile, profile_digest = metadata_snapshot(args.glibc_profile)
 
     def verify():
         require(system_sources() == sysmeta['sources']
@@ -78,14 +85,16 @@ def main():
         require(lock['sha256'] == build['source_archive_sha256'] == sha_file(args.archive)
                 and lock['version'] == build['version'], 'CPython archive differs')
         require(profile['sdk_binding']['sdk_manifest_sha256'] == build['sdk_manifest_sha256']
-                and sha_file(args.glibc_profile) == build['profile_file_sha256']
+                and profile_digest == build['profile_file_sha256']
+                and sha_file(args.glibc_profile) == profile_digest
                 and verify_profile(profile, 'glibc', args.sdk) == build['sdk_binding'],
                 'CPython SDK or glibc profile differs')
 
     verify()
-    report = {'status': 'failed', 'build_receipt_sha256': sha_file(build_path),
-              'system_build_id': sysmeta['build_id'], 'system_manifest_sha256': sha_file(sys_path),
-              'image_sha256': sha_file(image), 'elf_sha256': sha_file(elf),
+    report = {'status': 'failed', 'build_receipt_sha256': build_digest,
+              'system_build_id': sysmeta['build_id'], 'system_manifest_sha256': sys_digest,
+              'image_sha256': sysmeta['artifacts']['xos-install.iso']['sha256'],
+              'elf_sha256': build['executable']['sha256'],
               'sdk_manifest_sha256': build['sdk_manifest_sha256'],
               'profile_sha256': build['profile_file_sha256'], 'probe_sha256': sha_file(FIXTURE),
               'checks': [], 'not_run': build['unqualified']}
@@ -93,17 +102,21 @@ def main():
     try:
         with tempfile.TemporaryDirectory(prefix='cpython_glibc_guest_') as folder:
             temporary = Path(folder)
+            guest_image = stage_input(image, temporary / 'system.iso', report['image_sha256'])
+            guest_elf = stage_input(elf, temporary / 'python3', report['elf_sha256'])
+            guest_archive = stage_input(args.archive, temporary / 'cpython.tar.xz', lock['sha256'])
+            guest_probe = stage_input(FIXTURE, temporary / 'g4.py', report['probe_sha256'])
             disk = temporary / 'work.img'
             create_fat32(disk, 512)
             with Disk(disk, temporary) as fat:
                 for path in ('/usr', '/usr/bin', '/usr/lib', '/usr/lib/python3.14',
                              '/usr/lib/python3.14/encodings', '/tests'):
                     fat.command('mkdir', path)
-                fat.command('import', '/usr/bin/python3', elf)
-                fat.command('import', '/tests/g4.py', FIXTURE)
-                report['stdlib'] = stage_lib(args.archive, build['version'], temporary, fat)
+                fat.command('import', '/usr/bin/python3', guest_elf)
+                fat.command('import', '/tests/g4.py', guest_probe)
+                report['stdlib'] = stage_lib(guest_archive, build['version'], temporary, fat)
 
-            guest = Guest(image, 'cpython_glibc_cli', work_disk=disk, iso=True)
+            guest = Guest(guest_image, 'cpython_glibc_cli', work_disk=disk, iso=True)
             report['qemu'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
             guest.expect(b'xos64> ', timeout=40)
             send_bytes(guest, b'run\r')
@@ -124,8 +137,9 @@ def main():
             report['after'] = resources(guest)
             require(report['after'] == report['baseline'], 'CPython guest resource drift')
         verify()
-        require(sha_file(build_path) == report['build_receipt_sha256'] and sha_file(FIXTURE) == report['probe_sha256'],
-                'CPython receipt or probe changed during the guest')
+        require(sha_file(build_path) == build_digest and sha_file(sys_path) == sys_digest
+                and sha_file(FIXTURE) == report['probe_sha256'],
+                'CPython receipt, system manifest or probe changed during the guest')
         report['status'] = 'passed_subset'
     except Exception as error:
         report['error'] = str(error)

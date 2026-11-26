@@ -59,7 +59,7 @@ def target_site(path, stub_functions):
     path.write_text(''.join(name + '=' + value + '\n' for name, value in sorted(values.items())))
 
 
-def build(args):
+def build(args, env, removed):
     archive = args.archive.resolve(strict=True)
     lock = load_json(PORT / 'source_lock.json')
     require(sha_file(archive) == lock['sha256'], 'CPython archive differs from source lock')
@@ -81,7 +81,6 @@ def build(args):
         require(tool.get('available') and tool.get('sha256') == metadata['tools']['x86_64-elf-' + name]['sha256'],
                 'cross tool differs from the SDK build: ' + name)
     make = select_gnu_make()
-    env, removed = build_environment()
     work = args.output_dir.resolve()
     require(not work.is_relative_to(sdk) and not work.is_relative_to(PORT),
             'build directory must be outside the SDK and port inputs')
@@ -142,7 +141,10 @@ def build(args):
 
         start = ['xos_start.o', 'crti.o', 'crtbegin.o', 'xos_start_c.o']
         end = ['crtend.o', 'crtn.o']
-        archives = ['libc.a', 'libm.a', 'libxos_terminal.a', 'libgcc.a']
+        archives = ['libc.a', 'libm.a']
+        if 'usr/lib/libxos_terminal.a' in profile['sdk_binding']['link_artifacts']:
+            archives.append('libxos_terminal.a')
+        archives.append('libgcc.a')
         if (lib / 'libgcc_eh.a').is_file():
             archives.append('libgcc_eh.a')
         site = work / 'config.site'
@@ -219,10 +221,18 @@ def main():
     parser.add_argument('--build-python', type=Path, help='matching host CPython; built from the source lock if omitted')
     parser.add_argument('--compile-probe', action='store_true', help='also compile and link the static interpreter')
     args = parser.parse_args()
+    inherited = os.environ.copy()
+    env, removed = build_environment()
     try:
-        report = build(args)
+        # Tool discovery and the reused host builder inherit the CLI process environment.
+        os.environ.clear()
+        os.environ.update(env)
+        report = build(args, env, removed)
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
         parser.exit(1, 'CPython glibc: ' + str(error) + '\n')
+    finally:
+        os.environ.clear()
+        os.environ.update(inherited)
     summary = {name: report[name] for name in ('status', 'version', 'runtime_family', 'profile',
                                                 'sdk_manifest_sha256', 'guest_tested')}
     if 'executable' in report:

@@ -25,12 +25,18 @@ done.acquire()
 values = []
 def worker():
     try:
-        values.append((time.thread_time_ns(), _thread.get_ident(), "guest".upper()))
+        before = time.thread_time_ns()
+        for _ in range(8):
+            assert sum(value * value for value in range(100000)) == 333328333350000
+            after = time.thread_time_ns()
+            if after > before:
+                break
+        values.append((before, after, _thread.get_ident(), "guest".upper()))
     finally:
         done.release()
 
 ident = _thread.start_new_thread(worker, ())
 assert done.acquire(timeout=5)
-assert len(values) == 1 and values[0][0] >= 0 and values[0][1:] == (ident, "GUEST")
+assert len(values) == 1 and 0 <= values[0][0] < values[0][1] and values[0][2:] == (ident, "GUEST")
 done.release()
 print("CPYTHON_G4_THREADS_PASS", flush=True)

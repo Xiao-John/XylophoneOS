@@ -65,6 +65,18 @@ xypm ELF，无需扩大容量或更改默认镜像。profile 核验宿主套件 
 [监督进程启动顺序](../../src/user/programs/supervisor.cpp) ·
 [内核维护准入](../../src/kernel/arch/x86_64/tasks.cpp)
 
+从干净主线 `279bb287` 重建普通系统 `987e294ddcb7fe25` 并生成安装 ISO。
+使用上次验收的同一份 XOSBND1 载荷，在 QEMU 11.1.3 冷启动，原生 xypm
+自动完成安装，恢复程序清理已提交事务。关机后逐份核对 26 个已登记文件和
+三个暂存成员，全部通过。
+
+| 工件 | SHA-256 |
+| --- | --- |
+| 系统 manifest | `0e036699f5c0a88813a5edbb8cbdc3715f5e284ea8d37a88acd01e657b1e4533` |
+| 安装 ISO | `16b2aef7fc56641065214942443b3276a6fbd71f244066b4e25b05280397857e` |
+| XOSBND1 载荷 | `2ddc3642dd5393a93deaf5673e9da83a317faee417363f2fd095197cfc98685c` |
+| 冷启动运行记录 | `404d8f3dd5926b62704093c8f557672eaa1ae0c5e5988353f5d5669d0b90b6f0` |
+
 ## 提交边界和冻结对照
 
 通用 SDK 接收对象、profile 准入和打包器可独立合入。全量和精简产物共享
@@ -73,7 +85,10 @@ xypm ELF，无需扩大容量或更改默认镜像。profile 核验宿主套件 
 
 [通用打包回执](907ccb19_glibc_daily_xpk.md)记录了旧、新打包器使用同一份
 冻结 newlib SDK、profile 和工具进行逐字节对照，两者 XPK 摘要均为
-`ecadaad4e4d85790c3c5eb8d0fc63caf4823ab83baea43aa424a90710fce21e8`。
+`ecadaad4e4d85790c3c5eb8d0fc63caf4823ab83baea43ea424a90710fce21e8`。
+复核从 `0c4da402` 重建了同一系统 `5188c778d6ea0856`，确认 SDK 树摘要
+与冻结 profile 一致。对两份重新打包的 XPK 执行 `cmp` 和 `sha256sum`，
+确认两份包逐字节一致，且摘要均与通用打包记录一致。
 #214 在冻结 newlib profile 下独立构建并以普通维护命令复验八项事务。
 其 xypm ELF 摘要为
 `3def19bd47a56d4eee0d4a14d761fcb2b44593cbe2cd940db82eac710877e3e4`。

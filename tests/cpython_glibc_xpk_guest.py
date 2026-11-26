@@ -54,6 +54,7 @@ def main():
     parser.add_argument('--stock-candidate', type=Path, help='boot the same-profile stock installer on the work disk')
     parser.add_argument('--previous-profile', type=Path)
     parser.add_argument('--previous-package', type=Path, help='a different-profile build of the same CPython XPK')
+    parser.add_argument('--keep-work-disk', action='store_true', help='preserve installed and final disk images')
     parser.add_argument('--maintenance-timeout', type=int, default=600)
     args = parser.parse_args()
     if args.maintenance_timeout <= 0:
@@ -159,7 +160,8 @@ def main():
                                'source_commit': stock_build['source_commit']}
         with tempfile.TemporaryDirectory(prefix='cpython_glibc_p2_') as folder:
             work = Path(folder)
-            disk = (output if stock else work) / 'work.img'
+            keep_disk = stock or args.keep_work_disk
+            disk = (output if keep_disk else work) / 'work.img'
             create_fat32(disk, 512)
             user_file = work / 'user.txt'
             user_file.write_text('pre-existing user data\n')
@@ -266,7 +268,7 @@ def main():
             stock_files = report.get('stock', {}).get('installed_files', 0)
             report['installed_files'] = installed - stock_files
             require(report['installed_files'] == len(managed), 'installed files differ')
-            if stock:
+            if keep_disk:
                 sparse_copy(disk, output / 'cpython-installed.img')
                 report['installed_disk_sha256'] = sha_file(disk)
 
@@ -327,7 +329,7 @@ def main():
                                 and bundle.read('py3a2_zipmod.py') == b"VALUE = 'zipimport works'\n",
                                 'user deflated ZIP output changed')
                     report['preserved_data'].update({path: sha_file(fat.export(path)) for path in (gzip_path, zip_path)})
-            if stock:
+            if keep_disk:
                 report['final_disk_sha256'] = sha_file(disk)
             report['checks'].append('native_p2_remove_preserves_user_and_python_outputs')
             verify_inputs()

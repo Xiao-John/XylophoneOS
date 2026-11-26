@@ -1,0 +1,6 @@
+--- a/sysdeps/posix/libc_fatal.c
++++ b/sysdeps/posix/libc_fatal.c
+@@ -25 +25,2 @@
+-#include <unistd.h>
++#include <errno.h>
++#include <unistd.h>

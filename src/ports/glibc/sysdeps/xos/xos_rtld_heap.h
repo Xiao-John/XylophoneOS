@@ -16,6 +16,8 @@ extern "C" {
 int __xos_rtld_heap_begin (const struct xos_rtld_heap_plan *)
   __attribute__ ((visibility ("hidden")));
 void *__xos_rtld_heap_grow (size_t) __attribute__ ((visibility ("hidden")));
+/* One startup budget also covers the final file ownership transfer. */
+uint64_t __xos_rtld_heap_deadline (void) __attribute__ ((visibility ("hidden")));
 int __xos_rtld_heap_seal (void) __attribute__ ((visibility ("hidden")));
 
 #ifdef __cplusplus

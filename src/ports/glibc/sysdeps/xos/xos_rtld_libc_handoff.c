@@ -17,6 +17,9 @@ __xos_rtld_handoff_libc_files (struct link_map *libc_map,
   const int closed = __xos_rtld_finish_images (images);
   if (closed != 0)
     return closed;
+  const uint64_t deadline = __xos_rtld_heap_deadline ();
+  if (deadline == 0)
+    return EINVAL;
   if (libc_map == NULL || !libc_map->l_relocated || libc_map->l_versyms == NULL
       || libc_map->l_versions == NULL)
     return ENOEXEC;
@@ -29,7 +32,7 @@ __xos_rtld_handoff_libc_files (struct link_map *libc_map,
     return ENOEXEC;
 
   xos_file_startup_receiver adopt = DL_SYMBOL_ADDRESS (libc_map, symbol);
-  const long result = adopt (images->files, images->plan->deadline_ns);
+  const long result = adopt (images->files, deadline);
   return (int) -result;
 }
 
@@ -39,7 +42,10 @@ _dl_sysdep_start_cleanup (void)
   /* GNU calls this after libc relocation and the allocator switch. No
      constructors or program code can observe the late G3 table yet. */
   if (!__rtld_malloc_is_complete ())
-    _startup_fatal ("XOS rtld: shared libc allocator is unavailable\n");
+    {
+      (void) __xos_rtld_finish_images (&__xos_rtld_start_images);
+      _startup_fatal ("XOS rtld: shared libc allocator is unavailable\n");
+    }
   if (__xos_rtld_handoff_libc_files (GL (dl_ns)[LM_ID_BASE].libc_map,
                                     &__xos_rtld_start_images) != 0)
     _startup_fatal ("XOS rtld: cannot hand off native file startup\n");

@@ -630,6 +630,34 @@
       "distribution_status": "NOT_RUN: complete static source/relink materials, member-level license and binary distribution review; no new Release"
     },
     {
+      "name": "Qt Declarative E18 and bundled JavaScriptCore Macro Assembler",
+      "version": "6.8.3",
+      "path": "src/ports/qt6/qml",
+      "source": "https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtdeclarative-everywhere-src-6.8.3.tar.xz",
+      "source_archive_sha256": "1f03a2b8f5588b4face7da87926e9b2c1372b3a32157c52df07a75067a9db1af",
+      "license": "Qt per-file terms including LGPL-3.0-only, GPL-2.0-only, GPL-3.0-only, Qt commercial and BSD-3-Clause; Macro Assembler BSD-2-Clause",
+      "notices": [
+        "src/ports/qt6/licenses/GPL-2.0-only.txt",
+        "src/ports/qt6/licenses/GPL-3.0-only.txt",
+        "src/ports/qt6/licenses/LGPL-3.0-only.txt",
+        "src/ports/qt6/licenses/LicenseRef-Qt-Commercial.txt",
+        "src/ports/qt6/licenses/Qt-GPL-exception-1.0.txt",
+        "src/ports/qt6/qml/licenses/BSD-2-Clause.txt",
+        "src/ports/qt6/qml/licenses/BSD-3-Clause.txt",
+        "src/ports/qt6/qml/licenses/masm_license.txt",
+        "src/ports/qt6/qml/licenses/masm_qt_attribution.json"
+      ],
+      "artifact_sha256": {
+        "src/ports/qt6/qml/licenses/BSD-2-Clause.txt": "8fda146749ca071ac9cdce2e24d25444676ea48d1f9dccc2b7c15c054b717db8",
+        "src/ports/qt6/qml/licenses/BSD-3-Clause.txt": "9f0490f18656c6f2435bd14f603ef0c96434d1825615363dce43abb42ed1dcce",
+        "src/ports/qt6/qml/licenses/masm_license.txt": "9ba0c20a2972274f27e975d79ed3582e322d6891338266a52e2d3a9417fc0a72",
+        "src/ports/qt6/qml/licenses/masm_qt_attribution.json": "41f6415212dc5a4b54ccd7cc686aeec520e0e03fc2a8e20b1328d342aa24e4e0"
+      },
+      "used_in": ["static host QtQml and E18 source/build reconnaissance"],
+      "modifications": "No Qt Declarative source patches in this scope. See the locked archive LICENSES tree and per-file declarations for additional feature scopes.",
+      "distribution_status": "NOT_RUN: archive member and static redistribution/relink review, XOS guest build and distribution"
+    },
+    {
       "name": "liteHTML and bundled Gumbo (Aurora Browser)",
       "version": "liteHTML v0.9 commit 6ca1ab0419e770e6d35a1ef690238773a1dafcee; bundled Gumbo tree",
       "path": "src/ports/aurora_browser",

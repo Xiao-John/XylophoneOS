@@ -1,0 +1,91 @@
+{
+  "status": "passed",
+  "runner_sha256": "00651291d3cbbb952c81dce402ce30be00cf06c72121d45892443c9931e1cf36",
+  "checks": [
+    {
+      "round": 0,
+      "nonce": "ae0ff4cae9e54479295df199af96170d",
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed",
+      "scope": [
+        "failed_exec_preserves_name_and_channel",
+        "successful_exec_revokes_both_endpoints",
+        "blocked_peer_wakes",
+        "old_name_removed",
+        "queued_unaccepted_connection_discarded",
+        "same_pid_new_tokens_authenticated",
+        "child_exit_reclaims_everything"
+      ]
+    },
+    {
+      "round": 1,
+      "nonce": "a57c733692c9958f8a980a7b36a08025",
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed",
+      "scope": [
+        "failed_exec_preserves_name_and_channel",
+        "successful_exec_revokes_both_endpoints",
+        "blocked_peer_wakes",
+        "old_name_removed",
+        "queued_unaccepted_connection_discarded",
+        "same_pid_new_tokens_authenticated",
+        "child_exit_reclaims_everything"
+      ]
+    },
+    {
+      "round": 2,
+      "nonce": "c6e2885d5c7086efdb94a79f9fb5835f",
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed",
+      "scope": [
+        "failed_exec_preserves_name_and_channel",
+        "successful_exec_revokes_both_endpoints",
+        "blocked_peer_wakes",
+        "old_name_removed",
+        "queued_unaccepted_connection_discarded",
+        "same_pid_new_tokens_authenticated",
+        "child_exit_reclaims_everything"
+      ]
+    }
+  ],
+  "not_run": [
+    "sys81_explicit_channel_inheritance_stress",
+    "terminal_display_interactium_regression"
+  ],
+  "build_id": "2930da81b58b830f",
+  "image_sha256": "86eb8b82c56139e52f3f710ed0c369217894f3aa897bae3bc387ec001138855d",
+  "system_manifest_sha256": "0edb38c277eb232d3e097ff39834388842cada80e50829ff2dd9c603b18f7fcb",
+  "fixture_receipt_sha256": "e7b07e1fa9de93d7bc6c3eef28679c5b257bf45e41d9459ad1198d1e82197678",
+  "sdk_tree_sha256": "976aa6cad75b6d7d86fab427bf860daa622033f4818f39094dcd6f19bdb4aa07",
+  "artifacts": {
+    "ipc_exec_probe.elf": "07ac9269b5ed77365b91882fbab4198e8d12e60af8fd328838fcc1e3c7bb63bf"
+  },
+  "initial_disk_sha256": "3f6b7b375b7e510c1c5893a53b83bb15668483c516bcb02b5ef72acb4dddde6a",
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "evidence_files": [
+    {
+      "path": "guest_qemu.log",
+      "sha256": "e7161cd93657fae91c69688918af02aa2226f421d35c89f3905afbd60a088a53"
+    },
+    {
+      "path": "guest_serial.log",
+      "sha256": "451a6e5bac089e26d19fca565ba5f40544be504e73ef2ae28bd1e282441fd129"
+    }
+  ]
+}

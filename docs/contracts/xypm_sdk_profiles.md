@@ -136,6 +136,28 @@ python3 scripts/build_glibc_program.py --cxx \
 被核验的 sysroot。应用回执记录 profile、编译工具及 ELF 摘要，客体资格为
 `not_run`。既有 C 构建入口仍接受 SDK 和源文件；`--diagnostic` 用于诊断构建。
 
+### 独立部署 glibc 应用 SDK
+
+`package_glibc_sdk.py` 从完整 glibc SDK 构建目录和已绑定的 profile 生成新目录。
+部署目录保留 sysroot、原 manifest、glibc/GCC 来源核验文件和原 profile，并在
+复制后重验整个绑定。构建源码、缓存和中间产物留在原构建目录。分发时将整个
+部署目录作为一个单元，保留 `xos-app` 的执行权限。
+
+```sh
+python3 scripts/package_glibc_sdk.py --sdk-build "$XOS_GLIBC_CXX_SDK_BUILD" \
+  --profile build/xypm_profiles/glibc_cxx_candidate.json --output ./xos-glibc-sdk
+kit="$PWD/xos-glibc-sdk"
+"$kit/xos-app" init ./hello --id example.hello --language cpp
+"$kit/xos-app" build ./hello
+"$kit/xos-app" check ./hello
+"$kit/xos-app" pack ./hello --output ./hello.xpk
+```
+
+运行路径选中部署目录内的 SDK 和 profile，工具可随目录搬移到源树外使用。
+目标构建要求 Python 3.11 及与 SDK manifest 匹配的 `x86_64-elf` 工具在 PATH 上。
+编译、汇编与链接工具仍按现有规则核验。工具启动按单次调用选定运行库，切回
+newlib 时重新使用冻结 SDK 的原入口、项目与工作盘。新旧盘继续遵循单 profile 规则。
+
 发布为 glibc XPK 时，`xos_app.py` 的 `--sdk` 指向包含 `manifest.json` 和
 `sysroot/` 的完整构建目录。现有项目的 `target_profile` 应与候选 ID 一致，
 并使用独立项目目录。以下命令建立一个新的 C++ 应用，C 应用使用 `--language c`。

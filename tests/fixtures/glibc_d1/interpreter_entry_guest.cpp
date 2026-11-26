@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "interpreter_entry.hpp"
 #include "xos_rtld_mapping.h"
+#include "xos_rtld_heap.h"
 #include <errno.h>
 #include <xos/fault_sha256.hpp>
 #include <xos/vm.hpp>
@@ -12,6 +13,7 @@ using namespace xos::glibc_d1;
 
 extern "C" [[noreturn]] void __real___xos_glibc_start(const startup_info*, void* stack_top);
 extern "C" int attach_on_entry_stack(void**, xos_rtld_images*, xos_d1_entry_view*);
+extern "C" void* __minimal_malloc(usize);
 
 asm(
     ".text\n"
@@ -26,6 +28,13 @@ asm(
     "  ret\n");
 
 namespace {
+constexpr u64 heap_base = 0x120000200000ULL;
+constexpr u64 heap_bytes = 32ULL * 1024 * 1024;
+constexpr u64 batch = u64{XOS_VM_MAX_CHANGE_PAGES} * vm_page_size;
+constexpr u64 large_allocation = batch + vm_page_size;
+volatile u8* first_allocation;
+volatile u8* second_allocation;
+
 struct file_pin { xos_file_session* owner; u32 handle; u32 inode = 0; };
 xos_file_request request;
 xos_file_response response;
@@ -106,6 +115,47 @@ bool compare_phdr(void* source, unsigned int index, const Elf64_Phdr* pinned) {
     return true;
 }
 
+void exercise_early_heap() {
+    first_allocation = static_cast<u8*>(__minimal_malloc(vm_page_size));
+    if (reinterpret_cast<u64>(first_allocation) != heap_base
+        || first_allocation[0] != 0 || first_allocation[vm_page_size - 1] != 0) {
+        fail("GNU first allocation");
+    }
+    first_allocation[0] = 0xa7;
+    first_allocation[vm_page_size - 1] = 0x36;
+
+    // GNU reserves an extra page above the first block. The next native
+    // growth needs two batches; a separate read-only page blocks the latter.
+    const u64 next = heap_base + 2 * vm_page_size;
+    const u64 conflict_page = next + batch;
+    if (sdk::vm_change(vm_operation::commit, conflict_page, vm_page_size, vm_protection::read) != 0) {
+        fail("set up ordinary protection conflict");
+    }
+    if (__minimal_malloc(large_allocation) != nullptr
+        || sdk::write(1, reinterpret_cast<const void*>(next), 1) >= 0
+        || first_allocation[0] != 0xa7 || first_allocation[vm_page_size - 1] != 0x36
+        || sdk::vm_change(vm_operation::commit, conflict_page, vm_page_size,
+                          vm_protection::read_write) != vm_error_invalid) {
+        fail("second-batch rollback");
+    }
+    if (sdk::vm_change(vm_operation::decommit, conflict_page, vm_page_size) != 0) {
+        fail("release ordinary conflict");
+    }
+
+    second_allocation = static_cast<u8*>(__minimal_malloc(large_allocation));
+    // GNU reuses the old area’s remaining page when contiguous growth succeeds.
+    if (reinterpret_cast<u64>(second_allocation) != heap_base + vm_page_size
+        || second_allocation[0] != 0 || second_allocation[large_allocation - 1] != 0
+        || sdk::vm_change(vm_operation::commit, next, vm_page_size, vm_protection::read_write) != 0
+        || sdk::vm_change(vm_operation::commit, conflict_page, vm_page_size,
+                          vm_protection::read_execute) != vm_error_invalid) {
+        fail("batched GNU allocation and protections");
+    }
+    second_allocation[large_allocation - 1] = 0x41;
+    if (__minimal_malloc(heap_bytes) != nullptr) { fail("early heap budget"); }
+    sdk::print("D1_RTLD_EARLY_HEAP_OK batches=2 rollback=clean rw_nx=checked\n");
+}
+
 void prepare_dependency() {
     const int fd = __xos_rtld_open_pin("libhandoff.so");
     Elf64_Ehdr ehdr;
@@ -154,13 +204,15 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
     if (now < 0) { fail("rtld closure clock"); }
     xos_rtld_pin_plan plan{};
     plan.deadline_ns = static_cast<u64>(now) + 30000000000ULL;
+    const xos_rtld_heap_plan heap_plan{heap_base, heap_bytes, plan.deadline_ns};
     plan.count = 1;
     plan.pins[0] = {71, dependency.handle, dependency.inode, dependency_bytes, dependency_image.bias,
                     dependency_span, dependency_span, "libhandoff.so"};
     const auto stage = [&](xos_d1_entry_handoff& frame, main_headers headers,
                            const xos_rtld_pin_plan* dependencies) {
         return prepare_interpreter_entry(startup, main_source, headers, interpreter_source,
-                                         execution_mode::ordinary, native_entropy, early, frame, images, dependencies);
+                                         execution_mode::ordinary, native_entropy, early, frame, images,
+                                         dependencies, &heap_plan);
     };
     const u32 prior_sequence = early.request_sequence;
     const u64 too_low_addresses[] = {process_stack_bottom, XOS_D1_STACK_ENTRY_MIN - 16};
@@ -200,9 +252,22 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
         || images.main.bytes != 0 || images.interpreter.bytes != 0
         || frame->record.magic != 0 || early.phase != xos_file_session_active) { fail("ELF metadata rollback"); }
 
+    if (sdk::vm_reserve(heap_base, vm_page_size, vm_page_size, true) != static_cast<i64>(heap_base)) {
+        fail("reserve heap collision control");
+    }
+    result = prepare(main_phdr);
+    if (result.error != interpreter_entry_error::heap || result.mapping.vm_error != vm_error_collision
+        || result.release_error != 0 || images.main.bytes != 0 || images.interpreter.bytes != 0
+        || images.early_heap.bytes != 0 || frame->record.magic != 0 || early.phase != xos_file_session_active
+        || sdk::vm_change(vm_operation::unmap, heap_base, vm_page_size) != 0) {
+        fail("heap reservation rollback");
+    }
+
     result = prepare(main_phdr);
     if (result.error != interpreter_entry_error::none || early.phase != xos_file_session_transferred
-        || frame->record.files.request_sequence != early.request_sequence) { fail("prepare"); }
+        || frame->record.files.request_sequence != early.request_sequence
+        || images.early_heap.start != heap_base || images.early_heap.bytes != heap_bytes
+        || __xos_rtld_heap_grow(vm_page_size) != XOS_RTLD_HEAP_FAILED) { fail("prepare"); }
     app.owner = &frame->record.files;
     interpreter.owner = &frame->record.files;
     if (!close_pin(interpreter) || !close_pin(app)) { fail("close private pins"); }
@@ -212,6 +277,7 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
         || view.record->interpreter_entry != interpreter_image.bias + interpreter_image.entry
         || view.record->main_phdr != main_image.bias + main_phdr.address
         || view.record->main_phnum != main_phdr.count) { fail("actual rtld target checker"); }
+    exercise_early_heap();
     if (empty) {
         const u32 sequence = view.record->files.request_sequence;
         if (view.record->dependencies.count != 0 || view.record->dependencies.deadline_ns != 0
@@ -221,6 +287,9 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
     } else {
         prepare_dependency();
     }
+    if (__xos_rtld_heap_seal() != 0 || __xos_rtld_heap_grow(vm_page_size) != XOS_RTLD_HEAP_FAILED) {
+        fail("early heap sealed");
+    }
     early_sequence = view.record->files.request_sequence;
     if (__xos_file_adopt_early_session(&view.record->files) != 0
         || view.record->files.phase != xos_file_session_transferred) { fail("G3 ownership"); }
@@ -229,6 +298,10 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
 
 extern "C" const xos_d1_entry_view* d1_entry_view() { return &view; }
 extern "C" u32 d1_entry_sequence() { return early_sequence; }
+extern "C" int d1_early_heap_still_live() {
+    return first_allocation[0] == 0xa7 && first_allocation[vm_page_size - 1] == 0x36
+        && second_allocation[large_allocation - 1] == 0x41;
+}
 extern "C" int d1_release_images() {
     const i64 interpreter = release_image(images.interpreter);
     return release_image(images.main) == 0 && interpreter == 0;

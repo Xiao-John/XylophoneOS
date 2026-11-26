@@ -1,0 +1,29 @@
+--- a/elf/dl-minimal-malloc.c
++++ b/elf/dl-minimal-malloc.c
+@@ -30,0 +31,7 @@
++#ifdef XOS_RTLD_NATIVE_HEAP
++# include <xos_rtld_heap.h>
++# define RTLD_MINIMAL_PAGE_SIZE XOS_VM_PAGE
++#else
++# define RTLD_MINIMAL_PAGE_SIZE GLRO(dl_pagesize)
++#endif
++
+@@ -43,2 +50,2 @@
+-				 + GLRO(dl_pagesize) - 1)
+-				& ~(GLRO(dl_pagesize) - 1));
++				 + RTLD_MINIMAL_PAGE_SIZE - 1)
++				& ~(RTLD_MINIMAL_PAGE_SIZE - 1));
+@@ -56 +63 @@
+-      size_t nup = (n + GLRO(dl_pagesize) - 1) & ~(GLRO(dl_pagesize) - 1);
++      size_t nup = (n + RTLD_MINIMAL_PAGE_SIZE - 1) & ~(RTLD_MINIMAL_PAGE_SIZE - 1);
+@@ -59 +66,7 @@
+-      nup += GLRO(dl_pagesize);
++#ifdef XOS_RTLD_NATIVE_HEAP
++      if (nup > SIZE_MAX - RTLD_MINIMAL_PAGE_SIZE)
++        return NULL;
++      nup += RTLD_MINIMAL_PAGE_SIZE;
++      page = __xos_rtld_heap_grow (nup);
++#else
++      nup += RTLD_MINIMAL_PAGE_SIZE;
+@@ -61,0 +75 @@
++#endif

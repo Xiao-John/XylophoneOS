@@ -5,8 +5,9 @@ sysdep_routines += errno-loc
 endif
 ifeq ($(subdir),elf)
 sysdep_routines += cpu-tunables
-sysdep-rtld-routines += xos_rtld_entry xos_rtld_mapping xos_file_session
+sysdep-rtld-routines += xos_rtld_entry xos_rtld_mapping xos_file_session xos_rtld_heap
 CFLAGS-dl-load.os += -DXOS_RTLD_CLOSED_DEPENDENCIES
+CFLAGS-dl-minimal-malloc.os += -DXOS_RTLD_NATIVE_HEAP -ffunction-sections
 endif
 ifeq ($(subdir),stdlib)
 sysdep_routines += xos_process_exit

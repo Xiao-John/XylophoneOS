@@ -28,7 +28,9 @@ __xos_rtld_check_entry (void **start_argptr, struct xos_d1_entry_view *output)
       || record->size != sizeof (*record) || record->main_phnum == 0
       || record->main_phnum > 64 || record->main_entry == record->interpreter_entry
       || record->files.phase != xos_file_session_active || record->files.owner_pid == 0
-      || record->files.request_sequence == 0)
+      || record->files.request_sequence == 0
+      || ((record->heap.base != 0 || record->heap.bytes != 0 || record->heap.deadline_ns != 0)
+          && !xos_rtld_heap_plan_valid (&record->heap)))
     return 0;
 
   xos_u64 *args = handoff->stack.words;

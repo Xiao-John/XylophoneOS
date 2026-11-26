@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "durable_probe.hpp"
 #include "durable_probe_supervisor.hpp"
+#if XOS_PUMPKIN_ANCHORED_PROBE
+#include "../../../src/user/pumpkin/generation_guest.hpp"
+#endif
 
 namespace xos::user::pumpkin::durable_probe {
 namespace {
@@ -28,6 +31,11 @@ struct discovery {
     }
 };
 
+struct anchor_startup {
+    u64 proxy = 0;
+    u32 control = 0;
+};
+
 class daemon {
 public:
     ~daemon() {
@@ -39,7 +47,7 @@ public:
         }
     }
 
-    bool start(u32 image, grant_function grant, bool initialize) {
+    bool start(u32 image, grant_function grant, bool initialize, [[maybe_unused]] anchor_startup anchor = {}) {
         discovery entry;
         entry.published = sdk::ipc_name_publish(rendezvous) == 0;
         pipe_handles pipe{};
@@ -48,17 +56,37 @@ public:
         }
         sdk::spawn_options options;
         options.stdio[0] = pipe.read_token;
-        const char* args[]{daemon_image, initialize ? "--durable-init-test" : "--durable-test", rendezvous};
+        const char* mode = initialize ? "--durable-init-test" : "--durable-test";
+#if XOS_PUMPKIN_ANCHORED_PROBE
+        if (anchor.proxy != 0) {
+            mode = initialize ? "--anchored-init-test" : "--anchored-test";
+            options.prepare_context = &anchor.proxy;
+            options.prepare_child = [](u64 child, void* context) -> i64 {
+                anchor_guest::pair endpoints{};
+                return anchor_guest::create_pair(child, *static_cast<u64*>(context), endpoints)
+                    ? 0 : process_error_denied;
+            };
+        }
+#endif
+        const char* args[]{daemon_image, mode, rendezvous};
         const i64 child = sdk::spawn_image_options(image, 3, args, options);
         close_pipe(pipe.read_token);
         storage::grant_reply lease;
         if (child > 0) {
             pid = static_cast<u64>(child);
         }
-        const bool delivered = pid != 0 && grant(pid, storage::access::writer, lease) &&
+        bool delivered = pid != 0 && grant(pid, storage::access::writer, lease) &&
             write_pipe(pipe.write_token, &lease, sizeof(lease));
+#if XOS_PUMPKIN_ANCHORED_PROBE
+        if (delivered && anchor.proxy != 0) {
+            const anchor_guest::bind_proxy binding{pid};
+            delivered = sdk::channel_send_wait(anchor.control, &binding, sizeof(binding), anchor_guest::deadline()) == 0 &&
+                write_pipe(pipe.write_token, &anchor.proxy, sizeof(anchor.proxy));
+        }
+#endif
         close_pipe(pipe.write_token);
-        if (!delivered || !accept_control(entry)) {
+        control_admitted = delivered && accept_control(entry);
+        if (!control_admitted) {
             return false;
         }
         // Keep the discovery pair until the service has observed consumption
@@ -68,18 +96,19 @@ public:
         return expect(control, lookup, ready, initialize ? wire_status::not_found : wire_status::ok);
     }
 
-    bool stop() {
+    bool stop(int code = 0) {
         control.close();
         process_status child{};
         const auto waited = sdk::wait(pid, child);
         if (waited == 0) {
             pid = 0;
         }
-        return waited == 0 && child.outcome == process_outcome::exited && child.code == 0;
+        return waited == 0 && child.outcome == process_outcome::exited && child.code == code;
     }
 
     u64 pid = 0;
     ipc_client control;
+    bool control_admitted = false;
 
 private:
     bool accept_control(discovery& entry) {
@@ -174,7 +203,7 @@ bool dash_login(u64 pid, const credential& key) {
     return delivered && exited && result.outcome == process_outcome::exited && result.code == 0;
 }
 
-bool revoke_after_restart(daemon& server, const test_account& account_data) {
+bool revoke_live_session(daemon& server, const test_account& account_data, bool with_dash = true) {
     if (!lookup(server, account_data.identity, false)) {
         return false;
     }
@@ -187,7 +216,7 @@ bool revoke_after_restart(daemon& server, const test_account& account_data) {
     auto revoke = operation_request(wire_operation::revoke_account);
     revoke.token = account_data.identity;
     return check_identity(user, session, account_data.identity, wire_status::ok) &&
-        dash_login(server.pid, account_data.key) &&
+        (!with_dash || dash_login(server.pid, account_data.key)) &&
         expect(server.control, revoke, reply, wire_status::ok) &&
         check_identity(user, session, account_data.identity, wire_status::denied) &&
         login(user, account_data.key, reply, wire_status::denied);
@@ -209,7 +238,7 @@ void run(u32 image, grant_function grant, const char* mode) {
             sdk::print("PUMPKIN_DURABLE_FAIL provision-or-enroll\n");
             return;
         }
-        if (!active.start(image, grant, false) || !revoke_after_restart(active, account_data) || !active.stop()) {
+        if (!active.start(image, grant, false) || !revoke_live_session(active, account_data) || !active.stop()) {
             sdk::print("PUMPKIN_DURABLE_FAIL authenticate-or-revoke\n");
             return;
         }
@@ -231,4 +260,53 @@ void run(u32 image, grant_function grant, const char* mode) {
         sdk::print("pumpkin-durable-test: use cycle or check\n");
     }
 }
+
+#if XOS_PUMPKIN_ANCHORED_PROBE
+int run_anchored(u32 image, u32 proxy_image, grant_function grant) {
+    anchor_guest::pair proxy_control{};
+    sdk::spawn_options options{};
+    for (auto& fd : options.stdio) fd = -2;
+    options.prepare_context = &proxy_control;
+    options.prepare_child = [](u64 child, void* context) -> i64 {
+        auto& endpoints = *static_cast<anchor_guest::pair*>(context);
+        if (!anchor_guest::create_pair(sdk::pid(), child, endpoints)) return process_error_denied;
+        return sdk::pio_grant(pio_grant_action::grant, child, pio_resource_com1);
+    };
+    const char* args[]{"p2_anchor_proxy"};
+    const i64 proxy = sdk::spawn_image_options(proxy_image, 1, args, options);
+    if (proxy <= 0) return 21;
+
+    anchor_guest::scenario mode{};
+    const bool ready = sdk::channel_receive_wait(proxy_control.receive, &mode, sizeof(mode),
+                                                 anchor_guest::deadline()) == sizeof(mode);
+    bool passed = false;
+    if (ready) {
+        daemon server;
+        const bool started = server.start(image, grant, mode == anchor_guest::scenario::cycle,
+                                          {static_cast<u64>(proxy), proxy_control.transmit});
+        switch (mode) {
+        case anchor_guest::scenario::cycle: {
+            test_account account_data;
+            passed = started && enroll(server, account_data) &&
+                revoke_live_session(server, account_data, false) && server.stop();
+            break;
+        }
+        case anchor_guest::scenario::healthy:
+            passed = started && check_revoked(server, {disk_test_realm, 1}, {}) && server.stop();
+            break;
+        case anchor_guest::scenario::stale:
+            passed = !started && server.control_admitted && server.stop(11);
+            break;
+        }
+    }
+    const anchor_guest::supervisor_result result{static_cast<u8>(passed)};
+    if (!ready || sdk::channel_send_wait(proxy_control.transmit, &result, sizeof(result), anchor_guest::deadline()) != 0) {
+        (void)sdk::syscall(10, static_cast<u64>(proxy));
+    }
+    process_status child{};
+    const bool stopped = sdk::wait(static_cast<u64>(proxy), child) == 0 &&
+        child.outcome == process_outcome::exited && child.code == 0;
+    return passed && stopped ? 0 : 22;
+}
+#endif
 }

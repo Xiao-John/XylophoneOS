@@ -1,0 +1,25 @@
+--- a/Source/JavaScriptCore/runtime/JSLock.cpp
++++ b/Source/JavaScriptCore/runtime/JSLock.cpp
+@@ -109,3 +109,11 @@
+
+-    m_ownerThread = &Thread::currentSingleton();
++    auto& current_thread = Thread::currentSingleton();
++#if OS(XOS)
++    if (m_vm) {
++        if (!m_xos_mutator)
++            m_xos_mutator = &current_thread;
++        RELEASE_ASSERT(m_xos_mutator.get() == &current_thread);
++    }
++#endif
++    m_ownerThread = &current_thread;
+     m_hasOwnerThread.store(true, std::memory_order_release);
+--- a/Source/JavaScriptCore/runtime/JSLock.h
++++ b/Source/JavaScriptCore/runtime/JSLock.h
+@@ -156,2 +156,7 @@
+     RefPtr<Thread> m_ownerThread;
++#if OS(XOS)
++    // The VM keeps the first lock holder's identity across unlock and thread exit.
++    // Accessed only while holding m_lock.
++    RefPtr<Thread> m_xos_mutator;
++#endif
+     intptr_t m_lockCount;

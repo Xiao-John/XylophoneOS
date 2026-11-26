@@ -737,6 +737,16 @@ bool request_path(const request& in, client_session& session, path_reference& ou
     return output.error == status::ok;
 }
 
+bool directory_mutation_path(const request& in, client_session& session, path_reference& output,
+                             bool allow_root = false) {
+    u32 length = in.name_length;
+    if (length < max_name) {
+        while (length > 1 && in.name[length - 1] == '/') { --length; }
+    }
+    output.error = resolve_service_path(session, in.name, length, output, allow_root);
+    return output.error == status::ok;
+}
+
 status directory_from_path(path_reference& path, u32& object) {
     if (path.leaf[0] == '\0') {
         object = path.parent;
@@ -1448,7 +1458,8 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     const bool mutating = operation == op::anonymous || operation == op::anonymous_seal ||
         operation == op::clone_session || operation == op::write || operation == op::write_at || operation == op::replace_begin ||
         operation == op::replace_chunk || operation == op::replace_commit || operation == op::replace_abort ||
-        operation == op::remove || operation == op::mkdir || operation == op::rename || operation == op::sync ||
+        operation == op::remove || operation == op::remove_directory || operation == op::mkdir ||
+        operation == op::rename || operation == op::sync ||
         operation == op::truncate || operation == op::set_metadata ||
         (operation == op::open && ((in.flags & open_access_mask) != read_only ||
                                   (in.flags & open_option_mask) != 0));
@@ -2011,19 +2022,33 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         reply(out, in, code);
         break;
     }
+    case op::remove_directory:
     case op::remove: {
+        const bool directory_only = operation == op::remove_directory;
+        if (directory_only && (in.handle != 0 || in.flags != 0 || in.reserved != 0 ||
+                               in.offset != 0 || in.length != 0)) {
+            reply(out, in, status::invalid); break;
+        }
         path_reference resolved;
-        if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
+        const bool resolved_path = directory_only ? directory_mutation_path(in, session, resolved)
+                                                 : request_path(in, session, resolved);
+        if (!resolved_path) { reply(out, in, resolved.error); break; }
         const char* path = resolved.path;
         if (resolved.leaf[0] == '\0') { reply(out, in, status::invalid); break; }
+        if (directory_only && is_dev_directory(path)) { reply(out, in, status::not_empty); break; }
+        if (directory_only && is_null_device(path)) { reply(out, in, status::not_directory); break; }
         if (staging_active && refresh_staging_path() && same_path_object(staging_path, path)) {
             reply(out, in, status::busy); break;
         }
         FILINFO info{};
         const FRESULT found = f_stat(path, &info);
         if (found != FR_OK) { reply(out, in, from_fr(found)); break; }
-        if ((info.fattrib & AM_DIR) != 0) {
-            if ((in.flags & allow_directory) == 0) { reply(out, in, status::invalid); break; }
+        const bool directory = (info.fattrib & AM_DIR) != 0;
+        if (directory_only && !directory) { reply(out, in, status::not_directory); break; }
+        if (directory) {
+            if (!directory_only && (in.flags & allow_directory) == 0) {
+                reply(out, in, status::invalid); break;
+            }
             const status empty = directory_empty(path);
             if (empty != status::ok) { reply(out, in, empty); break; }
         }
@@ -2036,7 +2061,10 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     }
     case op::mkdir: {
         path_reference resolved;
-        if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
+        if (!directory_mutation_path(in, session, resolved, true)) { reply(out, in, resolved.error); break; }
+        if (resolved.leaf[0] == '\0' || is_dev_directory(resolved.path) || is_null_device(resolved.path)) {
+            reply(out, in, status::exists); break;
+        }
         reply(out, in, from_fr(f_mkdir(resolved.path)));
         break;
     }

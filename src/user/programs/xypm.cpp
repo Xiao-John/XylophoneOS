@@ -12,8 +12,14 @@
 #include "xypm_native.hpp"
 #include "xypm_journal.hpp"
 #include "xypm_repository_io.hpp"
-// The frozen single-thread SDK uses this weak hook for every file RPC. Share
-// its sequence with the P2 maintenance-acquire extension sent below.
+#ifdef XYP_GLIBC_RUNTIME
+extern "C" xos::i64 xypm_acquire_maintenance() {
+    xos::file::client files;
+    return files.init() ? files.maintenance_acquire() : static_cast<xos::i64>(xos::file::status::io);
+}
+#else
+// The frozen SDK predates the maintenance client method. Share its file RPC
+// sequence with the extension sent below.
 extern "C" xos::u32 xos_file_request_id() {
     static xos::u32 next=0;
     return next==0xffffffffu?0:++next;
@@ -29,6 +35,7 @@ extern "C" xos::i64 xypm_acquire_maintenance() {
         xos::sdk::yield();}
     return -1;
 }
+#endif
 extern "C" int xypm_recover_run();
 namespace {
 constexpr const char* index_path="/var/lib/xypm/index.tsv";

@@ -1052,6 +1052,13 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     const auto trace_result = syscall(sys_debug_trace, 0);
     if (trace_result < 0) { print("xsh: lifecycle trace control unavailable\n"); }
     start_persistent_recovery_gate();
+#if XOS_PUMPKIN_ANCHORED_PROBE
+    // The dedicated serial owner must start before UI, bundle or shell paths
+    // can launch anything from the disposable work disk.
+    if (persistent_recovery_gate) return 21;
+    return user::pumpkin::durable_probe::run_anchored(image_named("pumpkin_durable"),
+        image_named("p2_anchor_proxy"), private_storage_grant);
+#endif
     // Bootstrap installation must not run when marker inspection or guard
     // establishment fails; doing so could modify a disk awaiting recovery.
     process_guard_info startup_gate{};

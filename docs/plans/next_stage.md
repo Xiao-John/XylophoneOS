@@ -39,3 +39,10 @@ glibc C/C++ 已有 Linux arm64 实构建和静态客体证据，并发 C++ 普�
 ## 专项依据
 
 [开发纪律](../Discipline.md) · [宪法](../xos_plan.md) · [ABI](../contracts/abi_registry.md) · [glibc](glibc_port_scout.md) · [动态链接 D0](../contracts/dynamic_linking_d0.md) · [SDK profile](../contracts/xypm_sdk_profiles.md) · [Qt](qt.md) · [Qt 平台](../contracts/qt_platform.md) · [权限模型](permission_model_glibc.md) · [网络](network_development.md) · [浏览器](webengine_port.md)
+
+## 组合复验补记
+
+进程修复合入后的 `db8e15dd` 已在锁定 QEMU 上通过完整常规 smoke。
+glibc 日用工具、独立 Qt Quick 应用、Mobius 会话、Pumpkin 盘外代际和 ClarkE
+目标布局按各自门禁继续推进。
+[整合检查点](../work_log/8a09e2c7_next_stage_glibc_checkpoint.md)

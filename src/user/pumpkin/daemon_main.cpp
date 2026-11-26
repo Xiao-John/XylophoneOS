@@ -3,6 +3,9 @@
 #if XOS_PUMPKIN_DURABLE_PROBE
 #include "files_slot_client.hpp"
 #endif
+#if XOS_PUMPKIN_ANCHORED_PROBE
+#include "generation_guest.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -98,6 +101,27 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     }
     const auto* args = reinterpret_cast<const char* const*>(startup->argv);
     const entropy_api entropy{nullptr, kernel_entropy};
+#if XOS_PUMPKIN_ANCHORED_PROBE
+    const bool anchor_initialize = sdk::equal(args[1], "--anchored-init-test");
+    if (anchor_initialize || sdk::equal(args[1], "--anchored-test")) {
+        files_slot_client slots;
+        anchor_guest::client generation;
+        if (!slots.bind_bootstrap() || !generation.bind_bootstrap()) {
+            return 11;
+        }
+        anchored_files_store storage(slots.io(), generation.io(), disk_test_realm);
+        const auto store = storage.api();
+        if (anchor_initialize && provision_store(store, disk_test_realm) != status::ok) {
+            return 11;
+        }
+        struct live_backends { files_slot_client& slots; anchor_guest::client& generation; } live{slots, generation};
+        return serve_with_parent(store, disk_test_realm, entropy, args[2], disk_test_service,
+                                  {&live, [](void* context) {
+                                       const auto& state = *static_cast<live_backends*>(context);
+                                       return state.slots.live() && state.generation.live();
+                                   }});
+    }
+#endif
 #if XOS_PUMPKIN_DURABLE_PROBE
     const bool initialize = sdk::equal(args[1], "--durable-init-test");
     if (initialize || sdk::equal(args[1], "--durable-test")) {

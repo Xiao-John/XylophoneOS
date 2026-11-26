@@ -26,3 +26,25 @@ cmake -S "$WEBKIT_SOURCE" -B build/webkit-m0/target-xos-jsc -G Ninja \
 的头文件和 `data/i18n/uc` 静态库结束。实际日志在
 `build/webkit-m0/target-xos-jsc.log`。静态编译器探针只确认工具配置与对象生成，
 完整平台工具链链接、解释器产物及客体仍待验证。
+
+## 原生 LLInt 布局生成
+
+`build_llint_layout.py` 在 Linux 上用锁定的 WPE 归档、已验 glibc C/C++ SDK 和
+与该 SDK 配对的 ICU 79.1 目标归档生成 x86-64 LLInt 汇编头。输入 ICU 包的摘要和
+其中三个静态库的摘要在源锁的 `llint_icu`。该包来自已验签 ICU 源的目标构建。
+
+宿主使用 CMake、Ninja、Ruby、Python、Perl 和 C 编译器。构建器从锁定源码生成宿主
+`unifdef`，并核对目标编译器和 binutils 与 SDK 回执相同。选择 JSCOnly、静态链接、
+系统分配器和原生 x86-64 LLInt，禁用 JIT、WebAssembly 与采样分析。只构建
+`LLIntAssembly.h` 的依赖，目标编译仅一个任务。
+
+```sh
+python3 src/ports/webkit/build_llint_layout.py \
+  --archive "$WPE_ARCHIVE" --icu-archive "$XOS_ICU79_ARCHIVE" \
+  --sdk-build "$GLIBC_BUILD" --sdk-profile "$GLIBC_CXX_PROFILE" \
+  --output build/clarke_llint_layout
+```
+
+`manifest.json` 绑定实际生成的设置、偏移请求和汇编头，以及两个静态目标提取器。
+宿主 Ruby 从提取器读取目标编译时写入的设置表与偏移表。解释器链接、执行和跨线程
+GC 仍各自验收。 [验证记录](../../../docs/work_log/89051575_clarke_native_llint_layout_bridge.md)

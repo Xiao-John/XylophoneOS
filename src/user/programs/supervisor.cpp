@@ -1069,8 +1069,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (ui_ran) { ui::init(); }
     print("\nWelcome to Xshell | XylophoneOS\n"
           "help: commands   dash -i: POSIX shell   trace on: diagnostics\n\n");
-    (void)ensure_audio_service();
-    // DU4: one-shot P2 install after demos are quieted so process_guard can begin.
+    // The P2 guard needs exclusive admission before ordinary services start.
     if (ui_ran && ui::bundle_install_ok() && ui::staged_count() > 0 &&
         !ui::bundle_marker_present()) {
         if (!demo_keep && !demo_quiet) {
@@ -1096,6 +1095,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             print("[files] bundle package install incomplete; will retry next boot\n");
         }
     }
+    (void)ensure_audio_service();
     bool last_cr = false;
     for (;;) {
         print("xsh> ");

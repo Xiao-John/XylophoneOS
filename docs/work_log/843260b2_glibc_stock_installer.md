@@ -39,3 +39,13 @@ shell，原 360 秒预算保留。五项安装检查、13 个工具、26 个已�
 输出和卸载保留用户数据均通过。普通镜像另行通过锁定工具上的 79 项客体检查、10 项
 许可材料和 ABI 对照。这次使用原静态 kit，含 fork 的新 C/C++ kit 单独复验。
 [失败与修复后的验收索引](../reports/glibc_stock_installer_early_quiet_20261126/manifest.json)
+
+## 带单线程 fork 的签名 C/C++ kit
+
+从 `16523044` 在 #292 主线上以新 `xos-x86_64-glibc-stock-fork-v1` 重建候选
+`3bbbf73984b95c20`。真实空盘安装从 `run` 到可用 shell 为 170.801 秒。首个外部
+程序、13 项日用工具、26 个登记文件、33 项精确输出和卸载保留用户数据均通过。
+冻结的同一普通 ISO 用锁定 QEMU 11.1.2 另验 79 项、10 项许可材料与 ABI。
+本地预览装配重新核对了这套 SDK 与 `v0.0.1-1024` 冻结 newlib 归档，原盘回退
+另行跑客体。
+[带 fork 的安装器回执](../reports/glibc_stock_fork_installer_20261126/manifest.json)

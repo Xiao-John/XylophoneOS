@@ -1,0 +1,69 @@
+{
+  "boot_to_supervisor_ms": 170801,
+  "build_id": "3bbbf73984b95c20",
+  "checks": [
+    {
+      "name": "dash-runs-first-external-elf",
+      "passed": true
+    },
+    {
+      "name": "dash-installed-from-iso",
+      "passed": true
+    },
+    {
+      "name": "path-visible",
+      "passed": true
+    },
+    {
+      "name": "dash-runs",
+      "passed": true
+    },
+    {
+      "name": "iso-manifest",
+      "passed": true
+    }
+  ],
+  "external_elf_sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf",
+  "gate": "A3/A4 ISO dash install",
+  "iso_files": {
+    "DASH.ELF": "2a479bfb047d131910bec24a19f0636a8927ff7a46b31b47c26b1a18b5c6f302",
+    "KERNEL.BIN": "c0bcd3849256de8454963902ca5de8927bfce4676525457dede3ed004221c239",
+    "MANIFEST.TXT": "3f472538aae29ce012398eda8270d67dfd0b0f23d2445bf6d2c6dd5f431c1331"
+  },
+  "iso_sha256": "78c58d5707b42147978a6d68ae777efc4d637a23b514cf3740a78573cf252a4e",
+  "manifest": {
+    "boot_bundle": {
+      "container_bytes": 15901712,
+      "container_sha256": "2a479bfb047d131910bec24a19f0636a8927ff7a46b31b47c26b1a18b5c6f302",
+      "format": "XOSBND1",
+      "members": [
+        {
+          "data_len": 3305592,
+          "name": "dash",
+          "sha256": "d38457dd561b2fa2a09bdb99aa211c83fd07c006720310a653eed278b5d9076b",
+          "type": 1
+        },
+        {
+          "data_len": 8939520,
+          "name": "daily",
+          "sha256": "80176779cb58f6e598389aee4acfe65e9870fd37ea66938c9873bdd2f2fec013",
+          "type": 3
+        },
+        {
+          "data_len": 3656328,
+          "name": "xypm",
+          "sha256": "319325c3c8be5a3e60972994fec667a5244d560dfdd6fe0109f121a570706740",
+          "type": 5
+        }
+      ]
+    },
+    "build_id": "3bbbf73984b95c20",
+    "dash_bytes": 15901712,
+    "dash_sha256": "2a479bfb047d131910bec24a19f0636a8927ff7a46b31b47c26b1a18b5c6f302",
+    "format": 1,
+    "kernel_sha256": "c0bcd3849256de8454963902ca5de8927bfce4676525457dede3ed004221c239",
+    "version": "0.0.2-1103"
+  },
+  "serial_sha256": "e5c9b5df189d6eae5dbf7ed27bbc1fa39b29061a8b734e6d7dcc481bafc6318a",
+  "status": "passed"
+}

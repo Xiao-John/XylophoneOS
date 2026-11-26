@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "source_commit": "165230446a18fafb5990f2d4f4ddd7f5d1b401ac",
+  "implementation_tree": "811e827179e7aae542d5f2e5996e983eb0fc94a5",
+  "system_build_id": "3bbbf73984b95c20",
+  "ordinary_qemu": "QEMU emulator version 11.1.2",
+  "files": {
+    "candidate.json": "6de85d0a5b1fc998d755bf297fbf7c780b8f18d23ad9b12bf13ed6669b1b6add",
+    "install.serial.log.gz": "195325d9dc8af3016e0a9e6ad2a35ce9abe83f65b0b7f6b252fa2368569d7406",
+    "install_gate.serial.log.gz": "6676347fb4a0df3253ec3787f19d4bc8186a9c21cfd304cc24db85794779e7cf",
+    "installer_guest.json": "f1faa6ff36bd7fdf7953d99999667d080b68364a55c3ae5869d99daacb7d691f",
+    "ordinary_abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "ordinary_smoke.log": "e7b8b1aef9e00f9dc6b3debc6498bf581101b87e044a74c924dc15541f5cc35c",
+    "preview.json": "066bfc5591cd8ee6952e81fe956cfc6dc4183a21fffb0df638a2c7111920bd9b",
+    "run_remove.serial.log.gz": "9945a48b5bb745d07a91c7c6cae52f8b19069c4f999b225cc98c805fead97d75",
+    "stock_guest.json": "ff3a8b1926cabb6de976e64eafe0527529615584f2500bbd39b4245a300cb424"
+  }
+}

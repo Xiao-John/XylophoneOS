@@ -10,12 +10,15 @@ static int match_font(FcConfig *config, const char *expected_file)
     FcPattern *query = FcPatternCreate();
     FcCharSet *coverage = FcCharSetCreate();
     FcPattern *match = NULL;
+    FcChar8 *preferred;
     int status = 6;
 
     if (query && coverage && FcCharSetAddChar(coverage, 0x03bb)
         && FcPatternAddString(query, FC_FAMILY, generic_family)
         && FcPatternAddCharSet(query, FC_CHARSET, coverage)
-        && FcConfigSubstitute(config, query, FcMatchPattern)) {
+        && FcConfigSubstitute(config, query, FcMatchPattern)
+        && FcPatternGetString(query, FC_FAMILY, 0, &preferred) == FcResultMatch
+        && !strcmp((const char *)preferred, (const char *)expected_family)) {
         FcDefaultSubstitute(query);
         FcResult result;
         match = FcFontMatch(config, query, &result);

@@ -46,7 +46,8 @@ def build(args):
         raise ValueError('Fontconfig archive differs from the upstream source lock')
 
     sdk_manifest = args.sdk_build / 'manifest.json'
-    sdk_record = json.loads(sdk_manifest.read_bytes())
+    sdk_data = sdk_manifest.read_bytes()
+    sdk_record = json.loads(sdk_data)
     if sdk_record['status'] != 'static_sdk_built':
         raise ValueError('A complete static XOS glibc SDK is required')
     tools = {suffix: tool_identity('x86_64-elf-' + suffix) for suffix in ('gcc', 'as', 'ld', 'ar', 'ranlib')}
@@ -62,8 +63,9 @@ def build(args):
     sdk = args.sdk_build / 'sysroot'
     fixture = root / 'tests/fixtures/webkit/fontconfig_match.c'
     driver = port.parent / 'icu/xos-compiler'
-    inputs = {**font_inputs, **xml_inputs, **{path: digest(path) for path in
-              (sdk_manifest, driver, lock_path, fixture, sdk / 'usr/lib/libc.a')}}
+    inputs = {**font_inputs, **xml_inputs, **{sdk / name: expected for name, expected in sdk_record['artifacts'].items()}}
+    inputs.update({path: digest(path) for path in (driver, lock_path, fixture)})
+    inputs[sdk_manifest] = sha256(sdk_data).hexdigest()
     inputs[args.archive] = lock['sha256']
 
     def verify_inputs():

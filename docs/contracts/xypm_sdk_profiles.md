@@ -187,6 +187,37 @@ python3 scripts/build_candidate.py --output build/candidates/glibc_stock \
 编译、汇编与链接工具仍按现有规则核验。工具启动按单次调用选定运行库，切回
 newlib 时重新使用冻结 SDK 的原入口、项目与工作盘。新旧盘继续遵循单 profile 规则。
 
+发布为 glibc XPK 时，`xos_app.py` 的 `--sdk` 指向包含 `manifest.json` 和
+`sysroot/` 的完整构建目录。现有项目的 `target_profile` 应与候选 ID 一致，
+并使用独立项目目录。以下命令建立一个新的 C++ 应用，C 应用使用 `--language c`。
+项目头文件可放在 `src/`，也可作为 `files` 的数据源登记。编译器报告的项目依赖
+必须位于回执输入中，修改后应重新构建。
+
+```sh
+profile=build/xypm_profiles/glibc_cxx_candidate.json
+project=build/application_glibc/hello
+python3 scripts/create_xypm_profile.py create --runtime-family glibc --cxx \
+  --sdk-build "$XOS_GLIBC_CXX_SDK_BUILD" --id xos-x86_64-glibc-g4-cxx-v1 \
+  --output "$profile"
+python3 scripts/xos_app.py --profile "$profile" init "$project" \
+  --id friends.hello --language cpp
+python3 scripts/xos_app.py --profile "$profile" build "$project" --sdk "$XOS_GLIBC_CXX_SDK_BUILD"
+python3 scripts/xos_app.py --profile "$profile" check "$project" --sdk "$XOS_GLIBC_CXX_SDK_BUILD"
+python3 scripts/xos_app.py --profile "$profile" pack "$project" --sdk "$XOS_GLIBC_CXX_SDK_BUILD" \
+  --output build/application_glibc/hello.xpk
+```
+
+回退时使用原来绑定冻结 newlib SDK 的 `xos_app.json`、新旧隔离的项目输出和原
+profile、工作盘。以下命令使用 `0.0.1-1024` 冻结 SDK 对应的 profile。
+`XOS_NEWLIB_PROJECT` 应指向原项目或保留目标 profile 的独立副本。
+
+```sh
+python3 scripts/xos_app.py --profile config/package/xos_x86_64_static_single_v1.json \
+  build "$XOS_NEWLIB_PROJECT" --sdk "$XOS_FROZEN_NEWLIB_SDK"
+python3 scripts/xos_app.py --profile config/package/xos_x86_64_static_single_v1.json \
+  check "$XOS_NEWLIB_PROJECT" --sdk "$XOS_FROZEN_NEWLIB_SDK"
+```
+
 ### 工作区的应用 SDK 默认选择
 
 `scripts/xos_sdk.py` 为应用开发和宿主包工具保存同一选择。初始化时验证已部署的
@@ -223,34 +254,3 @@ python3 scripts/xos_sdk.py xypm verify-installed --image "$glibc_work"
 该入口的默认作用域是已配置工作区的应用与宿主包命令。安装候选、系统自举、原
 显式工具入口与发布材料仍采用独立的既有路径。整个 SDK 的发行默认项、生产许可
 及 newlib 退役继续使用发布门。[发布手册](../releases/playbook.md#glibc-应用-sdk-发布预览)
-
-发布为 glibc XPK 时，`xos_app.py` 的 `--sdk` 指向包含 `manifest.json` 和
-`sysroot/` 的完整构建目录。现有项目的 `target_profile` 应与候选 ID 一致，
-并使用独立项目目录。以下命令建立一个新的 C++ 应用，C 应用使用 `--language c`。
-项目头文件可放在 `src/`，也可作为 `files` 的数据源登记。编译器报告的项目依赖
-必须位于回执输入中，修改后应重新构建。
-
-```sh
-profile=build/xypm_profiles/glibc_cxx_candidate.json
-project=build/application_glibc/hello
-python3 scripts/create_xypm_profile.py create --runtime-family glibc --cxx \
-  --sdk-build "$XOS_GLIBC_CXX_SDK_BUILD" --id xos-x86_64-glibc-g4-cxx-v1 \
-  --output "$profile"
-python3 scripts/xos_app.py --profile "$profile" init "$project" \
-  --id friends.hello --language cpp
-python3 scripts/xos_app.py --profile "$profile" build "$project" --sdk "$XOS_GLIBC_CXX_SDK_BUILD"
-python3 scripts/xos_app.py --profile "$profile" check "$project" --sdk "$XOS_GLIBC_CXX_SDK_BUILD"
-python3 scripts/xos_app.py --profile "$profile" pack "$project" --sdk "$XOS_GLIBC_CXX_SDK_BUILD" \
-  --output build/application_glibc/hello.xpk
-```
-
-回退时使用原来绑定冻结 newlib SDK 的 `xos_app.json`、新旧隔离的项目输出和原
-profile、工作盘。以下命令使用 `0.0.1-1024` 冻结 SDK 对应的 profile。
-`XOS_NEWLIB_PROJECT` 应指向原项目或保留目标 profile 的独立副本。
-
-```sh
-python3 scripts/xos_app.py --profile config/package/xos_x86_64_static_single_v1.json \
-  build "$XOS_NEWLIB_PROJECT" --sdk "$XOS_FROZEN_NEWLIB_SDK"
-python3 scripts/xos_app.py --profile config/package/xos_x86_64_static_single_v1.json \
-  check "$XOS_NEWLIB_PROJECT" --sdk "$XOS_FROZEN_NEWLIB_SDK"
-```

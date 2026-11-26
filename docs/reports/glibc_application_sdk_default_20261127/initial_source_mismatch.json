@@ -1,0 +1,7 @@
+{
+  "candidate_build_id": "b210965441f899cc",
+  "candidate_source_commit": "aece996570fa23ae37d2171c8ca1a56b90926f59",
+  "error": "system source hash differs: scripts/xypm.py",
+  "status": "stopped_before_guest",
+  "test_sha256": "2847104610b09ac455b9ca3ba0b465b5684073143c5e4f9d431da2cf93170a14"
+}

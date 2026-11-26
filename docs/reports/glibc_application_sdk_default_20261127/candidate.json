@@ -1,0 +1,36 @@
+{
+  "application_sdk": {
+    "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+    "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+  },
+  "artifacts": {
+    "dash_manifest.json": "0cbd154890eda6197ccd0ba31e4d49138fe90ff145f08cbc63b28bbbcb795d42",
+    "stock/build_receipt.json": "15774cd54222bd28d1927e3d4094caaf70909d671bd2c67c90fe6ccfdbd911de",
+    "stock/daily.xpk": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f",
+    "stock/xypm.elf": "3971e1e05cafaf4769465ca338c1e65df11da4b5f4c477926cebc863e2037736",
+    "system/install_manifest.json": "2a069080b41ce99e4a14bc0e65250ceb59cb8cd12eb466f5671efa4ca94d4a38",
+    "system/kernel.elf": "88628cf77bde654c87c79c4cfeb3c0e44423fc3b0a410e6814a2032d96c3c1fc",
+    "system/license_report.json": "5546304f7a49d792b050dd4fa99758787ac86e0085c29fdb0238542d447726de",
+    "system/manifest.json": "1350c0cd37d579663794f8a7dae57bc155256382bfa84182a7a1728eb9405972",
+    "system/xos-install-dash.iso": "bd8e1ac9b42ae94043aa07b9ef9814d68e51e860b214ce9f62dc8c3723cc3ebc",
+    "system/xos-install.iso": "15c3bdc47b04eb06e3390d0e8c503a3d68068dc4a903b83cb52945df33fec53d"
+  },
+  "build_id": "3a17018acf8ff034",
+  "candidate_manifest_sha256": "f52c2303886a75f79e35782c4c9f3188767634b72dacc88d84e24a0b476e4ac7",
+  "guest_qualification": "not_run",
+  "installer_guest_qualification": "not_run",
+  "source_commit": "50e9a5a4da3e487f89d7f060285b7472747abd0d",
+  "status": "built_unverified",
+  "steps": {
+    "dash": "passed",
+    "install_iso": "passed",
+    "licenses": "passed",
+    "stock": "passed",
+    "system": "passed"
+  },
+  "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,14 @@
+{
+  "status": "passed_subset",
+  "build_id": "7503e43bbd1bd127",
+  "system_manifest_sha256": "0da762ed690557a35cd0754cac898271cd7c08fa5181c892a9732b515bb23281",
+  "iso_sha256": "2c4f30bdec2bcf63c1b91fc42006b1e6edefcb6821ca3a25006fc8fa499cc4e2",
+  "qemu": "QEMU emulator version 11.1.2",
+  "check": "normal Xsh does not expose or start the Pumpkin operator images",
+  "resources": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "7091d7a5f4c6d794c513865fa264275cc5a4c8e1f5a48691815d2b79572d3616"
+}

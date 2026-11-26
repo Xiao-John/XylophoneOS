@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Manage private Pumpkin login and developer resources in a disposable VM."""
+"""Manage Pumpkin login in a private VM configured by a trusted operator."""
 
 import argparse
 from contextlib import ExitStack, contextmanager
@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import re
 import selectors
+import shutil
 import signal
 import socket
 import stat
@@ -21,10 +22,11 @@ import time
 
 from make_work_disk import create_fat32
 from pumpkin_generation_authority import generation_authority, generation_error, generation_mark, publish_result
+from pumpkin_generation_provider import developer_realm, load_profile, provider_client
 from run_qemu import qemu_command
 
 
-realm = bytes.fromhex("51704432" + "00" * 12)
+realm = developer_realm
 header = struct.Struct("<4sHBBQ")
 account_selection = struct.Struct("<I32s92x")
 empty_account = bytes(account_selection.size)
@@ -64,6 +66,7 @@ resource_errors = {
     35: "Pumpkin sealed broker did not close cleanly",
 }
 directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+deployment_marker = "deployment.sha256"
 
 
 class login_error(RuntimeError):
@@ -122,7 +125,7 @@ def check_new_destination(path):
     raise login_error("The selected credential destination already exists")
 
 
-def read_credential(descriptor, record):
+def read_credential(descriptor, record, installation_realm=realm):
     with memoryview(record) as data:
         offset = 0
         while offset < len(data):
@@ -130,13 +133,13 @@ def read_credential(descriptor, record):
             require(count != 0, "Incomplete private credential file")
             offset += count
     tag, scope, number = credential_file_header.unpack_from(record)
-    require(tag == file_magic and scope == realm and number > 0 and any(memoryview(record)[-secret_size:]),
+    require(tag == file_magic and scope == installation_realm and number > 0 and any(memoryview(record)[-secret_size:]),
             "Invalid private credential record")
 
 
 def save_credential(descriptor, parent, identity, key):
     scope, number = struct.unpack("<16sQ", identity)
-    require(scope == realm and number > 0 and any(key), "Invalid issued credential")
+    require(any(scope) and number > 0 and any(key), "Invalid issued credential")
     record = bytearray(file_size)
     try:
         credential_file_header.pack_into(record, 0, file_magic, scope, number)
@@ -170,19 +173,32 @@ def install_disk(path):
         os.fsync(disk.fileno())
 
 
-def prepare(state, named_resources=False):
+def prepare(state, named_resources=False, *, deployment=None, system=None):
+    if deployment is not None:
+        require(system is not None, "Select the deployment system image")
+        select_deployment(system, bind_system(system), deployment)
+        require(provider_client(deployment).read() is None, "The provider realm has already been used")
     state.mkdir(mode=0o700)
     with private_directory(state) as descriptor:
-        authority_path = state / "authority"
-        authority_path.mkdir(mode=0o700)
-        generation_authority(authority_path, realm, named_resources=named_resources).provision()
+        if deployment is None:
+            authority_path = state / "authority"
+            authority_path.mkdir(mode=0o700)
+            generation_authority(authority_path, realm, named_resources=named_resources).provision()
         install_disk(state / "work.img")
+        if deployment is not None:
+            marker = os.open(deployment_marker, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                             0o600, dir_fd=descriptor)
+            with os.fdopen(marker, "wb") as stream:
+                stream.write(deployment.sha256.encode("ascii"))
+                stream.flush()
+                os.fsync(stream.fileno())
         os.fsync(descriptor)
 
 
 def bind_system(system):
     manifest = system / "manifest.json"
-    checked = json.loads(manifest.read_bytes())
+    metadata = manifest.read_bytes()
+    checked = json.loads(metadata)
     require(checked.get("pumpkin_user_login") is True and checked.get("pumpkin_operator_protocol") == 2,
             "Select a private operator login image built with this tool")
     names = ("xos-install.iso", "user_files.image.elf", "user_supervisor.image.elf",
@@ -194,15 +210,60 @@ def bind_system(system):
     artifacts = {name: digest(system / name) for name in names}
     require(all(checked["artifacts"][name]["sha256"] == value for name, value in artifacts.items()),
             "Login image differs from its build receipt")
-    return checked["build_id"], digest(manifest), artifacts
+    return checked["build_id"], hashlib.sha256(metadata).hexdigest(), artifacts
+
+
+def select_deployment(system, binding, deployment):
+    metadata = (system / "manifest.json").read_bytes()
+    require(hashlib.sha256(metadata).hexdigest() == binding[1], "Login image manifest changed")
+    manifest = json.loads(metadata)
+    installed_realm = manifest.get("pumpkin_deployment_realm")
+    named = manifest.get("pumpkin_named_resource_store") is True
+    if deployment is None:
+        require(installed_realm is None, "This login image requires its independent deployment provider")
+    else:
+        require(deployment.realm.hex() == installed_realm and deployment.system_manifest_sha256 == binding[1]
+                and deployment.named_resources == named, "System image does not match the deployment profile")
+    return named
+
+
+def check_installation(descriptor, deployment):
+    try:
+        marker = os.open(deployment_marker, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=descriptor)
+    except FileNotFoundError:
+        require(deployment is None, "The installation is missing its deployment binding")
+        return
+    with os.fdopen(marker, "rb") as stream:
+        info = os.fstat(stream.fileno())
+        require(deployment is not None and stat.S_ISREG(info.st_mode) and info.st_uid == os.geteuid()
+                and stat.S_IMODE(info.st_mode) == 0o600 and info.st_nlink == 1
+                and stream.read(65) == deployment.sha256.encode("ascii"),
+                "The installation does not match the deployment profile")
+
+
+@contextmanager
+def sealed_login_image(path, expected_sha256):
+    descriptor = os.memfd_create("pumpkin-login-iso", os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING)
+    try:
+        source = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        with os.fdopen(source, "rb") as stream, os.fdopen(os.dup(descriptor), "wb") as captured:
+            require(stat.S_ISREG(os.fstat(source).st_mode), "Login image must be a regular file")
+            shutil.copyfileobj(stream, captured)
+        seals = fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_GROW | fcntl.F_SEAL_WRITE | fcntl.F_SEAL_SEAL
+        fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS, seals)
+        reference = Path("/proc/self/fd") / str(descriptor)
+        require(digest(reference) == expected_sha256, "The sealed login image differs from its deployment profile")
+        yield reference, descriptor
+    finally:
+        os.close(descriptor)
 
 
 class private_vm:
     """Unlike the general test console, this pipe never accumulates a recording."""
 
-    def __init__(self, command):
+    def __init__(self, command, *, pass_fds=()):
         self.process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                        stderr=subprocess.DEVNULL, bufsize=0, close_fds=True)
+                                        stderr=subprocess.DEVNULL, bufsize=0, close_fds=True, pass_fds=pass_fds)
         self.reader = selectors.DefaultSelector()
         self.reader.register(self.process.stdout, selectors.EVENT_READ)
 
@@ -276,13 +337,13 @@ def decode_mark(data, named_resources):
     return None if data == empty_mark else generation_mark(*mark_layout.unpack(data), named_resources=named_resources)
 
 
-def operator_exchange(vm, command, frame, wallet, stored):
+def operator_exchange(vm, command, frame, wallet, stored, installation_realm):
     tag, version, operation, status, sequence = header.unpack_from(frame)
     require(tag == b"PKU1" and version == 1 and status == 0 and sequence == 1 and
             operation == credential_operations.get(command) and
             not any(memoryview(frame)[padding_offset:]), "Invalid private credential exchange")
     scope, number = struct.unpack_from("<16sQ", frame, identity_offset)
-    require(scope == realm and number > 0, "Invalid credential account binding")
+    require(scope == installation_realm and number > 0, "Invalid credential account binding")
     with memoryview(frame) as data:
         identity = data[identity_offset:secret_offset]
         secret = data[secret_offset:padding_offset]
@@ -336,12 +397,17 @@ def named_exchange(vm, command, frame, selection, selection_sent):
 
 
 def boot(system, state, command, authority, previous, path, stored, account, selection, display, revoke_requested,
-         *, first_account=False):
+         *, first_account=False, installation_realm=realm, expected_iso_sha256=None):
     with tempfile.TemporaryDirectory(prefix="pumpkin_user_") as private, ExitStack() as close_wallet:
         monitor = Path(private) / "qmp"
         drive = str(state / "work.img").replace(",", ",,")
-        vm = private_vm(qemu_command(system / "xos-install.iso", iso=True, work_disk=drive, qmp=monitor,
-                                     display=display))
+        image = system / "xos-install.iso"
+        descriptors = ()
+        if expected_iso_sha256 is not None:
+            image, pinned = close_wallet.enter_context(sealed_login_image(image, expected_iso_sha256))
+            descriptors = (pinned,)
+        vm = private_vm(qemu_command(image, iso=True, work_disk=drive, qmp=monitor, display=display),
+                        pass_fds=descriptors)
         try:
             vm.scan_boot(b"xos64> ")
             vm.send(b"run\r")
@@ -406,7 +472,7 @@ def boot(system, state, command, authority, previous, path, stored, account, sel
                             require(destination_seen and committed is not None and committed.revision == expected,
                                     "Credential issue has no confirmed account publication")
                         try:
-                            operator_exchange(vm, command, frame, wallet, stored)
+                            operator_exchange(vm, command, frame, wallet, stored, installation_realm)
                         finally:
                             wipe(stored)
                         credential_seen = True
@@ -484,7 +550,8 @@ def named_profile(system):
     return json.loads((system / "manifest.json").read_bytes()).get("pumpkin_named_resource_store") is True
 
 
-def operate(system, state, command, path, selection=None, account=b"alice", *, display=None, revoke_requested=None):
+def operate(system, state, command, path, selection=None, account=b"alice", *, display=None,
+            revoke_requested=None, deployment=None):
     first_account = command == first_account_command
     if first_account:
         require(path is not None and isinstance(account, bytes) and
@@ -496,7 +563,7 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
             "Select a private login image with a bound Mobius executable")
     require((revoke_requested is not None) == (command == "desktop-admin"),
             "Live revocation requires an explicit administration source")
-    named = named_profile(system)
+    named = select_deployment(system, binding, deployment)
     require(command != "read-resource" or (broker_artifact in binding[2] and not named),
             "Select the private Pumpkin sealed resource image")
     require((selection is not None) == (command in named_operations) and
@@ -506,7 +573,10 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
         disk = os.stat("work.img", dir_fd=descriptor, follow_symlinks=False)
         require(stat.S_ISREG(disk.st_mode) and disk.st_uid == os.geteuid() and disk.st_nlink == 1,
                 "Invalid private work disk")
-        authority = generation_authority(state / "authority", realm, named_resources=named)
+        check_installation(descriptor, deployment)
+        installation_realm = realm if deployment is None else deployment.realm
+        authority = (generation_authority(state / "authority", realm, named_resources=named)
+                     if deployment is None else provider_client(deployment))
         previous = authority.read()
         if first_account:
             require(previous is None, "First account provisioning requires an unused installation")
@@ -517,9 +587,10 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
                 check_new_destination(path)
             elif command in submission_commands:
                 with credential_file(path, False) as wallet:
-                    read_credential(wallet[0], stored)
+                    read_credential(wallet[0], stored, installation_realm)
             result = boot(system, state, command, authority, previous, path, stored, account, selection, display,
-                          revoke_requested, first_account=first_account)
+                          revoke_requested, first_account=first_account, installation_realm=installation_realm,
+                          expected_iso_sha256=binding[2]["xos-install.iso"] if deployment is not None else None)
             require(bind_system(system) == binding, "Login image receipt changed during operation")
             final = authority.read()
             if command == "enroll" and result == duplicate_enrollment:
@@ -546,6 +617,8 @@ def main():
     parser.add_argument("--system", type=Path)
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--credential-file", type=Path)
+    parser.add_argument("--deployment-profile", type=Path)
+    parser.add_argument("--deployment-profile-sha256")
     parser.add_argument("--account", default=None, help="select an account name, default alice")
     parser.add_argument("--resource-name")
     parser.add_argument("--generation", type=int)
@@ -554,7 +627,9 @@ def main():
     parser.add_argument("--display", help="QEMU display backend for the desktop operation")
     parser.add_argument("--revoke-on-signal", action="store_true", help="enable same-owner host SIGUSR1 to revoke the live desktop login")
     args = parser.parse_args()
-    if args.operation != "prepare" and args.system is None:
+    if (args.deployment_profile is None) != (args.deployment_profile_sha256 is None):
+        parser.error("supply the deployment profile and its trusted SHA-256 together")
+    if (args.operation != "prepare" or args.deployment_profile is not None) and args.system is None:
         parser.error("a matching --system is required")
     if (args.operation in credential_operations or args.operation == first_account_command) != (args.credential_file is not None):
         parser.error("--credential-file is required for credential submission and enrollment")
@@ -589,10 +664,13 @@ def main():
         parser.error("resource fields require a named resource operation")
     try:
         state = args.state.absolute()
+        deployment = (load_profile(args.deployment_profile, args.deployment_profile_sha256)
+                      if args.deployment_profile is not None else None)
         if args.operation == "prepare":
-            if args.system is not None:
-                bind_system(args.system)
-            prepare(state, args.system is not None and named_profile(args.system))
+            named = False
+            if args.system is not None and deployment is None:
+                named = select_deployment(args.system, bind_system(args.system), None)
+            prepare(state, named, deployment=deployment, system=args.system)
             print("Private Pumpkin installation prepared")
             return 0
         path = args.credential_file.absolute() if args.credential_file is not None else None
@@ -606,12 +684,12 @@ def main():
             try:
                 print(f"Live Pumpkin administration enabled for process {os.getpid()}", flush=True)
                 result = operate(args.system.absolute(), state, "desktop-admin", path, account=account.encode("ascii"),
-                                 display=args.display, revoke_requested=lambda: requested)
+                                 display=args.display, revoke_requested=lambda: requested, deployment=deployment)
             finally:
                 signal.signal(signal.SIGUSR1, old_handler)
         else:
             result = operate(args.system.absolute(), state, args.operation, path, selected, account.encode("ascii"),
-                             display=args.display)
+                             display=args.display, deployment=deployment)
         if selected is not None:
             result, generation, data = result
             if result == 1:

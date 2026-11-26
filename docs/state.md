@@ -21,6 +21,10 @@ Qt Quick 外部示例已用普通 xypm 离线工作盘完成原包安装、重�
 三次冷启渲染相同画面，回退保留替换后新增的用户文件。
 [接收者安装验证](work_log/4d6f124f_qt_quick_receiver_install.md)
 
+Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首户签发、重启认证和
+只回退客体盘时拒绝。硬件代际与物理启动仍待验收。
+[独立提供者部署](work_log/f1d2a697_pumpkin_provider_deployment.md)
+
 按 [Discipline](Discipline.md) 在合并、发行或里程碑更新。过程与证据见
 [work_log](work_log/) 和 [history](history/)，设计原则见
 [xos_plan.md 第一部分](xos_plan.md#第一部分设计原则)。本线活记忆写工作区根的

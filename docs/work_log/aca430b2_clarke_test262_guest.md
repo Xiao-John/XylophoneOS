@@ -25,3 +25,12 @@ python3 tests/jsc_test262_guest.py --suite "$TEST262_CHECKOUT" --system "$XOS_SY
   --payload "$JSC_ELF" --engine-binding "$JSC_BUILD_BINDING" --report "$OUTPUT" \
   --expected-resources 129696 3 1
 ```
+
+## 客体盘读回复验
+
+在 `97b2642f` 重新构建系统 `b927a79f809cf18c`。全部 22 个写入客体 FAT 盘的
+文件在启动前从同一磁盘读回，包括引擎、harness、完成标记和 16 个脚本变体。
+报告的每个脚本摘要由盘上读回的字节生成。实际替换盘上一份严格模式脚本的
+负向检查在启动 QEMU 前被拒绝。正确素材在锁定的 QEMU 11.1.2 继续通过 16 次
+真实执行，资源每次恢复到 `129696 / 3 / 1`。
+[读回绑定与回执](../reports/clarke_test262_readback_20261126/manifest.json)

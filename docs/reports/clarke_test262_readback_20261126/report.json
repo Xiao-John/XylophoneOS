@@ -1,0 +1,276 @@
+{
+  "status": "passed_subset",
+  "cases": [
+    {
+      "test": "test/built-ins/Array/prototype/map/15.4.4.19-1-1.js",
+      "mode": "sloppy",
+      "guest_script_sha256": "d1b29487c3412ec066a6160da36aac9d96809eb1c9c7aa84f33388b9174a69a5",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/Array/prototype/map/15.4.4.19-1-1.js",
+      "mode": "strict",
+      "guest_script_sha256": "023041e29807184f6e4674a129550ce16553a84f9af593c4521925dd2b2a2767",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/JSON/parse/15.12.1.1-0-1.js",
+      "mode": "sloppy",
+      "guest_script_sha256": "db4713276ffbff94b8d1dfab034da1e36c2f78de6517861df015cded3115b915",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/JSON/parse/15.12.1.1-0-1.js",
+      "mode": "strict",
+      "guest_script_sha256": "3fc15fc38124b6b0cfd85b0279faac979cc01a4229888d556cd51804e9f39201",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/Map/prototype/get/get.js",
+      "mode": "sloppy",
+      "guest_script_sha256": "cff9023f7594b8833f14b886d8865deb8cfc6b2cfc1f491424e34b186662b884",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/Map/prototype/get/get.js",
+      "mode": "strict",
+      "guest_script_sha256": "9a1aca8d6fb791e8cb59b89678ad89182e036be782f8c4a197e200edb8186509",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/Set/prototype/has/has.js",
+      "mode": "sloppy",
+      "guest_script_sha256": "3d3b3c7c6ac6f8ad47ad59c5d2bd675e5f1b700002dd0cd519aaebcc5a4fabba",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/Set/prototype/has/has.js",
+      "mode": "strict",
+      "guest_script_sha256": "2f76eb8960236bac08348a0793fd99d231455c89660a5c37d93130e98bba4301",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/TypedArray/prototype/slice/arraylength-internal.js",
+      "mode": "sloppy",
+      "guest_script_sha256": "e3f5ba113da04049301b7eed79995d69b3ae704ba2a93029ce432da84a3aaa99",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/built-ins/TypedArray/prototype/slice/arraylength-internal.js",
+      "mode": "strict",
+      "guest_script_sha256": "5fe4581a0e5811a0a033bb043d9eb53ce50b55933c6e7dc8612b47c2d07673e8",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/language/expressions/optional-chaining/call-expression.js",
+      "mode": "sloppy",
+      "guest_script_sha256": "fc1eca21ad14c895607e7e47dfa898d8e0f747f338f177136d092f8cc069051a",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/language/expressions/optional-chaining/call-expression.js",
+      "mode": "strict",
+      "guest_script_sha256": "8a6dc2f15dd5d50c6b9f321f971c2385ba3d90d1ad1d3915523fc7132ac884cf",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/language/statements/class/accessor-name-inst-computed-yield-expr.js",
+      "mode": "sloppy",
+      "guest_script_sha256": "3d9d6eee23c8c37bb154a7cb9e0a20d39e6120e79f6b23402a1bd30c4a49f5fe",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/language/statements/class/accessor-name-inst-computed-yield-expr.js",
+      "mode": "strict",
+      "guest_script_sha256": "eb366a0d9800379838383f72209d513945d8672f2c8255f5dc1f90cc7aac2e36",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/language/statements/for-of/Array.prototype.keys.js",
+      "mode": "sloppy",
+      "guest_script_sha256": "b3483fbd46d9ced0c3ce74dd25472a61e748cd89ac26e592eeb097e3827528e1",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "test/language/statements/for-of/Array.prototype.keys.js",
+      "mode": "strict",
+      "guest_script_sha256": "f84c4d869574087732771b5caf809bd1832cf7acbad709193bd4149f1a2f9bda",
+      "kind": "exited",
+      "code": 0,
+      "completion_marker": true,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "status": "passed"
+    }
+  ],
+  "test262_commit": "4db99ac4dc8924279ae07ed3246385924e878519",
+  "source_lock_sha256": "130658894c52264206163cb07ae90a94718ea8914cda34501fdcc780bda3b561",
+  "runner_sha256": "8c7147be25e0a5f6a5c88668eddf4bfa8c016adc085060618803945837fb74f7",
+  "scheduled": 16,
+  "expected_resources": [
+    129696,
+    3,
+    1
+  ],
+  "system_build": "b927a79f809cf18c",
+  "system_manifest_sha256": "010510cbf3aa8ab1dec8968f2717a05b555fde9dc1a66045372b30ab706824e0",
+  "iso_sha256": "201db60407fa73f8f37e9535be89f708f5a0da29ed958fd4c49781ed27358e49",
+  "jsc_sha256": "21c15eb5b1cf67abee9696b62f9ec44aa1b0f03f970fa0028662d89056cd6779",
+  "engine_binding_sha256": "35ac5733ace586d1020a375a664ef0cdfb0a6f6ec3178c201d81702285fdddd8",
+  "sdk_manifest_sha256": "a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e",
+  "fat_readback_sha256": {
+    "/tc/jsc": "21c15eb5b1cf67abee9696b62f9ec44aa1b0f03f970fa0028662d89056cd6779",
+    "/tc/assert.js": "206e274ca325eb8a652e3911c3fbd090e2480d11ed7579dc17a5d17a2360ed48",
+    "/tc/propertyHelper.js": "e2c648048dd2e51b393f1a65391d7348e148ac3646b38f34ae169790f513692e",
+    "/tc/sta.js": "1930c54af79455c484799f43e9a28e2b2f15c40d0917c9941ca54e26db243f35",
+    "/tc/testTypedArray.js": "801cfb0987bf36258ece483e5efa761dfd0780f4d33db7b2aedd2febb21fb49e",
+    "/tc/complete.js": "d7884fc5679636dc7e6ab9908894a04e4d26d976075ab231b54a4397ba3e07a1",
+    "/tc/case0_sloppy.js": "d1b29487c3412ec066a6160da36aac9d96809eb1c9c7aa84f33388b9174a69a5",
+    "/tc/case0_strict.js": "023041e29807184f6e4674a129550ce16553a84f9af593c4521925dd2b2a2767",
+    "/tc/case1_sloppy.js": "db4713276ffbff94b8d1dfab034da1e36c2f78de6517861df015cded3115b915",
+    "/tc/case1_strict.js": "3fc15fc38124b6b0cfd85b0279faac979cc01a4229888d556cd51804e9f39201",
+    "/tc/case2_sloppy.js": "cff9023f7594b8833f14b886d8865deb8cfc6b2cfc1f491424e34b186662b884",
+    "/tc/case2_strict.js": "9a1aca8d6fb791e8cb59b89678ad89182e036be782f8c4a197e200edb8186509",
+    "/tc/case3_sloppy.js": "3d3b3c7c6ac6f8ad47ad59c5d2bd675e5f1b700002dd0cd519aaebcc5a4fabba",
+    "/tc/case3_strict.js": "2f76eb8960236bac08348a0793fd99d231455c89660a5c37d93130e98bba4301",
+    "/tc/case4_sloppy.js": "e3f5ba113da04049301b7eed79995d69b3ae704ba2a93029ce432da84a3aaa99",
+    "/tc/case4_strict.js": "5fe4581a0e5811a0a033bb043d9eb53ce50b55933c6e7dc8612b47c2d07673e8",
+    "/tc/case5_sloppy.js": "fc1eca21ad14c895607e7e47dfa898d8e0f747f338f177136d092f8cc069051a",
+    "/tc/case5_strict.js": "8a6dc2f15dd5d50c6b9f321f971c2385ba3d90d1ad1d3915523fc7132ac884cf",
+    "/tc/case6_sloppy.js": "3d9d6eee23c8c37bb154a7cb9e0a20d39e6120e79f6b23402a1bd30c4a49f5fe",
+    "/tc/case6_strict.js": "eb366a0d9800379838383f72209d513945d8672f2c8255f5dc1f90cc7aac2e36",
+    "/tc/case7_sloppy.js": "b3483fbd46d9ced0c3ce74dd25472a61e748cd89ac26e592eeb097e3827528e1",
+    "/tc/case7_strict.js": "f84c4d869574087732771b5caf809bd1832cf7acbad709193bd4149f1a2f9bda"
+  },
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "passed": 16,
+  "serial_sha256": "2d73f5ec62ee83875824f5ff1bf92dd3776d0e7dfad900b4f8bc9faaff572e80"
+}

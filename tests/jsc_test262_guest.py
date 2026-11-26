@@ -28,19 +28,17 @@ def sha(path):
 
 
 def stage(disk, work, inputs, lock, payload):
-    create_fat32(disk, 512)
-    transfer(disk, "mkdir", "/tc")
-    transfer(disk, "import", "/tc/jsc", payload)
+    files = {"/tc/jsc": payload}
     required = set(lock["default_harness"])
     for case in lock["cases"]:
         required.update(case["includes"])
     for name in sorted(required):
         harness_file = work / name
         harness_file.write_bytes(inputs[f"harness/{name}"])
-        transfer(disk, "import", f"/tc/{name}", harness_file)
+        files[f"/tc/{name}"] = harness_file
     marker = work / "complete.js"
     marker.write_bytes(b'print("' + MARKER + b'");\n')
-    transfer(disk, "import", "/tc/complete.js", marker)
+    files["/tc/complete.js"] = marker
     staged = []
     for number, case in enumerate(lock["cases"]):
         raw = inputs[case["path"]]
@@ -48,15 +46,30 @@ def stage(disk, work, inputs, lock, payload):
             temporary = work / f"case{number}_{mode}.js"
             temporary.write_bytes(prefix + raw)
             script = f"/tc/{temporary.name}"
-            transfer(disk, "import", script, temporary)
+            files[script] = temporary
             harness = [f"/tc/{name}" for name in (*lock["default_harness"], *case["includes"])]
             arguments = " ".join([*harness, script, "/tc/complete.js"])
-            staged.append((case["path"], mode, sha(temporary), arguments))
-    return staged
+            staged.append((case["path"], mode, script, arguments))
+
+    expected = {path: sha(source) for path, source in files.items()}
+    create_fat32(disk, 512)
+    transfer(disk, "mkdir", "/tc")
+    for path, source in files.items():
+        transfer(disk, "import", path, source)
+
+    readback = work / "readback"
+    verified = {}
+    for path, digest in expected.items():
+        transfer(disk, "export", path, readback)
+        verified[path] = sha(readback)
+        readback.unlink()
+        if verified[path] != digest:
+            raise ValueError(f"FAT readback differs from the staged input: {path}")
+    return staged, verified
 
 
-def run_cases(guest, baseline, staged, cases):
-    for filename, mode, digest, arguments in staged:
+def run_cases(guest, baseline, staged, verified, cases):
+    for filename, mode, script, arguments in staged:
         output = command(guest, f"exec-file /tc/jsc {arguments}", b"[wait] pid=", timeout=180)
         launch = re.search(rb"\[loader\] started pid=(\d+) file=/tc/jsc\b", output)
         if launch is None:
@@ -69,7 +82,7 @@ def run_cases(guest, baseline, staged, cases):
         completed = output.replace(b"\r", b"").splitlines().count(MARKER) == 1
         after = resources(guest)
         passed = (kind, code) == ("exited", 0) and completed and after == baseline
-        cases.append({"test": filename, "mode": mode, "guest_script_sha256": digest,
+        cases.append({"test": filename, "mode": mode, "guest_script_sha256": verified[script],
                       "kind": kind, "code": code, "completion_marker": completed,
                       "resources_after": after, "status": "passed" if passed else "failed"})
         if after != baseline:
@@ -119,7 +132,8 @@ def main():
             shutil.copyfile(args.payload, frozen_payload)
             if sha(frozen_payload) != payload_sha:
                 raise ValueError("copied JavaScriptCore ELF differs from its build binding")
-            staged = stage(disk, work, inputs, lock, frozen_payload)
+            staged, verified = stage(disk, work, inputs, lock, frozen_payload)
+            report["fat_readback_sha256"] = verified
             guest = Guest(frozen_image, "test262", work_disk=disk, log_dir=args.report.parent)
             try:
                 report["qemu_version"] = subprocess.check_output(
@@ -132,7 +146,7 @@ def main():
                 report["baseline"] = baseline
                 if baseline != tuple(args.expected_resources):
                     raise RuntimeError("the selected system did not reach the expected guest baseline")
-                run_cases(guest, baseline, staged, report["cases"])
+                run_cases(guest, baseline, staged, verified, report["cases"])
                 report["passed"] = sum(case["status"] == "passed" for case in report["cases"])
                 if report["passed"] == report["scheduled"]:
                     report["status"] = "passed_subset"

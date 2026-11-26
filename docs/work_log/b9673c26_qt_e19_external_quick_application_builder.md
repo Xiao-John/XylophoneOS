@@ -85,3 +85,11 @@ Qt 软件首帧标记、定时退出 0、输入线程 join 和两次精确资源
 本地产物位于 `build/qt_glibc/quick_e19/app/`。目标 Qt kit 包包含上述安装前缀，实际
 应用构建仍显式绑定已验 SDK、宿主 kit、XOS 源码以及 QtBase 源包。许可分发和新 SDK
 组合需要单独验证。
+
+## 自定义输出目录
+
+应用可在构建树内设置 `RUNTIME_OUTPUT_DIRECTORY`。CMake 生成所选目标的实际文件
+路径，构建入口使用它核对 ELF，并在回执记录相对输出目录的路径。将外部样例的
+目标输出指定为 `bin/`，重新交叉链接后，回执及命令输出均为
+`build/bin/quick_app.elf`。该 ELF 的 SHA-256 为
+`aa647692d5c04a9d7f79330aa4d7d276f817978c2197c13d7c30602d9c8e553c`。

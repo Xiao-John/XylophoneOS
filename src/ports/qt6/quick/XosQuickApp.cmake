@@ -22,6 +22,7 @@ function(xos_link_quick_app target)
         string(APPEND inputs "${tool}=$<TARGET_FILE:Qt6::${tool}>\n")
     endforeach()
     file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/${target}-qt-inputs.txt" CONTENT "${inputs}")
+    file(GENERATE OUTPUT "${CMAKE_BINARY_DIR}/${target}-elf.txt" CONTENT "$<TARGET_FILE:${target}>\n")
 
     get_filename_component(port "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/.." ABSOLUTE)
     set(qpa "${target}_xos_qpa")

@@ -139,12 +139,15 @@ def main():
             or any(sha(Path(tool["path"])) != tool["sha256"] for tool in tools.values())):
         raise RuntimeError("The SDK, Qt kit or toolchain changed during the application build")
 
-    elf = build / f"{args.target}.elf"
+    elf = Path((build / f"{args.target}-elf.txt").read_text().rstrip("\n")).resolve(strict=True)
+    if not elf.is_relative_to(build) or not elf.is_file():
+        raise RuntimeError("The application must link its ELF inside the build directory")
     receipt = {"status": "static_quick_application_linked", "guest_qualification": "not_run",
                "sdk_manifest_sha256": sdk_manifest, "qtbase_source_sha256": source_sha,
                "qt_inputs": input_digests,
                "target_tools": {name: tool["sha256"] for name, tool in tools.items()},
-               "font_sha256": sha(font), "elf_sha256": sha(elf), "program_headers": verify_elf(elf)}
+               "font_sha256": sha(font), "elf": elf.relative_to(output).as_posix(),
+               "elf_sha256": sha(elf), "program_headers": verify_elf(elf)}
     (output / "receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
     print(elf)
 

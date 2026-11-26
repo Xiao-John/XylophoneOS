@@ -3,8 +3,33 @@
 
 namespace xos::user::network {
 using namespace net2;
-void service_core::initialize(u64 controller, const stack_api& stack) {
-    controller_ = controller; stack_ = stack;
+namespace {
+bool normalize_name(const u8* input, u32 length, char (&name)[dns_name_limit + 1]) {
+    if (!length || length > dns_name_limit + 1) return false;
+    if (input[length - 1] == '.') --length;
+    if (!length || length > dns_name_limit) return false;
+    u32 label_length = 0;
+    bool has_letter = false;
+    for (u32 i = 0; i < length; ++i) {
+        u8 character = input[i];
+        if (character >= 'A' && character <= 'Z') character += 'a' - 'A';
+        const bool letter = character >= 'a' && character <= 'z';
+        const bool digit = character >= '0' && character <= '9';
+        if (character == '.') {
+            if (!label_length || name[i - 1] == '-') return false;
+            label_length = 0;
+        } else {
+            if ((!letter && !digit && (character != '-' || !label_length)) || ++label_length > 63) return false;
+            has_letter |= letter;
+        }
+        name[i] = static_cast<char>(character);
+    }
+    return label_length && name[length - 1] != '-' && has_letter;
+}
+}
+
+void service_core::initialize(u64 controller, const stack_api& stack, const resolver_api& resolver) {
+    controller_ = controller; stack_ = stack; resolver_ = resolver;
 }
 u32 service_core::session_count() const {
     u32 count = 0; for (const auto& item : sessions_) if (item.peer) ++count; return count;
@@ -33,6 +58,7 @@ void service_core::release(u32 slot) {
 }
 void service_core::detach(u32 slot) {
     if (!alive(slot)) return;
+    if (slot < client_sessions) retire_ticket(slot);
     for (u32 i = 0; i < connection_limit; ++i)
         if (connections_[i].handle && connections_[i].owner == slot) release(i);
     sessions_[slot] = {};
@@ -40,6 +66,11 @@ void service_core::detach(u32 slot) {
 void service_core::expire(u64 now) {
     for (u32 i = 0; i < session_limit; ++i)
         if (alive(i) && now >= sessions_[i].last_active && now - sessions_[i].last_active >= idle_ns) detach(i);
+    for (auto& item : tickets_) {
+        if (!item.id || item.result != would_block || now < item.deadline) continue;
+        resolver_.cancel(resolver_.context, item.id);
+        item.result = timeout;
+    }
 }
 void service_core::shutdown() { for (u32 i = 0; i < session_limit; ++i) detach(i); }
 i64 service_core::find_connection(u32 owner, u64 handle) const {
@@ -49,6 +80,87 @@ i64 service_core::find_connection(u32 owner, u64 handle) const {
             return connections_[i].owner == owner ? static_cast<i64>(i) : denied;
     return closed;
 }
+
+void service_core::retire_ticket(u32 slot) {
+    auto& item = tickets_[slot];
+    if (item.id && item.result == would_block) resolver_.cancel(resolver_.context, item.id);
+    item = {};
+}
+
+void service_core::complete_ticket(void* context, u64 id, i64 result, u32 address, u64 expiry, u64 received) {
+    auto& self = *static_cast<service_core*>(context);
+    for (u32 owner = 0; owner < client_sessions; ++owner) {
+        auto& item = self.tickets_[owner];
+        if (item.id != id || item.generation != self.generation(owner) || item.epoch != self.config_epoch_ ||
+            item.result != would_block) continue;
+        item.result = received >= item.deadline ? timeout : result;
+        item.address = address;
+        item.expiry = expiry;
+        return;
+    }
+}
+
+bool service_core::resolve(u32 slot, const message& input, u64 now, message& output) {
+    if (!resolver_.start) { output.result = unsupported; return true; }
+    if (input.action == operation::configuration || input.action == operation::configure) {
+        if (input.object) { output.result = invalid; return true; }
+        u32 count = 0;
+        for (const auto& item : tickets_) if (item.id) ++count;
+        if (input.action == operation::configure) {
+            if (sessions_[slot].peer != controller_) { output.result = denied; return true; }
+            if (input.length != sizeof(config_request)) { output.result = invalid; return true; }
+            config_request requested{};
+            __builtin_memcpy(&requested, input.data, sizeof(requested));
+            if (requested.revision != configuration_revision ||
+                (requested.mode != network_mode::disabled && requested.mode != network_mode::static_direct)) {
+                output.result = invalid; return true;
+            }
+            if (requested.expected_epoch != config_epoch_) { output.result = config_changed; return true; }
+            if (count || connection_count() || config_epoch_ == ~u64{0}) { output.result = resources; return true; }
+            resolver_.configure(resolver_.context, requested.mode == network_mode::static_direct);
+            mode_ = requested.mode;
+            ++config_epoch_;
+        }
+        const config_snapshot snapshot{configuration_revision, mode_, config_epoch_, resolve_in_a, 0x0a00020f,
+                                       0xffffff00, permitted_address,
+                                       mode_ == network_mode::static_direct ? permitted_address : 0, count, 0};
+        __builtin_memcpy(output.data, &snapshot, sizeof(snapshot));
+        output.length = sizeof(snapshot);
+        return true;
+    }
+    if (slot >= client_sessions) { output.result = denied; return true; }
+    auto& item = tickets_[slot];
+    if (input.action == operation::resolve_start) {
+        if (mode_ == network_mode::disabled) { output.result = closed; return true; }
+        char name[dns_name_limit + 1]{};
+        if (input.object || !normalize_name(input.data, input.length, name)) { output.result = invalid; return true; }
+        if (item.id || !next_ticket_) { output.result = resources; return true; }
+        item = {next_ticket_++, generation(slot), config_epoch_, input.deadline, 0, would_block, 0};
+        output.result = resolver_.start(resolver_.context, name, item.id, complete_ticket, this);
+        if (output.result) item = {};
+        else output.object = item.id;
+        return true;
+    }
+    if (!input.object) { output.result = invalid; return true; }
+    if (input.object != item.id) {
+        output.result = closed;
+        for (const auto& other : tickets_) if (other.id == input.object) { output.result = denied; break; }
+        return true;
+    }
+    if (input.action == operation::resolve_cancel) { retire_ticket(slot); return true; }
+    if (now >= item.deadline) output.result = timeout;
+    else if (item.result == 0 && item.expiry && now >= item.expiry) output.result = dns_expired;
+    else output.result = item.result;
+    if (output.result == would_block) return true;
+    if (!output.result) {
+        const resolve_reply resolved{item.epoch, item.expiry, item.address, 0};
+        __builtin_memcpy(output.data, &resolved, sizeof(resolved));
+        output.length = sizeof(resolved);
+    }
+    retire_ticket(slot);
+    return true;
+}
+
 bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, message& output) {
     output = {};
     if (!alive(slot) || bytes < header_bytes || input.version != version ||
@@ -58,13 +170,15 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
     sessions_[slot].last_sequence = input.sequence;
     sessions_[slot].last_active = now;
     output.version = version; output.action = input.action; output.sequence = input.sequence;
-    output.object = input.action == operation::open ? 0 : input.object;
+    const bool assigns_object = input.action == operation::open || input.action == operation::resolve_start;
+    output.object = assigns_object ? 0 : input.object;
     if (!input.deadline || input.deadline <= now || input.deadline - now > max_request_ns) {
         output.result = timeout; return true;
     }
     const bool opening = input.action == operation::open;
     if ((!opening && (input.address || input.port || input.transport != protocol::none)) ||
-        (input.action != operation::send && input.length) ||
+        (input.action != operation::send && input.action != operation::configure &&
+         input.action != operation::resolve_start && input.length) ||
         (input.action != operation::receive && input.flags)) {
         output.result = invalid; return true;
     }
@@ -94,6 +208,8 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
         return true;
     }
     if (stopping_) { output.result = closed; return true; }
+    if (input.action >= operation::configuration && input.action <= operation::resolve_cancel)
+        return resolve(slot, input, now, output);
     if (opening) {
         if (input.object || !input.port || (input.transport != protocol::tcp && input.transport != protocol::udp)) {
             output.result = invalid; return true;

@@ -94,7 +94,7 @@ i64 lwip_stack::initialize(const frame_io& callbacks, const u8* mac) {
 void lwip_stack::shutdown() {
     if (active_) {
 #ifdef XOS_LWIP_DNS_LIFETIME
-        dns_xos_reset();
+        configure_dns(false);
 #endif
         for (u32 i = 0; i < connection_limit; ++i) (void)close(i, true);
         netif_set_down(&interface_); netif_remove(&interface_); active_ = false;
@@ -297,5 +297,86 @@ stack_api lwip_stack::api() {
             return static_cast<lwip_stack*>(self)->receive(slot, data, capacity, length, flags); },
         [](void* self, u32 slot, bool aborting) { return static_cast<lwip_stack*>(self)->close(slot, aborting); },
         [](void* self) { return static_cast<lwip_stack*>(self)->dropped_; }};
+}
+
+#ifdef XOS_LWIP_DNS_LIFETIME
+void lwip_stack::configure_dns(bool enabled) {
+    dns_xos_reset();
+    for (auto& subscription : subscriptions_) subscription = {};
+    if (enabled) {
+        ip_addr_t resolver{};
+        IP_ADDR4(&resolver, 10, 0, 2, 2);
+        dns_setserver(0, &resolver);
+    }
+}
+
+void lwip_stack::on_dns_found(const char* name, const ip_addr_t* address, void* context) {
+    if (!active_stack) return;
+    const u64 token = reinterpret_cast<uintptr_t>(context);
+    for (auto& subscription : active_stack->subscriptions_) {
+        if (subscription.token != token) continue;
+        const auto callback = subscription;
+        subscription = {};
+        uint64_t expiry = 0;
+        i64 result = dns_failure;
+        switch (dns_xos_callback_status(name, &expiry)) {
+        case DNS_XOS_SUCCESS: result = address ? 0 : io; break;
+        case DNS_XOS_TIMEOUT: result = timeout; break;
+        case DNS_XOS_NOT_FOUND: result = name_not_found; break;
+        case DNS_XOS_NO_DATA: result = name_no_data; break;
+        case DNS_XOS_REFUSED: result = dns_refused; break;
+        case DNS_XOS_TRUNCATED: result = dns_truncated; break;
+        case DNS_XOS_FAILURE: break;
+        }
+        const auto now = active_stack->monotonic_time();
+        callback.callback(callback.owner, token, now < 0 ? io : result,
+                          address ? lwip_ntohl(ip4_addr_get_u32(ip_2_ip4(address))) : 0,
+                          expiry, now < 0 ? 0 : static_cast<u64>(now));
+        return;
+    }
+}
+
+i64 lwip_stack::resolve_name(const char* name, u64 token, resolver_completion callback, void* owner) {
+    if (!active_ || failure_) return failure_ ? failure_ : closed;
+    for (auto& subscription : subscriptions_) {
+        if (subscription.token) continue;
+        subscription = {token, callback, owner};
+        void* context = reinterpret_cast<void*>(static_cast<uintptr_t>(token));
+        ip_addr_t cached{};
+        const auto result = dns_gethostbyname(name, &cached, on_dns_found, context);
+        if (result == ERR_INPROGRESS) return 0;
+        subscription = {};
+        if (result != ERR_OK) return result == ERR_MEM ? resources : map_error(result);
+        uint64_t expiry = 0;
+        const auto details = dns_xos_cache_expiry(name, &expiry);
+        const i64 now = monotonic_time();
+        if (now < 0 || details == ERR_IF) return io;
+        if (details || expiry <= static_cast<u64>(now)) return dns_expired;
+        callback(owner, token, 0, lwip_ntohl(ip4_addr_get_u32(ip_2_ip4(&cached))), expiry, static_cast<u64>(now));
+        return 0;
+    }
+    return resources;
+}
+
+void lwip_stack::cancel_dns(u64 token) {
+    for (auto& subscription : subscriptions_) {
+        if (subscription.token != token) continue;
+        (void)dns_xos_cancel(on_dns_found, reinterpret_cast<void*>(static_cast<uintptr_t>(token)));
+        subscription = {};
+        return;
+    }
+}
+#endif
+
+resolver_api lwip_stack::dns_api() {
+#ifdef XOS_LWIP_DNS_LIFETIME
+    return {this,
+        [](void* self, bool enabled) { static_cast<lwip_stack*>(self)->configure_dns(enabled); },
+        [](void* self, const char* name, u64 token, resolver_completion callback, void* owner) {
+            return static_cast<lwip_stack*>(self)->resolve_name(name, token, callback, owner); },
+        [](void* self, u64 token) { static_cast<lwip_stack*>(self)->cancel_dns(token); }};
+#else
+    return {};
+#endif
 }
 }

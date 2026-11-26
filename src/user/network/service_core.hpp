@@ -14,9 +14,16 @@ struct stack_api {
     i64 (*close)(void*, u32, bool);
     u32 (*dropped)(void*);
 };
+using resolver_completion = void (*)(void*, u64, i64, u32, u64, u64);
+struct resolver_api {
+    void* context;
+    void (*configure)(void*, bool);
+    i64 (*start)(void*, const char*, u64, resolver_completion, void*);
+    void (*cancel)(void*, u64);
+};
 class service_core {
 public:
-    void initialize(u64 controller, const stack_api& stack);
+    void initialize(u64 controller, const stack_api& stack, const resolver_api& resolver = {});
     i64 attach(u64 peer, u64 now);
     void detach(u32 session);
     void expire(u64 now);
@@ -32,10 +39,21 @@ public:
 private:
     struct session { u64 peer, last_sequence, last_active, generation; } sessions_[net2::session_limit]{};
     struct connection { u64 handle; u32 owner; } connections_[net2::connection_limit]{};
+    struct ticket {
+        u64 id, generation, epoch, deadline, expiry;
+        i64 result;
+        u32 address;
+    } tickets_[net2::client_sessions]{};
     u64 revoked_[16]{}, controller_ = 0, next_handle_ = 1, next_generation_ = 1;
     stack_api stack_{};
+    resolver_api resolver_{};
+    net2::network_mode mode_ = net2::network_mode::disabled;
+    u64 config_epoch_ = 1, next_ticket_ = 1;
     bool stopping_ = false;
     i64 find_connection(u32 owner, u64 handle) const;
     void release(u32 slot);
+    bool resolve(u32 slot, const net2::message& request, u64 now, net2::message& reply);
+    void retire_ticket(u32 slot);
+    static void complete_ticket(void* context, u64 id, i64 result, u32 address, u64 expiry, u64 received);
 };
 }

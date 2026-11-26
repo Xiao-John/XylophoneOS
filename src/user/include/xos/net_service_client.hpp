@@ -37,6 +37,7 @@ public:
             close(); return timeout;
         }
         input.version = version; input.sequence = next_sequence_++;
+        const bool assigns_object = input.action == operation::open || input.action == operation::resolve_start;
         bool sent = false;
         for (;;) {
             const i64 clock = sdk::syscall(sys_clock_monotonic);
@@ -60,8 +61,8 @@ public:
                         reply.port || reply.transport != protocol::none || reply.length > payload_bytes ||
                         static_cast<u64>(received) != header_bytes + reply.length ||
                         (reply.result < 0 && reply.length) || !valid_reply(input, reply) ||
-                        (input.action != operation::open && reply.object != input.object) ||
-                        (input.action == operation::open && ((reply.result == 0) != (reply.object != 0))) ||
+                        (!assigns_object && reply.object != input.object) ||
+                        (assigns_object && ((reply.result == 0) != (reply.object != 0))) ||
                         (reply.result > 0 && (input.action != operation::send || static_cast<u64>(reply.result) > input.length))) {
                         reply = {}; close(); return io;
                     }
@@ -72,10 +73,52 @@ public:
             if (sdk::syscall(sys_sleep_until, next)) { close(); return io; }
         }
     }
+    i64 configuration(u64 deadline, config_snapshot& snapshot) {
+        message input{}, reply{};
+        input.action = operation::configuration; input.deadline = deadline;
+        const i64 result = request(input, reply);
+        snapshot = {};
+        if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+        return result;
+    }
+    i64 configure(network_mode mode, u64 epoch, u64 deadline, config_snapshot& snapshot) {
+        message input{}, reply{};
+        const config_request config{configuration_revision, mode, epoch};
+        input.action = operation::configure; input.deadline = deadline; input.length = sizeof(config);
+        __builtin_memcpy(input.data, &config, sizeof(config));
+        const i64 result = request(input, reply);
+        snapshot = {};
+        if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+        return result;
+    }
+    i64 resolve_start(const char* name, u32 length, u64 deadline, u64& ticket) {
+        ticket = 0;
+        if (!name || !length || length > dns_name_limit + 1) return invalid;
+        message input{}, reply{};
+        input.action = operation::resolve_start; input.deadline = deadline; input.length = length;
+        __builtin_memcpy(input.data, name, length);
+        const i64 result = request(input, reply);
+        if (!result) ticket = reply.object;
+        return result;
+    }
+    i64 resolve_result(u64 ticket, u64 deadline, resolve_reply& answer) {
+        message input{}, reply{};
+        input.action = operation::resolve_result; input.deadline = deadline; input.object = ticket;
+        const i64 result = request(input, reply);
+        answer = {};
+        if (!result) __builtin_memcpy(&answer, reply.data, sizeof(answer));
+        return result;
+    }
+    i64 resolve_cancel(u64 ticket, u64 deadline) {
+        message input{}, reply{};
+        input.action = operation::resolve_cancel; input.deadline = deadline; input.object = ticket;
+        return request(input, reply);
+    }
 private:
     static bool valid_reply(const message& input, const message& reply) {
         if (reply.result < 0) {
-            if (reply.result < reset || reply.result > invalid) return false;
+            const bool n4 = input.action >= operation::configuration && input.action <= operation::resolve_cancel;
+            if (reply.result < (n4 ? dns_expired : reset) || reply.result > invalid) return false;
             if (input.action == operation::open || input.action == operation::status)
                 return !reply.flags || reply.flags == failed;
             if (input.action == operation::receive && reply.result == buffer_too_small)
@@ -97,7 +140,25 @@ private:
         case operation::cancel:
         case operation::revoke_peer:
         case operation::stop:
+        case operation::resolve_start:
+        case operation::resolve_cancel:
             return !reply.result && !reply.length && !reply.flags;
+        case operation::configuration:
+        case operation::configure: {
+            if (reply.result || reply.length != sizeof(config_snapshot) || reply.flags) return false;
+            config_snapshot config{};
+            __builtin_memcpy(&config, reply.data, sizeof(config));
+            return config.revision == configuration_revision && config.epoch && !config.reserved &&
+                config.capabilities == resolve_in_a && config.tickets <= client_sessions &&
+                ((config.mode == network_mode::disabled && !config.resolver) ||
+                 (config.mode == network_mode::static_direct && config.resolver == permitted_address));
+        }
+        case operation::resolve_result: {
+            if (reply.result || reply.length != sizeof(resolve_reply) || reply.flags) return false;
+            resolve_reply answer{};
+            __builtin_memcpy(&answer, reply.data, sizeof(answer));
+            return answer.epoch && !answer.reserved;
+        }
         default: return false;
         }
     }

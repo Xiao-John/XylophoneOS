@@ -1,0 +1,232 @@
+From d9341df69cb354106f8fa57184fe663dc2a1932a Mon Sep 17 00:00:00 2001
+From: XOS contributors <75989255+Xiao-John@users.noreply.github.com>
+Date: Thu, 26 Nov 2026 17:31:09 +0800
+Subject: [PATCH] Expose verified private DNS outcomes and positive expiry
+
+Local XOS additions are Apache-2.0. Keep upstream BSD declarations.
+---
+ src/core/dns.c         | 134 ++++++++++++++++++++++++++++++++++++++++-
+ src/include/lwip/dns.h |   6 ++
+ 2 files changed, 138 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/dns.c b/src/core/dns.c
+index f9914a6..485a21e 100644
+--- a/src/core/dns.c
++++ b/src/core/dns.c
+@@ -236,6 +236,7 @@ struct dns_table_entry {
+ #ifdef XOS_LWIP_DNS_LIFETIME
+   uint64_t expiry_ns;
+   uint64_t retry_ns;
++  enum dns_xos_status result;
+ #endif
+   ip_addr_t ipaddr;
+   u16_t txid;
+@@ -1005,6 +1006,40 @@ dns_call_found(u8_t idx, ip_addr_t *addr)
+ }
+ 
+ #ifdef XOS_LWIP_DNS_LIFETIME
++/* Callback metadata is available only during the call that lends this name. */
++enum dns_xos_status
++dns_xos_callback_status(const char *callback_name, uint64_t *expiry)
++{
++  u8_t i;
++  *expiry = 0;
++  for (i = 0; i < DNS_TABLE_SIZE; ++i) {
++    if (callback_name == dns_table[i].name) {
++      *expiry = dns_table[i].ttl ? dns_table[i].expiry_ns : 0;
++      return dns_table[i].result;
++    }
++  }
++  return DNS_XOS_FAILURE;
++}
++
++err_t
++dns_xos_cache_expiry(const char *name, uint64_t *expiry)
++{
++  uint64_t now;
++  u8_t i;
++  if (xos_lwip_dns_clock(&now) != ERR_OK) {
++    return ERR_IF;
++  }
++  for (i = 0; i < DNS_TABLE_SIZE; ++i) {
++    const struct dns_table_entry *entry = &dns_table[i];
++    if (entry->state == DNS_STATE_DONE && entry->ttl && now < entry->expiry_ns &&
++        lwip_stricmp(name, entry->name) == 0) {
++      *expiry = entry->expiry_ns;
++      return ERR_OK;
++    }
++  }
++  return ERR_VAL;
++}
++
+ /* Private NO_SYS control. Only the owner of the resolver loop may use it
+  * outside callbacks. Cancellation never calls client code. */
+ u8_t
+@@ -1174,6 +1209,9 @@ dns_check_entry(u8_t i)
+           } else {
+             LWIP_DEBUGF(DNS_DEBUG, ("dns_check_entry: \"%s\": timeout\n", entry->name));
+             /* call specified callback function if provided */
++#ifdef XOS_LWIP_DNS_LIFETIME
++            entry->result = DNS_XOS_TIMEOUT;
++#endif
+             dns_call_found(i, NULL);
+             /* flush this entry */
+             entry->state = DNS_STATE_UNUSED;
+@@ -1264,6 +1302,7 @@ dns_correct_response(u8_t idx, u32_t ttl)
+       duration = 0;
+     }
+     entry->expiry_ns = now + duration;
++    entry->result = DNS_XOS_SUCCESS;
+   }
+ #endif
+   dns_call_found(idx, &entry->ipaddr);
+@@ -1280,6 +1319,68 @@ dns_correct_response(u8_t idx, u32_t ttl)
+   }
+ }
+ 
++#ifdef XOS_LWIP_DNS_LIFETIME
++/* Validate names in sections used only to delimit a negative response. No
++ * record in those sections is promoted into an answer or cached. */
++static u16_t
++dns_skip_wire_name(const struct pbuf *p, u16_t cursor)
++{
++  u16_t end = 0, expanded = 1;
++  u8_t pointers = 0;
++  while (cursor < p->tot_len) {
++    int length = pbuf_try_get_at(p, cursor++);
++    if (length == 0) {
++      return end ? end : cursor;
++    }
++    if (length < 0) {
++      break;
++    }
++    if ((length & 0xc0) == 0xc0) {
++      const int next = pbuf_try_get_at(p, cursor);
++      if (next < 0 || ++pointers > 16) {
++        break;
++      }
++      const u16_t target = (u16_t)(((length & 0x3f) << 8) | next);
++      if (target < SIZEOF_DNS_HDR || target >= cursor - 1) {
++        break;
++      }
++      if (!end) {
++        end = (u16_t)(cursor + 1);
++      }
++      cursor = target;
++    } else {
++      expanded = (u16_t)(expanded + length + 1);
++      if (length > 63 || expanded > 255 || (u32_t)cursor + length >= p->tot_len) {
++        break;
++      }
++      cursor = (u16_t)(cursor + length);
++    }
++  }
++  return 0;
++}
++
++static int
++dns_negative_sections_valid(const struct pbuf *p, u16_t cursor, u32_t records)
++{
++  struct dns_answer record;
++  if (records > 45) {
++    return 0;
++  }
++  while (records--) {
++    cursor = dns_skip_wire_name(p, cursor);
++    if (!cursor || pbuf_copy_partial(p, &record, SIZEOF_DNS_ANSWER, cursor) != SIZEOF_DNS_ANSWER) {
++      return 0;
++    }
++    const u32_t next = (u32_t)cursor + SIZEOF_DNS_ANSWER + lwip_ntohs(record.len);
++    if (next > p->tot_len) {
++      return 0;
++    }
++    cursor = (u16_t)next;
++  }
++  return cursor == p->tot_len;
++}
++#endif
++
+ /**
+  * Receive input function for DNS response packets arriving for the dns UDP pcb.
+  */
+@@ -1339,8 +1440,11 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+ 
+         /* Check for correct response. */
+         if (((hdr.flags1 & DNS_FLAG1_RESPONSE) == 0) ||
+-            ((hdr.flags1 & DNS_FLAG1_OPCODE_MASK) != DNS_FLAG1_OPCODE_STANDARD) ||
+-            ((hdr.flags1 & DNS_FLAG1_TRUNC) != 0)) {
++            ((hdr.flags1 & DNS_FLAG1_OPCODE_MASK) != DNS_FLAG1_OPCODE_STANDARD)
++#ifndef XOS_LWIP_DNS_LIFETIME
++            || ((hdr.flags1 & DNS_FLAG1_TRUNC) != 0)
++#endif
++            ) {
+           LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: \"%s\": not a complete QUERY response\n", entry->name));
+           goto ignore_packet; /* ignore this packet */
+         }
+@@ -1396,6 +1500,24 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+         }
+         res_idx = (u16_t)(res_idx + SIZEOF_DNS_QUERY);
+ 
++#ifdef XOS_LWIP_DNS_LIFETIME
++        if ((hdr.flags1 & DNS_FLAG1_TRUNC) != 0) {
++          entry->result = DNS_XOS_TRUNCATED;
++          goto complete_negative;
++        }
++        if ((hdr.flags2 & DNS_FLAG2_ERR_MASK) || !nanswers) {
++          const u32_t non_answers = (u32_t)lwip_ntohs(hdr.numauthrr) + lwip_ntohs(hdr.numextrarr);
++          if (nanswers || !dns_negative_sections_valid(p, res_idx, non_answers)) {
++            goto ignore_packet;
++          }
++          switch (hdr.flags2 & DNS_FLAG2_ERR_MASK) {
++            case 0: entry->result = DNS_XOS_NO_DATA; goto complete_negative;
++            case DNS_FLAG2_ERR_NAME: entry->result = DNS_XOS_NOT_FOUND; goto complete_negative;
++            case 5: entry->result = DNS_XOS_REFUSED; goto complete_negative;
++            default: entry->result = DNS_XOS_FAILURE; goto complete_negative;
++          }
++        }
++#endif
+         /* Check for error. If so, call callback to inform. */
+         if (hdr.flags2 & DNS_FLAG2_ERR_MASK) {
+           LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: \"%s\": error in flags\n", entry->name));
+@@ -1524,6 +1646,9 @@ next_answer:
+ #endif /* LWIP_IPV4 && LWIP_IPV6 */
+           LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: \"%s\": error in response\n", entry->name));
+         }
++#ifdef XOS_LWIP_DNS_LIFETIME
++complete_negative:
++#endif
+         /* call callback to indicate error, clean up memory and return */
+         pbuf_free(p);
+         dns_call_found(i, NULL);
+@@ -1652,6 +1777,11 @@ dns_enqueue(const char *name, size_t hostnamelen, dns_found_callback found,
+   /* fill the entry */
+   entry->state = DNS_STATE_NEW;
+   entry->seqno = dns_seqno;
++#ifdef XOS_LWIP_DNS_LIFETIME
++  entry->result = DNS_XOS_FAILURE;
++  entry->ttl = 0;
++  entry->expiry_ns = 0;
++#endif
+   LWIP_DNS_SET_ADDRTYPE(entry->reqaddrtype, dns_addrtype);
+   LWIP_DNS_SET_ADDRTYPE(req->reqaddrtype, dns_addrtype);
+   req->found = found;
+diff --git a/src/include/lwip/dns.h b/src/include/lwip/dns.h
+index e39870d..4970899 100644
+--- a/src/include/lwip/dns.h
++++ b/src/include/lwip/dns.h
+@@ -114,6 +114,12 @@ err_t            dns_gethostbyname_addrtype(const char *hostname, ip_addr_t *add
+ 
+ 
+ #ifdef XOS_LWIP_DNS_LIFETIME
++enum dns_xos_status {
++  DNS_XOS_FAILURE, DNS_XOS_SUCCESS, DNS_XOS_TIMEOUT, DNS_XOS_NOT_FOUND,
++  DNS_XOS_NO_DATA, DNS_XOS_REFUSED, DNS_XOS_TRUNCATED
++};
++enum dns_xos_status dns_xos_callback_status(const char *callback_name, uint64_t *expiry);
++err_t            dns_xos_cache_expiry(const char *name, uint64_t *expiry);
+ u8_t             dns_xos_cancel(dns_found_callback found, void *arg);
+ void             dns_xos_reset(void);
+ #endif
+-- 
+2.54.0 (Apple Git-157)
+

@@ -53,7 +53,13 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
         response.value != generation_mark{}) return false;
     const auto mode = static_cast<scenario>(response.result);
 #if XOS_PUMPKIN_USER_LOGIN
-    if (mode < scenario::user_enroll || mode > scenario::user_revoke) return false;
+#if XOS_PUMPKIN_USER_RESOURCE
+    constexpr auto last_mode = scenario::user_resource;
+#else
+    constexpr auto last_mode = scenario::user_revoke;
+#endif
+    if (mode < scenario::user_enroll || mode > last_mode) return false;
+    const bool submitting = mode == scenario::user_login || mode == scenario::user_resource;
     wire_id credential_owner{};
     bool credential_exchanged = false, credential_slots_cleared = false;
 #else
@@ -93,7 +99,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
                 has_bytes(credentials.key.bytes, secret_bytes) != (mode == scenario::user_enroll)) return false;
             user_login::packet reply{};
             if (!serial_exchange(uart, credentials, reply) || !user_login::same_identity(reply.identity, credentials.identity) ||
-                has_bytes(reply.key.bytes, secret_bytes) != (mode == scenario::user_login) ||
+                has_bytes(reply.key.bytes, secret_bytes) != submitting ||
                 sdk::channel_send_wait(supervisor.transmit, &reply, sizeof(reply), deadline()) != 0) return false;
             credential_owner = credentials.identity;
             credential_exchanged = true;
@@ -109,7 +115,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
         bool valid = finish.pass <= 1;
         bool completed = finish.pass == 1;
 #if XOS_PUMPKIN_USER_LOGIN
-        if (finish.pass == user_login::denied && mode == scenario::user_login && credential_exchanged) {
+        if (finish.pass == user_login::denied && submitting && credential_exchanged) {
             valid = true;
             completed = true;
         }
@@ -117,8 +123,9 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
 #endif
 #if XOS_PUMPKIN_NATIVE_LOGIN
         using result = xos::user::pumpkin::native_login::result;
+        const auto last_error = mode == scenario::user_resource ? result::broker_cleanup : result::holder_exit;
         valid = valid || (finish.pass >= static_cast<u8>(result::holder_start) &&
-                          finish.pass <= static_cast<u8>(result::holder_exit));
+                          finish.pass <= static_cast<u8>(last_error));
 #endif
         if (report == sizeof(finish) && valid) {
             packet done{}, ack{};

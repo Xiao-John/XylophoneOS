@@ -36,7 +36,17 @@ secret_offset = identity_offset + 24
 padding_offset = secret_offset + secret_size
 ready, read, publish, finish = range(1, 5)
 issue, submit = range(1, 3)
-scenarios = {"enroll": 4, "login": 5, "revoke": 6}
+scenarios = {"enroll": 4, "login": 5, "revoke": 6, "read-resource": 7}
+submission_commands = ("login", "read-resource")
+credential_operations = {"enroll": issue, **dict.fromkeys(submission_commands, submit)}
+broker_artifact = "user_p2_sealed.image.elf"
+resource_errors = {
+    29: "Pumpkin resource session did not complete",
+    32: "Pumpkin sealed broker could not start",
+    33: "Pumpkin sealed broker startup was not confirmed",
+    34: "Pumpkin sealed broker was not admitted",
+    35: "Pumpkin sealed broker did not close cleanly",
+}
 directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
 
 
@@ -151,6 +161,8 @@ def bind_system(system):
     require(checked.get("pumpkin_user_login") is True, "Select the private operator login image")
     names = ("xos-install.iso", "user_files.image.elf", "user_supervisor.image.elf",
              "user_pumpkin_durable.image.elf", "user_p2_anchor_proxy.image.elf", "user_pumpkin_holder.image.elf")
+    if checked.get("pumpkin_user_resource") is True:
+        names += (broker_artifact,)
     artifacts = {name: digest(system / name) for name in names}
     require(all(checked["artifacts"][name]["sha256"] == value for name, value in artifacts.items()),
             "Login image differs from its build receipt")
@@ -239,7 +251,7 @@ def decode_mark(data):
 def operator_exchange(vm, command, frame, wallet, stored):
     tag, version, operation, status, sequence = header.unpack_from(frame)
     require(tag == b"PKU1" and version == 1 and status == 0 and sequence == 1 and
-            operation == {"enroll": issue, "login": submit}.get(command) and
+            operation == credential_operations.get(command) and
             not any(memoryview(frame)[padding_offset:]), "Invalid private credential exchange")
     scope, number = struct.unpack_from("<16sQ", frame, identity_offset)
     require(scope == realm and number > 0, "Invalid credential account binding")
@@ -312,7 +324,9 @@ def boot(system, state, command, authority, wallet, stored):
                         time.sleep(0.15)
                         quit_qmp(monitor)
                         require(vm.process.wait(timeout=8) == 0, "Private guest shutdown failed")
-                        require(status == 1 or (status == 2 and command == "login"),
+                        if command == "read-resource" and status in resource_errors:
+                            raise login_error(resource_errors[status])
+                        require(status == 1 or (status == 2 and command in submission_commands),
                                 "Private login did not complete; check the account before retrying enrollment")
                         require(credential_seen == (command != "revoke"), "Missing private credential exchange")
                         return status
@@ -327,6 +341,8 @@ def boot(system, state, command, authority, wallet, stored):
 
 def operate(system, state, command, path):
     binding = bind_system(system)
+    require(command != "read-resource" or broker_artifact in binding[2],
+            "Select the private Pumpkin resource image")
     with private_directory(state) as descriptor:
         fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
         disk = os.stat("work.img", dir_fd=descriptor, follow_symlinks=False)
@@ -342,7 +358,7 @@ def operate(system, state, command, path):
                 result = boot(system, state, command, authority, None, stored)
             else:
                 with credential_file(path, command == "enroll") as wallet:
-                    if command == "login":
+                    if command in submission_commands:
                         read_credential(wallet[0], stored)
                     result = boot(system, state, command, authority, wallet, stored)
             require(bind_system(system) == binding, "Login image receipt changed during operation")
@@ -350,7 +366,8 @@ def operate(system, state, command, path):
             expected = 2 if command == "enroll" else previous.revision + (command == "revoke")
             require(final is not None and final.revision == expected,
                     "Independent account generation did not confirm the expected state")
-            require(command != "login" or final == previous, "A login unexpectedly changed the account store")
+            require(command not in submission_commands or final == previous,
+                    "A login unexpectedly changed the account store")
             return result
         finally:
             wipe(stored)
@@ -365,8 +382,8 @@ def main():
     args = parser.parse_args()
     if args.operation != "prepare" and args.system is None:
         parser.error("a matching --system is required")
-    if (args.operation in ("enroll", "login")) != (args.credential_file is not None):
-        parser.error("--credential-file is required for enroll and login only")
+    if (args.operation in credential_operations) != (args.credential_file is not None):
+        parser.error("--credential-file is required for enroll, login and read-resource")
     try:
         state = args.state.absolute()
         if args.operation == "prepare":
@@ -380,6 +397,7 @@ def main():
             return 3
         print({"enroll": "Pumpkin credential issued to your private file",
                "login": "Pumpkin login confirmed and session logged out",
+               "read-resource": "Pumpkin sealed resource read confirmed and session logged out",
                "revoke": "Pumpkin credential revoked"}[args.operation])
         return 0
     except login_error as error:

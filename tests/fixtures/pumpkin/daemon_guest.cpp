@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "pumpkin/native_ipc.hpp"
 #if XOS_PUMPKIN_RESOURCE_BRIDGE
-#include "pumpkin/resource_broker.hpp"
+#include "pumpkin/resource_broker_client.hpp"
 #endif
 
 namespace {
@@ -259,33 +259,19 @@ wire_id prepare_read(ipc_client& actor, wire_id session, u64 number, wire_status
 class read_lane {
 public:
     explicit read_lane(u64 broker_pid) {
-        const auto deadline = now() + max_request_ns;
-        for (;;) {
-            const auto connected = sdk::ipc_name_connect(broker_service_name, pair_);
-            if (connected == 0) { break; }
-            require(connected == ipc_error_name_not_found, "broker-connect");
-            pause(deadline);
-        }
-        broker_opened opened{};
-        require(authenticated_peer(pair_) == broker_pid && receive_broker_frame(pair_, opened, deadline) &&
-            opened.version == wire_version && !opened.reserved && opened.connection, "broker-open");
-        number_ = opened.connection;
+        require(client_.connect(broker_pid), "broker-open");
     }
-    ~read_lane() { close_ipc(pair_); }
-    read_lane(const read_lane&) = delete;
-    read_lane& operator=(const read_lane&) = delete;
-    u64 number() const { return number_; }
+    u64 number() const { return client_.connection_number(); }
 
     wire_id prepare(ipc_client& actor, wire_id session, wire_status expected = wire_status::ok) const {
-        return prepare_read(actor, session, number_, expected);
+        wire_id ticket{};
+        require(client_.prepare(actor, session, ticket) == expected, "prepare-read");
+        return ticket;
     }
 
     void take(wire_id ticket, wire_status expected, const char* what) {
-        broker_read read{wire_version, 0, broker_object_number, now() + max_request_ns, ticket};
         broker_data data{};
-        require(sdk::ipc_send(pair_.send, &read, sizeof(read)) == 0 &&
-            receive_broker_frame(pair_, data, read.deadline) && data.version == wire_version &&
-            data.result == expected, what);
+        require(client_.read(ticket, data) && data.result == expected, what);
         if (expected == wire_status::ok) {
             require(data.data.length == sizeof(record) && __builtin_memcmp(data.data.bytes, record, sizeof(record)) == 0,
                 "broker-data");
@@ -295,8 +281,7 @@ public:
     }
 
 private:
-    ipc_channel pair_{};
-    u64 number_ = 0;
+    broker_read_client client_;
 };
 
 int read_other_process(const char* name) {

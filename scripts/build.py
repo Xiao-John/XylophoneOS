@@ -61,6 +61,8 @@ def main():
                         help="exercise trusted credential delivery in the anchored developer profile")
     parser.add_argument("--pumpkin-user-login", action="store_true",
                         help="enable the private operator enrollment and login entry")
+    parser.add_argument("--pumpkin-user-resource", action="store_true",
+                        help="enable a sealed resource for the private operator login entry")
     args = parser.parse_args()
     if args.eager_fork and args.cow1_probe:
         parser.error("select eager control or the opt-in COW1 probe, not both")
@@ -82,6 +84,8 @@ def main():
         parser.error("native Pumpkin login requires the anchored developer profile")
     if args.pumpkin_user_login and not args.pumpkin_native_login:
         parser.error("operator login requires the native Pumpkin developer profile")
+    if args.pumpkin_user_resource and not args.pumpkin_user_login:
+        parser.error("operator resource access requires the private Pumpkin login profile")
     if any(private_profiles) and BUILD == ROOT / "build":
         parser.error("files private storage probe requires an isolated build subdirectory")
     if sum(private_profiles) > 1:
@@ -151,6 +155,7 @@ def main():
                                       **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
                                       **({"pumpkin_user_login": True} if args.pumpkin_user_login else {}),
+                                      **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       "virtio_gpu": gpu_config,
                                       "network_service": network_configuration(ROOT)}, sort_keys=True).encode())
@@ -175,6 +180,7 @@ def main():
                                  pumpkin_anchored_probe=args.pumpkin_anchored_probe,
                                  pumpkin_native_login=args.pumpkin_native_login,
                                  pumpkin_user_login=args.pumpkin_user_login,
+                                 pumpkin_user_resource=args.pumpkin_user_resource,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
@@ -332,6 +338,7 @@ def main():
         **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
         **({"pumpkin_user_login": True} if args.pumpkin_user_login else {}),
+        **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,

@@ -4,6 +4,8 @@
 
 namespace xos::user::pumpkin {
 
+inline constexpr u64 read_association_lifetime_ns = 2'000'000'000ull;
+
 // Private, single-object, read-only service channel. The object record and
 // client endpoint identity come from the trusted broker's current state.
 struct broker_read_request {

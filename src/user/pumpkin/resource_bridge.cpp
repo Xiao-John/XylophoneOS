@@ -2,9 +2,6 @@
 #include "resource_bridge.hpp"
 
 namespace xos::user::pumpkin {
-namespace {
-constexpr u64 ticket_lifetime_ns = 2'000'000'000ull;
-}
 
 resource_bridge::~resource_bridge() { close(); }
 
@@ -54,7 +51,7 @@ status resource_bridge::invoke(service_core& core, const connection_id& connecti
         }
         if (!free && (!read.ticket.number || read.expires <= now)) { free = &read; }
     }
-    if (!free || next_ticket_ == ~u64{0} || now > ~u64{0} - ticket_lifetime_ns) {
+    if (!free || next_ticket_ == ~u64{0} || now > ~u64{0} - read_association_lifetime_ns) {
         return status::exhausted;
     }
     nonce random{};
@@ -63,7 +60,7 @@ status resource_bridge::invoke(service_core& core, const connection_id& connecti
         return status::unavailable;
     }
     reply.token = {random, ++next_ticket_};
-    *free = {reply.token, connection, channel, session, peer, broker_connection, now + ticket_lifetime_ns};
+    *free = {reply.token, connection, channel, session, peer, broker_connection, now + read_association_lifetime_ns};
     return status::ok;
 }
 

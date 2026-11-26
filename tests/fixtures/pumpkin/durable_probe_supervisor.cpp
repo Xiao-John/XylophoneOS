@@ -268,7 +268,8 @@ void run(u32 image, grant_function grant, const char* mode) {
 }
 
 #if XOS_PUMPKIN_ANCHORED_PROBE
-int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unused]] u32 holder_image) {
+int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unused]] u32 holder_image,
+                 [[maybe_unused]] u32 broker_image) {
     anchor_guest::pair proxy_control{};
     sdk::spawn_options options{};
     for (auto& fd : options.stdio) fd = -2;
@@ -331,6 +332,16 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
                 passed = login_result != 0 && server.stop();
             }
             break;
+#if XOS_PUMPKIN_USER_RESOURCE
+        case anchor_guest::scenario::user_resource:
+            if (started) {
+                login_result = broker_image ? native_login::login_user(holder_image, server.pid, server.control,
+                    {account, sizeof(account) - 1}, proxy_control, broker_image)
+                    : static_cast<u8>(native_login::result::broker_launch);
+                passed = (login_result == 1 || login_result == user_login::denied) && server.stop();
+            }
+            break;
+#endif
         case anchor_guest::scenario::user_revoke:
             passed = started && native_login::revoke_user(server.control, {account, sizeof(account) - 1}) && server.stop();
             break;
@@ -346,7 +357,8 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
     u8 outcome = static_cast<u8>(passed);
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #if XOS_PUMPKIN_USER_LOGIN
-    if (passed && mode == anchor_guest::scenario::user_login && login_result == user_login::denied) { outcome = login_result; }
+    if (passed && (mode == anchor_guest::scenario::user_login || mode == anchor_guest::scenario::user_resource) &&
+        login_result == user_login::denied) { outcome = login_result; }
     if (!passed && login_result >= static_cast<u8>(native_login::result::holder_start)) { outcome = login_result; }
 #else
     if (!passed && login_result > 1) { outcome = login_result; }

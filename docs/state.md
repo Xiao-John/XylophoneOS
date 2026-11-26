@@ -34,7 +34,7 @@ Mobius/ClarkE 开发包及 Pumpkin 原生 IPC。各模块的客体结果与全�
 | N4 DNS/DHCP | 配置与名称契约以及 DNS 回包收紧已合入。生产 DNS/DHCP 保持关闭。 | [N4 契约](contracts/network_n4_v1_proposal.md)、[DNS 记录](work_log/4e29c6b1_network_dns_hardening.md) |
 | ClarkE 浏览器 | 原有本地 HTML/CSS 和受控 HTTP 路径有客体证据。独立开发包的安装、升级、双入口启动和卸载通过。WebKit 已具备独立 XOS 平台识别。 | [产品包复验](work_log/af27a498_desktop_product_packages.md)、[WebKit 计划](plans/webengine_port.md) |
 | Mobius 系统 UI | 产品入口和独立开发包已合入。xsh 与 dash 客体启动均通过，卸载保留原用户文件。 | [产品包复验](work_log/af27a498_desktop_product_packages.md) |
-| Pumpkin | 身份核心、原生 IPC、私有存储区和受信测试客户端已合入。易失会话通过双 Shell 复验。可重启守护进程在继续评审。 | [身份核心](work_log/c6198fee_pumpkin_identity_core.md)、[授权客户端](work_log/eaf8370d_pumpkin_authenticated_files_client.md)、[持久守护进程 PR #195](https://github.com/Xiao-John/XylophoneOS/pull/195) |
+| Pumpkin | 身份核心、原生 IPC、私有存储区和受信测试客户端已合入。易失会话通过双 Shell 复验。可重启守护进程的测试配置已合入并重验。 | [身份核心](work_log/c6198fee_pumpkin_identity_core.md)、[授权客户端](work_log/eaf8370d_pumpkin_authenticated_files_client.md)、[重启复验](work_log/d1c062ce_next_stage_combination.md#持久守护进程合入后) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |
 | Semantic Broker / 时间语义 / G3 复核 | #30/#31/#32 已合（勘查与限定模型） | [0108](work_log/0108_semantic_pipe_probe.md)、[0109](work_log/0109_temporal_semantics.md)、[0110](work_log/0110_aurora_g3_review.md) |
 | 现代应用兼容 Phase 1 | 已合，探针级；完整浏览器/Core/HTTPS 未通过 | [0085](work_log/0085_modern_app_compatibility_phase1.md) |

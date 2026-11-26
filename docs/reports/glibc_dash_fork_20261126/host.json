@@ -1,0 +1,29 @@
+{
+  "host-files": {
+    "status": "passed",
+    "raw_report_sha256": "04a3f71613d65dce64e86ab5da9adf89bd816ba7eca7fe758ba313a8db8ea2c4",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "summary": "PASS 15 real glibc FD/files/FatFs integration groups"
+  },
+  "host-terminal": {
+    "status": "passed",
+    "raw_report_sha256": "3631a4e7a9f0cfbb2b8d931e2a8658c43a6498ad31a0171e09fc2d702502a1dc",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "summary": "PASS 24 glibc terminal groups"
+  },
+  "host-files-extra": {
+    "status": "passed",
+    "raw_report_sha256": "d2e3b9d5885937438719cd050aea4c95e528be1c48257e8a06d50312618dd777",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "summary": "PASS 8 files_extra real integration groups"
+  }
+}

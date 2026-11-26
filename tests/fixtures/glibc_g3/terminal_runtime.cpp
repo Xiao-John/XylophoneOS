@@ -30,6 +30,9 @@ std::mutex mock_lock;
 std::condition_variable input_changed;
 xos::channel_info channels[3];
 unsigned channel_count = 2, channel_queries, channel_closes, sends, file_closes, file_sends;
+unsigned fork_aborts, fork_commits, fork_channel_waits;
+long now_ns = 1000;
+constexpr long fork_deadline = 5000001000L;
 xos::terminal::request pending;
 xos::terminal::mode mode = xos::terminal::default_mode;
 xos_file_response file_response;
@@ -70,6 +73,7 @@ void file_request(const xos_file_request& request) {
     if (request.operation == 4) { file_response.handle = 7; file_response.reserved = 1; }
     else if (request.operation == 6) file_response.value = request.length;
     else if (request.operation == 8) ++file_closes;
+    else if (request.operation == file_clone_session) assert(request.offset == 78);
     else std::abort();
 }
 }
@@ -94,9 +98,19 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
     std::unique_lock<std::mutex> guard(mock_lock);
     if (number == 6) return 77;
     if (number == 22) { auto *handles = reinterpret_cast<xos_u32*>(first); handles[0]=100; handles[1]=101; return 0; }
-    if (number == 46) return 1000;
+    if (number == 46) return now_ns;
+    if (number == 57) return 78;
+    if (number == 58) { assert(first == 78); ++fork_commits; return 0; }
+    if (number == 19) { assert(first == 78); ++fork_aborts; return 0; }
     if (number == 4 && first == 100) { file_request(*reinterpret_cast<const xos_file_request*>(second)); return 0; }
-    if (number == 5 && first == 101) { std::memcpy(reinterpret_cast<void*>(second), &file_response, sizeof(file_response)); return sizeof(file_response); }
+    if (number == 5 && first == 101) {
+        if (is("fork_files_timeout") && now_ns < fork_deadline) {
+            now_ns = fork_deadline;
+            return -3;
+        }
+        std::memcpy(reinterpret_cast<void*>(second), &file_response, sizeof(file_response));
+        return sizeof(file_response);
+    }
     if (number == xos::sys_channel) {
         if (first == static_cast<xos_u64>(xos::channel_action::enumerate)) {
             ++channel_queries;
@@ -106,8 +120,23 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
         if (first == static_cast<xos_u64>(xos::channel_action::close)) {
             assert(second == 10 || second == 11); ++channel_closes; return 0;
         }
+        if (first == static_cast<xos_u64>(xos::channel_action::fork_pair)) {
+            auto& pair = *reinterpret_cast<xos::channel_fork_pair*>(second);
+            assert(pair.child_pid == 78 && pair.source_send == 10 && pair.source_receive == 11);
+            pair.child_send = 12;
+            pair.child_receive = 13;
+            return 0;
+        }
         if (first == static_cast<xos_u64>(xos::channel_action::wait)) {
             assert(second == 10 || second == 11);
+            if (third != xos::thread_deadline_infinite) {
+                assert(third == static_cast<xos_u64>(fork_deadline));
+                ++fork_channel_waits;
+                if (second == 11 && is("fork_terminal_timeout")) {
+                    now_ns = fork_deadline;
+                    return xos::thread_error_timeout;
+                }
+            }
             if (second == 11 && fail_once && (is("service_death") || is("timeout"))) {
                 fail_once = false; return is("timeout") ? -13 : -1;
             }
@@ -135,6 +164,8 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
             if (mode.vmin != 0 || block_read) { reply.result = 1; reply.length = 1; reply.data[0] = 'R'; }
         } else if (pending.operation == 7) reply.result = pending.length > 17 ? 17 : pending.length;
         else if (pending.operation == 15) { assert(pending.length == 0); reply.result = readiness_reply; }
+        else if (pending.operation == static_cast<xos_u32>(xos::terminal::operation::fork_attach))
+            now_ns += 4000000000L;
         else assert(pending.operation == 13 || pending.operation == 14);
         pending_reply = false;
         if (fail_once) {
@@ -192,6 +223,20 @@ int main(int argc, char **argv) {
             const long expected = is("invalid_v2") || is("bad_controller") ? -EINVAL
                 : is("duplicate_channels") ? -EIO : -EACCES;
             assert(__xos_file_isatty(0) == expected && sends == 0 && file_sends == 0);
+        } else if (is("fork_ok") || is("fork_terminal_timeout") || is("fork_files_timeout")) {
+            assert(__xos_file_isatty(0) == 1);
+            const long result = __xos_file_fork();
+            assert(sends == 1 && fork_channel_waits == 2);
+            if (is("fork_ok"))
+                assert(result == 78 && file_sends == 1 && fork_commits == 1 && fork_aborts == 0);
+            else {
+                assert(result == -ETIMEDOUT && fork_commits == 0 && fork_aborts == 1);
+                assert(file_sends == (is("fork_terminal_timeout") ? 0U : 1U));
+            }
+            if (is("fork_terminal_timeout"))
+                assert(channel_closes == 2 && __xos_file_write(1, "x", 1) == -EIO);
+            else
+                assert(channel_closes == 0 && __xos_file_write(1, "x", 1) == 1);
         } else if (is("lease")) {
             assert(__xos_file_isatty(0) == 1); block_read = true;
             char byte = 0;

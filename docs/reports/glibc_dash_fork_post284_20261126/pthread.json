@@ -1,0 +1,220 @@
+{
+  "status": "passed_subset",
+  "suite": "threads",
+  "runs": [
+    {
+      "case": "g3_threads",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.8043347999991965,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_threads\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000353000\r\n[loader] started pid=10 file=/bin/g3_threads\n[process] event=wait_blocked parent=7 child=10\r\nG3-T BEGIN public pthread probe\nG3-T PASS unsupported attributes and cancellation errors\nG3-T PASS TLS errno once locks cond sem rwlock barrier TSD join exit quota\nG3-T PASS monotonic and realtime bounded waits\nG3-T PASS complete\n[task] event=reclaimed pid=10 pages=272\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_last_thread",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.6142678140022326,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_last_thread\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000353000\r\n[loader] started pid=11 file=/bin/g3_last_thread\n[process] event=wait_blocked parent=7 child=11\r\nG3-T PASS initial pthread_exit join TSD and final-worker atexit\n[task] event=reclaimed pid=11 pages=711\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_detached",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.5866999959980603,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_detached\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x0000000000353000\r\n[loader] started pid=12 file=/bin/g3_detached\n[process] event=wait_blocked parent=7 child=12\r\nG3-T BEGIN detached lifecycle\nG3-T PASS detached creation detach TSD slots kernel-stack recovery rounds=16\n[task] event=reclaimed pid=12 pages=231\r\n[wait] pid=12 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_active_exit",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 127,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 30.648927111004014,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_active_exit\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x0000000000353000\r\n[loader] started pid=13 file=/bin/g3_active_exit\n[process] event=wait_blocked parent=7 child=13\r\nG3-T BEGIN active worker owns stdout\nG3-X callback before blocked flush\n[task] event=exit_cleanup_timeout pid=13 owner_tid=33\r\n[task] event=reclaimed pid=13 pages=747\r\n[wait] pid=13 kind=exited code=127\nxsh> "
+    },
+    {
+      "case": "g3_threads",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.9550740070044412,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_threads\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x0000000000353000\r\n[loader] started pid=14 file=/bin/g3_threads\n[process] event=wait_blocked parent=7 child=14\r\nG3-T BEGIN public pthread probe\nG3-T PASS unsupported attributes and cancellation errors\nG3-T PASS TLS errno once locks cond sem rwlock barrier TSD join exit quota\nG3-T PASS monotonic and realtime bounded waits\nG3-T PASS complete\n[task] event=reclaimed pid=14 pages=342\r\n[wait] pid=14 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_last_thread",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.5544777260001865,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_last_thread\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x0000000000353000\r\n[loader] started pid=15 file=/bin/g3_last_thread\n[process] event=wait_blocked parent=7 child=15\r\nG3-T PASS initial pthread_exit join TSD and final-worker atexit\n[task] event=reclaimed pid=15 pages=711\r\n[wait] pid=15 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_detached",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.6232472599949688,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_detached\n[process] event=started pid=16 parent=7\r\n[process] pid=16 address_space=0x0000000000353000\r\n[loader] started pid=16 file=/bin/g3_detached\n[process] event=wait_blocked parent=7 child=16\r\nG3-T BEGIN detached lifecycle\nG3-T PASS detached creation detach TSD slots kernel-stack recovery rounds=16\n[task] event=reclaimed pid=16 pages=231\r\n[wait] pid=16 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_active_exit",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 127,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 31.150316806000774,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_active_exit\n[process] event=started pid=17 parent=7\r\n[process] pid=17 address_space=0x0000000000353000\r\n[loader] started pid=17 file=/bin/g3_active_exit\n[process] event=wait_blocked parent=7 child=17\r\nG3-T BEGIN active worker owns stdout\nG3-X callback before blocked flush\n[task] event=exit_cleanup_timeout pid=17 owner_tid=58\r\n[task] event=reclaimed pid=17 pages=747\r\n[wait] pid=17 kind=exited code=127\nxsh> "
+    },
+    {
+      "case": "g3_threads",
+      "repetition": 3,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.8236306520047947,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_threads\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x0000000000353000\r\n[loader] started pid=18 file=/bin/g3_threads\n[process] event=wait_blocked parent=7 child=18\r\nG3-T BEGIN public pthread probe\nG3-T PASS unsupported attributes and cancellation errors\nG3-T PASS TLS errno once locks cond sem rwlock barrier TSD join exit quota\nG3-T PASS monotonic and realtime bounded waits\nG3-T PASS complete\n[task] event=reclaimed pid=18 pages=272\r\n[wait] pid=18 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_last_thread",
+      "repetition": 3,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.5845472529981635,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_last_thread\n[process] event=started pid=19 parent=7\r\n[process] pid=19 address_space=0x0000000000353000\r\n[loader] started pid=19 file=/bin/g3_last_thread\n[process] event=wait_blocked parent=7 child=19\r\nG3-T PASS initial pthread_exit join TSD and final-worker atexit\n[task] event=reclaimed pid=19 pages=711\r\n[wait] pid=19 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_detached",
+      "repetition": 3,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.6375898440019228,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_detached\n[process] event=started pid=20 parent=7\r\n[process] pid=20 address_space=0x0000000000353000\r\n[loader] started pid=20 file=/bin/g3_detached\n[process] event=wait_blocked parent=7 child=20\r\nG3-T BEGIN detached lifecycle\nG3-T PASS detached creation detach TSD slots kernel-stack recovery rounds=16\n[task] event=reclaimed pid=20 pages=231\r\n[wait] pid=20 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_active_exit",
+      "repetition": 3,
+      "status": "passed",
+      "expected_exit_code": 127,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 30.570567451002717,
+      "resources": [
+        129709,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_active_exit\n[process] event=started pid=21 parent=7\r\n[process] pid=21 address_space=0x0000000000353000\r\n[loader] started pid=21 file=/bin/g3_active_exit\n[process] event=wait_blocked parent=7 child=21\r\nG3-T BEGIN active worker owns stdout\nG3-X callback before blocked flush\n[task] event=exit_cleanup_timeout pid=21 owner_tid=83\r\n[task] event=reclaimed pid=21 pages=747\r\n[wait] pid=21 kind=exited code=127\nxsh> "
+    }
+  ],
+  "qmp": "disabled; serial-only qualification",
+  "active_worker_normal_exit": "native bounded cleanup window; qualified only by exit suite",
+  "dash_entry": "not_run",
+  "system_build_id": "bec24eea8c3ee683",
+  "image_sha256": "8d1c4438bf37ccee62a8202f0b16f0bba5ab9320e169e52c65d141e70eff1363",
+  "system_manifest_sha256": "7ff8a5b5c8cc272bb44cc267c2697da8cfd088c10344987c4e6a884431a9f5e6",
+  "glibc_manifest_sha256": "2840652b6b5e289aee6ae0e8985fecd0bd23ce5c81634690ba403b8df9f786d9",
+  "sdk_profile": "xos_glibc_static_research_v1",
+  "elfs": {
+    "g3_threads": {
+      "source": "glibc_g3/threads.c",
+      "source_sha256": "f8e225dec8251c329aea9d491418030781b84766b367485178f83376191c507e",
+      "elf_sha256": "88a972cdea63bc45e71b42afe974a037a212ad44501e7f23d990925c59162585",
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    },
+    "g3_last_thread": {
+      "source": "glibc_g3/last_thread_exit.c",
+      "source_sha256": "7c597c48e291af0096da2f1acc9f6ba61259778f201d7b7c9fea9126c4c636f3",
+      "elf_sha256": "10b17bea888d55cd7927ef32203343c19c544b6e9cd3e810557f7bb2ddc915d7",
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    },
+    "g3_detached": {
+      "source": "glibc_g3/detached_threads.c",
+      "source_sha256": "da1cb0844ac52cabc922d2815a9b26721457198d6d2f73076bc73e4978afc816",
+      "elf_sha256": "b85ffba1cd0013dc850340f7fa1806226722024fab420804b9268d2d642ac04f",
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    },
+    "g3_active_exit": {
+      "source": "glibc_g3/blocked_stdio_exit.c",
+      "source_sha256": "db3452081df71e96bd4a589ed6f9336f47da4e2237121388f7c186841658f52a",
+      "elf_sha256": "116f2a455673535b1751e1ef7db146c9d79b772d9a809be639b15fd204047dc0",
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    }
+  },
+  "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline": [
+    129709,
+    3,
+    1
+  ],
+  "serial_sha256": "1c936e4ab57362b886886df7f6ab55d0dd7dbeb08579bccbf8a3a5a1ea7d1981"
+}

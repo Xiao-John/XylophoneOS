@@ -16,6 +16,8 @@ i64 connect_startup(client& session, const startup_info* startup);
 // On any error the caller must abort the unstarted child; transport failure
 // may mean the service already processed the request.
 i64 register_fork(client& session, const channel_fork_pair& pair);
+// Both transport waits share one absolute monotonic deadline.
+i64 register_fork_until(client& session, const channel_fork_pair& pair, u64 deadline_ns);
 i64 get_mode(client& session, mode& value);
 i64 set_mode(client& session, const mode& value, mode_action action = mode_action::now);
 i64 drain(client& session);

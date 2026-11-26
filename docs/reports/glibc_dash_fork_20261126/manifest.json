@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "source_commit": "8a53567deb353e677b6cb23e378bfc6885cc37a9",
+  "system_build_id": "b5cbf1ddf65e6b36",
+  "files": {
+    "binding.json": "91412c44a98c34d2046e0759d89ce5803c796371c0dde154176a6ce18b15e0f7",
+    "focused.serial.log.gz": "a60c171b1d3dd45fa9067c1eedf4cfd4ca59b9c4da4e17c08d01497203506dfd",
+    "guest.json": "f1b2762d0b91135066cdb0e74fa20a7f0b63cc52390ca354986fc47bb4e3b14a",
+    "guest.serial.log.gz": "1956f808f58e19477e5217c0cae42daa07908661d04a5dc2d97c3a5a34115cd6",
+    "host.json": "3f3a652c2449bef74fa7ff49ba0d062d108944180622921278367024cdf1f774"
+  }
+}

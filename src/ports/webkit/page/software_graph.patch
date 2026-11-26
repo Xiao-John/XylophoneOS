@@ -1,0 +1,325 @@
+--- a/Source/CMakeLists.txt
++++ b/Source/CMakeLists.txt
+@@ -42,7 +42,7 @@
+     include_directories(${CMAKE_CURRENT_BINARY_DIR}/ThirdParty/libwebrtc)
+ endif ()
+
+-if (USE_SKIA)
++if (USE_SKIA AND NOT XOS_WEBCORE_SOFTWARE)
+     add_subdirectory(ThirdParty/skia)
+ endif ()
+
+--- a/Source/cmake/OptionsJSCOnly.cmake
++++ b/Source/cmake/OptionsJSCOnly.cmake
+@@ -15,6 +15,8 @@
+ set(PROJECT_VERSION_MICRO 0)
+ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_MICRO})
+
++option(XOS_WEBCORE_SOFTWARE "Build the native XOS software WebCore target" OFF)
++
+ WEBKIT_OPTION_BEGIN()
+ WEBKIT_OPTION_DEFINE(ENABLE_STATIC_JSC "Whether to build JavaScriptCore as a static library." PUBLIC OFF)
+ WEBKIT_OPTION_DEFINE(USE_LIBBACKTRACE "Whether to enable usage of libbacktrace." PUBLIC OFF)
+@@ -24,6 +26,11 @@
+ endif ()
+ WEBKIT_OPTION_DEFINE(ENABLE_JSC_GLIB_API "Whether to enable the JavaScriptCore GLib API." PUBLIC OFF)
+ WEBKIT_OPTION_DEFINE(USE_SYSTEM_UNIFDEF "Whether to use a system-provided unifdef" PRIVATE OFF)
++
++if (XOS_WEBCORE_SOFTWARE)
++    WEBKIT_OPTION_DEFAULT_PORT_VALUE(USE_SKIA PRIVATE ON)
++    WEBKIT_OPTION_DEFAULT_PORT_VALUE(USE_SKIA_ENCODERS PRIVATE OFF)
++endif ()
+
+ WEBKIT_OPTION_END()
+
+@@ -125,3 +132,28 @@
+         message(FATAL_ERROR "libbacktrace is required for USE_LIBBACKTRACE")
+     endif ()
+ endif ()
++
++# XOS uses the static JSC build and the software Skia WebCore configuration.
++if (XOS_WEBCORE_SOFTWARE)
++    if (NOT CMAKE_SYSTEM_NAME STREQUAL "XOS" OR NOT ENABLE_STATIC_JSC)
++        message(FATAL_ERROR "XOS software WebCore requires the XOS target and static JSC")
++    endif ()
++    set(ENABLE_WEBCORE ON)
++    set(ENABLE_API_TESTS OFF)
++    set(ENABLE_LAYOUT_TESTS OFF)
++    set(WebCore_LIBRARY_TYPE STATIC)
++    if (NOT USE_SKIA OR USE_SKIA_ENCODERS)
++        message(FATAL_ERROR "Use CPU Skia with the software WebCore target")
++    endif ()
++    find_package(LibXml2 2.9.13 REQUIRED)
++    find_package(SQLite3 REQUIRED)
++    find_package(ZLIB REQUIRED)
++    find_package(HarfBuzz REQUIRED COMPONENTS ICU)
++    find_package(Fontconfig REQUIRED)
++    find_package(Freetype 2.9.0 REQUIRED)
++    find_package(PNG REQUIRED)
++    find_package(JPEG REQUIRED)
++    if (NOT TARGET SQLite3::SQLite3)
++        add_library(SQLite3::SQLite3 ALIAS SQLite::SQLite3)
++    endif ()
++endif ()
+--- a/Source/WebCore/CMakeLists.txt
++++ b/Source/WebCore/CMakeLists.txt
+@@ -2263,7 +2263,7 @@
+     )
+ elseif (USE_LIBEPOXY)
+     list(APPEND WebCore_LIBRARIES Epoxy::Epoxy)
+-else ()
++elseif (NOT XOS_WEBCORE_SOFTWARE)
+     list(APPEND WebCore_LIBRARIES OpenGL::GLES)
+
+     list(APPEND WebCore_SYSTEM_INCLUDE_DIRECTORIES
+--- /dev/null
++++ b/Source/WebCore/PlatformJSCOnly.cmake
+@@ -0,0 +1,31 @@
++if (XOS_WEBCORE_SOFTWARE)
++    foreach (input XOS_SKIA_INCLUDE_DIRECTORY XOS_SKIA_RASTER_ARCHIVE XOS_SKIA_FONTCONFIG_ARCHIVE)
++        if (NOT EXISTS "${${input}}")
++            message(FATAL_ERROR "Missing target WebCore input ${input}")
++        endif ()
++    endforeach ()
++    set(skia_headers "${CMAKE_CURRENT_BINARY_DIR}/SkiaHeaders")
++    file(MAKE_DIRECTORY "${skia_headers}/top" "${skia_headers}/mod/skia/modules")
++    file(CREATE_LINK "${XOS_SKIA_INCLUDE_DIRECTORY}/include" "${skia_headers}/top/skia" SYMBOLIC)
++    file(CREATE_LINK "${XOS_SKIA_INCLUDE_DIRECTORY}/modules/svg/include"
++        "${skia_headers}/mod/skia/modules/svg" SYMBOLIC)
++    add_library(Skia::Skia STATIC IMPORTED)
++    set_target_properties(Skia::Skia PROPERTIES
++        IMPORTED_LOCATION "${XOS_SKIA_RASTER_ARCHIVE}"
++        INTERFACE_INCLUDE_DIRECTORIES "${XOS_SKIA_INCLUDE_DIRECTORY};${skia_headers}/top;${skia_headers}/mod")
++    target_compile_definitions(Skia::Skia INTERFACE
++        SK_BUILD_FOR_UNIX SK_ASSUME_GL=0 SK_ASSUME_GL_ES=0 SK_ASSUME_WEBGL=0 SK_RELEASE
++        SK_DISABLE_LEGACY_GL_MAKE_NATIVE_INTERFACE SK_DISABLE_LEGACY_IMAGE_READBUFFER
++        SK_DISABLE_LEGACY_INIT_DECODERS SK_DISABLE_LEGACY_PNG_WRITEBUFFER SK_DISABLE_TRACING SK_DISABLE_WEBGL_INTERFACE)
++    target_link_libraries(Skia::Skia INTERFACE Freetype::Freetype PNG::PNG JPEG::JPEG)
++    include(platform/Skia.cmake)
++    list(REMOVE_ITEM WebCore_UNIFIED_SOURCE_LIST_FILES "platform/SourcesSkia.txt")
++    list(APPEND WebCore_UNIFIED_SOURCE_LIST_FILES "platform/SourcesXOSSkia.txt")
++    list(APPEND WebCore_LIBRARIES "${XOS_SKIA_FONTCONFIG_ARCHIVE}" Fontconfig::Fontconfig)
++    list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES "${WEBCORE_DIR}/platform/network/xos")
++    list(APPEND WebCore_PRIVATE_FRAMEWORK_HEADERS
++        platform/network/xos/CertificateInfo.h
++        platform/network/xos/ResourceError.h
++        platform/network/xos/ResourceRequest.h
++        platform/network/xos/ResourceResponse.h)
++endif ()
+--- /dev/null
++++ b/Source/WebCore/platform/SourcesXOSSkia.txt
+@@ -0,0 +1,65 @@
++// Copyright (C) 2024 Igalia S.L.
++//
++// Redistribution and use in source and binary forms, with or without
++// modification, are permitted provided that the following conditions
++// are met:
++// 1. Redistributions of source code must retain the above copyright
++//    notice, this list of conditions and the following disclaimer.
++// 2. Redistributions in binary form must reproduce the above copyright
++//    notice, this list of conditions and the following disclaimer in the
++//    documentation and/or other materials provided with the distribution.
++//
++// THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
++// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
++// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++// PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
++// BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
++// THE POSSIBILITY OF SUCH DAMAGE.
++
++page/skia/MemoryReleaseSkia.cpp
++
++platform/graphics/filters/skia/FEColorMatrixSkiaApplier.cpp
++platform/graphics/filters/skia/FEComponentTransferSkiaApplier.cpp
++platform/graphics/filters/skia/FEDropShadowSkiaApplier.cpp
++platform/graphics/filters/skia/FEGaussianBlurSkiaApplier.cpp
++platform/graphics/filters/skia/SourceGraphicSkiaApplier.cpp
++
++platform/graphics/skia/TransformationMatrixSkia.cpp
++platform/graphics/skia/ColorSkia.cpp
++platform/graphics/skia/ColorSpaceSkia.cpp
++platform/graphics/skia/ComplexTextControllerSkia.cpp
++platform/graphics/skia/FloatRectSkia.cpp
++platform/graphics/skia/FloatRoundedRectSkia.cpp
++platform/graphics/skia/FontCacheSkia.cpp
++platform/graphics/skia/FontCascadeSkia.cpp
++platform/graphics/skia/FontCustomPlatformDataSkia.cpp
++platform/graphics/skia/FontDescriptionSkia.cpp
++platform/graphics/skia/FontPlatformDataSkia.cpp
++platform/graphics/skia/FontRenderOptionsSkia.cpp
++platform/graphics/skia/FontSkia.cpp
++platform/graphics/skia/FontVariationsSkia.cpp
++platform/graphics/skia/GlyphPageSkia.cpp
++platform/graphics/skia/GradientSkia.cpp
++platform/graphics/skia/GraphicsContextSkia.cpp
++platform/graphics/skia/ImageBufferSkiaBackend.cpp
++platform/graphics/skia/ImageBufferSkiaSurfaceBackend.cpp
++platform/graphics/skia/ImageBufferSkiaUnacceleratedBackend.cpp
++platform/graphics/skia/ImageUtilitiesSkia.cpp
++platform/graphics/skia/IntRectSkia.cpp
++platform/graphics/skia/NativeImageSkia.cpp
++platform/graphics/skia/PathSkia.cpp
++platform/graphics/skia/PatternSkia.cpp
++platform/graphics/skia/ShareableBitmapSkia.cpp
++platform/graphics/skia/SkiaHarfBuzzFont.cpp
++platform/graphics/skia/SkiaHarfBuzzFontCache.cpp
++platform/graphics/skia/SkiaRecordingResult.cpp
++platform/graphics/skia/SkiaSerializedImageBuffer.cpp
++platform/graphics/skia/SkiaSystemFallbackFontCache.cpp
++platform/graphics/skia/SkiaUtilities.cpp
++
++platform/skia/SharedBufferSkia.cpp
+--- /dev/null
++++ b/Source/WebCore/platform/network/xos/CertificateInfo.h
+@@ -0,0 +1,31 @@
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++#include <cstdint>
++#include <wtf/Vector.h>
++
++namespace WebCore {
++
++class CertificateInfo final {
++public:
++    using certificate_chain = Vector<Vector<uint8_t>>;
++
++    CertificateInfo() = default;
++    CertificateInfo(certificate_chain&& chain, unsigned validation_errors)
++        : m_chain(WTF::move(chain))
++        , m_validation_errors(validation_errors)
++    {
++    }
++
++    bool isEmpty() const { return m_chain.isEmpty(); }
++    bool operator==(const CertificateInfo&) const = default;
++    CertificateInfo isolatedCopy() const { return CertificateInfo(certificate_chain(m_chain), m_validation_errors); }
++    const certificate_chain& certificateChain() const { return m_chain; }
++    unsigned validationErrors() const { return m_validation_errors; }
++
++private:
++    certificate_chain m_chain;
++    unsigned m_validation_errors { 0 };
++};
++
++} // namespace WebCore
+--- /dev/null
++++ b/Source/WebCore/platform/network/xos/ResourceError.h
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++#include <WebCore/ResourceErrorBase.h>
++
++namespace WebCore {
++
++class ResourceError final : public ResourceErrorBase {
++public:
++    ResourceError(Type type = Type::Null)
++        : ResourceErrorBase(type)
++    {
++    }
++
++    ResourceError(const String& domain, int code, const URL& failing_url, const String& description,
++                  Type type = Type::General, IsSanitized sanitized = IsSanitized::No)
++        : ResourceErrorBase(domain, code, failing_url, description, type, sanitized)
++    {
++    }
++
++    ErrorRecoveryMethod errorRecoveryMethod() const { return ErrorRecoveryMethod::NoRecovery; }
++
++private:
++    friend class ResourceErrorBase;
++    void doPlatformIsolatedCopy(const ResourceError& original) { m_isSanitized = original.m_isSanitized; }
++};
++
++} // namespace WebCore
+--- /dev/null
++++ b/Source/WebCore/platform/network/xos/ResourceRequest.h
+@@ -0,0 +1,55 @@
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++#include <WebCore/ResourceRequestBase.h>
++
++namespace WebCore {
++
++class ResourceRequest final : public ResourceRequestBase {
++public:
++    ResourceRequest()
++        : ResourceRequest(URL())
++    {
++    }
++
++    explicit ResourceRequest(String&& url)
++        : ResourceRequest(URL({ }, WTF::move(url)))
++    {
++    }
++
++    ResourceRequest(URL&& url)
++        : ResourceRequestBase(WTF::move(url), ResourceRequestCachePolicy::UseProtocolCachePolicy)
++    {
++    }
++
++    ResourceRequest(URL&& url, const String& referrer, ResourceRequestCachePolicy policy = ResourceRequestCachePolicy::UseProtocolCachePolicy)
++        : ResourceRequestBase(WTF::move(url), policy)
++    {
++        setHTTPReferrer(referrer);
++    }
++
++    explicit ResourceRequest(ResourceRequestBase&& base)
++        : ResourceRequestBase(WTF::move(base))
++    {
++    }
++
++private:
++    friend class ResourceRequestBase;
++    // XOS serializes the canonical base fields at the transport boundary.
++    void doUpdatePlatformRequest() { }
++    void doUpdateResourceRequest() { }
++    void doUpdatePlatformHTTPBody() { }
++    void doUpdateResourceHTTPBody() { }
++    void doPlatformSetAsIsolatedCopy(const ResourceRequest&) { }
++};
++
++} // namespace WebCore
++
++namespace WTF {
++
++template<> struct MarkableTraits<WebCore::ResourceRequest> {
++    static bool isEmptyValue(const WebCore::ResourceRequest& request) { return request.isNull(); }
++    static WebCore::ResourceRequest emptyValue() { return { }; }
++};
++
++} // namespace WTF
+--- /dev/null
++++ b/Source/WebCore/platform/network/xos/ResourceResponse.h
+@@ -0,0 +1,23 @@
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++#include <WebCore/ResourceResponseBase.h>
++
++namespace WebCore {
++
++class ResourceResponse final : public ResourceResponseBase {
++public:
++    ResourceResponse() = default;
++
++    ResourceResponse(URL&& url, String&& mime_type, long long length, String&& encoding)
++        : ResourceResponseBase(WTF::move(url), WTF::move(mime_type), length, WTF::move(encoding))
++    {
++    }
++
++    explicit ResourceResponse(ResourceResponseBase&& base)
++        : ResourceResponseBase(WTF::move(base))
++    {
++    }
++};
++
++} // namespace WebCore

@@ -28,3 +28,33 @@ python3 tests/webkit_software_recording_guest.py --target "$RECORDING_OUT" \
 WebCore 目标前，还需要在 `SourcesSkia.txt` 中处理 `SkiaPaintingEngine.cpp` 和
 `SkiaReplayCanvas.cpp` 的 GPU 图集访问，并接通其他平台接口。页面解析、布局和 Qt
 视口仍按 M2 独立验收。
+
+## WebCore 软件构建目标
+
+为整个静态目标应用 `software_context.patch`、`software_buffers.patch` 和
+`software_graph.patch`。在通常的 XOS JSCOnly 交叉配置上启用
+`XOS_WEBCORE_SOFTWARE=ON`。该选项启用静态 WebCore、软件 Skia 和 WebCore 的原生
+请求值类型。软件缓冲区的创建和转移沿用上游对象，Canvas 请求加速缓冲区时沿用
+WebCore 的软件回退。整页构建的源表选入软件字体、滤镜、绘制和缓冲区对象。GL、
+Ganesh、纹理图集及协调合成器由其各自后端处理。
+
+链接器使用 `XOS_SKIA_RASTER_ARCHIVE` 和 `XOS_SKIA_FONTCONFIG_ARCHIVE`。Skia 头来
+自同一锁定源包下的 `Source/ThirdParty/skia`，用 `XOS_SKIA_INCLUDE_DIRECTORY` 指定。
+在只搜索目标库的配置中提供 ICU 79.1、LibXml2、SQLite3、zlib、HarfBuzz 与
+HarfBuzz ICU、Fontconfig、FreeType、PNG 和 JPEG。宿主生成器按原有方式从宿主环境
+获取，Skia 归档和上述依赖均来自 XOS 目标构建。
+
+```sh
+cmake -S "$WEBKIT_SOURCE" -B "$WEBKIT_OUTPUT" -G Ninja \
+  -DPORT=JSCOnly -DXOS_WEBCORE_SOFTWARE=ON -DENABLE_STATIC_JSC=ON \
+  -DCMAKE_TOOLCHAIN_FILE="$XOS_WEBKIT_TOOLCHAIN" \
+  -DXOS_SKIA_INCLUDE_DIRECTORY="$WEBKIT_SOURCE/Source/ThirdParty/skia" \
+  -DXOS_SKIA_RASTER_ARCHIVE="$SKIA_RASTER_A" \
+  -DXOS_SKIA_FONTCONFIG_ARCHIVE="$SKIA_FONTCONFIG_A"
+cmake --build "$WEBKIT_OUTPUT" --target WebCore
+```
+
+`XOS_WEBKIT_TOOLCHAIN` 使用同一 glibc C/C++ kit 的 C/C++ 驱动和 sysroot，提供上述目标
+库的 CMake 搜索根。编译器和原生 ABI 头的布置沿用
+[JSCOnly 配置](../README.md#原生-llint-布局生成)。明确关闭 JIT、WebAssembly、采样
+及宿主动态依赖搜索。完整目标归档、客体 DOM/CSS 布局以及 Qt 视口仍待验证。

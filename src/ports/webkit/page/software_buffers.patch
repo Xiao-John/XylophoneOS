@@ -1,0 +1,130 @@
+--- a/Source/WebCore/platform/graphics/ImageBuffer.cpp
++++ b/Source/WebCore/platform/graphics/ImageBuffer.cpp
+@@ -49,10 +49,13 @@
+ #endif
+
+ #if USE(SKIA)
++#include "SkiaSerializedImageBuffer.h"
++#endif
++
++#if USE(SKIA) && !OS(XOS)
+ #include "GLContext.h"
+ #include "ImageBufferSkiaAcceleratedBackend.h"
+ #include "PlatformDisplay.h"
+-#include "SkiaSerializedImageBuffer.h"
+
+ WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_BEGIN
+ #include <skia/gpu/ganesh/GrBackendSurface.h>
+@@ -95,7 +98,7 @@
+             if (auto imageBuffer = ImageBuffer::create<ImageBufferIOSurfaceBackend>(size, resolutionScale, colorSpace, pixelFormat, purpose, creationContext))
+                 return imageBuffer;
+         }
+-#elif USE(SKIA)
++#elif USE(SKIA) && !OS(XOS)
+         if (auto imageBuffer = ImageBuffer::create<ImageBufferSkiaAcceleratedBackend>(size, resolutionScale, colorSpace, pixelFormat, purpose, { }))
+             return imageBuffer;
+ #endif
+--- a/Source/WebCore/platform/graphics/skia/SkiaSerializedImageBuffer.cpp
++++ b/Source/WebCore/platform/graphics/skia/SkiaSerializedImageBuffer.cpp
+@@ -27,11 +27,13 @@
+ #include "SkiaSerializedImageBuffer.h"
+
+ #if USE(SKIA)
++#if !OS(XOS)
+ #include "GLContext.h"
+ #include "GLFence.h"
+ #include "GraphicsContext.h"
+ #include "NativeImage.h"
+ #include "PlatformDisplay.h"
++#endif
+ #include <wtf/TZoneMallocInlines.h>
+
+ namespace WebCore {
+@@ -41,6 +43,10 @@
+ SkiaSerializedImageBuffer::SkiaSerializedImageBuffer(ImageBuffer& imageBuffer)
+     : m_memoryCost(imageBuffer.memoryCost())
+ {
++#if OS(XOS)
++    RELEASE_ASSERT(imageBuffer.renderingMode() != RenderingMode::Accelerated);
++    m_imageBuffer = imageBuffer;
++#else
+     // Non accelerated ImageBuffer can be transferred to other threads.
+     if (imageBuffer.renderingMode() != RenderingMode::Accelerated) {
+         m_imageBuffer = imageBuffer;
+@@ -58,8 +64,12 @@
+     m_colorSpace = imageBuffer.colorSpace();
+     m_bufferFormat = { imageBuffer.pixelFormat() };
+     m_fence = GLFence::create(PlatformDisplay::sharedDisplay().glDisplay());
++#endif
+ }
+
++#if OS(XOS)
++SkiaSerializedImageBuffer::~SkiaSerializedImageBuffer() = default;
++#else
+ SkiaSerializedImageBuffer::~SkiaSerializedImageBuffer()
+ {
+     // The snapshot holds the last reference to a texture of this thread's GrContext once the source
+@@ -73,9 +83,13 @@
+         });
+     }
+ }
++#endif
+
+ RefPtr<ImageBuffer> SkiaSerializedImageBuffer::sinkIntoImageBuffer()
+ {
++#if OS(XOS)
++    return m_imageBuffer;
++#else
+     if (m_imageBuffer)
+         return m_imageBuffer;
+
+@@ -100,6 +114,7 @@
+     // Flush the context to ensure all operations are done before the source image buffer is destroyed.
+     copiedImageBuffer->flushDrawingContext();
+     return copiedImageBuffer;
++#endif
+ }
+
+ size_t SkiaSerializedImageBuffer::memoryCost() const
+--- a/Source/WebCore/platform/graphics/skia/SkiaSerializedImageBuffer.h
++++ b/Source/WebCore/platform/graphics/skia/SkiaSerializedImageBuffer.h
+@@ -27,9 +27,11 @@
+
+ #if USE(SKIA)
+ #include "ImageBuffer.h"
++#include <wtf/TZoneMalloc.h>
++#if !OS(XOS)
+ #include <wtf/RunLoop.h>
+-#include <wtf/TZoneMalloc.h>
+ #include <wtf/ThreadSafeWeakPtr.h>
++#endif
+
+ namespace WebCore {
+ class GLFence;
+@@ -47,6 +49,7 @@
+     size_t memoryCost() const override;
+
+     RefPtr<ImageBuffer> m_imageBuffer;
++#if !OS(XOS)
+     FloatSize m_logicalSize;
+     float m_resolutionScale { 1 };
+     DestinationColorSpace m_colorSpace { DestinationColorSpace::SRGB() };
+@@ -54,6 +57,7 @@
+     RefPtr<NativeImage> m_image;
+     ThreadSafeWeakPtr<RunLoop> m_runLoop;
+     std::unique_ptr<GLFence> m_fence;
++#endif
+     size_t m_memoryCost { 0 };
+ };
+
+--- a/Source/WebCore/page/Page.cpp
++++ b/Source/WebCore/page/Page.cpp
+@@ -4909,7 +4909,7 @@
+         modes.add(FilterRenderingMode::Accelerated);
+ #endif
+
+-#if USE(SKIA) && !PLATFORM(WIN) && (!PLATFORM(WPE) || ENABLE(WPE_PLATFORM))
++#if USE(SKIA) && !OS(XOS) && !PLATFORM(WIN) && (!PLATFORM(WPE) || ENABLE(WPE_PLATFORM))
+     if (settings().hardwareAccelerationEnabled())
+         modes.add(FilterRenderingMode::Accelerated);
+ #endif

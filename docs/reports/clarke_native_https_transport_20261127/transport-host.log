@@ -1,0 +1,4 @@
+/usr/bin/c++
+PASS N3 native client: groups=7 UDP-zero,required-retry,connecting,short-write,would-block,close-preserves-siblings,timeout-no-replay,EOF,malformed,cleanup strict-replies=1
+PASS N3 production SDK/HTTP: short writes, binary payload, EOF, truncation, trailing bytes, bounds, framing, same-origin redirects, redirect budget, numeric IPv4
+PASS native probe strict freestanding syntax + host link without libc; frozen target/guest NOT_RUN

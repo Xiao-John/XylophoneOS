@@ -1,11 +1,12 @@
 # Bounded HTTP parsing and native transport
 
 This original Apache-2.0 component provides an allocation-free URL/HTTP parser
-and a controlled HTTP client over the authenticated `net2` user service. The
+and controlled HTTP and HTTPS clients over the authenticated `net2` user service. The
 parser remains independent of Qt, devices and networking. `transport.cpp` uses
 `<xos/net_transport.hpp>` and requires a connected client whose service PID came
 from a trusted launcher. The native path introduces no POSIX socket, errno, FD,
-pthread/TLS or libc-private interface. Aurora navigation is integrated separately.
+pthread/TLS or libc-private interface. The explicit HTTPS client uses the separate
+native TLS stream. ClarkE owns the navigation policy.
 
 The parser follows a restricted reading of [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986.html)
 and [HTTP/1.1 framing](https://www.rfc-editor.org/rfc/rfc9112.html), consulted
@@ -13,9 +14,9 @@ and [HTTP/1.1 framing](https://www.rfc-editor.org/rfc/rfc9112.html), consulted
 
 ## Accepted parsing and framing
 
-- `http://` ASCII DNS/IPv4 authority, explicit port1–65535, literal dot-segment
-  removal, relative paths/query/fragment/network references. The transport accepts
-  canonical numeric IPv4 only; DNS remains a parser input, with no resolver.
+- `http://` and `https://` ASCII DNS/IPv4 authority, explicit port1–65535, literal
+  dot-segment removal, relative paths/query/fragment/network references. The plain
+  HTTP transport accepts canonical numeric IPv4 addresses.
 - GET with Host, `Connection: close`, `Accept-Encoding: identity`. Header injection
   and caller-modified URL objects are checked again before request construction.
 - HTTP/1.0 or1.1 status/headers; exactly one decimal Content-Length and an exact
@@ -29,8 +30,10 @@ and [HTTP/1.1 framing](https://www.rfc-editor.org/rfc/rfc9112.html), consulted
 Limits: URL2048 bytes, host253/label63, headers16KiB/64 fields, body1MiB; no recursive
 parsing. The caller supplies the buffer and can impose a smaller total capacity.
 `fetch(client, input, buffer, capacity, deadline, response, final_url, max_redirects)`
-returns exact wire bytes in that buffer; the successful response's body_offset and
-body_length select its complete body. `final_url` supplies the base for relative
+returns exact wire bytes in that buffer. The successful response identifies the
+raw header fields and the complete body with their respective offsets and lengths.
+The header span starts after the status line and ends before the final blank line.
+`final_url` supplies the base for relative
 resources. Error outputs are empty. The existing pure parser's `need_more` result
 requires callers to wait before consuming a body.
 
@@ -50,12 +53,14 @@ trailing data even when the response fills the caller's buffer. Errors cancel th
 connection; failed cancellation closes the IPC session for server-side cleanup.
 No automatic retry follows an uncertain send.
 
-HTTPS, TLS, DNS resolution, DHCP, credentials, IPv6, transfer coding (including
-chunked), compression, informational responses and close-delimited bodies remain
-unsupported. This component does not execute downloads, modify files, spawn
-processes or provide JavaScript. Browsers remain responsible for navigation and
-aggregate resource policy; the separate Aurora integration uses no redirects and
-a shared navigation deadline/request/byte budget.
+`https_transport.hpp` exposes `fetch_https` for a single response over the native
+TLS stream. The caller chooses the authenticated service, expected IPv4 address
+and a DER trust anchor. With `net2_dns` selected, the authenticated resolver
+must return the configured address. The URL host supplies the SNI, certificate
+name and HTTP Host. A response is returned after HTTP framing and verified TLS
+closure. ClarkE uses this transport with its configured origin and shared
+navigation deadline, request budget and byte budget. The same interface is
+available to the WebKit network backend.
 
 ## Validation and guest handoff
 

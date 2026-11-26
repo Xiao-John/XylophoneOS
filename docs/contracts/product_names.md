@@ -13,6 +13,8 @@
 下生成私有开发包，脚本验证 ELF、构建回执及 SDK 树。候选包的安装、升级、卸载和客体
 证据见 [产品包记录](../work_log/af27a498_desktop_product_packages.md)。发行时按实际 Qt
 与 SDK 组合另行复核许可和重链接材料。旧盘用户文件沿用现有归属，迁移不得覆盖同名用户文件。
+Mobius 也有使用独立 glibc C/C++ profile 的私有候选，见
+[glibc XPK 生命周期](../work_log/f38242fd_mobius_glibc_xpk_lifecycle.md)。
 
 Aurora 仍指共享视觉库、历史设计或既有协议。保留共享的 `aurora` 命名空间、`libXosAurora.a`、资源路径、服务名称和冻结证据。源码目录的历史名称可与发行入口并存。笔记应用沿用自己的标识。
 

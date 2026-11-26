@@ -7,6 +7,7 @@ namespace xos::ui {
 void init();
 bool available();
 // XOSBND1 staged XPKs (DU4): paths under /var/cache/xypm/incoming/
+bool boot_bundle_present();
 u32 staged_count();
 const char* staged_path(u32 index);
 bool bundle_marker_present();

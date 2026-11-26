@@ -1,0 +1,102 @@
+{
+  "cxx_compilation": {
+    "c_sdk_manifest_sha256": "b4c573486d2458f1a47c7c88ed079d8a53f946ceba8c9cf955b8f87f1e467623",
+    "c_sdk_tree_sha256": "54964d29b9f77b6867593fad09201082d5522cb59eb12761de9b85ffb3d5207e",
+    "configure_driver_sha256": "b4a5acc5a553e4a3c3fe7beb8f581cb231569410f63045e3cacb9b159cf0f57d",
+    "configure_link_probe_sha256": "a1d16d1508feedd18b0c36d27b432c031cfe171bd0ef43d61a87ed1053ddd9e6",
+    "configure_sha256": "ff35fe5103251ea2c5b06d204e6706d95c5d355d386f94f8c912d4d4d8f5a1e2",
+    "configure_terminal_archive_sha256": "ee67a125e26ccf1f11c43676b7716b762b822596ebd2e568a50359f0be68e11f",
+    "cxx_recipe_sha256": "17c6b6d752ff29648d8d0bc3aa5bd7f6954587cd9989849d121cca09e689ab07",
+    "cxx_reconfigure_recipe_sha256": "4363113e1d44885de28f838bd4dd68c7db490e23c049cd9efc744ed3f83ca300",
+    "pthread_header_sha256": "e1222d3f1dfe88fb9e0db5512b6744bc2b964d34c196a6e23ecc3be9e4514f47",
+    "public_cxx_abi_macros": {
+      "_GLIBCXX_HAS_GTHREADS": "1",
+      "_GLIBCXX_INLINE_VERSION": "0",
+      "_GLIBCXX_USE_CXX11_ABI": "1",
+      "_GLIBCXX_USE_DUAL_ABI": "1"
+    },
+    "public_cxx_config_macro_differences": {},
+    "unmodified_base_libgcc_members": 142,
+    "unwinder_configure_sha256": "bc95385d262e10b885f717949be67bcdd46273dc00efe32720325ebbe3beee4f",
+    "unwinder_dependency_receipts": {
+      "emutls.o": "6787b494e92b329a88398a25577576e77576728a3cf68c3c8200d91b74836a17",
+      "unwind-c.o": "b6872ca2fb134395810b7d7ce5c34fa2f6ce1ec8efb95d8c960a735432835d2a",
+      "unwind-dw2-fde.o": "694388cc6ea53c601b6cb936f189bf4883a3f00b286aee5050f8bede3ba161df",
+      "unwind-dw2.o": "50d0d9afa94507136fe33d95054c60197923f91761ef9766d084fea29279c42e",
+      "unwind-sjlj.o": "efd468438eaedfe37c6f84012dc6d9d6a1607f8d3d2ba81081b116bb71977025"
+    },
+    "unwinder_recipe_sha256": "7523d49784ee221a787847e3d8f0c1d16194400b7057f1cbf6e17696c2c81e6d"
+  },
+  "gcc_source": {
+    "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+    "evidence": {
+      "gpgv.log": "81f75ace9bf61ee7f64b835e518dc4cda053ee4814a28ead6f0ffac5a79edd95",
+      "gpgv.status": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4",
+      "release_key.gpg": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db"
+    },
+    "gpgv_exit": 0,
+    "key_sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+    "lock_sha256": "3fbd5444abe4946667813ea45c66c2a1bd1bf43e937d142c4ca8bea735e1e28f",
+    "schema": 1,
+    "signature": {
+      "hash_algorithm": 8,
+      "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+      "signature_timestamp": 1786091352,
+      "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641"
+    },
+    "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+    "status": "upstream_signature_verified",
+    "trust_record": {
+      "identity_sources": [
+        "https://gcc.gnu.org/mirrors.html",
+        "https://gcc.gnu.org/pipermail/gcc/2026-August/248711.html"
+      ],
+      "key_file": "keys/gnu-keyring.gpg",
+      "key_sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+      "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+      "signature_file": "keys/gcc-16.2.0.tar.xz.sig",
+      "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641"
+    },
+    "verified_at": "2026-11-26T13:16:33.387094+00:00"
+  },
+  "gcc_source_verification_report_sha256": "78dbc0ea997962ddbf51655020ff963067d272e224b5a4d4bbb254f8140d2bca",
+  "glibc_allocator_check_log_sha256": "1c5566b29d6e80d3f00d47e0b86d5a91a9410c5b7be6bb6a5b6e305fcbfa6084",
+  "glibc_source": {
+    "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+    "verification": "upstream_signature_verified",
+    "verification_report_sha256": "102923c8faa16260c3f1bb5c7ff7771ddb99c6aa8aac052fe1c20bac4eb4402e"
+  },
+  "kit_file_count": 1765,
+  "kit_tree_sha256": "8b67e1b967013a4b31f2289461af9eebf39eba27f2cf36c66b4de650291266a8",
+  "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+  "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+  "runtime_archives_sha256": {
+    "libc.a": "d3384b92df41bf714100e56d1f9a02af17fd0c07144797558134e68f10651b98",
+    "libgcc.a": "76e46640d9329f32d0b87dc68d7b571e2a4f8d7474c564dc2e669dff81fd8916",
+    "libm.a": "9abf45fcab9647157b89dc146c94a84825688daf096d53ed40293f6918533edc",
+    "libstdc++.a": "d0ecb5a0d0a8b6ba2eda1fdafa66f7efda718252dde247f99c9814a763a65466",
+    "libsupc++.a": "61c7d36d2397747aa14ef5b76fe3ec9129bb730c0e673e8a806381131bd92219"
+  },
+  "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+  "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262",
+  "source_commit": "5a828b33b8f8c4051a4e7f8175b775388b9db26b",
+  "source_tree": "0503d3fe9ba1291267204eba63922ccb5f17073a",
+  "status": "kit_staged",
+  "tool_digests": {
+    "x86_64-elf-as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "x86_64-elf-g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "x86_64-elf-gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "x86_64-elf-ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1"
+  },
+  "unwinder": {
+    "frame_registry": "pthread_mutex",
+    "replaced_members": {
+      "emutls.o": "0aa7c2fb60441b44b066add1ec2cb951b69ba2364b4a4e6f0d5c2d74f4e447d8",
+      "unwind-c.o": "c2100138cc1c381a8d5f12e15ee8ab91a5dec3248a977b8640bf9f6939659a29",
+      "unwind-dw2-fde.o": "a253c3c958eac1e479cb8e3f7051bd9761f54080c2d7e9bfeb49e09790923b92",
+      "unwind-dw2.o": "2737dccaa009f5a49286f038c3fdaa491039137a459a392b2265e48b7e7ff08d",
+      "unwind-sjlj.o": "a2bff809d228057b7c3e9b98276a95610839edb93eb3d662756cc403d2372173"
+    },
+    "thread_model": "posix"
+  }
+}

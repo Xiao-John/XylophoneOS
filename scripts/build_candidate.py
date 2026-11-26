@@ -23,6 +23,8 @@ def main():
     parser.add_argument('--toolchain-prefix', type=Path)
     parser.add_argument('--glibc-app-kit', type=Path,
                         help='use an independently staged glibc C/C++ application SDK for the installer shell')
+    parser.add_argument('--glibc-daily-source', type=Path,
+                        help='locked sbase source for the selected glibc installer stock tools')
     parser.add_argument('--newlib-archive', type=Path)
     parser.add_argument('--gcc-source', type=Path)
     parser.add_argument('--guest', action='store_true', help='run the existing make smoke gate')
@@ -36,6 +38,8 @@ def main():
         parser.error('supply --newlib-archive and --gcc-source together for the threaded C++ SDK')
     if args.installer_guest and not args.glibc_app_kit:
         parser.error('--installer-guest requires --glibc-app-kit')
+    if args.glibc_daily_source and not args.glibc_app_kit:
+        parser.error('--glibc-daily-source requires --glibc-app-kit')
     app_sdk = inspect_app_kit(args.glibc_app_kit) if args.glibc_app_kit else None
     test_installer = app_sdk is not None and (args.installer_guest or args.guest)
     untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '-z'], cwd=ROOT)
@@ -57,10 +61,15 @@ def main():
         kit = args.glibc_app_kit.absolute()
         system_command.append('--quiet-demos-on-launch')
         dash_command.extend(['--sdk', str(kit / 'sdk/sysroot'), '--glibc-profile', str(kit / 'profile.json')])
-    commands = [('system', system_command),
-                ('dash', dash_command),
-                ('install_iso', [sys.executable, 'scripts/build_install_iso.py', '--dash-manifest', str(output / 'dash_manifest.json')]),
-                ('licenses', [sys.executable, 'scripts/license_audit.py'])]
+    commands = [('system', system_command), ('dash', dash_command)]
+    install_command = [sys.executable, 'scripts/build_install_iso.py', '--dash-manifest', str(output / 'dash_manifest.json')]
+    if args.glibc_daily_source:
+        stock = output / 'stock'
+        commands.append(('stock', [sys.executable, 'scripts/build_glibc_daily_bundle.py',
+                       '--kit', str(kit), '--sbase', str(args.glibc_daily_source.resolve()), '--output', str(stock)]))
+        install_command.extend(['--member', f'3:daily={stock / "daily.xpk"}',
+                                '--member', f'5:xypm={stock / "xypm.elf"}'])
+    commands.extend([('install_iso', install_command), ('licenses', [sys.executable, 'scripts/license_audit.py'])])
     if args.newlib_archive:
         work = output / 'threaded_newlib'
         commands.extend([
@@ -77,6 +86,13 @@ def main():
     if test_installer:
         commands.append(('installer_smoke', [sys.executable, 'tests/iso_dash_install.py',
                          '--external', '--report', str(output / 'installer_guest_report.json')]))
+        if args.glibc_daily_source:
+            commands.append(('stock_guest', [sys.executable, 'tests/daily_utilities_p2_guest.py',
+                             '--system', str(ROOT / 'build'), '--installer-iso', str(ROOT / 'build/xos-install-dash.iso'),
+                             '--xypm-build', str(stock / 'xypm.json'), '--package', str(stock / 'daily.xpk'),
+                             '--profile', str(kit / 'profile.json'), '--glibc-sdk', str(kit / 'sdk'),
+                             '--dash-receipt', str(output / 'dash_manifest.json'),
+                             '--dash-timeout', '480', '--output', str(output / 'stock_guest')]))
     try:
         for name, command in commands:
             step = {'name': name, 'argv': command, 'log': name + '.log', 'status': 'running'}
@@ -87,7 +103,7 @@ def main():
             step['returncode'] = result.returncode
             step['status'] = 'passed' if result.returncode == 0 else 'failed'
             if result.returncode:
-                if name == 'installer_smoke':
+                if name in ('installer_smoke', 'stock_guest'):
                     report['installer_guest_qualification'] = 'failed'
                 raise RuntimeError(name + ' failed; see ' + str(output / step['log']))
         system = json.loads((ROOT / 'build/manifest.json').read_text())
@@ -98,10 +114,18 @@ def main():
             require(inspect_app_kit(args.glibc_app_kit) == app_sdk,
                     'application kit changed while building the candidate')
             dash, dash_receipt_hash = metadata_snapshot(output / 'dash_manifest.json')
+            installed_dash = install['dash_sha256']
+            if args.glibc_daily_source:
+                members = {(item['type'], item['name']): item['sha256'] for item in install['boot_bundle']['members']}
+                require(members == {(1, 'dash'): dash['sha256'], (3, 'daily'): sha(stock / 'daily.xpk'),
+                                    (5, 'xypm'): sha(stock / 'xypm.elf')}, 'installed stock bundle differs from its inputs')
+                installed_dash = members[(1, 'dash')]
+                for name in ('daily.xpk', 'xypm.elf', 'build_receipt.json'):
+                    report['artifacts']['stock/' + name] = sha(stock / name)
             require(system['quiet_demos_on_launch'] is True and dash['profile'] == 'dash_glibc_preview'
                     and dash['inputs']['profile'] == app_sdk['profile_sha256']
                     and dash['inputs']['sdk/manifest.json'] == app_sdk['sdk_manifest_sha256']
-                    and dash['sha256'] == install['dash_sha256'],
+                    and dash['sha256'] == installed_dash,
                     'installer dash differs from the selected application SDK')
             report['artifacts']['dash_manifest.json'] = dash_receipt_hash
         report['build_id'] = system['build_id']
@@ -133,6 +157,19 @@ def main():
                     and guest['iso_sha256'] == report['artifacts']['system/xos-install-dash.iso'],
                     'install guest report does not bind the frozen candidate ISO')
             report['artifacts']['installer_guest_report.json'] = guest_hash
+            if args.glibc_daily_source:
+                guest, guest_hash = metadata_snapshot(output / 'stock_guest/report.json')
+                require(guest['status'] == 'passed' and guest['system_build_id'] == system['build_id']
+                        and guest['installer_iso_sha256'] == report['artifacts']['system/xos-install-dash.iso']
+                        and guest['image_sha256'] == report['artifacts']['system/xos-install.iso']
+                        and guest['package_sha256'] == report['artifacts']['stock/daily.xpk']
+                        and guest['xypm_elf_sha256'] == report['artifacts']['stock/xypm.elf']
+                        and guest['xypm_receipt_sha256'] == report['artifacts']['stock/build_receipt.json']
+                        and guest['dash_receipt_sha256'] == report['artifacts']['dash_manifest.json']
+                        and guest['profile_binding_sha256'] == app_sdk['profile_sha256']
+                        and guest['sdk_manifest_sha256'] == app_sdk['sdk_manifest_sha256'],
+                        'stock guest report does not bind the frozen installer inputs')
+                report['artifacts']['stock_guest/report.json'] = guest_hash
             report['installer_guest_qualification'] = 'passed'
         report['status'] = 'built_smoke_passed' if args.guest else 'built_unverified'
         report['guest_qualification'] = 'smoke_passed' if args.guest else 'not_run'

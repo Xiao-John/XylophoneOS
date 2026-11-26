@@ -34,8 +34,10 @@ class monitor:
     def close(self):
         if self.qmp_file is not None:
             self.qmp_file.close()
+            self.qmp_file = None
         if self.qmp_socket is not None:
             self.qmp_socket.close()
+            self.qmp_socket = None
 
     def press_ctrl(self, key):
         for down, keys in ((True, ("ctrl", key)), (False, (key, "ctrl"))):
@@ -50,7 +52,10 @@ def frame(observation, image, future, light, timeout):
     while time.monotonic() < end:
         if future.done():
             raise RuntimeError(f"Desktop stopped before scanout, result {future.result()}")
-        observation.qmp("screendump", {"filename": str(image)})
+        try:
+            observation.qmp("screendump", {"filename": str(image)})
+        finally:
+            observation.close()
         kind, geometry, depth, pixels = image.read_bytes().split(b"\n", 3)
         if (kind, geometry, depth) == (b"P6", b"800 600", b"255"):
             bright = sum(min(pixels[i:i+3]) > 170 for i in range(0, len(pixels), 3))
@@ -134,6 +139,7 @@ def retire_desktop(system, state, wallet, output):
                         assert not future.done(), "The desktop closed before the administrator acted"
                         start = time.monotonic()
                         process.send_signal(signal.SIGUSR1)
+                        screen.close()
                         stdout, stderr = future.result(timeout=10)
                         elapsed = time.monotonic() - start
                     finally:

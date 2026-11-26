@@ -76,3 +76,20 @@ XOS 的进程号、页大小和熵沿用已绑定的 glibc 接口。内存占用
 [构建与客体回执](../../../docs/work_log/73cec3d9_clarke_wtf_native_runtime.md)记录
 实际线程、页保护、文件映射错误和资源回收。JSC 静态配置页、分配器和 VM GC
 另行验收。
+
+## XOS WTF 匿名页分配
+
+指定 `--wtf-allocator` 与新输出目录可构建实际 `OSAllocatorPOSIX.cpp` 目标对象。
+XOS 通过现有 VM 接口保留匿名区，再由目标 glibc 提交和更新页权限。保留区的对齐、
+guard、物理释放与回收均按原生 VM 操作完成。
+[普通客体记录](../../../docs/work_log/fab9b5b1_clarke_wtf_os_allocator.md)绑定定位的对象、
+实际 WTF 归档与读写及回收验证。
+
+## XOS JSC 配置页
+
+`--wtf-config` 构建配置初始化和保护对象。XOS 在静态 CRT 的早期构造阶段以
+不替换的精确请求建立已对齐的匿名配置区。C++ 和原生 LLInt 取同一个只读 ELF
+字面量中的基址。WTF finalize 通过真实的 `mprotect` 冻结配置页。
+[正例与地址冲突客体](../../../docs/work_log/b73f1f0f_clarke_jsc_config_protection.md)
+分别验证初始化与原生只读权限、占用时的明确启动失败。完整 JSC 链接与 VM 启动
+另有独立验收。

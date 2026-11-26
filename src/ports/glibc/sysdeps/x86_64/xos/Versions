@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+# x86-64 memmove tests the historical memcpy symbol version. The version
+# generator folds this empty entry into the XOS shlib-versions baseline.
+libc {
+  GLIBC_2.2.5 {
+  }
+}

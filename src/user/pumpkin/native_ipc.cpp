@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "native_ipc.hpp"
+#if XOS_PUMPKIN_NATIVE_LOGIN
+#include "login_resource.hpp"
+#endif
 
 namespace xos::user::pumpkin {
 
@@ -77,7 +80,8 @@ bool attach(service_core& core, transport_session& session, ipc_channel channel,
 
 enum class progress { keep, drop, failure };
 
-progress process_request(service_core& core, transport_session& session, u64& now, bool draining) {
+progress process_request(service_core& core, transport_session& session, u64& now, bool draining,
+                         [[maybe_unused]] login_resource* resource = nullptr, [[maybe_unused]] bool registrar = false) {
     if (now >= session.expires) {
         return progress::drop;
     }
@@ -103,10 +107,22 @@ progress process_request(service_core& core, transport_session& session, u64& no
     if (clock_ok) {
         now = static_cast<u64>(received_at);
     }
+    const wire_extension* extension = nullptr;
+#if XOS_PUMPKIN_NATIVE_LOGIN
+    struct resource_context { login_resource* resource; ipc_channel channel; bool registrar; };
+    resource_context ingress{resource, session.channel, registrar};
+    const wire_extension login_extension{&ingress,
+        [](void* context, service_core& state, const connection_id& connection,
+           const wire_request& incoming, u64 at, wire_reply& outgoing) {
+            auto& input = *static_cast<resource_context*>(context);
+            return input.resource->invoke(state, connection, input.channel, input.registrar, incoming, at, outgoing);
+        }};
+    if (resource != nullptr) { extension = &login_extension; }
+#endif
     // The kernel copies the single-slot packet. Never retry after dispatch,
     // since the mutation may already have executed.
     const bool sent = received == sizeof(request) && clock_ok && now < session.expires &&
-        dispatch_request(core, session.connection, session.sequence, request, now, reply) &&
+        dispatch_request(core, session.connection, session.sequence, request, now, reply, extension) &&
         sdk::ipc_send(session.channel.send, &reply, sizeof(reply)) == 0;
     wipe_bytes(&request, sizeof(request));
     wipe_bytes(&reply, sizeof(reply));
@@ -129,7 +145,7 @@ progress process_request(service_core& core, transport_session& session, u64& no
 
 int serve_native(const store_api& store, const nonce& realm, const entropy_api& entropy,
                  ipc_channel control, u64 controller, const char* service_name,
-                 backing_liveness backing) {
+                 backing_liveness backing, login_resource* resource) {
     service_core core;
     transport_session registrar, clients[client_limit]{};
     const i64 initial = monotonic_now();
@@ -159,7 +175,7 @@ int serve_native(const store_api& store, const nonce& realm, const entropy_api& 
             draining = true;
             exit_code = 12;
         }
-        const auto control_result = process_request(core, registrar, now, draining);
+        const auto control_result = process_request(core, registrar, now, draining, resource, true);
         if (control_result != progress::keep) {
             if (control_result == progress::failure) {
                 exit_code = 12;
@@ -176,7 +192,7 @@ int serve_native(const store_api& store, const nonce& realm, const entropy_api& 
             if (client.channel.send == 0) {
                 continue;
             }
-            const auto result = process_request(core, client, now, draining);
+            const auto result = process_request(core, client, now, draining, resource);
             if (result != progress::keep) {
                 disconnect(core, client);
             }

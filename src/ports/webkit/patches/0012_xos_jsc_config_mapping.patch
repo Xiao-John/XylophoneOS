@@ -1,0 +1,209 @@
+--- a/Source/WTF/wtf/WTFConfig.h
++++ b/Source/WTF/wtf/WTFConfig.h
+@@ -51,0 +52,7 @@
++
++#if OS(XOS)
++extern "C" WTF_EXPORT_PRIVATE const uintptr_t g_xos_jsc_config_address;
++inline Slot* configuration_slots() { return reinterpret_cast<Slot*>(g_xos_jsc_config_address); }
++#else
++inline Slot* configuration_slots() { return g_config; }
++#endif
+@@ -141 +148 @@
+-inline Config* addressOfWTFConfig() { return std::bit_cast<Config*>(&WebConfig::g_config[startSlotOfWTFConfig]); }
++inline Config* addressOfWTFConfig() { return std::bit_cast<Config*>(&WebConfig::configuration_slots()[startSlotOfWTFConfig]); }
+--- a/Source/WTF/wtf/WTFConfig.cpp
++++ b/Source/WTF/wtf/WTFConfig.cpp
+@@ -30,0 +31,6 @@
++#if OS(XOS)
++#include <cstdlib>
++#include <unistd.h>
++#include <xos/vm_abi.hpp>
++#endif
++
+@@ -88,0 +95,6 @@
++#if OS(XOS)
++constexpr uintptr_t xos_config_address = xos::vm_arena_end - WTF::ConfigSizeToProtect;
++static_assert(xos_config_address >= xos::vm_arena_begin);
++static_assert(!(xos_config_address & (WTF::ConfigAlignment - 1)));
++extern "C" const uintptr_t g_xos_jsc_config_address = xos_config_address;
++#else
+@@ -89,0 +102 @@
++#endif
+@@ -122,0 +136,27 @@
++#if OS(XOS)
++// The JSC shell accesses configuration before its first WTF::initialize call.
++static void initialize_xos_config_mapping()
++{
++    static std::once_flag once_flag;
++    std::call_once(once_flag, [] {
++        void* const address = WebConfig::configuration_slots();
++        void* const mapping = mmap(address, ConfigSizeToProtect, PROT_NONE,
++            MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE, -1, 0);
++        if (mapping == address && !mprotect(mapping, ConfigSizeToProtect, PROT_READ | PROT_WRITE))
++            return;
++
++        if (mapping != MAP_FAILED)
++            munmap(mapping, ConfigSizeToProtect);
++        // Fatal reporting cannot use WTF configuration until this mapping exists.
++        constexpr char failure[] = "ClarkE JSC configuration mapping failed\n";
++        static_cast<void>(write(STDERR_FILENO, failure, sizeof(failure) - 1));
++        _exit(EXIT_FAILURE);
++    });
++}
++
++__attribute__((constructor(101))) static void initialize_xos_config_before_cpp()
++{
++    initialize_xos_config_mapping();
++}
++#endif
++
+@@ -125 +165,3 @@
+-#if PLATFORM(COCOA)
++#if OS(XOS)
++    initialize_xos_config_mapping();
++#elif PLATFORM(COCOA)
+@@ -185 +227 @@
+-    [[maybe_unused]] uint8_t* reservedConfigBytes = reinterpret_cast_ptr<uint8_t*>(WebConfig::g_config);
++    [[maybe_unused]] uint8_t* reservedConfigBytes = reinterpret_cast_ptr<uint8_t*>(WebConfig::configuration_slots());
+@@ -214 +256 @@
+-    permanentlyFreezePages(&WebConfig::g_config, ConfigSizeToProtect, WTF::FreezePagePermission::ReadOnly);
++    permanentlyFreezePages(WebConfig::configuration_slots(), ConfigSizeToProtect, WTF::FreezePagePermission::ReadOnly);
+--- a/Source/JavaScriptCore/llint/LowLevelInterpreter.asm
++++ b/Source/JavaScriptCore/llint/LowLevelInterpreter.asm
+@@ -468,0 +469,9 @@
++macro load_web_config_base(reg)
++    if XOS_CONFIG_INDIRECT
++        pcrtoaddr _g_xos_jsc_config_address, reg
++        loadp [reg], reg
++    else
++        leap _g_config, reg
++    end
++end
++
+@@ -470 +479 @@
+-    leap _g_config, reg
++    load_web_config_base(reg)
+@@ -1271 +1280 @@
+-            leap _g_config, a7
++            load_web_config_base(a7)
+@@ -1278 +1287 @@
+-            leap _g_config, a7
++            load_web_config_base(a7)
+@@ -1285 +1294 @@
+-            leap _g_config, a7
++            load_web_config_base(a7)
+@@ -1410 +1419 @@
+-        leap _g_config, a5
++        load_web_config_base(a5)
+@@ -1679 +1688 @@
+-            leap _g_config, a2
++            load_web_config_base(a2)
+@@ -1802 +1811 @@
+-        leap _g_config, a2
++        load_web_config_base(a2)
+@@ -2192 +2201 @@
+-            leap _g_config, t2
++            load_web_config_base(t2)
+@@ -2323 +2332 @@
+-        leap _g_config, t3
++        load_web_config_base(t3)
+@@ -3051 +3060 @@
+-            leap _g_config, a2
++            load_web_config_base(a2)
+@@ -3075 +3084 @@
+-            leap _g_config, a2
++            load_web_config_base(a2)
+@@ -3106 +3115 @@
+-            leap _g_config, a2
++            load_web_config_base(a2)
+--- a/Source/JavaScriptCore/llint/LowLevelInterpreter64.asm
++++ b/Source/JavaScriptCore/llint/LowLevelInterpreter64.asm
+@@ -348 +348 @@
+-        leap _g_config, a7
++        load_web_config_base(a7)
+@@ -483 +483 @@
+-                    leap _g_config, a2
++                    load_web_config_base(a2)
+@@ -695 +695 @@
+-        leap _g_config, scratch
++        load_web_config_base(scratch)
+@@ -770 +770 @@
+-        leap _g_config, t3
++        load_web_config_base(t3)
+@@ -806 +806 @@
+-        leap _g_config, t3
++        load_web_config_base(t3)
+@@ -2512 +2512 @@
+-    leap _g_config, t5
++    load_web_config_base(t5)
+@@ -2596 +2596 @@
+-            leap _g_config, t5
++            load_web_config_base(t5)
+@@ -2710 +2710 @@
+-        leap _g_config, a1
++        load_web_config_base(a1)
+--- a/Source/JavaScriptCore/llint/LowLevelInterpreter32_64.asm
++++ b/Source/JavaScriptCore/llint/LowLevelInterpreter32_64.asm
+@@ -2325 +2325 @@
+-    leap _g_config, t5
++    load_web_config_base(t5)
+@@ -2410 +2410 @@
+-            leap _g_config, t5
++            load_web_config_base(t5)
+--- a/Source/JavaScriptCore/llint/InPlaceInterpreter.asm
++++ b/Source/JavaScriptCore/llint/InPlaceInterpreter.asm
+@@ -216 +216,2 @@
+-    leap WTFConfig + constexpr WTF::offsetOfWTFConfigLowestAccessibleAddress, scratch
++    load_web_config_base(scratch)
++    addp constexpr WTF::startOffsetOfWTFConfig + constexpr WTF::offsetOfWTFConfigLowestAccessibleAddress, scratch
+@@ -556 +557 @@
+-        leap _g_config, ws1
++        load_web_config_base(ws1)
+@@ -588 +589 @@
+-        leap _g_config, ws1
++        load_web_config_base(ws1)
+@@ -1263 +1264 @@
+-        leap _g_config, a1
++        load_web_config_base(a1)
+@@ -1393 +1394 @@
+-        leap _g_config, ws0
++        load_web_config_base(ws0)
+@@ -1762 +1763 @@
+-    leap _g_config, ws1
++    load_web_config_base(ws1)
+@@ -1780 +1781 @@
+-    leap _g_config, ws1
++    load_web_config_base(ws1)
+@@ -1836 +1837 @@
+-    leap _g_config, ws0
++    load_web_config_base(ws0)
+@@ -1962 +1963 @@
+-    leap _g_config, ws0
++    load_web_config_base(ws0)
+--- a/Source/JavaScriptCore/llint/InPlaceInterpreter64.asm
++++ b/Source/JavaScriptCore/llint/InPlaceInterpreter64.asm
+@@ -11928 +11928 @@
+-    leap _g_config, t5
++    load_web_config_base(t5)
+@@ -11992 +11992 @@
+-    leap _g_config, t4
++    load_web_config_base(t4)
+@@ -12310 +12310 @@
+-    leap _g_config, ws1
++    load_web_config_base(ws1)
+@@ -12624 +12624 @@
+-    leap _g_config, ws1
++    load_web_config_base(ws1)
+--- a/Source/JavaScriptCore/llint/LLIntOfflineAsmConfig.h
++++ b/Source/JavaScriptCore/llint/LLIntOfflineAsmConfig.h
+@@ -93,0 +94,2 @@
++#define OFFLINE_ASM_XOS_CONFIG_INDIRECT OS(XOS)
++
+--- a/Source/JavaScriptCore/llint/LowLevelInterpreter.cpp
++++ b/Source/JavaScriptCore/llint/LowLevelInterpreter.cpp
+@@ -92,0 +93,3 @@
++#if OS(XOS)
++using WebConfig::g_xos_jsc_config_address;
++#else
+@@ -93,0 +97 @@
++#endif

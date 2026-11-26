@@ -4,6 +4,12 @@
 #if XOS_PUMPKIN_ANCHORED_PROBE
 #include "../../../src/user/pumpkin/generation_guest.hpp"
 #endif
+#if XOS_PUMPKIN_NATIVE_LOGIN
+#include "../../../src/user/pumpkin/native_login.hpp"
+#endif
+#if XOS_PUMPKIN_USER_LOGIN
+#include "../../../src/user/pumpkin/user_login.hpp"
+#endif
 
 namespace xos::user::pumpkin::durable_probe {
 namespace {
@@ -262,7 +268,7 @@ void run(u32 image, grant_function grant, const char* mode) {
 }
 
 #if XOS_PUMPKIN_ANCHORED_PROBE
-int run_anchored(u32 image, u32 proxy_image, grant_function grant) {
+int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unused]] u32 holder_image) {
     anchor_guest::pair proxy_control{};
     sdk::spawn_options options{};
     for (auto& fd : options.stdio) fd = -2;
@@ -280,15 +286,31 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant) {
     const bool ready = sdk::channel_receive_wait(proxy_control.receive, &mode, sizeof(mode),
                                                  anchor_guest::deadline()) == sizeof(mode);
     bool passed = false;
-    if (ready) {
+#if XOS_PUMPKIN_NATIVE_LOGIN
+    u8 login_result = 0;
+    process_stats before{}, after{};
+    const bool bounded_start = sdk::syscall(sys_process_stats, reinterpret_cast<u64>(&before)) == 0;
+#else
+    const bool bounded_start = true;
+#endif
+    if (ready && bounded_start) {
         daemon server;
-        const bool started = server.start(image, grant, mode == anchor_guest::scenario::cycle,
+        const bool initialized = mode == anchor_guest::scenario::cycle || mode == anchor_guest::scenario::user_enroll;
+        const bool started = server.start(image, grant, initialized,
                                           {static_cast<u64>(proxy), proxy_control.transmit});
         switch (mode) {
         case anchor_guest::scenario::cycle: {
+#if XOS_PUMPKIN_NATIVE_LOGIN
+            if (started) {
+                const auto result = native_login::run(holder_image, server.pid, server.control, {account, sizeof(account) - 1});
+                login_result = static_cast<u8>(result);
+                passed = result == native_login::result::passed && server.stop();
+            }
+#else
             test_account account_data;
             passed = started && enroll(server, account_data) &&
                 revoke_live_session(server, account_data, false) && server.stop();
+#endif
             break;
         }
         case anchor_guest::scenario::healthy:
@@ -297,9 +319,40 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant) {
         case anchor_guest::scenario::stale:
             passed = !started && server.control_admitted && server.stop(11);
             break;
+#if XOS_PUMPKIN_USER_LOGIN
+        case anchor_guest::scenario::user_enroll:
+            passed = started && native_login::enroll_user(server.control, {account, sizeof(account) - 1}, proxy_control) &&
+                server.stop();
+            break;
+        case anchor_guest::scenario::user_login:
+            if (started) {
+                login_result = native_login::login_user(holder_image, server.pid, server.control,
+                    {account, sizeof(account) - 1}, proxy_control);
+                passed = login_result != 0 && server.stop();
+            }
+            break;
+        case anchor_guest::scenario::user_revoke:
+            passed = started && native_login::revoke_user(server.control, {account, sizeof(account) - 1}) && server.stop();
+            break;
+#endif
+        default:
+            break;
         }
     }
-    const anchor_guest::supervisor_result result{static_cast<u8>(passed)};
+#if XOS_PUMPKIN_NATIVE_LOGIN
+    passed = passed && sdk::syscall(sys_process_stats, reinterpret_cast<u64>(&after)) == 0 &&
+        before.free_pages == after.free_pages && before.tasks == after.tasks && before.completions == after.completions;
+#endif
+    u8 outcome = static_cast<u8>(passed);
+#if XOS_PUMPKIN_NATIVE_LOGIN
+#if XOS_PUMPKIN_USER_LOGIN
+    if (passed && mode == anchor_guest::scenario::user_login && login_result == user_login::denied) { outcome = login_result; }
+    if (!passed && login_result >= static_cast<u8>(native_login::result::holder_start)) { outcome = login_result; }
+#else
+    if (!passed && login_result > 1) { outcome = login_result; }
+#endif
+#endif
+    const anchor_guest::supervisor_result result{outcome};
     if (!ready || sdk::channel_send_wait(proxy_control.transmit, &result, sizeof(result), anchor_guest::deadline()) != 0) {
         (void)sdk::syscall(10, static_cast<u64>(proxy));
     }

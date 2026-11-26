@@ -1,5 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "generation_guest.hpp"
+#if XOS_PUMPKIN_NATIVE_LOGIN
+#include "native_login.hpp"
+#endif
+#if XOS_PUMPKIN_USER_LOGIN
+#include "disk_test_store.hpp"
+#include "user_login.hpp"
+#endif
 #include "../drivers/uart_16550.hpp"
 
 namespace {
@@ -18,7 +25,8 @@ bool wait_irq(user::uart::driver& uart, u64 end) {
     return ready > 0 && uart.service_irq(static_cast<u64>(ready)) == 0 && clean_line(uart);
 }
 
-bool serial_exchange(user::uart::driver& uart, const packet& request, packet& reply) {
+template<class Frame>
+bool serial_exchange(user::uart::driver& uart, const Frame& request, Frame& reply) {
     const u64 end = deadline();
     if (end == 0) return false;
     const auto* output = reinterpret_cast<const u8*>(&request);
@@ -42,8 +50,15 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     packet ready{}, response{};
     ready.op = operation::ready;
     if (!serial_exchange(uart, ready, response) || response.expected != generation_mark{} ||
-        response.value != generation_mark{} || response.result < static_cast<u8>(scenario::cycle) ||
-        response.result > static_cast<u8>(scenario::stale)) return false;
+        response.value != generation_mark{}) return false;
+    const auto mode = static_cast<scenario>(response.result);
+#if XOS_PUMPKIN_USER_LOGIN
+    if (mode < scenario::user_enroll || mode > scenario::user_revoke) return false;
+    wire_id credential_owner{};
+    bool credential_exchanged = false, credential_slots_cleared = false;
+#else
+    if (mode < scenario::cycle || mode > scenario::stale) return false;
+#endif
     if (sdk::channel_send_wait(supervisor.transmit, &response.result, sizeof(response.result), deadline()) != 0) {
         return false;
     }
@@ -59,14 +74,59 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     if (end == 0) return false;
     for (;;) {
         supervisor_result finish{};
+#if XOS_PUMPKIN_USER_LOGIN
+        user_login::packet credentials{};
+        const i64 report = sdk::ipc_recv(supervisor.receive, &credentials, sizeof(credentials));
+        if (report == sizeof(credentials)) {
+            const auto operation = mode == scenario::user_enroll ? user_login::operation::issue : user_login::operation::submit;
+            if (mode == scenario::user_revoke || credentials.identity.number == 0 ||
+                credentials.identity.scope != disk_test_realm) return false;
+            if (credential_exchanged) {
+                if (credential_slots_cleared || !user_login::header(credentials, operation, 2) ||
+                    !user_login::same_identity(credentials.identity, credential_owner) ||
+                    has_bytes(credentials.key.bytes, secret_bytes) ||
+                    sdk::channel_send_wait(supervisor.transmit, &credentials, sizeof(credentials), deadline()) != 0) return false;
+                credential_slots_cleared = true;
+                continue;
+            }
+            if (!user_login::header(credentials, operation, 1) ||
+                has_bytes(credentials.key.bytes, secret_bytes) != (mode == scenario::user_enroll)) return false;
+            user_login::packet reply{};
+            if (!serial_exchange(uart, credentials, reply) || !user_login::same_identity(reply.identity, credentials.identity) ||
+                has_bytes(reply.key.bytes, secret_bytes) != (mode == scenario::user_login) ||
+                sdk::channel_send_wait(supervisor.transmit, &reply, sizeof(reply), deadline()) != 0) return false;
+            credential_owner = credentials.identity;
+            credential_exchanged = true;
+            continue;
+        } else if (report == sizeof(finish)) {
+            finish.pass = static_cast<u8>(credentials.tag);
+        } else if (report != sdk::ipc_error_empty) {
+            return false;
+        }
+#else
         const i64 report = sdk::ipc_recv(supervisor.receive, &finish, sizeof(finish));
-        if (report == sizeof(finish) && finish.pass <= 1) {
+#endif
+        bool valid = finish.pass <= 1;
+        bool completed = finish.pass == 1;
+#if XOS_PUMPKIN_USER_LOGIN
+        if (finish.pass == user_login::denied && mode == scenario::user_login && credential_exchanged) {
+            valid = true;
+            completed = true;
+        }
+        if (completed && mode != scenario::user_revoke && !credential_slots_cleared) return false;
+#endif
+#if XOS_PUMPKIN_NATIVE_LOGIN
+        using result = xos::user::pumpkin::native_login::result;
+        valid = valid || (finish.pass >= static_cast<u8>(result::holder_start) &&
+                          finish.pass <= static_cast<u8>(result::holder_exit));
+#endif
+        if (report == sizeof(finish) && valid) {
             packet done{}, ack{};
             done.op = operation::finish;
             done.result = finish.pass;
             done.sequence = sequence + 1;
             return serial_exchange(uart, done, ack) && ack.result == 0 &&
-                ack.expected == generation_mark{} && ack.value == generation_mark{} && finish.pass != 0;
+                ack.expected == generation_mark{} && ack.value == generation_mark{} && completed;
         }
         if (report != sdk::ipc_error_empty) return false;
 

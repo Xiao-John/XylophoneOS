@@ -67,10 +67,10 @@ def stage_interpreter(binary, work, root, build, metadata):
             'objcopy_sha256': expected, 'layout': layout}
 
 
-def stage_library(archive, work, root):
+def stage_library(archive, port, work, root):
     source = work / 'source'
     extract_source(archive, source)
-    apply_patches(source)
+    apply_patches(source, port=port)
     lib = source / 'Lib'
     output = root / LIBRARY
     output.parent.mkdir(parents=True)
@@ -112,13 +112,19 @@ def package(args):
     lock = load_json(PORT / 'source_lock.json')
     digest = lock['sha256']
     require(build['version'] == lock['version'] == '3.14.9' and
-            build['source_archive_sha256'] == digest == sha_file(args.archive), 'CPython source archive differs')
+            build['source_archive_sha256'] == digest, 'CPython source archive differs')
 
     with tempfile.TemporaryDirectory(prefix='cpython_glibc_xpk_') as folder:
         work = Path(folder)
         root = work / 'root'
+        archive = work / 'cpython.tar.xz'
+        shutil.copyfile(args.archive, archive)
+        require(sha_file(archive) == digest, 'CPython source archive differs')
+        port_snapshot = work / 'port'
+        shutil.copytree(PORT, port_snapshot)
+        require(hash_tree(port_snapshot) == port, 'CPython source patches changed before staging')
         elf = stage_interpreter(args.cpython_build / 'target_build/python.exe', work, root, build, metadata)
-        library = stage_library(args.archive, work, root)
+        library = stage_library(archive, port_snapshot, work, root)
         license_root = 'usr/share/licenses/' + PACKAGE + '/'
         licenses = []
         for source, name in [(work / 'source/LICENSE', 'cpython/LICENSE'), (ROOT / 'LICENSE', 'xos/LICENSE'),

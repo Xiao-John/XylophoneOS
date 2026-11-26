@@ -102,6 +102,16 @@ def main():
                     absent="AssertionError",
                 ),
                 check(
+                    "startup_prefix_and_path_metadata",
+                    "/usr/bin/python3 /work/py1/getpath_metadata.py",
+                    "PY1_GETPATH_METADATA_OK",
+                ),
+                check(
+                    "newlib_bare_command_executable_lookup",
+                    "python3 /work/py1/getpath_metadata.py",
+                    "PY1_GETPATH_METADATA_OK",
+                ),
+                check(
                     "selected_stdlib_closure",
                     "python3 /work/py1/stdlib_probe.py",
                     "PY1_STDLIB_OK json re collections itertools functools math 雪",

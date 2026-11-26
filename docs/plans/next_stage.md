@@ -152,3 +152,8 @@ ABI 表通过。普通配置验证与各专项配置的独立回执共同构成�
 默认选择、Pumpkin 独立代际提供者和 GNU 解释器固定依赖闭包。该提交的新普通镜像
 通过 79 项客体、10 项许可材料和 ABI 检查。各模块的专项回执由对应构建维护。
 [普通组合](../work_log/56b3ada5_next_stage_combined.md)
+
+主线 `abf0fc0a` 纳入统一 glibc SDK 的 CPython stock 包验收、GNU C++ 固定依赖闭包
+和 ClarkE 原生 HTTPS 后，重新构建普通镜像 `8863999ce1a57285`。79 项普通客体检查、
+10 项许可材料和 ABI 表核对通过。上述三项能力以各自的专项回执为准。
+[普通组合](../work_log/abf0fc0a_next_stage_combined.md)

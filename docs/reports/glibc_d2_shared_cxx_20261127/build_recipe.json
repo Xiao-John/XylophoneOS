@@ -1,0 +1,198 @@
+{
+  "status": "built_not_run",
+  "target": "x86_64-unknown-xos",
+  "commands": {
+    "signature": [
+      "gpgv",
+      "--keyring",
+      "${XOS_GCC_INPUTS}/gnu-keyring.gpg",
+      "--status-fd",
+      "1",
+      "${XOS_GCC_INPUTS}/gcc-16.2.0.tar.xz.sig",
+      "${XOS_GCC_INPUTS}/gcc-16.2.0.tar.xz"
+    ],
+    "build-triplet": [
+      "${XOS_CXX_BUILD}/work/gcc-16.2.0/config.guess"
+    ],
+    "target-triplet": [
+      "${XOS_CXX_BUILD}/work/gcc-16.2.0/config.sub",
+      "x86_64-unknown-xos"
+    ],
+    "glibc-atexit": [
+      "/usr/bin/make",
+      "-C",
+      "${XOS_GLIBC_SOURCE}/stdlib",
+      "objdir=${XOS_GNU_BUILD_COPY}",
+      "-j1",
+      "${XOS_GNU_BUILD_COPY}/stdlib/atexit.oS"
+    ],
+    "gcc-plugin-directory": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "-print-file-name=plugin"
+    ],
+    "configure-libgcc": [
+      "${XOS_CXX_BUILD}/work/gcc-16.2.0/libgcc/configure",
+      "--build=aarch64-unknown-linux-gnu",
+      "--host=x86_64-unknown-xos",
+      "--enable-shared",
+      "--disable-gcov"
+    ],
+    "gcc-target-headers": [
+      "sh",
+      "${XOS_CXX_BUILD}/work/gcc-16.2.0/gcc/mkconfig.sh",
+      "tconfig.h"
+    ],
+    "build-libgcc": [
+      "/usr/bin/make",
+      "-j1",
+      "gcc_objdir=${XOS_CXX_BUILD}/work/gcc",
+      "SHLIB_LC=-lc",
+      "LIBGCC2_DEBUG_CFLAGS=-g0",
+      "libgcc_s.so"
+    ],
+    "build-libm": [
+      "/usr/bin/make",
+      "-C",
+      "${XOS_GLIBC_SOURCE}/math",
+      "objdir=${XOS_GNU_BUILD_COPY}",
+      "-j1",
+      "-o",
+      "${XOS_GNU_BUILD_COPY}/libc.so",
+      "-o",
+      "${XOS_GNU_BUILD_COPY}/elf/ld.so",
+      "link-libc-deps=${XOS_GNU_BUILD_COPY}/libc.so ${XOS_GNU_BUILD_COPY}/elf/ld.so ${XOS_CXX_BUILD}/work/target/libgcc/libgcc_s.so.1",
+      "link-libc-args=${XOS_GNU_BUILD_COPY}/libc.so -Wl,--as-needed ${XOS_CXX_BUILD}/work/target/libgcc/libgcc_s.so.1 ${XOS_GNU_BUILD_COPY}/elf/ld.so",
+      "LDFLAGS-m.so=-nostdlib -Wl,-shared,--eh-frame-hdr,-z,now,-z,relro,-z,noexecstack,-z,nomark-plt,-z,nopack-relative-relocs,-z,max-page-size=8192,-z,separate-code",
+      "${XOS_GNU_BUILD_COPY}/math/libm.so"
+    ],
+    "configure-libstdcxx": [
+      "${XOS_CXX_BUILD}/work/gcc-16.2.0/libstdc++-v3/configure",
+      "--build=aarch64-unknown-linux-gnu",
+      "--host=x86_64-unknown-xos",
+      "--prefix=/usr",
+      "--with-gxx-include-dir=/usr/include/c++/16.2.0",
+      "--disable-multilib",
+      "--enable-shared",
+      "--disable-static",
+      "--disable-nls",
+      "--disable-libstdcxx-pch",
+      "--enable-libstdcxx-threads=yes",
+      "--enable-clocale=generic",
+      "--disable-libstdcxx-backtrace",
+      "--disable-libstdcxx-filesystem-ts"
+    ],
+    "build-libstdcxx": [
+      "/usr/bin/make",
+      "-j1"
+    ],
+    "install-headers-include": [
+      "/usr/bin/make",
+      "-C",
+      "${XOS_CXX_BUILD}/work/std/include",
+      "install",
+      "DESTDIR=${XOS_CXX_BUILD}/work/install"
+    ],
+    "install-headers-libsupcxx": [
+      "/usr/bin/make",
+      "-C",
+      "${XOS_CXX_BUILD}/work/std/libsupc++",
+      "install-data",
+      "DESTDIR=${XOS_CXX_BUILD}/work/install"
+    ]
+  },
+  "tools": {
+    "gcc": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "g++": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "as": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+      "version_exit_code": 0,
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "ar": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+      "sha256": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+      "version_exit_code": 0,
+      "version": "GNU ar (GNU Binutils) 2.47.20260726"
+    },
+    "ranlib": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ranlib",
+      "sha256": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d",
+      "version_exit_code": 0,
+      "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
+    },
+    "nm": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+      "sha256": "422d96cfd2867a90713df8881cd9f7cbb5799bf0f776054e5f0438a99360439c",
+      "version_exit_code": 0,
+      "version": "GNU nm (GNU Binutils) 2.47.20260726"
+    },
+    "objdump": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objdump",
+      "sha256": "5831b76dd40f79ea722035a9cbf758d128c1346afb31d9719a328db518936d18",
+      "version_exit_code": 0,
+      "version": "GNU objdump (GNU Binutils) 2.47.20260726"
+    },
+    "strip": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-strip",
+      "sha256": "c70271b11778b8bbe338095e1a2a40a9ec2f38746b343eb08d6a2671e376ed01",
+      "version_exit_code": 0,
+      "version": "GNU strip (GNU Binutils) 2.47.20260726"
+    },
+    "readelf": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "sha256": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42",
+      "version_exit_code": 0,
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "bound_inputs": {
+    "${XOS_C_SDK}/manifest.json": "57e6da1dca1ab3fc4a8ed366eedcbc8158197807ed702c277c1dcc88929aa497",
+    "${XOS_GNU_BUILD_COPY}/libc.so": "b1cd3f0151632d286d40abb117b343ec17a1fb3f7c54d1473cd3ef6f77ca9035",
+    "${XOS_GNU_BUILD_COPY}/elf/ld.so": "12998ce57925fcdce984bdce2c2d566175389374e762aaefdf8579d6cef002a7",
+    "${XOS_GNU_BUILD_COPY}/csu/Scrt1.o": "344be1ef68dd45689b7294de356218dc5b16cbf82bd3b7367a40bacd9609b09a",
+    "${XOS_GNU_BUILD_COPY}/csu/crti.o": "cf923e8746c929a3200b2eeb07fe8ad8c85727222aa78d1999272882a5a98eef",
+    "${XOS_GNU_BUILD_COPY}/csu/crtn.o": "b018ccd5c25036594e7fa3846d7dd4c4ea66210b341d33f39875fd1a7a54f7ae",
+    "${XOS_GCC_PIC_CRT}/crtbeginS.o": "d1f9b26b212fe61acae370cae0a61f82632b1bb6d074e4bc8ce1edce3bbd6ca4",
+    "${XOS_GCC_PIC_CRT}/crtendS.o": "2299f1c03b9966209362535ea7ee4a15bc22c11e922820ceccbeb7ae6d28e3d8"
+  },
+  "headers_count": 857,
+  "plugin_headers": {
+    "auto-host.h": "38d08ab98439a15627e615f42f818e957c7f4efbb074b1f8ed75785ba992a8c6",
+    "tm.h": "473e8d222433c051eb764fc340995d7bf3290d671ce103f0dbd5d999d8674d40",
+    "tsystem.h": "a91af19e6e85f77c4b5194f43f348c8841738207844c36d66c347bbee0de32fd",
+    "coretypes.h": "9d46c5017b22872206f8fa0961b23c916dde1bfd23b33ca221bbff333c7d1d87"
+  },
+  "artifacts": {
+    "atexit.oS": "41e4b1e6792d1c273f99442578fdec789eca2414403ba311905882b4332741ef",
+    "libgcc_s.so.1": "f0c37dbe69e804917b898de71e5bee70c7c35e42915f02e5beb8a490170ddd4b",
+    "libm.so.0.1": "4aed5253dffa17315047fac8cb76bdca4168b68db86d8ffe509e3e886787352b",
+    "libstdc++.so.6": "cd9ca2d8acc53bea8136175bf8ac2b70844ae5a1f796a74e968bf9a444feea8f"
+  }
+}

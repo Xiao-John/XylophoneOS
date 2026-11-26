@@ -1,0 +1,468 @@
+{
+  "status": "passed_subset",
+  "scope": "private native GNU interpreter and a versioned application",
+  "case": "shared-cxx",
+  "language": "cpp",
+  "system_build_id": "8d8d22c07d5f48d2",
+  "commands": {
+    "strip_debug_libc": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_GNU_BUILD}/libc.so",
+      "${XOS_REPLAY}/shared-cxx/dependency.so"
+    ],
+    "strip_debug_interpreter": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_GNU_BUILD}/elf/ld.so",
+      "${XOS_REPLAY}/shared-cxx/interpreter.so"
+    ],
+    "strip_1": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_CXX_BUILD}/lib/libgcc_s.so.1",
+      "${XOS_REPLAY}/shared-cxx/dependency-1.so"
+    ],
+    "strip_2": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_CXX_BUILD}/lib/libm.so.0.1",
+      "${XOS_REPLAY}/shared-cxx/dependency-2.so"
+    ],
+    "strip_3": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_CXX_BUILD}/lib/libstdc++.so.6",
+      "${XOS_REPLAY}/shared-cxx/dependency-3.so"
+    ],
+    "compile_module": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "-nostdinc++",
+      "-std=gnu++20",
+      "-isystem",
+      "${XOS_CXX_BUILD}/include/c++/16.2.0",
+      "-isystem",
+      "${XOS_CXX_BUILD}/include/c++/16.2.0/x86_64-unknown-xos",
+      "-isystem",
+      "${XOS_CXX_BUILD}/include/c++/16.2.0/backward",
+      "--sysroot=${XOS_C_SDK}/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-isystem",
+      "${XOS_C_SDK}/sysroot/usr/include",
+      "-isystem",
+      "${XOS_C_SDK}/sysroot/usr/lib/compiler-include",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-fPIC",
+      "-c",
+      "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_cxx_dependency.cpp",
+      "-o",
+      "${XOS_REPLAY}/shared-cxx/sample.o"
+    ],
+    "link_module": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--build-id=none",
+      "--no-undefined",
+      "-z",
+      "noexecstack",
+      "-z",
+      "now",
+      "-z",
+      "relro",
+      "-z",
+      "max-page-size=8192",
+      "-z",
+      "separate-code",
+      "-rpath-link",
+      "${XOS_GNU_BUILD}/elf",
+      "--eh-frame-hdr",
+      "-rpath-link",
+      "${XOS_CXX_BUILD}/lib",
+      "-shared",
+      "-soname",
+      "libsample.so",
+      "-o",
+      "${XOS_REPLAY}/shared-cxx/sample.so",
+      "${XOS_GNU_BUILD}/csu/crti.o",
+      "${XOS_GCC_PIC_CRT}/crtbeginS.o",
+      "${XOS_REPLAY}/shared-cxx/sample.o",
+      "${XOS_CXX_BUILD}/lib/libstdc++.so.6",
+      "${XOS_CXX_BUILD}/lib/libgcc_s.so.1",
+      "${XOS_GNU_BUILD}/libc.so",
+      "${XOS_GNU_BUILD}/elf/ld.so",
+      "${XOS_GCC_PIC_CRT}/crtendS.o",
+      "${XOS_GNU_BUILD}/csu/crtn.o"
+    ],
+    "compile_app": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "-nostdinc++",
+      "-std=gnu++20",
+      "-isystem",
+      "${XOS_CXX_BUILD}/include/c++/16.2.0",
+      "-isystem",
+      "${XOS_CXX_BUILD}/include/c++/16.2.0/x86_64-unknown-xos",
+      "-isystem",
+      "${XOS_CXX_BUILD}/include/c++/16.2.0/backward",
+      "--sysroot=${XOS_C_SDK}/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-isystem",
+      "${XOS_C_SDK}/sysroot/usr/include",
+      "-isystem",
+      "${XOS_C_SDK}/sysroot/usr/lib/compiler-include",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-fPIE",
+      "-fno-builtin",
+      "-c",
+      "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_cxx_application.cpp",
+      "-o",
+      "${XOS_REPLAY}/shared-cxx/application.o"
+    ],
+    "link_app": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--build-id=none",
+      "--no-undefined",
+      "-z",
+      "noexecstack",
+      "-z",
+      "now",
+      "-z",
+      "relro",
+      "-z",
+      "max-page-size=8192",
+      "-z",
+      "separate-code",
+      "-rpath-link",
+      "${XOS_GNU_BUILD}/elf",
+      "--eh-frame-hdr",
+      "-rpath-link",
+      "${XOS_CXX_BUILD}/lib",
+      "-pie",
+      "-e",
+      "_start",
+      "--dynamic-linker",
+      "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1",
+      "-o",
+      "${XOS_REPLAY}/shared-cxx/main.pie",
+      "${XOS_GNU_BUILD}/csu/Scrt1.o",
+      "${XOS_GNU_BUILD}/csu/crti.o",
+      "${XOS_GCC_PIC_CRT}/crtbeginS.o",
+      "${XOS_REPLAY}/shared-cxx/application.o",
+      "${XOS_CXX_BUILD}/lib/atexit.oS",
+      "${XOS_REPLAY}/shared-cxx/sample.so",
+      "${XOS_CXX_BUILD}/lib/libstdc++.so.6",
+      "${XOS_CXX_BUILD}/lib/libgcc_s.so.1",
+      "${XOS_GNU_BUILD}/libc.so",
+      "${XOS_GCC_PIC_CRT}/crtendS.o",
+      "${XOS_GNU_BUILD}/csu/crtn.o"
+    ],
+    "elf_metadata": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "-hW",
+      "-lW",
+      "-dW",
+      "-VW",
+      "${XOS_REPLAY}/shared-cxx/main.pie",
+      "${XOS_REPLAY}/shared-cxx/interpreter.so",
+      "${XOS_REPLAY}/shared-cxx/dependency.so",
+      "${XOS_REPLAY}/shared-cxx/dependency-1.so",
+      "${XOS_REPLAY}/shared-cxx/dependency-2.so",
+      "${XOS_REPLAY}/shared-cxx/dependency-3.so",
+      "${XOS_REPLAY}/shared-cxx/sample.so"
+    ],
+    "compile_bootstrap": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "--sysroot=${XOS_C_SDK}/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-isystem",
+      "${XOS_C_SDK}/sysroot/usr/include",
+      "-isystem",
+      "${XOS_C_SDK}/sysroot/usr/lib/compiler-include",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-nostdinc++",
+      "-std=gnu++20",
+      "-ffreestanding",
+      "-fno-pie",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-DD1_ACTUAL_INTERPRETER",
+      "-I",
+      "${XOS_SYSTEM}/sdk/include",
+      "-I",
+      "${XOS_SOURCE}/src/user/loader/glibc_d1",
+      "-I",
+      "${XOS_SOURCE}/src/ports/glibc/sysdeps/xos",
+      "-I",
+      "${XOS_REPLAY}/shared-cxx",
+      "-c",
+      "${XOS_SOURCE}/tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp",
+      "-o",
+      "${XOS_REPLAY}/shared-cxx/entry.o"
+    ],
+    "link_bootstrap": [
+      "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--gc-sections",
+      "-z",
+      "noexecstack",
+      "-z",
+      "max-page-size=4096",
+      "--build-id=none",
+      "-Map",
+      "${XOS_REPLAY}/shared-cxx/link.map",
+      "-T",
+      "${XOS_C_SDK}/sysroot/user.ld",
+      "-o",
+      "${XOS_REPLAY}/shared-cxx/entry.elf",
+      "${XOS_C_SDK}/sysroot/usr/lib/xos_start.o",
+      "${XOS_REPLAY}/shared-cxx/entry.o",
+      "${XOS_GNU_BUILD}/elf/xos_file_session.os",
+      "--start-group",
+      "${XOS_SYSTEM}/sdk/lib/libxos_loader.a",
+      "${XOS_SYSTEM}/sdk/lib/libxos.a",
+      "${XOS_C_SDK}/sysroot/usr/lib/libgcc.a",
+      "--end-group"
+    ]
+  },
+  "tools": {
+    "gcc": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "g++": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "readelf": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "sha256": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42",
+      "version_exit_code": 0,
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+    },
+    "objcopy": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "sha256": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+      "version_exit_code": 0,
+      "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "sanitized_environment": [],
+  "sdk_manifest_sha256": "57e6da1dca1ab3fc4a8ed366eedcbc8158197807ed702c277c1dcc88929aa497",
+  "sdk_tree_sha256": "f2d825d0dea9f3cc3a834167f71a495b88e3195d8eb072b73e689dab20b8ad56",
+  "system_manifest_sha256": "4319772c3d9e586d67c9dc5968de192966eb533af572f0342d66f33b7deb545b",
+  "iso_sha256": "9b4a01a586845682f1acc7f2f589f4f10e085e11d75292292faac36dfab8ac1a",
+  "dash_sha256": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+  "dash_receipt_sha256": "2096f94e3931fdfc91005aed98b9096dc008dbb41a20493f858d3653431fa19f",
+  "runner_sha256": "c83c0ddb7c2185b40d8adb102907d6969119243631505df3f1beef307eebe35f",
+  "linked_originals": {
+    "${XOS_GNU_BUILD}/libc.so": "b1cd3f0151632d286d40abb117b343ec17a1fb3f7c54d1473cd3ef6f77ca9035",
+    "${XOS_GNU_BUILD}/elf/ld.so": "12998ce57925fcdce984bdce2c2d566175389374e762aaefdf8579d6cef002a7",
+    "${XOS_GNU_BUILD}/elf/xos_file_session.os": "cf56cbe1b287203166fbfe3c43fa597b446323f7832065de0574a6a90176e604",
+    "${XOS_GNU_BUILD}/csu/Scrt1.o": "344be1ef68dd45689b7294de356218dc5b16cbf82bd3b7367a40bacd9609b09a",
+    "${XOS_GNU_BUILD}/csu/crti.o": "cf923e8746c929a3200b2eeb07fe8ad8c85727222aa78d1999272882a5a98eef",
+    "${XOS_GNU_BUILD}/csu/crtn.o": "b018ccd5c25036594e7fa3846d7dd4c4ea66210b341d33f39875fd1a7a54f7ae",
+    "${XOS_CXX_BUILD}/manifest.json": "3aab103a3c08c6851173e8508305730afed872d1a0708786e1f2ca6d865605d9",
+    "${XOS_CXX_BUILD}/lib/libgcc_s.so.1": "f0c37dbe69e804917b898de71e5bee70c7c35e42915f02e5beb8a490170ddd4b",
+    "${XOS_CXX_BUILD}/lib/libm.so.0.1": "4aed5253dffa17315047fac8cb76bdca4168b68db86d8ffe509e3e886787352b",
+    "${XOS_CXX_BUILD}/lib/libstdc++.so.6": "cd9ca2d8acc53bea8136175bf8ac2b70844ae5a1f796a74e968bf9a444feea8f",
+    "${XOS_CXX_BUILD}/lib/atexit.oS": "41e4b1e6792d1c273f99442578fdec789eca2414403ba311905882b4332741ef"
+  },
+  "sources": {
+    "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_cxx_application.cpp": "6936ac6fe4668828db711a8acd91de2345dee2cda3be7c3c797a8b2f3fdcc604",
+    "${XOS_SOURCE}/tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp": "7582d097fbeb5bae4930a0263ff0a5aed25de547199977e14131ac91ff0192f2",
+    "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_cxx_dependency.cpp": "8fd607ebdcf590d25f74366f166c780cb53bad025358c0ffce4ffd712121dd26",
+    "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_cxx_exception.hpp": "cc59180935acb5276ef3d1478ace819b99493be12b1ea6eba63b9bd8d2295456"
+  },
+  "pic_crt": {
+    "crtbeginS.o": "d1f9b26b212fe61acae370cae0a61f82632b1bb6d074e4bc8ce1edce3bbd6ca4",
+    "crtendS.o": "2299f1c03b9966209362535ea7ee4a15bc22c11e922820ceccbeb7ae6d28e3d8"
+  },
+  "dependency_graph": {
+    "main.pie": [
+      "libsample.so",
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libc.so.0.1"
+    ],
+    "libc.so.0.1": [
+      "ld.so.1"
+    ],
+    "libgcc_s.so.1": [
+      "libc.so.0.1"
+    ],
+    "libm.so.0.1": [
+      "libc.so.0.1",
+      "libgcc_s.so.1"
+    ],
+    "libstdc++.so.6": [
+      "libm.so.0.1",
+      "libgcc_s.so.1",
+      "libc.so.0.1",
+      "ld.so.1"
+    ],
+    "libsample.so": [
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libc.so.0.1",
+      "ld.so.1"
+    ]
+  },
+  "images": {
+    "main": {
+      "entry": 17592188150416,
+      "phnum": 12,
+      "sha256": "2c04420be29b30ebd7f04c10ce3d590b9e3c423367ace67c5d7b516e3c473f61",
+      "span": 36864
+    },
+    "interpreter": {
+      "entry": 26389352914464,
+      "phnum": 7,
+      "sha256": "c07f075242347d850fd85ba503ecb92d43de3f41073446d95f648de8fd782bea",
+      "span": 237568
+    },
+    "dependency": {
+      "entry": 21990769572064,
+      "phnum": 12,
+      "sha256": "fe107347b5312f678aee0b4e7aa864c23e25e2d81849f82957b25f47cb79bf7b",
+      "span": 1609728
+    },
+    "dependency_1": {
+      "entry": 21990802980864,
+      "phnum": 8,
+      "sha256": "1797784df1ff3d2f31f53067b02b8a0b6a55d679de2984a5d07745240333d5bb",
+      "span": 200704
+    },
+    "dependency_2": {
+      "entry": 21990836535296,
+      "phnum": 10,
+      "sha256": "4df09851f5cd66deba5a9054ecd91c60f77a247cd6f6fc89855502425438c9ad",
+      "span": 847872
+    },
+    "dependency_3": {
+      "entry": 21990870089728,
+      "phnum": 9,
+      "sha256": "c5d8c32b8f187ecc49a8c630b940388d1583aec43f21ba4c54a391e3f4de7e5e",
+      "span": 2789376
+    },
+    "sample": {
+      "entry": 21990903644160,
+      "phnum": 9,
+      "sha256": "04b0b9a6493083d6b93cd01687c442e06415c714c5ecb93f6a390b6d666797f9",
+      "span": 36864
+    }
+  },
+  "startup_budget_seconds": 90,
+  "early_heap_pages": 128,
+  "bootstrap_sha256": "2f567e2a1a353387169c607ce0794952c80f1a1062423c3b2a2287f1d70d1278",
+  "bootstrap_program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 17281,
+      "memory_size": 17281,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1073762304,
+      "file_size": 2736,
+      "memory_size": 2736,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1073766400,
+      "file_size": 0,
+      "memory_size": 8224,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 0,
+      "file_size": 0,
+      "memory_size": 0,
+      "alignment": 8
+    }
+  ],
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_SYSTEM}/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_HOST_TEMP}/xos_d1_native_application_kak8sec6/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "guest_command_seconds": 32.401,
+  "guest_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD2_SHARED_CXX_OK throw=DSO catch=PIE rtti=shared unwind=complete worker=unsupported\nD2_SHARED_CXX_TLS_DTOR\nD2_SHARED_CXX_ATEXIT\n[task] event=reclaimed pid=11 pages=1517\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "bb4f2c44714595dbdb763f9e40b36e30dd31a64b38d17f7ace49efa7fd940cc9"
+}

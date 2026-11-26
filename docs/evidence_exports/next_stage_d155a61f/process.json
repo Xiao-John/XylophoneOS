@@ -1,0 +1,165 @@
+{
+  "status": "passed_subset",
+  "suite": "process",
+  "runs": [
+    {
+      "case": "g3_spawn",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 10.012129515998822,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "/bin/g3_spawn parent\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x000000000035f000\r\n[loader] started pid=10 file=/bin/g3_spawn\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x0000000000653000\r\n[process] event=wait_blocked parent=10 child=11\r\nGLIBC_SPAWN_CHILD_0\n[task] event=reclaimed pid=11 pages=277\r\n[process] event=started pid=12 parent=10\r\n[process] pid=12 address_space=0x0000000000653000\r\n[process] event=wait_blocked parent=10 child=0\r\nGLIBC_SPAWN_CHILD_23\n[task] event=reclaimed pid=12 pages=277\r\nGLIBC_SPAWN_WAIT_PASS\n[task] event=reclaimed pid=10 pages=277\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_spawn_denied",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.4963803850005206,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_spawn denied\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x000000000035f000\r\n[loader] started pid=13 file=/bin/g3_spawn\n[process] event=wait_blocked parent=7 child=13\r\nGLIBC_SPAWN_DENIED_PASS\n[task] event=reclaimed pid=13 pages=277\r\n[wait] pid=13 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_spawn_dash",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 10.090467899000942,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "dash /g3_spawn/spawn_via_dash.sh\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x000000000035f000\r\n[loader] started pid=14 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=14\r\n[process] event=started pid=15 parent=14\r\n[process] pid=15 address_space=0x00000000005e2000\r\n[process] event=wait_blocked parent=14 child=15\r\n[process] event=started pid=16 parent=15\r\n[process] pid=16 address_space=0x00000000006f7000\r\n[process] event=wait_blocked parent=15 child=16\r\nGLIBC_SPAWN_CHILD_0\n[task] event=reclaimed pid=16 pages=277\r\n[process] event=started pid=17 parent=15\r\n[process] pid=17 address_space=0x00000000006f7000\r\n[process] event=wait_blocked parent=15 child=0\r\nGLIBC_SPAWN_CHILD_23\n[task] event=reclaimed pid=17 pages=277\r\nGLIBC_SPAWN_WAIT_PASS\n[task] event=reclaimed pid=15 pages=277\r\nGLIBC_SPAWN_DASH_RC=0\n[task] event=reclaimed pid=14 pages=164\r\n[wait] pid=14 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_spawn",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 10.34375717200237,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "/bin/g3_spawn parent\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x000000000035f000\r\n[loader] started pid=18 file=/bin/g3_spawn\n[process] event=wait_blocked parent=7 child=18\r\n[process] event=started pid=19 parent=18\r\n[process] pid=19 address_space=0x0000000000653000\r\n[process] event=wait_blocked parent=18 child=19\r\nGLIBC_SPAWN_CHILD_0\n[task] event=reclaimed pid=19 pages=277\r\n[process] event=started pid=20 parent=18\r\n[process] pid=20 address_space=0x0000000000653000\r\n[process] event=wait_blocked parent=18 child=0\r\nGLIBC_SPAWN_CHILD_23\n[task] event=reclaimed pid=20 pages=277\r\nGLIBC_SPAWN_WAIT_PASS\n[task] event=reclaimed pid=18 pages=277\r\n[wait] pid=18 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_spawn_denied",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.5694376339997689,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_spawn denied\n[process] event=started pid=21 parent=7\r\n[process] pid=21 address_space=0x000000000035f000\r\n[loader] started pid=21 file=/bin/g3_spawn\n[process] event=wait_blocked parent=7 child=21\r\nGLIBC_SPAWN_DENIED_PASS\n[task] event=reclaimed pid=21 pages=277\r\n[wait] pid=21 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_spawn_dash",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 10.34803068399924,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "dash /g3_spawn/spawn_via_dash.sh\n[process] event=started pid=22 parent=7\r\n[process] pid=22 address_space=0x000000000035f000\r\n[loader] started pid=22 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=22\r\n[process] event=started pid=23 parent=22\r\n[process] pid=23 address_space=0x00000000005e2000\r\n[process] event=wait_blocked parent=22 child=23\r\n[process] event=started pid=24 parent=23\r\n[process] pid=24 address_space=0x00000000006f7000\r\n[process] event=wait_blocked parent=23 child=24\r\nGLIBC_SPAWN_CHILD_0\n[task] event=reclaimed pid=24 pages=277\r\n[process] event=started pid=25 parent=23\r\n[process] pid=25 address_space=0x00000000006f7000\r\n[process] event=wait_blocked parent=23 child=0\r\nGLIBC_SPAWN_CHILD_23\n[task] event=reclaimed pid=25 pages=277\r\nGLIBC_SPAWN_WAIT_PASS\n[task] event=reclaimed pid=23 pages=277\r\nGLIBC_SPAWN_DASH_RC=0\n[task] event=reclaimed pid=22 pages=164\r\n[wait] pid=22 kind=exited code=0\nxsh> "
+    }
+  ],
+  "qmp": "disabled; serial-only qualification",
+  "active_worker_normal_exit": "native bounded cleanup window; qualified only by exit suite",
+  "dash_entry": "passed",
+  "system_build_id": "7ff8eba2295e9bf9",
+  "image_sha256": "fcdb84345d8af6a2d71f940ec04c25a25968caac998e4f7ad719a40855af6752",
+  "system_manifest_sha256": "cfcd3434adc58b244e25106b688d75857fa68f5367a170444babcf20531724bb",
+  "glibc_manifest_sha256": "4b6df9f51b5c72fd0091cd97bacbc753590ef09a18f40387947c8176c8627b37",
+  "sdk_profile": "xos_glibc_static_research_v1",
+  "elfs": {
+    "g3_spawn": {
+      "source": "glibc_g3/process_spawn.c",
+      "source_sha256": "443d190a92d6ee5cd6944fdbe1e84a42227d04fc78aaed17b8d9bdab65de0b82",
+      "elf_sha256": "d9c17c36f103107cabd7d86cb7a96267f6da23d6de51a9e1f672cb68a0269e70",
+      "build_command": [
+        "/usr/bin/python3",
+        "/work/source/scripts/build_glibc_program.py",
+        "--sdk",
+        "/work/glibc-c/sysroot",
+        "--source",
+        "/work/source/tests/fixtures/glibc_g3/process_spawn.c",
+        "--output",
+        "/results/process/g3_spawn.elf"
+      ],
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    }
+  },
+  "runner_sha256": "dae7e9a1a15382c37bf252ab9803f23fa08d5d40a02533248215d299c809d4c9",
+  "dash_binding": {
+    "receipt": "build/dash-legacy.json",
+    "receipt_sha256": "29ee5cba5acf28708e4800044cec7538d1ddd69b77474850ca2a38fdf0984889",
+    "elf": "/work/source/.cache/xos_seed/dash/ef65e5cc020a8786d168/build/src/dash.runtime",
+    "elf_sha256": "94be9cc12698f6da03be0737e938f0c3d1f42061c3f89f3bcec869fcfc191067",
+    "sdk_manifest_sha256": "7a8b41f27bee822b32607e39aaeea7e6c527fe83a2c7f78fb1e20bdb96d89766"
+  },
+  "spawn_dash_script_sha256": "343a282c86a2769e3b6ace1835fda8ad651f54fad2104a7e95ab14c47b6db106",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_SYSTEM_BUILD}/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_GUEST_WORK}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline": [
+    129698,
+    3,
+    1
+  ],
+  "serial_sha256": "6eecbf1f131d13b543225b950efce23bdbda936f568b5a53337931afa6e3db88"
+}

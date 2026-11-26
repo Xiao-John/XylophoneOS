@@ -1,0 +1,101 @@
+{
+  "status": "passed_subset",
+  "suite": "pipe",
+  "runs": [
+    {
+      "case": "g3_pipe",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 5.209930453002016,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "/bin/g3_pipe\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x000000000035f000\r\n[loader] started pid=10 file=/bin/g3_pipe\n[process] event=wait_blocked parent=7 child=10\r\nGLIBC_PIPE_NONBLOCK_PASS\nGLIBC_PIPE_CAPACITY_PASS\nGLIBC_PIPE_THREAD_STDIO_PASS\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x0000000000658000\r\n[process] event=wait_blocked parent=10 child=11\r\n[task] event=reclaimed pid=11 pages=282\r\nGLIBC_PIPE_CLOEXEC_PASS\n[task] event=reclaimed pid=10 pages=282\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_pipe",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 5.193959931999416,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "/bin/g3_pipe\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x000000000035f000\r\n[loader] started pid=12 file=/bin/g3_pipe\n[process] event=wait_blocked parent=7 child=12\r\nGLIBC_PIPE_NONBLOCK_PASS\nGLIBC_PIPE_CAPACITY_PASS\nGLIBC_PIPE_THREAD_STDIO_PASS\n[process] event=started pid=13 parent=12\r\n[process] pid=13 address_space=0x0000000000658000\r\n[process] event=wait_blocked parent=12 child=13\r\n[task] event=reclaimed pid=13 pages=282\r\nGLIBC_PIPE_CLOEXEC_PASS\n[task] event=reclaimed pid=12 pages=282\r\n[wait] pid=12 kind=exited code=0\nxsh> "
+    }
+  ],
+  "qmp": "disabled; serial-only qualification",
+  "active_worker_normal_exit": "native bounded cleanup window; qualified only by exit suite",
+  "dash_entry": "not_run",
+  "system_build_id": "7ff8eba2295e9bf9",
+  "image_sha256": "fcdb84345d8af6a2d71f940ec04c25a25968caac998e4f7ad719a40855af6752",
+  "system_manifest_sha256": "cfcd3434adc58b244e25106b688d75857fa68f5367a170444babcf20531724bb",
+  "glibc_manifest_sha256": "4b6df9f51b5c72fd0091cd97bacbc753590ef09a18f40387947c8176c8627b37",
+  "sdk_profile": "xos_glibc_static_research_v1",
+  "elfs": {
+    "g3_pipe": {
+      "source": "glibc_g3/pipe_probe.c",
+      "source_sha256": "8964e5351b7fc632b3bf80cd1e3103845478df49e75724edf5bd19fb99f2d1f7",
+      "elf_sha256": "3999c14c1b39615f7f1ea9278cea043f24d2ac21e6712ddf761720435c82cbf6",
+      "build_command": [
+        "/usr/bin/python3",
+        "/work/source/scripts/build_glibc_program.py",
+        "--sdk",
+        "/work/glibc-c/sysroot",
+        "--source",
+        "/work/source/tests/fixtures/glibc_g3/pipe_probe.c",
+        "--output",
+        "/results/pipe/g3_pipe.elf"
+      ],
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    }
+  },
+  "runner_sha256": "dae7e9a1a15382c37bf252ab9803f23fa08d5d40a02533248215d299c809d4c9",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_SYSTEM_BUILD}/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_GUEST_WORK}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline": [
+    129698,
+    3,
+    1
+  ],
+  "serial_sha256": "d6ae1f54e8c3d2db124bb40e174578b2048e066a5dad9025d3b2aea4ffd88426"
+}

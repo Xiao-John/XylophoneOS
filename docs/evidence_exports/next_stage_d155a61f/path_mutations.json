@@ -1,0 +1,101 @@
+{
+  "status": "passed_subset",
+  "suite": "path-mutations",
+  "runs": [
+    {
+      "case": "g3_path_mutations",
+      "repetition": 1,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.7028777519990399,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_path_mutations\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x000000000035f000\r\n[loader] started pid=10 file=/bin/g3_path_mutations\n[process] event=wait_blocked parent=7 child=10\r\nGLIBC_PATH_MUTATION_PASS\n[task] event=reclaimed pid=10 pages=228\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    {
+      "case": "g3_path_mutations",
+      "repetition": 2,
+      "status": "passed",
+      "expected_exit_code": 0,
+      "expected_outcome": "exited",
+      "elapsed_seconds": 0.7095567389987991,
+      "resources": [
+        129698,
+        3,
+        1
+      ],
+      "output": "exec-file /bin/g3_path_mutations\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x000000000035f000\r\n[loader] started pid=11 file=/bin/g3_path_mutations\n[process] event=wait_blocked parent=7 child=11\r\nGLIBC_PATH_MUTATION_PASS\n[task] event=reclaimed pid=11 pages=228\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+    }
+  ],
+  "qmp": "disabled; serial-only qualification",
+  "active_worker_normal_exit": "native bounded cleanup window; qualified only by exit suite",
+  "dash_entry": "not_run",
+  "system_build_id": "7ff8eba2295e9bf9",
+  "image_sha256": "fcdb84345d8af6a2d71f940ec04c25a25968caac998e4f7ad719a40855af6752",
+  "system_manifest_sha256": "cfcd3434adc58b244e25106b688d75857fa68f5367a170444babcf20531724bb",
+  "glibc_manifest_sha256": "4b6df9f51b5c72fd0091cd97bacbc753590ef09a18f40387947c8176c8627b37",
+  "sdk_profile": "xos_glibc_static_research_v1",
+  "elfs": {
+    "g3_path_mutations": {
+      "source": "glibc_g3/path_mutations.c",
+      "source_sha256": "6f90fe72e8932d9f0bb142e713928b9ae9ea33d9f3144a198c1375e3d4943ef6",
+      "elf_sha256": "59d77e7a661ba4ab1b883d2805de03f03782ec8b752cf9093fef5ac5632f7a1c",
+      "build_command": [
+        "/usr/bin/python3",
+        "/work/source/scripts/build_glibc_program.py",
+        "--sdk",
+        "/work/glibc-c/sysroot",
+        "--source",
+        "/work/source/tests/fixtures/glibc_g3/path_mutations.c",
+        "--output",
+        "/results/path-mutations/g3_path_mutations.elf"
+      ],
+      "build_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exec_receiver_marker": null
+    }
+  },
+  "runner_sha256": "dae7e9a1a15382c37bf252ab9803f23fa08d5d40a02533248215d299c809d4c9",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_SYSTEM_BUILD}/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_GUEST_WORK}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline": [
+    129698,
+    3,
+    1
+  ],
+  "serial_sha256": "56f87aa831ba68107a28b72c2b4134cd359cf86c6001bfbe8445614b5c6b2afd"
+}

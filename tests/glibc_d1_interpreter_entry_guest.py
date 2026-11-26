@@ -112,10 +112,11 @@ def build(args, directory, report, rtld, sysroot):
                          '-c', FIXTURES / 'interpreter_entry_late.c', '-o', late])
     run('link_guest', [compiler['gcc']['path'], *cflags[:2], '-nostdlib', '-static', '-no-pie',
                        '-Wl,--build-id=none', '-Wl,-z,noexecstack', '-Wl,-z,max-page-size=4096',
-                       '-Wl,--wrap=__xos_glibc_start', '-T', sysroot / 'user.ld', '-o', elf,
+                       '-Wl,--gc-sections', '-Wl,--wrap=__xos_glibc_start', '-T', sysroot / 'user.ld', '-o', elf,
                        *(lib / item for item in ('xos_start.o', 'crti.o', 'crtbegin.o', 'xos_start_c.o')),
                        early, late, rtld, rtld.parent / 'xos_rtld_mapping.os',
-                       rtld.parent / 'xos_file_session.os', sysroot / GLIBC_STDIO_RECEIVER, '-Wl,--start-group',
+                       rtld.parent / 'xos_file_session.os', rtld.parent / 'xos_rtld_heap.os',
+                       rtld.parent / 'dl-minimal-malloc.os', sysroot / GLIBC_STDIO_RECEIVER, '-Wl,--start-group',
                        sdk / 'lib/libxos_loader.a', lib / 'libc.a', lib / 'libxos_terminal.a',
                        sdk / 'lib/libxos.a', lib / 'libgcc.a', '-Wl,--end-group',
                        lib / 'crtend.o', lib / 'crtn.o'])
@@ -158,10 +159,12 @@ def exercise(args, directory, inputs, report):
             report['output'] = result.decode(errors='replace')
             assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
             assert b'D1_INTERPRETER_STACK low=rejected below_min=rejected' in result, result
+            assert b'D1_RTLD_HEAP_PLAN_REQUIRED prepare=checked attach=checked' in result, result
+            assert b'D1_RTLD_EARLY_HEAP_OK batches=2 rollback=clean rw_nx=checked' in result, result
             assert b'D1_RTLD_ENTRY_CLOSURE_OK soname=libhandoff.so' in result, result
             assert b'D1_INTERPRETER_ENTRY_RC=0' in result, result
             match = re.search(rb'D1_INTERPRETER_ENTRY_PREPARED phdr=(\d+) interpreter=0x([0-9a-f]+)'
-                              rb' early=(\d+) late=(\d+) inherited=EFGH', result)
+                              rb' early=(\d+) late=(\d+) inherited=EFGH early_heap=live', result)
             assert match, result
             phnum, entry, early, late = match.groups()
             assert int(phnum) == report['images']['main']['phnum']
@@ -171,6 +174,8 @@ def exercise(args, directory, inputs, report):
             result = command(guest, 'dash /tests/empty.sh', b'kind=exited code=', timeout=120)
             report['empty_output'] = result.decode(errors='replace')
             assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
+            assert b'D1_RTLD_HEAP_PLAN_REQUIRED prepare=checked attach=checked' in result, result
+            assert b'D1_RTLD_EARLY_HEAP_OK batches=2 rollback=clean rw_nx=checked' in result, result
             assert b'D1_RTLD_ENTRY_EMPTY_OK no_requests' in result, result
             assert b'D1_INTERPRETER_ENTRY_RC=0' in result, result
             assert b'inherited=EFGH' in result, result

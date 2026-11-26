@@ -10,6 +10,7 @@
 extern const struct xos_d1_entry_view *d1_entry_view (void);
 extern xos_u32 d1_entry_sequence (void);
 extern int d1_release_images (void);
+extern int d1_early_heap_still_live (void);
 extern void _dl_aux_init (Elf64_auxv_t *);
 extern Elf64_auxv_t *_dl_auxv;
 
@@ -24,7 +25,7 @@ main (void)
     && getauxval (AT_ENTRY) == view->record->main_entry
     && getauxval (AT_BASE) == view->record->interpreter_base;
   _dl_aux_init (original);
-  if (!headers || !d1_release_images ())
+  if (!headers || !d1_release_images () || !d1_early_heap_still_live ())
     return 41;
 
   char data[4];
@@ -34,7 +35,7 @@ main (void)
       || __xos_file_exchange (&request, &response) != 0
       || response.request_id != d1_entry_sequence () + 2 || close (0) != 0)
     return 42;
-  printf ("D1_INTERPRETER_ENTRY_PREPARED phdr=%lu interpreter=%p early=%u late=%u inherited=EFGH\n",
+  printf ("D1_INTERPRETER_ENTRY_PREPARED phdr=%lu interpreter=%p early=%u late=%u inherited=EFGH early_heap=live\n",
           (unsigned long) view->record->main_phnum, (void *) view->record->interpreter_entry,
           d1_entry_sequence (), response.request_id);
   return 0;

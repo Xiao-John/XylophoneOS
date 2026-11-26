@@ -108,6 +108,7 @@ def build(args, directory, report, rtld):
                        '-Wl,--wrap=__xos_glibc_start', '-T', sysroot / 'user.ld', '-o', elf,
                        *(lib / name for name in ('xos_start.o', 'crti.o', 'crtbegin.o', 'xos_start_c.o')),
                        early, late, rtld / 'xos_rtld_mapping.os', rtld / 'xos_file_session.os', rtld / 'xos_rtld_entry.os',
+                       rtld / 'xos_rtld_heap.os',
                        sysroot / GLIBC_STDIO_RECEIVER, '-Wl,--start-group', lib / 'libc.a',
                        lib / 'libxos_terminal.a', sdk / 'lib/libxos.a', lib / 'libgcc.a',
                        '-Wl,--end-group', lib / 'crtend.o', lib / 'crtn.o'])
@@ -146,7 +147,7 @@ def exercise(args, directory, elf, report):
             command(guest, 'demo quiet', b'demo tasks')
             report['resources_before'] = resources(guest)
             expired_output = command(guest, 'dash /tests/expired.sh', b'kind=exited code=', timeout=60)
-            assert b'D1_RTLD_PHASE_EXPIRED request=unsent' in expired_output, expired_output
+            assert b'D1_RTLD_PHASE_EXPIRED request=unsent heap=uncommitted' in expired_output, expired_output
             assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', expired_output) == [b'54'], expired_output
             report['expired_output'] = expired_output.decode(errors='replace')
             assert resources(guest) == report['resources_before']

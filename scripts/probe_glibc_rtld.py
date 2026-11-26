@@ -120,7 +120,9 @@ def main():
         rtld_map = build / 'elf/xos_rtld_mapping.os'
         rtld_files = build / 'elf/xos_file_session.os'
         rtld_load = build / 'elf/dl-load.os'
-        for path in (rtld_map, rtld_files, rtld_load):
+        rtld_heap = build / 'elf/xos_rtld_heap.os'
+        rtld_allocator = build / 'elf/dl-minimal-malloc.os'
+        for path in (rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator):
             _, compilation = run('make_' + path.name, [*make_elf, path])
             if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
                        and line.split()[0].endswith('/cc') for line in compilation.splitlines()
@@ -137,11 +139,20 @@ def main():
                       '__pread64', '__close_nocancel', '__close', '__fstat64_time64', '_dl_load_cache_lookup'}:
             raise RuntimeError('fixed startup dependencies still route through path or POSIX FD I/O')
         _, mapping_imports = run('native_mapping_imports', [env['NM'], '-u', rtld_map])
-        if {line.split()[-1] for line in mapping_imports.splitlines()} != {'__xos_file_session_call_until', '__xos_rtld_check_entry'}:
+        if {line.split()[-1] for line in mapping_imports.splitlines()} != {'__xos_file_session_call_until', '__xos_rtld_check_entry', '__xos_rtld_heap_begin'}:
             raise RuntimeError('native rtld mapping unexpectedly depends on builtin libc or TLS')
         _, files_imports = run('native_files_imports', [env['NM'], '-u', rtld_files])
         if files_imports.strip():
             raise RuntimeError('native early files transport unexpectedly depends on another object')
+
+        _, heap_imports = run('native_heap_imports', [env['NM'], '-u', rtld_heap])
+        if heap_imports.strip():
+            raise RuntimeError('native heap unexpectedly depends on libc or TLS')
+        _, allocator_imports = run('rtld_allocator_imports', [env['NM'], '-u', rtld_allocator])
+        allocator_symbols = {line.split()[-1] for line in allocator_imports.splitlines()}
+        if '__xos_rtld_heap_grow' not in allocator_symbols or allocator_symbols & {'__mmap', 'mmap'}:
+            raise RuntimeError('GNU minimal allocator did not select the XOS early heap')
+        run('rtld_allocator_symbols', [env['NM'], rtld_allocator])
 
         failure, reason = run('make_dl_sysdep', [*make_elf, build / 'elf/dl-sysdep.os'], allow_failure=True)
         if not failure or 'error: #error "XOS dynamic interpreter startup is not implemented"' not in reason:
@@ -159,7 +170,7 @@ def main():
                 or sha(Path(__file__)) != report['probe_sha256']
                 or any(sha(Path(tool['path'])) != tool['sha256'] for tool in tools.values())):
             raise RuntimeError('source preparation or configured tools changed during the diagnostic')
-        report.update(status='rtld_entry_compiled_startup_blocked', artifacts={str(path.relative_to(output)): sha(path) for path in (entry, native_entry, rtld_map, rtld_files, rtld_load)})
+        report.update(status='rtld_entry_compiled_startup_blocked', artifacts={str(path.relative_to(output)): sha(path) for path in (entry, native_entry, rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator)})
     except Exception as error:
         report['error'] = str(error)
         raise

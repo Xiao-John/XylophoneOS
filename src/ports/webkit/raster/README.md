@@ -25,3 +25,25 @@ python3 tests/webkit_skia_raster_guest.py --target "$RASTER_OUT" \
 上界和文件位置保持。`SkFontMgr::makeFromFile` 从锁定的 DejaVu 字体绘制 `XOS`，
 核对字体、字形、像素与缺失文件退出。XOS 的 `sk_qread` 通过既有 `pread` 补齐短读，
 仍接受原生文件服务的上界与错误。该路径由 [客体记录](../../../../docs/work_log/e55d60c9_clarke_skia_file_stream.md) 绑定。
+## Fontconfig 字体后端
+
+`src/ports/webkit/raster/build_font_backend.py` 使用锁定 WebKit 源和已经绑定的 CPU
+栅格、Fontconfig、FreeType、LibXml2、C 与 C++ SDK，导出上游 Skia 字体管理器
+目标对象、`libskia_fontconfig.a` 与探针 ELF。XOS 的字体可读性检查沿用实际字体
+装载使用的定位文件流。
+
+组合使用当前 C 头文件、CRT、libc、libm 和终端支持，复用冻结栅格 SDK 的 C++ 头、
+libstdc++ 与 unwind 运行库。回执同时记录两个 SDK。完整 WebCore 应用仍以重新构建
+并统一绑定的 C/C++ SDK 作为交付输入。
+
+```sh
+python3 src/ports/webkit/raster/build_font_backend.py --webkit-archive "$WPE_ARCHIVE" \
+  --raster "$RASTER_TARGET" --fontconfig "$FONTCONFIG_TARGET" --fonts "$FONT_TARGET" \
+  --xml "$LIBXML2_TARGET" --cxx-sdk "$RASTER_GLIBC_SDK" --c-sdk "$FONTCONFIG_GLIBC_SDK" \
+  --output "$FONT_BACKEND"
+python3 tests/webkit_fontconfig_guest.py --target "$FONT_BACKEND" \
+  --font-target "$FONT_TARGET" --system "$SYSTEM" --output "$GUEST_PROOF"
+```
+
+客体验证通用字体族、按语言查找、真实希腊字形栅格、缺失码点和空 FAT 字体目录，
+并比较程序退出前后的资源。整页布局和 Qt 视口各自验收。

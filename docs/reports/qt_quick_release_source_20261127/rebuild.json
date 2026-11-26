@@ -1,0 +1,78 @@
+{
+  "status": "static_qtdeclarative_built_and_relinked",
+  "source_commit": "7d5f052e8fd82893ed29d6fa662a0a54c6b31907",
+  "source_tree": "61aebda99dfdcbd6aca4f49ab41967764c5855eb",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "upstream_source_sha256": "1f03a2b8f5588b4face7da87926e9b2c1372b3a32157c52df07a75067a9db1af",
+  "recipe_script_sha256": "03e7ba6c646fcab7fac51b13dfadefaacbcf18c95c56f26e45192d0351bc4d71",
+  "tool_image_id": "sha256:87c204c1263f7c18981b11752fe340a10e4bf8495e1ba2709456182e76bc1a22",
+  "host_platform": "linux/arm64",
+  "toolchain": {
+    "gcc": "16.2.0",
+    "binutils": "2.47",
+    "cmake": "4.4.5"
+  },
+  "network": "none",
+  "targets": [
+    "Qml",
+    "Quick"
+  ],
+  "parallelism_on_completed_build": 1,
+  "build_logs": {
+    "volume_syncqt_permission_rejected_sha256": "764a4266807283cf4852ccf04c93b0c003e3832a21dab2aa8431d570856fb9ec",
+    "parallel_gcc_killed_sha256": "353dc6a5e1b58fcca28ecd34726859c726d8da1a15d33f57bd3abe4b16d4c2ac",
+    "serial_quick_type_registration_gcc_killed_sha256": "edb425563dc49b96ea3e85bb8adaf79dcd245c7eb283d04d7cd5e71356d8feca",
+    "process_address_space_limit_rejected_sha256": "b4e56813141ad2a769e42c80d14d84464a978d4be63cca8ed0d0d5eeff57deac",
+    "continued_same_ninja_tree_after_relocating_two_completed_pchs_sha256": "e43d86890fca19a702d34c8f820ad3deb3561679c898bd774729c598bb860fe0"
+  },
+  "build_records": {
+    "build.ninja": {
+      "sha256": "a903f1df5debf7fc63fc1a6524414ccd8bc790b9a468698f31737b777e394c85",
+      "bytes": 15166378
+    },
+    "compile_commands.json": {
+      "sha256": "3f78bf12ec1e9ed9dd86678da603b113df3ae389ae96cc47751f708e538e3f29",
+      "bytes": 6483021
+    },
+    "config.summary": {
+      "sha256": "40faed4d8a52a87a6aa7f0d90ae151451e349be9c55c864af5cc1b4202ffa653",
+      "bytes": 1343
+    }
+  },
+  "rebuilt_archives": {
+    "libQt6Qml.a": {
+      "sha256": "32026716873cca21dab6732a54daf4356ace342de3ee2b167259b23dd4901124",
+      "bytes": 20531976,
+      "original_sha256": "0f5bdbf3e0ccc9e7d2d1906df5be5ab51851ae67ee68321e9752ba4014146a5d",
+      "matches_original": false
+    },
+    "libQt6Quick.a": {
+      "sha256": "21f5297822b66b1d3e21e64cf2eee4c28ea1ab39f4b54e42adf7adf7622480d5",
+      "bytes": 24661428,
+      "original_sha256": "5fb56984fab0bf937ae48de7bb900fb39f7f56222c216154a5f28b1c6dae2ec8",
+      "matches_original": false
+    }
+  },
+  "relink_warnings": [
+    "__getcwd is not implemented and will always fail",
+    "access is not implemented and will always fail",
+    "chdir is not implemented and will always fail",
+    "chmod is not implemented and will always fail",
+    "fchmod is not implemented and will always fail",
+    "flock is not implemented and will always fail",
+    "getcwd is not implemented and will always fail",
+    "kill is not implemented and will always fail",
+    "mkdir is not implemented and will always fail",
+    "raise is not implemented and will always fail",
+    "readlink is not implemented and will always fail",
+    "rename is not implemented and will always fail",
+    "rmdir is not implemented and will always fail",
+    "sleep is not implemented and will always fail",
+    "symlink is not implemented and will always fail",
+    "sysconf is not implemented and will always fail",
+    "truncate is not implemented and will always fail",
+    "usleep is not implemented and will always fail",
+    "warning: get_nprocs will always return 1"
+  ],
+  "raw_relink_log_sha256": "4f7f213a0477654deffa74429ed6a2f12d6a6b11f32e4516fe75af95b698e1ac"
+}

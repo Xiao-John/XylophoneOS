@@ -1,0 +1,20 @@
+{
+  "abi": "passed",
+  "accepted_source_commit": "c94f6bfe68b6f0310718d5f35cbb65e012074112",
+  "accepted_source_tree": "0daa7f3c9a28e186c4f5803c48444678118f54d2",
+  "initial_link_log_sha256": "d46cbc00ed2ff8ce3512195c881af847805f553a67ffcbc3ccc432fa0280aa60",
+  "initial_link_missing_symbols": [
+    "__xos_terminal_fork_child",
+    "__xos_terminal_fork_prepare"
+  ],
+  "license_materials": 10,
+  "ordinary_guest_checks": 79,
+  "original_matching_guest_exit": 6,
+  "original_matching_report_sha256": "bb731ae3b0ad9e5f6620c9d588d417bec59cfbc9966e0f7bc567d07e1c0f81c5",
+  "original_matching_serial_sha256": "6781a397acc4f6b82916a4609f9762caa09934bb3b280db3751933a52ad40602",
+  "system_base_commit": "aa267bfee380d671d1a823115f5490e9c1608e16",
+  "system_manifest_sha256": "3da8a755707e6d2a748fe10368e42a01d618d41eded1c9aa6283ea1adf2d9cd0",
+  "system_sdk_manifest_sha256": "7e960401535ec78e9d212b07812fd4271716ab614864b4184810d660d9c368f6",
+  "target_recipe_commit": "cfe5190393d34f423097cb6bac8a6da76f092622",
+  "target_recipe_tree": "9afefff035ab9fbb14bf8720024ee9fbc71ca832"
+}

@@ -1,0 +1,47 @@
+{
+  "status": "source_rebuilt_relinked_and_guest_verified",
+  "source_commit": "7d5f052e8fd82893ed29d6fa662a0a54c6b31907",
+  "source_tree": "61aebda99dfdcbd6aca4f49ab41967764c5855eb",
+  "guest_source_commit": "7e59ec71f787a38c68719fc8ceb4ab0825630f22",
+  "guest_source_tree": "9551f76b3410bb57d88cbd0a2384d27502238e5e",
+  "baseline_mainline": "093c82c7ce7a9ab70c54de1f6d9f6097a5153109",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "package_archive": {
+    "name": "xos_qt_quick_verified_source_materials.tar.zst",
+    "sha256": "5506c6f32f10ab5d2f0405903464d9bdeab95b193fa92eab908eebb2690cca0f",
+    "bytes": 122753733
+  },
+  "package_manifest_sha256": "bccec63133b64dad2f81841b6a5126fd76c04cecdc6df8f5cc6e7869e707200c",
+  "qtdeclarative_upstream_sha256": "1f03a2b8f5588b4face7da87926e9b2c1372b3a32157c52df07a75067a9db1af",
+  "reconstructed_source_files": 53154,
+  "target_member_source_counts": {
+    "archives": 18,
+    "members": 1066,
+    "compiled_sources": 1024,
+    "generated_sources": 42,
+    "matching_retained_objects": 468,
+    "file_spdx_available": 848,
+    "component_notice_available": 183,
+    "direct_sources_without_declaration_or_notice": 0
+  },
+  "host_artifacts": 48,
+  "runtime_materials_manifest_sha256": "a90e85503207d46d62c3797a8574f992c4f8661f33b253c4017c0b9b3df353a5",
+  "relinked_elf_sha256": "bedd360902b203a3f2b33344f79303534689167e965e1300813dcef76b89255e",
+  "system_build_id": "b279c8664a5cef66",
+  "system_manifest_sha256": "4f811bef189d64a5a15c39192652ea0ff8e5871ca121c8866cad0b70947bf7fc",
+  "image_sha256": "f8208206f9ace9e7016fe5c83c7fe7b27f334e2fc46c2df6541764787a6382cf",
+  "guest": {
+    "status": "passed_subset",
+    "launcher": "xsh",
+    "raw_serial_sha256": "cd4397cf09749b3ad32079e6437111b3ca09431868b4fabb8c6b9a5f6ac4205d",
+    "scanout": {
+      "mode": [
+        800,
+        600
+      ],
+      "text_ink_pixels": 475,
+      "sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1",
+      "partial_captures": 0
+    }
+  }
+}

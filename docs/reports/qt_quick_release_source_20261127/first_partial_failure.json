@@ -1,0 +1,25 @@
+{
+  "status": "failed",
+  "launcher": "xsh",
+  "system_build_id": "c11bf66d8c1c2baa",
+  "system_manifest_sha256": "7f15c13c2c1f0d4641d914adede7e99dbbd57b25aa2f6b64bfb48f35a441398c",
+  "image_sha256": "8d6af84427d71a3d04f8004a76f398d15f3b592606cbb0639705e5790bd19e7a",
+  "elf_sha256": "bedd360902b203a3f2b33344f79303534689167e965e1300813dcef76b89255e",
+  "app_receipt_sha256": "c342a06f423fb4190e7657ffc923cf898083b6a7a69e68f6edafc896c7d7c6ac",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "with_graphics": [
+    121620,
+    5,
+    3
+  ],
+  "qualification_source": "7d5f052e8fd82893ed29d6fa662a0a54c6b31907",
+  "raw_scanout_sha256": "34b8b59031fd575dd2280fbc12064b17f94ec48ff6a30e7b564bdf1d72436b3d",
+  "raw_serial_sha256": "3429659e3d742505fe988c05cba5cdb15c354a67f4555c82ef762f831b5c979d",
+  "failure": "Initial QMP screendump caught rows 40 through 90 of the app window; ink in the text area was zero."
+}

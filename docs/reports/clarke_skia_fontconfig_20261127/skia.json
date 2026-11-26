@@ -1,0 +1,50 @@
+{
+  "status": "passed_subset",
+  "target": "target_skia_fontconfig_linked",
+  "build_id": "71365bb8c2e9691c",
+  "iso_sha256": "bfa01b56eb527fb68e9877cf47b4f7d64b546b98e74da6025f9e55b43c861928",
+  "system_manifest_sha256": "3da8a755707e6d2a748fe10368e42a01d618d41eded1c9aa6283ea1adf2d9cd0",
+  "target_manifest_sha256": "133020839489ba94282d530b93387323a814bd56219e37592176e35d53ddb25a",
+  "probe_sha256": "e91d46b56407b08bcd5f88b660ebfabb2d0c6fd981e1fe2afe615c6ddc221ea6",
+  "font_sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+  "fixture_sha256": "cf1af70f1cde4125ee7b34efb276e1e3a7a13c29a3d426f4e0b180b608b822fc",
+  "runner_sha256": "45f527a06873e0f60e731ab37f603c96a48e703d2a6cadb5dea2a31c380507ca",
+  "cases": [
+    {
+      "directory": "/fc-fonts",
+      "exits": [
+        0
+      ],
+      "marker_count": 1,
+      "markers": [
+        "XOS_SKIA_FONTCONFIG_PASS family=DejaVu_Sans glyph=848 ink=107"
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    {
+      "directory": "/fc-empty",
+      "exits": [
+        5
+      ],
+      "marker_count": 1,
+      "markers": [
+        "XOS_SKIA_FONTCONFIG_EMPTY"
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    }
+  ],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ]
+}

@@ -13,6 +13,7 @@ sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "tests")]
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from task_smoke import pump, send_bytes
+from work_disk import transfer
 
 
 def sha256(path):
@@ -49,6 +50,7 @@ def iso_files(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report", type=Path, default=ROOT / "build/iso_dash_install_report.json")
+    parser.add_argument("--external", action="store_true", help="start an external ELF through the newly installed dash")
     args = parser.parse_args()
     image = ROOT / "build/xos-install-dash.iso"
     metadata = json.loads((ROOT / "build/install_manifest.json").read_text())
@@ -59,13 +61,32 @@ def main():
     with tempfile.TemporaryDirectory(prefix="xos_install_") as folder:
         disk = Path(folder) / "fresh.img"
         create_fat32(disk, 512)
+        if args.external:
+            probe = ROOT / "build/user_hello.image.elf"
+            report["external_elf_sha256"] = sha256(probe)
+            if report["external_elf_sha256"] != system["artifacts"][probe.name]["sha256"]:
+                raise AssertionError("external installer probe differs from the system build")
+            transfer(disk, "mkdir", "/bin")
+            transfer(disk, "import", "/bin/boot_probe", probe)
+            script = Path(folder) / "boot_probe.sh"
+            script.write_text("set -e\n/bin/boot_probe\necho A3EXTERNAL\n")
+            transfer(disk, "import", "/bin/boot_probe.sh", script)
         guest = Guest(image, "iso_dash_install", iso=True, work_disk=disk)
         try:
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)
             send_bytes(guest, b"run\r")
-            guest.expect_supervisor(start=start, timeout=60)
+            guest.expect_supervisor(trace=args.external, start=start, timeout=60)
             guest.expect(b"[files] dash installed", start=start, timeout=60)
+            if args.external:
+                begin = len(guest.output)
+                send_bytes(guest, b"dash /bin/boot_probe.sh\r")
+                guest.expect(b"hello from file", start=begin, timeout=30)
+                child_output = guest.output.index(b"hello from file", begin)
+                guest.expect(b"\nA3EXTERNAL\n", start=child_output, timeout=20)
+                guest.expect(b"kind=exited code=0", start=child_output, timeout=20)
+                guest.expect(b"xsh> ", start=child_output, timeout=20)
+                report["checks"].append({"name": "dash-runs-first-external-elf", "passed": True})
             pump(guest, 0.5)
             report["checks"].append({"name": "dash-installed-from-iso", "passed": True})
             begin = len(guest.output)

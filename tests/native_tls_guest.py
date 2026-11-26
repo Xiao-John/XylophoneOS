@@ -52,8 +52,10 @@ def prepare(destination):
         ("intermediate", "root", "issuer"),
         ("valid", "intermediate", "leaf"),
         ("expired", "intermediate", "leaf"),
+        ("wrong-host", "intermediate", "leaf"),
         ("unknown-ca", "other-root", "leaf"),
     ):
+        hostname = OTHER_NAME if name == "wrong-host" else HOSTNAME
         ext = destination / "extensions.cnf"
         ext.write_text(
             "basicConstraints=critical,CA:TRUE,pathlen:0\n"
@@ -61,10 +63,10 @@ def prepare(destination):
             "subjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid\n"
             if role == "issuer" else
             "basicConstraints=critical,CA:FALSE\nkeyUsage=critical,digitalSignature\n"
-            f"extendedKeyUsage=serverAuth\nsubjectAltName=DNS:{HOSTNAME}\n"
+            f"extendedKeyUsage=serverAuth\nsubjectAltName=DNS:{hostname}\n"
         )
         run("req", "-new", "-newkey", "rsa:2048", "-noenc", "-sha256", "-subj",
-            "/CN=" + (HOSTNAME if role == "leaf" else "XOS TLS Test Intermediate"),
+            "/CN=" + (hostname if role == "leaf" else "XOS TLS Test Intermediate"),
             "-keyout", name + ".key", "-out", name + ".csr")
         dates = ["-days", "4"]
         if name == "expired":
@@ -75,7 +77,7 @@ def prepare(destination):
             "-CAkey", issuer + ".key", "-set_serial", str(secrets.randbits(127) or 1),
             "-out", name + ".pem", "-extfile", ext.name, *dates)
 
-    for name in ("valid", "expired", "unknown-ca"):
+    for name in ("valid", "expired", "unknown-ca", "wrong-host"):
         path = destination / (name + ".pem")
         chain = (destination / "intermediate.pem").read_bytes() if name != "unknown-ca" else b""
         (destination / (name + "-chain.pem")).write_bytes(path.read_bytes() + chain)

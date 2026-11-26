@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "scope": "rebuilt ClarkE and guest on the independently qualified ticket base",
+  "source": {
+    "ticket_base_commit": "ebdbdd27f371cad5da1467a02b9f5b244097bcaa",
+    "system_browser_and_test_commit": "ff907778cbf2cd0295d26efc98d37126dbb44fe9",
+    "system_browser_and_test_tree": "aff2bba65bfd73218ce7a84b545841081a136b5f"
+  },
+  "toolchain_container_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "system_manifest_sha256": "47247f2323ab630490b76a033a6772d0d1ab1a5a6080225cd827cf373d850001",
+  "native_tls_receipt_sha256": "ef6d383a45f868412e3cee2905429a40a882a298377327200981b06a112204f6",
+  "scanout": {
+    "width": 800,
+    "height": 600,
+    "crop_xyxy": [
+      32,
+      222,
+      768,
+      550
+    ],
+    "rgb_counts": {
+      "244,247,252": 226726,
+      "24,50,76": 1460,
+      "183,53,118": 1024
+    },
+    "raw_ppm_sha256": "3331c2a402caba2c719af98eb5b86a1703ff64e5c11cf188ef3ca2b0f4f1c8c3"
+  },
+  "raw_host_parser_report_sha256": "757815a824603b98066d5a808626b1aa19daa55a53c2d9d993b1bfa816e07289",
+  "files": {
+    "guest.json": "4cc59a35af8a87421be35f072b41be36456902b551590aa82fdaa2831754e4cf",
+    "guest_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "http-parser.json": "05cc4266be607090902b10f94e676391ed2d24a33b266c1cb32e7b0a1b38e1d2",
+    "https.ppm.gz": "c5e35dd22c1c195a78081386f06b9e2bc71ed9ac236487e2c66a28f7c1fb8392",
+    "license-audit.txt": "9064ebe366bf0d98582b2ab080450520767c56666a7df879094f304a62c08d44",
+    "serial.log.gz": "1f4483ee7fff1045b610966d77027e20bd9ed196ae5a7e5c62cadfd07b45ef91"
+  }
+}

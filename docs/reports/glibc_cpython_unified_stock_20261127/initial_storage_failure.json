@@ -1,0 +1,14 @@
+{
+  "archive_sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+  "failed_step": {
+    "exit_code": 2,
+    "log_sha256": "f204e2dfb17ed91c1fa29893054ae73e048bea069dec6414c46826ee2a933562",
+    "name": "target_make"
+  },
+  "original_build_receipt_sha256": "bf0f9bbd2b4f582833f59bbf15259b046787994360abd8c24a560406917d2407",
+  "phase": "GNU ar archiving CPython target objects",
+  "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "reason": "No space left on device",
+  "status": "failed",
+  "vm_filesystem_bytes_available_at_diagnosis": 0
+}

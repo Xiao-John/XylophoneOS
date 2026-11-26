@@ -1,0 +1,24 @@
+{
+  "files": {
+    "build.json": "c3a61b8a2f2683a78482f013b07ca42975847d984b4d95e62e62dd6322ee99f8",
+    "cli.serial.log.gz": "be33c7a6cee088045059ce3df306b40a5af30ed6da3a61e622899bf424526249",
+    "cli_guest.json": "cdbb2ffb71fb98dc6147859a3ea332debee09e569e3778345fd2bb61c2e64469",
+    "cold_run_remove.serial.log.gz": "1c1bd5ca4aea484b72a18d006c309aaa18b857e8e1b4d650e76623f7fb356b98",
+    "comparison.json": "0e76bebb90afa99366bbd805df26dc5cc4a9e4aaf737565631da9a61868a7847",
+    "earlier_replay.json": "4887cb21b596c5d7dd4132fda93fa24d2c9cf71e91735f99c0569420196bb64c",
+    "elf_headers.log.gz": "b8ab46ee318a4aa6423fe502bdf1c8d17090b5ccfa2f639dd50fe502365e8948",
+    "first_cli.serial.log.gz": "fc4aafd2cf9f3275fd9072649025a77944cc4f4f5818fca4710e3b3aadd60665",
+    "first_cold_run_remove.serial.log.gz": "fd0381dbd94c36e44689d187aba5dd7b75c7348f6b52930cd216450f7ab068fc",
+    "first_native_install.serial.log.gz": "77388510a15d1aef2e44536e50dea51b720f488a3891cb0b6b0cbeb8fb6279bb",
+    "first_rejection.serial.log.gz": "9c0e67f95828a982dd4cf2c5fa4978808b6c77a85e8d0048cbf1d69ab506f531",
+    "first_stock_auto_install.serial.log.gz": "27feec146efb234897295f11b353e5b6b8380e732ec2f8220edb58fbe7e7e808",
+    "initial_storage_failure.json": "35debe741fc3d3c4ee16b1c89a15bdc5ce5f67eb8b3b18e4cb88a95ca55e5297",
+    "licenses.log": "168262abb562eb6316869dcb2de3480e8071f83ba53a3a182784672ee63b6a81",
+    "native_guest.json": "22bac9ad92290eaf195b3456106447482c42c531f02ef8a71fad87ea6f67698a",
+    "native_install.serial.log.gz": "06e297da170ca2ddb17596c2b4469a48e9e33e790957f4823ab2a1a2ca86bb76",
+    "rejection.serial.log.gz": "ff252538ef16e2a8b6a2f677614fc3e782c3a1908d6f1593439acca42b7b1c4f",
+    "stock_auto_install.serial.log.gz": "95be1ad2708332b64e8a00868efc8c0209db90ca009cbcc408fa58d2bf0e67a5",
+    "workspace_profile.json": "6a095b0b8f9263154371e758c950e7c8cd71b48547612073d3dd0954136b9ed7"
+  },
+  "version": 1
+}

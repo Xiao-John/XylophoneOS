@@ -1,0 +1,133 @@
+{
+  "application_sdk": {
+    "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+    "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+  },
+  "build_filesystem": "private host sparsebundle, case-sensitive APFS, bind-mounted into offline Linux arm64",
+  "candidate_artifacts": {
+    "dash_manifest.json": "0cbd154890eda6197ccd0ba31e4d49138fe90ff145f08cbc63b28bbbcb795d42",
+    "stock/build_receipt.json": "15774cd54222bd28d1927e3d4094caaf70909d671bd2c67c90fe6ccfdbd911de",
+    "stock/daily.xpk": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f",
+    "stock/xypm.elf": "3971e1e05cafaf4769465ca338c1e65df11da4b5f4c477926cebc863e2037736",
+    "system/install_manifest.json": "d3098531438fc49b7a4f9097fedaf9f0fff0553d7ccd25abe9058bc3c3ba3cfb",
+    "system/kernel.elf": "f62ecb8209321680430737e799e5035c87e68a5229dd0db61b62add73bd07947",
+    "system/license_report.json": "fc41d90ef2712382fe782b6a5229f6d2277db80bb4886f35feb9b93c81c4d2ad",
+    "system/manifest.json": "49f2b89d542ef74155006592b2e2154aa062da668c539679e20feddbba7eb333",
+    "system/xos-install-dash.iso": "f8dc48a88b422dce9e8f22d4389ee372a4dd961414538255565624708d972423",
+    "system/xos-install.iso": "22921ccbe425f3e566ed98fe5c29daf17e0c824d9ddea2922c67ba68658077f7"
+  },
+  "candidate_manifest_sha256": "3c9d1616576e73e2958aedd18c5a9f424181e48d846d055ad005915fc85dad1b",
+  "candidate_source_commit": "4d321863304650f5bdb37c1e059d74ccd176314d",
+  "container_image_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "cpython_build": {
+    "build_python_sha256": "c8d13e341393ca85bc56a2daa8d87605106927ec87ef6f5de900d3ea8073a2ea",
+    "builder_inputs": {
+      "build_cpython.py": "c6d1c0ef5fb4543dfee16798d2db2f2fea081e0b5a00c425f236f431ce80bbb1",
+      "build_cpython_glibc.py": "6c4e9bc6f0d16574f34ebe9063fe5d9338e2b2f303083223bd00820731b3c453",
+      "build_cpython_legacy.py": "38a0a2102400aa848ff8c90691552a796babf06a419b422dc4d27202e292b163"
+    },
+    "config_site_sha256": "cea5c9d2e6872e03bd15c07e8265809d80ae4b3d52ad3655ceee0bfc56156751",
+    "generated_config_sha256": "ba66ab3caac72a41434d236cbb2d9141201a2685036e19de825a01c924ce6d01",
+    "port_inputs": {
+      "README.md": "f3213a6a4f77376b388479e9e0854a50b13fb8e53768f2a74379106a94101baa",
+      "compression/compression_lock.json": "dcb34e462231d80954f46387e30ecff69da28c6e7e248ab76024f760a6ee5773",
+      "compression/upstream/bzip2-LICENSE": "c6dbbf828498be844a89eaa3b84adbab3199e342eb5cb2ed2f0d4ba7ec0f38a3",
+      "compression/upstream/xz-COPYING.0BSD": "0b01625d853911cd0e2e088dcfb743261034a091bb379246cb25a14cc4c74bf1",
+      "compression/upstream/zstd-LICENSE": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8",
+      "config/xos_config.site": "45d75ae0c82aba46d6be1438117af657ea8a152d98034e846485baaf0d233df6",
+      "idna_lock.json": "c6c7fc8b825ef1a842d6658361051e549ce7d8260886bff1abab9539eb340834",
+      "patches/0001_configure_xos_target.patch": "affc1401ca099395923c1a759d2fe584433f01b56c63b25bcd2e310da3dffacf",
+      "patches/0002_xos_module_scope.patch": "1fcf70f90798800eb29b7359d4e6e9c5e5ac31dceaa52ed00f0ff878c5f6cb9c",
+      "patches/0003_xos_pthread_backend.patch": "674790b15462415dca337e20415a02e0c871d11ecad13fccc6a8a515fbab728b",
+      "patches/0004_xos_basic_repl.patch": "811c8bca211f3fc54564241114a85798180dfbb628e8a82af00ddacab50fe163",
+      "patches/0005_xos_zoneinfo_tzdata_fallback.patch": "4cf2f85eb3a0c2678976408e499fdbe808de3c1bfc7da39633e06ea17edf6897",
+      "patches/0006_xos_blocking_time.patch": "5cb3a91ae702918b2d31de64f7d2ae0fb2823d9af58e06d179406c9de36e112e",
+      "patches/0007_glibc_clock_types.patch": "a255142492b466c77cb7073521709d316c8faa61cb1acf585dab073c90e1520f",
+      "patches/0008_newlib_getpath_metadata.patch": "e6d42ebd1440adb3cc8be4583afcda0c1cab3dbd03323a03d1e6a06e19293d73",
+      "patches/0009_newlib_getpath_execute_access.patch": "13b44184bf524e8a14ffba45d0aea5f02e45bb0916bbcc06b22712c2f0143d21",
+      "patches/series": "07252df648070f20126986f4aea26b46506006941977f3dde4344c39c41313a1",
+      "pillow/LICENSE": "17f240ae101143707e5e7303a5d800450d9ccc7475b463cedb555cefdb3c6ece",
+      "pillow/source_lock.json": "f4870dca29539fe4eb3d7da629aea580062990697fda8260980b99c0910a0a58",
+      "source_lock.json": "8afcd6eccbcfb3c3e6395037164158739cf98e55c9474521f83f9dd6db8986fa",
+      "sqlite/README.md": "de30a9dac8c6fe7fa5945ef4c8b38e9b254c6b09c0ac9641ae97eaa8ca82a301",
+      "sqlite/UPSTREAM_LICENSE.md": "3a487aaf2da3a06e58adba55c6e507a927cda568bc20d822bf62c36bdeb33d14",
+      "sqlite/sqlite_lock.json": "c0f54b2c5682e8d0462183e3f48e69d80e257342a3fdcb660a3ce580fb8d2e73",
+      "sqlite/xos_vfs.c": "87e7788346192b17914ff98a3240444dfed5d0a5512e968b284f5d826765b844",
+      "tzdata_lock.json": "d47b7345284c283f3ab4aa8422b2b22d8dcbb36f5524088765038b452f9dada8",
+      "upstream/LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+      "upstream/idna-LICENSE.md": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04",
+      "upstream/license.rst": "cd6f471c0bfdb099efefc25ddff9b3df8bf62e10428987f1f05e6f2f9e35d563",
+      "upstream/tzdata-2026.5-py2.py3-none-any.whl": "b683bd1b6659ddcd810ff02ad09ba821d4bf1065072805063eb35c49617905ac",
+      "upstream/tzdata-LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "upstream/zlib-LICENSE": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+      "xos_time.cpp": "4b98e5ca4d4523c1e89708da3a2af91dbed58f2b779aec1b3b22cc13bca28b70",
+      "zlib_lock.json": "3d084526751f4b39c750411223dcc09e560c5789aae1ccbd63affb1884d915bc",
+      "zlib_patches/0001_xos_errno_header.patch": "da73f294389ce1ebccb101a3b50a13bb3b170946fbe101bc4aff13d8100693c8"
+    },
+    "profile": "xos-x86_64-glibc-unified-cxx-v1",
+    "pyconfig_sha256": "e252aac7905fa0d2379eff74491ff2e62ea6455eb01247f3be3b313eab0fa3e4",
+    "setup_local_sha256": "82daa9182d78e3b6601b02e5f1680c99fe875278e8ef9e75ca8c931d8eafb557",
+    "source_archive_sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+    "static_extensions": [],
+    "status": "built_not_run",
+    "target": "x86_64-unknown-xos",
+    "unqualified": [
+      "dynamic extension loading",
+      "Pillow",
+      "zlib",
+      "SQLite",
+      "bzip2/xz/zstd",
+      "full standard library",
+      "interactive REPL"
+    ],
+    "version": "3.14.9"
+  },
+  "cpython_build_receipt_sha256": "0135b7c43f98a49b762d295c7d1f27b670e9c15bf4d24d0cdd67b9c9f83e80c2",
+  "cpython_original_executable": {
+    "bytes": 46460144,
+    "layout": {
+      "format": "static_elf64",
+      "load_and_main_stack_pages": 2243,
+      "load_segments": 3,
+      "machine": "x86_64",
+      "static_tls": true
+    },
+    "sha256": "ca53831d5a5fd61abd3dc7d957acde265f2a9532b74fc06daa3951bd8d0fc8ba"
+  },
+  "cpython_source_commit": "8d1b985dd8705772bd5a341ee303c68895a34d10",
+  "cpython_toolchain": {
+    "ar": {
+      "sha256": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+      "version": "GNU ar (GNU Binutils) 2.47.20260726"
+    },
+    "as": {
+      "sha256": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "g++": {
+      "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "gcc": {
+      "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "ld": {
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "ranlib": {
+      "sha256": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d",
+      "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
+    },
+    "readelf": {
+      "sha256": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42",
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "rebuild": "fresh target compile from locked archive using the previous same-version, hash-verified host Python"
+}

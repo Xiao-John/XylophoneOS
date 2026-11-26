@@ -1,0 +1,96 @@
+{
+  "checks": [
+    "frozen_newlib_profile_rejected",
+    "host_cross_profile_rejections",
+    "stock_installer_and_disk_receipts",
+    "native_previous_profile_install_rejected",
+    "ordinary_install_denied",
+    "native_p2_install",
+    "reboot_exec_disk_stdlib_and_real_module_operations",
+    "native_p2_remove_preserves_user_and_python_outputs"
+  ],
+  "cli_build_receipt_sha256": "0135b7c43f98a49b762d295c7d1f27b670e9c15bf4d24d0cdd67b9c9f83e80c2",
+  "final_disk_sha256": "e82501d7ed14344bef296f25b2ccfc5957fd1008bba38b6fad93cd264c60de1a",
+  "image_sha256": "22921ccbe425f3e566ed98fe5c29daf17e0c824d9ddea2922c67ba68658077f7",
+  "install_baseline": [
+    129806,
+    2,
+    0
+  ],
+  "installed_disk_sha256": "f5935124d73c959e412beabcbdd798f6718f32740994ac06c1a1bfece6f372af",
+  "installed_files": 14,
+  "interpreter": {
+    "bytes": 9407120,
+    "debug_bytes": 46460144,
+    "debug_sha256": "ca53831d5a5fd61abd3dc7d957acde265f2a9532b74fc06daa3951bd8d0fc8ba",
+    "layout": {
+      "format": "static_elf64",
+      "load_and_main_stack_pages": 2243,
+      "load_segments": 3,
+      "machine": "x86_64",
+      "static_tls": true
+    },
+    "objcopy_sha256": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+    "path": "usr/bin/python3",
+    "sha256": "611ad76f49fcd5f62238de798156a81bb99d7055231ae795992ae86ac2514186",
+    "strip_mode": "strip-debug"
+  },
+  "library_sha256": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79",
+  "package_sha256": "7314b3768ad3451f72af3125827ea56de0fe18bd0da96649d464bcb3851db089",
+  "preserved_data": {
+    "/work/py3a1/data/note.txt": "0ef5f509cc685bbad3241fb5656beeee111824a8d6e2c1bb76cda01bf93cc33d",
+    "/work/py3a1/data/stored.zip": "5bc5b869717cd68e3db8b6dc3836571fa79dc653b429e58709d239bdce9739d1",
+    "/work/user.txt": "9cda283a799cd426dbcf3be71525240d50d48c3da88c608cb80a7efc962a00c4"
+  },
+  "previous_package": {
+    "profile": "xos-x86_64-glibc-stock-fork-v1",
+    "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "resources": [
+      129806,
+      2,
+      0
+    ],
+    "sha256": "a82ad13aba9c80966b3f37f359cafb39730422b0eef5c7b7aad28d8ca75c7287",
+    "unchanged_files": {
+      "/var/lib/xypm/db.json": "0f981065ead58f77bc763ceca2de12b1e37fc2ae276794b8adbca643ba816c4f",
+      "/var/lib/xypm/index.tsv": "36780b36071c8827fb8f21b308c68edc4f1270c4da816bba39768f52c32368d2",
+      "/work/user.txt": "9cda283a799cd426dbcf3be71525240d50d48c3da88c608cb80a7efc962a00c4"
+    }
+  },
+  "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "run_baseline": [
+    129806,
+    2,
+    0
+  ],
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "status": "passed_subset",
+  "stdlib_members": 558,
+  "stock": {
+    "bundle_sha256": "c784d5bf3e2c92df342809824df568de369e1458b5552b1430135d0adb0e338d",
+    "candidate_manifest_sha256": "3c9d1616576e73e2958aedd18c5a9f424181e48d846d055ad005915fc85dad1b",
+    "daily": {
+      "build_receipt_sha256": "fbca3c7baac00107c7fe47df55f2e9b7950a8aafd8e6824d56fefce8f83bfd53",
+      "id": "xos.daily_utilities",
+      "xpk_sha256": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f"
+    },
+    "dash_sha256": "9a57e9eff7ee80311c4f5104f4740555a2a731c7a31134ce3b6cc2f48fb6c714",
+    "disk_sha256": "9b32240f780c54a6aebef774ba89fdfa37fbda36f2c6e52b0ae874d41e7dd209",
+    "installed_files": 26,
+    "installer_iso_sha256": "f8dc48a88b422dce9e8f22d4389ee372a4dd961414538255565624708d972423",
+    "reboot_iso_sha256": "22921ccbe425f3e566ed98fe5c29daf17e0c824d9ddea2922c67ba68658077f7",
+    "resources": [
+      125923,
+      2,
+      0
+    ],
+    "source_commit": "4d321863304650f5bdb37c1e059d74ccd176314d",
+    "xypm_sha256": "3971e1e05cafaf4769465ca338c1e65df11da4b5f4c477926cebc863e2037736"
+  },
+  "system_build_id": "8a36d456821db893",
+  "system_manifest_sha256": "49f2b89d542ef74155006592b2e2154aa062da668c539679e20feddbba7eb333",
+  "test_sha256": "edb70a825067a2a3443a8895cd8fb982c6c61b9ab15c1a54062d9071a67d16d2",
+  "xypm_elf_sha256": "3971e1e05cafaf4769465ca338c1e65df11da4b5f4c477926cebc863e2037736",
+  "xypm_receipt_sha256": "15774cd54222bd28d1927e3d4094caaf70909d671bd2c67c90fe6ccfdbd911de"
+}

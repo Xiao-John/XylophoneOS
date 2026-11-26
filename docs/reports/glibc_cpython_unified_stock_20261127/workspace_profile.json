@@ -1,0 +1,23 @@
+{
+  "installed_disk_before_and_after_sha256": "f5935124d73c959e412beabcbdd798f6718f32740994ac06c1a1bfece6f372af",
+  "old_selection_rejected": true,
+  "packages": [
+    {
+      "id": "xos.cpython",
+      "revision": 0,
+      "sha256": "7314b3768ad3451f72af3125827ea56de0fe18bd0da96649d464bcb3851db089",
+      "upstream_version": "3.14.9"
+    },
+    {
+      "id": "xos.daily_utilities",
+      "revision": 0,
+      "sha256": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f",
+      "upstream_version": "0.1.0"
+    }
+  ],
+  "selector_source_sha256": "3fa5e2a562f8050457f4432c8883bdfa842006565b41251b84ab6d68696d9234",
+  "verification": {
+    "files": 40,
+    "status": "verified"
+  }
+}

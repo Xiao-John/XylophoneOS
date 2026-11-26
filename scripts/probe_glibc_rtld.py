@@ -127,10 +127,17 @@ def main():
                        if line.split()):
                 raise RuntimeError('expected shared rtld module flags: ' + path.name)
         _, mapping_reference = run('dl_load_mapping_reference', [env['READELF'], '-rW', rtld_load])
-        if not all(name in mapping_reference for name in ('__xos_rtld_map_fd', '__xos_rtld_release_image')):
-            raise RuntimeError('upstream dl-load did not select the XOS mapping backend')
+        pins = ('__xos_rtld_open_pin', '__xos_rtld_read_pin', '__xos_rtld_pread_pin',
+                '__xos_rtld_stat_pin', '__xos_rtld_close_pin')
+        if not all(name in mapping_reference for name in (*pins, '__xos_rtld_map_fd', '__xos_rtld_release_image')):
+            raise RuntimeError('upstream dl-load did not select the closed XOS I/O and mapping backend')
+        _, loader_imports = run('dl_load_imports', [env['NM'], '-u', rtld_load])
+        imports = {line.split()[-1] for line in loader_imports.splitlines()}
+        if imports & {'__open64_nocancel', '__open64', '__read_nocancel', '__read', '__pread64_nocancel',
+                      '__pread64', '__close_nocancel', '__close', '__fstat64_time64', '_dl_load_cache_lookup'}:
+            raise RuntimeError('fixed startup dependencies still route through path or POSIX FD I/O')
         _, mapping_imports = run('native_mapping_imports', [env['NM'], '-u', rtld_map])
-        if {line.split()[-1] for line in mapping_imports.splitlines()} != {'__xos_file_session_call'}:
+        if {line.split()[-1] for line in mapping_imports.splitlines()} != {'__xos_file_session_call_until', '__xos_rtld_check_entry'}:
             raise RuntimeError('native rtld mapping unexpectedly depends on builtin libc or TLS')
         _, files_imports = run('native_files_imports', [env['NM'], '-u', rtld_files])
         if files_imports.strip():

@@ -1,0 +1,116 @@
+{
+  "status": "passed_subset",
+  "scope": "shared rtld mapping objects in a native static startup harness",
+  "shared_interpreter_executed": false,
+  "build_id": "c4467a63e70f99aa",
+  "iso_sha256": "fbafc12290aa343de69565fe7f26b991e57ef795bcf331aadddb8ca19c8472e2",
+  "system_manifest_sha256": "80ab782a20e35966abee592f69cdd01cbe82c9f82478d84cffce9e1985a98452",
+  "sdk_sha256": "e7db794fe7fcd6cf4e7b7b61c0e1e832417875fe84738d484856122bf732d242",
+  "profile_sha256": "9995246c7173f7565a7507fd99e7548af3d0d2f9dbf79ec6a56a082ac8c95430",
+  "rtld_manifest_sha256": "4a4dfdff76df9f225626bb855eb8d68e1553daed0c6cda2ea760b6d4677eebc1",
+  "rtld_objects": {
+    "shared/elf/rtld.os": "4b4b10fa066cb819bfc8f0f94fac030128ab693eb7b177b63937b3bc229bd23f",
+    "shared/elf/xos_rtld_entry.os": "308faa7c7426b698f89c402f127f112451343c1569577db17ec4e26b28dd46c0",
+    "shared/elf/xos_rtld_mapping.os": "f6831047822dd586fbbf18b53169a3bd35a452adecaac18e13cc9bcc280a4dc8",
+    "shared/elf/xos_file_session.os": "f9f0556e027ea0c1e5258615ebeddb3a2f3796b2eda563d50b784f6bdc47fbca",
+    "shared/elf/dl-load.os": "5fde5b40e056c13e3d70861703082d83d3ad2ca79f239be878b02df90e0f255f"
+  },
+  "dash_sha256": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+  "dash_receipt_sha256": "2096f94e3931fdfc91005aed98b9096dc008dbb41a20493f858d3653431fa19f",
+  "sanitized_environment": [],
+  "tools": {
+    "gcc": {
+      "available": true,
+      "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "g++": {
+      "available": true,
+      "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "as": {
+      "available": true,
+      "sha256": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+      "version_exit_code": 0,
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "ld": {
+      "available": true,
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "readelf": {
+      "available": true,
+      "sha256": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42",
+      "version_exit_code": 0,
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "dependencies": {
+    "small": {
+      "sha256": "b455153e5636ec2dd9512a7616875dbcfe78530b004251fbb0ac8b508593fcf5",
+      "pages": 6,
+      "bias": 17592188141568,
+      "entry": 17592188149760
+    },
+    "large": {
+      "sha256": "82a6594ece9f5fc68e8e5430e7a7637600e36471561ec177fb4368cd892ad443",
+      "pages": 8196,
+      "bias": 26389352808448,
+      "entry": 26389352816640
+    }
+  },
+  "program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 416806,
+      "memory_size": 416806,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1074159616,
+      "file_size": 174952,
+      "memory_size": 174952,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1074335744,
+      "file_size": 14048,
+      "memory_size": 42616,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 1074349736,
+      "file_size": 56,
+      "memory_size": 80,
+      "alignment": 8
+    }
+  ],
+  "guest_elf_sha256": "65a7f98afb323d215f966ed60d54eac9f14f19df8d97c3b8e681729301779012",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "expired_output": "dash /tests/expired.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD1_RTLD_PHASE_EXPIRED request=unsent\n[task] event=reclaimed pid=11 pages=200\r\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=54\nxsh> ",
+  "output": "dash /tests/probe.sh\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x0000000000360000\r\n[loader] started pid=12 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=12\r\n[process] event=started pid=13 parent=12\r\n[process] pid=13 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=12 child=13\r\nD1_RTLD_SMALL pages=6 holes=reserved r_rx_rw=checked pin_cursor=73\nD1_RTLD_LARGE pages=8196 holes=reserved r_rx_rw=checked pin_cursor=73\nD1_RTLD_DEPENDENCY_MAPPED early=81 late=83 inherited=EFGH\n[task] event=reclaimed pid=13 pages=235\r\nD1_RTLD_MAP_RC=0\n[task] event=reclaimed pid=12 pages=316\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "f7c1fd1721c593acfa519c8a707ea04bfec7a54b812d0ef8db7048edbd152006"
+}

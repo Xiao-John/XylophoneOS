@@ -1,0 +1,256 @@
+--- a/elf/dl-load.h
++++ b/elf/dl-load.h
+@@ -27,6 +27,15 @@
+ #include <libc-pointer-arith.h>
+ #include <stackinfo.h>
+ #include <not-cancel.h>
++
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++# include <xos_rtld_loader_io.h>
++#else
++# define dl_load_open __open64_nocancel
++# define dl_load_read __read_nocancel
++# define dl_load_pread __pread64_nocancel
++# define dl_load_close __close_nocancel
++#endif
+
+
+ /* Type for the buffer we put the ELF header and hopefully the program
+@@ -164,7 +173,7 @@
+ 	batch = phdrs_per_buf;
+       size_t bytes = (size_t) batch * sizeof (ElfW(Phdr));
+       ElfW(Off) off = it->phoff + (ElfW(Off)) idx * sizeof (ElfW(Phdr));
+-      if (__pread64_nocancel (it->fd, it->fbp->buf, bytes, off)
++      if (dl_load_pread (it->fd, it->fbp->buf, bytes, off)
+ 	  != (ssize_t) bytes)
+ 	return NULL;
+       it->buf_base = idx;
+--- a/elf/dl-load.c
++++ b/elf/dl-load.c
+@@ -1133,6 +1133,7 @@
+      in this information for the executable in case of an explicit
+      loader invocation.  */
+   struct r_file_id id;
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+   if (mode & __RTLD_OPENEXEC)
+     {
+       assert (nsid == LM_ID_BASE);
+@@ -1145,8 +1146,16 @@
+ 	}
+     }
+   else
+-    {
++#endif
++    {
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++      /* The closed plan supplies only one canonical name per shared object.
++         Its native pin identity was authenticated before mapping.  */
++      memset (&id, 0, sizeof (id));
++      if (__glibc_unlikely (!dl_load_check_pin (fd)))
++#else
+       if (__glibc_unlikely (!_dl_get_file_id (fd, &id)))
++#endif
+ 	{
+ 	  errstring = N_("cannot stat shared object");
+ 	lose_errno:
+@@ -1154,7 +1163,7 @@
+ 	lose:
+ 	  /* The file might already be closed.  */
+ 	  if (fd != -1)
+-	    __close_nocancel (fd);
++	    dl_load_close (fd);
+ 	  if (l != NULL && l->l_map_start != 0)
+ 	    _dl_unmap_segments (l);
+ 	  if (l != NULL && l->l_origin != (char *) -1l)
+@@ -1168,13 +1177,14 @@
+ 	  _dl_signal_error (errval, name, NULL, errstring);
+ 	}
+
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+       /* Look again to see if the real name matched another already loaded.  */
+       for (l = GL(dl_ns)[nsid]._ns_loaded; l != NULL; l = l->l_next)
+ 	if (!l->l_removed && _dl_file_id_match_p (&l->l_file_id, &id))
+ 	  {
+ 	    /* The object is already loaded.
+ 	       Just bump its reference count and return it.  */
+-	    __close_nocancel (fd);
++	    dl_load_close (fd);
+
+ 	    /* If the name is not in the list of names for this object add
+ 	       it.  */
+@@ -1183,6 +1193,7 @@
+
+ 	    return l;
+ 	  }
++#endif
+     }
+
+ #ifdef SHARED
+@@ -1207,7 +1218,7 @@
+
+       /* No need to bump the refcount of the real object, ld.so will
+ 	 never be unloaded.  */
+-      __close_nocancel (fd);
++      dl_load_close (fd);
+
+       /* Add the map for the mirrored object to the object list.  */
+       _dl_add_to_namespace_list (l, nsid);
+@@ -1223,7 +1234,7 @@
+       /* We are not supposed to load the object unless it is already
+ 	 loaded.  So return now.  */
+       free (realname);
+-      __close_nocancel (fd);
++      dl_load_close (fd);
+       return NULL;
+     }
+
+@@ -1347,7 +1358,7 @@
+ 	  errstring = N_("cannot allocate memory for program header");
+ 	  goto lose_errno;
+ 	}
+-      if ((size_t) __pread64_nocancel (fd, newp, phdr_size,
++      if ((size_t) dl_load_pread (fd, newp, phdr_size,
+ 				       header.e_phoff) != phdr_size)
+ 	{
+ 	  free (newp);
+@@ -1396,7 +1407,7 @@
+       }
+
+   /* We are done mapping in the file.  We no longer need the descriptor.  */
+-  if (__glibc_unlikely (__close_nocancel (fd) != 0))
++  if (__glibc_unlikely (dl_load_close (fd) != 0))
+     {
+       errstring = N_("cannot close file descriptor");
+       goto lose_errno;
+@@ -1595,7 +1606,7 @@
+   const char *errstring = NULL;
+   int errval = 0;
+
+-#ifdef SHARED
++#if defined SHARED && !defined XOS_RTLD_CLOSED_DEPENDENCIES
+   /* Give the auditing libraries a chance.  */
+   if (__glibc_unlikely (GLRO(dl_naudit) > 0))
+     {
+@@ -1608,7 +1619,7 @@
+ 	{
+ 	  /* An audit library changed what we're supposed to open,
+ 	     so FD no longer matches it.  */
+-	  __close_nocancel (fd);
++	  dl_load_close (fd);
+ 	  fd = -1;
+ 	}
+     }
+@@ -1616,7 +1627,7 @@
+
+   if (fd == -1)
+     /* Open the file.  We always open files read-only.  */
+-    fd = __open64_nocancel (name, O_RDONLY | O_CLOEXEC);
++    fd = dl_load_open (name, O_RDONLY | O_CLOEXEC);
+
+   if (fd != -1)
+     {
+@@ -1630,7 +1641,7 @@
+       /* Read in the header.  */
+       do
+ 	{
+-	  ssize_t retlen = __read_nocancel (fd, fbp->buf + fbp->len,
++	  ssize_t retlen = dl_load_read (fd, fbp->buf + fbp->len,
+ 					    sizeof (fbp->buf) - fbp->len);
+ 	  if (retlen <= 0)
+ 	    break;
+@@ -1652,7 +1663,7 @@
+ 	  _dl_exception_create (&exception, name, errstring);
+ 	  if (free_name)
+ 	    free ((char *) name);
+-	  __close_nocancel (fd);
++	  dl_load_close (fd);
+ 	  _dl_signal_exception (errval, &exception, NULL);
+ 	}
+
+@@ -1690,7 +1701,7 @@
+ 	      *found_other_class = true;
+ 	      if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+ 		_dl_debug_printf ("    (incompatible ELF class)\n");
+-	      __close_nocancel (fd);
++	      dl_load_close (fd);
+ 	      __set_errno (ENOENT);
+ 	      return -1;
+ 	    }
+@@ -1730,7 +1741,7 @@
+ 	{
+ 	  if (__glibc_unlikely (GLRO(dl_debug_mask) & DL_DEBUG_LIBS))
+ 	    _dl_debug_printf ("    (incompatible ELF machine)\n");
+-	  __close_nocancel (fd);
++	  dl_load_close (fd);
+ 	  __set_errno (ENOENT);
+ 	  return -1;
+ 	}
+@@ -1760,3 +1771,4 @@
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ /* Try to open NAME in one of the directories in SPS.  Return the fd, or -1.
+    If successful, fill in *REALNAME with the malloc'd full directory name.  If
+    it turns out that none of the directories in SPS exists, SPS->DIRS is
+@@ -1878,7 +1890,7 @@
+ 				      "object cannot be tested for being "
+ 				      "SUID or the bit is not set\n",
+ 				      buf);
+-		  __close_nocancel (fd);
++		  dl_load_close (fd);
+ 		  fd = -1;
+ 		  /* We simply ignore the file, signal this by setting
+ 		     the error value which would have been set by `open'.  */
+@@ -1900,7 +1912,7 @@
+ 	    {
+ 	      /* No memory for the name, we certainly won't be able
+ 		 to load and link it.  */
+-	      __close_nocancel (fd);
++	      dl_load_close (fd);
+ 	      dl_scratch_buffer_free (&scratch);
+ 	      return -1;
+ 	    }
+@@ -1938,6 +1950,8 @@
+   dl_scratch_buffer_free (&scratch);
+   return -1;
+ }
++
++#endif
+
+ struct link_map *
+ _dl_lookup_map (Lmid_t nsid, const char *name)
+@@ -1995,6 +2009,28 @@
+   /* Will be true if we found a DSO which is of the other ELF class.  */
+   bool found_other_class = false;
+
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++  /* The startup plan has already authenticated the complete dependency
++     closure. Resolve only its exact SONAMEs, without reopening paths.  */
++  if (nsid != LM_ID_BASE || trace_mode || GLRO (dl_naudit) != 0
++      || (mode & (__RTLD_DLOPEN | __RTLD_OPENEXEC | __RTLD_AUDIT)) != 0)
++    _dl_signal_error (ENOTSUP, name, NULL, N_("unsupported XOS linker mode"));
++  fd = dl_load_open (name, O_RDONLY | O_CLOEXEC);
++  if (fd != -1)
++    {
++      realname = __strdup (name);
++      if (realname == NULL)
++        {
++          dl_load_close (fd);
++          _dl_signal_error (ENOMEM, name, NULL,
++                            N_("cannot create shared object descriptor"));
++        }
++      fd = open_verify (realname, fd, &fb, loader, 0, mode,
++                        &found_other_class, true);
++      if (fd == -1)
++        free (realname);
++    }
++#else /* Generic pathname lookup.  */
+ #ifdef SHARED
+   /* Give the auditing libraries a chance to change the name before we
+      try anything.  */
+@@ -2180,6 +2216,7 @@
+ #ifdef SHARED
+  no_file:
+ #endif
++#endif /* XOS_RTLD_CLOSED_DEPENDENCIES */
+   /* In case the LOADER information has only been provided to get to
+      the appropriate RUNPATH/RPATH information we do not need it
+      anymore.  */

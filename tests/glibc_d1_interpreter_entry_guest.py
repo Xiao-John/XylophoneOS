@@ -87,22 +87,26 @@ def build(args, directory, report, rtld, sysroot):
     cflags = ['-B' + str(tools) + '/', '--sysroot=' + str(sysroot), '-nostdinc', '-O2',
               '-mno-red-zone', '-fno-builtin', '-fno-stack-protector', '-Wall', '-Wextra', '-Werror',
               '-isystem', sysroot / 'usr/include', '-isystem', lib / 'compiler-include']
-    pic, pie, image = (directory / name for name in ('image.o', 'main.pie', 'interpreter.so'))
+    pic, pie, image, dependency = (directory / name for name in
+                                  ('image.o', 'main.pie', 'interpreter.so', 'dependency.so'))
     run('compile_images', [compiler['gcc']['path'], *cflags, '-fPIC', '-ffreestanding',
                            '-c', FIXTURES / 'layout_dso.c', '-o', pic])
     ld = [compiler['ld']['path'], '-e', 'd1_entry', '-z', 'noexecstack', '-z', 'max-page-size=8192',
           '-z', 'separate-code', '--build-id=none', '--no-undefined']
     run('link_pie', [*ld, '-pie', '--dynamic-linker', INTERPRETER[:-1].decode(), '-o', pie, pic])
     run('link_shared_input', [*ld, '-shared', '-o', image, pic])
-    run('elf_inputs', [compiler['readelf']['path'], '-hW', '-lW', pie, image])
+    run('link_dependency', [*ld, '-shared', '-soname', 'libhandoff.so', '-o', dependency, pic])
+    run('elf_inputs', [compiler['readelf']['path'], '-hW', '-lW', '-dW', pie, image, dependency])
     with (directory / 'interpreter_plan.hpp').open('x') as header:
         report['images'] = {name: describe(path, name, bias, header) for name, path, bias in (
-            ('main', pie, BIASES[0]), ('interpreter', image, BIASES[1]))}
+            ('main', pie, BIASES[0]), ('interpreter', image, BIASES[1]),
+            ('dependency', dependency, 0x140020000000))}
 
     early, late, elf = (directory / name for name in ('entry.o', 'late.o', 'entry.elf'))
     run('compile_bootstrap', [compiler['g++']['path'], *cflags, '-fno-pie', '-ffreestanding',
                               '-fno-exceptions', '-fno-rtti', '-nostdinc++', '-std=gnu++20',
-                              '-I', sdk / 'include', '-I', ROOT / 'src/user/loader/glibc_d1', '-I', directory,
+                              '-I', sdk / 'include', '-I', ROOT / 'src/user/loader/glibc_d1',
+                              '-I', OVERLAY, '-I', directory,
                               '-c', FIXTURES / 'interpreter_entry_guest.cpp', '-o', early])
     run('compile_late', [compiler['gcc']['path'], *cflags, '-fno-pie', '-I', OVERLAY,
                          '-c', FIXTURES / 'interpreter_entry_late.c', '-o', late])
@@ -110,14 +114,15 @@ def build(args, directory, report, rtld, sysroot):
                        '-Wl,--build-id=none', '-Wl,-z,noexecstack', '-Wl,-z,max-page-size=4096',
                        '-Wl,--wrap=__xos_glibc_start', '-T', sysroot / 'user.ld', '-o', elf,
                        *(lib / item for item in ('xos_start.o', 'crti.o', 'crtbegin.o', 'xos_start_c.o')),
-                       early, late, rtld, sysroot / GLIBC_STDIO_RECEIVER, '-Wl,--start-group',
+                       early, late, rtld, rtld.parent / 'xos_rtld_mapping.os',
+                       rtld.parent / 'xos_file_session.os', sysroot / GLIBC_STDIO_RECEIVER, '-Wl,--start-group',
                        sdk / 'lib/libxos_loader.a', lib / 'libc.a', lib / 'libxos_terminal.a',
                        sdk / 'lib/libxos.a', lib / 'libgcc.a', '-Wl,--end-group',
                        lib / 'crtend.o', lib / 'crtn.o'])
     report['program_headers'] = verify_elf(elf)
     require_stdio_marker(elf.read_bytes(), elf.name)
     report['guest_elf_sha256'] = sha(elf)
-    return pie, image, elf
+    return pie, image, dependency, elf
 
 
 def exercise(args, directory, inputs, report):
@@ -126,15 +131,17 @@ def exercise(args, directory, inputs, report):
     script = directory / 'child.sh'
     script.write_text('/usr/bin/d1_entry < /tests/input\nrc=$?\n'
                       'printf "D1_INTERPRETER_ENTRY_RC=%s\\n" "$rc"\nexit "$rc"\n')
-    pie, image, elf = inputs
+    empty = directory / 'empty.sh'
+    empty.write_text(script.read_text().replace('/usr/bin/d1_entry <', '/usr/bin/d1_entry empty <', 1))
+    pie, image, dependency, elf = inputs
     with tempfile.TemporaryDirectory(prefix='xos_d1_interpreter_entry_') as folder:
         disk = Path(folder) / 'work.img'
         create_fat32(disk, 512)
         for path in ('/usr', '/usr/bin', '/tests'):
             transfer(disk, 'mkdir', path)
         for path, source in (('/usr/bin/dash', args.dash), ('/usr/bin/d1_entry', elf),
-                             ('/tests/main.pie', pie), ('/tests/interpreter.so', image),
-                             ('/tests/input', data), ('/tests/child.sh', script)):
+                             ('/tests/main.pie', pie), ('/tests/interpreter.so', image), ('/tests/dependency.so', dependency),
+                             ('/tests/input', data), ('/tests/child.sh', script), ('/tests/empty.sh', empty)):
             transfer(disk, 'import', path, source)
         guest = Guest(args.system / 'xos-install.iso', 'interpreter_entry', work_disk=disk,
                       qmp_enabled=False, log_dir=directory)
@@ -151,6 +158,7 @@ def exercise(args, directory, inputs, report):
             report['output'] = result.decode(errors='replace')
             assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
             assert b'D1_INTERPRETER_STACK low=rejected below_min=rejected' in result, result
+            assert b'D1_RTLD_ENTRY_CLOSURE_OK soname=libhandoff.so' in result, result
             assert b'D1_INTERPRETER_ENTRY_RC=0' in result, result
             match = re.search(rb'D1_INTERPRETER_ENTRY_PREPARED phdr=(\d+) interpreter=0x([0-9a-f]+)'
                               rb' early=(\d+) late=(\d+) inherited=EFGH', result)
@@ -159,6 +167,13 @@ def exercise(args, directory, inputs, report):
             assert int(phnum) == report['images']['main']['phnum']
             assert int(entry, 16) == report['images']['interpreter']['entry']
             assert int(late) == int(early) + 2
+            assert resources(guest) == report['resources_before']
+            result = command(guest, 'dash /tests/empty.sh', b'kind=exited code=', timeout=120)
+            report['empty_output'] = result.decode(errors='replace')
+            assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
+            assert b'D1_RTLD_ENTRY_EMPTY_OK no_requests' in result, result
+            assert b'D1_INTERPRETER_ENTRY_RC=0' in result, result
+            assert b'inherited=EFGH' in result, result
             report['resources_after'] = resources(guest)
             assert report['resources_after'] == report['resources_before']
         finally:
@@ -184,7 +199,8 @@ def main():
         rtld_manifest = load_json(args.rtld_proof / 'manifest.json')
         rtld = args.rtld_proof / 'shared/elf/xos_rtld_entry.os'
         assert rtld_manifest['status'] == 'rtld_entry_compiled_startup_blocked'
-        assert rtld_manifest['artifacts']['shared/elf/xos_rtld_entry.os'] == sha(rtld)
+        for source, digest in rtld_manifest['artifacts'].items():
+            assert sha(args.rtld_proof / source) == digest
         assert rtld_manifest['source_sha256'] == load_json(args.sdk_build / 'manifest.json')['source_sha256']
         preparation = args.rtld_proof / 'prepared/manifest.json'
         assert sha(preparation) == rtld_manifest['preparation_manifest_sha256']
@@ -202,7 +218,8 @@ def main():
         assert sha(rtld) == report['rtld_object_sha256'] and sha(args.dash) == report['dash_sha256']
         assert sha(inputs[0]) == report['images']['main']['sha256']
         assert sha(inputs[1]) == report['images']['interpreter']['sha256']
-        assert sha(inputs[2]) == report['guest_elf_sha256']
+        assert sha(inputs[2]) == report['images']['dependency']['sha256']
+        assert sha(inputs[3]) == report['guest_elf_sha256']
         report['status'] = 'passed_subset'
     finally:
         write_report(args.output / 'report.json', report)

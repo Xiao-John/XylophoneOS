@@ -107,7 +107,7 @@ def build(args, directory, report, rtld):
                        '-Wl,--build-id=none', '-Wl,-z,noexecstack', '-Wl,-z,max-page-size=4096',
                        '-Wl,--wrap=__xos_glibc_start', '-T', sysroot / 'user.ld', '-o', elf,
                        *(lib / name for name in ('xos_start.o', 'crti.o', 'crtbegin.o', 'xos_start_c.o')),
-                       early, late, rtld / 'xos_rtld_mapping.os', rtld / 'xos_file_session.os',
+                       early, late, rtld / 'xos_rtld_mapping.os', rtld / 'xos_file_session.os', rtld / 'xos_rtld_entry.os',
                        sysroot / GLIBC_STDIO_RECEIVER, '-Wl,--start-group', lib / 'libc.a',
                        lib / 'libxos_terminal.a', sdk / 'lib/libxos.a', lib / 'libgcc.a',
                        '-Wl,--end-group', lib / 'crtend.o', lib / 'crtn.o'])
@@ -123,6 +123,8 @@ def exercise(args, directory, elf, report):
     script = directory / 'probe.sh'
     script.write_text('/usr/bin/d1_rtld_map < /tests/input\nrc=$?\n'
                       'printf "D1_RTLD_MAP_RC=%s\\n" "$rc"\nexit "$rc"\n')
+    expired = directory / 'expired.sh'
+    expired.write_text('/usr/bin/d1_rtld_map expired < /tests/input\n')
     with tempfile.TemporaryDirectory(prefix='xos_d1_rtld_mapping_') as folder:
         disk = Path(folder) / 'work.img'
         create_fat32(disk, 512)
@@ -130,7 +132,7 @@ def exercise(args, directory, elf, report):
             transfer(disk, 'mkdir', path)
         for path, source in (('/usr/bin/dash', args.dash), ('/usr/bin/d1_rtld_map', elf),
                              ('/tests/small.so', directory / 'small.so'), ('/tests/large.so', directory / 'large.so'),
-                             ('/tests/input', input_file), ('/tests/probe.sh', script)):
+                             ('/tests/input', input_file), ('/tests/probe.sh', script), ('/tests/expired.sh', expired)):
             transfer(disk, 'import', path, source)
         guest = Guest(args.system / 'xos-install.iso', 'rtld_mapping', work_disk=disk,
                       qmp_enabled=False, log_dir=directory)
@@ -143,6 +145,11 @@ def exercise(args, directory, elf, report):
             guest.expect_supervisor(trace=True, timeout=40)
             command(guest, 'demo quiet', b'demo tasks')
             report['resources_before'] = resources(guest)
+            expired_output = command(guest, 'dash /tests/expired.sh', b'kind=exited code=', timeout=60)
+            assert b'D1_RTLD_PHASE_EXPIRED request=unsent' in expired_output, expired_output
+            assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', expired_output) == [b'54'], expired_output
+            report['expired_output'] = expired_output.decode(errors='replace')
+            assert resources(guest) == report['resources_before']
             output = command(guest, 'dash /tests/probe.sh', b'kind=exited code=', timeout=150)
             report['output'] = output.decode(errors='replace')
             for label, dependency in report['dependencies'].items():

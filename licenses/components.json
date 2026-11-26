@@ -653,9 +653,9 @@
         "src/ports/qt6/qml/licenses/masm_license.txt": "9ba0c20a2972274f27e975d79ed3582e322d6891338266a52e2d3a9417fc0a72",
         "src/ports/qt6/qml/licenses/masm_qt_attribution.json": "41f6415212dc5a4b54ccd7cc686aeec520e0e03fc2a8e20b1328d342aa24e4e0"
       },
-      "used_in": ["static host QtQml and E18 source/build reconnaissance"],
-      "modifications": "No Qt Declarative source patches in this scope. See the locked archive LICENSES tree and per-file declarations for additional feature scopes.",
-      "distribution_status": "NOT_RUN: archive member and static redistribution/relink review, XOS guest build and distribution"
+      "used_in": ["static host QtQml and E18 XOS glibc interpreter candidate"],
+      "modifications": "The XOS target patch selects the XOS anonymous VM allocator and disables the QML disk cache. Additional module terms are in the locked archive LICENSES tree and per-file declarations.",
+      "distribution_status": "NOT_RUN: archive member and static redistribution/relink review and distribution"
     },
     {
       "name": "liteHTML and bundled Gumbo (Aurora Browser)",

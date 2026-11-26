@@ -1,0 +1,63 @@
+--- a/src/qml/CMakeLists.txt
++++ b/src/qml/CMakeLists.txt
+@@ -633 +632,0 @@
+-        jsruntime/qv4compilationunitmapper_unix.cpp
+@@ -634,0 +634,4 @@
++)
++
++qt_internal_extend_target(Qml CONDITION UNIX AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS"
++    SOURCES jsruntime/qv4compilationunitmapper_unix.cpp
+@@ -720 +723 @@
+-qt_internal_extend_target(Qml CONDITION UNIX AND NOT INTEGRITY
++qt_internal_extend_target(Qml CONDITION UNIX AND NOT INTEGRITY AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS"
+@@ -722,0 +726,4 @@
++)
++
++qt_internal_extend_target(Qml CONDITION CMAKE_SYSTEM_NAME STREQUAL "XOS"
++    SOURCES ../3rdparty/masm/wtf/os_allocator_xos.cpp
+--- a/src/3rdparty/masm/wtf/PageBlock.cpp
++++ b/src/3rdparty/masm/wtf/PageBlock.cpp
+@@ -28,0 +29,4 @@
++#ifdef Q_OS_XOS
++#include <xos/vm_abi.hpp>
++#endif
++
+@@ -43 +47,8 @@
+-#if OS(UNIX)
++#if defined(Q_OS_XOS)
++
++inline size_t systemPageSize()
++{
++    return xos::vm_page_size;
++}
++
++#elif OS(UNIX)
+--- a/src/qml/jsruntime/qv4engine.cpp
++++ b/src/qml/jsruntime/qv4engine.cpp
+@@ -2248,0 +2249,3 @@
++#ifdef Q_OS_XOS
++    return DiskCache::Disabled;
++#else
+@@ -2257,0 +2261 @@
++#endif
+--- a/src/qml/jsruntime/qv4compilationunitmapper.cpp
++++ b/src/qml/jsruntime/qv4compilationunitmapper.cpp
+@@ -14,0 +15,15 @@
++
++#ifdef Q_OS_XOS
++
++CompiledData::Unit *CompilationUnitMapper::get(const QString &, const QDateTime &,
++                                             QString *errorString)
++{
++    *errorString = QStringLiteral("QML disk cache is unavailable on XOS");
++    return nullptr;
++}
++
++void CompilationUnitMapper::invalidate(const QString &)
++{
++}
++
++#else
+@@ -80,0 +96,2 @@
++#endif
++

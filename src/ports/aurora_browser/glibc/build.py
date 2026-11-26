@@ -72,6 +72,7 @@ def prepare_tls(args, output, sdk, env):
     origin_header = config / "clarke_https_origin.hpp"
     origin_header.write_text(f'static constexpr char clarke_tls_host[] = "{host}";\n'
                              f'static constexpr char clarke_tls_address[] = "{address}";\n'
+                             f'static constexpr bool clarke_tls_resolve_net2 = {str(args.tls_resolve_net2).lower()};\n'
                              f'static constexpr unsigned clarke_tls_port = {port};\n')
     target = output / "tls"
     archive_snapshot = config / "mbedtls.tar.bz2"
@@ -95,6 +96,7 @@ def prepare_tls(args, output, sdk, env):
     flags = [f"-DXOS_CLARKE_TLS_{key}={path}" for key, path in
              (("BUILD", target), ("UPSTREAM", upstream), ("CONFIG", config))]
     details = {"host": host, "port": port, "ipv4_address": address, "root_der_sha256": anchor_digest,
+               "address_source": "net2_dns" if args.tls_resolve_net2 else "pinned",
                "native_tls_receipt_sha256": sha(target / "receipt.json")}
     return flags, inputs, command, details
 
@@ -108,9 +110,11 @@ def main():
     parser.add_argument("--tls-address", help="pinned IPv4 destination for that origin")
     parser.add_argument("--tls-archive", type=Path, help="locked Mbed TLS source archive")
     parser.add_argument("--tls-root-der", type=Path, help="DER trust anchor for that origin")
+    parser.add_argument("--tls-resolve-net2", action="store_true",
+                        help="require the authenticated resolver to return the pinned route")
     args = parser.parse_args()
     tls_options = (args.tls_origin, args.tls_address, args.tls_archive, args.tls_root_der)
-    if any(tls_options) and not all(tls_options):
+    if (any(tls_options) or args.tls_resolve_net2) and not all(tls_options):
         parser.error("HTTPS requires origin, destination address, source archive and trust anchor together")
     sdk_build, qt_build, prefix, qt_source, host = (
         path.resolve(strict=True) for path in

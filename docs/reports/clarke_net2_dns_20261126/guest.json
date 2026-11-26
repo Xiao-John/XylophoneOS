@@ -1,0 +1,73 @@
+{
+  "status": "passed",
+  "checks": [
+    "authenticated_https_html_css_bmp_and_pixels",
+    "mixed_transport_stylesheet_denied",
+    "trusted_chain_with_wrong_san_denied_before_http",
+    "net2_resolver_preserves_authority_and_rejects_different_route",
+    "untrusted_certificate_denied_before_http",
+    "bilateral_tls_close_and_native_resource_recovery"
+  ],
+  "build_id": "0a702f30cad8abeb",
+  "image_sha256": "b2ac2a0db23b7d45c23767e69765ed25eaaedecf50a565be1dbb01a9e6cecd8f",
+  "browser_sha256": "92f6c30f1a74b028bcac0c7a83852e0cf6fed039c1bd627585489b4084a69aab",
+  "receipt_sha256": "81a1c2801dbd373760ae62787c4caf9720c2695bd97bf1312930a1d45b5cc307",
+  "profile": {
+    "address_source": "net2_dns",
+    "host": "tls.xos.test",
+    "ipv4_address": "10.0.2.2",
+    "native_tls_receipt_sha256": "4be2dbd15186fedfaebd7251911545062fb31fca6a32d53446191c5f8c165cc4",
+    "port": 18443,
+    "root_der_sha256": "0ae85d18be771da979b4f02e4305e91be83a9f35b0fa195732d90668357cc203"
+  },
+  "package_sha256": "5abcf685650dc8a5613578d076c63201ca41f9492ed44041d55aced562c09213",
+  "sdk_profile_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "installation": {
+    "status": "exported_candidate",
+    "operation": "install",
+    "id": "xos.clarke",
+    "source_sha256": "4dab6c86e68e7f5ef0e060c7d7bd6004278d1c34af957f5e4faac401538d1912",
+    "output_sha256": "5d37276c9eaa376cdcf692a4cebba01379958f6bd89f778b866098a8b3e3560e",
+    "verified_files": 38,
+    "mutations": 65,
+    "backend_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f"
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "screenshot_sha256": "75abb37cc152666ba7bb2604a65f933501e9fc37e398d0f7f9d994bd3ecbf4e4",
+  "host": {
+    "requests": [
+      "/35bd291d2dbfb11ae56ad905f8f29df3/index.html",
+      "/35bd291d2dbfb11ae56ad905f8f29df3/theme.css",
+      "/35bd291d2dbfb11ae56ad905f8f29df3/proof.bmp",
+      "/35bd291d2dbfb11ae56ad905f8f29df3/mixed.html"
+    ],
+    "sni": [
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test",
+      "tls.xos.test"
+    ],
+    "handshake_errors": [
+      "TLSV1_ALERT_UNKNOWN_CA",
+      "SSLV3_ALERT_BAD_CERTIFICATE"
+    ],
+    "connections": 6,
+    "closed": 4,
+    "dns": [
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.2"
+      },
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.2"
+      },
+      {
+        "name": "tls.xos.test",
+        "answer": "10.0.2.99"
+      }
+    ]
+  }
+}

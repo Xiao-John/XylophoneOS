@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "snapshot_created_before_fixture_compilation": true,
+  "late_worktree_edit_present_at_compiler_exit": true,
+  "source_restored": true,
+  "frozen_probe_sha256": "d620008ecc3c2a18972b9df556f6631f7f2db5daf7bf03e2bf50277aa4f057bf",
+  "late_worktree_edit_sha256": "da3ff0b781873db4a7011174e94f335ba5a37f1bff949551d1a3497c6a457eec",
+  "target_elf_sha256": "0ea2007d09f364a2a4ecb69877c3a7fe5f9f4f029ceee7b4fb85a79be35a7063"
+}

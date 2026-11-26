@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "implementation_commit": "4cc23087a6e3b992b9a6b6fcc008ceda6cbd2dde",
+  "implementation_tree": "5e0c5d5a8e516f1e3b28e74d6827ba559675c624",
+  "serial_raw_sha256": "55d1d5fcd2150aad2e810285b3b791ddb974df2e34b49b1c4c54b015c4130902",
+  "xml_serial_raw_sha256": "e9decab706718541bf8bd4fb01ebfd086589a9f1ae74ed7b6e98f62d203d6d18",
+  "files": {
+    "guest.json": "c40aaba938a2837c7c26c77d8da58bd613319fb3595faa4a4bee9c420969da4f",
+    "guest.serial.log.gz": "794370c925233d0f1acb192706a87a896412efcbace64bd11a1df01b11b99cb4",
+    "target.json": "819dbf8b3a15323dbbe756cb16e0a99c05491ee3c5ad0849802ad18c5e27c6fd",
+    "xml_rebound.json": "9a04b956825d960798571481aa58160ff8fa1ccc69d8f611bb152850a8dd00b9",
+    "xml_rebound.serial.log.gz": "a33fafe805d80204b2759a1e95aefcef4c5f6469a809672e6f4cbf9a3f8b4060",
+    "host_recheck.json": "3e9d148efccc54256dd6fabc5c658a69174a90177948c1fae737d0a4ec273f70"
+  }
+}

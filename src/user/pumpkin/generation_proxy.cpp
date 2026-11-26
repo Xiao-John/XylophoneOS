@@ -55,6 +55,11 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     if (!serial_exchange(uart, ready, response) || response.expected != generation_mark{} ||
         response.value != generation_mark{}) return false;
     const auto mode = static_cast<scenario>(response.result);
+#if XOS_PUMPKIN_MOBIUS
+    const bool desktop = mode == scenario::user_desktop;
+#else
+    constexpr bool desktop = false;
+#endif
 #if XOS_PUMPKIN_USER_LOGIN
 #if XOS_PUMPKIN_USER_RESOURCE
     constexpr auto last_mode = scenario::user_resource;
@@ -71,8 +76,8 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     named_operator::packet selected{};
     u8 named_result = 0;
 #endif
-    if ((mode < scenario::user_enroll || mode > last_mode) && !named_read && !named_mutation) return false;
-    const bool submitting = mode == scenario::user_login || mode == scenario::user_resource || named_read;
+    if ((mode < scenario::user_enroll || mode > last_mode) && !named_read && !named_mutation && !desktop) return false;
+    const bool submitting = mode == scenario::user_login || mode == scenario::user_resource || named_read || desktop;
     const bool credentials_needed = submitting || mode == scenario::user_enroll;
     wire_id credential_owner{};
     bool credential_exchanged = false, credential_slots_cleared = false;
@@ -112,7 +117,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     if (owner.daemon == 0 || !find_pair(controller, owner.daemon, service)) return false;
 
     u64 sequence = 0;
-    const u64 end = deadline(23'000'000'000);
+    const u64 end = deadline(23'000'000'000 + (desktop ? connection_lifetime_ns : 0));
     if (end == 0) return false;
     for (;;) {
         supervisor_result finish{};
@@ -193,8 +198,9 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
 #endif
 #if XOS_PUMPKIN_NATIVE_LOGIN
         using result = xos::user::pumpkin::native_login::result;
-        const auto last_error = mode == scenario::user_resource || mode == scenario::user_named_read
-            ? result::broker_cleanup : result::holder_exit;
+        const auto last_error = desktop ? result::desktop_failed :
+            (mode == scenario::user_resource || mode == scenario::user_named_read
+                ? result::broker_cleanup : result::holder_exit);
         valid = valid || (finish.pass >= static_cast<u8>(result::holder_start) &&
                           finish.pass <= static_cast<u8>(last_error));
 #endif

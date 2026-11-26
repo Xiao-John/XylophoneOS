@@ -177,6 +177,21 @@ installed browser. It observes rendered pixels, the verified TLS status,
 rejection of a plaintext stylesheet and an untrusted certificate, bilateral
 TLS close and process resource recovery.
 
+Add `--tls-resolve-net2` to require resolution through the authenticated
+N4 session. The same session opens TCP only after the resolver returns the
+configured address. The URL hostname remains the TLS SNI, certificate identity
+and HTTP Host. Resolver failure or a different route ends navigation. The
+`pinned` address source selects the static developer HTTPS route. Numeric HTTP
+uses explicit IPv4 destinations under its own policy.
+
+For this test, build the system with `--net-dns-probe` and use a network-isolated
+Linux container with `--network none --dns 127.0.0.1`. The runner starts its
+private loopback DNS fixture on UDP 53 and keeps the TLS listener on the
+configured high port. The container needs permission to bind its own UDP 53.
+The resolver fixture and TLS listener serve only the controlled test origin.
+The runner also checks a trusted certificate for another hostname and a
+different DNS route without sending HTTP on either path.
+
 Historical local-provider evidence, measured scope and failed iterations are in
 [0083](../work_log/0083_aurora_browser_offline.md).
 

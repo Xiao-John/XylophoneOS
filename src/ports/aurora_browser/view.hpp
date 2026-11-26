@@ -267,7 +267,17 @@ public:
     int get_default_font_size()const override{return 16;}
     const char *get_default_font_name()const override{return "DejaVu Sans";}
     void draw_list_marker(litehtml::uint_ptr,const litehtml::list_marker &m)override {if(!painter)return;painter->setPen(color(m.color));painter->setBrush(color(m.color));if(m.marker_type==litehtml::list_style_type_decimal)painter->drawText(box(m.pos),QString::number(m.index)+".");else painter->drawEllipse(box(m.pos));}
-    void load_image(const char *src,const char *base,bool)override {auto path=resource(src,base);if(path.isEmpty()||images.contains(path))return;if(images.size()>=8)throw std::runtime_error("image quota");QByteArray data;QString error;if(!resource_extension(path,".bmp")||!source_.load(path,data,1048630,error)||data.size()<54||data.mid(0,2)!="BM"){std::printf("BROWSER_RESOURCE_REJECT image\n");return;}
+    void load_image(const char *src,const char *base,bool)override {
+        auto path=resource(src,base);
+        if(path.isEmpty()||images.contains(path))return;
+        if(images.size()>=8)throw std::runtime_error("image quota");
+        QByteArray data;
+        QString error;
+        if(!resource_extension(path,".bmp")||!source_.load(path,data,1048630,error)||data.size()<54||data.mid(0,2)!="BM"){
+            const auto reason = error.isEmpty() ? QByteArray("format") : error.toUtf8();
+            std::printf("BROWSER_RESOURCE_REJECT image %s\n", reason.constData());
+            return;
+        }
         auto u32=[&](int offset){return quint32(quint8(data[offset]))|(quint32(quint8(data[offset+1]))<<8)|(quint32(quint8(data[offset+2]))<<16)|(quint32(quint8(data[offset+3]))<<24);};
         // Only uncompressed Windows BMP, bounded positive dimensions before Qt.
         auto w=u32(18),h=u32(22);if(u32(14)!=40||w==0||h==0||w>512||h>512||u32(30)!=0||quint8(data[28])!=24||quint8(data[29])!=0){std::printf("BROWSER_RESOURCE_REJECT bmp-header\n");return;}

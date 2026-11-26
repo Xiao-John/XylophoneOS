@@ -52,3 +52,11 @@ GNU Make 仍以 ELF 导入。动态链接、GNU Make 递归 jobserver、其他�
 若候选使用不同的 SDK 树、SDK 清单或 profile，按上述命令重建两个 XPK 和 GNU Make。
 新的报告同时记录新候选清单、两张 ISO、三个包和 GNU Make 的摘要，以及该次真实客体
 结果。此处保留候选 `7f88e4f9070640c2` 的原始阶段证据。
+
+## 安装回执加强后的两次启动
+
+候选 `7ec6c8d583db12c9` 已完成两张 ISO 与 SDK 回执交叉核对。旧应用的完整 SDK 树和
+profile 摘要与新候选相同，可以复用原应用字节。真实 QEMU 以新安装镜像及普通镜像
+启动同一工作盘，重复通过 C、C++、GNU Make、日用工具和状态文件持久化。每次停机均
+核对三个包、50 个登记文件，最终 FAT 读回四份文件。两张镜像及 runner 的摘要重新绑定。
+[新候选组合回执](../reports/glibc_stock_apps_post285_20261126/manifest.json)

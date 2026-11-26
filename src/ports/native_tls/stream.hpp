@@ -6,6 +6,8 @@
 
 namespace native_tls {
 
+enum class route_source { pinned, net2_dns };
+
 // Single-use, single-threaded TLS 1.3 client. The caller supplies the trusted
 // service identity, DER trust anchor, and DNS name independently of the address.
 class stream {
@@ -17,7 +19,7 @@ public:
 
     int connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
                 const char* hostname, const unsigned char* trust_anchor,
-                size_t trust_anchor_size, xos::u64 deadline);
+                size_t trust_anchor_size, xos::u64 deadline, route_source route = route_source::pinned);
     int write(const unsigned char* data, size_t size);
     // Zero is a verified TLS close_notify. Unauthenticated transport EOF fails.
     int read(unsigned char* data, size_t capacity);

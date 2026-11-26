@@ -1,0 +1,133 @@
+{
+  "build_receipt": {
+    "path": "usr/share/xos.cpython/build_receipt.json",
+    "sha256": "96824f139f1e18d879d6ccd706ff6a0906c83f9cc4c097261fd440a87825618b"
+  },
+  "files": [
+    {
+      "path": "usr/bin/python3",
+      "role": "executable",
+      "sha256": "a581294047917223a7d4907f439b927bdb75f736389e858dd879a6b0062351be",
+      "size": 9402160,
+      "type": "file"
+    },
+    {
+      "path": "usr/lib/python3.14/os.py",
+      "role": "data",
+      "sha256": "976bdb3e24925f2fb3ce43a4d788de6dcbb88a7cc8604c60ae690fbdd6507546",
+      "size": 41958,
+      "type": "file"
+    },
+    {
+      "path": "usr/lib/python314.zip",
+      "role": "data",
+      "sha256": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79",
+      "size": 10654445,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/cpython/LICENSE",
+      "role": "data",
+      "sha256": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+      "size": 13804,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/LICENSE",
+      "role": "data",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "size": 11358,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses/mit_legacy.txt",
+      "role": "data",
+      "sha256": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+      "size": 1223,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/COPYING.LIB",
+      "role": "data",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+      "size": 26419,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/LICENSES",
+      "role": "data",
+      "sha256": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+      "size": 19665,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING",
+      "role": "data",
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+      "size": 18002,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB",
+      "role": "data",
+      "sha256": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861",
+      "size": 26527,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME",
+      "role": "data",
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+      "size": 3324,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/xos/LICENSE",
+      "role": "data",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "size": 11358,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/licenses/xos.cpython/xos/NOTICE",
+      "role": "data",
+      "sha256": "dd2d47bae96472ce65252423f76ec3b868e83b4a03b34753f77f74f7a3c3f62e",
+      "size": 1874,
+      "type": "file"
+    },
+    {
+      "path": "usr/share/xos.cpython/build_receipt.json",
+      "role": "data",
+      "sha256": "96824f139f1e18d879d6ccd706ff6a0906c83f9cc4c097261fd440a87825618b",
+      "size": 55488,
+      "type": "file"
+    }
+  ],
+  "format_version": 1,
+  "id": "xos.cpython",
+  "licenses": [
+    "usr/share/licenses/xos.cpython/cpython/LICENSE",
+    "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/COPYING.LIB",
+    "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/LICENSES",
+    "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING",
+    "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB",
+    "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME",
+    "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/LICENSE",
+    "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses/mit_legacy.txt",
+    "usr/share/licenses/xos.cpython/xos/LICENSE",
+    "usr/share/licenses/xos.cpython/xos/NOTICE"
+  ],
+  "required_features": [
+    "directories",
+    "file_io",
+    "heap",
+    "static_tls",
+    "stdio",
+    "threads"
+  ],
+  "revision": 0,
+  "runtime_dependencies": [],
+  "source": "Pinned CPython source and the native static interpreter in the build receipt",
+  "target_profile": "xos-x86_64-glibc-stock-fork-v1",
+  "upstream_version": "3.14.9"
+}

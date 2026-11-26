@@ -11,6 +11,12 @@ GCC 16.2.0 和 GNU binutils 2.47 构建 XOS 静态库。首次完整构建和来
 导致复验工件导出失败。保留首轮独立的完整工件和记录。
 [构建、链接和运行命令](../../src/ports/webkit/icu/README.md)
 
+评审后从空目录重跑正式入口。宿主显式设置 `LIBS=-lxos_unavailable_host_sentinel`，
+构建器清除该值，宿主与目标各自构建成功。新镜像 `8d7525f679d42e69` 运行了
+逐字节相同的静态 ELF。新构建清单 SHA-256 为
+`f5ccbeddf417880ea812aac4f9c9f6a7be3936b0dcda34949fb135490c4ed7b4`，客体回执为
+`8928525b9d62443557ce0c72f7b12fc52a419193db22683837f6eef50f4430ae`。
+
 QEMU 11.1.3，常规 BIOS 系统 `dcc48dddea8b7785`，xsh 输出 `ICU_SMOKE_OK` 后
 退出 0。NFC 组合、德语大写、英文词边界和标准排序成功，资源前后为
 `129714 / 3 / 1`。链接器报告 SDK 的 `raise` 和 `__getcwd` 缺口，本回归未使用
@@ -32,6 +38,14 @@ QEMU 11.1.3，常规 BIOS 系统 `dcc48dddea8b7785`，xsh 输出 `ICU_SMOKE_OK` 
 Ruby 2.6.10 和 GCC 16.2.0 完成配置和生成。CMake 缓存中的 `data`、`i18n`、
 `uc` 均指向经过摘要核对的目标静态库。配置日志 SHA-256 为
 `937e7a3902baf009e0ce2cd876e76b1a34c1e9bac7f5c6bd8f31f7277077c7b9`。
+
+执行真实 `cmake --build <目录> --target jsc`。首轮 bmalloc 发现目标未选分配器。
+添加 `-DUSE_SYSTEM_MALLOC=ON` 重建后越过该错误。接下来 WTF 与解释器生成工具
+无法编译目标线程类型。XOS 已提供基本 pthread，WTF 还需独立的线程栈、跨线程
+挂起和 GC 协作路径。默认 POSIX 后端的 `sigaction` 和 `pthread_kill` 不能直接
+视为可用。两个编译日志 SHA-256 分别为
+`4bc0b65c9acf22bc64433036b4058a557c66c91a117ccceb8f3325d5e2338894`
+和 `6e03ac7d9a1a580805469b05a26cc2b28526f095752ce278ad02277b02aceda5`。
 
 独立安装前缀只用于开发。解释器构建、WebCore、完整 locale/文件语义、dash 入口和
 发行材料各有独立验收门。

@@ -44,7 +44,8 @@ def main():
     output = args.output.absolute()
     output.mkdir(parents=True, exist_ok=False)
     env, _ = clean_build_environment(os.environ)
-    env = {name: value for name, value in env.items() if not name.startswith(('ac_cv_', 'icu_cv_'))}
+    env = {name: value for name, value in env.items()
+           if name != 'LIBS' and not name.startswith(('ac_cv_', 'icu_cv_'))}
     env['LC_ALL'] = 'C'
     env['CONFIG_SITE'] = os.devnull
     env['CFLAGS'] = env['CXXFLAGS'] = '-O1 -g0'

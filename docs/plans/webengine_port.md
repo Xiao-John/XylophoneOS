@@ -58,7 +58,7 @@ XOS 平台标识补丁已用同一锁定归档实测。CMake 在 `CMAKE_SYSTEM_N
 
 ICU4C 79.1 的三个 XOS 静态组件已经构建并在客体测试，覆盖 NFC、大小写、词边界和
 排序。纳入该 ICU 前缀后，JSCOnly 识别了三个目标静态归档，CMake 配置及生成均通过。
-下一门是解释器构建与客体验收。
+用 glibc 系统分配器开始编译后，当前停在 WTF 对目标线程类型及挂起接口的假设。
 [ICU 构建器](../../src/ports/webkit/icu/README.md) · [ICU 客体记录](../work_log/4df1ab2c_clarke_icu4c_xos.md)
 
 现有 VirtIO-Net、N2/N3 已通过独立实测，ClarkE 的受控 HTTP 可作为网络对照。

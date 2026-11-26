@@ -5,7 +5,9 @@
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import json
+import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
@@ -107,6 +109,45 @@ def live_desktop(system, state, wallet, output):
                     processes[0].terminate()
 
 
+def retire_desktop(system, state, wallet, output):
+    with tempfile.TemporaryDirectory(dir="/tmp", prefix="pkadm_") as folder:
+        private = Path(folder)
+        command = [sys.executable, "-B", str(operator.__file__), "desktop", "--revoke-on-signal",
+                   "--system", str(system), "--state", str(state), "--credential-file", str(wallet)]
+        with subprocess.Popen(command, env={**os.environ, "TMPDIR": folder}, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, text=True) as process:
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(process.communicate)
+                try:
+                    end = time.monotonic() + 15
+                    address = None
+                    while not future.done() and time.monotonic() < end:
+                        address = next(private.glob("pumpkin_user_*/qmp"), None)
+                        if address is not None:
+                            break
+                        time.sleep(0.1)
+                    assert address is not None, "Live administration QMP did not start"
+                    screen = monitor(address)
+                    try:
+                        active = frame(screen, output / "active-before-revocation.ppm", future, light=False, timeout=140)
+                        time.sleep(2.1)  # The private operator has kept a verified session past its first poll.
+                        assert not future.done(), "The desktop closed before the administrator acted"
+                        start = time.monotonic()
+                        process.send_signal(signal.SIGUSR1)
+                        stdout, stderr = future.result(timeout=10)
+                        elapsed = time.monotonic() - start
+                    finally:
+                        screen.close()
+                    assert process.returncode == 0, stderr
+                    assert stdout.splitlines() == [f"Live Pumpkin administration enabled for process {process.pid}",
+                                                   "Pumpkin revoked the account and retired the active Mobius session"]
+                    return {"active_frame": active, "elapsed_ms": round(elapsed * 1000),
+                            "holder_refusal_and_resource_recovery": "confirmed"}
+                finally:
+                    if not future.done():
+                        process.terminate()
+
+
 def install(state, executable):
     operator.prepare(state)
     disk = state / "work.img"
@@ -146,10 +187,19 @@ def run(system, executable, output):
             report["checks"].append("operator wiped its submitted wallet before the first desktop frame")
             assert operator.operate(system, state, "login", wallet) == 1
             report["checks"].append("same credential can authenticate again after logout")
-            assert operator.operate(system, state, "revoke", None) == 1
+            unaffected = private / "unaffected-wallet"
+            assert operator.operate(system, state, "enroll", unaffected, account=b"bob") == 1
+            revision = authority.read().revision
+            report["live_revocation"] = retire_desktop(system, state, wallet, output)
+            assert authority.read().revision == revision + 1
+            report["checks"].append("authenticated host administration retired the already-visible desktop and its leases")
             assert operator.operate(system, state, "desktop", wallet) == 2
-            assert authority.read().revision == 3
+            assert operator.operate(system, state, "login", unaffected, account=b"bob") == 1
+            assert authority.read().revision == revision + 1
             report["checks"].append("durable revocation rejects a later desktop login")
+            assert operator.operate(system, state, "revoke", None, account=b"bob") == 1
+            assert authority.read().revision == revision + 2
+            report["checks"].append("live revocation did not alter the other account or the standalone administrator path")
 
             modified = private / "different.elf"
             data = executable.read_bytes()

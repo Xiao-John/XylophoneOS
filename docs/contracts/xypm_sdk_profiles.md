@@ -144,14 +144,30 @@ python3 scripts/build_glibc_program.py --cxx \
 部署目录作为一个单元，保留 `xos-app` 的执行权限。
 
 ```sh
+kit="$PWD/build/xos-glibc-sdk"
+project=build/hello
 python3 scripts/package_glibc_sdk.py --sdk-build "$XOS_GLIBC_CXX_SDK_BUILD" \
-  --profile build/xypm_profiles/glibc_cxx_candidate.json --output ./xos-glibc-sdk
-kit="$PWD/xos-glibc-sdk"
-"$kit/xos-app" init ./hello --id example.hello --language cpp
-"$kit/xos-app" build ./hello
-"$kit/xos-app" check ./hello
-"$kit/xos-app" pack ./hello --output ./hello.xpk
+  --profile build/xypm_profiles/glibc_cxx_candidate.json --output "$kit"
+"$kit/xos-app" init "$project" --id example.hello --language cpp
+"$kit/xos-app" build "$project"
+"$kit/xos-app" check "$project"
+"$kit/xos-app" pack "$project" --output build/hello.xpk
 ```
+
+在同一配套工具链下，用该目录构建带 glibc dash 的安装候选。
+
+```sh
+python3 scripts/build_candidate.py --output build/candidates/glibc_installer \
+  --glibc-app-kit "$kit" --installer-guest
+```
+
+候选清单绑定 kit、SDK、profile、dash 回执和冻结安装 ISO。
+`--installer-guest` 启动实际安装 ISO，从新工作盘验收 dash 安装、首个外部 ELF
+和交互命令。候选的监督进程在首个外部程序之前自动释放启动演示进程的槽位。
+`--guest` 还会运行普通系统 smoke，采用仓库工具链配置中的 QEMU 版本。
+系统自举和缺省的候选构建继续使用既有 SDK。切换整个应用 SDK 按迁移计划
+验收存量应用和回退。
+[glibc 迁移计划](../plans/glibc_port_scout.md#从加固期走向默认切换的门)
 
 运行路径选中部署目录内的 SDK 和 profile，工具可随目录搬移到源树外使用。
 目标构建要求 Python 3.11 及与 SDK manifest 匹配的 `x86_64-elf` 工具在 PATH 上。

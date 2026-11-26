@@ -1,0 +1,11 @@
+{
+  "application_profile_sha256": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+  "build_id": "6e7c97a2040ff325",
+  "installer_iso_sha256": "5ecf6708c12c7fd5cca46a4fb8dece4631c36346e672f1d1e70040273f77e9d9",
+  "packages": {
+    "external-c.xpk": "d7aeef8b75b2186236694ed67a2da81de3ff7bd07be260181faa85cd623706e2",
+    "external-cpp.xpk": "256709dbfa82361ba178861dbb6e847eccda0e01329a926113167443e2d7a57c"
+  },
+  "qemu": "QEMU emulator version 11.1.2",
+  "status": "failed"
+}

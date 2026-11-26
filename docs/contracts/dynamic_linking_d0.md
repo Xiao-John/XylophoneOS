@@ -135,6 +135,11 @@ bootstrap 只做原生启动适配、验证和映射交接，上游 rtld 继续�
 RELRO 与不可执行页异常、洞和精确保留冲突。客体使用内嵌该工件的静态测试程序。
 闭包、PIE 和 glibc rtld 启动留在完整 D1 验收范围内。
 
+[D1 原生 bootstrap 文件映射](../work_log/61e99048_glibc_d1_native_image_mapping.md)
+把高地址复制与保护接入原生 loader 归档。无 libc 的入口从同一个已核对摘要的
+只读 pin 定位读取原工具链工件，复用 sys67 和现有文件读取接口。该组件使用调用方
+给出的已核验 LOAD 描述与预算。真实闭包验证、重定位策略和启动交接继续按本契约实现。
+
 glibc 上游 `dl-map-segments.h` 的文件 mmap/MAP_FIXED 路径不能原样调用当前
 XOS mmap。XOS 后端应使用匿名私有保留与显式复制，保证 BSS/段尾为零、洞保持
 不可访问、对象不共享可写物理页、失败全量撤回，复用上游解析与布局语义。

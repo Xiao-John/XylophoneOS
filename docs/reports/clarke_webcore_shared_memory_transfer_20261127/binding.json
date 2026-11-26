@@ -1,0 +1,23 @@
+{
+  "scope": "same grant-backed WebCore CPU bitmap mapped in two authenticated XOS guest processes",
+  "main": "f09f2f7fba36943eef955cfb72a0d20269432808",
+  "graph_pr_head": "6cce70952822473ab1de4a166ba72daee87fa2fb",
+  "local_shared_memory_pr_head": "7e3a6adedd46d1d2fa7fda91dda72d7b76c330e6",
+  "source_commit": "286054d7cb7158e9022e7221b7f415df38fe6170",
+  "source_git_tree": "7d8491946e615dd03b19408bc8051d29eda10901",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "system_build_id": "4ee994892cab2a88",
+  "system_source_sha256": "4ee994892cab2a8827ea473dc82c8277718f99c07a9cc1f8c00a8a6cb1f288ab",
+  "system_manifest_sha256": "8be5366d985235ff64905bda61943d5accb687838b17216cc29f2dfe62aa9dbc",
+  "target_manifest_sha256": "acd5fdc7a2e21ab206a254bc5d07e46fb5ab5fdc5e14433270095b758b92e9b0",
+  "elf_sha256": "31d9a3077839c6915f5db69b2892e297d8e8340a254d6353e799fa82789497f7",
+  "target_compiler": "GCC 16.2.0",
+  "cmake": "4.4.5",
+  "scope_remaining": [
+    "general WebKit2 IPC and independently trusted senders",
+    "multi-grant viewports",
+    "receiver-initiated standalone capability drop",
+    "full page rendering"
+  ]
+}

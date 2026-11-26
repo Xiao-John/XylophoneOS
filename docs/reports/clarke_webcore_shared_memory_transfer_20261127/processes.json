@@ -1,0 +1,86 @@
+[
+  {
+    "mode": 1,
+    "parent": 11,
+    "child": 12,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 2,
+    "parent": 11,
+    "child": 13,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 3,
+    "parent": 11,
+    "child": 14,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 4,
+    "parent": 11,
+    "child": 15,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 1,
+    "parent": 16,
+    "child": 17,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 2,
+    "parent": 16,
+    "child": 18,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 3,
+    "parent": 16,
+    "child": 19,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 4,
+    "parent": 16,
+    "child": 20,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 1,
+    "parent": 21,
+    "child": 22,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 2,
+    "parent": 21,
+    "child": 23,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 3,
+    "parent": 21,
+    "child": 24,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  },
+  {
+    "mode": 4,
+    "parent": 21,
+    "child": 25,
+    "parent_address_space": "0x360000",
+    "child_address_space": "0x97f000"
+  }
+]

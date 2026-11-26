@@ -1,0 +1,10 @@
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  LOAD           0x000000 0x0000000040000000 0x0000000040000000 0x300ba6 0x300ba6 R E 0x1000
+  LOAD           0x301000 0x0000000040301000 0x0000000040301000 0x0d180b 0x0d180b R   0x1000
+  LOAD           0x3d3000 0x00000000403d3000 0x00000000403d3000 0x004ec0 0x01464c RW  0x1000
+0000000040005b76 T WebCore::ShareableBitmap::createPlatformImage(WebCore::BackingStoreCopy, WebCore::ShouldInterpolate)
+00000000400028d2 T WebCore::xos_memory_loan::receive(WebCore::xos_shared_memory_route const&, WebCore::SharedMemoryProtection, unsigned long)
+000000004000221a T WebCore::xos_memory_offer::send(WebCore::SharedMemoryHandle&&, WebCore::xos_shared_memory_route const&, unsigned long)
+0000000040286460 T __xos_spawn_path
+000000004022ffe0 W posix_spawn
+00000000402301c0 W waitpid

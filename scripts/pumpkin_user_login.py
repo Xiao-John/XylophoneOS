@@ -38,12 +38,14 @@ padding_offset = secret_offset + secret_size
 ready, read, publish, finish = range(1, 5)
 issue, submit = range(1, 3)
 scenarios = {"enroll": 4, "login": 5, "revoke": 6, "read-resource": 7}
-named_operations = {"read-named": 1, "publish-named": 2, "erase-named": 3}
-scenarios.update({"read-named": 9, "publish-named": 10, "erase-named": 11})
+named_operations = {"read-named": 1, "publish-named": 2, "erase-named": 3, "import-fat": 4}
+scenarios.update({"read-named": 9, "publish-named": 10, "erase-named": 11, "import-fat": 12})
+named_writes = ("publish-named", "erase-named", "import-fat")
 submission_commands = ("login", "read-resource", "read-named")
 credential_operations = {"enroll": issue, **dict.fromkeys(submission_commands, submit)}
 named_layout = struct.Struct("<QIB3x16s")
 named_empty = bytes(frame_size - header.size)
+named_payload_size = len(named_empty) - named_layout.size
 broker_artifact = "user_p2_sealed.image.elf"
 resource_errors = {
     29: "Pumpkin resource session did not complete",
@@ -274,36 +276,42 @@ def operator_exchange(vm, command, frame, wallet, stored):
 
 
 def named_packet(operation, sequence, payload=named_empty):
-    return header.pack(b"PKN1", 1, operation, 0, sequence) + payload
+    return header.pack(b"PKN1", 2, operation, 0, sequence) + payload
 
 
 def named_exchange(vm, command, frame, selection, selection_sent):
     tag, version, operation, status, sequence = header.unpack_from(frame)
-    require(tag == b"PKN1" and version == 1 and operation == named_operations[command],
+    require(tag == b"PKN1" and version == 2 and operation == named_operations[command],
             "Invalid named resource exchange")
-    name, generation, data = selection
+    name, generation, data, source = selection
     payload = frame[header.size:]
     if not selection_sent:
         require(sequence == 1 and not status and payload == named_empty, "Invalid named resource selection request")
-        selected = named_layout.pack(generation, data, len(name), name)
-        vm.send(named_packet(operation, 1, selected + bytes(len(named_empty) - len(selected))))
+        selected = named_layout.pack(generation, len(source) if source else data, len(name), name)
+        vm.send(named_packet(operation, 1, selected + source.ljust(named_payload_size, b"\0")))
         return None
-    require(sequence == 2 and not any(payload[named_layout.size:]), "Invalid named resource result")
+    require(sequence == 2, "Invalid named resource result")
+    returned = b""
     if status == 1:
         actual, actual_data, length, returned_name = named_layout.unpack_from(payload)
         require(actual > 0 and length == len(name) and returned_name == name.ljust(16, b"\0") and
                 not any(payload[13:16]), "Invalid returned resource identity")
-        if command == "publish-named":
+        if command in ("publish-named", "import-fat"):
             require(actual > generation and actual_data == 0, "Invalid committed resource generation")
         else:
-            require((generation == 0 or generation == actual) and (command == "read-named" or actual_data == 0),
-                    "Unexpected returned resource generation")
+            require(generation == 0 or generation == actual, "Unexpected returned resource generation")
+        if command == "read-named":
+            require(0 < actual_data <= 32, "Invalid returned named resource length")
+            returned = payload[named_layout.size:named_layout.size + actual_data]
+        else:
+            require(actual_data == 0, "Unexpected named resource data")
+        require(not any(payload[named_layout.size + len(returned):]), "Invalid named resource padding")
     else:
-        actual, actual_data = 0, 0
-        allowed = (2, 3) if command == "read-named" else (4,)
+        actual = 0
+        allowed = (2, 3) if command == "read-named" else (4, 5) if command == "import-fat" else (4,)
         require(status in allowed and payload == named_empty, "Unexpected named resource status")
     vm.send(named_packet(operation, 2))
-    return status, actual, actual_data
+    return status, actual, returned
 
 
 def boot(system, state, command, authority, wallet, stored, selection=None):
@@ -354,7 +362,7 @@ def boot(system, state, command, authority, wallet, stored, selection=None):
                             selected.realm, selected.revision, selected.length, selected.checksum)
                         reply = generation_packet(read, int(selected is None), sequence, encoded)
                     elif operation == publish:
-                        require(status == 0 and command in ("enroll", "revoke", "publish-named", "erase-named"),
+                        require(status == 0 and command in ("enroll", "revoke", *named_writes),
                                 "Generation publication is unavailable in this operation")
                         candidate = decode_mark(value, authority.named_resources)
                         require(candidate is not None, "Missing generation publication")
@@ -419,13 +427,13 @@ def operate(system, state, command, path, selection=None):
                     result = boot(system, state, command, authority, wallet, stored, selection)
             require(bind_system(system) == binding, "Login image receipt changed during operation")
             final = authority.read()
-            mutation = command in ("publish-named", "erase-named") and result[0] == 1
+            mutation = command in named_writes and result[0] == 1
             expected = 2 if command == "enroll" else previous.revision + (command == "revoke" or mutation)
             require(final is not None and final.revision == expected,
                     "Independent account generation did not confirm the expected state")
             require(previous is None or expected != previous.revision or final == previous,
                     "The named resource or account mark unexpectedly changed")
-            if command == "publish-named" and mutation:
+            if command in ("publish-named", "import-fat") and mutation:
                 require(result[1] == expected, "Published resource differs from the independent generation")
             return result
         finally:
@@ -441,6 +449,7 @@ def main():
     parser.add_argument("--resource-name")
     parser.add_argument("--generation", type=int)
     parser.add_argument("--resource-value", type=int, help="unsigned 32-bit value for publish-named")
+    parser.add_argument("--fat-source", help="absolute guest source file for import-fat")
     args = parser.parse_args()
     if args.operation != "prepare" and args.system is None:
         parser.error("a matching --system is required")
@@ -456,8 +465,17 @@ def main():
             parser.error("erase requires the current resource generation")
         if (args.operation == "publish-named") != (args.resource_value is not None) or not 0 <= (args.resource_value or 0) < 2**32:
             parser.error("publish requires an unsigned 32-bit resource value")
-        selected = args.resource_name.encode("ascii"), args.generation or 0, args.resource_value or 0
-    elif args.resource_name is not None or args.generation is not None or args.resource_value is not None:
+        if (args.operation == "import-fat") != (args.fat_source is not None):
+            parser.error("import-fat requires its guest FAT source")
+        try:
+            source = args.fat_source.encode("utf-8") if args.fat_source is not None else b""
+        except UnicodeError:
+            parser.error("a FAT source path must be UTF-8")
+        if args.fat_source is not None and (not source.startswith(b"/") or not 2 <= len(source) < named_payload_size or
+                                           any(byte < 32 or byte in (92, 127) for byte in source)):
+            parser.error("a FAT source must be an absolute guest path of 2 to 95 UTF-8 bytes")
+        selected = args.resource_name.encode("ascii"), args.generation or 0, args.resource_value or 0, source
+    elif args.resource_name is not None or args.generation is not None or args.resource_value is not None or args.fat_source is not None:
         parser.error("resource fields require a named resource operation")
     try:
         state = args.state.absolute()
@@ -473,12 +491,16 @@ def main():
             result, generation, data = result
             if result == 1:
                 if args.operation == "read-named":
-                    print(f"Pumpkin named resource generation {generation} value {data}")
+                    if len(data) == 4:
+                        print(f"Pumpkin named resource generation {generation} value {int.from_bytes(data, 'little')}")
+                    else:
+                        print(f"Pumpkin named resource generation {generation} bytes {data.hex()}")
                 else:
                     print(f"Pumpkin named resource generation {generation} confirmed")
                 return 0
-            if result in (3, 4):
-                print("Pumpkin named resource read denied" if result == 3 else "Pumpkin named resource generation conflict")
+            if result in (3, 4, 5):
+                print({3: "Pumpkin named resource read denied", 4: "Pumpkin named resource generation conflict",
+                       5: "Pumpkin FAT source could not supply a pinned file of 1 to 32 bytes"}[result])
                 return result + 1
         if result == 2:
             print("Pumpkin login denied")

@@ -15,7 +15,7 @@ enum class wire_operation : u32 {
     authenticate = 1, logout, identity, create_account, lookup_account, rotate_credential, revoke_account,
     grant_login_resource, read_login_resource,
     admit_resource_broker, begin_resource_read,
-    put_named_resource, read_named_resource, erase_named_resource,
+    put_named_resource, read_named_resource, erase_named_resource, put_named_binary,
 };
 enum class wire_status : u32 {
     ok = 0, invalid, denied, not_found, conflict, exhausted, unavailable, corrupt, io_error, outcome_unknown,
@@ -34,6 +34,8 @@ struct wire_request {
     u32 name_length = 0;
     u32 reserved = 0;
     char name[name_limit]{};
+    // put_named_binary uses this byte span as a typed resource payload. Its
+    // selector supplies the length and the unused tail is always zero.
     credential key;
 };
 struct wire_reply {

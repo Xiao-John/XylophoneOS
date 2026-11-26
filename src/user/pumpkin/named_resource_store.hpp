@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
+#include "named_resource_data.hpp"
 #include "service_core.hpp"
 #include "snapshot_publication.hpp"
 
 namespace xos::user::pumpkin {
-inline constexpr usize named_resource_bytes = 32;
 inline constexpr usize named_envelope_overhead = 144;
 inline constexpr usize named_envelope_capacity = snapshot_capacity + named_envelope_overhead;
 static_assert(named_envelope_capacity <= publication_payload_capacity);

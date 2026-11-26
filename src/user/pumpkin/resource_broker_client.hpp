@@ -67,7 +67,7 @@ public:
         if (!received || reply.version != broker_wire_version || reply.reserved || reply.data.length > sealed_blob_capacity ||
             has_bytes(reply.data.bytes + reply.data.length, sizeof(reply.data.bytes) - reply.data.length)) { return false; }
         if (reply.result == wire_status::ok) {
-            if (named ? reply.data.length != sizeof(u32) || !reply.generation ||
+            if (named ? !reply.data.length || reply.data.length > named_resource_bytes || !reply.generation ||
                         (named->generation && reply.generation != named->generation) :
                         !reply.data.length || reply.generation) { return false; }
         } else if ((reply.result != wire_status::denied && reply.result != wire_status::io_error &&

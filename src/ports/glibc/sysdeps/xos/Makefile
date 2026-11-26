@@ -7,6 +7,7 @@ ifeq ($(subdir),elf)
 sysdep_routines += cpu-tunables
 sysdep-rtld-routines += xos_rtld_entry xos_rtld_mapping xos_file_session xos_rtld_heap xos_rtld_sysdep_start
 sysdep-rtld-routines += xos_rtld_sysdep_invoke _exit getpid
+sysdep-rtld-routines += xos_rtld_libc_handoff
 CFLAGS-dl-load.os += -DXOS_RTLD_CLOSED_DEPENDENCIES
 CFLAGS-dl-minimal-malloc.os += -DXOS_RTLD_NATIVE_HEAP -ffunction-sections
 CFLAGS-rtld.os += -DXOS_RTLD_CLOSED_DEPENDENCIES -ffunction-sections -fdata-sections
@@ -16,6 +17,7 @@ CFLAGS-dl-catch.os += -ffunction-sections
 CFLAGS-dl-tunables.os += -ffunction-sections
 CFLAGS-dl-mutex.os += -ffunction-sections
 CFLAGS-dl-misc.os += -ffunction-sections
+CFLAGS-xos_rtld_libc_handoff.os += -ffunction-sections
 endif
 ifeq ($(subdir),stdlib)
 sysdep_routines += xos_process_exit
@@ -30,6 +32,7 @@ endif
 
 ifeq ($(subdir),io)
 sysdep_routines += xos_file_session xos_file_runtime xos_file_positioned xos_anonymous
+CFLAGS-xos_file_runtime.os += -ffunction-sections
 endif
 ifeq ($(subdir),dirent)
 sysdep_routines += xos_file_directory

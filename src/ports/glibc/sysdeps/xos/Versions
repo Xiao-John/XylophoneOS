@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+libc {
+  GLIBC_PRIVATE {
+    __xos_file_adopt_startup;
+  }
+}

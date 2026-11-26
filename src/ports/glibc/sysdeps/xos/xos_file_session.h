@@ -31,6 +31,12 @@ struct xos_file_session
 long __xos_file_session_call (struct xos_file_session *, struct xos_file_request *,
                              struct xos_file_response *)
   __attribute__ ((visibility ("hidden")));
+/* Startup uses the same session with a shorter, absolute monotonic deadline.
+   An already expired call sends nothing. If a sent request times out, the
+   shared session is poisoned, as it is for an ordinary request timeout. */
+long __xos_file_session_call_until (struct xos_file_session *, struct xos_file_request *,
+                                   struct xos_file_response *, xos_u64)
+  __attribute__ ((visibility ("hidden")));
 long __xos_file_session_poison (struct xos_file_session *, int)
   __attribute__ ((visibility ("hidden")));
 long __xos_file_session_take (struct xos_file_session *, struct xos_file_session *)

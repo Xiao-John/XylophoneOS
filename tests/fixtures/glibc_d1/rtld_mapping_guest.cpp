@@ -14,20 +14,21 @@ namespace {
 struct dependency {
     int fd;
     const char* path;
+    const char* soname;
     u64 bias;
     u32 size;
     const u8* digest;
     u64 span, hole, pages;
 };
 constexpr dependency inputs[] = {
-    {70, "/tests/small.so", small_bias, small_bytes, small_digest, small_span, small_hole, small_pages},
-    {71, "/tests/large.so", large_bias, large_bytes, large_digest, large_span, large_hole, large_pages},
+    {70, "/tests/small.so", "libsmall.so", small_bias, small_bytes, small_digest, small_span, small_hole, small_pages},
+    {71, "/tests/large.so", "liblarge.so", large_bias, large_bytes, large_digest, large_span, large_hole, large_pages},
 };
 struct elf_scan {
     Elf64_Ehdr header;
     Elf64_Phdr phdrs[64];
 };
-xos_rtld_pin pins[2];
+xos_rtld_pin_plan plan;
 xos_rtld_images state;
 xos_u32 last_sequence;
 
@@ -51,18 +52,23 @@ long send(file::op operation, u32 handle, u64 offset = 0, u32 length = 0, u32 fl
     return __xos_file_session_call(state.files, &state.request, &state.response);
 }
 
-xos_rtld_pin open_pin(const dependency& input) {
+long open_path(const char* path, u32 flags) {
     u32 length = 0;
-    while (input.path[length] != 0 && length + 1 < sizeof(state.request.name)) {
-        state.request.name[length] = input.path[length];
+    while (path[length] != 0 && length + 1 < sizeof(state.request.name)) {
+        state.request.name[length] = path[length];
         ++length;
     }
     state.request.name[length] = 0;
     state.request.name_length = length;
-    const long opened = send(file::op::open, 0, 0, 0, file::read_only | file::open_pin);
+    return send(file::op::open, 0, 0, 0, flags);
+}
+
+xos_rtld_pin open_pin(const dependency& input) {
+    const long opened = open_path(input.path, file::read_only | file::open_pin);
     if (opened != 0 || state.response.value != input.size) { fail("pin open", opened); }
-    const xos_rtld_pin pin{input.fd, state.response.handle, state.response.reserved, input.size,
-                           input.bias, input.span, input.span};
+    xos_rtld_pin pin{input.fd, state.response.handle, state.response.reserved, input.size,
+                     input.bias, input.span, input.span, {}};
+    for (u32 at = 0; input.soname[at] != 0; ++at) { pin.soname[at] = input.soname[at]; }
     if (send(file::op::seek, pin.handle, 73) != 0 || state.response.value != 73) { fail("pin position"); }
     return pin;
 }
@@ -72,7 +78,7 @@ void verified_scan(const dependency& input, elf_scan& scan) {
     u8 scratch[1024];
     for (u32 at = 0; at < input.size;) {
         const u32 portion = input.size - at < sizeof(scratch) ? input.size - at : sizeof(scratch);
-        if (!__xos_rtld_read_pin(input.fd, at, scratch, portion)) { fail("hash same pin"); }
+        if (__xos_rtld_pread_pin(input.fd, scratch, portion, at) != portion) { fail("hash same pin"); }
         hash.update(scratch, portion);
         at += portion;
     }
@@ -81,10 +87,20 @@ void verified_scan(const dependency& input, elf_scan& scan) {
     for (u32 i = 0; i < sizeof(digest); ++i) {
         if (digest[i] != input.digest[i]) { fail("pin digest"); }
     }
-    if (!__xos_rtld_read_pin(input.fd, 0, &scan.header, sizeof(scan.header))
-        || scan.header.e_phnum == 0 || scan.header.e_phnum > 64
-        || !__xos_rtld_read_pin(input.fd, scan.header.e_phoff, scan.phdrs,
-                               scan.header.e_phnum * sizeof(Elf64_Phdr))) { fail("pin scan"); }
+    if (__xos_rtld_pread_pin(input.fd, &scan.header, sizeof(scan.header), 0) != sizeof(scan.header)
+        || scan.header.e_phnum == 0 || scan.header.e_phnum > 64) { fail("pin ELF header"); }
+    const u32 bytes = scan.header.e_phnum * sizeof(Elf64_Phdr);
+    if (__xos_rtld_pread_pin(input.fd, scan.phdrs, bytes, scan.header.e_phoff) != bytes) { fail("pin PHDR"); }
+
+    unsigned char identity[5];
+    if (__xos_rtld_stat_pin(input.fd) != 0
+        || __xos_rtld_read_pin(input.fd, identity, 4) != 4
+        || __xos_rtld_pread_pin(input.fd, identity + 4, 1, input.size) != 0
+        || __xos_rtld_read_pin(input.fd, identity + 4, 1) != 1
+        || identity[0] != ELFMAG0 || identity[1] != ELFMAG1
+        || identity[2] != ELFMAG2 || identity[3] != ELFMAG3 || identity[4] != ELFCLASS64) {
+        fail("private verifier cursor and EOF");
+    }
 }
 
 bool same_phdr(void* data, unsigned int index, const Elf64_Phdr* pinned) {
@@ -167,18 +183,55 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
         || state.response.data[2] != 'C' || state.response.data[3] != 'D') { fail("inherited object early read"); }
     xos_rtld_mapped unused{};
     if (__xos_rtld_map_fd(70, nullptr, 0, nullptr, nullptr, &unused) != ENOTSUP) { fail("absent closure"); }
-    pins[0] = open_pin(inputs[0]);
-    pins[1] = open_pin(inputs[1]);
-    state.pins = pins;
-    state.count = 2;
-    if (__xos_rtld_attach_images(&state) != 0 || __xos_rtld_attach_images(&state) != EBUSY) { fail("attachment"); }
-    exercise_mapping(inputs[0], pins[0], false);
-    exercise_mapping(inputs[1], pins[1], true);
-    if (__xos_rtld_detach_images(&state) != 0
-        || __xos_rtld_read_pin(pins[0].fd, 0, &unused, 1)
-        || send(file::op::close, pins[0].handle) != 0 || send(file::op::close, pins[1].handle) != 0) {
-        fail("detach and close");
+    const auto* argv = reinterpret_cast<const char* const*>(startup->argv);
+    const bool expiry = startup->argc == 2 && sdk::equal(argv[1], "expired");
+    if (!expiry) {
+        // Once the expired process has exited, a writer can open both files.
+        // A surviving startup pin would refuse this even without a write.
+        for (const auto& input : inputs) {
+            if (open_path(input.path, file::write_only) != 0
+                || send(file::op::close, state.response.handle) != 0) {
+                fail("expired phase pin reclamation");
+            }
+        }
     }
+    plan.pins[0] = open_pin(inputs[0]);
+    plan.pins[1] = open_pin(inputs[1]);
+    plan.count = 2;
+    const long now = sdk::syscall(46);
+    if (now < 0) { fail("initial clock"); }
+    plan.deadline_ns = static_cast<u64>(now) + (expiry ? 50000000ULL : 30000000000ULL);
+    state.plan = &plan;
+    if (__xos_rtld_attach_images(&state) != 0 || __xos_rtld_attach_images(&state) != EBUSY) { fail("attachment"); }
+    if (__xos_rtld_open_pin("missing.so") != -ENOENT
+        || __xos_rtld_open_pin("/tests/small.so") != -EINVAL
+        || __xos_rtld_open_pin(inputs[0].soname) != inputs[0].fd
+        || __xos_rtld_open_pin(inputs[0].soname) != -EALREADY
+        || __xos_rtld_open_pin(inputs[1].soname) != inputs[1].fd) { fail("closed SONAME lookup"); }
+
+    if (expiry) {
+        const u32 seq = early.request_sequence;
+        char data;
+        if (sdk::syscall(47, plan.deadline_ns) != 0
+            || __xos_rtld_read_pin(inputs[0].fd, &data, 1) != -ETIMEDOUT
+            || __xos_rtld_close_pin(inputs[0].fd) != -ETIMEDOUT
+            || __xos_rtld_finish_images(&state) != ETIMEDOUT
+            || early.request_sequence != seq || early.phase != xos_file_session_active) {
+            fail("absolute phase expiry");
+        }
+        sdk::print("D1_RTLD_PHASE_EXPIRED request=unsent\n");
+        sdk::exit(54);
+    }
+
+    exercise_mapping(inputs[0], plan.pins[0], false);
+    if (__xos_rtld_close_pin(inputs[0].fd) != 0
+        || __xos_rtld_close_pin(inputs[0].fd) != -EBADF
+        || __xos_rtld_open_pin(inputs[0].soname) != -EALREADY
+        || send(file::op::fstat, plan.pins[0].handle) != -EBADF) { fail("one native close"); }
+    exercise_mapping(inputs[1], plan.pins[1], true);
+    if (__xos_rtld_finish_images(&state) != 0
+        || __xos_rtld_open_pin(inputs[1].soname) != -ENOTSUP
+        || send(file::op::fstat, plan.pins[1].handle) != -EBADF) { fail("phase pin cleanup"); }
     last_sequence = early.request_sequence;
     if (__xos_file_adopt_early_session(&early) != 0) { fail("one session into libc"); }
     state.files = nullptr;

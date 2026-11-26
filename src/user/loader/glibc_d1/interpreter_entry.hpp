@@ -32,5 +32,5 @@ interpreter_entry_result prepare_interpreter_entry(
     const startup_info* startup, const pinned_image& main, main_headers headers,
     const pinned_image& interpreter, execution_mode mode, entropy_source entropy,
     xos_file_session& early_files, xos_d1_entry_handoff& frame,
-    interpreter_allocations& allocations);
+    interpreter_allocations& allocations, const xos_rtld_pin_plan* dependencies = nullptr);
 }

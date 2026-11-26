@@ -156,9 +156,10 @@ authenticated_handles (xos_u32 handles[2])
 }
 
 long
-__xos_file_session_call (struct xos_file_session *session,
-                        struct xos_file_request *request,
-                        struct xos_file_response *response)
+__xos_file_session_call_until (struct xos_file_session *session,
+                              struct xos_file_request *request,
+                              struct xos_file_response *response,
+                              xos_u64 phase_deadline)
 {
   if (session == 0 || request == 0 || response == 0) return -EFAULT;
   if ((const void *) request == (const void *) response) return -EINVAL;
@@ -182,7 +183,11 @@ __xos_file_session_call (struct xos_file_session *session,
   long now = file_trap (46, 0, 0, 0);
   if (now < 0 || (xos_u64) now > (xos_u64) LONG_MAX - 5000000000ULL)
     return __xos_file_session_poison (session, EIO);
-  const xos_u64 deadline = (xos_u64) now + 5000000000ULL;
+  if ((xos_u64) now >= phase_deadline)
+    return -ETIMEDOUT;
+  xos_u64 deadline = (xos_u64) now + 5000000000ULL;
+  if (phase_deadline < deadline)
+    deadline = phase_deadline;
   request->magic = 0x51455246;
   request->version = 2;
   request->request_id = ++session->request_sequence;
@@ -214,6 +219,14 @@ __xos_file_session_call (struct xos_file_session *session,
       if (next > deadline) next = deadline;
       if (file_trap (47, next, 0, 0) != 0) return __xos_file_session_poison (session, EIO);
     }
+}
+
+long
+__xos_file_session_call (struct xos_file_session *session,
+                        struct xos_file_request *request,
+                        struct xos_file_response *response)
+{
+  return __xos_file_session_call_until (session, request, response, ~(xos_u64) 0);
 }
 
 long

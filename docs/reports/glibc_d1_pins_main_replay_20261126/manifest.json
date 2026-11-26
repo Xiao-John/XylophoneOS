@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "implementation_tree": "c295bea7ee2c1fcbe8cc268a042a8920e3e43eb3",
+  "files": {
+    "entry.json": "9d6b9a731dd1046cf018af7eb33cf429e916308f6722fd831f38f810ffd7f11b",
+    "mapper.json": "94cd1f5bf9059f4047d521ba653c4f3a1993445a1e6d4238ec44023b2034d2be"
+  },
+  "raw_report_sha256": {
+    "mapper.json": "b2c29236817f4eeef06dabf29c926e12641befd574010e0fb9ffad7f3de04218",
+    "entry.json": "c33c9612e119ce9e587b65bd2ac020bcfbaa0cbc1db89c0af7aa1def390c9490"
+  }
+}

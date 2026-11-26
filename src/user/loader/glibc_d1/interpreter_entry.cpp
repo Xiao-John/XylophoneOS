@@ -43,6 +43,19 @@ bool linked_main_table(const mapped_image& image, main_headers headers) {
     return found;
 }
 
+void copy_pin_plan(xos_rtld_pin_plan& output, const xos_rtld_pin_plan* source) {
+    output.reserved = 0;
+    output.deadline_ns = source == nullptr ? 0 : source->deadline_ns;
+    output.count = source == nullptr ? 0 : source->count;
+    if (source == nullptr) { return; }
+    // No libc memory implementation is available before the interpreter's
+    // CPU and runtime initialization. Copy only the verified live entries.
+    auto* destination = reinterpret_cast<volatile u8*>(output.pins);
+    const auto* input = reinterpret_cast<const u8*>(source->pins);
+    const usize bytes = output.count * sizeof(xos_rtld_pin);
+    for (usize i = 0; i < bytes; ++i) { destination[i] = input[i]; }
+}
+
 interpreter_entry_result abandon(interpreter_entry_error error, interpreter_allocations& scratch,
                                  const image_map_result& mapped = {}) {
     const i64 interpreter_error = release_image(scratch.interpreter);
@@ -55,12 +68,13 @@ interpreter_entry_result prepare_interpreter_entry(
     const startup_info* startup, const pinned_image& main, main_headers headers,
     const pinned_image& interpreter, execution_mode mode, entropy_source entropy,
     xos_file_session& early_files, xos_d1_entry_handoff& frame,
-    interpreter_allocations& allocations) {
+    interpreter_allocations& allocations, const xos_rtld_pin_plan* dependencies) {
     const auto stack_address = reinterpret_cast<u64>(&frame);
     if (stack_address < XOS_D1_STACK_ENTRY_MIN || stack_address > process_startup_begin - sizeof(frame)
         || (stack_address & 15) != 0 || frame.record.magic != 0
         || allocations.main.start != 0 || allocations.main.bytes != 0
         || allocations.interpreter.start != 0 || allocations.interpreter.bytes != 0
+        || (dependencies != nullptr && !xos_rtld_valid_pin_plan(dependencies))
         || &early_files == &frame.record.files || early_files.phase != xos_file_session_active) {
         return {interpreter_entry_error::layout, {}, 0};
     }
@@ -81,6 +95,7 @@ interpreter_entry_result prepare_interpreter_entry(
     if (__xos_file_session_take(&frame.record.files, &early_files) != 0) {
         return abandon(interpreter_entry_error::files, scratch);
     }
+    copy_pin_plan(frame.record.dependencies, dependencies);
     frame.record.version = XOS_D1_ENTRY_VERSION;
     frame.record.size = sizeof(frame.record);
     frame.record.main_phdr = main.image.bias + headers.address;

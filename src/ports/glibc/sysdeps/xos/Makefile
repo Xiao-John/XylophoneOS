@@ -6,6 +6,7 @@ endif
 ifeq ($(subdir),elf)
 sysdep_routines += cpu-tunables
 sysdep-rtld-routines += xos_rtld_entry xos_rtld_mapping xos_file_session
+CFLAGS-dl-load.os += -DXOS_RTLD_CLOSED_DEPENDENCIES
 endif
 ifeq ($(subdir),stdlib)
 sysdep_routines += xos_process_exit

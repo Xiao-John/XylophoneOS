@@ -26,4 +26,7 @@ int xos_seal_anonymous(int);
 int xos_shell_execve(const char *, char *const[], char *const[]);
 int xos_shell_script(const char *);
 void xos_check_tree(union node *);
+#ifdef XOS_DASH_GLIBC_PREVIEW
+int xos_has_heredoc(union node *);
+#endif
 #endif

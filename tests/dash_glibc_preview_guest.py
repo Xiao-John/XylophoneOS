@@ -11,6 +11,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from boot_smoke import Guest
+from dash_c3_smoke import reserved_snapshot
 from install_dash import install
 from make_work_disk import create_fat32
 from process_smoke import command, resources
@@ -36,6 +37,37 @@ test "$value" = 'glibc dash file bytes' || exit 53
 . /cases/dot.inc || exit 54
 printf '%s\n' "$source_marker"
 '''
+HEREDOC = r'''word=expanded
+IFS= read -r literal <<'QUOTED' || exit 65
+literal $word \keep
+QUOTED
+test "$literal" = 'literal $word \keep' || exit 66
+IFS= read -r expanded <<UNQUOTED || exit 67
+expanded:$word:$((7+5))
+UNQUOTED
+test "$expanded" = 'expanded:expanded:12' || exit 68
+word=outer
+word=inner IFS= read -r prefixed <<ASSIGNMENT || exit 72
+$word
+ASSIGNMENT
+test "$prefixed:$word" = 'outer:outer' || exit 73
+printf 'DASH_GLIBC_HERE_PASS <%s> <%s>\n' "$literal" "$expanded"
+'''
+HEREDOC_FAILURE = r'''i=0
+while [ "$i" -lt 24 ]; do
+    if IFS= read -r unused <<DISCARDED >/missing/heredoc-output; then
+discarded line $i
+DISCARDED
+        exit 69
+    fi
+    i=$((i+1))
+done
+IFS= read -r recovered <<RECOVERED || exit 70
+recovered document
+RECOVERED
+test "$recovered" = 'recovered document' || exit 71
+printf 'DASH_GLIBC_HERE_RECOVERED=%s\n' "$i"
+'''
 EXTERNAL = r'''cd /cases || exit 61
 PATH=/missing:/bin
 export PATH
@@ -51,7 +83,10 @@ CASES = {
     'pipeline': ("printf unexpected | printf unexpected\n", 2, b'pipelines unavailable', ''),
     'subshell': ("(printf unexpected)\n", 2, b'subshells unavailable', ''),
     'substitution': ('printf "%s\\n" "$(printf unexpected)"\n', 2, b'command substitution unavailable', ''),
-    'heredoc': ("read value <<EOF\nunexpected\nEOF\n", 2, b'here-documents unavailable', ''),
+    'heredoc': (HEREDOC, 0, br'DASH_GLIBC_HERE_PASS <literal $word \keep> <expanded:expanded:12>', ''),
+    'heredoc_failure': (HEREDOC_FAILURE, 0, b'DASH_GLIBC_HERE_RECOVERED=24', ''),
+    'external_heredoc': ("/bin/preview_child explicit 'two words' '' <<EOF >/out/kept\nunexpected\nEOF\n",
+                         2, b'here-document requires a parent builtin', ''),
     'external_explicit': (EXPLICIT, 0, b'DASH_GLIBC_CHILD_EXPLICIT argv_env_cwd=ok', ''),
     'external_path': (EXTERNAL.format(command="preview_child path 'two words' ''"),
                       23, b'DASH_GLIBC_CHILD_PATH argv_env_cwd=ok', ''),
@@ -145,6 +180,9 @@ def main():
             transfer(disk, 'import', '/bin/text_tool', text_tool)
             for path in ('/cases', '/out'):
                 transfer(disk, 'mkdir', path)
+            keep = args.artifacts / 'kept-input.txt'
+            keep.write_bytes(b'pre-existing work disk bytes\n')
+            transfer(disk, 'import', '/out/kept', keep)
             fixtures = {'dot.inc': 'source_marker=DASH_GLIBC_FILES_PASS\n'}
             for name, (source, _, _, arguments) in CASES.items():
                 fixtures[name + '.sh'] = source
@@ -157,6 +195,7 @@ def main():
                 path.write_text(source)
                 report['fixtures'][name] = sha(path)
                 transfer(disk, 'import', '/cases/' + name, path)
+            report['reserved_before'] = reserved_snapshot(disk)
             guest = Guest(iso, 'dash_glibc_preview', work_disk=disk, iso=True, qmp_enabled=False)
             report['qemu'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
             guest.expect(b'xos64> ', timeout=60)
@@ -181,6 +220,10 @@ def main():
                     assert b'getcwd() failed' not in capture, capture
                     if shell == 'dash':
                         assert b'DASH_GLIBC_EXIT=' + expected + b'\n' in capture, capture
+                    if name == 'heredoc_failure':
+                        assert capture.count(b'/missing/heredoc-output') == 24, capture
+                    if name == 'external_heredoc':
+                        assert b'DASH_GLIBC_CHILD_' not in capture, capture
                     if name in EXTERNAL_CASES:
                         assert b'DASH_GLIBC_CHILD_RC=' + expected + b'\n' in capture, capture
                         assert b'DASH_GLIBC_TEXT_EXECUTED' not in capture and b'DASH_GLIBC_CHILD_BAD' not in capture, capture
@@ -193,9 +236,15 @@ def main():
                     record.update(exit_code=status, resources=after)
             command(guest, 'sync', b'[files] sync=ok')
             guest.close()
+            report['reserved_after'] = reserved_snapshot(disk)
+            assert report['reserved_after'] == report['reserved_before'], report['reserved_after']
             exported = args.artifacts / 'files.txt'
             transfer(disk, 'export', '/out/files.txt', exported)
             assert exported.read_bytes() == b'glibc dash file bytes\n'
+            kept = args.artifacts / 'kept-output.txt'
+            transfer(disk, 'export', '/out/kept', kept)
+            assert kept.read_bytes() == keep.read_bytes(), 'unsupported redirection changed an existing file'
+            report['kept_sha256'] = sha(kept)
             report.update(status='passed_subset', file_sha256=sha(exported))
     finally:
         if guest:

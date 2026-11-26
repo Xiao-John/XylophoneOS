@@ -57,9 +57,24 @@
 +		*argv = cmd = path_bshell;
 +		goto repeat;
 +	}
+--- a/src/eval.c
++++ b/src/eval.c
+@@ -849 +849,11 @@
+-	status = redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
++#ifdef XOS_DASH_GLIBC_PREVIEW
++	/* Reject unsupported commands before opening any redirection. */
++	if (xos_has_heredoc(cmd->ncmd.redirect) &&
++	    (argc == 0 || cmdentry.cmdtype != CMDBUILTIN || execcmd)) {
++		sh_warnx("here-document requires a parent builtin in the glibc dash preview");
++		execcmd = 0;
++		status = 2;
++		goto bail;
++	}
++#endif
++	status = redirectsafe(cmd->ncmd.redirect, REDIR_PUSH|REDIR_SAVEFD2);
 --- a/src/redir.c
 +++ b/src/redir.c
-@@ -356,37 +356,19 @@
+@@ -356,37 +356,14 @@
 -	size_t len = 0;
 -	int pip[2];
 -	int memfd;
@@ -97,10 +112,6 @@
 -	return pip[0];
 -}
 -
-+#ifdef XOS_DASH_GLIBC_PREVIEW
-+    (void)redir;
-+    sh_error("here-documents unavailable in the glibc dash preview");
-+#else
 +    const char *p = redir->nhere.doc->narg.text;
 +    int fd, saved_error;
 +    if (redir->type == NXHERE) {
@@ -114,5 +125,4 @@
 +        sh_error("here-document: %s", strerror(saved_error));
 +    }
 +    return fd;
-+#endif
 +}

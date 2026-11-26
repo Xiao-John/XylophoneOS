@@ -131,7 +131,7 @@ def main():
     if run.returncode != 0:
         raise SystemExit(f"FAIL real files/FatFs integration\n{run.stdout}{run.stderr}")
     report = json.loads((output / "report.json").read_text())
-    report["real_files_fatfs"] = {"status": "pass", "groups": 14,
+    report["real_files_fatfs"] = {"status": "pass", "groups": 15,
                                  "kernel_transport": "simulated"}
     after = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
              for path in sorted(set(sources))}

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "authority-host.log": "302cfbcee0992970d19d1a9c1c8973fdf965956bda664c1d634f22af27058f6f",
+    "binding.json": "2bde1ccd4362e537ccb1abfb4607119863590c2757c79b0227a7677ce7e472aa",
+    "desktop.json": "c4ce7c756d9c438794ee78a682f256bd9534e87547bf63f194085caa5f91e87e",
+    "desktop_failure.json": "218aed303c76ce6d702b26226793c7e24608340152a3af1eb8bf5cf4d7de8445",
+    "headless.json": "22e19abc13fee7e5c262d24f4678b2d1f8aff59abe1dd5151038780e7e43b48d",
+    "last-black-scanout.ppm.gz": "bdf4af1d83618e80172a98270c70b5693d8c378a90201a93b88de85170f2e8d6"
+  }
+}

@@ -60,4 +60,5 @@ cmake --build "$WEBKIT_OUTPUT" --target WebCore
 及宿主动态依赖搜索。完整目标归档、客体 DOM/CSS 布局以及 Qt 视口仍待验证。
 
 [XOS CPU 共享内存](shared_memory_xos.md) 另外接入真实本进程 grant 和只读像素映射。
-所得对象可用于软件位图。跨进程编解码与收回仍按其单独的协议与验收门推进。
+所得对象可用于软件位图。专用的[跨进程位图借用](shared_memory_transfer_xos.md)
+处理受监督进程之间的句柄交接和回收。

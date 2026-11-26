@@ -1,11 +1,13 @@
 {
-  "version": 1,
-  "source_commit": "7e59ec71f787a38c68719fc8ceb4ab0825630f22",
-  "source_tree": "9551f76b3410bb57d88cbd0a2384d27502238e5e",
-  "system_build_id": "b279c8664a5cef66",
   "files": {
     "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
     "binding.json": "ccf2af5a82b84ea67b6b7f5a71e573242f7ac05289a8baf768dbeda6018c5683",
+    "current_abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "current_binding.json": "b0870a23dfa1cd3dcb11797b63ea6ec5114fd9bfa9d4a33faae5cc792014cf72",
+    "current_dash.json": "0b19201ffbae71728e1a2afbdd4752eeeeb886404fa0f6f0ac2f127d3e64440f",
+    "current_dash.serial.log.gz": "5cc71f498feff1b740b42313f0548bba593003ded02ae2e1d72698bd515d2a80",
+    "current_xsh.json": "0e8fbed33c4784df991b33946fa483706e48e26e0db4818b2457c04592df6112",
+    "current_xsh.serial.log.gz": "b0308fe58f8a2904041c92c6f4aeb62ec7a5f44b1291ec49c2593b4f20d3767c",
     "declarative_source_comparison.json": "8ec9fb28e2deabf85aaca321dc2085ab58c46c5720189a985823c6fc0edc0ff1",
     "first_partial_failure.json": "7b8ad1522d40915e4cf3fece15234c5116690a33e5ce5417b119adfabaea1b23",
     "first_partial_guest.serial.log.gz": "9600bd191114619c0693b8a4f454be7dc43a642dd6dca1cdd3a33611c7f2ce14",
@@ -21,5 +23,9 @@
     "runtime_source_reuse.json": "2f6f27f704db9e72c879155558f730ab70e170f72e018aac759af0d4c22f86d8",
     "scanout.ppm.gz": "b659e99251480e868afa7ece256fa5516021ebd8b64f19b00e1232d9719d1ad5",
     "target_member_sources.json.gz": "4597265bc2a0aac82df8b05710420d68c11eda910384055b57c57bef10e60b09"
-  }
+  },
+  "source_commit": "7e59ec71f787a38c68719fc8ceb4ab0825630f22",
+  "source_tree": "9551f76b3410bb57d88cbd0a2384d27502238e5e",
+  "system_build_id": "b279c8664a5cef66",
+  "version": 1
 }

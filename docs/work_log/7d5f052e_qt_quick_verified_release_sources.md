@@ -61,7 +61,7 @@ GNU 工具链 seed 和独立 C++ SDK 复编未运行。
 使用含探针修订的源码 `7e59ec71` 重建普通镜像 `b279c8664a5cef66`，在 QEMU 11.1.2 的
 xsh 用同一新 ELF 验证。实际画面 800×600、475 个文字亮像素，画面 SHA-256 与 #303 参考一致。
 输入线程已回收，应用退出 0。应用和图形服务结束后分别回到 `121620 / 5 / 3` 和
-`129696 / 3 / 1`。ABI 文档检查通过。新 ELF 的 dash 入口未运行。
+`129696 / 3 / 1`。ABI 文档检查通过。主线组合的两种入口复验见下节。
 
 ```sh
 python3 -B tests/qt6_quick_kit_guest.py --system "$SYSTEM" \
@@ -71,3 +71,11 @@ python3 -B tests/qt6_quick_kit_guest.py --system "$SYSTEM" \
 
 Qt 原始发行材料包和对应 SDK 源码包均保留在本地，实际发行渠道、安装信息及上述许可范围仍待
 核对。[重编、重链接与客体证据](../reports/qt_quick_release_source_20261127/manifest.json)
+
+## 与最新主线的两种入口
+
+基于 `393a60bb` 组合重建普通镜像 `470422325ebe087f` 和匹配的 dash。原档重新编译
+的 QtQml 与 QtQuick 双替换 ELF 分别经 xsh 和 dash 启动。两个实测画面均为
+800×600、475 个文字亮像素，完整画面 SHA-256 相同。应用和图形服务退出后均回到
+各自资源基线，ABI 对照通过。
+[主线组合的两种入口回执](../reports/qt_quick_release_source_20261127/manifest.json)

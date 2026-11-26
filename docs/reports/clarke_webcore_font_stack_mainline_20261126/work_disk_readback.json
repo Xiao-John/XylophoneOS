@@ -1,0 +1,11 @@
+{
+  "guest_files_sha256": {
+    "/fonts/probe.elf": "f8ef5451aa0affebb36a2e57a4897d77ca35904e327e9baab6c806dac4c07fec",
+    "/fonts/run.sh": "05424a25ed9870c3cd6c837707bc2700ade83073247aba22b2ed55b74c7be770",
+    "/fonts/sample.ttf": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+    "/usr/bin/dash": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9"
+  },
+  "method": "export_from_copy_on_write_snapshot_of_the_exact_running_qemu_fat_image",
+  "status": "passed",
+  "system_iso_sha256": "8d3f138c3142be8380a4edf65c3174f34e4873c585ba561e340c672466f6a212"
+}

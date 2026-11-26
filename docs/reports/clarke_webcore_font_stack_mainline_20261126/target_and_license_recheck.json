@@ -1,0 +1,84 @@
+{
+  "cross_tool_recheck": {
+    "image_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+    "tools_sha256": {
+      "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+      "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+      "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d"
+    }
+  },
+  "font_notice_checksums": {
+    "src/ports/qt6/licenses/gui/src/3rdparty/freetype/BDF-LICENSE.txt": "e4e792f29e66750f2e410fd7b50a567652c180f6ee15e1a4dfa0bb5cde524537",
+    "src/ports/qt6/licenses/gui/src/3rdparty/freetype/LICENSE.txt": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1",
+    "src/ports/qt6/licenses/gui/src/3rdparty/freetype/PCF-LICENSE.txt": "6938597bfdeca0db191a8f9ede52eaf2482c2c71a0094c084747a1235f9958fe",
+    "src/ports/qt6/licenses/gui/src/3rdparty/freetype/ZLIB-LICENSE.txt": "2b1f5d615382a151af3eb71462ad17d89e2efee8fa7664058d35d3d9237ebb19",
+    "src/ports/qt6/licenses/gui/src/3rdparty/freetype/docs/FTL.TXT": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1",
+    "src/ports/qt6/licenses/gui/src/3rdparty/freetype/docs/GPLv2.TXT": "c4120c6752c910c299e3bd9cb3a46ff262c268303ca2069b61f92f10a5656c18",
+    "src/ports/qt6/licenses/gui/src/3rdparty/harfbuzz-ng/COPYING": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64",
+    "src/ports/qt6/licenses/gui/src/3rdparty/wasm/DEJAVU-LICENSE": "7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93"
+  },
+  "glyph_fixture_sha256": "bb4c5c57f0a33c45f75ae00a865bc567952020fbf993c6fc11d7eed2bfbb1986",
+  "icu_notice": {
+    "archive_member": "icu/LICENSE",
+    "archive_sha256": "06fa63ecb521048f8082f12ad988f6b678d90cbd88aafce24cbc94902b191d99",
+    "registered_path": "src/ports/webkit/icu/LICENSE.upstream",
+    "sha256": "e09827667e0bb3c808b2a463548ba814a5e6249b67353234d70c8dfc2bcc417d",
+    "signature_sha256": "f0377e8def38c8b717ba54a072b4e64fe18a7f9cbf15171a98f5d01b778524b6",
+    "signature_verification": {
+      "gpgv_keyring_sha256": "4e0333e0b0802852c33bb9ff9862c1f2460c79c563c6d715f8d525bce41ca164",
+      "published_keys_sha256": "17e95e9720e30c4e6ddee9967ef293c8c3c7647923ea89f94f1eee590c4c9670",
+      "signature_date": "2026-10-22",
+      "signing_fingerprint": "E52F07877A5805F9AF4AB0ACD46C5610D06E7001",
+      "status": "verified"
+    },
+    "source_lock_sha256": "5cb1d132cf2ba7081be79b266fd36b89533f14390babb2098298e7264ffd1c92"
+  },
+  "sdk_manifest_sha256": "a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e",
+  "sdk_profile": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-clarke-llint",
+    "profile_sha256": "3aa343495c26d715460fed84480014ab505c1a6f92976a3c6eb617341ef6562c",
+    "runtime_family": "glibc",
+    "sdk_tree_sha256": "2070dbad9ddd860a11dd1511f1268c1f62683df01d1a967bfa741e53df0799d6",
+    "status": "candidate_binding_verified"
+  },
+  "status": "target_binding_and_notice_materials_verified",
+  "system_license_check": {
+    "active_register_items": [],
+    "build_id": "bcb17ac93ce933bf",
+    "files": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "NOTICE": "dd2d47bae96472ce65252423f76ec3b868e83b4a03b34753f77f74f7a3c3f62e",
+      "licenses/GFDL-1.3.texi": "2b6a0198db38b8c8969e4581b2873d69411906ba8e6057c19fd6f5e00e291b2b",
+      "licenses/components.json": "e61dea66e5c1fa2383bd9f9e0e636ad8aceb70857fc5b3c20dee1756afaf1561",
+      "licenses/fatfs.txt": "5e865b99f0a4800b699d356a20887741c49681d36f712ba9cd0c2c65dea89f7c",
+      "licenses/legacy_mit_files.json": "56bdd672a3c0545cf5043289c0b29a4fef49ba0d3fef2fd29350e6f2ec093429",
+      "licenses/lwip.txt": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b",
+      "licenses/mit_legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+      "licenses/newlib.txt": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6",
+      "licenses/open_items.json": "dfbb1456412c729c2b90f2aa5d92318e068798f39d3ebbbaecb233b9384efa0f"
+    },
+    "scope": "registered_materials_and_sdk_copies"
+  },
+  "target_artifacts_verified": 164,
+  "target_compiler_wrapper_sha256": "d1f5af65ee0acb805f9dffe9b728df6e80c35e01023c712cba40357168b2b00a",
+  "target_icu_static_members": {
+    "lib/libicudata.a": "0b5168e5c536398e4985e56bb6bf6a8a6ddabcd0886e8b81913debe6a80caf52",
+    "lib/libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
+    "lib/libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83"
+  },
+  "target_input_archives": {
+    "icu_static": "d64f090773eb9027bf9e0d46c95c8a60ed6d0817429f516c3807c0554178acb4",
+    "qtbase": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+    "wpe_webkit": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56"
+  },
+  "target_manifest_sha256": "f01641dbffd07bb185d37de8cc7f72e1875edb1f6462af41201aa6ee2957b334",
+  "target_recipe_sha256": "cf2de9511babd975df8079aff859476bb6ae16817a116b3e5c0b4853efd0b121",
+  "target_source_locks": {
+    "src/ports/qt6/source_lock.json": "f37d1f82234b71066d59dd704febf86ba59762bce53021ef0ef0774709c6ed04",
+    "src/ports/webkit/source_lock.json": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "mainline_base": "26e3d2a9c89557ce5cb850ece88600c5edf1a204",
+  "implementation_commit": "3427d85e834544bb707a4ddb880d94927e243f7c",
+  "implementation_tree": "fe1e6622dccff2e9afa3a123c91a16241c02ae26",
+  "system_source_sha256": "bcb17ac93ce933bfdd595500cffba58a7c92c6ddd706e039f17c1d8eb759cf27",
+  "serial_raw_sha256": "e6ea2bd3826a10f498f9284606d6b2cf112ecef2f01b78ec81dd54936850305c",
+  "files": {
+    "guest.json": "345c6ef18ed5eb28339819833bc174f9b561fa8a6a564641910b1787f5deff95",
+    "guest.serial.log.gz": "60f30a030f0d0f56d2bf67bff03a55cc61f92b712ef5872a41e32c776a7d8bd0",
+    "target_and_license_recheck.json": "a83ca1a000f8544be00e8a880167c1eb16b0d176880b8ad7d2ad1a7fc23bf427",
+    "work_disk_readback.json": "2f2ee589db66542b4db2e0cd20e2606f7598fda396f301a856ea56b9bb9da3a5"
+  }
+}

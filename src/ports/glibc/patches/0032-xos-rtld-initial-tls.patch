@@ -1,0 +1,101 @@
+--- a/elf/rtld.c
++++ b/elf/rtld.c
+@@ -56,0 +57,6 @@
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++# include <startup.h>
++# include <xos_rtld_initial_tls.h>
++# define init_tls __xos_rtld_init_tls
++# define init_tls_templates __xos_rtld_init_tls_templates
++#endif
+@@ -360,0 +367 @@
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+@@ -370,0 +378 @@
++#endif
+@@ -377,0 +386,18 @@
++
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++/* Publish the real dispatcher after self-relocation and before invoking
++   the OS entry, while the ELF RELRO data is still writable.  */
++static void
++xos_init_rtld_dispatch (void)
++{
++  GLRO (dl_debug_printf) = _dl_debug_printf;
++  GLRO (dl_mcount) = _dl_mcount;
++  GLRO (dl_lookup_symbol_x) = _dl_lookup_symbol_x;
++  GLRO (dl_open) = _dl_open;
++  GLRO (dl_close) = _dl_close;
++  GLRO (dl_catch_error) = _dl_catch_error;
++  GLRO (dl_error_free) = _dl_error_free;
++  GLRO (dl_tls_get_addr_soft) = _dl_tls_get_addr_soft;
++  GLRO (dl_libc_freeres) = __rtld_libc_freeres;
++}
++#endif
+@@ -452,0 +479,3 @@
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++  xos_init_rtld_dispatch ();
++#endif
+@@ -730 +759,4 @@
+-static void *
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
++static
++#endif
++void *
+@@ -750,2 +782,8 @@
+-  /* No need to check the return value.  If memory allocation failed
+-     the program would have been terminated.  */
++  if (GL(dl_tls_dtv_slotinfo_list) == NULL)
++    {
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++      _startup_fatal ("XOS rtld: cannot allocate initial TLS slotinfo\n");
++#else
++      _dl_fatal_printf ("cannot allocate initial TLS slotinfo\n");
++#endif
++    }
+@@ -768,0 +807,3 @@
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++    _startup_fatal ("XOS rtld: cannot allocate initial TLS data\n");
++#else
+@@ -770,0 +812 @@
++#endif
+@@ -780,0 +823,19 @@
++}
++
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
++static
++#endif
++void
++init_tls_templates (struct link_map *main_map, void *tcbp)
++{
++  unsigned int i = main_map->l_searchlist.r_nlist;
++  while (i-- > 0)
++    {
++      struct link_map *l = main_map->l_initfini[i];
++      if (l->l_tls_blocksize != 0)
++        _dl_add_to_slotinfo (l, true);
++    }
++  /* _dl_add_to_slotinfo records gen = dl_tls_generation + 1.  */
++  if (GL(dl_tls_max_dtv_idx) > 0)
++    ++GL(dl_tls_generation);
++  _dl_allocate_tls_init (tcbp, true);
+@@ -2258,3 +2319 @@
+-  /* Populate the DTV slotinfo and copy each TLS module's into thestatic TLS
+-     block *before* the relocation loop.  IFUNC resolvers fired during phase 2
+-     of the per-object two-phase scheme therefore observe initialised TLS.  */
++  /* Populate startup TLS before relocation runs resolvers. */
+@@ -2262,15 +2321 @@
+-    {
+-      unsigned int i = main_map->l_searchlist.r_nlist;
+-      while (i-- > 0)
+-	{
+-	  struct link_map *l = main_map->l_initfini[i];
+-	  if (l->l_tls_blocksize != 0)
+-	    _dl_add_to_slotinfo (l, true);
+-	}
+-      /* _dl_add_to_slotinfo records gen = dl_tls_generation + 1, and
+-	 _dl_allocate_tls_init asserts gen <= dl_tls_generation, so bump
+-	 the generation before init.  */
+-      if (GL(dl_tls_max_dtv_idx) > 0)
+-	++GL(dl_tls_generation);
+-      _dl_allocate_tls_init (tcbp, true);
+-    }
++    init_tls_templates (main_map, tcbp);

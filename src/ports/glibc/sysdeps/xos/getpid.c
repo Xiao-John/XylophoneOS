@@ -26,12 +26,16 @@ __getpid (void)
      to aliasing another process; the final pid_t ABI is not yet decided. */
   if (value > INT_MAX)
     {
+#if !defined SHARED || !IS_IN (rtld)
       __set_errno (EOVERFLOW);
+#endif
       return (pid_t) -1;
     }
   if (value <= 0)
     {
+#if !defined SHARED || !IS_IN (rtld)
       __set_errno (EIO);
+#endif
       return (pid_t) -1;
     }
   return (pid_t) value;

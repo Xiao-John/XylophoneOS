@@ -1,0 +1,370 @@
+{
+  "status": "passed_subset",
+  "verified_source_head": "5cac399d45cc0ef166a854b062e1c4c059d02bb0",
+  "verified_source_tree": "703a2f62ed0becc967b1d92c5403962d32243497",
+  "main_source_head": "8d1b985dd8705772bd5a341ee303c68895a34d10",
+  "previous_pr_head": "b835755623da8c0c09127cb11b22de331f18997b",
+  "system_build_id": "e8067c409e9b9629",
+  "system_manifest_sha256": "0c502fe82e58f9461aaf829116e44300cd56ef684eec75c00d898851857e1f24",
+  "iso_sha256": "b901632d940bb4a248ec25db5315151a755fbd3b1e2cf937fafa91f3936b1a12",
+  "sdk_manifest_sha256": "d7584fe8964932f62f51209b2fbf492b68e56430a03fe76cab3d3bd6b56c69a3",
+  "sdk_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "sdk_source_verification_report_sha256": "e606f1690fd1f376485618be8d95e9d3accab3953295b9a72f1a9e8a3c483fd8",
+  "sdk_source_verification_status": "upstream_signature_verified",
+  "sdk_profile": "xos_glibc_static_research_v1",
+  "official_guard_log_sha256": "52f0cb73aa31fb7a0807d46b55e08baf6df354bfc137b32c193dd25c9e422d90",
+  "shared_libc_sha256": "0cbf55610a67f1a0642abae548c31a9cafc6b7a5b125e710c0cd367ec394331f",
+  "gnu_interpreter_sha256": "bd35fd87f5b701a820637dbc0a6914d6f3fab4ae972bc86e0f140219e10ee7a4",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "source_inputs": {
+    "/inputs/dash.elf": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+    "/inputs/dash.json": "2096f94e3931fdfc91005aed98b9096dc008dbb41a20493f858d3653431fa19f",
+    "/inputs/gcc-16.2.0.tar.xz": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+    "/inputs/gcc-16.2.0.tar.xz.sig": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+    "/inputs/glibc-2.44.tar.xz": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+    "/inputs/gnu-keyring.gpg": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+    "/inputs/lwip-2.2.1.tar.xz": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1"
+  },
+  "host": {
+    "warning_control_log_sha256": "1a05868061618dd5388db89f9aa9eb0a1c91eb88b7923a10f33aded37483c039",
+    "word_alignment_control_log_sha256": "06b99b13d9b174be1eb3ee7e4f0ae437da0f9a9b51fe06c3bd093f67331b17db",
+    "sanitized_report_sha256": "780f17abdb04cf75d8b4e64900b5f7cc7b4d850715759fca1d36ac93967f76d9",
+    "cases_passed": 50,
+    "files_fatfs_groups": 15,
+    "startup_environment_names": 11,
+    "environment_log_sha256": "6b5328339117f85c729171356d94f93965d1602b93c9a71b6ad90b5e4d7e9496"
+  },
+  "static": {
+    "g2": {
+      "raw_report_sha256": "aa3ff6407469381f5cea1d5d5d6000c4800966962711d97272c3adc570c24ed6",
+      "runs": 12,
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "serial_log": {
+        "raw_sha256": "40be46588a4544377045171bfd0b8072829c353968ad0e24548c9d4f2207ec30",
+        "compressed_sha256": "e6b33d2594cdaf99af0ccd64fa4ac224ae9fde9169fb00e1614cd15e8c7ad8b6"
+      },
+      "cases": {
+        "g2_return": 3,
+        "g2_exit": 3,
+        "g2_fatal_stderr": 3,
+        "g2_ctor_order": 3
+      },
+      "exit_codes": {
+        "g2_return": 37,
+        "g2_exit": 39,
+        "g2_fatal_stderr": 127,
+        "g2_ctor_order": 0
+      },
+      "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+      "newlib_control": "passed: current-system malloc/printf/exit/resources",
+      "dash_entry": "not_run"
+    },
+    "files": {
+      "raw_report_sha256": "abb91e0b6bb25da91f0b713bef1221b94bc983e891f87594b7bb01b8aa09268d",
+      "runs": 9,
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "serial_log": {
+        "raw_sha256": "eeecf91fb45bb5c1eb3ca5707735d9abd9da934d63a2eab9ccceca3d58a4fc58",
+        "compressed_sha256": "3a75a404576586430db4216037005565ec751176b8fbd2ae9b97a3eaa5fe474e"
+      },
+      "cases": {
+        "g3_files_single": 3,
+        "g3_files_threads": 3,
+        "g3_files_parent": 3
+      },
+      "exit_codes": {
+        "g3_files_single": 0,
+        "g3_files_threads": 0,
+        "g3_files_parent": 0
+      },
+      "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+      "newlib_control": null,
+      "dash_entry": "not_run"
+    },
+    "files-extra": {
+      "raw_report_sha256": "7dd3a9e76c13dad547408636df129115b4f9fb9ccdbb3f8a1d090c63612b4f6f",
+      "runs": 6,
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "serial_log": {
+        "raw_sha256": "e046151005c90d6874174d010a27f1a71fc71722f97d37897562a563e312e62a",
+        "compressed_sha256": "30c1f0ac82a63b987f524a6f3fcb45dfc7518343d4eebebed99fe62b74a174a2"
+      },
+      "cases": {
+        "g3_files_extra": 3,
+        "g3_files_extra_parent": 3
+      },
+      "exit_codes": {
+        "g3_files_extra": 0,
+        "g3_files_extra_parent": 0
+      },
+      "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+      "newlib_control": null,
+      "dash_entry": "not_run"
+    },
+    "pipe": {
+      "raw_report_sha256": "372390fa0275783fd1df2f1ad324571a05e295518662a1919f7137c83ef98f53",
+      "runs": 3,
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "serial_log": {
+        "raw_sha256": "d0b9f5d9f4dc0433ac74abd5fec2080c5a00a58a1b4fbd83c38340349792190a",
+        "compressed_sha256": "404db0cf72f717ab9564d7a5db423d3718a0ab36bfddb73a09d910ef6b2f79f9"
+      },
+      "cases": {
+        "g3_pipe": 3
+      },
+      "exit_codes": {
+        "g3_pipe": 0
+      },
+      "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+      "newlib_control": null,
+      "dash_entry": "not_run"
+    },
+    "path-mutations": {
+      "raw_report_sha256": "a20f60db762328071e4c43760dde68d5de6591083885e46e393dd104422c5abb",
+      "runs": 3,
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "serial_log": {
+        "raw_sha256": "2e63159ff346e510d1e2ad99c60bcec4eb67188a8eddd0387c6847c8ee0a830e",
+        "compressed_sha256": "88fe1489b028e36b44535ea8635eeb33f301749bcd18f49170da8d48406111af"
+      },
+      "cases": {
+        "g3_path_mutations": 3
+      },
+      "exit_codes": {
+        "g3_path_mutations": 0
+      },
+      "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+      "newlib_control": null,
+      "dash_entry": "not_run"
+    },
+    "cwd": {
+      "raw_report_sha256": "b366b3c48a605bfc1921b4ae3e9ce08266bc147a0009fef61313cc4ec1ab62f2",
+      "runs": 6,
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "serial_log": {
+        "raw_sha256": "ec810e3161de0c7db855c393736558f9b1ef5653d8a8f697ef0ef3d2fb6c0c2d",
+        "compressed_sha256": "5f4c75e6f59ba21f532516e229e1ce559a1318514b8b35be98eb466c9106a204"
+      },
+      "cases": {
+        "g3_cwd": 3,
+        "g3_cwd_dash": 3
+      },
+      "exit_codes": {
+        "g3_cwd": 0,
+        "g3_cwd_dash": 0
+      },
+      "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+      "newlib_control": null,
+      "dash_entry": "passed"
+    },
+    "process": {
+      "raw_report_sha256": "992f7c081882865ea48deb410958ade27ba992187e05930bb403dfdf0e8606bb",
+      "runs": 9,
+      "baseline": [
+        129696,
+        3,
+        1
+      ],
+      "serial_log": {
+        "raw_sha256": "9ed67abd65a80c1c14b6c440e81615f6552aadd19a7285740b3c05486849f7f7",
+        "compressed_sha256": "56cffaf420878f4b8182119551927703d8ca5c264ecdf9368db6524fbb1ee45d"
+      },
+      "cases": {
+        "g3_spawn": 3,
+        "g3_spawn_denied": 3,
+        "g3_spawn_dash": 3
+      },
+      "exit_codes": {
+        "g3_spawn": 0,
+        "g3_spawn_denied": 0,
+        "g3_spawn_dash": 0
+      },
+      "runner_sha256": "67900cc0709e8d8b03c3c9ca58a29866289e5e320f2d7ad5fe6db0d74fe81a25",
+      "newlib_control": null,
+      "dash_entry": "passed"
+    },
+    "terminal": {
+      "raw_report_sha256": "7e5f1a387e433932138bbda2bd749dd0a8e5dfc6814bf31181f97c0f434b52d5",
+      "runs": 7,
+      "baseline": [
+        129512,
+        4,
+        2
+      ],
+      "serial_log": {
+        "raw_sha256": "d5c6938a7aed9a3b84f5a1ddf1c45ffafff175b09ddbfd938304f3f2ade0e98b",
+        "compressed_sha256": "81808b5b763340ff65889e4f0e98e4beb8d7389d1917c55d6f078885ecadcb92"
+      },
+      "cases": {
+        "terminal_select": 1,
+        "public_terminal": 3,
+        "native_exec_terminal_receiver": 3
+      },
+      "exit_codes": {
+        "terminal_select": 0,
+        "public_terminal": 0,
+        "native_exec_terminal_receiver": 0
+      },
+      "runner_sha256": "a6028ba212b43530124038af376cc3dbc8a889740736a084a77cf67abe342a50",
+      "newlib_control": null,
+      "dash_entry": null
+    }
+  },
+  "dynamic": {
+    "c": {
+      "raw_report_sha256": "0bc7da90a369f78ff9dce1763bd86a8cce700f9b89a141bebf70dae1af766e7f",
+      "images": {
+        "main": {
+          "entry": 17592188150400,
+          "phnum": 11,
+          "sha256": "b05c724e4d447a45d8adfec3048d9ac8624b41723b9dcb18593c953fed350ae4",
+          "span": 36864
+        },
+        "interpreter": {
+          "entry": 26389352914464,
+          "phnum": 7,
+          "sha256": "c07f075242347d850fd85ba503ecb92d43de3f41073446d95f648de8fd782bea",
+          "span": 237568
+        },
+        "dependency": {
+          "entry": 21990769572064,
+          "phnum": 12,
+          "sha256": "a241537bec2acadc5d721a4db9d70dfe26fae369c525a2875adcafd409ce62ec",
+          "span": 1609728
+        }
+      },
+      "bootstrap_sha256": "78d7ed642cc77770815d03c30d6a2b59d3dcb0f89a9aa15f64a3fec170da4a52",
+      "runner_sha256": "6a374c6afea2488acf8f9c703124f09c1b6df55592dbe4860bbd591829e1551a",
+      "serial_log": {
+        "raw_sha256": "15f581016d88137e8114b77e000cc6e04a9c722b925140b972fc1859e1fa73c4",
+        "compressed_sha256": "12986e9bf6d9de0ac62a55ad95d76cbe9b31f201e1e8cce4e5cc92835ceb6c36"
+      },
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD1_DYNAMIC_C_OK ctor=1 env=1 auxv=1 file=1 errno=1\n[task] event=reclaimed pid=11 pages=551\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    "cpp": {
+      "raw_report_sha256": "89113da7f4b7680146c7734188c1f9623a96f14c6297150d1d39e7dbfbd18a5f",
+      "images": {
+        "main": {
+          "entry": 17592188150080,
+          "phnum": 12,
+          "sha256": "d6d07c77848e03cdad04d765e4f2ea7f1deda25446e981065d47afd7f0844468",
+          "span": 36864
+        },
+        "interpreter": {
+          "entry": 26389352914464,
+          "phnum": 7,
+          "sha256": "c07f075242347d850fd85ba503ecb92d43de3f41073446d95f648de8fd782bea",
+          "span": 237568
+        },
+        "dependency": {
+          "entry": 21990769572064,
+          "phnum": 12,
+          "sha256": "a241537bec2acadc5d721a4db9d70dfe26fae369c525a2875adcafd409ce62ec",
+          "span": 1609728
+        }
+      },
+      "bootstrap_sha256": "1880eacb080657c29d3b1c2cc2897df60dadc24b1bc624fb39af0dd0868a1456",
+      "runner_sha256": "6a374c6afea2488acf8f9c703124f09c1b6df55592dbe4860bbd591829e1551a",
+      "serial_log": {
+        "raw_sha256": "75b676f630773b19b2500a62eb461152143a3eacf07c6274cba11de966aa9709",
+        "compressed_sha256": "2f081133c5e34476b4f69a7fa74fbbe87915d37180b498420b135c660e404d4d"
+      },
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD1_DYNAMIC_CPP_OK ctor=1 tls=1\nD1_DYNAMIC_CPP_FINI\n[task] event=reclaimed pid=11 pages=517\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    "unlisted": {
+      "raw_report_sha256": "28a564c11c3950830da1b8ed44710d301dc885562dbc927d7c8e4a7e42b6342b",
+      "images": {
+        "main": {
+          "entry": 17592188150400,
+          "phnum": 11,
+          "sha256": "b05c724e4d447a45d8adfec3048d9ac8624b41723b9dcb18593c953fed350ae4",
+          "span": 36864
+        },
+        "interpreter": {
+          "entry": 26389352914464,
+          "phnum": 7,
+          "sha256": "c07f075242347d850fd85ba503ecb92d43de3f41073446d95f648de8fd782bea",
+          "span": 237568
+        },
+        "dependency": {
+          "entry": 21990769572064,
+          "phnum": 12,
+          "sha256": "a241537bec2acadc5d721a4db9d70dfe26fae369c525a2875adcafd409ce62ec",
+          "span": 1609728
+        }
+      },
+      "bootstrap_sha256": "78d7ed642cc77770815d03c30d6a2b59d3dcb0f89a9aa15f64a3fec170da4a52",
+      "runner_sha256": "6a374c6afea2488acf8f9c703124f09c1b6df55592dbe4860bbd591829e1551a",
+      "serial_log": {
+        "raw_sha256": "52a339cd8140e413b55e9eb4c3613ee9c17e89c1f53ae9394c5a752837447630",
+        "compressed_sha256": "05c7847051add3f2ecc091ad9250dd47c253f8bb6563d6cb009ebf8846049680"
+      },
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\n/usr/bin/d1_entry: error while loading shared libraries: libc.so.0.1: cannot open shared object file: No such file or directory\n[task] event=reclaimed pid=11 pages=118\r\nD1_DYNAMIC_STATUS=127\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=127\nxsh> "
+    }
+  },
+  "native_build_retries": {
+    "system-host-bind-failed.log": "fa2417f1068c2d1c3ba208b1ce0b1e39cccf7e8bb5b3537457e8a9a0f60bda46",
+    "sdk-install-bind-failed.log": "7c9c47129d3896e763ad2a07fb83cdd97d20c0503e674006e2d27ec8f6b508f6",
+    "pic-crt-host-bind-failed.log": "df17230355487d4750717f6f09e49e32ce616a09a524a15406c2e3bffe8ed581"
+  },
+  "fresh_newlib_dash_receipt_sha256": "0f7f0035911919efa70407dbf8cb77012e32e5e0ab5ccf6a9eb3c59a104ba1cb",
+  "local_replay_archives": {
+    "system.tar.zst": "c61156e703ab42ebc880bbd6100a7fd8e3f10768d8eccbbdf2fd2636b0d3d4eb",
+    "glibc-c.tar.zst": "8c2c26cf69a319fbf516e5d43700a493ef914b3cfd80b704e9edb9fb19117b2b",
+    "gnu-link-and-replay.tar.zst": "32481cd9acea1a10907e6ed2f3de9188caaf17a4e2b15cbd8d740bc336a54a37",
+    "guest-and-controls.tar.zst": "b6d194a0d0cfebeb45e71204f8b0c220e38cbcacea9d5f7ee82d8d3cb22d06c5"
+  },
+  "later_main_source_review": {
+    "main_head": "643d9de28ba7252bb5437f8fbc90a16a4b3c90ea",
+    "composition_head": "882ddd6ddfd557864c9a1a5d7c05d851d9c21672",
+    "composition_tree": "b762864563fc2b481c624a711daeeac074b56cdf",
+    "static_sdk_manifest_inputs_identical": 337,
+    "native_loader_kernel_shared_service_and_libc_sources_equal_to_replay": true,
+    "normal_pumpkin_profile_default": "private flags omitted",
+    "workspace_sdk_selection_and_recovery_tools_equal_to_latest_main": true,
+    "sdk_profile_host_cases": 45,
+    "sdk_profile_host_log_sha256": "876fa80f0fb77ccb11b6852d0733e0c1060f2b807143605dc80f043618e6cc2e",
+    "p3_repository_host_cases": 50,
+    "p3_repository_host_log_sha256": "a919f3de31173d99fd08d3705e3272482629606244cf9046e50c04ef4a52df21",
+    "guest_replay_scope": "exact source pinned above"
+  }
+}

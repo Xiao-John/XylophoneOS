@@ -1,0 +1,105 @@
+test_authentication_evidence_tamper_rejected (__main__.profile_cases.test_authentication_evidence_tamper_rejected) ... ok
+test_boolean_compiler_exit_status_rejected (__main__.profile_cases.test_boolean_compiler_exit_status_rejected) ... ok
+test_boolean_protocol_version_rejected (__main__.profile_cases.test_boolean_protocol_version_rejected) ... ok
+test_candidate_id_contains_family (__main__.profile_cases.test_candidate_id_contains_family) ... ok
+test_claimed_guest_build_rejected (__main__.profile_cases.test_claimed_guest_build_rejected) ... ok
+test_cli_creation_and_verification (__main__.profile_cases.test_cli_creation_and_verification) ... ok
+test_cli_failure_leaves_no_profile (__main__.profile_cases.test_cli_failure_leaves_no_profile) ... ok
+test_cli_preserves_existing_output (__main__.profile_cases.test_cli_preserves_existing_output) ... ok
+test_cli_rejects_nonobject_manifest_without_traceback (__main__.profile_cases.test_cli_rejects_nonobject_manifest_without_traceback) ... ok
+test_cli_rejects_output_inside_sdk (__main__.profile_cases.test_cli_rejects_output_inside_sdk) ... ok
+test_cli_rejects_symlinked_sdk_root (__main__.profile_cases.test_cli_rejects_symlinked_sdk_root) ... ok
+test_cxx_authentication_separate_from_glibc (__main__.profile_cases.test_cxx_authentication_separate_from_glibc) ... ok
+test_cxx_header_path_escape_rejected (__main__.profile_cases.test_cxx_header_path_escape_rejected) ... ok
+test_cxx_separate_unwinder_requires_its_own_profile (__main__.profile_cases.test_cxx_separate_unwinder_requires_its_own_profile) ... ok
+test_cxx_single_thread_unwinder_rejected (__main__.profile_cases.test_cxx_single_thread_unwinder_rejected) ... ok
+test_cxx_unwinder_member_changed_after_rehash_rejected (__main__.profile_cases.test_cxx_unwinder_member_changed_after_rehash_rejected) ... ok
+test_cxx_weak_pthread_unwinder_rejected_after_rehash (__main__.profile_cases.test_cxx_weak_pthread_unwinder_rejected_after_rehash) ... ok
+test_cxx_wrong_thread_model_rejected (__main__.profile_cases.test_cxx_wrong_thread_model_rejected) ... ok
+test_expired_signature_status_rejected_even_after_rehash (__main__.profile_cases.test_expired_signature_status_rejected_even_after_rehash) ... ok
+test_external_source_evidence_mutation_during_validation_rejected (__main__.profile_cases.test_external_source_evidence_mutation_during_validation_rejected) ... ok
+test_extra_unlisted_header_rejected (__main__.profile_cases.test_extra_unlisted_header_rejected) ... ok
+test_glibc_builder_rejects_c_only_profile_for_cpp (__main__.profile_cases.test_glibc_builder_rejects_c_only_profile_for_cpp) ... ok
+test_glibc_builder_rejects_newlib_profile (__main__.profile_cases.test_glibc_builder_rejects_newlib_profile) ... ok
+test_glibc_stdio_transfer_binds_staged_receiver (__main__.profile_cases.test_glibc_stdio_transfer_binds_staged_receiver) ... ok
+test_glibc_terminal_archive_is_bound_and_target_checked (__main__.profile_cases.test_glibc_terminal_archive_is_bound_and_target_checked) ... ok
+test_header_version_mismatch_rejected_after_rehash (__main__.profile_cases.test_header_version_mismatch_rejected_after_rehash) ... ok
+test_manifest_path_escape_rejected (__main__.profile_cases.test_manifest_path_escape_rejected) ... ok
+test_missing_crt_rejected_after_rehash (__main__.profile_cases.test_missing_crt_rejected_after_rehash) ... ok
+test_missing_source_authentication_rejected (__main__.profile_cases.test_missing_source_authentication_rejected) ... ok
+test_mixed_target_archive_rejected_after_rehash (__main__.profile_cases.test_mixed_target_archive_rejected_after_rehash) ... ok
+test_nested_metadata_objects_rejected (__main__.profile_cases.test_nested_metadata_objects_rejected) ... ok
+test_newlib_and_glibc_candidates_verify_without_guest_claim (__main__.profile_cases.test_newlib_and_glibc_candidates_verify_without_guest_claim) ... ok
+test_newlib_builder_rejects_glibc_profile_before_access (__main__.profile_cases.test_newlib_builder_rejects_glibc_profile_before_access) ... ok
+test_newlib_cxx_lineage_rejected (__main__.profile_cases.test_newlib_cxx_lineage_rejected) ... ok
+test_newlib_libc_digest_rejected (__main__.profile_cases.test_newlib_libc_digest_rejected) ... ok
+test_newlib_malformed_build_id_rejected (__main__.profile_cases.test_newlib_malformed_build_id_rejected) ... ok
+test_newlib_missing_build_id_rejected (__main__.profile_cases.test_newlib_missing_build_id_rejected) ... ok
+test_registered_id_cannot_be_rebound_but_can_be_verified (__main__.profile_cases.test_registered_id_cannot_be_rebound_but_can_be_verified) ... ok
+test_sdk_artifact_changed_after_generation (__main__.profile_cases.test_sdk_artifact_changed_after_generation) ... ok
+test_sdk_manifest_changed_after_generation (__main__.profile_cases.test_sdk_manifest_changed_after_generation) ... ok
+test_sdk_mutation_during_validation_rejected (__main__.profile_cases.test_sdk_mutation_during_validation_rejected) ... ok
+test_stub_feature_rejected (__main__.profile_cases.test_stub_feature_rejected) ... ok
+test_symlink_and_special_entries_rejected (__main__.profile_cases.test_symlink_and_special_entries_rejected) ... ok
+test_sysroot_symlink_rejected (__main__.profile_cases.test_sysroot_symlink_rejected) ... ok
+test_wrong_family_rejected (__main__.profile_cases.test_wrong_family_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 45 tests in 7.890s
+
+OK
+test_ambiguous_package_identity (__main__.repository_cases.test_ambiguous_package_identity) ... ok
+test_boolean_version (__main__.repository_cases.test_boolean_version) ... ok
+test_changed_index_bytes (__main__.repository_cases.test_changed_index_bytes) ... ok
+test_cli_round_trip (__main__.repository_cases.test_cli_round_trip) ... ok
+test_conflicting_versions (__main__.repository_cases.test_conflicting_versions) ... ok
+test_cycle (__main__.repository_cases.test_cycle) ... ok
+test_deep_metadata (__main__.repository_cases.test_deep_metadata) ... ok
+test_dependency_identity_mismatch (__main__.repository_cases.test_dependency_identity_mismatch) ... ok
+test_deterministic_repository_and_lock (__main__.repository_cases.test_deterministic_repository_and_lock) ... ok
+test_duplicate_json_keys (__main__.repository_cases.test_duplicate_json_keys) ... ok
+test_duplicate_lock_root (__main__.repository_cases.test_duplicate_lock_root) ... ok
+test_duplicate_repository_entry (__main__.repository_cases.test_duplicate_repository_entry) ... ok
+test_duplicate_source_preserves_no_incomplete_repository (__main__.repository_cases.test_duplicate_source_preserves_no_incomplete_repository) ... ok
+test_existing_output_preserved (__main__.repository_cases.test_existing_output_preserved) ... ok
+test_fifo_package_rejected_without_blocking (__main__.repository_cases.test_fifo_package_rejected_without_blocking) ... ok
+test_incomplete_lock (__main__.repository_cases.test_incomplete_lock) ... ok
+test_index_symlink (__main__.repository_cases.test_index_symlink) ... ok
+test_invalid_lock_pin (__main__.repository_cases.test_invalid_lock_pin) ... ok
+test_invalid_size (__main__.repository_cases.test_invalid_size) ... ok
+test_invalid_utf8 (__main__.repository_cases.test_invalid_utf8) ... ok
+test_lock_symlink (__main__.repository_cases.test_lock_symlink) ... ok
+test_many_payload_members_binary_lookup (__main__.repository_cases.test_many_payload_members_binary_lookup) ... ok
+test_metadata_dependencies_differ (__main__.repository_cases.test_metadata_dependencies_differ) ... ok
+test_metadata_features_differ (__main__.repository_cases.test_metadata_features_differ) ... ok
+test_metadata_size_differs (__main__.repository_cases.test_metadata_size_differs) ... ok
+test_metadata_version_differs (__main__.repository_cases.test_metadata_version_differs) ... ok
+test_missing_dependency_in_index (__main__.repository_cases.test_missing_dependency_in_index) ... ok
+test_missing_package (__main__.repository_cases.test_missing_package) ... ok
+test_mixed_index (__main__.repository_cases.test_mixed_index) ... ok
+test_native_captured_size_and_extra_tail (__main__.repository_cases.test_native_captured_size_and_extra_tail) ... ok
+test_oversized_index (__main__.repository_cases.test_oversized_index) ... ok
+test_oversized_lock (__main__.repository_cases.test_oversized_lock) ... ok
+test_package_growth_rejected_with_captured_size (__main__.repository_cases.test_package_growth_rejected_with_captured_size) ... ok
+test_package_replacement_between_verify_and_stage (__main__.repository_cases.test_package_replacement_between_verify_and_stage) ... ok
+test_package_symlink (__main__.repository_cases.test_package_symlink) ... ok
+test_repository_entry_budget (__main__.repository_cases.test_repository_entry_budget) ... ok
+test_selected_closure_budget (__main__.repository_cases.test_selected_closure_budget) ... ok
+test_selected_package_upgrade (__main__.repository_cases.test_selected_package_upgrade) ... ok
+test_single_package_transactions_and_reverse_dependency (__main__.repository_cases.test_single_package_transactions_and_reverse_dependency) ... ok
+test_tampered_package (__main__.repository_cases.test_tampered_package) ... ok
+test_unknown_lock_fields (__main__.repository_cases.test_unknown_lock_fields) ... ok
+test_unknown_metadata_field (__main__.repository_cases.test_unknown_metadata_field) ... ok
+test_unsorted_repository (__main__.repository_cases.test_unsorted_repository) ... ok
+test_utf8_opaque_version (__main__.repository_cases.test_utf8_opaque_version) ... ok
+test_utf8_version_character_boundary (__main__.repository_cases.test_utf8_version_character_boundary) ... ok
+test_utf8_version_over_boundary (__main__.repository_cases.test_utf8_version_over_boundary) ... ok
+test_valid_dependency_order_and_trusted_pin (__main__.repository_cases.test_valid_dependency_order_and_trusted_pin) ... ok
+test_wrong_lock_order (__main__.repository_cases.test_wrong_lock_order) ... ok
+test_wrong_lock_pin (__main__.repository_cases.test_wrong_lock_pin) ... ok
+test_xypm_build_preparation_version_and_source_closure (__main__.repository_cases.test_xypm_build_preparation_version_and_source_closure) ... ok
+
+----------------------------------------------------------------------
+Ran 50 tests in 6.451s
+
+OK

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "durable_probe.hpp"
 #include "durable_probe_supervisor.hpp"
+#include "../../../src/user/pumpkin/anchored_installation.hpp"
 #if XOS_PUMPKIN_ANCHORED_PROBE
 #include "../../../src/user/pumpkin/generation_guest.hpp"
 #endif
@@ -147,7 +148,7 @@ private:
             }
         }
         return received == sizeof(offer) && offer.version == wire_version && offer.reserved == 0 &&
-            offer.realm == disk_test_realm && control.bind(offer.channel, pid);
+            offer.realm == anchored_installation_realm && control.bind(offer.channel, pid);
     }
 };
 
@@ -269,7 +270,7 @@ struct named_user {
         __builtin_memcpy(request.name, name.data, name.length);
         wire_reply reply{};
         if (!expect(server.control, request, reply, wire_status::ok) ||
-            reply.token.scope != disk_test_realm || reply.token.number != expected_number || reply.flags) {
+            reply.token.scope != anchored_installation_realm || reply.token.number != expected_number || reply.flags) {
             wipe_bytes(&reply, sizeof(reply));
             return false;
         }
@@ -292,7 +293,7 @@ struct named_user {
         auto request = named_request(wire_operation::read_named_resource, session, generation);
         wire_reply reply{};
         return expect(client, request, reply, expected) &&
-            (expected != wire_status::ok || (reply.token.scope == disk_test_realm &&
+            (expected != wire_status::ok || (reply.token.scope == anchored_installation_realm &&
              reply.token.number == generation && reply.flags == data));
     }
 };
@@ -304,13 +305,13 @@ bool named_cycle(daemon& server) {
     wire_reply reply{};
     if (!expect(carol.client, put, reply, wire_status::denied) ||
         !expect(server.control, put, reply, wire_status::ok) ||
-        reply.token.scope != disk_test_realm || reply.token.number != first_generation ||
+        reply.token.scope != anchored_installation_realm || reply.token.number != first_generation ||
         !alice.read(first_generation, wire_status::ok, first_content) ||
         !carol.read(first_generation, wire_status::denied)) { return false; }
 
     auto replace = named_request(wire_operation::put_named_resource, carol.identity, first_generation, second_content);
     return expect(server.control, replace, reply, wire_status::ok) &&
-        reply.token.scope == disk_test_realm && reply.token.number == second_generation &&
+        reply.token.scope == anchored_installation_realm && reply.token.number == second_generation &&
         expect(server.control, replace, reply, wire_status::conflict) &&
         alice.read(second_generation, wire_status::denied) &&
         carol.read(first_generation, wire_status::denied) &&
@@ -367,7 +368,7 @@ u8 mutate_named(daemon& server, named_operator::packet& input, account_name owne
     wire_reply result{};
     if (server.control.call(update, result) != exchange::received) return 0;
     if (result.result == wire_status::conflict) return named_operator::conflict;
-    if (result.result != wire_status::ok || (put && (result.token.scope != disk_test_realm ||
+    if (result.result != wire_status::ok || (put && (result.token.scope != anchored_installation_realm ||
                                                       result.token.number <= input.fields.generation))) return 0;
     if (put) input.fields.generation = result.token.number;
     input.fields.data = 0;
@@ -398,7 +399,7 @@ void run(u32 image, grant_function grant, const char* mode) {
     } else if (sdk::equal(mode, "check")) {
         daemon restarted;
         if (!restarted.start(image, grant, false) ||
-            !check_revoked(restarted, {disk_test_realm, 1}, {}) || !restarted.stop()) {
+            !check_revoked(restarted, {anchored_installation_realm, 1}, {}) || !restarted.stop()) {
             sdk::print("PUMPKIN_DURABLE_FAIL boot-recovery\n");
             return;
         }
@@ -488,7 +489,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         case anchor_guest::scenario::named_empty:
             passed = started && named_absent(server) && server.stop();
 #else
-            passed = started && check_revoked(server, {disk_test_realm, 1}, {}) && server.stop();
+            passed = started && check_revoked(server, {anchored_installation_realm, 1}, {}) && server.stop();
 #endif
             break;
         case anchor_guest::scenario::stale:

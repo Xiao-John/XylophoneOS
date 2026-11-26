@@ -1,0 +1,60 @@
+{
+  "reference_qml_example": {
+    "sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+    "bytes": 38211856,
+    "shader_occurrences": {
+      "frag": {
+        "sha256": "2c4b5b7415b6dfa562615ed9a836e2c8f16087ca2e381faa1b1a05972ce06c1b",
+        "count": 1
+      },
+      "vert": {
+        "sha256": "e5e191ff1f94085d082b5d73417945fc312f178a27dbce884390f9d838fb5231",
+        "count": 1
+      }
+    }
+  },
+  "rebuilt_qml_example": {
+    "sha256": "bedd360902b203a3f2b33344f79303534689167e965e1300813dcef76b89255e",
+    "bytes": 38392048,
+    "shader_occurrences": {
+      "frag": {
+        "sha256": "2c4b5b7415b6dfa562615ed9a836e2c8f16087ca2e381faa1b1a05972ce06c1b",
+        "count": 1
+      },
+      "vert": {
+        "sha256": "e5e191ff1f94085d082b5d73417945fc312f178a27dbce884390f9d838fb5231",
+        "count": 1
+      }
+    }
+  },
+  "kit_host_qsb": {
+    "sha256": "0d3c86b8e7368f7a00d5b38ed7fc53d9826f800a8fd90889d858671d929c31b1",
+    "bytes": 10538280,
+    "shader_occurrences": {
+      "frag": {
+        "sha256": "2c4b5b7415b6dfa562615ed9a836e2c8f16087ca2e381faa1b1a05972ce06c1b",
+        "count": 1
+      },
+      "vert": {
+        "sha256": "e5e191ff1f94085d082b5d73417945fc312f178a27dbce884390f9d838fb5231",
+        "count": 1
+      }
+    }
+  },
+  "target_qtgui_archive": {
+    "archive_sha256": "17b33e879ea78ec5189567218892eba6790e01d4964fee1f459bcfbec4559b99",
+    "resource_path_prefix": "/qt-project.org/gui/painting/shaders",
+    "resources": {
+      "frag": "2c4b5b7415b6dfa562615ed9a836e2c8f16087ca2e381faa1b1a05972ce06c1b",
+      "vert": "e5e191ff1f94085d082b5d73417945fc312f178a27dbce884390f9d838fb5231"
+    }
+  },
+  "host_qtgui_archive": {
+    "archive_sha256": "b62be9223fcb018f9a613d112fab469a8ae0383a83e2c360b5a4085d00c352cb",
+    "resource_path_prefix": "/qt-project.org/gui/painting/shaders",
+    "resources": {
+      "frag": "2c4b5b7415b6dfa562615ed9a836e2c8f16087ca2e381faa1b1a05972ce06c1b",
+      "vert": "e5e191ff1f94085d082b5d73417945fc312f178a27dbce884390f9d838fb5231"
+    }
+  }
+}

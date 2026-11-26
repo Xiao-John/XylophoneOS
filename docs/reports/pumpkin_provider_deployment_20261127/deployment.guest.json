@@ -1,0 +1,97 @@
+{
+  "status": "passed_subset",
+  "build_id": "e02cb7a2acbc1071",
+  "system_manifest_sha256": "3eb8d1da14ad50d4457b7883eee18bd7a2b366435850c98565faec4c2527da92",
+  "artifacts": {
+    "xos-install.iso": "c85f0356ac59375dfbfcf71f210b4bedaae4b6c5147f91aed5011e5c19c358d0",
+    "user_files.image.elf": "f86732d1e4839720bcf5c4a7c17703574ff83d18ecfdaaed5ea089df286ad49a",
+    "user_supervisor.image.elf": "589ffac18be4246a135c81446915fb380ea480efec36e89098c818ebf0710e20",
+    "user_pumpkin_durable.image.elf": "e3691f02464aa02d6072778426284248f48548110352d4ff1535460b28367060",
+    "user_p2_anchor_proxy.image.elf": "f3feeef9cbeb72b53c1106ee2700b80f4af14ccfba3af5d112655ea26eda6816",
+    "user_pumpkin_holder.image.elf": "2081bc74b0dc2efd6b126eb447203c3985e54c17adb492f64635b4cf4f0b0e3f"
+  },
+  "provider_entry_sha256": "09e500629afe7d5f881b5444f51dfde7cf4d3c83af203a74530281065393d5b6",
+  "operator_entry_sha256": "5f18a6f2c1abfe177b8e22ed987e037e3e167160f0fcfaae4a2c01aa3eee9ec5",
+  "runner_sha256": "719ed0e40a72d52b02ed47099197ca12d469d2e7cdbb51171320f8e53be8c85e",
+  "installation_realm": "6f4cbd3968676252fdb2f836edf90281",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "provider_filesystem": "tmpfs",
+  "checks": [
+    {
+      "case": "verified launch medium is sealed"
+    },
+    {
+      "case": "deployment cannot fall back to a local provider",
+      "exit": 1
+    },
+    {
+      "case": "deployment rejects a missing provider",
+      "exit": 1
+    },
+    {
+      "case": "provider cannot start before independent provisioning",
+      "exit": 1
+    },
+    {
+      "case": "operator cannot provision the generation provider",
+      "exit": 1
+    },
+    {
+      "case": "separate Linux UID provisions an empty generation",
+      "exit": 0
+    },
+    {
+      "case": "operator cannot open the provider store directly",
+      "exit": 1
+    },
+    {
+      "case": "provider refuses a different peer UID on the same socket group",
+      "exit": 0
+    },
+    {
+      "case": "launcher refuses a peer outside the pinned provider UID",
+      "exit": 1
+    },
+    {
+      "case": "operator installs against the independently prepared provider",
+      "exit": 0
+    },
+    {
+      "case": "non-operator cannot request first issuance",
+      "exit": 1
+    },
+    {
+      "case": "different sealed image binding is rejected",
+      "exit": 1
+    },
+    {
+      "case": "profile digest mismatch is rejected",
+      "exit": 1
+    },
+    {
+      "case": "real guest issues the first credential",
+      "exit": 0
+    },
+    {
+      "case": "first issuance cannot be repeated",
+      "exit": 1
+    },
+    {
+      "case": "normal login is denied while the provider is unavailable",
+      "exit": 1
+    },
+    {
+      "case": "fresh VM and provider process confirm ordinary login",
+      "exit": 0
+    },
+    {
+      "case": "restoring only the old guest disk cannot restore the realm",
+      "exit": 1
+    },
+    {
+      "case": "current disk still establishes a real ordinary session",
+      "exit": 0
+    }
+  ],
+  "deployment_profile_sha256": "9d57dff99adc9a57dcc65fb8d11e397047cdf6629440d81853a949392ef68ab3"
+}

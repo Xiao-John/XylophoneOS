@@ -1,0 +1,116 @@
+{
+  "builds": [
+    {
+      "elf_sha256": "1aeed34ca071791849e5acc7f3b723bdb647f6da20e184f84b47952bc10e30d7",
+      "files": 27,
+      "revision": 0,
+      "sha256": "129329b9d3ace6022c90fc6599dff1b2f3579fc12513d98bd5a652343eb5d334",
+      "target_profile": "xos-x86_64-static-single-b2-v1",
+      "upstream_version": "0.1.0"
+    },
+    {
+      "elf_sha256": "e11c05601ee281b88ee2785e65fda6b478d8db91ba4b081cae7db83378ad45cc",
+      "files": 32,
+      "revision": 0,
+      "sha256": "abbeb22ca4f5490747f06f92378bff5f8159f657560e6b494709f325ba46678a",
+      "target_profile": "xos-x86_64-glibc-stock-fork-v1",
+      "upstream_version": "0.4.0"
+    }
+  ],
+  "created_by_old": {
+    "dependency_lock": [
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c5b1476b0904b394fa397ce1e237726d72e7b7429146ea664a64f45ee5e6c4e0",
+        "upstream_version": "1.0"
+      }
+    ],
+    "disk_sha256": "4a487331839807cd7dd43260ae6d66e4f74ce59b7477a9e4d064f4e7c5210514",
+    "file_sha256": {
+      "/out/user.txt": "d23bb6f19522072d41b6ddd3bc099eafc0fba8f7eebd43076496ecfc66712bcb",
+      "/var/lib/xypm/db.json": "c346fd8b7f83ea791950f40efa2ccbf24f900c0cc4b91db9b0a0230feb77d133",
+      "/var/lib/xypm/index.tsv": "181eeeb1576f7f6c87ac80f279b26536d521e71dc1852c60cf4f89e8c9f3adc0"
+    },
+    "package_rows": [
+      {
+        "id": "friends.dependent",
+        "revision": 2147483647,
+        "sha256": "b474945d52d549b8c125ed5f39a7331f7527a7749bd80a93b22f61ed2214e93c",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c5b1476b0904b394fa397ce1e237726d72e7b7429146ea664a64f45ee5e6c4e0",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "xos.xypm",
+        "revision": 0,
+        "sha256": "129329b9d3ace6022c90fc6599dff1b2f3579fc12513d98bd5a652343eb5d334",
+        "upstream_version": "0.1.0"
+      }
+    ],
+    "verified_files": 33
+  },
+  "initial_disk_sha256": "25154ad3dfe6833c7cdb92062f708da0655ce7afaaefb78d5a6fcfb6d43da4d1",
+  "mode": "legacy_newlib_profile_refusal",
+  "profile_refusal": {
+    "boot_control_sha256": "79ea66d6a6fc4f3b2643411279d5586047fceccd1563965ace7c943dc42ed7b8",
+    "dependency_lock": [
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c5b1476b0904b394fa397ce1e237726d72e7b7429146ea664a64f45ee5e6c4e0",
+        "upstream_version": "1.0"
+      }
+    ],
+    "disk_sha256": "79ea66d6a6fc4f3b2643411279d5586047fceccd1563965ace7c943dc42ed7b8",
+    "file_sha256": {
+      "/out/user.txt": "d23bb6f19522072d41b6ddd3bc099eafc0fba8f7eebd43076496ecfc66712bcb",
+      "/var/lib/xypm/db.json": "c346fd8b7f83ea791950f40efa2ccbf24f900c0cc4b91db9b0a0230feb77d133",
+      "/var/lib/xypm/index.tsv": "181eeeb1576f7f6c87ac80f279b26536d521e71dc1852c60cf4f89e8c9f3adc0"
+    },
+    "package_rows": [
+      {
+        "id": "friends.dependent",
+        "revision": 2147483647,
+        "sha256": "b474945d52d549b8c125ed5f39a7331f7527a7749bd80a93b22f61ed2214e93c",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "friends.p2",
+        "revision": 2147483647,
+        "sha256": "c5b1476b0904b394fa397ce1e237726d72e7b7429146ea664a64f45ee5e6c4e0",
+        "upstream_version": "1.0"
+      },
+      {
+        "id": "xos.xypm",
+        "revision": 0,
+        "sha256": "129329b9d3ace6022c90fc6599dff1b2f3579fc12513d98bd5a652343eb5d334",
+        "upstream_version": "0.1.0"
+      }
+    ],
+    "verified_files": 33
+  },
+  "profile_sha256": {
+    "new": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "old": "a75fbb11cc76f36bc745d2715f659ae2fe935b8817187ebec4359c5c42583996"
+  },
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "status": "passed",
+  "system": [
+    {
+      "build_id": "7cc38437aa823d84",
+      "image_sha256": "0128c84dde73889eff8e724da589cdcc287bed497169457abe96e427d0027419",
+      "manifest_sha256": "f0f60ee97bb5dbad374c3c88275f0d6ba0c7c4c4cbab2ac44b079b3837decdf2"
+    },
+    {
+      "build_id": "b74c9dec2c92c9bd",
+      "image_sha256": "453288f1744c75ae8d6e0da1bcfcb05ef1266a5581949b9f7063109876c177f6",
+      "manifest_sha256": "f11a15e9d0d7e15d759214ee9915d0424d0ffea7cae7872663f08ff9302f89e9"
+    }
+  ],
+  "test_sha256": "6d0238867824c61775a7957c732033e200800f53fd515711c833152ed4bc082b"
+}

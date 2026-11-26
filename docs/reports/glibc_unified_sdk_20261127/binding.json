@@ -1,0 +1,160 @@
+{
+  "application_source_commit": "af47b2c5b179a27bba432c70832f63516f6d4749",
+  "cxx_runtime": {
+    "gcc_version": "16.2.0",
+    "include_directories": [
+      "usr/include/c++/16.2.0",
+      "usr/include/c++/16.2.0/x86_64-unknown-xos",
+      "usr/include/c++/16.2.0/backward"
+    ],
+    "locale_model": "generic",
+    "source_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+    "status": "built",
+    "target": "x86_64-unknown-xos",
+    "thread_model": "posix",
+    "unwinder": {
+      "frame_registry": "pthread_mutex",
+      "replaced_members": {
+        "emutls.o": "0aa7c2fb60441b44b066add1ec2cb951b69ba2364b4a4e6f0d5c2d74f4e447d8",
+        "unwind-c.o": "c2100138cc1c381a8d5f12e15ee8ab91a5dec3248a977b8640bf9f6939659a29",
+        "unwind-dw2-fde.o": "a253c3c958eac1e479cb8e3f7051bd9761f54080c2d7e9bfeb49e09790923b92",
+        "unwind-dw2.o": "2737dccaa009f5a49286f038c3fdaa491039137a459a392b2265e48b7e7ff08d",
+        "unwind-sjlj.o": "a2bff809d228057b7c3e9b98276a95610839edb93eb3d662756cc403d2372173"
+      },
+      "thread_model": "posix"
+    }
+  },
+  "cxx_runtime_closure": {
+    "c_sdk_manifest_sha256": "a9f3d4c9a43a1f478f63ae97258d82fab0cfbbb07679f16d65ee75ee538bcece",
+    "c_sdk_tree_sha256": "f37cbf0878f4f32d109147424974e12b4fb93453747c1826329b9aba43200541",
+    "configure_driver_sha256": "b4a5acc5a553e4a3c3fe7beb8f581cb231569410f63045e3cacb9b159cf0f57d",
+    "configure_link_probe_sha256": "0e359f9c40b76b0fe700502e919ea132d03947a1dcb6a600a8986879c9afb198",
+    "configure_sha256": "37090b3b1c8d9cebe54149345daa1728cbc45b88b2b64a56b616647cb579643d",
+    "configure_terminal_archive_sha256": "52df6bf395e70853e24244011d4ab7cfc0d1e43cfaf62840d33db3e13c6d8e94",
+    "cxx_compile_recipe_sha256": "950947a4261ecb60215f80a61a666b4fd118fc12b90c7a7fd03c12b5b08798b1",
+    "cxx_prepare_recipe_sha256": "07a65ebeed29d10f51791319e852d44dd2eaecb92f7d3eeef7a297010d071574",
+    "cxx_recipe_sha256": "55d2dceb46e209bbffd80f77c75ddded69e01c0e45f20cf42e84b8989fdf7f39",
+    "pthread_header_sha256": "e1222d3f1dfe88fb9e0db5512b6744bc2b964d34c196a6e23ecc3be9e4514f47",
+    "public_cxx_abi_macros": {
+      "_GLIBCXX_HAS_GTHREADS": "1",
+      "_GLIBCXX_INLINE_VERSION": "0",
+      "_GLIBCXX_USE_CXX11_ABI": "1",
+      "_GLIBCXX_USE_DUAL_ABI": "1"
+    },
+    "public_cxx_config_macro_differences": {
+      "_GLIBCXX_USE_REALPATH": {
+        "current": "1",
+        "old": null
+      }
+    },
+    "unmodified_base_libgcc_members": 142,
+    "unwinder_configure_sha256": "bc95385d262e10b885f717949be67bcdd46273dc00efe32720325ebbe3beee4f",
+    "unwinder_dependency_receipts": {
+      "emutls.o": "6787b494e92b329a88398a25577576e77576728a3cf68c3c8200d91b74836a17",
+      "unwind-c.o": "b6872ca2fb134395810b7d7ce5c34fa2f6ce1ec8efb95d8c960a735432835d2a",
+      "unwind-dw2-fde.o": "694388cc6ea53c601b6cb936f189bf4883a3f00b286aee5050f8bede3ba161df",
+      "unwind-dw2.o": "50d0d9afa94507136fe33d95054c60197923f91761ef9766d084fea29279c42e",
+      "unwind-sjlj.o": "efd468438eaedfe37c6f84012dc6d9d6a1607f8d3d2ba81081b116bb71977025"
+    },
+    "unwinder_recipe_sha256": "7523d49784ee221a787847e3d8f0c1d16194400b7057f1cbf6e17696c2c81e6d"
+  },
+  "detached_inputs": [
+    "SDK archive extracted at a different mount path",
+    "source fixtures copied into independent project directory"
+  ],
+  "executed_abi_scope": "qualified_static_subset",
+  "local_delivery_base": "fe981f723523c2212d2d2d89d08d432c54ab5629",
+  "manifest_and_profile_sha256": {
+    "complete_sdk": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "profile": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "system": "aac63f847bde7af435cca6c4dc15e91322f46ff1ef2f86395aa34add102d7387"
+  },
+  "sdk_artifact_count": 1759,
+  "selected_archive_sha256": {
+    "usr/lib/libBrokenLocale.a": "43072e7337caca807e40c7fcd4dbe733befdf6dc54dfc785f9f919848b4aa088",
+    "usr/lib/libc.a": "5c22e215d68aea22a61cede19ee92e27716eb63b817b1fc4f82ac9a5472acb8c",
+    "usr/lib/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+    "usr/lib/libg.a": "413a21c27b1187c40b03c777d0a8a12a20266ec33ca123586421f7ace7ee0ade",
+    "usr/lib/libgcc.a": "76e46640d9329f32d0b87dc68d7b571e2a4f8d7474c564dc2e669dff81fd8916",
+    "usr/lib/libm.a": "da7a7e8026e5cfead978de1574ed70b555105171d500091894a7b62d2ab8e35e",
+    "usr/lib/libmcheck.a": "6992391465282750d0112d76eb3e08898a64e3a4e8c5b44794dc972e77ef2110",
+    "usr/lib/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+    "usr/lib/librt.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+    "usr/lib/libstdc++.a": "9794f0f76a5c0f0ecff749f2013407b9ac3f97361671b65da0c19d93dd2913d3",
+    "usr/lib/libsupc++.a": "d048424c3b40156b1dc55cd09864f48f3c31273271bf72a4a48fa6380e90d526",
+    "usr/lib/libxos_terminal.a": "52df6bf395e70853e24244011d4ab7cfc0d1e43cfaf62840d33db3e13c6d8e94"
+  },
+  "selected_containers": {
+    "gcc_library_build": {
+      "image": "xos-campaign-proof:glibc-cxx-sources",
+      "image_id": "sha256:caf035ff5fe4f313416ca252a169c3fb1cc7a945bebedd345d0a134996b62e3e"
+    },
+    "toolchain": {
+      "image": "xos-campaign-toolchain:linux-arm64",
+      "image_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2"
+    }
+  },
+  "source_verification": {
+    "gcc": {
+      "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+      "key_sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+      "lock_sha256": "3fbd5444abe4946667813ea45c66c2a1bd1bf43e937d142c4ca8bea735e1e28f",
+      "public_fingerprints": {
+        "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+        "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641"
+      },
+      "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+      "status": "upstream_signature_verified"
+    },
+    "glibc": {
+      "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+      "lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+      "public_fingerprints": {
+        "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+        "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A"
+      },
+      "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+      "status": "upstream_signature_verified"
+    }
+  },
+  "terminal_input_inventory": {
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/audio_abi.hpp": "6b9e27332b5163d2eceb9e364581a80f74be098c8b47711f7b577f7e9b4b901d",
+    "src/shared/include/xos/device_abi.hpp": "cdece558f19833d44f5d372a674d430e869c8a9d8fdfb8d1a81e49581a10fa11",
+    "src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+    "src/shared/include/xos/file_abi.hpp": "9e6e6585dd8dee2e9b2db8d10fac7aeeffb693b41f8f4702d119bbfee3e5c4aa",
+    "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "src/shared/include/xos/net_abi.hpp": "14e0baf22c2de09588c8924b07a05a7b6095fc4db0b9d408405efbaa18cd819e",
+    "src/shared/include/xos/net_service_abi.hpp": "14a7cb20681ef4b48f59c2458acb4d31e482934abc264cb7283e416d32a273f0",
+    "src/shared/include/xos/process_abi.hpp": "87ab05622cec8373ed9b939c5f52e2aaac703ce6ca2d3ad0ecd8d6586e98571c",
+    "src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+    "src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+    "src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+    "src/user/include/xos/audio_client.hpp": "75b4ef444194a38a9f64889b49c849ad399870129c81b2971ae27f8bfbd38746",
+    "src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+    "src/user/include/xos/device.hpp": "a51d315ee644b727da7db66bb3111c3553a85e6fb8c0e8b6870dc70b07c08e5d",
+    "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "src/user/include/xos/elf.hpp": "c93092a90a6bd6295ddb4f3352cc47d597cb0c4d71047870399db3585dfd9f28",
+    "src/user/include/xos/execution.hpp": "bfd902bcc7aa654df5408d8014960036ed387d25d8551b5e682c4e7ec367abb9",
+    "src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+    "src/user/include/xos/file_client.hpp": "fa6df84ef7f249f681408daf11cd2f2137f3aff8b218667f0b324c13ce644f65",
+    "src/user/include/xos/file_ui.hpp": "b078a633cb47dd6537ae4bc945a766750e0467b860bfaa677275d5d92758123c",
+    "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "src/user/include/xos/net_client.hpp": "b4024b191e578f9af9820ed5b09622b4ba137c949026465ebd6134e63a8b7b62",
+    "src/user/include/xos/net_service_client.hpp": "81f59343ac8da95a5e3c9feba86f10269b5d88c46aad64d21ce975097cf0de98",
+    "src/user/include/xos/net_transport.hpp": "1476c895b0cf5b4082989d4d8f60c0229e91151bab715e8e4f546861d8f4851f",
+    "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "src/user/include/xos/sdk.hpp": "9d1649943e9a62ff83612ec1d7bcbdfacec302696a89554e0cf82526f9c82769",
+    "src/user/include/xos/spawn.hpp": "2e2779af1ab790eca0bd10484921d69d69871828fb5494bdd8e2c7f3f4f30077",
+    "src/user/include/xos/terminal_client.hpp": "3ef1d2d4e763a510f32457dd2eccb37cabe1ea7df5f3ba2cc50814cbf6ea56fb",
+    "src/user/include/xos/terminal_control.hpp": "b2f803aa503e91c6c35ab174b0f7e6638c0edcec32375d33dd98b404fa00f78e",
+    "src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+    "src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+    "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+    "src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e"
+  }
+}

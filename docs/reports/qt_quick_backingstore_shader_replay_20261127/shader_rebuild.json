@@ -1,0 +1,235 @@
+{
+  "kit_qsb": {
+    "architecture": "linux/arm64",
+    "container_image_id": "sha256:87c204c1263f7c18981b11752fe340a10e4bf8495e1ba2709456182e76bc1a22",
+    "network": "none",
+    "qsb_sha256": "0d3c86b8e7368f7a00d5b38ed7fc53d9826f800a8fd90889d858671d929c31b1",
+    "regeneration_options": [
+      "--qt6",
+      "--qsbversion",
+      "64"
+    ],
+    "version": "6.8.3"
+  },
+  "legacy_replay": {
+    "architecture": "linux/amd64",
+    "compiler_options": [
+      "--glsl",
+      "100 es,120,150",
+      "--hlsl",
+      "50",
+      "--msl",
+      "12"
+    ],
+    "container_image_id": "sha256:65ae3c17116d5361446ce3d6ddd283e408f1441d22c18d6ca3270b271988ede6",
+    "network": "none",
+    "qsb_sha256": "b98a6aca3f96e6229e3755497d09f575b1ff73a095b3bc89e9b3c18889a57f7c",
+    "qt_hash_seed": 0,
+    "support_packages_from_debian_signed_archive": {
+      "libdbus-1-3": "1.16.4-1",
+      "libegl1": "1.7.0-3+b1",
+      "libfontconfig1": "2.17.1-5",
+      "libfreetype6": "2.15.0+dfsg-1",
+      "libgl1": "1.7.0-3+b1",
+      "libglvnd0": "1.7.0-3+b1",
+      "libglx0": "1.7.0-3+b1",
+      "libx11-6": "2:1.8.14-1",
+      "libxau6": "1:1.0.11-1+b2",
+      "libxcb1": "1.17.0-2+b2",
+      "libxdmcp6": "1:1.1.5-2+b1",
+      "libxext6": "2:1.3.4-1+b4",
+      "libxkbcommon0": "1.13.1-1"
+    },
+    "version": "6.4.0"
+  },
+  "original_producer_invocation": "not_retained_upstream",
+  "qsb_reserialization": {
+    "format_option": "64",
+    "fragment_affected_maps": [
+      "HLSL 50",
+      "MSL 12"
+    ],
+    "fragment_binding_order": [
+      1,
+      0
+    ],
+    "python_zlib_runtime_version": "1.2.12"
+  },
+  "raw_external_logs": {
+    "legacy": "d16ce88265811a7dc37d97ff3bdb13b387183c1fa457cdc4d2d7efa9efc0532e",
+    "modern": "b34934a3d6ff9981940792ef9c9c394416da40e56022307143301741f00fe1fb"
+  },
+  "serialized_format": 6,
+  "stages": {
+    "frag": {
+      "decoded_payloads": {
+        "glsl,100es": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 764,
+            "sha256": "dda2a8bb4544e777e22dcd764b8190ab5074e60cbb1dfa18e62ae8014e02789d"
+          }
+        },
+        "glsl,120": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 714,
+            "sha256": "f938743f7c9e032d5809d822b51d6867c643b8e42fc6fc4c15d8091b63405d73"
+          }
+        },
+        "glsl,150": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 712,
+            "sha256": "b62df0c3abee51258408491b36fc4ec3b121a8f950e7071d11c2776c7fbf78a5"
+          }
+        },
+        "hlsl,50": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 1275,
+            "sha256": "0ae440b02c13f39e3e7974aaae99fff540676d24f94f0d6865de0e7e4fa1045e"
+          }
+        },
+        "msl,12": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 1047,
+            "sha256": "97bf877fbe950ceb1e2a6cc481aec94d9801ed7ad6b5368f3161f4c92f24e070"
+          }
+        },
+        "reflect": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 1478,
+            "sha256": "b1753a1a1da0f1f520ba7f354bd80ebf096b2eb4213e708c2e69e008d82c890b"
+          }
+        },
+        "spirv,100": {
+          "legacy_generated_equal": true,
+          "modern_differs_only_at_spirv_generator_word": {
+            "modern_hex": "0x0008000b",
+            "published_hex": "0x0008000a",
+            "word": 2
+          },
+          "modern_generated_equal": false,
+          "published": {
+            "bytes": 1520,
+            "sha256": "cd4318089d253ab1ffce5fdf30bac1083c24785e84be2ec466f17536ead9eca5"
+          }
+        }
+      },
+      "full_regenerated_package_equal": true,
+      "kit_compat64_output": {
+        "bytes": 1656,
+        "sha256": "2be1a174e0b90b3333e4978e048062b0a229c013eb7168a8132bb7d4f8a87a9c"
+      },
+      "legacy_fixed_hash_seed_output": {
+        "bytes": 1681,
+        "sha256": "16501ff8021f2c91500a649650ac045f719c40c1c21e3adf5e4f82e091cb59a8"
+      },
+      "normalized_qsb_dump_sha256": "c93ddcff7e4bf71159c4a3efb0aaeea38e9c8ba309f16501145a2a4d51db68da",
+      "published": {
+        "bytes": 1657,
+        "sha256": "2c4b5b7415b6dfa562615ed9a836e2c8f16087ca2e381faa1b1a05972ce06c1b"
+      },
+      "published_and_legacy_normalized_qsb_dumps_equal": true,
+      "regenerated_package": {
+        "bytes": 1657,
+        "sha256": "2c4b5b7415b6dfa562615ed9a836e2c8f16087ca2e381faa1b1a05972ce06c1b"
+      }
+    },
+    "vert": {
+      "decoded_payloads": {
+        "glsl,100es": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 365,
+            "sha256": "6c0d99c1698ae59c56d7e84db2d553add6bc4901c6dd1d15d51d55101f462a10"
+          }
+        },
+        "glsl,120": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 365,
+            "sha256": "0c3e4eeff21f1a7c8ca21464aba2674c6483670b11c3e47c7f6eb50f1606c707"
+          }
+        },
+        "glsl,150": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 347,
+            "sha256": "14f32d9769b3b67e14a8f62a85f9839f3e2b7af6da9fbb14068eb96efd527b4f"
+          }
+        },
+        "hlsl,50": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 1007,
+            "sha256": "55dda3697b7b7103b1e5089e619fcf21358f659005dac243f5a4e0d62341a522"
+          }
+        },
+        "msl,12": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 662,
+            "sha256": "2cf42ea33de8249cc853ec6b9ffa5a310cbe580136c3c97f310b12e673f02ee3"
+          }
+        },
+        "reflect": {
+          "legacy_generated_equal": true,
+          "modern_generated_equal": true,
+          "published": {
+            "bytes": 1408,
+            "sha256": "39210abd330763d71935e3aa69026bdf0b8a48ef7ca181a596578195383b890a"
+          }
+        },
+        "spirv,100": {
+          "legacy_generated_equal": true,
+          "modern_differs_only_at_spirv_generator_word": {
+            "modern_hex": "0x0008000b",
+            "published_hex": "0x0008000a",
+            "word": 2
+          },
+          "modern_generated_equal": false,
+          "published": {
+            "bytes": 1296,
+            "sha256": "b60cc2bd2b4bdf4388223e7e1ac9cf69008f48693a5575cf823b3bacc41607cb"
+          }
+        }
+      },
+      "full_regenerated_package_equal": true,
+      "kit_compat64_output": {
+        "bytes": 1409,
+        "sha256": "c163f5825111a0e1be9d0a2e06f8f791c58b2be4620d59d3e536c12b98ec5823"
+      },
+      "legacy_fixed_hash_seed_output": {
+        "bytes": 1425,
+        "sha256": "f19e165d03da0edfc383894c238b2190e3a5adb0e030d043f51e67932d678b6d"
+      },
+      "normalized_qsb_dump_sha256": "6dea005ab4d6fef652f78cfdeddb259c9cf74ffeabf1bf88e177eefb951f39ef",
+      "published": {
+        "bytes": 1408,
+        "sha256": "e5e191ff1f94085d082b5d73417945fc312f178a27dbce884390f9d838fb5231"
+      },
+      "published_and_legacy_normalized_qsb_dumps_equal": true,
+      "regenerated_package": {
+        "bytes": 1408,
+        "sha256": "e5e191ff1f94085d082b5d73417945fc312f178a27dbce884390f9d838fb5231"
+      }
+    }
+  },
+  "status": "both_published_qsb_packages_rebuilt_byte_identical",
+  "vertex_rejected_by_fragment_order_entrypoint": true
+}

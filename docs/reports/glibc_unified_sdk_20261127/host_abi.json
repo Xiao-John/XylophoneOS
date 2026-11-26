@@ -1,0 +1,194 @@
+{
+  "compiler_tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "nm": "422d96cfd2867a90713df8881cd9f7cbb5799bf0f776054e5f0438a99360439c",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d",
+    "readelf": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42"
+  },
+  "cross_rejections": {
+    "browser": {
+      "current_profile_previous_kit": "glibc SDK feature still has stubs: directories",
+      "new_xpk_previous_profile": "package target profile mismatch: package='xos-x86_64-glibc-unified-cxx-v1' selected='xos-x86_64-glibc-clarke-llint'; use a matching profile; local profiles are development-only and incompatible with a release image",
+      "previous_profile_current_kit": "profile differs from the complete SDK binding"
+    },
+    "stock": {
+      "current_profile_previous_kit": "profile differs from the complete SDK binding",
+      "new_xpk_previous_profile": "package target profile mismatch: package='xos-x86_64-glibc-unified-cxx-v1' selected='xos-x86_64-glibc-stock-fork-v1'; use a matching profile; local profiles are development-only and incompatible with a release image",
+      "previous_profile_current_kit": "profile differs from the complete SDK binding"
+    }
+  },
+  "profiles": {
+    "browser": {
+      "binding": {
+        "guest_qualification": "not_run",
+        "profile_id": "xos-x86_64-glibc-clarke-llint",
+        "profile_sha256": "3aa343495c26d715460fed84480014ab505c1a6f92976a3c6eb617341ef6562c",
+        "runtime_family": "glibc",
+        "sdk_tree_sha256": "2070dbad9ddd860a11dd1511f1268c1f62683df01d1a967bfa741e53df0799d6",
+        "status": "candidate_binding_verified"
+      },
+      "public_abi_macros": {
+        "_GLIBCXX_HAS_GTHREADS": "1",
+        "_GLIBCXX_INLINE_VERSION": "0",
+        "_GLIBCXX_USE_CXX11_ABI": "1",
+        "_GLIBCXX_USE_DUAL_ABI": "1"
+      },
+      "realpath_enabled": null,
+      "sdk_manifest_sha256": "a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e"
+    },
+    "stock": {
+      "binding": {
+        "guest_qualification": "not_run",
+        "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+        "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+        "runtime_family": "glibc",
+        "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262",
+        "status": "candidate_binding_verified"
+      },
+      "public_abi_macros": {
+        "_GLIBCXX_HAS_GTHREADS": "1",
+        "_GLIBCXX_INLINE_VERSION": "0",
+        "_GLIBCXX_USE_CXX11_ABI": "1",
+        "_GLIBCXX_USE_DUAL_ABI": "1"
+      },
+      "realpath_enabled": null,
+      "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b"
+    },
+    "unified": {
+      "binding": {
+        "guest_qualification": "not_run",
+        "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+        "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+        "runtime_family": "glibc",
+        "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+        "status": "candidate_binding_verified"
+      },
+      "public_abi_macros": {
+        "_GLIBCXX_HAS_GTHREADS": "1",
+        "_GLIBCXX_INLINE_VERSION": "0",
+        "_GLIBCXX_USE_CXX11_ABI": "1",
+        "_GLIBCXX_USE_DUAL_ABI": "1"
+      },
+      "realpath_enabled": "1",
+      "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f"
+    }
+  },
+  "relocated_kit": {
+    "archive_bytes": 19813481,
+    "archive_sha256": "c136383acc64a4275401ce6ff8192636d1c06a1d6951da593badb15f29b1b607",
+    "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+    "original_and_relocated_equal": true
+  },
+  "symbols": {
+    "libc.a": {
+      "browser": {
+        "missing_from_unified": [],
+        "new_in_unified": [
+          "__faccessat",
+          "__xos_file_access",
+          "__xos_file_adopt_early_session",
+          "__xos_file_chdir",
+          "__xos_file_fork",
+          "__xos_file_getcwd",
+          "__xos_file_open_anonymous",
+          "__xos_file_pipe",
+          "__xos_file_seal_anonymous",
+          "__xos_file_service_error",
+          "__xos_file_session_call",
+          "__xos_file_session_call_until",
+          "__xos_file_session_poison",
+          "__xos_file_session_take",
+          "__xos_file_spawn_begin",
+          "__xos_file_spawn_end",
+          "__xos_terminal_fd_readable",
+          "__xos_thread_name_after_fork",
+          "xos_open_anonymous",
+          "xos_seal_anonymous"
+        ]
+      },
+      "counts": {
+        "browser": 3684,
+        "stock": 3703,
+        "unified": 3704
+      },
+      "selected_present": [
+        "__faccessat",
+        "faccessat",
+        "pthread_create",
+        "pthread_getattr_np",
+        "readlink",
+        "realpath"
+      ],
+      "stock": {
+        "missing_from_unified": [],
+        "new_in_unified": [
+          "__faccessat"
+        ]
+      }
+    },
+    "libgcc.a": {
+      "browser": {
+        "missing_from_unified": [],
+        "new_in_unified": []
+      },
+      "counts": {
+        "browser": 182,
+        "stock": 182,
+        "unified": 182
+      },
+      "stock": {
+        "missing_from_unified": [],
+        "new_in_unified": []
+      }
+    },
+    "libm.a": {
+      "browser": {
+        "missing_from_unified": [],
+        "new_in_unified": []
+      },
+      "counts": {
+        "browser": 1915,
+        "stock": 1915,
+        "unified": 1915
+      },
+      "stock": {
+        "missing_from_unified": [],
+        "new_in_unified": []
+      }
+    },
+    "libstdc++.a": {
+      "browser": {
+        "missing_from_unified": [],
+        "new_in_unified": []
+      },
+      "counts": {
+        "browser": 7115,
+        "stock": 7115,
+        "unified": 7115
+      },
+      "stock": {
+        "missing_from_unified": [],
+        "new_in_unified": []
+      }
+    },
+    "libsupc++.a": {
+      "browser": {
+        "missing_from_unified": [],
+        "new_in_unified": []
+      },
+      "counts": {
+        "browser": 506,
+        "stock": 506,
+        "unified": 506
+      },
+      "stock": {
+        "missing_from_unified": [],
+        "new_in_unified": []
+      }
+    }
+  }
+}

@@ -355,7 +355,9 @@ static void concurrent() {
 static void inheritance(const char* scenario) {
     setup_startup(3);
     auto* exec = reinterpret_cast<xos_file_startup_exec*>(startup_area + 152);
-    auto* entries = reinterpret_cast<xos_file_startup_descriptor*>(startup_area + 256);
+    const auto offset = !std::strcmp(scenario, "inheritance_word_aligned") ? 260 : 256;
+    auto* entries = reinterpret_cast<xos_file_startup_descriptor*>(startup_area + offset);
+    exec->descriptors = reinterpret_cast<xos_u64>(entries);
     exec->count = 3;
     entries[0] = {5, 4, 2, 1, O_RDWR, 0};
     entries[1] = {6, 4, 2, 1, O_RDWR, 0};
@@ -637,7 +639,8 @@ int main(int argc, char** argv) {
     else if (!std::strcmp(argv[1], "access_legacy_stat")) access_legacy_stat();
     else if (!std::strcmp(argv[1], "spawn_cwd_serialization")) spawn_cwd_serialization();
     else if (!std::strcmp(argv[1], "concurrent")) concurrent();
-    else if (!std::strcmp(argv[1], "inheritance") || !std::strcmp(argv[1], "invalid_inheritance")
+    else if (!std::strcmp(argv[1], "inheritance") || !std::strcmp(argv[1], "inheritance_word_aligned")
+             || !std::strcmp(argv[1], "invalid_inheritance")
              || !std::strcmp(argv[1], "duplicate_cleanup")) inheritance(argv[1]);
     else if (!std::strcmp(argv[1], "inheritance_v2") || !std::strcmp(argv[1], "duplicate_v2_handle")
              || !std::strcmp(argv[1], "path_v2_redirection")) inheritance_v2(argv[1]);

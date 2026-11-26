@@ -1,0 +1,58 @@
+{
+  "artifacts": {
+    "dash_manifest.json": "0cbd154890eda6197ccd0ba31e4d49138fe90ff145f08cbc63b28bbbcb795d42",
+    "stock/build_receipt.json": "438d86ec255b8635c7a31453c0f7f2a21febb1b2795b7284914337f801ce2464",
+    "stock/daily.xpk": "859bd9e9dcdc76beb00b17387ab773a79ef9fef0fecd8ea06ea26cc486ab80c6",
+    "stock/xypm.elf": "5cac616937f6b4c28460c48942fda3885a16b2318388e91b2a892b7de24c5e0a",
+    "system/install_manifest.json": "f40262e9c4becdd740e4001ed55b62e30dd1ae522f42f7db9a6c61e8f0e2c00c",
+    "system/license_report.json": "397f88ffd1152893f1f7f9141ab309adb1baf075408cdea923617ccd61bcfd5f",
+    "system/xos-install-dash.iso": "544681af41578420792aabcf33afb5956185763cd3c34b13642586b219ce9a02",
+    "system/xos-install.iso": "091bc0424e67d0fab23d0ca5349a524ffc24b60aaa005aa88377f0c3783d9887"
+  },
+  "build_id": "b210965441f899cc",
+  "candidate_manifest_sha256": "94cf5e324bc06285b65f060440ec4984e71cca98dd27e67e370a42c5a8925cbb",
+  "daily_tool_inventory": [
+    "basename",
+    "cat",
+    "cp",
+    "dirname",
+    "head",
+    "ls",
+    "mkdir",
+    "mv",
+    "rm",
+    "rmdir",
+    "tail",
+    "tee",
+    "wc"
+  ],
+  "gnu_make_source": {
+    "archive_sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+    "signature_sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929",
+    "source_verified_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2",
+    "version": "4.4.1"
+  },
+  "kit_binding": {
+    "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+    "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+  },
+  "license_audit": "PASS: 10 license materials | build b210965441f899cc | open license items: 0 -> none (register: licenses/open_items.json)",
+  "not_run": [
+    "default_activation",
+    "newlib_retirement",
+    "GNU Make native XPK lifecycle",
+    "unified SDK CPython and graphical product rebuild",
+    "full candidate make smoke"
+  ],
+  "old_stock_witness_package_sha256": "80176779cb58f6e598389aee4acfe65e9870fd37ea66938c9873bdd2f2fec013",
+  "source_commit": "aece996570fa23ae37d2171c8ca1a56b90926f59",
+  "tested_glibc_profiles": {
+    "browser": "xos-x86_64-glibc-clarke-llint",
+    "stock": "xos-x86_64-glibc-stock-fork-v1",
+    "unified": "xos-x86_64-glibc-unified-cxx-v1"
+  }
+}

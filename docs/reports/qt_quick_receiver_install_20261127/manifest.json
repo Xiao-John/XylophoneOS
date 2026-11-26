@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "combined.guest.json": "cbcc8d7a3c793a1fdc23568553dcf9e2117cce433ab300ba9746044203b204ef",
+    "combined.installed.serial.log.gz": "ba2db568857101ed03bbb6df173475dd754389aae1fec3ce0784e62c7f596537",
+    "combined.replaced.serial.log.gz": "8eb407243f01ef8fd32deb218c7839fc6ba7a3eae0ee3d19f54349f7923427a4",
+    "combined.rolled_back.serial.log.gz": "b1f2d13093d639e814959b0a515568772a94da0c2d220899ef9da242d06082d9",
+    "scanout.ppm.gz": "b659e99251480e868afa7ece256fa5516021ebd8b64f19b00e1232d9719d1ad5",
+    "source_and_packages.json": "0889bd4966df3105704bfd666fcd7d066d839550d2e23435299f621b99efe483",
+    "standalone.guest.json": "d244f2a72d0153fd426e53bad31c9ab27a753fdb6c7d0bdda42601e938d2e559",
+    "standalone.installed.serial.log.gz": "f868dab12da757e110e9e561df42385a98edd90ca56b59fe4883b4b9417398dd",
+    "standalone.replaced.serial.log.gz": "1bb0542cb80c33269fbf09db3b4ba4225572953507082312e31bc6f26f3cc204",
+    "standalone.rolled_back.serial.log.gz": "a175df0dc7c16b63517b61071752231289f534d676fade52b738f1852de63c52"
+  }
+}

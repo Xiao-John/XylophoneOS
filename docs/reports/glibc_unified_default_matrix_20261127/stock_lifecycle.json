@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "system_build_id": "b210965441f899cc",
+  "image_sha256": "091bc0424e67d0fab23d0ca5349a524ffc24b60aaa005aa88377f0c3783d9887",
+  "xypm_elf_sha256": "5cac616937f6b4c28460c48942fda3885a16b2318388e91b2a892b7de24c5e0a",
+  "package_sha256": "859bd9e9dcdc76beb00b17387ab773a79ef9fef0fecd8ea06ea26cc486ab80c6",
+  "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "dash_sha256": "9a57e9eff7ee80311c4f5104f4740555a2a731c7a31134ce3b6cc2f48fb6c714",
+  "test_sha256": "477c5c4084fbeef8bf0bd85a2b4c4cc32c08e0262dff8a677d662b7d460308e0",
+  "checks": [
+    "installer_autoinstalls_daily_xpk",
+    "reboot_and_installed_tools",
+    "guest_p2_remove_preserves_user_data_and_exact_du12_outputs"
+  ],
+  "maintenance_timeout_seconds": 360,
+  "dash_timeout_seconds": 480,
+  "not_run": [
+    "fault_injection",
+    "abrupt_power_loss",
+    "upgrade"
+  ],
+  "installer_iso_sha256": "544681af41578420792aabcf33afb5956185763cd3c34b13642586b219ce9a02",
+  "daily_receipt_sha256": "e070cd64e0a9c21e2783bcd21c4ecf675e986b6956292adbad71d6448abd827a",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "profile_binding_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "xypm_receipt_sha256": "438d86ec255b8635c7a31453c0f7f2a21febb1b2795b7284914337f801ce2464",
+  "dash_receipt_sha256": "0cbd154890eda6197ccd0ba31e4d49138fe90ff145f08cbc63b28bbbcb795d42",
+  "tools": 13,
+  "install_baseline": [
+    125923,
+    2,
+    0
+  ],
+  "installed_files": 26,
+  "run_remove_baseline": [
+    129806,
+    2,
+    0
+  ],
+  "checked_output_files": 33
+}

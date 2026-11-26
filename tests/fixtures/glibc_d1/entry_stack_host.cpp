@@ -10,6 +10,9 @@
 #ifdef D1_NATIVE_GUEST
 #include <sys/random.h>
 #endif
+#ifdef D1_AUXV_CONSUMER
+#include <sys/auxv.h>
+#endif
 
 using namespace xos;
 using namespace xos::glibc_d1;
@@ -98,6 +101,35 @@ static u8* expected_random;
 static u8 expected_bytes[16];
 static u32 observed;
 
+#ifdef D1_AUXV_CONSUMER
+extern "C" {
+void _dl_aux_init(Elf64_auxv_t*);
+extern Elf64_auxv_t* _dl_auxv;
+extern const Elf64_Phdr* _dl_phdr;
+extern size_t _dl_phnum, _dl_pagesize;
+extern void* _dl_random;
+extern int __libc_enable_secure;
+}
+
+static void verify_glibc_auxv(const u64* words, const u64* expected) {
+    auto* previous_auxv = _dl_auxv;
+    auto* previous_random = _dl_random;
+    auto previous_secure = __libc_enable_secure;
+    auto* vector = reinterpret_cast<Elf64_auxv_t*>(const_cast<u64*>(words));
+    _dl_aux_init(vector);
+    assert(_dl_auxv == vector);
+    assert(reinterpret_cast<u64>(_dl_phdr) == expected_phdr && _dl_phnum == expected_phnum);
+    assert(_dl_pagesize == vm_page_size && _dl_random == expected_random);
+    assert(__libc_enable_secure == static_cast<int>(expected_secure));
+    for (u32 index = 0; expected[index] != AT_NULL; index += 2) {
+        assert(getauxval(expected[index]) == expected[index + 1]);
+    }
+    _dl_aux_init(previous_auxv);
+    _dl_random = previous_random;
+    __libc_enable_secure = previous_secure;
+}
+#endif
+
 extern "C" void inspect_entry_words(const u64* stack) {
     assert(reinterpret_cast<u64>(stack) % 16 == 0);
     assert(stack[0] == expected_argc);
@@ -110,6 +142,9 @@ extern "C" void inspect_entry_words(const u64* stack) {
                             AT_ENTRY, expected_entry, AT_BASE, expected_base, AT_PAGESZ, vm_page_size,
                             AT_SECURE, expected_secure, AT_RANDOM, reinterpret_cast<u64>(expected_random), AT_NULL, 0};
     assert(std::memcmp(env + 1, expected, sizeof(expected)) == 0);
+#ifdef D1_AUXV_CONSUMER
+    verify_glibc_auxv(env + 1, expected);
+#endif
     const auto* table = reinterpret_cast<const Elf64_Phdr*>(expected_phdr);
     assert(table[0].p_type == PT_PHDR && table[1].p_type == PT_INTERP);
     const auto* loader_ehdr = reinterpret_cast<const Elf64_Ehdr*>(expected_base);
@@ -155,6 +190,14 @@ int main(int argc, char** argv) {
                              native_entropy, frame));
     inspect_entry(frame.words);
     assert(observed == 1);
+#ifdef D1_AUXV_CONSUMER
+    expected_secure = 1;
+    assert(build_entry_stack(startup, app.image, app.headers, loader.image, execution_mode::secure,
+                             native_entropy, frame));
+    inspect_entry(frame.words);
+    assert(observed == 2);
+    std::puts("D1_GLIBC_AUXV_PASS native_decoder=static ordinary=ok secure=ok");
+#endif
     unmap_image(loader);
     unmap_image(app);
     std::puts("D1_ENTRY_STACK_GUEST_PASS native_startup=v2 native_entropy=ok private_rsp=ok");

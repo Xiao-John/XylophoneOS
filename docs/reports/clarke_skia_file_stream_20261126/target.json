@@ -1,0 +1,54 @@
+{
+  "artifacts": {
+    "cmake/libskia_raster.a": "f90d49079daa76dfa33e337cf9cde94dc6c9c7a21ee5e518835e7eb1869f5dc3",
+    "cmake/skia_file_stream_probe": "92437bddfb0d44bd2ae4c9962043568109bde31ea3f051a546ae937f7731a596",
+    "cmake/skia_raster_probe": "556d11c0a8d569659171803bc7ce2eb1f4ea6a552a74fdb535d734e6904c844f",
+    "codecs/jpeg/lib/libjpeg.a": "72f199a71e509042d63ecf895de044581842e1008c7880d5d455709a80984143",
+    "codecs/png/lib/libpng.a": "1734d9f171debddb8e01fcf268d7e92d70c9aa2ed2e4ae3b6ac2f5382a0021ed",
+    "notices/libjpeg_copyright.txt": "f26a2c0b6c1ab7e40444de31cc5b112a534cc589d6fd9b93620054e9692b81c6",
+    "notices/libjpeg_ijg.txt": "1cb448f5e2e6d3aca60943f4eee1a04675628dc0266a074a42bc1560ebc28d61",
+    "notices/libjpeg_license.txt": "96f5b328adbb78eeaaec6980d73fd558cb1e4d62560ed615646bc3cf5e532430",
+    "notices/libpng_license.txt": "16d9daaafbf63a31a5bdc91d4600972548fef5aaa1244202393288dbd079c49a",
+    "notices/skia_license.txt": "5f787c1dee3c56547f09ccc2906ab5f5293c4d8dd6c8654e573216c38e908dbd",
+    "notices/zlib_license.txt": "845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243",
+    "project/CMakeLists.txt": "5d7748885ee5d52d1f2f982db5c1bab6625f0bc6a9272feef6f19094eee29820",
+    "project/file_stream.patch": "b93d6e12deb19152717bc19e87ecbc1b79e7429684007f3300e2fd3798169c43",
+    "project/file_stream_probe.cpp": "9f95cfebf7e91f2f9356752d7d63ddeb852cffdbc5e3ecdb5a9eea0c7d9dc626",
+    "project/raster_probe.cpp": "9fd98eb4d086e4b728cb3f30607ced13633cd158d8dd0467d2b57d70bf345c3b",
+    "project/skia_sources.cmake": "6ed26e4668b8390cd8a71027d672e8a2d6cf093a8ae02549d6daec47b848b61c",
+    "zlib/lib/libz.a": "cbfc8db9e5d47d924405c3383b6acd97dc8ae35a9547125534e50a8ed01946ad"
+  },
+  "builder_sha256": "3d29580882ca1d979af81980800e126ab540de56bb899d51bb952e8d2efd3289",
+  "freetype_target_manifest_sha256": "f01641dbffd07bb185d37de8cc7f72e1875edb1f6462af41201aa6ee2957b334",
+  "notice_lock_sha256": "b3e7abb589b0332e486984d0b12fa6a9e99d9f61fc5024003b6f7a7df7830696",
+  "profile_binding": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-clarke-llint",
+    "profile_sha256": "3aa343495c26d715460fed84480014ab505c1a6f92976a3c6eb617341ef6562c",
+    "runtime_family": "glibc",
+    "sdk_tree_sha256": "2070dbad9ddd860a11dd1511f1268c1f62683df01d1a967bfa741e53df0799d6",
+    "status": "candidate_binding_verified"
+  },
+  "sdk_manifest_sha256": "a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e",
+  "skia_file_stream_source_sha256": "7c2739424242bc852f4ae4ac1c1b79ae966f30c702678554d3f615edaf1e505e",
+  "skia_source_count": 520,
+  "source_archives": {
+    "qtbase": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+    "webkit": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+    "zlib": "9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23"
+  },
+  "source_locks": {
+    "qtbase": "f37d1f82234b71066d59dd704febf86ba59762bce53021ef0ef0774709c6ed04",
+    "webkit": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030",
+    "zlib": "98086cd39910809a9b3a2027a9fd4772bf648f5a714647696f250dc20e33cf09"
+  },
+  "status": "target_skia_raster_linked",
+  "target_tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d"
+  }
+}

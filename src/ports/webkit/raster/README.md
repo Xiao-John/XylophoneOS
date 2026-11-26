@@ -14,9 +14,14 @@ python3 src/ports/webkit/raster/build_target.py --webkit-archive "$WPE_ARCHIVE" 
   --font-target "$FONTS_OUT" --sdk-build "$GLIBC_BUILD" \
   --sdk-profile "$GLIBC_CXX_PROFILE" --output "$RASTER_OUT"
 python3 tests/webkit_skia_raster_guest.py --target "$RASTER_OUT" \
-  --system "$SYSTEM" --output "$GUEST_OUT"
+  --system "$SYSTEM" --font-target "$FONTS_OUT" --output "$GUEST_OUT"
 ```
 
 验收以静态 Skia 产生的实际 12×10 像素为准，包含白底、裁剪蓝块和重叠红块。启动前
 从 FAT 读回目标 ELF，出口核对资源。Qt 视口、WebCore 页面、编码图像解析和 GPU 路径
 各自验收。随目标保留组件声明和原始成员摘要。
+
+使用 `--font-target` 还会在同一 FAT 盘测试 8,192 字节定位读、短尾读、EOF、偏移
+上界和文件位置保持。`SkFontMgr::makeFromFile` 从锁定的 DejaVu 字体绘制 `XOS`，
+核对字体、字形、像素与缺失文件退出。XOS 的 `sk_qread` 通过既有 `pread` 补齐短读，
+仍接受原生文件服务的上界与错误。该路径由 [客体记录](../../../../docs/work_log/e55d60c9_clarke_skia_file_stream.md) 绑定。

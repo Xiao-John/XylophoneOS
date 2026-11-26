@@ -1,0 +1,13 @@
+{
+  "files": {
+    "after.qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "after.serial.log.gz": "0599a8e0998f543dad4d6c99141e0e3d8f8cc4e8cf7f1ea960db649e2eef81c1",
+    "before.qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "before.serial.log.gz": "0fe0a4ad47eb7d13cfa130d7c30cec056cc303fa0966e691b9c8cc915735db37",
+    "glibc.qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "glibc.serial.log.gz": "9980537e12c11d5bec0b72240c68ae790c24209937af5d67d22de13c7dc8e963",
+    "preserved_user_data.txt": "222592d159c0fea276128c828e61d96a819626d5705d318a2ab8e4a2ff461aa1",
+    "report.json": "ee7249f9b81ca8b9251c298569258f080dc9e682a36eda113c640a88c2d6e88b"
+  },
+  "version": 1
+}

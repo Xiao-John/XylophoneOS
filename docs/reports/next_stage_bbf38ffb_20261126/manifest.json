@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "binding.json": "cdc6b77b6c577c80113f776c590f3a17c3819df474783d724eadfccdb05279aa",
+    "smoke.log": "2d203ab7795cddad937ecf6ad9ff696584f2b3eed1af744f0a588dabfcde8c07"
+  }
+}

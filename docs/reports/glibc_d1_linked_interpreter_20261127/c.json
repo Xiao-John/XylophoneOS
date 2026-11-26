@@ -1,0 +1,298 @@
+{
+  "status": "passed_subset",
+  "scope": "private native GNU interpreter and a versioned application",
+  "case": "c",
+  "language": "c",
+  "system_build_id": "fe13f33a2c08aa13",
+  "commands": {
+    "strip_debug_libc": [
+      "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_BUILD}/gnu-link/libc.so",
+      "${XOS_BUILD}/linked-acceptance-c/dependency.so"
+    ],
+    "strip_debug_interpreter": [
+      "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_BUILD}/gnu-link/elf/ld.so",
+      "${XOS_BUILD}/linked-acceptance-c/interpreter.so"
+    ],
+    "compile_app": [
+      "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "--sysroot=${XOS_BUILD}/sdk/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-isystem",
+      "${XOS_BUILD}/sdk/sysroot/usr/include",
+      "-isystem",
+      "${XOS_BUILD}/sdk/sysroot/usr/lib/compiler-include",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-fPIE",
+      "-fno-builtin",
+      "-c",
+      "${XOS_ROOT}/tests/fixtures/glibc_d1/interpreter_application.c",
+      "-o",
+      "${XOS_BUILD}/linked-acceptance-c/application.o"
+    ],
+    "link_app": [
+      "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "-pie",
+      "-e",
+      "_start",
+      "--build-id=none",
+      "--no-undefined",
+      "-z",
+      "noexecstack",
+      "-z",
+      "now",
+      "-z",
+      "relro",
+      "-z",
+      "max-page-size=8192",
+      "-z",
+      "separate-code",
+      "--dynamic-linker",
+      "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1",
+      "-rpath-link",
+      "${XOS_BUILD}/gnu-link/elf",
+      "-o",
+      "${XOS_BUILD}/linked-acceptance-c/main.pie",
+      "${XOS_BUILD}/gnu-link/csu/Scrt1.o",
+      "${XOS_BUILD}/gnu-link/csu/crti.o",
+      "${XOS_BUILD}/linked-acceptance-c/application.o",
+      "${XOS_BUILD}/gnu-link/libc.so",
+      "${XOS_BUILD}/gnu-link/csu/crtn.o"
+    ],
+    "elf_metadata": [
+      "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "-hW",
+      "-lW",
+      "-dW",
+      "-VW",
+      "${XOS_BUILD}/linked-acceptance-c/main.pie",
+      "${XOS_BUILD}/linked-acceptance-c/interpreter.so",
+      "${XOS_BUILD}/linked-acceptance-c/dependency.so"
+    ],
+    "compile_bootstrap": [
+      "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "--sysroot=${XOS_BUILD}/sdk/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-isystem",
+      "${XOS_BUILD}/sdk/sysroot/usr/include",
+      "-isystem",
+      "${XOS_BUILD}/sdk/sysroot/usr/lib/compiler-include",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-nostdinc++",
+      "-std=gnu++20",
+      "-ffreestanding",
+      "-fno-pie",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-DD1_ACTUAL_INTERPRETER",
+      "-I",
+      "${XOS_ROOT}/build/qualification/sdk/include",
+      "-I",
+      "${XOS_ROOT}/src/user/loader/glibc_d1",
+      "-I",
+      "${XOS_ROOT}/src/ports/glibc/sysdeps/xos",
+      "-I",
+      "${XOS_BUILD}/linked-acceptance-c",
+      "-c",
+      "${XOS_ROOT}/tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp",
+      "-o",
+      "${XOS_BUILD}/linked-acceptance-c/entry.o"
+    ],
+    "link_bootstrap": [
+      "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--gc-sections",
+      "-z",
+      "noexecstack",
+      "-z",
+      "max-page-size=4096",
+      "--build-id=none",
+      "-Map",
+      "${XOS_BUILD}/linked-acceptance-c/link.map",
+      "-T",
+      "${XOS_BUILD}/sdk/sysroot/user.ld",
+      "-o",
+      "${XOS_BUILD}/linked-acceptance-c/entry.elf",
+      "${XOS_BUILD}/sdk/sysroot/usr/lib/xos_start.o",
+      "${XOS_BUILD}/linked-acceptance-c/entry.o",
+      "${XOS_BUILD}/gnu-link/elf/xos_file_session.os",
+      "--start-group",
+      "${XOS_ROOT}/build/qualification/sdk/lib/libxos_loader.a",
+      "${XOS_ROOT}/build/qualification/sdk/lib/libxos.a",
+      "${XOS_BUILD}/sdk/sysroot/usr/lib/libgcc.a",
+      "--end-group"
+    ]
+  },
+  "tools": {
+    "gcc": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "g++": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "readelf": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "sha256": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42",
+      "version_exit_code": 0,
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+    },
+    "objcopy": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "sha256": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+      "version_exit_code": 0,
+      "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "sanitized_environment": [],
+  "sdk_manifest_sha256": "80fa5dd60a87662c281f623f704d359da7f7fd3e4420b9670372ef0ceadb4e31",
+  "sdk_tree_sha256": "8cd84e9ea35ec86e4bca065de6bf36a07ae5e9557a3428918782fb52e58b0e22",
+  "system_manifest_sha256": "c5073581a9437e09ce1f820c6a5ef4bac6e4387c0fa2a19de9bc13fda6a8fb5d",
+  "iso_sha256": "de3797df8a42e4239839ba7c1d1e9b3880643d68fc31122b70c574482d3d5bdc",
+  "dash_sha256": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+  "dash_receipt_sha256": "2096f94e3931fdfc91005aed98b9096dc008dbb41a20493f858d3653431fa19f",
+  "runner_sha256": "6a374c6afea2488acf8f9c703124f09c1b6df55592dbe4860bbd591829e1551a",
+  "linked_originals": {
+    "${XOS_BUILD}/gnu-link/libc.so": "b1cd3f0151632d286d40abb117b343ec17a1fb3f7c54d1473cd3ef6f77ca9035",
+    "${XOS_BUILD}/gnu-link/elf/ld.so": "12998ce57925fcdce984bdce2c2d566175389374e762aaefdf8579d6cef002a7",
+    "${XOS_BUILD}/gnu-link/elf/xos_file_session.os": "cf56cbe1b287203166fbfe3c43fa597b446323f7832065de0574a6a90176e604",
+    "${XOS_BUILD}/gnu-link/csu/Scrt1.o": "344be1ef68dd45689b7294de356218dc5b16cbf82bd3b7367a40bacd9609b09a",
+    "${XOS_BUILD}/gnu-link/csu/crti.o": "cf923e8746c929a3200b2eeb07fe8ad8c85727222aa78d1999272882a5a98eef",
+    "${XOS_BUILD}/gnu-link/csu/crtn.o": "b018ccd5c25036594e7fa3846d7dd4c4ea66210b341d33f39875fd1a7a54f7ae"
+  },
+  "sources": {
+    "${XOS_ROOT}/tests/fixtures/glibc_d1/interpreter_application.c": "f647f00529d507810de56c82cbcf563812df866a50a4977247851dafaa2688d5",
+    "${XOS_ROOT}/tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp": "2c313667d6902a3f35ac1a4ee7fe84fb55e4b18285945902643bb88d3fe1406e"
+  },
+  "images": {
+    "main": {
+      "entry": 17592188150400,
+      "phnum": 11,
+      "sha256": "3fbe8818d464d332d24e03b0c9c7fd6299fe68195ecf7c1f468c87bfb59d42b6",
+      "span": 36864
+    },
+    "interpreter": {
+      "entry": 26389352914464,
+      "phnum": 7,
+      "sha256": "c07f075242347d850fd85ba503ecb92d43de3f41073446d95f648de8fd782bea",
+      "span": 237568
+    },
+    "dependency": {
+      "entry": 21990769572064,
+      "phnum": 12,
+      "sha256": "fe107347b5312f678aee0b4e7aa864c23e25e2d81849f82957b25f47cb79bf7b",
+      "span": 1609728
+    }
+  },
+  "bootstrap_sha256": "ff48f0da3bc9685013e21d4c2b1954d90653fcd0d10b3add39f8688dc47e6fe5",
+  "bootstrap_program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 16961,
+      "memory_size": 16961,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1073762304,
+      "file_size": 2144,
+      "memory_size": 2144,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1073766400,
+      "file_size": 0,
+      "memory_size": 8224,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 0,
+      "file_size": 0,
+      "memory_size": 0,
+      "alignment": 8
+    }
+  ],
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_ROOT}/build/qualification/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_HOST_TEMP}/xos_d1_native_application_bdv_8tml/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "guest_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD1_DYNAMIC_C_OK ctor=1 env=1 auxv=1 file=1 errno=1\n[task] event=reclaimed pid=11 pages=551\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "cd655b9433c5caa2254e0987d2c90e3e38e398de0b1048228a8c773664c94929"
+}

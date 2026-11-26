@@ -1,9 +1,6 @@
 --- a/posix/glob.c
 +++ b/posix/glob.c
-@@ -646,7 +646,7 @@
-                 }
-               else
-                 home_dir = "c:/users/default"; /* poor default */
+@@ -649,4 +649,4 @@
 -#else
 +#elif !defined XOS_TILDE_WITHOUT_NSS
                int err;

@@ -58,10 +58,14 @@ or the shell's PATH lookup. The loader enforces the caller's create authority.
 Child arguments, environment, working directory and exit status use the native
 spawn and wait APIs.
 
-Pipelines, subshells, command substitution, here-documents, explicit exec and
-the fallback for executable text scripts require further port work. External
-file-backed redirection requires compatible standard descriptor transfer. The
-installed C3 route uses newlib.
+Parent-executed builtins can read here-documents from sealed anonymous files.
+Quoted delimiters preserve literal text, and unquoted delimiters allow the
+preview's supported expansions.
+
+Pipelines, subshells, command substitution, explicit exec and the fallback for
+executable text scripts require further port work. External file-backed
+redirection requires compatible standard descriptor transfer. The installed C3
+route uses newlib.
 
 
 C1 experimental branch adds external-only, foreground pipelines of at most four

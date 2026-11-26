@@ -91,6 +91,27 @@ int main(int argc, char** argv) {
     anonymous = {}; anonymous.operation = 8; anonymous.handle = anonymous_handle;
     assert(__xos_file_exchange(&anonymous, &created) == 0);
     checked("anonymous_create_io_seal_and_close");
+    const int document = static_cast<int>(__xos_file_open_anonymous());
+    assert(document >= 0 && __xos_file_fcntl(document, F_GETFD, 0) == FD_CLOEXEC);
+    const int alias = static_cast<int>(__xos_file_dup(document, 0, 0, 0));
+    assert(alias >= 0 && alias != document);
+    assert(__xos_file_write(alias, "document", 8) == 8);
+    assert(__xos_file_seek(document, 0, SEEK_SET) == 0);
+    assert(__xos_file_seal_anonymous(document) == 0);
+    assert(__xos_file_fcntl(alias, F_GETFL, 0) == O_RDONLY);
+    assert(__xos_file_write(document, "x", 1) == -EBADF);
+    assert(__xos_file_write(alias, "x", 1) == -EBADF);
+    assert(__xos_file_close(document) == 0);
+    char document_bytes[8]{};
+    assert(__xos_file_read(alias, document_bytes, sizeof(document_bytes)) == 8);
+    assert(!std::memcmp(document_bytes, "document", 8));
+    assert(__xos_file_close(alias) == 0);
+    const int ordinary = open_file("/ordinary", O_RDWR | O_CREAT);
+    assert(__xos_file_seal_anonymous(ordinary) == -EBADF);
+    assert(__xos_file_fcntl(ordinary, F_GETFL, 0) == O_RDWR);
+    assert(__xos_file_write(ordinary, "x", 1) == 1);
+    assert(__xos_file_close(ordinary) == 0);
+    checked("anonymous_fd_cloexec_seal_alias_and_failed_seal");
     unsigned int anonymous_handles[16]{};
     for (unsigned int& handle : anonymous_handles) {
         anonymous = {}; anonymous.operation = 21;

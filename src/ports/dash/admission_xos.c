@@ -2,6 +2,14 @@
 #include <fcntl.h>
 /* Appended to eval.c, with its upstream node/error declarations in scope. */
 void xos_check_tree(union node *n);
+#ifdef XOS_DASH_GLIBC_PREVIEW
+int xos_has_heredoc(union node *n) {
+    for (; n; n = n->nfile.next)
+        if (n->type == NHERE || n->type == NXHERE) return 1;
+    return 0;
+}
+#endif
+
 static void xos_check_redirect(union node *n) {
     for (; n; n = n->nfile.next) {
         if (n->nfile.fd < 0 || n->nfile.fd > 2)
@@ -15,9 +23,6 @@ static void xos_check_redirect(union node *n) {
                 sh_error("only descriptors 0, 1, and 2 are available in XOS dash B2");
             break;
         case NHERE: case NXHERE:
-#ifdef XOS_DASH_GLIBC_PREVIEW
-            sh_error("here-documents unavailable in the glibc dash preview");
-#endif
             xos_check_tree(n->nhere.doc);
             break;
         default:
@@ -59,6 +64,10 @@ void xos_check_tree(union node *n) {
     case NDEFUN:
         xos_check_tree(n->ndefun.body); break;
     case NREDIR:
+#ifdef XOS_DASH_GLIBC_PREVIEW
+        if (xos_has_heredoc(n->nredir.redirect))
+            sh_error("here-document requires a parent builtin in the glibc dash preview");
+#endif
         xos_check_tree(n->nredir.n); xos_check_redirect(n->nredir.redirect); break;
     case NNOT: xos_check_tree(n->nnot.com); break;
     case NPIPE: {

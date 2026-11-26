@@ -19,7 +19,7 @@ CASES = ['basic', 'v3', 'lease', 'concurrent', 'invalid_v2', 'invalid_v3',
 def compiled_sources():
     overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
     return [overlay / (name + '.c') for name in
-            ('xos_file_runtime', 'xos_terminal_runtime', 'ioctl', 'select')] + [
+            ('xos_file_runtime', 'xos_file_session', 'xos_terminal_runtime', 'ioctl', 'select')] + [
         ROOT / 'src/ports/glibc/terminal_support.cpp', ROOT / 'src/user/sdk/terminal_client.cpp',
         ROOT / 'tests/fixtures/glibc_g3/terminal_runtime.cpp']
 

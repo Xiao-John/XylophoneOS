@@ -648,6 +648,9 @@ void launch_file(const char* name, u32 argc, char** argv, u32 spawn_depth, bool 
     if (!terminal_session && user::shell_terminal::active()) {
         print("xsh: terminal session active; use tty-run for compatible programs\n"); return;
     }
+#if XOS_QUIET_DEMOS_ON_LAUNCH
+    if (!demo_keep && !demo_quiet) { quiet_boot_demos(); }
+#endif
     if (terminal_session && !user::shell_terminal::active()) {
         if (!demo_keep && !demo_quiet) {
             for (u64 demo = 1; demo <= 4; ++demo) (void)syscall(10, demo);

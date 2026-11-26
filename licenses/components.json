@@ -4,6 +4,23 @@
   "legacy_inventory": "legacy_mit_files.json",
   "components": [
     {
+      "name": "XOS loader image reader",
+      "path": "src/user/loader/image_reader.hpp",
+      "source": "src/user/loader/load.cpp",
+      "license": "MIT AND Apache-2.0",
+      "notices": [
+        "LICENSE",
+        "licenses/mit_legacy.txt"
+      ],
+      "used_in": [
+        "XOS user-space loader SDK archive"
+      ],
+      "source_files": {
+        "src/user/loader/image_reader.hpp": "MIT AND Apache-2.0"
+      },
+      "modifications": "The reader was extracted from the historical loader while retaining the original mixed-license notice."
+    },
+    {
       "name": "Open Adventure",
       "version": "1.12",
       "path": "src/ports/adventure",
@@ -877,6 +894,27 @@
       "modifications": "Pinned upstream archive plus ordered, hash-bound DNS reply-validation and bounded-entropy patches in source_lock.json; original BSD-3-Clause notices retained. XOS NO_SYS adapter remains libc-independent; production DNS and DHCP remain disabled.",
       "artifact_sha256": {
         "licenses/lwip.txt": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
+      }
+    },
+    {
+      "name": "Mbed TLS and bundled TF-PSA-Crypto",
+      "version": "4.1.1 / 1.2.0",
+      "path": "src/ports/native_tls",
+      "source": "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-4.1.1/mbedtls-4.1.1.tar.bz2",
+      "license": "Apache-2.0 OR GPL-2.0-or-later",
+      "notices": [
+        "src/ports/native_tls/notices/LICENSE",
+        "src/ports/native_tls/notices/tf-psa-crypto/LICENSE",
+        "src/ports/native_tls/notices/framework/LICENSE"
+      ],
+      "used_in": [
+        "Private XOS native TLS guest proof"
+      ],
+      "modifications": "Unmodified upstream archive; XOS-specific build configuration and user-space transport, entropy, and clock adapters. Apache-2.0 elected for this profile. Source and notice hashes are locked in source_lock.json.",
+      "artifact_sha256": {
+        "src/ports/native_tls/notices/LICENSE": "9b405ef4c89342f5eae1dd828882f931747f71001cfba7d114801039b52ad09b",
+        "src/ports/native_tls/notices/tf-psa-crypto/LICENSE": "da8c58f05f135a9d15e9ffad4ecf854cfcc1f014c8abfd75ba05f62630ccc118",
+        "src/ports/native_tls/notices/framework/LICENSE": "11402351e38392230bb8934ba1095c0c0049a296c0f8821f76e4672dff54b490"
       }
     }
   ]

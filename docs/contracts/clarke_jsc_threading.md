@@ -55,3 +55,8 @@ XOS 的 `JSLock::lock` 在持有内部锁时保留首个 VM 持锁线程的 WTF 
 `PageReservation` 和 `OSAllocator` 的对齐、guard 和分配生命周期。XOS 后端使用
 已有 VM 保留、提交、保护、decommit 和释放操作。当前静态 JSC 的配置页与 VM 所有者
 GC 调度仍有独立验证门。
+
+[XOS 配置页](../work_log/b73f1f0f_clarke_jsc_config_protection.md)使用真实匿名区
+和位于只读 ELF 段的固定基址字面量。静态 CRT 在 shell 提前读取或写入 options
+前完成保留与提交。实际 WTF finalize 冻结动态配置页，已有映射占用候选地址时
+正常启动会明确失败。完整 JSC VM 的初始化、GC 所有者与 RunLoop 生命周期仍待验证。

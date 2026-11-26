@@ -30,6 +30,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--output-dir", type=Path, default=BUILD)
+    parser.add_argument("--quiet-demos-on-launch", action="store_true",
+                        help="stop boot demos before Xsh launches an external ELF unless demo keep was selected")
     parser.add_argument("--capacity-probe", action="store_true",
                         help="link a verified 5 MiB read-only section for the ISO capacity gate")
     parser.add_argument("--terminal-supervisor-probe", action="store_true",
@@ -92,6 +94,9 @@ def main():
         parser.error("the anchored probe owns the test supervisor and COM1")
     if args.terminal_supervisor_probe and args.ncurses_supervisor_probe:
         parser.error("select at most one test supervisor")
+    if args.quiet_demos_on_launch and (args.terminal_supervisor_probe or
+                                       args.ncurses_supervisor_probe or args.pumpkin_anchored_probe):
+        parser.error("--quiet-demos-on-launch requires the normal Xsh supervisor")
     if (args.terminal_supervisor_probe or args.ncurses_supervisor_probe) and BUILD == ROOT / "build":
         parser.error("terminal supervisor probe requires an isolated build subdirectory")
     if args.clean:
@@ -151,6 +156,7 @@ def main():
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
                                       **({"pumpkin_user_login": True} if args.pumpkin_user_login else {}),
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
+                                      **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       "virtio_gpu": gpu_config,
                                       "network_service": network_configuration(ROOT)}, sort_keys=True).encode())
     build_id = source_digest[:16]
@@ -174,7 +180,8 @@ def main():
                                  pumpkin_anchored_probe=args.pumpkin_anchored_probe,
                                  pumpkin_native_login=args.pumpkin_native_login,
                                  pumpkin_user_login=args.pumpkin_user_login,
-                                 pumpkin_user_resource=args.pumpkin_user_resource)
+                                 pumpkin_user_resource=args.pumpkin_user_resource,
+                                 quiet_demos_on_launch=args.quiet_demos_on_launch)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:
@@ -332,6 +339,7 @@ def main():
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
         **({"pumpkin_user_login": True} if args.pumpkin_user_login else {}),
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
+        **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()

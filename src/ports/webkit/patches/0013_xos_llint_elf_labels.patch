@@ -1,0 +1,10 @@
+--- a/Source/WTF/wtf/InlineASM.h
++++ b/Source/WTF/wtf/InlineASM.h
+@@ -66 +66,2 @@
+-#elif  OS(LINUX)               \
++#elif  OS(XOS)                 \
++    || OS(LINUX)               \
+@@ -85 +86,2 @@
+-#elif  OS(LINUX)               \
++#elif  OS(XOS)                 \
++    || OS(LINUX)               \

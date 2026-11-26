@@ -135,6 +135,11 @@ bootstrap 只做原生启动适配、验证和映射交接，上游 rtld 继续�
 RELRO 与不可执行页异常、洞和精确保留冲突。客体使用内嵌该工件的静态测试程序。
 闭包、PIE 和 glibc rtld 启动留在完整 D1 验收范围内。
 
+[D1 原生 bootstrap 文件映射](../work_log/61e99048_glibc_d1_native_image_mapping.md)
+把高地址复制与保护接入原生 loader 归档。无 libc 的入口从同一个已核对摘要的
+只读 pin 定位读取原工具链工件，复用 sys67 和现有文件读取接口。该组件使用调用方
+给出的已核验 LOAD 描述与预算。真实闭包验证、重定位策略和启动交接继续按本契约实现。
+
 glibc 上游 `dl-map-segments.h` 的文件 mmap/MAP_FIXED 路径不能原样调用当前
 XOS mmap。XOS 后端应使用匿名私有保留与显式复制，保证 BSS/段尾为零、洞保持
 不可访问、对象不共享可写物理页、失败全量撤回，复用上游解析与布局语义。
@@ -199,6 +204,11 @@ bootstrap/rtld 早期 I/O 与 libc 后期文件操作必须使用同一进程文
 顺序、锁、失败状态和实际继承对象。早期不能依赖尚未安装的 TLS/errno/malloc；
 交接时不能另起一个 legacy request-id 序列、重连后丢弃未知结果或按路径重建
 继承 FD。复用 G3 统一文件会话接口，尚需的 early/late 所有权交接单列验收。
+
+现有[私有会话交接](../work_log/0aa96e34_glibc_d1_early_files_session.md)已在真实静态
+glibc CRT 前后验证。早期单一持有方把当前 PID、内核认证端点、编号与失败状态交给
+尚未初始化的 G3，继承 FD 仍从现有 startup 描述恢复。动态解释器中的接入仍是 D1
+验收项。
 
 ## 6. 重定位、保护、TLS 和生命周期
 

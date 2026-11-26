@@ -9,6 +9,17 @@
 
 using namespace xos;
 using namespace xos::glibc_d1;
+#if defined(D1_ACTUAL_INTERPRETER)
+struct linked_dependency {
+    const char* path;
+    const char* soname;
+    u32 bytes;
+    const u8 (&digest)[32];
+    u64 bias;
+    u64 span;
+    bool omit;
+};
+#endif
 #include "interpreter_plan.hpp"
 
 #if defined(D1_ACTUAL_INTERPRETER)
@@ -107,7 +118,7 @@ void verify(source& image, const char* path, u32 length, const u8 (&digest)[32])
     image.handle = response.handle;
     image.inode = response.reserved;
     sha256 hash;
-    u8 bytes[1024];
+    u8 bytes[sizeof(response.data)];
     for (u32 offset = 0; offset < length;) {
         const u32 amount = length - offset < sizeof(bytes) ? length - offset : sizeof(bytes);
         if (!positioned(&image, offset, bytes, amount)) { fail("read verification input"); }
@@ -143,7 +154,7 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
 #if defined(D1_ACTUAL_INTERPRETER)
     const long now = sdk::syscall(46);
     if (now < 0) { fail("clock"); }
-    bootstrap_deadline = static_cast<u64>(now) + 30000000000ULL;
+    bootstrap_deadline = static_cast<u64>(now) + startup_budget_ns;
 #endif
     xos_file_session early{};
     if (file_call(early, file::op::open, 0, 0, 0, file::read_only, "/tests/input") != 0) {
@@ -156,12 +167,11 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
     if (file_call(early, file::op::close, stream) != 0) { fail("close bootstrap stream"); }
 #endif
 
-    source main{&early}, ld{&early}, dep{&early};
+    source main{&early}, ld{&early};
     verify(main, "/tests/main.pie", main_bytes, main_digest);
     verify(ld, "/tests/interpreter.so", interpreter_bytes, interpreter_digest);
-#if defined(D1_ACTUAL_INTERPRETER)
-    if (!unlisted) { verify(dep, "/tests/dependency.so", dependency_bytes, dependency_digest); }
-#else
+#if !defined(D1_ACTUAL_INTERPRETER)
+    source dep{&early};
     verify(dep, "/tests/dependency.so", dependency_bytes, dependency_digest);
 #endif
     const pinned_image main_source{main_image, main_bytes, positioned, &main, {main_span, main_span}};
@@ -169,9 +179,7 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
                                  {interpreter_span, interpreter_span}};
     xos_rtld_pin_plan pins{};
 #if defined(D1_ACTUAL_INTERPRETER)
-    if (!unlisted) { pins.deadline_ns = bootstrap_deadline; }
     const u64 heap_deadline = bootstrap_deadline;
-    constexpr u64 heap_pages = 32;
 #else
     const long now = sdk::syscall(46);
     if (now < 0) { fail("clock"); }
@@ -180,11 +188,20 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
     constexpr u64 heap_pages = 8;
 #endif
 #if defined(D1_ACTUAL_INTERPRETER)
-    if (!unlisted) {
-        pins.count = 1;
-        pins.pins[0] = {71, dep.handle, dep.inode, dependency_bytes, dependency_image.bias,
-                        dependency_span, dependency_span, "libc.so.0.1"};
+    static_assert(sizeof(linked_dependencies) / sizeof(linked_dependencies[0]) <= XOS_RTLD_MAX_PINS);
+    for (const auto& image : linked_dependencies) {
+        if (unlisted && image.omit) { continue; }
+        source dep{&early};
+        verify(dep, image.path, image.bytes, image.digest);
+        auto& pin = pins.pins[pins.count];
+        pin = {71 + static_cast<int>(pins.count), dep.handle, dep.inode, image.bytes,
+               image.bias, image.span, image.span, {}};
+        const auto length = strlen(image.soname);
+        if (length >= sizeof(pin.soname)) { fail("dependency SONAME"); }
+        memcpy(pin.soname, image.soname, length + 1);
+        ++pins.count;
     }
+    if (pins.count) { pins.deadline_ns = bootstrap_deadline; }
 #else
     pins.count = 1;
     pins.pins[0] = {71, dep.handle, dep.inode, dependency_bytes, dependency_image.bias,

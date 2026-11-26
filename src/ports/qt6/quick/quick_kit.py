@@ -102,6 +102,33 @@ def fingerprint(kit):
     }
 
 
+def verify_target_receipt(path, *, tree_sha256, sdk_manifest, sdk_profile, inputs):
+    receipt, digest = metadata_snapshot(path)
+    require(receipt.get("status") == "static_qt_quick_target_installed",
+            "Provide the installed Qt Quick target build receipt")
+    require(receipt.get("target_tree_sha256") == tree_sha256
+            and receipt.get("sdk_manifest_sha256") == sdk_manifest
+            and receipt.get("sdk_profile_file_sha256") == sdk_profile
+            and receipt.get("target_inputs") == {name: value for name, value in inputs.items()
+                                                 if name not in HOST_TOOLS}
+            and all(receipt.get("native_generators", {}).get(tool) == inputs[tool] for tool in HOST_TOOLS),
+            "Installed Qt Quick target or SDK differs from the target build receipt")
+    return digest
+
+
+def kit_target_receipt(kit, shape, application_receipt):
+    wanted = application_receipt.get("target_receipt_sha256")
+    path = kit / "target_receipt.json"
+    if wanted is None and not path.exists() and not path.is_symlink():
+        return
+    digest = verify_target_receipt(
+        relative_file(kit, path.name), tree_sha256=shape["tree_sha256"]["target"],
+        sdk_manifest=shape["sdk_manifest_sha256"], sdk_profile=shape["sdk_profile_file_sha256"],
+        inputs=shape["qt_inputs"])
+    require(digest == wanted, "The Qt target receipt differs from the initial application link")
+    shape["target_receipt_sha256"] = digest
+
+
 def verify_kit(kit):
     require(sys.platform == "linux" and platform.machine() in ("aarch64", "arm64"),
             "the Qt Quick kit requires a Linux AArch64 host")
@@ -109,6 +136,7 @@ def verify_kit(kit):
     source_receipt = relative_file(kit, "input_application_receipt.json")
     shape = fingerprint(kit)
     shape["input_application_receipt_sha256"] = sha_file(source_receipt)
+    kit_target_receipt(kit, shape, load_json(source_receipt))
     require(manifest == shape, "Qt Quick kit content differs from its manifest")
     return digest
 
@@ -139,6 +167,8 @@ def stage_kit(args):
         package_sdk(args.sdk_build, args.sdk_profile, output / "runtime")
         shutil.copyfile(args.qtbase, output / "qtbase.tar.xz")
         shutil.copyfile(args.application_receipt, output / "input_application_receipt.json")
+        if args.target_receipt is not None:
+            shutil.copyfile(args.target_receipt, output / "target_receipt.json")
         notices = output / "notices"
         for name, port in NOTICE_PORTS:
             component_dir = notices / name
@@ -151,6 +181,7 @@ def stage_kit(args):
         require(sha_file(output / "input_application_receipt.json") == receipt_digest,
                 "the linked application receipt changed while staging the kit")
         manifest["input_application_receipt_sha256"] = receipt_digest
+        kit_target_receipt(output, manifest, receipt)
         (output / "manifest.json").write_bytes(canonical(manifest))
     except Exception:
         shutil.rmtree(output)
@@ -162,6 +193,7 @@ def main():
     for field in ("target-prefix", "host-qt", "host-qml", "qtbase", "sdk-build", "sdk-profile",
                   "application-receipt", "output"):
         parser.add_argument(f"--{field}", type=Path, required=True)
+    parser.add_argument("--target-receipt", type=Path, help="record the independently built target prefix")
     args = parser.parse_args()
     stage_kit(args)
     print(args.output / "manifest.json")

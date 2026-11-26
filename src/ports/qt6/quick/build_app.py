@@ -18,9 +18,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_glibc_program import sha, verify_elf
 from glibc_g1_probe import clean_build_environment, tool_identity
-from quick_kit import MODULES, kit_paths, qt_inputs, verify_kit
+from quick_kit import MODULES, kit_paths, qt_inputs, verify_kit, verify_target_receipt
 from xypm_format import load_json
-from xypm_sdk_profile import metadata_snapshot, verify_profile
+from xypm_sdk_profile import metadata_snapshot, sdk_snapshot, verify_profile
 
 
 def extract_font(archive, font):
@@ -44,6 +44,7 @@ def main():
     for field in ("target-prefix", "host-qt", "host-qml", "qtbase", "sdk-build", "sdk-profile"):
         parser.add_argument(f"--{field}", type=Path)
     parser.add_argument("--kit", type=Path, help="use a kit staged by quick_kit.py")
+    parser.add_argument("--target-receipt", type=Path, help="prove the separate target prefix was built with this SDK")
     parser.add_argument("--target", required=True, help="CMake executable target and ELF basename")
     parser.add_argument("--jobs", type=int, default=4)
     args = parser.parse_args()
@@ -53,11 +54,13 @@ def main():
     if args.kit is not None:
         kit = args.kit.resolve(strict=True)
         paths = kit_paths(kit)
-        if any(getattr(args, field) is not None for field in paths):
+        if args.target_receipt is not None or any(getattr(args, field) is not None for field in paths):
             parser.error("--kit cannot be combined with separate Qt and glibc SDK inputs")
         if args.output.resolve().is_relative_to(kit):
             parser.error("The output must be outside the staged kit")
         kit_digest = verify_kit(kit)
+        if (kit / "target_receipt.json").is_file():
+            args.target_receipt = kit / "target_receipt.json"
         for field, path in paths.items():
             setattr(args, field, path)
     elif any(getattr(args, field) is None for field in kit_paths(Path("."))):
@@ -92,6 +95,12 @@ def main():
         if not path.is_file() or path.resolve(strict=True) != path:
             parser.error(f"Missing or redirected Qt kit input: {path}")
     input_digests = {name: sha(path) for name, path in expected.items()}
+    target_digest = source_digest = None
+    if args.target_receipt:
+        target_digest = verify_target_receipt(
+            args.target_receipt, tree_sha256=sdk_snapshot(prefix)[0], sdk_manifest=sdk_manifest,
+            sdk_profile=sha(args.sdk_profile), inputs=input_digests)
+        source_digest = sdk_snapshot(source)[0]
 
     env, _ = clean_build_environment(os.environ)
     for variable in ("CMAKE_PREFIX_PATH", "Qt6_DIR", "Qt6_ROOT", "QML_IMPORT_PATH", "QML2_IMPORT_PATH",
@@ -147,6 +156,13 @@ def main():
             or (kit_digest is not None and verify_kit(kit) != kit_digest)):
         raise RuntimeError("The SDK, Qt kit or toolchain changed during the application build")
 
+    if target_digest is not None:
+        observed_target = verify_target_receipt(
+            args.target_receipt, tree_sha256=sdk_snapshot(prefix)[0], sdk_manifest=sdk_manifest,
+            sdk_profile=sha(args.sdk_profile), inputs=input_digests)
+        if observed_target != target_digest or sdk_snapshot(source)[0] != source_digest:
+            raise RuntimeError("The Qt target build receipt or application source changed during the link")
+
     elf = Path((build / f"{args.target}-elf.txt").read_text().rstrip("\n")).resolve(strict=True)
     if not elf.is_relative_to(build) or not elf.is_file():
         raise RuntimeError("The application must link its ELF inside the build directory")
@@ -156,6 +172,10 @@ def main():
                "target_tools": {name: tool["sha256"] for name, tool in tools.items()},
                "font_sha256": sha(font), "elf": elf.relative_to(output).as_posix(),
                "elf_sha256": sha(elf), "program_headers": verify_elf(elf)}
+    if target_digest is not None:
+        receipt["target_receipt_sha256"] = target_digest
+        receipt["app_source_tree_sha256"] = source_digest
+        receipt["sdk_profile_file_sha256"] = sha(args.sdk_profile)
     if kit_digest is not None:
         receipt["kit_manifest_sha256"] = kit_digest
     (output / "receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")

@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 import re
 import subprocess
 import sys
@@ -16,11 +17,13 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "tests")]
 import boot_smoke
+from dash_glibc_preview_guest import bind_preview
 from graphics_guest import start_graphics, stop_graphics
 from make_work_disk import create_fat32
 from process_smoke import command, resources
 from task_smoke import pump, send_bytes
 from work_disk import transfer
+from xypm_sdk_profile import relative_file, sdk_snapshot
 
 
 def digest(path):
@@ -70,11 +73,15 @@ def main():
     parser.add_argument("--payload", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True, help="new evidence directory")
     parser.add_argument("--work-disk-tool", type=Path, help="prebuilt native XOS FAT helper")
-    parser.add_argument("--dash-manifest", type=Path, help="launch through the built legacy Dash")
+    parser.add_argument("--dash-manifest", type=Path, help="launch through the supplied Dash build")
     parser.add_argument("--system-manifest", type=Path, help="manifest for the boot image and Dash SDK")
+    parser.add_argument("--kit", type=Path, help="relocated Quick kit with a target build receipt")
+    parser.add_argument("--app-receipt", type=Path, help="lifecycle application receipt from build_app.py")
     args = parser.parse_args()
     if args.dash_manifest and not args.system_manifest:
         parser.error("--dash-manifest requires --system-manifest")
+    if bool(args.kit) != bool(args.app_receipt) or (args.kit and not args.system_manifest):
+        parser.error("Bound lifecycle checks require a kit, application receipt and system manifest")
     output = args.output.resolve()
     output.mkdir(parents=True)
     report = {"status": "FAILED", "image_sha256": digest(args.image),
@@ -88,10 +95,38 @@ def main():
             assert report["image_sha256"] == artifacts["xos-install.iso"]["sha256"]
             report["system_manifest_sha256"] = digest(args.system_manifest)
             report["system_build_id"] = system["build_id"]
+        if args.kit:
+            kit_manifest = args.kit / "manifest.json"
+            target_receipt = args.kit / "target_receipt.json"
+            sdk_profile = args.kit / "runtime/profile.json"
+            sdk_build = args.kit / "runtime/sdk"
+            kit = json.loads(kit_manifest.read_bytes())
+            app = json.loads(args.app_receipt.read_bytes())
+            installed_target = json.loads(target_receipt.read_bytes())
+            assert app["status"] == "static_quick_application_linked"
+            assert relative_file(args.app_receipt.parent, app["elf"]) == args.payload.resolve(strict=True)
+            assert app["elf_sha256"] == report["elf_sha256"]
+            assert app["kit_manifest_sha256"] == digest(kit_manifest)
+            assert app["target_receipt_sha256"] == kit["target_receipt_sha256"] == digest(target_receipt)
+            assert app["sdk_profile_file_sha256"] == kit["sdk_profile_file_sha256"] == digest(sdk_profile)
+            assert app["sdk_manifest_sha256"] == kit["sdk_manifest_sha256"] == digest(sdk_build / "manifest.json")
+            assert app["qt_inputs"] == kit["qt_inputs"]
+            assert installed_target["target_tree_sha256"] == kit["tree_sha256"]["target"]
+            assert app["app_source_tree_sha256"] == sdk_snapshot(ROOT / "tests/fixtures/qt6/quick")[0]
+            assert all(digest(ROOT / name) == expected for name, expected in system["sources"].items())
+            report.update(app_receipt_sha256=digest(args.app_receipt), kit_manifest_sha256=digest(kit_manifest),
+                          target_receipt_sha256=digest(target_receipt), sdk_manifest_sha256=app["sdk_manifest_sha256"],
+                          sdk_profile_sha256=app["sdk_profile_file_sha256"])
         if args.dash_manifest:
             dash = json.loads(args.dash_manifest.read_text())
-            sdk_sha = artifacts["sdk/manifest.json"]["sha256"]
-            assert dash["profile"] == "dash_c3" and dash["sdk_manifest_sha256"] == sdk_sha
+            if dash["profile"] == "dash_glibc_preview" and args.kit:
+                dash_binding = bind_preview(SimpleNamespace(
+                    preview_receipt=args.dash_manifest, glibc_sdk=sdk_build, glibc_profile=sdk_profile))
+                sdk_sha = dash_binding["sdk_manifest_sha256"]
+                assert sdk_sha == app["sdk_manifest_sha256"]
+            else:
+                sdk_sha = artifacts["sdk/manifest.json"]["sha256"]
+                assert dash["profile"] == "dash_c3" and dash["sdk_manifest_sha256"] == sdk_sha
             dash_elf = (ROOT / dash["elf"]).resolve(strict=True)
             assert digest(dash_elf) == dash["sha256"]
             operations.extend([("mkdir", "/usr"), ("mkdir", "/usr/bin"),
@@ -107,12 +142,22 @@ def main():
                     subprocess.run([args.work_disk_tool.resolve(), disk, *operation], check=True)
                 else:
                     transfer(disk, *operation)
+            if args.kit:
+                copied = Path(temp) / "readback.elf"
+                transfer(disk, "export", "/bin/quick.elf", copied)
+                report["fat_payload_sha256"] = digest(copied)
+                assert report["fat_payload_sha256"] == report["elf_sha256"]
+                if args.dash_manifest:
+                    transfer(disk, "export", "/usr/bin/dash", copied)
+                    report["fat_dash_sha256"] = digest(copied)
+                    assert report["fat_dash_sha256"] == report["dash_elf_sha256"]
             # Route the existing guest helper's logs alongside this receipt.
             (output / "build").mkdir()
             with patch.object(boot_smoke, "ROOT", output):
                 guest = boot_smoke.Guest(args.image.resolve(), "guest", work_disk=disk)
                 try:
-                    report["qemu_command"] = guest.command
+                    if not args.kit:
+                        report["qemu_command"] = guest.command
                     report["qemu_version"] = subprocess.check_output(
                         [guest.command[0], "--version"], text=True).splitlines()[0]
                     guest.expect(b"xos64> ", timeout=40)
@@ -157,6 +202,7 @@ def main():
                     report["status"] = "PASSED"
                 finally:
                     guest.close()
+                    report["serial_sha256"] = digest(output / "build/guest_serial.log")
     finally:
         (output / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(report["status"])

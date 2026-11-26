@@ -16,7 +16,8 @@
     "patches/0007_xos_wtf_native_entropy.patch": "11582af4dba7c3304a6933f9bf3887e3f5cdba6bf3ad0ccd24a3b17c383ccf8e",
     "patches/0008_xos_wtf_page_size.patch": "e305ec2ff038b4022264307172e02be0c3c3575f4030cb3db67ea1dece8bcccb",
     "patches/0009_xos_wtf_memory_services.patch": "935b105ed11d3290027e3385618390600d39bd45fbca25d8b3cf95b4ec9c2090",
-    "patches/0010_xos_wtf_config_platform.patch": "a0edf20bbc8d50ac78dea1e2908ce5180030eaaeb7bf62fc3d4b8e6bda73f693"
+    "patches/0010_xos_wtf_config_platform.patch": "a0edf20bbc8d50ac78dea1e2908ce5180030eaaeb7bf62fc3d4b8e6bda73f693",
+    "patches/0011_xos_wtf_os_allocator.patch": "0b5fcfb18d461b134d86178e257aaa7f98c4555f81f457b2b9b100eaa4795239"
   },
   "llint_icu": {
     "version": "79.1",

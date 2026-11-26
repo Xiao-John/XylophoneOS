@@ -76,3 +76,11 @@ XOS 的进程号、页大小和熵沿用已绑定的 glibc 接口。内存占用
 [构建与客体回执](../../../docs/work_log/73cec3d9_clarke_wtf_native_runtime.md)记录
 实际线程、页保护、文件映射错误和资源回收。JSC 静态配置页、分配器和 VM GC
 另行验收。
+
+## XOS WTF 匿名页分配
+
+指定 `--wtf-allocator` 与新输出目录可构建实际 `OSAllocatorPOSIX.cpp` 目标对象。
+XOS 通过现有 VM 接口保留匿名区，再由目标 glibc 提交和更新页权限。保留区的对齐、
+guard、物理释放与回收均按原生 VM 操作完成。
+[普通客体记录](../../../docs/work_log/fab9b5b1_clarke_wtf_os_allocator.md)绑定定位的对象、
+实际 WTF 归档与读写及回收验证。

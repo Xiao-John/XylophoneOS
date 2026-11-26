@@ -32,6 +32,11 @@ bool valid_request(const wire_request& request, const wire_extension* extension)
         if (request.name_length != sizeof(resource_broker_grant) || !zero_id(request.token)) { return false; }
     } else if (operation == wire_operation::begin_resource_read) {
         if (request.name_length != sizeof(u64) || !valid_id(request.token)) { return false; }
+    } else if (operation >= wire_operation::put_named_resource && operation <= wire_operation::erase_named_resource) {
+        if (request.name_length != sizeof(named_resource_request) ||
+            (operation == wire_operation::erase_named_resource ? !zero_id(request.token) : !valid_id(request.token))) {
+            return false;
+        }
     } else if (uses_name(operation) ? request.name_length == 0 || !zero_id(request.token)
                                     : request.name_length != 0 || !valid_id(request.token)) {
         return false;
@@ -100,6 +105,9 @@ status invoke(service_core& core, const connection_id& connection, const wire_re
     case wire_operation::read_login_resource:
     case wire_operation::admit_resource_broker:
     case wire_operation::begin_resource_read:
+    case wire_operation::put_named_resource:
+    case wire_operation::read_named_resource:
+    case wire_operation::erase_named_resource:
         break;
     }
     return status::invalid;
@@ -140,12 +148,14 @@ bool valid_reply(const wire_request& request, const wire_reply& reply) {
         return reply.flags == 0 && zero_id(reply.token) && !has_key;
     }
     const bool expects_token = uses_name(request.operation) || request.operation == wire_operation::identity ||
-        request.operation == wire_operation::begin_resource_read;
+        request.operation == wire_operation::begin_resource_read || request.operation == wire_operation::put_named_resource ||
+        request.operation == wire_operation::read_named_resource;
     const bool expects_key = request.operation == wire_operation::create_account ||
         request.operation == wire_operation::rotate_credential;
     return (expects_token ? valid_id(reply.token) : zero_id(reply.token)) && expects_key == has_key &&
         (request.operation == wire_operation::lookup_account ? reply.flags <= 1 :
-            request.operation == wire_operation::read_login_resource || reply.flags == 0);
+            request.operation == wire_operation::read_login_resource ||
+            request.operation == wire_operation::read_named_resource || reply.flags == 0);
 }
 
 }

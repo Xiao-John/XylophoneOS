@@ -26,7 +26,7 @@ wire_status transport_status(status result) {
     }
 }
 
-bool process_read(client_slot& client, sealed_blob& object, broker_authority& authority, u64 now) {
+bool process_read(client_slot& client, sealed_blob* object, broker_authority& authority, u64 now) {
     if (now >= client.expires) { return false; }
     if (client.replied) {
         return sdk::ipc_wait(client.pair.send, ipc_wait_mode::try_send) == process_error_would_block;
@@ -35,8 +35,10 @@ bool process_read(client_slot& client, sealed_blob& object, broker_authority& au
     const auto count = sdk::ipc_recv(client.pair.receive, &input, sizeof(input));
     if (count == process_error_would_block) { return true; }
     const u64 peer = authenticated_peer(client.pair);
-    if (count != sizeof(input) || input.version != wire_version || input.reserved ||
+    if (count != sizeof(input) || input.version != broker_wire_version || input.reserved ||
         !peer || input.ticket.scope == nonce{} || !input.ticket.number) { return false; }
+    if (object ? has_bytes(reinterpret_cast<const u8*>(&input.named), sizeof(input.named)) :
+        input.object != 0 || !valid_named_request(input.named)) { return false; }
     const auto received = monotonic_now();
     if (received < 0 || static_cast<u64>(received) < now) { return false; }
     now = static_cast<u64>(received);
@@ -48,18 +50,29 @@ bool process_read(client_slot& client, sealed_blob& object, broker_authority& au
             broker_authority& authority;
             const ipc_channel& pair;
             broker_read_request message;
-        } call{authority, client.pair, {wire_version, 0, 0, client_deadline, peer, client.number, input.ticket}};
-        const blob_read_check check{&call, [](void* context, const nonce& incarnation, const owner_record& owner) {
-            auto& read = *static_cast<read_context*>(context);
-            read.message.incarnation = incarnation;
-            read.message.object = owner.object;
-            read.message.owner = owner.owner;
-            const auto allowed = read.authority.authorize(read.message);
-            if (allowed != status::ok) { return allowed; }
-            return read.authority.live() && authenticated_peer(read.pair) == read.message.peer
-                ? status::ok : status::denied;
-        }};
-        output.result = transport_status(object.read_associated(input.object, check, output.data));
+        } call{authority, client.pair, {broker_wire_version, 0, 0, client_deadline, peer, client.number, input.ticket}};
+        if (object == nullptr) {
+            call.message.named = input.named;
+            broker_read_reply selected{};
+            output.result = transport_status(authority.authorize(call.message, &selected));
+            if (output.result == wire_status::ok) {
+                output.generation = selected.generation;
+                output.data.length = sizeof(selected.data);
+                __builtin_memcpy(output.data.bytes, &selected.data, sizeof(selected.data));
+            }
+        } else {
+            const blob_read_check check{&call, [](void* context, const nonce& incarnation, const owner_record& owner) {
+                auto& read = *static_cast<read_context*>(context);
+                read.message.incarnation = incarnation;
+                read.message.object = owner.object;
+                read.message.owner = owner.owner;
+                const auto allowed = read.authority.authorize(read.message);
+                if (allowed != status::ok) { return allowed; }
+                return read.authority.live() && authenticated_peer(read.pair) == read.message.peer
+                    ? status::ok : status::denied;
+            }};
+            output.result = transport_status(object->read_associated(input.object, check, output.data));
+        }
     }
     const auto before_reply = monotonic_now();
     if (before_reply < 0 || static_cast<u64>(before_reply) < now ||
@@ -73,7 +86,7 @@ bool process_read(client_slot& client, sealed_blob& object, broker_authority& au
     return true;
 }
 
-int serve(sealed_blob& object, broker_authority& authority, const ipc_channel& control, u64 parent) {
+int serve(sealed_blob* object, broker_authority& authority, const ipc_channel& control, u64 parent) {
     if (sdk::ipc_name_publish(broker_service_name) != 0) { return 13; }
     client_slot clients[4]{};
     u64 next_connection = 0;
@@ -96,7 +109,7 @@ int serve(sealed_blob& object, broker_authority& authority, const ipc_channel& c
                 if (!client.number) { free = &client; break; }
             }
             if (free && next_connection != ~u64{0} && authenticated_peer(incoming)) {
-                const broker_opened opened{wire_version, 0, ++next_connection};
+                const broker_opened opened{broker_wire_version, 0, ++next_connection};
                 if (sdk::ipc_send(incoming.send, &opened, sizeof(opened)) == 0) {
                     *free = {incoming, opened.connection, now + max_request_ns, false};
                     incoming = {};
@@ -132,25 +145,36 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
             sdk::ipc_send(rendezvous.value.send, &offer, sizeof(offer)) != 0) { return 11; }
         broker_configuration config{};
         const u64 deadline = static_cast<u64>(now) + max_request_ns;
-        if (!receive_broker_frame(control.value, config, deadline) || config.version != wire_version ||
-            !config.daemon || !config.owner.number || config.owner.realm == nonce{} ||
-            config.incarnation == nonce{} || config.length == 0 || config.length > sealed_blob_capacity) { return 11; }
+        if (!receive_broker_frame(control.value, config, deadline) || config.version != broker_wire_version || !config.daemon) {
+            return 11;
+        }
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+        constexpr bool named_profile = true;
+#else
+        constexpr bool named_profile = false;
+#endif
+        if (named_profile ? config.length || config.owner != identity_id{} || config.incarnation != nonce{} ||
+                            has_bytes(config.bytes, sizeof(config.bytes)) :
+                            !config.owner.number || config.owner.realm == nonce{} ||
+                            config.incarnation == nonce{} || config.length == 0 || config.length > sealed_blob_capacity) {
+            return 11;
+        }
         // The parent's reply witnesses consumption of the rendezvous offer.
         close_ipc(rendezvous.value);
 
         file::client files;
         sealed_blob object{files};
         nonce registry{};
-        if (sdk::syscall(sys_random_bytes, reinterpret_cast<u64>(registry.bytes), sizeof(registry.bytes)) != 0 ||
+        if (!named_profile && (sdk::syscall(sys_random_bytes, reinterpret_cast<u64>(registry.bytes), sizeof(registry.bytes)) != 0 ||
             !files.init() || object.publish({registry, broker_object_number, 1}, config.incarnation, config.owner,
-                config.bytes, config.length) != status::ok) { return 12; }
+                config.bytes, config.length) != status::ok)) { return 12; }
         ipc_channel daemon_pair{};
         broker_authority authority;
         if (sdk::ipc_channel_create(config.daemon, daemon_pair) != 0 ||
             !authority.bind(daemon_pair, config.daemon)) { return 12; }
         const auto remote = sdk::ipc_channel_for_peer(daemon_pair);
-        const broker_ready ready{wire_version, 0, {sdk::pid(), remote.send, remote.receive}};
+        const broker_ready ready{broker_wire_version, 0, {sdk::pid(), remote.send, remote.receive}};
         if (sdk::ipc_send(control.value.send, &ready, sizeof(ready)) != 0) { return 12; }
-        return serve(object, authority, control.value, parent);
+        return serve(named_profile ? nullptr : &object, authority, control.value, parent);
     }
 }

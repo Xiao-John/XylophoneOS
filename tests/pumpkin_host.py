@@ -14,9 +14,12 @@ core_sources = [module / name for name in ("account_store.cpp", "service_core.cp
 protocol_source = module / "daemon_protocol.cpp"
 publication_source = module / "snapshot_publication.cpp"
 resource_source = module / "resource_dispatch.cpp"
+named_store_source = module / "named_resource_store.cpp"
 fixtures = [
     ("pumpkin_core_host", "service_core_host.cpp", [*core_sources, protocol_source, resource_source]),
     ("pumpkin_publication_host", "snapshot_publication_host.cpp", [*core_sources, publication_source]),
+    ("pumpkin_named_store_host", "named_resource_store_host.cpp",
+     [*core_sources, publication_source, named_store_source]),
 ]
 common = ["-std=c++20", "-Wall", "-Wextra", "-Werror",
           "-I", str(root / "src/shared/include"), "-I", str(root / "src/user/include"),
@@ -38,7 +41,7 @@ def run(options, output):
     if options.target_cxx:
         target = ["-O2", "-ffreestanding", "-fno-exceptions", "-fno-rtti", "-nostdinc++",
                   "-mno-red-zone", "-fstack-usage"]
-        for source in [*core_sources, protocol_source, publication_source, resource_source]:
+        for source in [*core_sources, protocol_source, publication_source, resource_source, named_store_source]:
             subprocess.run([options.target_cxx, *common, *target, "-c", source,
                             "-o", output / (source.stem + ".o")], check=True, timeout=60)
         print("PASS freestanding x86-64 object compilation", flush=True)

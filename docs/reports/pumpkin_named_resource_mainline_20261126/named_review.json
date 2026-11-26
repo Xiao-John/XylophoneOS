@@ -1,0 +1,130 @@
+{
+  "status": "passed_subset",
+  "build_id": "4a63c680daee91a6",
+  "system_manifest_sha256": "7d5ec1e9a03393159a1f0c2f4b54628f8f280aad01833823e58c3389fb90b37b",
+  "artifacts": {
+    "xos-install.iso": "ee96db2e82f93167de2b495bbc75d6fbe8d0d63b6c1e26dbd79d278562c4d878",
+    "user_files.image.elf": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+    "user_supervisor.image.elf": "91ea50c4bcfdb16bf62c828dc93afacad06f5dd72196ec2cd4632a86ff592575",
+    "user_pumpkin_durable.image.elf": "bb0d58a50ba0894f0ef8967fa247c90db25e6c770cdf9779a88f143c2bd14056",
+    "user_p2_anchor_proxy.image.elf": "188470f459d320f3af266a721ad198710f4862070590e74158e6507b7ec82596",
+    "user_pumpkin_holder.image.elf": "4c5923aceadc62b6467629e7d22b9b317db08f7d5e07b82b9335767026148247",
+    "user_p2_sealed.image.elf": "54ce0c0c79ece59cbb132741212036b7a67fe8569e1430808391c6a2bf00ac4d"
+  },
+  "entry_sha256": "1cdb593291967ec14f35e1fb933969322905049aed00f566354dfc2c8af73f17",
+  "runner_sha256": "f70ee4bba831574305c36cf5b97d3ce42ebed9d1a2c9743959825fcdb26299dd",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "checks": [
+    {
+      "case": "typed private installation",
+      "exit": 0,
+      "revision": 0
+    },
+    {
+      "case": "issue a persistent account credential",
+      "exit": 0,
+      "revision": 2
+    },
+    {
+      "case": "working credential sees no object before publication",
+      "exit": 4,
+      "revision": 2,
+      "result": "Pumpkin named resource read denied"
+    },
+    {
+      "case": "the trusted registrar assigns the new object to the enrolled owner",
+      "exit": 0,
+      "revision": 3,
+      "result": "Pumpkin named resource generation 3 confirmed"
+    },
+    {
+      "case": "fresh VM reads the current object and rejects a pending read after logout",
+      "exit": 0,
+      "revision": 3,
+      "result": "Pumpkin named resource generation 3 value 293"
+    },
+    {
+      "case": "fresh VM recovers the same credential, fixed generation and data",
+      "exit": 0,
+      "revision": 3,
+      "result": "Pumpkin named resource generation 3 value 293"
+    },
+    {
+      "case": "a valid session cannot read a different logical name",
+      "exit": 4,
+      "revision": 3,
+      "result": "Pumpkin named resource read denied"
+    },
+    {
+      "case": "the registrar replaces the same name with a new object key",
+      "exit": 0,
+      "revision": 4,
+      "result": "Pumpkin named resource generation 4 confirmed"
+    },
+    {
+      "case": "a fresh valid session cannot read the old generation",
+      "exit": 4,
+      "revision": 4,
+      "result": "Pumpkin named resource read denied"
+    },
+    {
+      "case": "fresh VM reads replacement data and rejects a pending read after logout",
+      "exit": 0,
+      "revision": 4,
+      "result": "Pumpkin named resource generation 4 value 719"
+    },
+    {
+      "case": "stale erase cannot remove the replacement",
+      "exit": 5,
+      "revision": 4,
+      "result": "Pumpkin named resource generation conflict"
+    },
+    {
+      "case": "the registrar invalidates the exact replacement generation",
+      "exit": 0,
+      "revision": 5,
+      "result": "Pumpkin named resource generation 4 confirmed"
+    },
+    {
+      "case": "fresh VM rejects the deleted key",
+      "exit": 4,
+      "revision": 5,
+      "result": "Pumpkin named resource read denied"
+    },
+    {
+      "case": "fresh VM recovers absence by logical name",
+      "exit": 4,
+      "revision": 5,
+      "result": "Pumpkin named resource read denied"
+    },
+    {
+      "case": "recreating the logical name does not reuse the erased key",
+      "exit": 0,
+      "revision": 6,
+      "result": "Pumpkin named resource generation 6 confirmed"
+    },
+    {
+      "case": "the original owner reads the recreated object",
+      "exit": 0,
+      "revision": 6,
+      "result": "Pumpkin named resource generation 6 value 991"
+    },
+    {
+      "case": "durable registrar revocation leaves a current object with a revoked owner",
+      "exit": 0,
+      "revision": 7
+    },
+    {
+      "case": "fresh VM refuses the revoked credential for the current object",
+      "exit": 3,
+      "revision": 7,
+      "result": "Pumpkin login denied"
+    },
+    {
+      "case": "fresh VM refuses the same credential without a resource request",
+      "exit": 3,
+      "revision": 7,
+      "result": "Pumpkin login denied"
+    }
+  ]
+}

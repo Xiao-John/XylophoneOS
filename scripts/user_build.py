@@ -16,7 +16,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 ncurses_supervisor_probe=False, glibc_files_death_probe=False,
                 files_private_storage_probe=False, files_private_client_probe=False, pumpkin_durable_probe=False,
                 pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False,
-                pumpkin_user_resource=False, quiet_demos_on_launch=False):
+                pumpkin_user_resource=False, pumpkin_named_resource_store=False, quiet_demos_on_launch=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -96,6 +96,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         login_flags += ("-DXOS_PUMPKIN_USER_LOGIN=1",)
     if pumpkin_user_resource:
         login_flags += ("-DXOS_PUMPKIN_USER_RESOURCE=1", "-DXOS_PUMPKIN_RESOURCE_BRIDGE=1")
+    if pumpkin_named_resource_store:
+        login_flags += ("-DXOS_PUMPKIN_NAMED_RESOURCE_STORE=1",)
     durable_flags += login_flags
     private_storage_flags = (("-DXOS_FILES_PRIVATE_STORAGE_PROBE=1", *private_client_flags)
                              if files_private_storage_probe or files_slot_broker else ())
@@ -115,7 +117,11 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                                ("native_login.cpp", "login_resource.cpp", "resource_dispatch.cpp", "sealed_blob.cpp")})
     if pumpkin_user_resource:
         durable_objects["resource_bridge.cpp"] = compile_source(root / "src/user/pumpkin/resource_bridge.cpp",
-                                                                 ("-Os", "-ffunction-sections", "-fdata-sections"))
+                                                                 ("-Os", "-ffunction-sections", "-fdata-sections", *login_flags))
+    if pumpkin_named_resource_store:
+        durable_objects.update({name: compile_source(root / "src/user/pumpkin" / name,
+                                             ("-Os", "-ffunction-sections", "-fdata-sections")) for name in
+                                ("named_resource_store.cpp", "named_resource_rpc.cpp")})
     # The bundle installer grew this translation unit; keep -Os so the
     # file-backed install ISO stays within its size budget.
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp", ("-Os",))

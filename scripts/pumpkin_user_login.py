@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Enroll, submit or revoke an operator-held Pumpkin credential in a private VM."""
+"""Manage private Pumpkin login and developer resources in a disposable VM."""
 
 import argparse
 from contextlib import contextmanager
@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import selectors
 import socket
 import stat
@@ -37,8 +38,12 @@ padding_offset = secret_offset + secret_size
 ready, read, publish, finish = range(1, 5)
 issue, submit = range(1, 3)
 scenarios = {"enroll": 4, "login": 5, "revoke": 6, "read-resource": 7}
-submission_commands = ("login", "read-resource")
+named_operations = {"read-named": 1, "publish-named": 2, "erase-named": 3}
+scenarios.update({"read-named": 9, "publish-named": 10, "erase-named": 11})
+submission_commands = ("login", "read-resource", "read-named")
 credential_operations = {"enroll": issue, **dict.fromkeys(submission_commands, submit)}
+named_layout = struct.Struct("<QIB3x16s")
+named_empty = bytes(frame_size - header.size)
 broker_artifact = "user_p2_sealed.image.elf"
 resource_errors = {
     29: "Pumpkin resource session did not complete",
@@ -145,12 +150,12 @@ def install_disk(path):
         os.fsync(disk.fileno())
 
 
-def prepare(state):
+def prepare(state, named_resources=False):
     state.mkdir(mode=0o700)
     with private_directory(state) as descriptor:
         authority_path = state / "authority"
         authority_path.mkdir(mode=0o700)
-        generation_authority(authority_path, realm).provision()
+        generation_authority(authority_path, realm, named_resources=named_resources).provision()
         install_disk(state / "work.img")
         os.fsync(descriptor)
 
@@ -244,8 +249,8 @@ def generation_packet(operation, status, sequence, value=empty_mark):
     return header.pack(b"PKA1", 1, operation, status, sequence) + empty_mark + value
 
 
-def decode_mark(data):
-    return None if data == empty_mark else generation_mark(*mark_layout.unpack(data))
+def decode_mark(data, named_resources):
+    return None if data == empty_mark else generation_mark(*mark_layout.unpack(data), named_resources=named_resources)
 
 
 def operator_exchange(vm, command, frame, wallet, stored):
@@ -268,7 +273,40 @@ def operator_exchange(vm, command, frame, wallet, stored):
     vm.send(frame)
 
 
-def boot(system, state, command, authority, wallet, stored):
+def named_packet(operation, sequence, payload=named_empty):
+    return header.pack(b"PKN1", 1, operation, 0, sequence) + payload
+
+
+def named_exchange(vm, command, frame, selection, selection_sent):
+    tag, version, operation, status, sequence = header.unpack_from(frame)
+    require(tag == b"PKN1" and version == 1 and operation == named_operations[command],
+            "Invalid named resource exchange")
+    name, generation, data = selection
+    payload = frame[header.size:]
+    if not selection_sent:
+        require(sequence == 1 and not status and payload == named_empty, "Invalid named resource selection request")
+        selected = named_layout.pack(generation, data, len(name), name)
+        vm.send(named_packet(operation, 1, selected + bytes(len(named_empty) - len(selected))))
+        return None
+    require(sequence == 2 and not any(payload[named_layout.size:]), "Invalid named resource result")
+    if status == 1:
+        actual, actual_data, length, returned_name = named_layout.unpack_from(payload)
+        require(actual > 0 and length == len(name) and returned_name == name.ljust(16, b"\0") and
+                not any(payload[13:16]), "Invalid returned resource identity")
+        if command == "publish-named":
+            require(actual > generation and actual_data == 0, "Invalid committed resource generation")
+        else:
+            require((generation == 0 or generation == actual) and (command == "read-named" or actual_data == 0),
+                    "Unexpected returned resource generation")
+    else:
+        actual, actual_data = 0, 0
+        allowed = (2, 3) if command == "read-named" else (4,)
+        require(status in allowed and payload == named_empty, "Unexpected named resource status")
+    vm.send(named_packet(operation, 2))
+    return status, actual, actual_data
+
+
+def boot(system, state, command, authority, wallet, stored, selection=None):
     with tempfile.TemporaryDirectory(prefix="pumpkin_user_") as private:
         monitor = Path(private) / "qmp"
         drive = str(state / "work.img").replace(",", ",,")
@@ -284,6 +322,8 @@ def boot(system, state, command, authority, wallet, stored):
             vm.send(generation_packet(ready, scenarios[command], 0))
             sequence = 1
             credential_seen = False
+            selection_sent = False
+            named_result = None
             for _ in range(20):
                 frame = bytearray(frame_size)
                 try:
@@ -298,6 +338,11 @@ def boot(system, state, command, authority, wallet, stored):
                         operator_exchange(vm, command, frame, wallet, stored)
                         credential_seen = True
                         continue
+                    if tag == b"PKN1":
+                        require(selection is not None and named_result is None, "Unexpected named resource frame")
+                        named_result = named_exchange(vm, command, frame, selection, selection_sent)
+                        selection_sent = True
+                        continue
                     require(tag == b"PKA1" and version == 1 and serial == sequence,
                             "Invalid generation frame from login guest")
                     expected, value = frame[header.size:header.size + mark_layout.size], frame[-mark_layout.size:]
@@ -309,11 +354,11 @@ def boot(system, state, command, authority, wallet, stored):
                             selected.realm, selected.revision, selected.length, selected.checksum)
                         reply = generation_packet(read, int(selected is None), sequence, encoded)
                     elif operation == publish:
-                        require(status == 0 and command in ("enroll", "revoke"),
+                        require(status == 0 and command in ("enroll", "revoke", "publish-named", "erase-named"),
                                 "Generation publication is unavailable in this operation")
-                        candidate = decode_mark(value)
+                        candidate = decode_mark(value, authority.named_resources)
                         require(candidate is not None, "Missing generation publication")
-                        result = authority.publish(decode_mark(expected), candidate)
+                        result = authority.publish(decode_mark(expected, authority.named_resources), candidate)
                         codes = {publish_result.committed: 0, publish_result.conflict: 1,
                                  publish_result.unchanged: 2, publish_result.outcome_unknown: 3}
                         reply = generation_packet(publish, codes[result], sequence)
@@ -324,11 +369,15 @@ def boot(system, state, command, authority, wallet, stored):
                         time.sleep(0.15)
                         quit_qmp(monitor)
                         require(vm.process.wait(timeout=8) == 0, "Private guest shutdown failed")
-                        if command == "read-resource" and status in resource_errors:
+                        if command in ("read-resource", "read-named") and status in resource_errors:
                             raise login_error(resource_errors[status])
+                        require(credential_seen == (command in credential_operations), "Missing private credential exchange")
+                        if selection is not None:
+                            require(named_result is not None and status == named_result[0],
+                                    "Named resource result was not confirmed")
+                            return named_result
                         require(status == 1 or (status == 2 and command in submission_commands),
                                 "Private login did not complete; check the account before retrying enrollment")
-                        require(credential_seen == (command != "revoke"), "Missing private credential exchange")
                         return status
                     vm.send(reply)
                     sequence += 1
@@ -339,35 +388,45 @@ def boot(system, state, command, authority, wallet, stored):
             vm.close()
 
 
-def operate(system, state, command, path):
+def named_profile(system):
+    return json.loads((system / "manifest.json").read_bytes()).get("pumpkin_named_resource_store") is True
+
+
+def operate(system, state, command, path, selection=None):
     binding = bind_system(system)
-    require(command != "read-resource" or broker_artifact in binding[2],
-            "Select the private Pumpkin resource image")
+    named = named_profile(system)
+    require(command != "read-resource" or (broker_artifact in binding[2] and not named),
+            "Select the private Pumpkin sealed resource image")
+    require((selection is not None) == (command in named_operations) and
+            (selection is None or named and broker_artifact in binding[2]), "Select the private named resource image")
     with private_directory(state) as descriptor:
         fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
         disk = os.stat("work.img", dir_fd=descriptor, follow_symlinks=False)
         require(stat.S_ISREG(disk.st_mode) and disk.st_uid == os.geteuid() and disk.st_nlink == 1,
                 "Invalid private work disk")
-        authority = generation_authority(state / "authority", realm)
+        authority = generation_authority(state / "authority", realm, named_resources=named)
         previous = authority.read()
         require((previous is None) == (command == "enroll"),
                 "Enrollment requires a new installation; restore or inspect an existing installation explicitly")
         stored = bytearray(file_size)
         try:
-            if command == "revoke":
-                result = boot(system, state, command, authority, None, stored)
+            if command not in credential_operations:
+                result = boot(system, state, command, authority, None, stored, selection)
             else:
                 with credential_file(path, command == "enroll") as wallet:
                     if command in submission_commands:
                         read_credential(wallet[0], stored)
-                    result = boot(system, state, command, authority, wallet, stored)
+                    result = boot(system, state, command, authority, wallet, stored, selection)
             require(bind_system(system) == binding, "Login image receipt changed during operation")
             final = authority.read()
-            expected = 2 if command == "enroll" else previous.revision + (command == "revoke")
+            mutation = command in ("publish-named", "erase-named") and result[0] == 1
+            expected = 2 if command == "enroll" else previous.revision + (command == "revoke" or mutation)
             require(final is not None and final.revision == expected,
                     "Independent account generation did not confirm the expected state")
-            require(command not in submission_commands or final == previous,
-                    "A login unexpectedly changed the account store")
+            require(previous is None or expected != previous.revision or final == previous,
+                    "The named resource or account mark unexpectedly changed")
+            if command == "publish-named" and mutation:
+                require(result[1] == expected, "Published resource differs from the independent generation")
             return result
         finally:
             wipe(stored)
@@ -379,19 +438,48 @@ def main():
     parser.add_argument("--system", type=Path)
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--credential-file", type=Path)
+    parser.add_argument("--resource-name")
+    parser.add_argument("--generation", type=int)
+    parser.add_argument("--resource-value", type=int, help="unsigned 32-bit value for publish-named")
     args = parser.parse_args()
     if args.operation != "prepare" and args.system is None:
         parser.error("a matching --system is required")
     if (args.operation in credential_operations) != (args.credential_file is not None):
-        parser.error("--credential-file is required for enroll, login and read-resource")
+        parser.error("--credential-file is required for credential submission and enrollment")
+    selected = None
+    if args.operation in named_operations:
+        if args.resource_name is None or re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,15}", args.resource_name) is None:
+            parser.error("select a logical resource name of 1 to 16 lowercase ASCII characters, starting with a letter or digit")
+        if (args.generation is None and args.operation != "read-named") or not 0 <= (args.generation or 0) < 2**64:
+            parser.error("specify the expected unsigned generation for a mutation")
+        if args.operation == "erase-named" and args.generation == 0:
+            parser.error("erase requires the current resource generation")
+        if (args.operation == "publish-named") != (args.resource_value is not None) or not 0 <= (args.resource_value or 0) < 2**32:
+            parser.error("publish requires an unsigned 32-bit resource value")
+        selected = args.resource_name.encode("ascii"), args.generation or 0, args.resource_value or 0
+    elif args.resource_name is not None or args.generation is not None or args.resource_value is not None:
+        parser.error("resource fields require a named resource operation")
     try:
         state = args.state.absolute()
         if args.operation == "prepare":
-            prepare(state)
+            if args.system is not None:
+                bind_system(args.system)
+            prepare(state, args.system is not None and named_profile(args.system))
             print("Private Pumpkin installation prepared")
             return 0
         path = args.credential_file.absolute() if args.credential_file is not None else None
-        result = operate(args.system.absolute(), state, args.operation, path)
+        result = operate(args.system.absolute(), state, args.operation, path, selected)
+        if selected is not None:
+            result, generation, data = result
+            if result == 1:
+                if args.operation == "read-named":
+                    print(f"Pumpkin named resource generation {generation} value {data}")
+                else:
+                    print(f"Pumpkin named resource generation {generation} confirmed")
+                return 0
+            if result in (3, 4):
+                print("Pumpkin named resource read denied" if result == 3 else "Pumpkin named resource generation conflict")
+                return result + 1
         if result == 2:
             print("Pumpkin login denied")
             return 3

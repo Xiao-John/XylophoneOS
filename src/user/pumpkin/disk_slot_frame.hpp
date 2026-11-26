@@ -19,7 +19,7 @@ inline constexpr char magic[] = "PUMTEST1";
 inline constexpr usize header_bytes = 16;
 static_assert(header_bytes + snapshot_capacity <= slot_bytes);
 
-inline load_result inspect(const u8 (&frame)[slot_bytes], usize& length) {
+inline load_result inspect(const u8 (&frame)[slot_bytes], usize& length, usize capacity = snapshot_capacity) {
     length = 0;
     if (!has_bytes(frame, sizeof(frame))) {
         return load_result::absent;
@@ -29,15 +29,16 @@ inline load_result inspect(const u8 (&frame)[slot_bytes], usize& length) {
         size |= static_cast<usize>(frame[8 + index]) << (8 * index);
     }
     if (__builtin_memcmp(frame, magic, sizeof(magic) - 1) != 0 || has_bytes(frame + 12, 4) ||
-        size > snapshot_capacity || has_bytes(frame + header_bytes + size, sizeof(frame) - header_bytes - size)) {
+        size > capacity || size > sizeof(frame) - header_bytes ||
+        has_bytes(frame + header_bytes + size, sizeof(frame) - header_bytes - size)) {
         return load_result::io_error;
     }
     length = size;
     return load_result::loaded;
 }
 
-inline bool encode(u8 (&frame)[slot_bytes], const u8* bytes, usize length) {
-    if (bytes == nullptr || length > snapshot_capacity) {
+inline bool encode(u8 (&frame)[slot_bytes], const u8* bytes, usize length, usize capacity = snapshot_capacity) {
+    if (bytes == nullptr || length > capacity || length > sizeof(frame) - header_bytes) {
         return false;
     }
     wipe_bytes(frame, sizeof(frame));

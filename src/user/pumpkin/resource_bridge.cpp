@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "resource_bridge.hpp"
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#include "named_resource_rpc.hpp"
+#endif
 
 namespace xos::user::pumpkin {
 
@@ -64,19 +67,33 @@ status resource_bridge::invoke(service_core& core, const connection_id& connecti
     return status::ok;
 }
 
-status resource_bridge::authorize(service_core& core, const broker_read_request& request, u64 now) {
+status resource_bridge::authorize(service_core& core, const broker_read_request& request, u64 now,
+                                  [[maybe_unused]] broker_read_reply& reply) {
     for (auto& pending : reads_) {
         if (pending.ticket.number != request.ticket.number || pending.ticket.scope != request.ticket.scope) {
             continue;
         }
         if (!pending.ticket.number || pending.expires <= now ||
-            pending.origin.incarnation != request.incarnation || pending.peer != request.peer ||
+            (!request.named.length && pending.origin.incarnation != request.incarnation) ||
+            pending.peer != request.peer ||
             pending.broker_connection != request.broker_connection ||
             authenticated_peer(pending.channel) != pending.peer) {
             return status::denied;
         }
         const auto read = pending;
         pending = {};
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+        if (named_ != nullptr) {
+            named_resource_record selected{};
+            const auto result = select_named_resource(*named_, core, read.origin, read.session, request.named, now,
+                                                       selected);
+            if (result == status::ok) {
+                reply.generation = selected.key.generation;
+                __builtin_memcpy(&reply.data, selected.bytes, sizeof(reply.data));
+            }
+            return result;
+        }
+#endif
         return core.authorize_owner(read.origin, now, read.session,
             {read.origin, request.object, resource_read}, {request.object, request.owner, resource_read}, resource_read);
     }
@@ -96,10 +113,18 @@ void resource_bridge::poll(service_core& core, u64& now) {
     broker_read_request request{};
     const auto received = sdk::ipc_recv(broker_.receive, &request, sizeof(request));
     if (received == process_error_would_block) { return; }
-    if (received != sizeof(request) || request.version != wire_version || request.reserved ||
+    bool named = false;
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+    named = named_ != nullptr;
+#endif
+    const bool object_ok = named ? valid_named_request(request.named) && request.object == resource_key{} &&
+        request.owner == identity_id{} && request.incarnation == nonce{} :
+        request.object.number && request.object.generation && request.object.registry != nonce{} &&
+        request.owner.number && request.owner.realm != nonce{} &&
+        !has_bytes(reinterpret_cast<const u8*>(&request.named), sizeof(request.named));
+    if (received != sizeof(request) || request.version != broker_wire_version || request.reserved ||
         request.sequence == 0 || request.sequence != sequence_ + 1 || !request.peer ||
-        !request.broker_connection || !request.object.number || !request.object.generation ||
-        request.object.registry == nonce{} || !request.owner.number || request.owner.realm == nonce{}) {
+        !request.broker_connection || !object_ok) {
         close();
         return;
     }
@@ -107,9 +132,9 @@ void resource_bridge::poll(service_core& core, u64& now) {
     const auto observed = monotonic_now();
     if (observed < 0 || static_cast<u64>(observed) < now) { close(); return; }
     now = static_cast<u64>(observed);
-    broker_read_reply reply{wire_version, wire_status::denied, sequence_};
+    broker_read_reply reply{broker_wire_version, wire_status::denied, sequence_};
     if (request.deadline > now && request.deadline - now <= max_request_ns &&
-        authorize(core, request, now) == status::ok) {
+        authorize(core, request, now, reply) == status::ok) {
         reply.result = wire_status::ok;
     }
     if (sdk::ipc_send(broker_.send, &reply, sizeof(reply)) != 0) { close(); return; }
@@ -129,7 +154,8 @@ bool broker_authority::bind(ipc_channel channel, u64 expected_peer) {
     return true;
 }
 
-status broker_authority::authorize(broker_read_request& request) {
+status broker_authority::authorize(broker_read_request& request, broker_read_reply* selected) {
+    if (selected) { *selected = {}; }
     const auto now = monotonic_now();
     if (!live() || sequence_ == ~u64{0} || now < 0 ||
         request.deadline <= static_cast<u64>(now) || request.deadline - static_cast<u64>(now) > max_request_ns) {
@@ -146,9 +172,13 @@ status broker_authority::authorize(broker_read_request& request) {
             const auto arrived = sdk::ipc_recv(channel_.receive, &reply, sizeof(reply));
             const auto clock = monotonic_now();
             if (clock < now || static_cast<u64>(clock) >= transport_deadline) { break; }
-            if (arrived == sizeof(reply) && reply.version == wire_version && reply.sequence == request.sequence) {
+            if (arrived == sizeof(reply) && reply.version == broker_wire_version && reply.sequence == request.sequence &&
+                reply.reserved == 0) {
                 if (reply.result == wire_status::ok || reply.result == wire_status::denied) {
+                    const bool provides_data = selected && reply.result == wire_status::ok;
+                    if (provides_data ? !reply.generation : reply.generation || reply.data) { break; }
                     if (static_cast<u64>(clock) >= request.deadline) { return status::unavailable; }
+                    if (selected) { *selected = reply; }
                     return reply.result == wire_status::ok ? status::ok : status::denied;
                 }
             }

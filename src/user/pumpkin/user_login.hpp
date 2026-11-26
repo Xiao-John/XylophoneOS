@@ -7,6 +7,7 @@ namespace xos::user::pumpkin::user_login {
 inline constexpr u32 magic = 0x31554b50; // PKU1
 inline constexpr u16 version = 1;
 inline constexpr u8 denied = 2;
+inline constexpr u8 resource_denied = 3;
 enum class operation : u8 { issue = 1, submit };
 
 // Private, separate from the generation records even though both use the

@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Build native LLInt layout headers or the WTF stack object targets for XOS."""
+"""Build native LLInt layout headers, WTF stack objects or the JSC mutator admission object for XOS."""
 
 import argparse
 import hashlib
 import json
 import os
 from pathlib import Path
+import shlex
 import shutil
 import struct
 import subprocess
@@ -62,10 +63,10 @@ def build(args):
     env, _ = clean_build_environment(os.environ)
     env["LC_ALL"] = "C"
 
-    def run(stage, command):
+    def run(stage, command, *, cwd=None):
         report = output / (stage + ".log")
         with report.open("w") as stream:
-            result = subprocess.run(command, env=env, stdout=stream, stderr=subprocess.STDOUT)
+            result = subprocess.run(command, cwd=cwd, env=env, stdout=stream, stderr=subprocess.STDOUT)
         if result.returncode != 0:
             raise RuntimeError(stage + " failed; see " + str(report))
 
@@ -108,6 +109,10 @@ def build(args):
     env["COMPILER_PATH"] = str(tool_dir)
 
     layout = output / "layout"
+    extra_config = []
+    if args.stage == "jsc_mutator":
+        extra_config.extend(["-DENABLE_UNIFIED_BUILDS=OFF", "-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON",
+                             "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"])
     run("configure", ["cmake", "-S", source, "-B", layout, "-G", "Ninja",
                        "-DPORT=JSCOnly", "-DENABLE_STATIC_JSC=ON", "-DUSE_SYSTEM_MALLOC=ON",
                        "-DENABLE_JIT=OFF", "-DENABLE_C_LOOP=OFF", "-DENABLE_WEBASSEMBLY=OFF",
@@ -124,20 +129,8 @@ def build(args):
                        f"-DICU_INCLUDE_DIR={icu / 'include'}",
                        f"-DICU_DATA_LIBRARY_RELEASE={icu / 'lib/libicudata.a'}",
                        f"-DICU_UC_LIBRARY_RELEASE={icu / 'lib/libicuuc.a'}",
-                       f"-DICU_I18N_LIBRARY_RELEASE={icu / 'lib/libicui18n.a'}"])
-    if args.wtf_stack:
-        object_dir = "Source/WTF/wtf/CMakeFiles/WTF.dir/"
-        artifacts = tuple(object_dir + name for name in (
-            "StackBounds.cpp.obj", "xos/xos_stack_bounds.cpp.obj", "Threading.cpp.obj"))
-        run("wtf_stack", ["cmake", "--build", layout, "--target", *artifacts, "--parallel", "1"])
-        for name in artifacts:
-            with (layout / name).open("rb") as stream:
-                header = stream.read(64)
-            if (len(header) != 64 or header[:7] != b"\x7fELF\x02\x01\x01"
-                    or struct.unpack_from("<HH", header, 16) != (1, 62)):
-                raise RuntimeError(name + " is not an x86-64 ELF relocatable object")
-        status = "target_wtf_stack_objects_compiled"
-    else:
+                       f"-DICU_I18N_LIBRARY_RELEASE={icu / 'lib/libicui18n.a'}", *extra_config])
+    if args.stage == "layout":
         derived = "JavaScriptCore/DerivedSources/"
         target = derived + "LLIntAssembly.h"
         run("layout", ["cmake", "--build", layout, "--target", target, "--parallel", "1"])
@@ -151,6 +144,32 @@ def build(args):
         if "OFFLINE_ASM_GLOBAL_LABEL(vmEntryToJavaScript)" not in assembly or '"push %rbp ' not in assembly:
             raise RuntimeError("layout generator did not emit the native x86-64 interpreter entry")
         status = "target_llint_assembly_generated"
+    else:
+        if args.stage == "wtf_stack":
+            object_dir = "Source/WTF/wtf/CMakeFiles/WTF.dir/"
+            artifacts = tuple(object_dir + name for name in (
+                "StackBounds.cpp.obj", "xos/xos_stack_bounds.cpp.obj", "Threading.cpp.obj"))
+            status = "target_wtf_stack_objects_compiled"
+            run(args.stage, ["cmake", "--build", layout, "--target", *artifacts, "--parallel", "1"])
+        else:
+            artifacts = ("Source/JavaScriptCore/CMakeFiles/JavaScriptCore.dir/runtime/JSLock.cpp.obj",)
+            status = "target_jsc_mutator_admission_object_compiled"
+            # Building this Ninja object target also builds its ordered library
+            # dependencies. Compile the same unit after generating its headers.
+            run("jsc_mutator_headers", ["cmake", "--build", layout, "--target",
+                                       "JavaScriptCore_CopyPrivateHeaders", "JavaScriptCore_CopyHeaders",
+                                       "WTF_CopyHeaders", "bmalloc_CopyHeaders", "--parallel", "1"])
+            commands = json.loads((layout / "compile_commands.json").read_bytes())
+            unit, = (item for item in commands if layout / item.get("output", "") == layout / artifacts[0]
+                     and item["file"] == str(source / "Source/JavaScriptCore/runtime/JSLock.cpp")
+                     and item["directory"] == str(layout))
+            run(args.stage, shlex.split(unit["command"]), cwd=layout)
+        for name in artifacts:
+            with (layout / name).open("rb") as stream:
+                header = stream.read(64)
+            if (len(header) != 64 or header[:7] != b"\x7fELF\x02\x01\x01"
+                    or struct.unpack_from("<HH", header, 16) != (1, 62)):
+                raise RuntimeError(name + " is not an x86-64 ELF relocatable object")
     if verify_profile(load_json(args.sdk_profile), "glibc", args.sdk_build) != binding:
         raise RuntimeError("SDK or profile changed during the build")
     match(Path(__file__), recipe_digest)
@@ -169,7 +188,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("archive", "icu-archive", "sdk-build", "sdk-profile", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
-    parser.add_argument("--wtf-stack", action="store_true", help="build only the native WTF stack objects")
+    stages = parser.add_mutually_exclusive_group()
+    stages.add_argument("--wtf-stack", dest="stage", action="store_const", const="wtf_stack",
+                        help="build only the native WTF stack objects")
+    stages.add_argument("--jsc-mutator", dest="stage", action="store_const", const="jsc_mutator",
+                        help="build only the JSC mutator admission object")
+    parser.set_defaults(stage="layout")
     build(parser.parse_args())
 
 

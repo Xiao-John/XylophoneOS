@@ -41,7 +41,8 @@ static int initialized, initialization_error, session_failed;
 static xos_u32 request_sequence, send_handle, receive_handle;
 static struct xos_file_request request;
 static struct xos_file_response response;
-enum { file_stat = 3, file_fstat = 18, file_cwd_get = 27 };
+enum { file_stat = 3, file_open = 4, file_fstat = 18, file_anonymous = 21,
+       file_anonymous_seal = 22, file_cwd_get = 27 };
 /* The files service reserves this identity for its synthetic /dev namespace. */
 enum { file_device_directory_inode = 0xfffe };
 
@@ -193,11 +194,11 @@ valid_response_shape (unsigned int operation)
       && response.length == 0 && response.value == 0;
   /* anonymous creates a fresh empty regular file and returns the same handle
      and identity fields as open; it must not poison the shared session. */
-  if (operation == 4 || operation == 21)
+  if (operation == file_open || operation == file_anonymous)
     return response.length == 0 && response.handle != 0
       && (response.flags & ~1U) == 0 && response.reserved != 0
       && response.reserved <= 65535 && response.value <= 0xfffffffeULL
-      && (operation != 21 || (response.flags == 0 && response.value == 0));
+      && (operation != file_anonymous || (response.flags == 0 && response.value == 0));
   if (operation == file_stat || operation == file_fstat)
     {
       unsigned int allowed_flags = 7U;
@@ -323,7 +324,6 @@ valid_startup_range (xos_u64 address, xos_u64 size)
 }
 
 static long close_object (int);
-static long open_file (const char *, int);
 
 static int
 restore_descriptors (const struct xos_file_startup *startup, int terminal_startup)
@@ -518,7 +518,7 @@ free_descriptor (int minimum)
 }
 
 static long
-open_file (const char *path, int flags)
+open_file (const char *path, int flags, unsigned int operation)
 {
   if (!valid_flags ((unsigned int) flags)) return -EINVAL;
   int fd = free_descriptor (0), index = -1;
@@ -526,16 +526,19 @@ open_file (const char *path, int flags)
     if (objects[i].references == 0) { index = i; break; }
   if (fd < 0 || index < 0) return -EMFILE;
   memset (&request, 0, sizeof (request));
-  long result = prepare_path (path);
-  if (result != 0) return result;
-  request.flags = (unsigned int) (flags & O_ACCMODE) + 1;
-  if (flags & O_CREAT) request.flags |= 4;
-  if (flags & O_EXCL) request.flags |= 8;
-  if (flags & O_TRUNC) request.flags |= 16;
-  if (flags & O_APPEND) request.flags |= 32;
-  if (flags & O_DIRECTORY) request.flags |= 1024;
-  if (request.name[request.name_length - 1] == '/') request.flags |= 1024;
-  result = call_service (4);
+  if (operation == file_open)
+    {
+      long prepared = prepare_path (path);
+      if (prepared != 0) return prepared;
+      request.flags = (unsigned int) (flags & O_ACCMODE) + 1;
+      if (flags & O_CREAT) request.flags |= 4;
+      if (flags & O_EXCL) request.flags |= 8;
+      if (flags & O_TRUNC) request.flags |= 16;
+      if (flags & O_APPEND) request.flags |= 32;
+      if (flags & O_DIRECTORY) request.flags |= 1024;
+      if (request.name[request.name_length - 1] == '/') request.flags |= 1024;
+    }
+  long result = call_service (operation);
   if (result != 0) return result;
   if (response.handle == 0 || response.length != 0 || response.value > 0xfffffffeULL)
     return session_fault (EIO);
@@ -556,7 +559,41 @@ __xos_file_open (const char *path, int flags)
 {
   int error = begin ();
   if (error != 0) return error;
-  long result = open_file (path, flags);
+  long result = open_file (path, flags, file_open);
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_open_anonymous (void)
+{
+  int error = begin ();
+  if (error != 0) return error;
+  long result = open_file (0, O_RDWR | O_CLOEXEC, file_anonymous);
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_seal_anonymous (int fd)
+{
+  int error = begin ();
+  if (error != 0) return error;
+  int index = object_for (fd);
+  long result = -EBADF;
+  if (index >= 0)
+    {
+      struct open_object *object = &objects[index];
+      result = -EINVAL;
+      if (object->kind == kind_file)
+        {
+          memset (&request, 0, sizeof (request));
+          request.handle = object->handle;
+          result = call_service (file_anonymous_seal);
+          if (result == 0)
+            object->flags = (object->flags & ~(unsigned int) O_ACCMODE) | O_RDONLY;
+        }
+    }
   unlock_session ();
   return result;
 }

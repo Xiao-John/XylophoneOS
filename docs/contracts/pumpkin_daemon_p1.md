@@ -48,5 +48,6 @@
 缓冲中的凭据驻留时间，当前适配器只直接擦除用户态工作缓冲。正式登录凭据采集、
 控制端重授、文件用户归属和 Mobius 验收各自推进。
 
+[持久化勘查](pumpkin_storage_feasibility.md) ·
 [客体验证记录](../work_log/60325ea6_pumpkin_daemon_native_ipc.md) ·
 [端点生命周期](ipc_endpoint_lifecycle.md)

@@ -1,0 +1,16 @@
+{
+  "archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+  "base_lock_sha256": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030",
+  "files_equal_to_combined_build_source": {
+    "Source/WebCore/PlatformJSCOnly.cmake": "8467ee60bdb066f036a92b2f1ba30b91ff893a172cb84f96f8ac90292bbda077",
+    "Source/WebCore/platform/SharedMemory.h": "5926df6b5d8a8ce15c8012f30f1f53b9fa829955d376f7bc58117528b36c6c4a",
+    "Source/WebCore/platform/graphics/skia/ShareableBitmapSkia.cpp": "7472b9233293ab484dc5ae36eaf7892b192de89cc192c012ad0323ed17b91c28",
+    "Source/WebCore/platform/xos/SharedMemoryXOS.cpp": "717998c3bde68184bd6bbe91681ae66e97261305c00b3174b77025fb009ea4bf"
+  },
+  "patch_count": 21,
+  "patch_log_sha256": "d7832b5fab4b8e4b313ca48889168d00319e6509f12a2cfd9ef51715746f5407",
+  "prepared_manifest_sha256": "a859e9761f669d0ad8a7337f8cd7528848b0664e061f94a4e9c3862bb4de1237",
+  "shared_memory_patch_sha256": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98",
+  "software_lock_sha256": "4fd81d7ebd3a26d4aed704a88611e2c91005b91e0a062b38760f668fa51d4899",
+  "status": "source_prepared"
+}

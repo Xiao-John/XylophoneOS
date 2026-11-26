@@ -31,9 +31,19 @@ WebCore 目标前，还需要在 `SourcesSkia.txt` 中处理 `SkiaPaintingEngine
 
 ## WebCore 软件构建目标
 
-为整个静态目标应用 `software_context.patch`、`software_buffers.patch` 和
-`software_graph.patch`。在通常的 XOS JSCOnly 交叉配置上启用
-`XOS_WEBCORE_SOFTWARE=ON`。该选项启用静态 WebCore、软件 Skia 和 WebCore 的原生
+[软件源锁](source_lock.json) 引用 WebKit 基础源锁，并固定软件补丁、原生共享页补丁的顺序和
+SHA-256。准备工具在新目录中验证并展开原档，按顺序零 fuzz 应用补丁，然后安放
+基础源锁中的 WTF 平台文件。使用 GNU patch，必要时以 `--patch` 指定其位置。
+在大小写敏感的构建卷运行下列命令。
+
+```sh
+python3 src/ports/webkit/page/prepare_source.py --archive "$WPE_ARCHIVE" --output "$PREPARED_OUT"
+WEBKIT_SOURCE="$PREPARED_OUT/source/wpewebkit-2.54.2"
+```
+
+`manifest.json` 绑定源档、各补丁、平台文件和应用日志，成功准备源码后才写入。
+在通常的 XOS JSCOnly 交叉配置上启用 `XOS_WEBCORE_SOFTWARE=ON`。
+该选项启用静态 WebCore、软件 Skia 和 WebCore 的原生
 请求值类型。软件缓冲区的创建和转移沿用上游对象，Canvas 请求加速缓冲区时沿用
 WebCore 的软件回退。整页构建的源表选入软件字体、滤镜、绘制和缓冲区对象。GL、
 Ganesh、纹理图集及协调合成器由其各自后端处理。
@@ -57,7 +67,29 @@ cmake --build "$WEBKIT_OUTPUT" --target WebCore
 `XOS_WEBKIT_TOOLCHAIN` 使用同一 glibc C/C++ kit 的 C/C++ 驱动和 sysroot，提供上述目标
 库的 CMake 搜索根。编译器和原生 ABI 头的布置沿用
 [JSCOnly 配置](../README.md#原生-llint-布局生成)。明确关闭 JIT、WebAssembly、采样
-及宿主动态依赖搜索。完整目标归档、客体 DOM/CSS 布局以及 Qt 视口仍待验证。
+及宿主动态依赖搜索。软件配置在生成绑定前关闭 WebGL 和 WebGPU。重用早期的
+CMakeCache 时，将 `ENABLE_WEBGL` 和 `ENABLE_WEBGPU` 两项设为 `OFF`。
 
-[XOS CPU 共享内存](shared_memory_xos.md) 另外接入真实本进程 grant 和只读像素映射。
-所得对象可用于软件位图。跨进程编解码与收回仍按其单独的协议与验收门推进。
+## 本地整页验收
+
+使用该配置生成的 WebCore 命令编译 `tests/fixtures/webkit/local_page.cpp` 和锁定
+源包的 `Source/WebCore/testing/TestPage.cpp`，补上后者所在目录的头文件搜索路径。
+将两个对象与完整 WebCore、同配置的 JavaScriptCore/WTF、PAL 和软件 Skia 等目标
+归档链接成普通 XOS 应用 `local_page.elf`。链接回执 `local_page_link.json` 保存 ELF、
+C++ 夹具、HTML、SDK manifest、SDK profile、源锁及三个软件补丁的 SHA-256。
+字段名见客体运行器的 `inputs`。
+
+```sh
+python3 tests/webkit_local_page_guest.py --target "$PAGE_OUT" --sdk-kit "$XOS_SDK_KIT" \
+  --system "$SYSTEM_OUT" --output "$GUEST_OUT"
+```
+
+夹具通过 WebCore 的测试页加载本地 HTML，检查两个 DOM 元素的 CSS 边界并调用
+`LocalFrameView::paintContents` 绘制到 CPU 位图。客体分别读回原 HTML 和只改
+叠层颜色的 HTML。第二次应到达像素检查、退出码为 11，两个进程退出后资源均须
+回到基线。完整目标归档、此门的客体结果以及 Qt 视口仍待验证。
+
+## 原生共享页
+
+软件源准备入口按源锁同时应用原生共享页补丁。
+[原生 ABI 和共享页生命周期](shared_memory_xos.md)

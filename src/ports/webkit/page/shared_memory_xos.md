@@ -1,8 +1,7 @@
 # ClarkE 的 WebCore CPU 共享页
 
-在锁定的 WPE WebKit 2.54.2 上，应用 `software_context.patch`、
-`software_buffers.patch`、`software_graph.patch` 后应用 `shared_memory_xos.patch`。
-沿用软件 WebCore 目标的配置。交叉工具链的 `XOS_NATIVE_ABI_INCLUDE` 须包含
+[软件源准备入口](README.md#webcore-软件构建目标) 在锁定 WPE WebKit 2.54.2 上
+依序应用软件补丁和 `shared_memory_xos.patch`。沿用软件 WebCore 目标的配置。交叉工具链的 `XOS_NATIVE_ABI_INCLUDE` 须包含
 原生 SDK 的 `xos/ipc_v1.hpp`、`xos/ipc_v1_abi.hpp` 及已有的 VM、syscall 头。
 静态最终链接须包含对应目标的原生 SDK syscall 实现。
 

@@ -1,5 +1,4 @@
 {
-  "version": 1,
   "files": {
     "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
     "binding.json": "e43d30019d3c6b9c86ebb7d3a2b6413b8df55b9983985739cd8fe475e0f77d5c",
@@ -7,6 +6,8 @@
     "guest.serial.log.gz": "5bcb52c8054c81b2ae4bef510adbf89b03e67c76b12567b7b370ad6bc870fc36",
     "native-grant.guest.json": "6454d7abf0cb3b060efc950b62b5a4adcd4075c6697148f780319b096d0edac9",
     "native-grant.serial.log.gz": "81cb34a41591ac12f692655d782462ccc577932b217c9c53778614a7779c71da",
+    "source_replay.json": "0204d6350259d6539feaefafafd7e821d45a57a1fd4bc0a78b2b147cb35fe60b",
     "target.json": "077ca4e955b8649ea30d2d1422dc0ea54f3a08be0aa7704ef4010dd58c9e6939"
-  }
+  },
+  "version": 1
 }

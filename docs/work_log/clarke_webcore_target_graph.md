@@ -34,3 +34,38 @@ WebCore 目标现在启用已绑定的 HarfBuzz，并在未启用辅助功能时
 `SkiaSerializedImageBuffer.cpp` 所在的三个目标单元。部分页面和布局单元的编译器
 进程被信号终止，保留原始回执。复跑的构建统一采用较小批次，并显式允许无优化诊断
 构建。原生共享内存接口与整页客体验收仍继续推进。
+
+## 页面与布局对象
+
+将 #322 的原生共享内存补丁叠加到同一份锁定源码后，重新生成目标图。Linux 容器中
+编译了 `SharedMemoryXOS.cpp` 和实际 DOM 生成输入。其后又有 WebCore 编译器进程被
+信号终止。保留容器的原日志，并移植 CMake 生成的命令路径与导出头链接供 macOS 上的
+同版本 GNU 交叉工具使用。单独编译的 `Page.cpp`、`RenderView.cpp` 和
+`HTMLDocumentParser.cpp` 均生成 x86-64 目标对象，检查了 `Page` 构造、`RenderView`
+布局及绘制符号。组合对象回执单独绑定目标图、补丁、编译器和三个实际工件。完整归档、
+最终链接和客体页面按各自的验收条件继续验证。
+
+## 软件绑定与本地整页夹具
+
+宿主批量构建找到了两处实际的绑定类型错误。CMake 旧值将 WebGL 放进生成绑定的
+Canvas 联合类型，同时 C++ 配置将 WebGL 关闭。软件目标现在在绑定功能收集前关闭
+WebGL 和 WebGPU，并拒绝显式启用这两个后端。重新生成的 Canvas 绑定去掉了 WebGL
+联合成员，原先失败的两个 WebCore 编译单元均生成 x86-64 目标对象。
+
+新增的本地整页夹具及上游的 `TestPage.cpp` 都以新目标图交叉编译通过。客体运行器
+要求绑定 ELF、HTML、SDK 和软件补丁，将原 HTML 和颜色变体分别写盘后读回，检查
+真实 DOM 布局、Skia 页面像素和资源回收。已用新配置重启 2171 个 WebCore 单元的
+批量编译。完整归档、整页 ELF 链接和客体结果待验证。
+[绑定与夹具对象回执](../reports/clarke_webcore_target_graph_20261127/local_page_and_bindings.json)
+
+独立复核发现早期软件补丁的 CMake 上下文无法被 GNU patch 零 fuzz 应用。已从锁定档
+重生成该段，使用 GNU patch 2.8.1 从原档重放 17 个基线补丁和 3 个软件补丁。
+重放后的 `OptionsJSCOnly.cmake` 与生成上述目标对象时的输入逐字节相同。
+
+## 锁定的软件源准备
+
+增加独立的软件源锁和准备入口，沿用基础源锁的上游档案和 WTF 平台文件。实跑从原档
+展开完整源码并重放 20 个补丁，抽取的 51 个补丁相关文件与独立 GNU 重放逐字节相同。
+修改归档或软件补丁时，准备程序在展开前拒绝。以该新目录生成了软件 WebCore 的
+CMake 图。这里验收到源码准备和配置，带原生共享页的全量对象另按组合输入验证。
+[软件源及配置回执](../reports/clarke_webcore_target_graph_20261127/locked_software_source.json)

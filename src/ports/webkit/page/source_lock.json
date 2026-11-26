@@ -1,0 +1,21 @@
+{
+  "base_lock_sha256": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030",
+  "patches": [
+    {
+      "path": "page/software_context.patch",
+      "sha256": "56def73ed3a4ffcb2a4e6d6ddc54130582d3e4e33c5cb49b3ade83f93877f2f9"
+    },
+    {
+      "path": "page/software_buffers.patch",
+      "sha256": "46b6eb27de8e5f1f2f3c8a90030659e2d6820e67a3de8634c8ff09711a45f1b3"
+    },
+    {
+      "path": "page/software_graph.patch",
+      "sha256": "1b23f5f237f79d78f47deac90fd499801d31bde7bd4ed3194875deab6107fb88"
+    },
+    {
+      "path": "page/shared_memory_xos.patch",
+      "sha256": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98"
+    }
+  ]
+}

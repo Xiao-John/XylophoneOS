@@ -47,3 +47,10 @@ python3 -B tests/abi_doc_consistency.py
 本轮未验完整 WebCore 绘图上下文、超过 256 KiB 的合并映射或 WebKit2 的跨进程
 句柄与回收协议。IP4 原生客体结果只覆盖其现有 ABI。
 [目标链接和客体证据](../reports/clarke_webcore_shared_memory_20261127/manifest.json)
+
+## 组合源码重放
+
+原生共享页补丁已加入软件源锁。以锁定档和更新后的软件目标重新准备源码，
+21 个锁定补丁均以 GNU patch 零 fuzz 应用，原生补丁涉及的文件与实际组合构建
+输入逐字节相同。既有单进程位图和 IP4 客体回执保留各自的原始构建身份。
+[组合源码回执](../reports/clarke_webcore_shared_memory_20261127/source_replay.json)

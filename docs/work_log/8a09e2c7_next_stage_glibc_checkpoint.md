@@ -34,6 +34,7 @@ make -C "$EMPTY_BUILD_SOURCE" smoke
 - Pumpkin 存储适配器已合入。开发 headless 配置实际使用盘外代际记录，健康盘重启
   保留吊销，全盘恢复旧版本拒绝启动。生产授权、物理断电及正常系统组合仍须资格。
   [适配器 #204](https://github.com/Xiao-John/XylophoneOS/pull/204) · [三次启动 #207](https://github.com/Xiao-John/XylophoneOS/pull/207)
-- ClarkE 已通过真实 pthread 和栈范围探针。继续锁定目标布局生成证据，之后验证
-  单 mutator 解释器、WTF/JSC 链接和客体运行。WebCore、生产网络及浏览器发行留给
-  对应 gate。 [线程基础 #202](https://github.com/Xiao-John/XylophoneOS/pull/202)
+- ClarkE 已通过真实 pthread 和栈范围探针。两个真实 LLInt 提取器已交叉链接，
+  宿主 Ruby 读取目标布局并生成可复核的原生 x86-64 汇编。WTF/JSC 链接及客体
+  解释器运行仍需验收，随后推进 WebCore 和生产网络。
+  [线程基础 #202](https://github.com/Xiao-John/XylophoneOS/pull/202) · [目标布局 #211](https://github.com/Xiao-John/XylophoneOS/pull/211)

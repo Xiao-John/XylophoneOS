@@ -1,20 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
-#include "account_store.hpp"
-#include "../services/files_private_storage.hpp"
+#include "disk_slot_frame.hpp"
 
 namespace xos::user::pumpkin {
 
 // This install realm belongs only to the disposable daemon test profile.
 inline constexpr nonce disk_test_realm{{0x51, 0x70, 0x44, 0x32}};
 inline constexpr char disk_test_service[] = "pumpkin-p2-test";
-
-// The caller holds one native exclusive files lease throughout.
-struct test_slot_io {
-    void* context = nullptr;
-    bool (*read)(void*, u32, u8 (&)[user::files_private_storage::slot_bytes]) = nullptr;
-    bool (*write_and_verify)(void*, u32, const u8 (&)[user::files_private_storage::slot_bytes]) = nullptr;
-};
 
 class disk_test_store {
 public:

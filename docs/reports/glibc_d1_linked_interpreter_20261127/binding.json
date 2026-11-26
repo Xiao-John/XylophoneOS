@@ -88,5 +88,6 @@
   "vendor_context_equivalence": {
     "glob.c": "a2446de9c1a6707ac00025a36cef578af3b4c4b2fb1e9a6c2758860d2361dc2e",
     "wordexp.c": "5115b4d0f12b2fe2399ca5d2a6c2cd4f366b68d766c7a7b88ceffdc95682048c"
-  }
+  },
+  "publication_replay_sha256": "4174850fc7a7a7151e92f9f6182a5559d0163dc722f7d413505abd8d1508dfd7"
 }

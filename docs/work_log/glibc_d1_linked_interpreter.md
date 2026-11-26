@@ -26,3 +26,5 @@
 三组都运行在系统 `fe13f33a2c08aa13`，资源均恢复 `129696/3/1`。精确重建产出的 `ld.so` 和 `libc.so.0.1` 与首次成功运行的二进制逐字节一致。[构建绑定](../reports/glibc_d1_linked_interpreter_20261127/binding.json) · [C 客体](../reports/glibc_d1_linked_interpreter_20261127/c.json) · [C++ 客体](../reports/glibc_d1_linked_interpreter_20261127/cpp.json) · [缺 pin 客体](../reports/glibc_d1_linked_interpreter_20261127/unlisted.json)
 
 `tests/glibc_d1_linked_interpreter_guest.py` 接受实际系统、C SDK、GNU 链接目录、已绑定的 dash 和 GCC PIC CRT，生成每轮构建命令、动态版本信息、QEMU 串口和资源计数。公开报告用 `${XOS_*}` 变量记录宿主路径，绑定中保留原始报告 SHA-256。
+
+从草稿源提交 `2499f7a5` 的完整 Git 归档复建，系统 `8d8d22c07d5f48d2` 上三组再次返回 0、0、127，资源仍为 `129696/3/1`。对上游补丁上下文的收窄留下逐字节相同的 C 源码、`ld.so`、`libc.so`、GCC PIC CRT 和应用 PIE。SDK 与系统的回执使用本次新构建。[发布补丁文本复验](../reports/glibc_d1_linked_interpreter_20261127/publication_replay.json)

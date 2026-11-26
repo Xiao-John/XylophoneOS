@@ -1,0 +1,72 @@
+{
+  "runtime_and_runner_source_head": "2499f7a5928eb48f1c49ba27b815b78c70f787c1",
+  "runtime_and_runner_source_tree": "f3d8d8abf919d8dc49b21d875244ff6266b49bf9",
+  "sdk_manifest_sha256": "57e6da1dca1ab3fc4a8ed366eedcbc8158197807ed702c277c1dcc88929aa497",
+  "sdk_tree_sha256": "f2d825d0dea9f3cc3a834167f71a495b88e3195d8eb072b73e689dab20b8ad56",
+  "system_build_id": "8d8d22c07d5f48d2",
+  "system_manifest_sha256": "4319772c3d9e586d67c9dc5968de192966eb533af572f0342d66f33b7deb545b",
+  "iso_sha256": "9b4a01a586845682f1acc7f2f589f4f10e085e11d75292292faac36dfab8ac1a",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "glibc_signature_verified": true,
+  "guard_log_sha256": "5188138b0146337f351fb9a615b64bcdd4f8b8605028701a75f370b0defe6c20",
+  "rtld_sha256": "12998ce57925fcdce984bdce2c2d566175389374e762aaefdf8579d6cef002a7",
+  "libc_sha256": "b1cd3f0151632d286d40abb117b343ec17a1fb3f7c54d1473cd3ef6f77ca9035",
+  "pic_crt_sha256": {
+    "crtbeginS.o": "d1f9b26b212fe61acae370cae0a61f82632b1bb6d074e4bc8ce1edce3bbd6ca4",
+    "crtendS.o": "2299f1c03b9966209362535ea7ee4a15bc22c11e922820ceccbeb7ae6d28e3d8"
+  },
+  "same_binary_bytes_as_earlier_qualification": true,
+  "case_results": {
+    "c": {
+      "raw_report_sha256": "098056beed23f37e6b0eb6dfac916a953c2aeeea4238ab0c5e676efb5358e98d",
+      "raw_serial_sha256": "097caf5a42c0ec4904d9706ac01ce2728445f46625f8106d73cd6f006b6ff191",
+      "application_sha256": "3fbe8818d464d332d24e03b0c9c7fd6299fe68195ecf7c1f468c87bfb59d42b6",
+      "bootstrap_sha256": "ff48f0da3bc9685013e21d4c2b1954d90653fcd0d10b3add39f8688dc47e6fe5",
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD1_DYNAMIC_C_OK ctor=1 env=1 auxv=1 file=1 errno=1\n[task] event=reclaimed pid=11 pages=551\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    "cpp": {
+      "raw_report_sha256": "6ccd1f4d66082741d111a07e785a9bd3f562f82828adbef7bb4985c9744a4757",
+      "raw_serial_sha256": "f86feb29801545e928b259e0c7aefa5706b070d47b0f74e3d519b012b25c7810",
+      "application_sha256": "f845cab57a8dbdd9d1b4caa9117de9182b354ef2bd21af247869818c89ad3457",
+      "bootstrap_sha256": "64c8a9fba934146b5f5a51edec1b34a3fe861461d821dbd2ea76e5e994e96c97",
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD1_DYNAMIC_CPP_OK ctor=1 tls=1\nD1_DYNAMIC_CPP_FINI\n[task] event=reclaimed pid=11 pages=517\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    "unlisted": {
+      "raw_report_sha256": "44fcd5261a536dd642c78259eb6c3d966e68509143dbfbfc3d36d502e4a4900f",
+      "raw_serial_sha256": "234c488190c1d80bf1f6771166445a91ac76ce8fe8ffac2cb52173b7da9665a0",
+      "application_sha256": "3fbe8818d464d332d24e03b0c9c7fd6299fe68195ecf7c1f468c87bfb59d42b6",
+      "bootstrap_sha256": "ff48f0da3bc9685013e21d4c2b1954d90653fcd0d10b3add39f8688dc47e6fe5",
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\n/usr/bin/d1_entry: error while loading shared libraries: libc.so.0.1: cannot open shared object file: No such file or directory\n[task] event=reclaimed pid=11 pages=118\r\nD1_DYNAMIC_STATUS=127\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=127\nxsh> ",
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    }
+  }
+}

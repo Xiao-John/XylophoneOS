@@ -34,15 +34,15 @@ Pumpkin 盘外代际由开发客体验证，ClarkE 的 LLInt 和 WTF 栈范围�
 | 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
 | VirtIO-Net / N2–N3 | sys112 授权的用户态驱动和 lwIP v2 已合入。传输、多应用隔离、生命周期和撤销有绑定客体结果。raw 诊断保持隔离。 | [原始帧纵切](contracts/net_user_driver.md)、[v2 契约](contracts/net_service_v2.md)、[多应用复验](work_log/69b0e274_network_guest_readiness_and_window.md) |
 | N4 DNS/DHCP | 配置与名称契约以及 DNS 回包收紧已合入。生产 DNS/DHCP 保持关闭。 | [N4 契约](contracts/network_n4_v1_proposal.md)、[DNS 记录](work_log/4e29c6b1_network_dns_hardening.md) |
-| ClarkE 浏览器 | 原有 HTML/CSS 与受控 HTTP、开发包生命周期、双入口有客体证据。WebKit 已生成实际目标 LLInt，WTF 线程栈范围通过原生辅助函数客体验证。完整引擎与受控 HTTPS 待验。 | [产品包复验](work_log/af27a498_desktop_product_packages.md)、[LLInt](work_log/89051575_clarke_native_llint_layout_bridge.md)、[WTF](work_log/207c6644_clarke_native_wtf_thread_and_stack_slice.md) |
+| ClarkE 浏览器 | glibc Widgets 入口、开发包生命周期、HTML/CSS 与受控 HTTP 已在客体复验。WebKit 已生成目标 LLInt，WTF 线程栈范围通过原生辅助函数验证。完整引擎与 HTTPS 待验。 | [glibc 客体](work_log/b8adab19_clarke_glibc_widgets.md)、[LLInt](work_log/89051575_clarke_native_llint_layout_bridge.md)、[WTF](work_log/207c6644_clarke_native_wtf_thread_and_stack_slice.md) |
 | Mobius 系统 UI | 正式入口和 glibc Qt Widgets 会话已合入。实际 XPK 安装后双入口启动，卸载后原 newlib 桌面可从旧入口启动，用户配置保留。 | [桌面客体](work_log/8f0020c4_mobius_glibc_widgets_guest.md)、[工作盘与回退](work_log/f38242fd_mobius_glibc_xpk_lifecycle.md) |
-| Pumpkin | 身份核心、原生 IPC、私有存储区和受信客户端已合入。实际开发守护进程通过吊销与当前盘恢复，开发专用盘外代际拒绝完整旧盘。生产代际存储、凭据发放与独立资源服务接入待验。 | [身份核心](work_log/c6198fee_pumpkin_identity_core.md)、[盘外代际复验](work_log/31dde03e_pumpkin_anchored_guest_snapshot_fence.md) |
+| Pumpkin | 身份核心、原生 IPC、私有存储区和受信客户端已合入。开发守护进程复验吊销、当前盘恢复和旧盘拒绝。普通镜像的封存对象通过两轮拥有者与跨账号授权验收。生产代际和凭据发放待验。 | [身份核心](work_log/c6198fee_pumpkin_identity_core.md)、[盘外代际](work_log/31dde03e_pumpkin_anchored_guest_snapshot_fence.md)、[封存对象](work_log/8ca1f149_pumpkin_sealed_resource_guest.md) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |
 | Semantic Broker / 时间语义 / G3 复核 | #30/#31/#32 已合（勘查与限定模型） | [0108](work_log/0108_semantic_pipe_probe.md)、[0109](work_log/0109_temporal_semantics.md)、[0110](work_log/0110_aurora_g3_review.md) |
 | 现代应用兼容 Phase 1 | 已合，探针级；完整浏览器/Core/HTTPS 未通过 | [0085](work_log/0085_modern_app_compatibility_phase1.md) |
 | Pillow 静态成像 | 核心受限通过；线程 BLOCKED（`_malloc_r` vector14 未解） | [0088](work_log/0088_cpython_static_pillow.md) |
 | PX4-A 匿名 VM | sys67、续体、公开映射子集及 fork/exec 生命周期已实现，VM3 恢复后有定向客体记录。SDK 完整资格仍为 `implemented_unqualified`。 | [VM3 恢复记录](work_log/58b24599_vm3_lifecycle_sdk.md)、[VM2](work_log/588667af_vm2_full_qualification.md) |
-| 终端 / ncursesw W1 | 最终验收全 gate 通过并合入（#66）：W0 冻结、4 系统、15 项交接探针、`freeze_ncursesw_subset` 12 项 | [0187](work_log/0187_w1_final_acceptance.md)、[0074](work_log/0074_ncursesw_w1_scout.md) |
+| 终端 / ncursesw W1 | 冻结基线 #66 通过 15 项终端交接和 12 项 ncursesw 子集。主线 `f9d6384d` 的显式 glibc SDK 通过原 W1 locale、24×80 重入和宽屏交互。 | [冻结基线](work_log/0187_w1_final_acceptance.md)、[glibc 主线复跑](work_log/77b48ecc_runtime_acceptance_checkpoint.md#glibc-sdk-与-ncursesw-串口组合) |
 | 许可两叶（D7） | #67/#68 逐成员映射和分发材料保留。#169 修正 SPDX 与材料摘要，本阶段登记 0 open、1 deferred、7 N/A。 | [0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)、[登记](../licenses/open_items.json)、[整合修正](work_log/7a8d4aa9_integration_license_materials.md) |
 | SSG 批次 / Aurora Dock | 2026-11-04 批次合入 #45（Dock 图标）、#40（SSG consumers 派生证据）、#44→#49（Browser/Notes SSG 栈）和 #50（P3B 双 Provider、C30 改名及全量 manifest）。 | [Dock](work_log/0190_aurora_midnight_dock.md)、[双 Provider](work_log/0196_ssg_p3b_dual_provider.md) |
 | 日常工具 / UTF-8 / 游戏 | 各自有既有整合记录，游戏线沿用该批的交付范围。 | [0069](work_log/0069_daily_utilities.md)、[0068](work_log/0068_utf8_filenames.md)、[Open Adventure](work_log/0066_open_adventure_package.md) |
@@ -58,7 +58,7 @@ Pumpkin 盘外代际由开发客体验证，ClarkE 的 LLInt 和 WTF 栈范围�
 | 显示/ISO | sys65/66 在 buildef83c9fc92217380 重验 G02 19组通过 | [当前报告](reports/qt_e16_qualified_20261028/g02/report.json)、[显示历史](history/boot_display.md)；QtGui/QPA 单全屏 raster 已验 |
 | CPython | PY0–PY2/T3-PY、A1–A3、B1–B4专项通过 | [用户态摘要](history/userland.md)；B2–B4系统6251d26b611a388d，Python11c39c52e451a9499450 |
 | xypm | P2 与 glibc C++ 客体安装、升级、卸载、重启和恢复已有实验 profile 证据，冻结 newlib 入口已复验。P3 离线仓库、锁和重启回读已合入。 | [glibc 事务](work_log/24df429a_xypm_glibc_guest_transactions.md)、[P2](work_log/0066_xypm_p2_validation.md)、[P3](work_log/7c2de8a4_xypm_p3_preview_guest.md) |
-| glibc | 静态 C/C++ 构建、分配器锁修复、进程启动/等待及显式应用打包已合入。glibc dash 可执行原生外部 ELF。完整 C3、D1–D4 和 SDK 默认切换待验。 | [迁移基线](work_log/c7442fa6_glibc_application_migration.md)、[应用生命周期](work_log/82cabf5d_glibc_xpk_lifecycle.md)、[dash](work_log/aff51323_dash_glibc_preview.md) |
+| glibc | 静态 C/C++、进程启动与等待、dash 外部 ELF 的原生管线和重定向、单终端描述符读就绪已合入。D1 通过双高地址来宾探针并构建共享 rtld 入口对象。完整 C3、解释器、后续动态链接和默认切换待验。 | [应用生命周期](work_log/82cabf5d_glibc_xpk_lifecycle.md)、[双入口管线](work_log/6d49a810_glibc_dash_child_stdio.md)、[终端就绪](work_log/0f07e824_glibc_terminal_select.md)、[共享 rtld](work_log/a1cc675f_glibc_d1_shared_rtld_entry_diagnostic.md) |
 | SDK 过渡 | newlib 是现行默认。glibc C/C++ 使用隔离候选与配套验收，候选准入和激活分别登记。普通及线程 newlib 的文件能力清单已有同源阶段复验。 | [SDK profile 契约](contracts/xypm_sdk_profiles.md)、[glibc 源认证](work_log/53bc719e_glibc_source_authentication.md)、[阶段记录](work_log/efc3a5ff_xos_integration_campaign.md) |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
 | POSIX/Qt | 静态 QtQml 通过脚本、绑定、回收和 VM 配额负向检查。Quick 软件渲染及输入在两种 Shell 通过。外部应用使用独立工具包构建后通过实际文本画面与资源回收。 | [QtQml](work_log/d8bd3467_qt_e18_target_qml_and_vm.md)、[Quick](work_log/13a6b397_qt_e19_quick_through_legacy_dash.md)、[外部应用](work_log/b9673c26_qt_e19_external_quick_application_builder.md) |
@@ -79,8 +79,9 @@ Pumpkin 盘外代际由开发客体验证，ClarkE 的 LLInt 和 WTF 栈范围�
 
 ## 下一步
 
-- 后续组合候选通过 79 项常规、10 项许可材料和 50 次 glibc 客体运行。最终实际
-  主线仍需绑定提交，重建两套 SDK 并运行组合门禁。[组合复验](work_log/ea2d71c6_next_stage_combined_guest.md)
+- 组合候选通过 79 项常规、10 项许可材料和 50 次 glibc 客体运行。收口须从最终
+  主线提交重建系统和两套 SDK，实际运行组合门禁，并将结果绑定到该源码与产物。
+  [组合复验](work_log/ea2d71c6_next_stage_combined_guest.md)
 - N4 生产启用、glibc 默认 SDK 切换、动态链接 D1–D4、显示/ps2/ata 后续设备迁移、
   系统重建/自举（D6）与 Qt QML/Quick 各按专项计划推进。
 - 按 Discipline → 本页 → 宪法 → 专项契约/登记接手；新开发独立分支/PR 交付，

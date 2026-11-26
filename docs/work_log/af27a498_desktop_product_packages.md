@@ -6,7 +6,7 @@
 
 ## 复现
 
-使用现有 Mobius 和 ClarkE 构建器生成真实 ELF 和回执。将实际线程 SDK 树登记到
+使用 Mobius 构建器的 `--products-only` 和现有 ClarkE 构建器生成真实 ELF 和回执。将实际线程 SDK 树登记到
 测试专用 profile，包含 C++ 与线程能力。SDK、Qt 及工具选用同一匹配构建，当前
 工作记录使用运行过 Qt 6.8.3 Widgets 的线程 newlib SDK。生成包和测试示例如下。
 
@@ -34,3 +34,16 @@ QEMU 11.1.2 在专用 FAT32 盘上通过两次安装、一次 ClarkE 升级、xs
 组合复验再次通过六组检查和五次离线事务。报告 SHA-256 为
 `799e4782d5bf0930caf5abbfa738dbc55b5aa5775e746f9ad8a56bb921dccc94`，串口为
 `056c8fec3abc8fd13b9c9e7f5b3e9b573c3c6d5b75eb56449d1b270f0ea1f2e4`。
+
+## 评审复验
+
+产品 ELF 回执记录完整 SDK 树的摘要，构建前后重算。包装器核对登记的 SDK 树与
+构建回执。仅变更试验副本的 SDK 头文件或 `libxos.a`，保持 SDK 清单原字节，
+并将变动副本登记到试验 profile，两个变动均被拒绝打包。
+
+从变更提交 `813c9060` 重建系统 `dcc48dddea8b7785` 和同系统 dash。macOS 两次
+宿主执行在 FAT 导出时中止。使用 Linux 独立临时工作盘和 QEMU 11.1.3 复验，
+输出目录位于源码树外。通过六组检查与五次离线事务，图形退出后资源恢复为
+`129714 / 3 / 1`。报告 SHA-256 为
+`ea1115e8cbdd64e137ac0063c06bb609b72a6dac2c5e7c28ebb271c5a4602aa1`，串口为
+`747da706ab9abdfe81fbfb59169c673c0a8fe1c194f2423d161817a9a0441e06`。

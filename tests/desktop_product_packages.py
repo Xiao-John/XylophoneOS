@@ -29,7 +29,7 @@ def press(guest, key, modifier=None):
 
 
 def guest_products(image, disk, output, checks):
-    guest = Guest(image, str(output.relative_to(ROOT / 'build') / 'products'), work_disk=disk, iso=True)
+    guest = Guest(image, 'products', work_disk=disk, iso=True, log_dir=output)
     try:
         guest.expect(b'xos64> ', timeout=45)
         send_bytes(guest, b'run\r')

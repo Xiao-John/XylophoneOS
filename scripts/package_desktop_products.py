@@ -15,11 +15,12 @@ QT = ROOT / 'src/ports/qt6'
 FEATURES = ['cxx_runtime', 'file_io', 'heap', 'static_tls', 'stdio', 'threads']
 
 
-def verify_elf(path, sdk_manifest):
+def verify_elf(path, sdk_manifest, sdk_tree_digest):
     receipt_path = path.with_suffix('.receipt.json')
     receipt = load_json(receipt_path)
     elf_digest = sha_file(path)
     require(elf_digest == receipt['elf_sha256'], f'ELF differs from receipt: {path}')
+    require(receipt.get('sdk_tree_sha256') == sdk_tree_digest, f'SDK tree differs from ELF receipt: {path}')
     inputs = receipt['inputs']
     require(inputs.get(str(sdk_manifest)) == sha_file(sdk_manifest), f'SDK differs from ELF receipt: {path}')
     for name, expected in inputs.items():
@@ -30,6 +31,7 @@ def verify_elf(path, sdk_manifest):
 
 def package(root, product, elfs, resources, notices, profile, sdk, revision, destination):
     entries = []
+    binding = sdk_check(sdk, profile)
 
     def register(name, role):
         target = root / name
@@ -38,7 +40,7 @@ def package(root, product, elfs, resources, notices, profile, sdk, revision, des
 
     payloads = {}
     for name, path in elfs.items():
-        payloads[name] = verify_elf(path, sdk / 'manifest.json')
+        payloads[name] = verify_elf(path, sdk / 'manifest.json', binding['tree_sha256'])
         target = root / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, target)
@@ -58,7 +60,6 @@ def package(root, product, elfs, resources, notices, profile, sdk, revision, des
         register(filename, 'data')
         licenses.append(filename)
 
-    binding = sdk_check(sdk, profile)
     receipt_path = f'usr/share/{product}/build_receipt.json'
     target = root / receipt_path
     target.parent.mkdir(parents=True, exist_ok=True)

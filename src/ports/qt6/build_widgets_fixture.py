@@ -13,11 +13,14 @@ import sys
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from ssg_public_paths import portable
+from xos_app import tree_receipt
+from xypm_format import require
 p=argparse.ArgumentParser(description=__doc__)
 for n in ('source','sdk','qt-build','qt-source','core-build','host-qt','binutils','output'):
     p.add_argument('--'+n,type=Path,required=True)
 p.add_argument('--wrap', action='append', default=[])
 p.add_argument('--portable-receipt', action='store_true', help='write a public path-template receipt; default receipt is local-only')
+p.add_argument('--bind-sdk-tree', action='store_true', help='record the exact SDK snapshot for xypm packaging')
 p.add_argument('--extra-source', type=Path, action='append', default=[])
 p.add_argument('--moc-header', type=Path, action='append', default=[])
 p.add_argument('--resource-qrc', type=Path, action='append', default=[])
@@ -28,6 +31,7 @@ p.add_argument('--extra-archive', type=Path, action='append', default=[],
 a=p.parse_args()
 source,sdk,qt,qs,core,host,binutils,out=[getattr(a,n).resolve() for n in
     ('source','sdk','qt_build','qt_source','core_build','host_qt','binutils','output')]
+sdk_tree_digest = tree_receipt(sdk)[0] if a.bind_sdk_tree else None
 extra_archives=[p.resolve() for p in a.extra_archive]
 here=Path(__file__).resolve().parent
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
@@ -221,6 +225,9 @@ overlay_files=[f for f in overlay.rglob('*') if f.is_file()]
 inputs=[asset,wallpaper,aurora,*extra_archives,*sorted((here/'aurora').glob('*.*')),*sorted((here/'editor').glob('*.hpp')),here/'editor/main.cpp',*qt_inputs,*overlay_files,*overlay_targets,*sorted((here/'patches').glob('*.patch')),*sorted((here/'runtime').glob('*.*')),source,here/'qpa/qxos.cpp',here/'qpa/xos.json',Path(__file__),font,sdk/'manifest.json',*([sdk_release] if sdk_release.is_file() else []),*archives,*resources,plugin]
 receipt={'commands':commands,'inputs':{str(p):sha(p) for p in inputs},'elf_sha256':sha(out),
          'qtcore_sha256':expected,'host_tools':{n:sha(host_tool(n)) for n in ('moc','rcc')}}
+if sdk_tree_digest is not None:
+    require(tree_receipt(sdk)[0] == sdk_tree_digest, 'SDK changed during Widgets build')
+    receipt['sdk_tree_sha256'] = sdk_tree_digest
 receipt['inputs'].update({str(p.resolve()): sha(p) for p in [*a.extra_source, *a.moc_header, *a.resource_qrc, *additional_sources]})
 mappings=[('XOS_SDK_PREFIX',sdk),('XOS_BUILD_DIR',qt),('XOS_QT_SOURCE',qs),('XOS_HOST_QT',host),('XOS_BINUTILS',binutils),('XOS_ARTIFACT_DIR',out.parent),('XOS_CXX',cxx),('XOS_AR',ar),('XOS_PYTHON',sys.executable)]
 if a.portable_receipt:

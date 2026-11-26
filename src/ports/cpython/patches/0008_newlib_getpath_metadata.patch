@@ -1,0 +1,21 @@
+From: XOS contributors
+Subject: [PATCH] use native stat for CPython getpath on XOS newlib
+
+XOS newlib implements stat and realpath for its link-free namespace,
+but does not declare or implement lstat. Keep the normal getpath
+behavior and error checks without adding a public alias.
+
+--- a/Modules/getpath.c
++++ b/Modules/getpath.c
+@@ -494,5 +494,11 @@
+         goto done;
+     }
++#if defined(__xos__) && !defined(__GLIBC__)
++    /* The XOS newlib file namespace has no symbolic links. Keep the
++       existence and error checks through the SDK's native stat(). */
++    if (stat(narrow, &st)) {
++#else
+     if (lstat(narrow, &st)) {
++#endif
+         PyErr_SetFromErrno(PyExc_OSError);
+         goto done;

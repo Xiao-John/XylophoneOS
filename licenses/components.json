@@ -682,6 +682,28 @@
       "distribution_status": "Local qualification; complete binary distribution acceptance pending"
     },
     {
+      "name": "WebCore tokenizer qualification",
+      "version": "WPE WebKit 2.54.2",
+      "path": "src/ports/webkit/tokenizer",
+      "source": "https://wpewebkit.org/releases/wpewebkit-2.54.2.tar.xz",
+      "source_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+      "license": "Per-file terms, including BSD-style and LGPL 2.x notices in the upstream WebCore archive",
+      "notices": [
+        "src/ports/webkit/tokenizer/notices/webcore_apple.txt",
+        "src/ports/webkit/tokenizer/notices/webcore_lgpl_2.txt",
+        "src/ports/webkit/tokenizer/notices/webcore_lgpl_2_1.txt"
+      ],
+      "artifact_sha256": {
+        "src/ports/webkit/tokenizer/notices/webcore_apple.txt": "0b5d3a7cc325942567373b0ecd757d07c132e0ebd7c97bfc63f7e1a76094edb4",
+        "src/ports/webkit/tokenizer/notices/webcore_lgpl_2.txt": "45decd245a7c2fddf18e215359a3c1892c1770438f7f81a1b21bdd525a942fa7",
+        "src/ports/webkit/tokenizer/notices/webcore_lgpl_2_1.txt": "a4e64e3963a1a06aad897420a99134969a4a1acba8c90b2a05fabe777475ecd5"
+      },
+      "used_in": [
+        "static WebCore HTML tokenizer guest qualification"
+      ],
+      "distribution_status": "Local qualification; full member-level review and binary distribution acceptance pending"
+    },
+    {
       "name": "Qt Widgets E17 and Xylophone Aurora Glass",
       "version": "QtBase 6.8.3; Aurora 1 (local qualification)",
       "path": "src/ports/qt6",

@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_glibc_program import sha, verify_elf
 from glibc_g1_probe import clean_build_environment, tool_identity
+from quick_kit import MODULES, kit_paths, qt_inputs, verify_kit
 from xypm_format import load_json
 from xypm_sdk_profile import metadata_snapshot, verify_profile
 
@@ -38,14 +39,29 @@ def extract_font(archive, font):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for field in ("source", "output", "target-prefix", "host-qt", "host-qml", "qtbase",
-                  "sdk-build", "sdk-profile"):
+    for field in ("source", "output"):
         parser.add_argument(f"--{field}", type=Path, required=True)
+    for field in ("target-prefix", "host-qt", "host-qml", "qtbase", "sdk-build", "sdk-profile"):
+        parser.add_argument(f"--{field}", type=Path)
+    parser.add_argument("--kit", type=Path, help="use a kit staged by quick_kit.py")
     parser.add_argument("--target", required=True, help="CMake executable target and ELF basename")
     parser.add_argument("--jobs", type=int, default=4)
     args = parser.parse_args()
     if args.jobs < 1 or not re.fullmatch(r"[a-zA-Z_][a-zA-Z0-9_-]*", args.target):
         parser.error("--jobs must be positive and --target must be a CMake executable name")
+    kit_digest = None
+    if args.kit is not None:
+        kit = args.kit.resolve(strict=True)
+        paths = kit_paths(kit)
+        if any(getattr(args, field) is not None for field in paths):
+            parser.error("--kit cannot be combined with separate Qt and glibc SDK inputs")
+        if args.output.resolve().is_relative_to(kit):
+            parser.error("The output must be outside the staged kit")
+        kit_digest = verify_kit(kit)
+        for field, path in paths.items():
+            setattr(args, field, path)
+    elif any(getattr(args, field) is None for field in kit_paths(Path("."))):
+        parser.error("Specify --kit or all separate Qt and glibc SDK inputs")
     if args.output.exists() or args.output.is_symlink() or args.sdk_build.is_symlink():
         parser.error("Use a fresh output path and an SDK build directory")
 
@@ -71,16 +87,7 @@ def main():
         if tool.get("sha256") != manifest["tools"][f"x86_64-elf-{name}"]["sha256"]:
             parser.error(f"x86_64-elf-{name} differs from the SDK build")
 
-    modules = ("Core", "Gui", "Qml", "QmlMeta", "QmlModels", "Quick", "BundledPcre2",
-               "BundledZLIB", "BundledFreetype", "BundledHarfbuzz")
-    expected = {name: prefix / "lib" / f"libQt6{name}.a" for name in modules}
-    for plugin, directory in (("qtquick2plugin", "QtQuick"), ("qmlplugin", "QtQml"),
-                              ("modelsplugin", "QtQml/Models"), ("quickwindow", "QtQuick/Window")):
-        library = "quickwindowplugin" if plugin == "quickwindow" else plugin
-        expected[plugin] = prefix / "qml" / directory / f"lib{library}.a"
-    expected.update({tool: host_qt / "libexec" / tool for tool in ("moc", "rcc")})
-    expected.update({tool: host_qml / "libexec" / tool for tool in
-                     ("qmlimportscanner", "qmltyperegistrar", "qmlcachegen")})
+    expected = qt_inputs(prefix, host_qt, host_qml)
     for path in expected.values():
         if not path.is_file() or path.resolve(strict=True) != path:
             parser.error(f"Missing or redirected Qt kit input: {path}")
@@ -123,7 +130,7 @@ def main():
                  f"-DXOS_QUICK_QT_VERSION={version}",
                  f"-DXOS_QUICK_SUPPORT={PORT / 'XosQuickApp.cmake'}", f"-DXOS_QTBASE_FONT={font}"]
     configure.extend(f"-D{name}_DIR:PATH={packages / name}" for name in
-                     ("Qt6", *(f"Qt6{module}" for module in modules), "Qt6QmlIntegration"))
+                     ("Qt6", *(f"Qt6{module}" for module in MODULES), "Qt6QmlIntegration"))
     subprocess.run(configure, env=env, check=True)
     inputs_file = build / f"{args.target}-qt-inputs.txt"
     if not inputs_file.is_file():
@@ -136,7 +143,8 @@ def main():
                     "--target", args.target], env=env, check=True)
     if ({name: sha(path) for name, path in expected.items()} != input_digests
             or verify_profile(load_json(args.sdk_profile), "glibc", sdk_build) != binding
-            or any(sha(Path(tool["path"])) != tool["sha256"] for tool in tools.values())):
+            or any(sha(Path(tool["path"])) != tool["sha256"] for tool in tools.values())
+            or (kit_digest is not None and verify_kit(kit) != kit_digest)):
         raise RuntimeError("The SDK, Qt kit or toolchain changed during the application build")
 
     elf = Path((build / f"{args.target}-elf.txt").read_text().rstrip("\n")).resolve(strict=True)
@@ -148,6 +156,8 @@ def main():
                "target_tools": {name: tool["sha256"] for name, tool in tools.items()},
                "font_sha256": sha(font), "elf": elf.relative_to(output).as_posix(),
                "elf_sha256": sha(elf), "program_headers": verify_elf(elf)}
+    if kit_digest is not None:
+        receipt["kit_manifest_sha256"] = kit_digest
     (output / "receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
     print(elf)
 

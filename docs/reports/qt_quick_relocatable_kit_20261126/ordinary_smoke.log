@@ -1,0 +1,22 @@
+python3 tests/boot_smoke.py
+PASS: 6 checks | build 36fafd7e665ba3f8
+python3 tests/kernel_smoke.py
+PASS: 18 E02 checks | build 36fafd7e665ba3f8
+python3 tests/task_smoke.py
+PASS: 12 E03 checks | build 36fafd7e665ba3f8
+python3 tests/process_smoke.py
+PASS: 13 E04 checks | build 36fafd7e665ba3f8
+python3 tests/file_smoke.py
+PASS: 8 E05 checks | build 36fafd7e665ba3f8
+python3 tests/persist_smoke.py
+PASS: 4 E07 checks | build 36fafd7e665ba3f8
+python3 tests/full_disk_smoke.py
+PASS: 1 E07-full check | build 36fafd7e665ba3f8
+python3 tests/libc_smoke.py
+PASS: 3 E06 checks | build 36fafd7e665ba3f8
+python3 tests/e08_storage_smoke.py
+PASS: 9 E08-1 groups | build 36fafd7e665ba3f8
+python3 tests/runtime_smoke.py
+PASS: 5 E08-2 groups | build 36fafd7e665ba3f8
+python3 scripts/license_audit.py
+PASS: 10 license materials | build 36fafd7e665ba3f8 | open license items: 0 -> none (register: licenses/open_items.json)

@@ -22,6 +22,7 @@ PORT = ROOT / "src/ports/cpython"
 DEFAULT_ARCHIVE = ROOT / ".cache/xos_seed/cpython/sources/zlib-1.3.2.tar.xz"
 DEFAULT_SDK = ROOT / "build/threading_sdk"
 GLIBC_ARTIFACTS = ('include/zlib.h', 'include/zconf.h', 'lib/libz.a')
+GLIBC_PROBE_PATCH = PORT / 'zlib_patches/0002_glibc_probe_libraries.patch'
 
 
 def glibc_zlib_binding(prefix, sdk_binding, sdk_digest, profile_digest):
@@ -34,14 +35,17 @@ def glibc_zlib_binding(prefix, sdk_binding, sdk_digest, profile_digest):
             and report['sdk_manifest_sha256'] == sdk_digest and report['profile_file_sha256'] == profile_digest
             and report['inputs']['build_script_sha256'] == sha_file(__file__)
             and report['inputs']['zlib_lock_sha256'] == sha_file(PORT / 'zlib_lock.json')
-            and report['inputs']['xos_patch_sha256'] == sha_file(PORT / 'zlib_patches/0001_xos_errno_header.patch'),
+            and report['inputs']['xos_patch_sha256'] == sha_file(PORT / 'zlib_patches/0001_xos_errno_header.patch')
+            and report['inputs']['glibc_probe_patch_sha256'] == sha_file(GLIBC_PROBE_PATCH)
+            and report['configure_checks']['vsnprintf'] is True,
             'zlib build is not bound to the selected static glibc SDK and source lock')
     artifacts = {name: sha_file(relative_file(prefix, name)) for name in GLIBC_ARTIFACTS}
     require(artifacts == {'include/' + name: digest for name, digest in report['header_sha256'].items()}
             | {'lib/libz.a': report['libz_sha256']}, 'zlib build artifacts changed')
     return {'version': lock['version'], 'source_archive_sha256': lock['sha256'],
             'license_sha256': lock['license_sha256'], 'build_receipt_sha256': report_digest,
-            'builder_sha256': sha_file(__file__), 'artifacts': artifacts}
+            'builder_sha256': sha_file(__file__), 'configure_checks': report['configure_checks'],
+            'artifacts': artifacts}
 
 
 def sha256(path):
@@ -127,6 +131,8 @@ def main():
     glibc = {}
     env = dict(os.environ)
     make = 'make'
+    arflags = 'rc'
+    ranlib_command = ranlib
     cflags = ['-O2', '-mno-red-zone', '-fno-pie', '-fno-pic', '-fno-stack-protector',
               '-ffunction-sections', '-fdata-sections', '-D__xos__=1']
     if args.glibc_profile:
@@ -141,9 +147,21 @@ def main():
         env, _ = clean_build_environment(os.environ)
         env.update(CHOST='x86_64-elf', LC_ALL='C')
         make = select_gnu_make()['path']
+        arflags = 'rcD'
+        ranlib_command = shlex.join([ranlib, '-D'])
         sysroot = sdk / 'sysroot'
         cflags.extend(['--sysroot=' + str(sysroot), '-nostdinc', '-isystem', str(sysroot / 'usr/include'),
                        '-isystem', str(sysroot / 'usr/lib/compiler-include')])
+        lib = sysroot / 'usr/lib'
+        start = ('xos_start.o', 'crti.o', 'crtbegin.o', 'xos_start_c.o')
+        end = ('crtend.o', 'crtn.o')
+        archives = ['libc.a', 'libm.a']
+        archives.extend(name for name in ('libxos_terminal.a', 'libgcc.a', 'libgcc_eh.a') if (lib / name).is_file())
+        env['LDFLAGS'] = shlex.join(['-nostdlib', '-static', '-no-pie', '-T', str(sysroot / 'user.ld'),
+                                     '-Wl,--gc-sections,--build-id=none,-z,noexecstack,-z,max-page-size=4096'])
+        env['LIBS'] = shlex.join([*[str(lib / name) for name in start], '-Wl,--start-group',
+                                  *[str(lib / name) for name in archives], '-Wl,--end-group',
+                                  *[str(lib / name) for name in end]])
         glibc = {'runtime_family': 'glibc', 'sdk_binding': binding, 'profile_file_sha256': profile_digest,
                  'tool_sha256': {name: tool['sha256'] for name, tool in tools.items()}}
     else:
@@ -157,6 +175,7 @@ def main():
         "sdk_manifest_sha256": sdk_hash,
         "zlib_lock_sha256": sha256(PORT / "zlib_lock.json"),
         "xos_patch_sha256": sha256(PORT / "zlib_patches/0001_xos_errno_header.patch"),
+        **({'glibc_probe_patch_sha256': sha_file(GLIBC_PROBE_PATCH)} if glibc else {}),
         **glibc,
     }
     fingerprint = hashlib.sha256(
@@ -185,7 +204,7 @@ def main():
     env.update(
         CC=cc,
         AR=ar,
-        RANLIB=ranlib,
+        RANLIB=ranlib_command,
         CFLAGS=shlex.join(cflags),
     )
     run(
@@ -211,14 +230,24 @@ def main():
         **glibc,
     }
     try:
+        if glibc:
+            run(['patch', '-p1', '--forward', '-i', str(GLIBC_PROBE_PATCH)], cwd=source, env=env,
+                log=work / 'glibc_probe_patch.log')
         run(
             ["/bin/sh", str(source / "configure"), "--static", f"--prefix={prefix}"],
             cwd=build,
             env=env,
             log=work / "configure.log",
         )
+        if glibc:
+            configure = (work / 'configure.log').read_text()
+            report['configure_checks'] = {
+                'strerror': 'Checking for strerror... Yes.' in configure,
+                'vsnprintf': 'Checking for vsnprintf() in stdio.h... Yes.' in configure,
+            }
+            require(report['configure_checks']['vsnprintf'], 'glibc zlib requires a working bounded vsnprintf')
         run(
-            [make, "-j2", f"AR={ar}", "ARFLAGS=rc", "libz.a"],
+            [make, "-j2", f"AR={ar}", f"ARFLAGS={arflags}", f"RANLIB={ranlib_command}", "libz.a"],
             cwd=build,
             env=env,
             log=work / "make.log",

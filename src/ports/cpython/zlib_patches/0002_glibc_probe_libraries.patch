@@ -1,0 +1,23 @@
+From: XOS contributors
+Subject: [PATCH] configure: use LIBS in executable probes
+
+Static XOS probes link explicit startup objects and archives. Place LIBS
+after the probe source so its outstanding references can select members.
+
+--- a/configure
++++ b/configure
+@@ -583 +583 @@
+-  if try $CC $CFLAGS $LDFLAGS -o $test $test.c; then
++  if try $CC $CFLAGS $LDFLAGS -o $test $test.c $LIBS; then
+@@ -617 +617 @@
+-  if try $CC $CFLAGS $LDFLAGS -o $test $test.c; then
++  if try $CC $CFLAGS $LDFLAGS -o $test $test.c $LIBS; then
+@@ -634 +634 @@
+-if try $CC $CFLAGS $LDFLAGS -o $test $test.c; then
++if try $CC $CFLAGS $LDFLAGS -o $test $test.c $LIBS; then
+@@ -740 +740 @@
+-  if try $CC $CFLAGS $LDFLAGS -o $test $test.c; then
++  if try $CC $CFLAGS $LDFLAGS -o $test $test.c $LIBS; then
+@@ -833 +833 @@
+-  if try $CC $CFLAGS $LDFLAGS -o $test $test.c; then
++  if try $CC $CFLAGS $LDFLAGS -o $test $test.c $LIBS; then

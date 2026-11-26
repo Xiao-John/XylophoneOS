@@ -1,0 +1,19 @@
+--- a/Source/WebCore/Modules/push-api/PushMessageCrypto.cpp
++++ b/Source/WebCore/Modules/push-api/PushMessageCrypto.cpp
+@@ -193,14 +193,11 @@
+      */
+     if (span.size() < 2)
+         return SIZE_MAX;
+
+-    uint16_t paddingLength;
+-    memcpySpan(asMutableByteSpan(paddingLength), span.first(2));
+-    paddingLength = ntohs(paddingLength);
+-
++    // Decode the two network-order bytes without a socket header.
++    unsigned paddingLeft = (static_cast<unsigned>(span[0]) << 8) | span[1];
+     size_t current = 2;
+-    uint16_t paddingLeft = paddingLength;
+     while (current < span.size() && span[current] == 0x0 && paddingLeft) {
+         ++current;
+         --paddingLeft;
+     }

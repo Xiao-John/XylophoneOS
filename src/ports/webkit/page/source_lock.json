@@ -16,6 +16,10 @@
     {
       "path": "page/shared_memory_xos.patch",
       "sha256": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98"
+    },
+    {
+      "path": "page/network_byte_order.patch",
+      "sha256": "390a437a162620e0f391aec7a5b009bc4fe5a8d3b1c90730287f699238954491"
     }
   ]
 }

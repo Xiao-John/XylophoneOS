@@ -5,7 +5,10 @@ sysdep_routines += errno-loc
 endif
 ifeq ($(subdir),elf)
 sysdep_routines += cpu-tunables
-sysdep-rtld-routines += xos_rtld_entry xos_rtld_mapping xos_file_session xos_rtld_heap _exit getpid
+static-only-routines += cpu-tunables
+sysdep-rtld-routines += xos_rtld_entry xos_rtld_mapping xos_file_session xos_rtld_heap xos_rtld_sysdep_start
+sysdep-rtld-routines += xos_rtld_sysdep_invoke _exit getpid
+sysdep-rtld-routines += xos_rtld_libc_handoff
 CFLAGS-dl-load.os += -DXOS_RTLD_CLOSED_DEPENDENCIES
 CFLAGS-dl-object.os += -DXOS_RTLD_CLOSED_DEPENDENCIES
 CFLAGS-dl-minimal-malloc.os += -DXOS_RTLD_NATIVE_HEAP -ffunction-sections
@@ -15,10 +18,41 @@ CFLAGS-dl-minimal.os += -ffunction-sections
 CFLAGS-dl-catch.os += -ffunction-sections
 CFLAGS-dl-tunables.os += -ffunction-sections
 CFLAGS-dl-mutex.os += -ffunction-sections
-CFLAGS-dl-misc.os += -DXOS_RTLD_CLOSED_DEPENDENCIES
+CFLAGS-dl-misc.os += -DXOS_RTLD_CLOSED_DEPENDENCIES -ffunction-sections
+CFLAGS-xos_rtld_libc_handoff.os += -ffunction-sections
 endif
 ifeq ($(subdir),stdlib)
 sysdep_routines += xos_process_exit
+endif
+ifeq ($(subdir),malloc)
+# The shared cleanup assumes several optional GNU subdirs are present.
+ifeq ($(filter nss,$(subdirs)),)
+CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_NSS
+endif
+ifeq ($(filter resolv,$(subdirs)),)
+CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_RESOLV
+CFLAGS-thread-freeres.os += -DXOS_FREERES_WITHOUT_RESOLV
+endif
+ifeq ($(filter inet,$(subdirs)),)
+CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_INET
+endif
+ifeq ($(filter login,$(subdirs)),)
+CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_LOGIN
+endif
+endif
+ifeq ($(subdir),posix)
+ifeq ($(filter nss,$(subdirs)),)
+CPPFLAGS-glob.os += -DXOS_TILDE_WITHOUT_NSS
+CPPFLAGS-glob64.os += -DXOS_TILDE_WITHOUT_NSS
+CPPFLAGS-wordexp.os += -DXOS_TILDE_WITHOUT_NSS
+endif
+endif
+ifeq ($(subdir),socket)
+ifeq ($(filter resolv,$(subdirs)),)
+# The checked address converters use the portable GNU implementations.
+sysdep_routines += inet_ntop inet_pton inet_pton_length
+shared-only-routines += inet_ntop inet_pton inet_pton_length
+endif
 endif
 ifeq ($(subdir),nptl)
 sysdep_headers += bits/pthread_stack_min-dynamic.h bits/pthread_stack_min.h
@@ -30,6 +64,7 @@ endif
 
 ifeq ($(subdir),io)
 sysdep_routines += xos_file_session xos_file_runtime xos_file_positioned xos_anonymous
+CFLAGS-xos_file_runtime.os += -ffunction-sections
 endif
 ifeq ($(subdir),dirent)
 sysdep_routines += xos_file_directory

@@ -35,12 +35,20 @@ SUPPORT = ('elf/dl-tls.os', 'elf/dl-tls_init_tp.os', 'elf/dl-mutex.os',
            'string/rtld-memmove.os', 'string/rtld-memset.os', 'string/rtld-strlen.os',
            'stdio-common/rtld-_fitoa_word.os', 'stdio-common/rtld-itoa-udigits.os',
            'setjmp/rtld-__longjmp.os', 'csu/errno-loc.os', 'csu/errno.os')
+RELOCATION_SUPPORT = ('elf/dl-reloc.os', 'elf/dl-lookup.os', 'elf/dl-setup_hash.os',
+                      'elf/dl-audit.os', 'elf/dl-misc.os', 'elf/dl-scope.os', 'elf/tlsdesc.os',
+                      'elf/dl-tlsdesc.os', 'elf/dl-trampoline.os', 'elf/dl-runtime.os',
+                      'elf/dl-get-cpu-features.os', 'elf/dl-thread_gscope_wait.os', 'elf/dl-profile.os',
+                      'misc/rtld-mprotect.os', 'csu/rtld-errno.os', 'string/rtld-stpcpy.os',
+                      'string/rtld-strcmp.os', 'string/rtld-memcmp.os',
+                      'nptl/rtld-lowlevellock.os', 'nptl/rtld-xos_lll_futex.os', 'nptl/rtld-xos_wait_word.os')
 SUCCESS = (b'D1_CLOSURE_TLS_OK modules=3 dsos=2 tdata=checked tbss=zero '
            b'dtv=1 tp=preserved libc_errno=checked')
+RELOCATION_OK = b'D1_GNU_RELOC_OK dsos=2 tpoff64=gnu relro=sealed errno=dynamic tp=preserved'
 OOM = b'XOS rtld: cannot allocate initial TLS slotinfo'
 
 
-def describe(path, index, alignment, value, plan):
+def describe(path, index, alignment, value, plan, inspection, relocate):
     data = path.read_bytes()
     if (data[:7] != b'\x7fELF\x02\x01\x01' or struct.unpack_from('<HH', data, 16) != (3, 62)):
         raise ValueError('dependency must be x86-64 ET_DYN')
@@ -52,8 +60,10 @@ def describe(path, index, alignment, value, plan):
     tls, = [header for header in table if header[0] == 7]
     loads = [header for header in table if header[0] == 1 and header[6]]
     _, flags, offset, address, _, filesz, memsz, align = tls
-    if (flags != 4 or filesz < 3 or memsz - filesz < 129 or align != alignment
-            or data[offset:offset + 3] != bytes((value, 0x3c, 0x19))
+    template = struct.pack('<Q', value) if relocate else bytes((value, 0x3c, 0x19))
+    bss = 8 if relocate else 129
+    if (flags != 4 or filesz < len(template) or memsz - filesz < bss or align != alignment
+            or data[offset:offset + len(template)] != template
             or not any(p[1] & 4 and p[2] <= offset <= offset + filesz <= p[2] + p[5]
                        and p[3] + offset - p[2] == address for p in loads)):
         raise ValueError('PT_TLS does not describe the expected file-backed template')
@@ -61,9 +71,24 @@ def describe(path, index, alignment, value, plan):
     digest = sha(path)
     octets = ','.join(hex(octet) for octet in bytes.fromhex(digest))
     plan.write(f'static constexpr u8 digest_{index}[] = {{{octets}}};\n')
-    return {'sha256': digest, 'bias': BIASES[index], 'bytes': len(data), 'span': span,
-            'tls_file_offset': offset, 'tls_vaddr': address, 'tls_file_bytes': filesz,
-            'tls_memory_bytes': memsz, 'tls_alignment': align}
+    result = {'sha256': digest, 'bias': BIASES[index], 'bytes': len(data), 'span': span,
+              'tls_file_offset': offset, 'tls_vaddr': address, 'tls_file_bytes': filesz,
+              'tls_memory_bytes': memsz, 'tls_alignment': align}
+    if relocate:
+        relro, = [header for header in table if header[0] == 0x6474e552]
+        begin, end = relro[3] & -PAGE, (relro[3] + relro[6]) & -PAGE
+        relocs = re.findall(r'^([0-9a-f]+)\s+[0-9a-f]+\s+(R_X86_64_\w+)(.*)$',
+                            inspection, re.MULTILINE)
+        needed = re.findall(r'\(NEEDED\).*Shared library: \[([^\]]+)\]', inspection)
+        if (needed != (['libie_base.so'] if index else []) or not relocs
+                or any(kind != 'R_X86_64_TPOFF64' or not begin <= int(place, 16) <= end - 8
+                       for place, kind, _ in relocs)
+                or (index and not any('provider_tls' in symbol for _, _, symbol in relocs))):
+            raise ValueError('linked DSO does not bind the planned TPOFF64/RELRO closure')
+        result.update(needed=needed, relocations=[(int(place, 16), kind, symbol.strip())
+                                                for place, kind, symbol in relocs],
+                      relro_pages=[begin, end])
+    return result
 
 
 def build(args, report, rtld):
@@ -87,23 +112,34 @@ def build(args, report, rtld):
         report['commands'][stage] = command_line
         with (output / (stage + '.log')).open('w') as log:
             subprocess.run(command_line, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
+        return (output / (stage + '.log')).read_text()
 
     flags = ['-B' + str(tool_dir) + '/', '--sysroot=' + str(sysroot), '-nostdinc',
              '-isystem', sysroot / 'usr/include', '-isystem', sysroot / 'usr/lib/compiler-include',
              '-O2', '-mno-red-zone', '-ffreestanding', '-fno-builtin',
              '-fno-stack-protector', '-Wall', '-Wextra', '-Werror']
     dependencies = report['dependencies'] = {}
+    gnu = args.gnu_relocation
+    names = ('libie_base.so', 'libie_use.so') if gnu else ('libtls1.so', 'libtls2.so')
+    source = FIXTURES / ('relocation_dependency.c' if gnu else 'closure_tls_dependency.c')
     with (output / 'closure_tls_plan.hpp').open('x') as plan:
-        for index, (alignment, value) in enumerate(((64, 0x51), (256, 0xa7))):
-            name = f'libtls{index + 1}.so'
+        for index, (name, alignment, value) in enumerate(zip(names, (64, 256), (0x51, 0xa7))):
             obj, dso = output / (name + '.o'), output / name
-            run('compile_' + name, 'gcc', *flags, '-fPIC', f'-DD1_TLS_ALIGNMENT={alignment}',
-                f'-DD1_TLS_VALUE={value}', '-c', FIXTURES / 'closure_tls_dependency.c', '-o', obj)
+            dso_flags = [f'-DD1_TLS_ALIGNMENT={alignment}', f'-DD1_TLS_VALUE={value}']
+            links = []
+            if gnu:
+                dso_flags = ['-ftls-model=initial-exec'] + (['-DD1_TLS_PROVIDER'] if index == 0 else [])
+                links = ([proof / 'shared/csu/errno-loc.os', proof / 'shared/csu/errno.os']
+                         if index == 0 else [output / names[0]])
+            run('compile_' + name, 'gcc', *flags, '-fPIC', *dso_flags,
+                '-c', source, '-o', obj)
+            protection = ['-z', 'relro', '-z', 'now', '-z', 'common-page-size=4096',
+                          '-Bsymbolic-functions'] if gnu else []
             run('link_' + name, 'ld', '-shared', '-e', 'd1_dependency', '-soname', name,
                 '-z', 'max-page-size=8192', '-z', 'separate-code', '-z', 'noexecstack',
-                '--no-undefined', '--build-id=none', '-o', dso, obj)
-            run('inspect_' + name, 'readelf', '-hW', '-lW', '-dW', '-rW', dso)
-            dependencies[name] = describe(dso, index, alignment, value, plan)
+                '--no-undefined', '--build-id=none', *protection, '-o', dso, obj, *links)
+            inspection = run('inspect_' + name, 'readelf', '-hW', '-lW', '-dW', '-rW', dso)
+            dependencies[name] = describe(dso, index, alignment, value, plan, inspection, gnu)
         plan.write('static constexpr dependency dependencies[] = {\n')
         for index, (name, info) in enumerate(dependencies.items()):
             plan.write(f'    {{"/tests/{name}", "{name}", {info["bias"]}, {info["bytes"]}, '
@@ -114,7 +150,9 @@ def build(args, report, rtld):
     run('compile_bootstrap', 'g++', *flags, '-fno-pie', '-fno-exceptions', '-fno-rtti',
         '-nostdinc++', '-std=gnu++20', '-I', args.system / 'sdk/include',
         '-I', OVERLAY, '-I', output, '-c', FIXTURES / 'closure_tls_bootstrap.cpp', '-o', bootstrap)
-    paths = ('elf/d1-closure-tls-fixture.o', 'elf/rtld.os', *SUPPORT)
+    fixture_name = 'elf/d1-gnu-relocation-fixture.o' if gnu else 'elf/d1-closure-tls-fixture.o'
+    support_paths = SUPPORT[:-2] + RELOCATION_SUPPORT if gnu else SUPPORT
+    paths = (fixture_name, 'elf/rtld.os', *support_paths)
     if not all('shared/' + path in rtld['artifacts'] for path in paths):
         raise ValueError('rtld manifest is missing a closure TLS input')
     fixture, gnu_rtld, *support = (proof / 'shared' / name for name in paths)
@@ -152,9 +190,10 @@ def exercise(args, report, elf):
             command(guest, 'demo quiet', b'demo tasks')
             baseline = resources(guest)
             report.update(resources_before=baseline, runs={})
-            for name, suffix, marker, code in (
-                    ('exhausted', ' heap-limit', OOM, b'127'),
-                    ('ordinary', '', SUCCESS, b'0')):
+            cases = (('ordinary', '', RELOCATION_OK, b'0'), ('repeated', '', RELOCATION_OK, b'0'))
+            if not args.gnu_relocation:
+                cases = (('exhausted', ' heap-limit', OOM, b'127'), ('ordinary', '', SUCCESS, b'0'))
+            for name, suffix, marker, code in cases:
                 result = command(guest, 'exec-file /bin/closure_tls' + suffix,
                                  b'kind=exited code=', timeout=60)
                 after = resources(guest)
@@ -171,13 +210,20 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('system', 'sdk-build', 'profile', 'rtld-proof', 'output'):
         parser.add_argument('--' + name, type=lambda value: Path(value).resolve(), required=True)
+    parser.add_argument('--gnu-relocation', action='store_true',
+                        help='exercise GNU initial-exec relocation and native RELRO on a linked DSO pair')
     args = parser.parse_args()
     args.output.mkdir(parents=True)
     report = {'status': 'failed', 'scope': 'GNU initial rtld TLS with an authenticated DSO closure',
               'shared_interpreter_executed': False,
               'shared_libc_leaf_scope': 'link-time resolved errno', 'commands': {}}
+    if args.gnu_relocation:
+        report.update(scope='GNU TPOFF64 relocation with an authenticated linked DSO pair',
+                      shared_libc_leaf_scope='runtime relocated errno in the provider DSO')
+    fixture, key = ((FIXTURES / 'relocation_runtime.c', 'gnu_relocation_fixture_sha256')
+                    if args.gnu_relocation else (FIXTURE, 'closure_tls_fixture_sha256'))
     try:
-        system, sdk, rtld, artifacts = bind_rtld_inputs(args, report, FIXTURE, 'closure_tls_fixture_sha256')
+        system, sdk, rtld, artifacts = bind_rtld_inputs(args, report, fixture, key)
         elf = build(args, report, rtld)
         exercise(args, report, elf)
         if (bind_system(args.system) != system or verify_profile(load_json(args.profile), 'glibc', args.sdk_build) != sdk

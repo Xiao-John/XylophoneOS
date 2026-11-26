@@ -13,6 +13,7 @@ long __xos_file_open (const char *, int) __attribute__ ((visibility ("hidden")))
 long __xos_file_open_anonymous (void) __attribute__ ((visibility ("hidden")));
 long __xos_file_seal_anonymous (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_close (int) __attribute__ ((visibility ("hidden")));
+long __xos_file_close_range (unsigned int, unsigned int) __attribute__ ((visibility ("hidden")));
 long __xos_file_pipe (int [2], int) __attribute__ ((visibility ("hidden")));
 long __xos_file_read (int, void *, size_t) __attribute__ ((visibility ("hidden")));
 long __xos_file_write (int, const void *, size_t) __attribute__ ((visibility ("hidden")));

@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+libc {
+  GLIBC_2.44 {
+    __errno_location;
+  }
+  GLIBC_PRIVATE {
+    __xos_file_adopt_startup;
+  }
+}

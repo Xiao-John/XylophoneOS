@@ -17,5 +17,4 @@ __faccessat (int fd, const char *path, int mode, int flags)
      no symbolic links or separate real and effective file identities. */
   return (int) xos_file_result (__xos_file_access (path, mode));
 }
-libc_hidden_def (__faccessat)
 weak_alias (__faccessat, faccessat)

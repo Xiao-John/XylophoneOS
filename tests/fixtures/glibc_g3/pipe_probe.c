@@ -74,8 +74,18 @@ static int capacity(void)
     }
     int ends[2] = { 41, 43 };
     CHECK(pipe(ends) == -1 && errno == EMFILE && ends[0] == 41 && ends[1] == 43);
-    for (size_t i = 0; i < sizeof(aliases) / sizeof(aliases[0]); ++i)
-        CHECK(close(aliases[i]) == 0);
+    CHECK(close_range(aliases[1], aliases[0], 0) == -1 && errno == EINVAL);
+    CHECK(close_range(aliases[0], aliases[1], 1) == -1 && errno == EINVAL);
+    CHECK(fcntl(aliases[0], F_GETFD) == FD_CLOEXEC);
+    const size_t last = sizeof(aliases) / sizeof(aliases[0]) - 1;
+    CHECK(close_range(aliases[0], aliases[last] - 1, 0) == 0);
+    for (size_t i = 0; i < last; ++i)
+        CHECK(fcntl(aliases[i], F_GETFD) == -1 && errno == EBADF);
+    CHECK(fcntl(aliases[last], F_GETFD) == FD_CLOEXEC);
+    closefrom(aliases[last]);
+    CHECK(fcntl(aliases[last], F_GETFD) == -1 && errno == EBADF);
+    CHECK(fcntl(STDOUT_FILENO, F_GETFD) == 0);
+    CHECK(close_range(UINT_MAX, UINT_MAX, 0) == 0);
 
     int pairs[8][2];
     for (size_t i = 0; i < sizeof(pairs) / sizeof(pairs[0]); ++i)

@@ -88,6 +88,12 @@ __xos_rtld_heap_grow (size_t bytes)
   return (void *) start;
 }
 
+uint64_t
+__xos_rtld_heap_deadline (void)
+{
+  return heap.phase == heap_open ? heap.deadline : 0;
+}
+
 int
 __xos_rtld_heap_seal (void)
 {

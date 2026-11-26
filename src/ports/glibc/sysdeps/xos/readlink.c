@@ -17,5 +17,4 @@ __readlink (const char *path, char *buffer, size_t length)
   long result = __xos_file_stat (AT_FDCWD, path, &status);
   return xos_file_result (result == 0 ? -EINVAL : result);
 }
-libc_hidden_def (__readlink)
 weak_alias (__readlink, readlink)

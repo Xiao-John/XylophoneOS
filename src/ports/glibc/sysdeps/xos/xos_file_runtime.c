@@ -12,7 +12,11 @@
 
 #include "xos_file_trap.h"
 
+#ifdef SHARED
+# include "xos_d1_start.h"
+#else
 extern const void *__xos_startup __attribute__ ((weak, visibility ("hidden")));
+#endif
 /* The backend and its strongly linked terminal adapter provide file (bit0)
    and terminal (bit1) startup. Path-based redirection remains separate. */
 const unsigned int __xos_file_startup_capabilities
@@ -78,12 +82,19 @@ session_fault (int error)
 }
 
 static long
-call_service (unsigned int operation)
+call_service_until (unsigned int operation, xos_u64 deadline)
 {
   request.operation = (xos_file_u16) operation;
-  return __xos_file_session_call (&session, &request, &response);
+  return __xos_file_session_call_until (&session, &request, &response, deadline);
 }
 
+static long
+call_service (unsigned int operation)
+{
+  return call_service_until (operation, ~(xos_u64) 0);
+}
+
+#ifndef SHARED
 long
 __xos_file_adopt_early_session (struct xos_file_session *early)
 {
@@ -93,6 +104,7 @@ __xos_file_adopt_early_session (struct xos_file_session *early)
   unlock_session ();
   return result;
 }
+#endif
 
 static int
 prepare_path (const char *path)
@@ -140,15 +152,17 @@ valid_startup_range (xos_u64 address, xos_u64 size)
 #endif
 }
 
-static long close_object (int);
+static long close_object_until (int, xos_u64);
 
 static int
-restore_descriptors (const struct xos_file_startup *startup, int terminal_startup)
+restore_descriptors (const struct xos_file_startup *startup, int terminal_startup,
+                     xos_u64 deadline)
 {
   const struct xos_file_startup_exec *exec = (const void *) ((const char *) startup + 152);
   if (!valid_startup_range ((xos_u64) exec, sizeof (*exec))
       || exec->magic != 0x335845534f585546ULL || exec->reserved != 0
-      || exec->count > fd_limit || (exec->descriptors & 3) != 0
+      || exec->count > fd_limit
+      || exec->descriptors % _Alignof (struct xos_file_startup_descriptor) != 0
       || !valid_startup_range (exec->descriptors,
                               (xos_u64) exec->count * sizeof (struct xos_file_startup_descriptor)))
     return -EINVAL;
@@ -219,7 +233,7 @@ restore_descriptors (const struct xos_file_startup *startup, int terminal_startu
     if (cleanup[i])
       {
         objects[i].references = 1;
-        long result = close_object (i);
+        long result = close_object_until (i, deadline);
         if (result < 0)
           {
             if (terminal_startup) (void) __xos_terminal_close ();
@@ -230,18 +244,21 @@ restore_descriptors (const struct xos_file_startup *startup, int terminal_startu
 }
 
 static int
-initialize (void)
+valid_startup_header (const struct xos_file_startup *startup)
 {
-  if (initialized) return initialization_error;
+  return ((xos_u64) startup & 7) == 0
+    && valid_startup_range ((xos_u64) startup, sizeof (*startup))
+    && startup->magic == 0x3154524154535358ULL && startup->size == 48
+    && startup->version >= 1 && startup->version <= 3 && startup->handle_count == 3
+    && startup->reserved == (startup->version == 1 ? 0 : 64);
+}
+
+static int
+initialize_from (const struct xos_file_startup *startup, xos_u64 deadline)
+{
   initialized = 1;
   for (int i = 0; i < fd_limit; ++i) descriptors[i].object = -1;
-  const struct xos_file_startup *startup = &__xos_startup ? __xos_startup : 0;
-  if (startup != 0
-      && (((xos_u64) startup & 7) != 0
-          || !valid_startup_range ((xos_u64) startup, sizeof (*startup))
-          || startup->magic != 0x3154524154535358ULL || startup->size != 48
-          || startup->version < 1 || startup->version > 3 || startup->handle_count != 3
-          || (startup->version == 1 ? startup->reserved != 0 : startup->reserved != 64)))
+  if (startup != 0 && !valid_startup_header (startup))
     return initialization_error = -EINVAL;
   for (int i = 0; i < 3; ++i)
     {
@@ -263,7 +280,7 @@ initialize (void)
     return initialization_error = -EINVAL;
   const int terminal_startup = (extension->flags & 0x10000U) != 0;
   if (startup->version == 3)
-    return initialization_error = restore_descriptors (startup, terminal_startup);
+    return initialization_error = restore_descriptors (startup, terminal_startup, deadline);
   if (terminal_startup)
     {
       if (extension->flags != 0x10007U) return initialization_error = -EINVAL;
@@ -307,6 +324,53 @@ initialize (void)
         return initialization_error = -EINVAL;
     }
   return 0;
+}
+
+#ifdef SHARED
+long
+__xos_file_adopt_startup (struct xos_file_session *early, xos_u64 deadline)
+{
+  long result = lock_session ();
+  if (result != 0) return result;
+  const struct xos_file_startup *startup = (const void *) XOS_D1_STARTUP_BEGIN;
+  const long now = file_trap (46, 0, 0, 0);
+  if (initialized)
+    result = -EBUSY;
+  else if (early == NULL || deadline == 0 || deadline > LONG_MAX
+           || !valid_startup_header (startup))
+    result = -EINVAL;
+  else if (early->phase != xos_file_session_active || now < 0)
+    result = -EIO;
+  else if ((xos_u64) now >= deadline)
+    result = -ETIMEDOUT;
+  else
+    {
+      result = __xos_file_session_take (&session, early);
+      if (result == 0)
+        {
+          result = initialize_from (startup, deadline);
+          const long finished = file_trap (46, 0, 0, 0);
+          if (result == 0 && (finished < 0 || (xos_u64) finished >= deadline))
+            result = initialization_error = finished < 0 ? -EIO : -ETIMEDOUT;
+        }
+    }
+  unlock_session ();
+  return result;
+}
+#endif
+
+static int
+initialize (void)
+{
+  if (initialized) return initialization_error;
+#ifdef SHARED
+  /* The relocated libc has no CRT-owned startup state. Its caller must
+     adopt the real descriptors and authenticated session before use. */
+  return -EIO;
+#else
+  const struct xos_file_startup *startup = &__xos_startup ? __xos_startup : 0;
+  return initialize_from (startup, ~(xos_u64) 0);
+#endif
 }
 
 static int
@@ -557,7 +621,7 @@ __xos_file_pipe (int output[2], int flags)
 }
 
 static long
-close_object (int index)
+close_object_until (int index, xos_u64 deadline)
 {
   struct open_object *object = &objects[index];
   if (--object->references != 0) return 0;
@@ -566,7 +630,7 @@ close_object (int index)
     {
       memset (&request, 0, sizeof (request));
       request.handle = object->handle;
-      result = call_service (8);
+      result = call_service_until (8, deadline);
       if (result == 0 && response.length != 0) result = session_fault (EIO);
     }
   else if (object->kind == kind_terminal) result = __xos_terminal_close ();
@@ -576,6 +640,12 @@ close_object (int index)
      accidentally close a later FD that reused its number. */
   *object = (struct open_object) { 0 };
   return result;
+}
+
+static long
+close_object (int index)
+{
+  return close_object_until (index, ~(xos_u64) 0);
 }
 
 long
@@ -640,20 +710,38 @@ __xos_file_spawn_end (struct xos_spawn_stdio *stdio)
   unlock_runtime (&spawn_cwd_lock);
 }
 
+static long
+close_descriptor (int fd)
+{
+  int index = object_for (fd);
+  if (index < 0) return -EBADF;
+  descriptors[fd] = (struct fd_slot) { -1, 0 };
+  return close_object (index);
+}
+
 long
 __xos_file_close (int fd)
 {
   int error = begin ();
   if (error != 0) return error;
-  int index = object_for (fd);
-  long result = -EBADF;
-  if (index >= 0)
-    {
-      descriptors[fd] = (struct fd_slot) { -1, 0 };
-      result = close_object (index);
-    }
+  long result = close_descriptor (fd);
   unlock_session ();
   return result;
+}
+
+long
+__xos_file_close_range (unsigned int first, unsigned int last)
+{
+  if (first > last) return -EINVAL;
+  if (first >= fd_limit) return 0;
+  int error = begin ();
+  if (error != 0) return error;
+  /* Closing retires the descriptor even if its final release reports an
+     error. The range operation ignores those individual close results. */
+  for (unsigned int fd = first; fd < fd_limit && fd <= last; ++fd)
+    (void) close_descriptor ((int) fd);
+  unlock_session ();
+  return 0;
 }
 
 static long

@@ -1,0 +1,93 @@
+{
+  "runtime_build_source_head": "41b1c4eed718c5e9c056fb0d8694a0035cdc10d1",
+  "runtime_build_source_tree": "7627f970108a23c7cf14bf5ef7210b3fa0c7377d",
+  "runner_commit": "5c723d86da5f835e94fcc2d0a06bbd58b05cf71a",
+  "base_main": "af47b2c5b179a27bba432c70832f63516f6d4749",
+  "fixed_policy_pull_request": 305,
+  "toolchain_image_sha256": "a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "glibc_archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "gcc_archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+  "gcc_signature_receipt_sha256": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4",
+  "sdk_manifest_sha256": "80fa5dd60a87662c281f623f704d359da7f7fd3e4420b9670372ef0ceadb4e31",
+  "link_preparation_manifest_sha256": "dda1f3a254294778561b935aef059de970fdff0150cfc134437ed8234ed03596",
+  "terminal_build_manifest_sha256": "4d194bb3537079a73019b1f18f2bf8ecdc946532c8187fa39c14429f4eea1df3",
+  "terminal_pic_manifest_sha256": "3934d2208d168b83737886c7135fb6852fc5495025f2fcf77926cadc9d09ff1d",
+  "libc_sha256": "b1cd3f0151632d286d40abb117b343ec17a1fb3f7c54d1473cd3ef6f77ca9035",
+  "rtld_sha256": "12998ce57925fcdce984bdce2c2d566175389374e762aaefdf8579d6cef002a7",
+  "gcc_pic_crt_sha256": {
+    "crtbeginS.o": "d1f9b26b212fe61acae370cae0a61f82632b1bb6d074e4bc8ce1edce3bbd6ca4",
+    "crtendS.o": "2299f1c03b9966209362535ea7ee4a15bc22c11e922820ceccbeb7ae6d28e3d8"
+  },
+  "guard_log_sha256": "5188138b0146337f351fb9a615b64bcdd4f8b8605028701a75f370b0defe6c20",
+  "gnu_rtld_link_log_sha256": "2a8b0e2f3e5195bbf4c098972dcae21fd345b43c528a7d64604e5e9531a0aa37",
+  "gnu_libc_link_log_sha256": "8fd5f027289d5cc34c29f5a29ade48fc3f1f15fb22b07a9371a0816d00f250c3",
+  "host_path_templates": [
+    "XOS_BUILD",
+    "XOS_HOST_TEMP",
+    "XOS_INPUTS",
+    "XOS_ROOT",
+    "XOS_TARGET_TOOL_BIN",
+    "XOS_TOOLCHAIN_ROOT"
+  ],
+  "guest_cases": {
+    "c": {
+      "report_sha256": "1eb41559ada4cc2df71e7abc4d6321b2f8c56d59d50b9a82ce651881e47bddc8",
+      "raw_report_sha256": "ce1894bce18e8f5a95e829be3db60fd43106c692a10f7cc787271cfad964bb63",
+      "serial_sha256": "cd655b9433c5caa2254e0987d2c90e3e38e398de0b1048228a8c773664c94929",
+      "serial_gzip_sha256": "629104317a9d73372388203654d0b1d692f31c1ffcabac5b53aba039e6d8dfd1",
+      "main_sha256": "3fbe8818d464d332d24e03b0c9c7fd6299fe68195ecf7c1f468c87bfb59d42b6",
+      "bootstrap_sha256": "ff48f0da3bc9685013e21d4c2b1954d90653fcd0d10b3add39f8688dc47e6fe5",
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    "cpp": {
+      "report_sha256": "16f4175d2cc5377eb91dc9c386a1a72e70535778e6d2119dbdadf612c34abdfa",
+      "raw_report_sha256": "1de8f2e651b56330e9945a65a50b565005189b73b992f380c2ad339355c165a5",
+      "serial_sha256": "3903983fa62eceac7a1939373803eceb6912d58ce93fb20dd51816df555825ec",
+      "serial_gzip_sha256": "9f025316065d9940002c81bd77b9fd47cf3c591e497c730f4af11398cea37336",
+      "main_sha256": "f845cab57a8dbdd9d1b4caa9117de9182b354ef2bd21af247869818c89ad3457",
+      "bootstrap_sha256": "64c8a9fba934146b5f5a51edec1b34a3fe861461d821dbd2ea76e5e994e96c97",
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    "unlisted": {
+      "report_sha256": "9bf3596147148e4e99d9b04ad1cebe7a4a78ca0136ee9adc23498e1c42a60297",
+      "raw_report_sha256": "699f2e63f3ed50a57212427ac666ab899d1a14a734d694470b26819f6dd58020",
+      "serial_sha256": "be793e21cd7f65016fcab2a6b4fdebae68404690129028f90591614aaa81eb18",
+      "serial_gzip_sha256": "702813b131b55465011c4c7a1b7ef58180e13717ea3ba2b1a63cab15bb7bb24f",
+      "main_sha256": "3fbe8818d464d332d24e03b0c9c7fd6299fe68195ecf7c1f468c87bfb59d42b6",
+      "bootstrap_sha256": "ff48f0da3bc9685013e21d4c2b1954d90653fcd0d10b3add39f8688dc47e6fe5",
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    }
+  },
+  "vendor_context_equivalence": {
+    "glob.c": "a2446de9c1a6707ac00025a36cef578af3b4c4b2fb1e9a6c2758860d2361dc2e",
+    "wordexp.c": "5115b4d0f12b2fe2399ca5d2a6c2cd4f366b68d766c7a7b88ceffdc95682048c"
+  },
+  "publication_replay_sha256": "4174850fc7a7a7151e92f9f6182a5559d0163dc722f7d413505abd8d1508dfd7"
+}

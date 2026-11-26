@@ -21,10 +21,12 @@ inputs = sorted([*common_cpp, *programs.values(), "scripts/build_pumpkin_daemon.
                  *(str(source.relative_to(root)) for source in (root / module).glob("*.hpp"))])
 sdk_headers = [
     ("src/shared/include/xos/", "abi_types.hpp"),
+    ("src/shared/include/xos/", "file_abi.hpp"),
     ("src/shared/include/xos/", "process_abi.hpp"),
     ("src/shared/include/xos/", "thread_abi.hpp"),
     ("src/user/include/xos/", "fault_sha256.hpp"),
     ("src/user/include/xos/", "sdk.hpp"),
+    ("src/user/include/xos/", "spawn.hpp"),
 ]
 
 

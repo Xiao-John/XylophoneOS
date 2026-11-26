@@ -78,12 +78,14 @@ bool attach(service_core& core, transport_session& session, ipc_channel channel,
 enum class progress { keep, drop, failure };
 
 progress process_request(service_core& core, transport_session& session, u64& now, bool draining) {
-    if (now >= session.expires || (session.reply_expires != 0 && now >= session.reply_expires)) {
+    if (now >= session.expires) {
         return progress::drop;
     }
     const auto send_ready = sdk::ipc_wait(session.channel.send, ipc_wait_mode::try_send);
     if (send_ready != 0) {
-        return send_ready == process_error_would_block ? progress::keep : progress::drop;
+        const bool awaiting_consumption = send_ready == process_error_would_block &&
+            (session.reply_expires == 0 || now < session.reply_expires);
+        return awaiting_consumption ? progress::keep : progress::drop;
     }
     session.reply_expires = 0;
     if (draining) {
@@ -114,6 +116,11 @@ progress process_request(service_core& core, transport_session& session, u64& no
     if (!sent) {
         return progress::drop;
     }
+    const auto enqueued_at = monotonic_now();
+    if (enqueued_at < 0 || static_cast<u64>(enqueued_at) < now) {
+        return progress::failure;
+    }
+    now = static_cast<u64>(enqueued_at);
     session.reply_expires = now + reply_budget_ns;
     return progress::keep;
 }

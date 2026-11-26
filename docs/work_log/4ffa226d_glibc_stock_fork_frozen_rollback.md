@@ -14,6 +14,8 @@
 
 两份 glibc 重建 XPK 的字节摘要与参考包不同。比较对应 ELF 副本时，去除调试信息后的字节分别一致。实际安装与运行均使用带调试信息的新构建产物，回执记录了各自的摘要。
 
+回退使用两套独立工作盘。旧盘始终保留原 newlib profile、包数据库和 ELF。glibc 只在自己的盘上运行，原对象没有执行跨 ABI 转换。
+
 [回执与各项输入摘要](../reports/glibc_stock_fork_frozen_rollback_20261126/report.json)
 [原系统首次启动](../reports/glibc_stock_fork_frozen_rollback_20261126/before.serial.log.gz)
 [glibc 候选启动](../reports/glibc_stock_fork_frozen_rollback_20261126/glibc.serial.log.gz)

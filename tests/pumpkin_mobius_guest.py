@@ -54,6 +54,10 @@ def frame(observation, image, future, light, timeout):
             raise RuntimeError(f"Desktop stopped before scanout, result {future.result()}")
         try:
             observation.qmp("screendump", {"filename": str(image)})
+        except FileNotFoundError:
+            # The operator removes its private monitor socket when the VM
+            # retires. Report its completion rather than a missing socket.
+            raise RuntimeError(f"Desktop monitor closed, operator result {future.result(timeout=10)}") from None
         finally:
             observation.close()
         kind, geometry, depth, pixels = image.read_bytes().split(b"\n", 3)
@@ -114,13 +118,13 @@ def live_desktop(system, state, wallet, output):
                     processes[0].terminate()
 
 
-def retire_desktop(system, state, wallet, output):
+def managed_desktop(system, state, wallet, output, *, revoke):
     with tempfile.TemporaryDirectory(dir="/tmp", prefix="pkadm_") as folder:
         private = Path(folder)
         command = [sys.executable, "-B", str(operator.__file__), "desktop", "--revoke-on-signal",
                    "--system", str(system), "--state", str(state), "--credential-file", str(wallet)]
         with subprocess.Popen(command, env={**os.environ, "TMPDIR": folder}, stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE, text=True) as process:
+                              stderr=subprocess.PIPE, text=True, start_new_session=True) as process:
             with ThreadPoolExecutor(max_workers=1) as executor:
                 future = executor.submit(process.communicate)
                 try:
@@ -134,24 +138,29 @@ def retire_desktop(system, state, wallet, output):
                     assert address is not None, "Live administration QMP did not start"
                     screen = monitor(address)
                     try:
-                        active = frame(screen, output / "active-before-revocation.ppm", future, light=False, timeout=140)
+                        name = "active-before-revocation.ppm" if revoke else "admin-before-logout.ppm"
+                        active = frame(screen, output / name, future, light=False, timeout=140)
                         time.sleep(2.1)  # The private operator has kept a verified session past its first poll.
-                        assert not future.done(), "The desktop closed before the administrator acted"
+                        assert not future.done(), "The desktop closed before the selected action"
                         start = time.monotonic()
-                        process.send_signal(signal.SIGUSR1)
+                        if revoke:
+                            process.send_signal(signal.SIGUSR1)
+                        else:
+                            screen.press_ctrl("q")
                         screen.close()
                         stdout, stderr = future.result(timeout=10)
                         elapsed = time.monotonic() - start
                     finally:
                         screen.close()
                     assert process.returncode == 0, stderr
-                    assert stdout.splitlines() == [f"Live Pumpkin administration enabled for process {process.pid}",
-                                                   "Pumpkin revoked the account and retired the active Mobius session"]
-                    return {"active_frame": active, "elapsed_ms": round(elapsed * 1000),
-                            "holder_refusal_and_resource_recovery": "confirmed"}
+                    expected = ("Pumpkin revoked the account and retired the active Mobius session"
+                                if revoke else "Mobius closed and Pumpkin confirmed logout")
+                    assert stdout.splitlines() == [f"Live Pumpkin administration enabled for process {process.pid}", expected]
+                    outcome = "holder_refusal_and_resource_recovery" if revoke else "logout_and_resource_recovery"
+                    return {"active_frame": active, "elapsed_ms": round(elapsed * 1000), outcome: "confirmed"}
                 finally:
                     if not future.done():
-                        process.terminate()
+                        os.killpg(process.pid, signal.SIGTERM)
 
 
 def install(state, executable):
@@ -193,10 +202,13 @@ def run(system, executable, output):
             report["checks"].append("operator wiped its submitted wallet before the first desktop frame")
             assert operator.operate(system, state, "login", wallet) == 1
             report["checks"].append("same credential can authenticate again after logout")
+            report["admin_logout"] = managed_desktop(system, state, wallet, output, revoke=False)
+            assert authority.read() == enrolled and operator.operate(system, state, "login", wallet) == 1
+            report["checks"].append("admin-enabled desktop with no signal logged out and preserved the account")
             unaffected = private / "unaffected-wallet"
             assert operator.operate(system, state, "enroll", unaffected, account=b"bob") == 1
             revision = authority.read().revision
-            report["live_revocation"] = retire_desktop(system, state, wallet, output)
+            report["live_revocation"] = managed_desktop(system, state, wallet, output, revoke=True)
             assert authority.read().revision == revision + 1
             report["checks"].append("authenticated host administration retired the already-visible desktop and its leases")
             assert operator.operate(system, state, "desktop", wallet) == 2

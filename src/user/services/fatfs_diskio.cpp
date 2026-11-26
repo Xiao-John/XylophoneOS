@@ -5,6 +5,9 @@
 #if XOS_FILES_PRIVATE_STORAGE_PROBE
 #include "files_private_storage.hpp"
 #endif
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+#include "files_private_broker.hpp"
+#endif
 
 using xos::u64;
 using xos::i64;
@@ -15,7 +18,20 @@ static u64 g_sectors;
 namespace xos::user::files_private_storage {
 namespace {
 region private_region;
+}
 
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+slot_io private_slot_io() {
+    return {&private_region,
+            [](void* context, u32 slot, u8 (&bytes)[slot_bytes]) {
+                return static_cast<region*>(context)->read_slot(slot, bytes);
+            },
+            [](void* context, u32 slot, const u8 (&bytes)[slot_bytes]) {
+                return static_cast<region*>(context)->write_slot(slot, bytes);
+            }};
+}
+#else
+namespace {
 u8 test_byte(u32 slot, u32 index) {
     return static_cast<u8>(0x47 + 29 * slot + 13 * index + index / sector_bytes);
 }
@@ -53,6 +69,7 @@ bool verify_test_slots() {
     return private_region.write_slot(slot, data) && private_region.read_slot(slot, data) &&
         matches_test_slot(slot, data, still_blank) && !still_blank;
 }
+#endif
 }
 #endif
 

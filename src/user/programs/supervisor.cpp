@@ -18,6 +18,9 @@
 #include <xos/net_service_client.hpp>
 #include "fault_bundle.hpp"
 #include "../services/shell_terminal.hpp"
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+#include "../services/files_private_broker.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -180,6 +183,68 @@ u32 image_named(const char* name) {
     }
     return 0;
 }
+
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+bool private_storage_grant(u64 child, user::files_private_storage::access rights,
+                           user::files_private_storage::grant_reply& offer) {
+    namespace storage = user::files_private_storage;
+    u32 send = 0, receive = 0;
+    storage::grant_request request;
+    request.child = child;
+    request.rights = rights;
+    const auto deadline = storage::exchange_deadline();
+    if (deadline < 0 || ipc_handles(send, receive) != 0 ||
+        ipc_send(send, &request, sizeof(request)) != 0) {
+        return false;
+    }
+    u8 packet[file::message_size]{};
+    do {
+        const i64 bytes = ipc_recv(receive, packet, sizeof(packet));
+        if (bytes == sizeof(offer)) {
+            __builtin_memcpy(static_cast<void*>(&offer), packet, sizeof(offer));
+            if (offer.magic == storage::grant_magic && offer.version == storage::protocol_version &&
+                offer.child == child && offer.reserved == 0) {
+                return offer.status == storage::result::ok;
+            }
+        } else if (bytes < 0 && bytes != process_error_would_block) {
+            return false;
+        }
+    } while (storage::wait_tick(deadline));
+    return false;
+}
+
+void private_storage_probe(const char* mode) {
+    namespace storage = user::files_private_storage;
+    const bool read_only = equal(mode, "check");
+    if (!read_only && !equal(mode, "seed") && !equal(mode, "partial")) {
+        print("pumpkin-store-test: use seed, partial or check\n");
+        return;
+    }
+    constexpr char name[] = "p2_store_probe";
+    const auto image = image_named(name);
+    pipe_handles pipe{};
+    if (image == 0 || syscall(sys_pipe_create, reinterpret_cast<u64>(&pipe)) != 0) {
+        print("pumpkin-store-test: launch unavailable\n");
+        return;
+    }
+    const char* arguments[] = {name, mode};
+    sdk::spawn_options options{};
+    options.stdio[0] = pipe.read_token;
+    const i64 child = spawn_image_options(image, 2, arguments, options);
+    (void)syscall(sys_pipe_close, pipe.read_token);
+    storage::grant_reply reply;
+    if (child <= 0 ||
+        !private_storage_grant(static_cast<u64>(child),
+                               read_only ? storage::access::reader : storage::access::writer, reply) ||
+        syscall(sys_pipe_write, pipe.write_token, reinterpret_cast<u64>(&reply), sizeof(reply)) != sizeof(reply)) {
+        print("pumpkin-store-test: grant unavailable\n");
+    }
+    (void)syscall(sys_pipe_close, pipe.write_token);
+    if (child > 0) {
+        result_line(static_cast<u64>(child));
+    }
+}
+#endif
 
 i64 delegate_audio_controller(u64 child, void*) {
     return xos::sdk::pio_grant(xos::pio_grant_action::delegate, child,
@@ -765,6 +830,12 @@ void execute(u32 argc, char** argv) {
         !equal(argv[0], "maint-recover-boot")) {
         print("maintenance: persistent recovery required; command blocked\n"); return;
     }
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+    if (argc == 2 && equal(argv[0], "pumpkin-store-test")) {
+        private_storage_probe(argv[1]);
+        return;
+    }
+#endif
     if (equal(argv[0], "help")) {
         print("Files     ls [path] | cat/stat/rm/edit <file> | mkdir <path> | mv <old> <new> | sync\n"
               "Programs  <command> [args] | exd <command> [args] | type <command>\n"

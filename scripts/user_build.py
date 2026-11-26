@@ -13,7 +13,8 @@ from lwip_service_build import build as build_lwip_service
 
 
 def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False,
-                ncurses_supervisor_probe=False, glibc_files_death_probe=False, files_private_storage_probe=False):
+                ncurses_supervisor_probe=False, glibc_files_death_probe=False,
+                files_private_storage_probe=False, files_private_client_probe=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -82,10 +83,14 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              "-c", str(source), "-o", str(obj)])
         return str(obj)
 
-    private_storage_flags = ("-DXOS_FILES_PRIVATE_STORAGE_PROBE=1",) if files_private_storage_probe else ()
+    private_client_flags = ("-DXOS_FILES_PRIVATE_CLIENT_PROBE=1",) if files_private_client_probe else ()
+    private_storage_flags = (("-DXOS_FILES_PRIVATE_STORAGE_PROBE=1", *private_client_flags)
+                             if files_private_storage_probe or files_private_client_probe else ())
     fatfs_objects = [compile_fatfs(root / "src/third_party/fatfs/ff.c"),
                      compile_fatfs(root / "src/user/services/fatfs_diskio.cpp", private_storage_flags),
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
+    private_broker_objects = [compile_source(root / "src/user/services" / name) for name in
+                              ("files_private_broker.cpp", "files_private_lease.cpp")] if files_private_client_probe else []
     # The bundle installer grew this translation unit; keep -Os so the
     # file-backed install ISO stays within its size budget.
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp", ("-Os",))
@@ -114,6 +119,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         copied = copy_archive_provenance(captured, build, built_archive, sdk)
         archive_manifests[copied.relative_to(sdk).as_posix()] = digest(copied.read_bytes())
     names = ("supervisor", "files", "demo", "fault", "spin", "slow", "echo", "hello", "ipc_probe", "libc_hello", "e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "display", "gfxdemo", "interactium", "interactiumd", "ic_client", "xypm_recover", "xos_diag", "terminal", "terminal_app_probe", "audio_service", "audio_tone", "net_service")
+    if files_private_client_probe:
+        names += ("p2_store_probe",)
     bootstrap_names = ("supervisor", "files")
     libc_programs = ("libc_hello", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "xos_diag", "terminal_app_probe")
     disk_programs = ("e08_probe", "runtime_probe", "cpp_runtime_probe", "tls_exit_probe", "threading_core_probe", "xos_diag", "terminal", "terminal_app_probe")
@@ -136,11 +143,13 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             source_path = root / "tests/fixtures/threading/core_probe.cpp"
         if name == "terminal_app_probe":
             source_path = root / "tests/fixtures/ncursesw/terminal_app_probe.cpp"
+        if name == "p2_store_probe":
+            source_path = root / "tests/fixtures/pumpkin/files_private_client_guest.cpp"
         extra_flags = ("-w",) if name in libc_programs else ()
         if name == "supervisor":
             # Keep the embedded supervisor compact after the bundle installer
             # additions.
-            extra_flags += ("-Os",)
+            extra_flags += ("-Os", *private_client_flags)
         if name == "files" and glibc_files_death_probe:
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "files":
@@ -173,6 +182,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                      *([str(loader_archive)] if name == "audio_service" else []),
              *([*interactium_objects] if name in ("interactium", "interactiumd") else []),
              *([*fatfs_objects] if name == "files" else []),
+             *(private_broker_objects if name == "files" else []),
+             *([compile_source(root / "src/user/pumpkin/account_store.cpp")] if name == "p2_store_probe" else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]
                if name in libc_programs else [str(archive)]),

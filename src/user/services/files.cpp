@@ -9,6 +9,9 @@
 #if XOS_FILES_PRIVATE_STORAGE_PROBE
 #include "files_private_storage.hpp"
 #endif
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+#include "files_private_broker.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -2143,7 +2146,12 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     const FRESULT mounted_result = f_mount(&fs, "", 1);
     mounted = mounted_result == FR_OK;
     if (mounted) { recover(); if (!recovery_failed) { recover_orphans(); } }
-#if XOS_FILES_PRIVATE_STORAGE_PROBE
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+    user::files_private_storage::broker private_broker(user::files_private_storage::private_slot_io());
+    if (!private_broker.establish_bootstrap()) {
+        recovery_failed = true;
+    }
+#elif XOS_FILES_PRIVATE_STORAGE_PROBE
     if (mounted && !recovery_failed && !xos::user::files_private_storage::verify_test_slots()) {
         recovery_failed = true;
     }
@@ -2171,6 +2179,19 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             request& in = request_buffer;
             const i64 received = sdk::ipc_recv(session.request_handle, &in, sizeof(in));
             if (received <= 0) { continue; }
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+            namespace storage = user::files_private_storage;
+            if (received == sizeof(storage::grant_request) && private_broker.bootstrap_session(info)) {
+                storage::grant_request grant;
+                __builtin_memcpy(static_cast<void*>(&grant), &in, sizeof(grant));
+                const auto offered = private_broker.grant(grant, info, index, mounted && !recovery_failed);
+                if (sdk::ipc_send(session.response_handle, &offered, sizeof(offered)) != 0 &&
+                    offered.status == storage::result::ok) {
+                    private_broker.revoke();
+                }
+                continue;
+            }
+#endif
             response& out = response_buffer;
             out = response{};
             if (received != static_cast<i64>(sizeof(in))) {
@@ -2182,6 +2203,9 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             }
             (void)sdk::ipc_send(session.response_handle, &out, sizeof(out));
         }
+#if XOS_FILES_PRIVATE_CLIENT_PROBE
+        private_broker.poll(mounted && !recovery_failed);
+#endif
         sdk::yield();
     }
 }

@@ -1,0 +1,39 @@
+{
+  "status": "passed_subset",
+  "launcher": "xsh",
+  "system_build_id": "f129209799d58b4b",
+  "system_manifest_sha256": "014f23573d8df8bfb959353f1865a2282dabf6735f5359f60e0984801c50be3e",
+  "image_sha256": "88d10f135f094b0ee9effd140d42bbfe74623c8b3d40f3f86903ddeb572ea0d1",
+  "elf_sha256": "6a1d6bf15a1814e5f20bc4876803e695a5bfb0d1bfba4548a0f7d1de692b7a3e",
+  "app_receipt_sha256": "4bed1855737fce04742d2922b98cc52bf3d3da3c6cb678159a5c50f497dde1c1",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "with_graphics": [
+    121620,
+    5,
+    3
+  ],
+  "scanout": {
+    "mode": [
+      800,
+      600
+    ],
+    "text_ink_pixels": 475,
+    "sha256": "ba0c16e426bb616c66cbd5985ac0d694eb07f9e4152195c066542968a4232aa1"
+  },
+  "after_payload": [
+    121620,
+    5,
+    3
+  ],
+  "after_services": [
+    129696,
+    3,
+    1
+  ]
+}

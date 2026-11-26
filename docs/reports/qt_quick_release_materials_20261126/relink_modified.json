@@ -1,0 +1,11 @@
+{
+  "status": "static_quick_application_linked",
+  "elf": "quick_app.elf",
+  "elf_sha256": "6a1d6bf15a1814e5f20bc4876803e695a5bfb0d1bfba4548a0f7d1de692b7a3e",
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "materials_manifest_sha256": "28566ca68b6d902dafa62bb90f60de1fa30631dd189977c3777ad361446ae676",
+  "matches_reference": false,
+  "replacement_archives": {
+    "link/kit/target/lib/libQt6Quick.a": "107b3a8ec3014500e76ed2d199d11a162508f58aa3828f5ed933c0ced77bbd18"
+  }
+}

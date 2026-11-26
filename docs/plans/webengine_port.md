@@ -52,6 +52,10 @@ ClarkE 的 M0 对照使用 [锁定的 WPE WebKit 2.54.2 发布归档](../../src/
 | JSCOnly | 宿主关闭归档缺失工具所需的 header map 后继续到 WTF；没有完成配置 | 用完整的上游工具输入做宿主控制，锁定目标 ICU 和实际需要的内存、时钟、线程语义 |
 | XOS JSCOnly | 使用签名验证过的独立 glibc C/C++ sysroot，GCC 16.2.0 两个编译器 ABI 探针通过；上游配置对 CMake 的目标 OS `Generic` 明确拒绝 | 增加独立 XOS 识别及平台审查，再验证解释器静态链和客体运行 |
 
+XOS 平台标识补丁已用同一锁定归档实测。CMake 在 `CMAKE_SYSTEM_NAME=XOS` 下通过
+原先的平台检查并进入 JSCOnly 依赖检测，当前明确停在目标 ICU
+的 `data`、`i18n` 和 `uc` 组件。复现见 [目标配置记录](../../src/ports/webkit/README.md)。
+
 现有 VirtIO-Net、N2/N3 已通过独立实测，ClarkE 的受控 HTTP 可作为网络对照。
 M3 仍须证明所选引擎的 NetworkProcess 走原生网络服务，并补真实 TLS、证书和失败路径。
 

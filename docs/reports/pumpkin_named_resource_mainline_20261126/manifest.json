@@ -3,8 +3,9 @@
   "implementation_commit": "606e26ec",
   "files": {
     "named.json": "a9a03b130e5b24b929ba0f32c6d39794c3d0bcb43f3dd6ad4bfedcb12ca768b3",
-    "ordinary.json": "91c5e2808c98c0502f78cf0fb6d91a8b68aaad88a2e4d51f7284347d20f6a606",
+    "ordinary.json": "32dd31356e7928702901a73683bb303c360e0a3bd76fff5dc229554331ef5e1d",
     "replay.json": "319f0029ef0be1a055126534eea86f429b014f6ed771b8c3c574040c3038b3c6",
     "sealed.json": "928a5f9cfed4be217e7e4893f52292f2f43606f9da9cf7fc5cf7a4968c5c74cb"
-  }
+  },
+  "raw_ordinary_sha256": "91c5e2808c98c0502f78cf0fb6d91a8b68aaad88a2e4d51f7284347d20f6a606"
 }

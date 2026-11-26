@@ -1,0 +1,38 @@
+{
+  "source_commit": "165230446a18fafb5990f2d4f4ddd7f5d1b401ac",
+  "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "build_id": "3bbbf73984b95c20",
+  "guest_qualification": "not_run",
+  "installer_guest_qualification": "passed",
+  "application_sdk": {
+    "kit_tree_sha256": "8b67e1b967013a4b31f2289461af9eebf39eba27f2cf36c66b4de650291266a8",
+    "profile_file_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "profile_id": "xos-x86_64-glibc-stock-fork-v1",
+    "profile_sha256": "a7bf0f845819b1deae2939991144e8feba03a335362e5fbee24c88f71dbe3b25",
+    "sdk_manifest_sha256": "d32a5c3b604016492df6af8ca04445b8d050cc81d4225db68cf4926e17c6aa7b",
+    "sdk_tree_sha256": "a720d515255bf7bfe4031fdf49a23d0f41edde367bfea3c00c909c7289d6e262"
+  },
+  "raw_candidate_sha256": "03cfc21b1cc17350ba0c31dcaaad50b10c733f64adca305c4446613327f4fe17",
+  "artifacts": {
+    "system/manifest.json": "ec8755e10c6a51c5e89d6c385ce93bf0052fce13f64ceb85abf38f3ba6794017",
+    "system/install_manifest.json": "3a608b25f8ae1f6a3bc1141b65792e22ebd4dcd25336e6e4c7df3a9e30b99c89",
+    "system/xos-install.iso": "81f63f92056c59639c5b4c31b0771a2fc5db3868c03c40bd79060f6263481228",
+    "system/xos-install-dash.iso": "78c58d5707b42147978a6d68ae777efc4d637a23b514cf3740a78573cf252a4e",
+    "system/license_report.json": "59bdeb3bac7fe278e1e1cfccb35cc998055a9ef5bcbf9ff5935f5446ca8c5614",
+    "stock/daily.xpk": "80176779cb58f6e598389aee4acfe65e9870fd37ea66938c9873bdd2f2fec013",
+    "stock/xypm.elf": "319325c3c8be5a3e60972994fec667a5244d560dfdd6fe0109f121a570706740",
+    "stock/build_receipt.json": "e3bddd0979abd6f72b73f9b1748f3010b2aacc1adf28105ea9c76dc22007d21e",
+    "dash_manifest.json": "cd1913428f57e1cef212226bc59fa9990a155df404443aa3db6580f8fa6cf0cc",
+    "installer_guest_report.json": "f1faa6ff36bd7fdf7953d99999667d080b68364a55c3ae5869d99daacb7d691f",
+    "stock_guest/report.json": "ff3a8b1926cabb6de976e64eafe0527529615584f2500bbd39b4245a300cb424"
+  },
+  "steps": {
+    "system": "passed",
+    "dash": "passed",
+    "stock": "passed",
+    "install_iso": "passed",
+    "licenses": "passed",
+    "installer_smoke": "passed",
+    "stock_guest": "passed"
+  }
+}

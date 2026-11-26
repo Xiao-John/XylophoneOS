@@ -9,9 +9,11 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
+from boot_smoke import Guest
 from daily_utilities_smoke import expected_du12_outputs
+from iso_dash_install import iso_files
 from make_work_disk import create_fat32
-from package_p2_faults import boot_maintenance_guest, resources
+from package_p2_faults import boot_maintenance_guest, quiet_maintenance_guest, resources
 from task_smoke import send_bytes
 from xypm_format import canonical, load_json, require, sha_file, strict_json, verify_package
 from xypm_image import Disk, query_image
@@ -53,15 +55,20 @@ def main():
     parser.add_argument('--xypm-build', type=Path, required=True)
     parser.add_argument('--package', type=Path, required=True)
     parser.add_argument('--profile', type=Path, required=True)
-    parser.add_argument('--dash', type=Path, required=True)
+    parser.add_argument('--dash', type=Path)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--glibc-sdk', type=Path)
     parser.add_argument('--dash-receipt', type=Path)
+    parser.add_argument('--installer-iso', type=Path, help='start with the bound automatic daily install')
     parser.add_argument('--maintenance-timeout', type=int, default=360)
     parser.add_argument('--dash-timeout', type=int, default=180)
     args = parser.parse_args()
     if min(args.maintenance_timeout, args.dash_timeout) <= 0:
         parser.error('timeouts must be positive')
+    if args.dash is None:
+        if args.dash_receipt is None:
+            parser.error('supply --dash or --dash-receipt')
+        args.dash = ROOT / load_json(args.dash_receipt)['elf']
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=True)
     system = load_json(args.system / 'manifest.json')
@@ -71,6 +78,8 @@ def main():
     if glibc and (args.glibc_sdk is None or args.dash_receipt is None or
                   not {'cxx_runtime', 'stdio_transfer'} <= set(profile['features'])):
         parser.error('glibc requires a C/C++ stdio_transfer profile, --glibc-sdk and --dash-receipt')
+    if args.installer_iso and not glibc:
+        parser.error('the stock installer gate requires a glibc profile')
     build = load_json(args.xypm_build)
     elf = Path(build['elf'])
     package = verify_package(args.package, profile)
@@ -86,6 +95,17 @@ def main():
               'not_run': ['fault_injection', 'abrupt_power_loss', 'upgrade', 'iso_install']}
     guest = None
     try:
+        if args.installer_iso:
+            install = load_json(args.system / 'install_manifest.json')
+            staged = {(item['type'], item['name']): item['sha256'] for item in install['boot_bundle']['members']}
+            require(staged == {(1, 'dash'): report['dash_sha256'], (3, 'daily'): package['sha256'],
+                               (5, 'xypm'): report['xypm_elf_sha256']}, 'installer bundle membership differs')
+            files = iso_files(args.installer_iso)
+            require(install['build_id'] == system['build_id'] and
+                    files['KERNEL.BIN'] == install['kernel_sha256'] == system['artifacts']['kernel.bin']['sha256'] and
+                    files['DASH.ELF'] == install['boot_bundle']['container_sha256'], 'installer ISO differs from its manifest')
+            report['installer_iso_sha256'] = sha_file(args.installer_iso)
+            report['not_run'].remove('iso_install')
         if glibc:
             daily_bytes = bytearray()
             receipt = managed['build_receipt']
@@ -117,13 +137,17 @@ def main():
             with Disk(disk, root) as backend:
                 for path in ('/usr', '/usr/bin', '/out', '/tmp', '/tests'):
                     backend.command('mkdir', path)
+                if not args.installer_iso:
+                    for path, source in (('/usr/bin/xypm', elf), ('/usr/bin/dash', args.dash)):
+                        backend.command('import', path, source)
                 for path, source in (
-                    ('/usr/bin/xypm', elf), ('/usr/bin/dash', args.dash),
-                    ('/out/daily.xpk', args.package), ('/out/sentinel', sentinel),
+                    ('/out/sentinel', sentinel),
                     ('/tests/du12.sh', fixture / 'du12.sh'), ('/tests/binary.dat', fixture / 'binary.dat'),
                     ('/tests/tail_limit.dat', limit), ('/tests/tail_over_limit.dat', over),
                 ):
                     backend.command('import', path, source)
+                if not args.installer_iso:
+                    backend.command('import', '/out/daily.xpk', args.package)
 
             def command(line, expected, timeout):
                 start = len(guest.output)
@@ -132,23 +156,38 @@ def main():
                 guest.expect_supervisor(start=start, timeout=timeout)
                 return bytes(guest.output[start:])
 
-            guest = boot_maintenance_guest(image, 'daily_p2_install', disk)
-            baseline = resources(guest)
-            report['install_baseline'] = baseline
-            command('xypm install /out/daily.xpk', b'maintenance write lease required', 40)
-            require(resources(guest) == baseline, 'resources drift after denied install')
-            report['checks'].append('ordinary_install_denied')
-            data = command('maint-run /usr/bin/xypm install /out/daily.xpk --sha256 ' + package['sha256'],
-                           b'maintenance: completed', args.maintenance_timeout)
-            require(b'committed transaction cleaned' in data, 'install cleanup missing')
-            require(resources(guest) == baseline, 'resources drift after install')
-            report['checks'].append('guest_p2_install')
+            if args.installer_iso:
+                guest = Guest(args.installer_iso, 'daily_p2_auto_install', work_disk=disk, iso=True)
+                guest.expect(b'xos64> ', timeout=40)
+                send_bytes(guest, b'run\r')
+                guest.expect(b'[files] bundle packages installed', timeout=args.maintenance_timeout)
+                guest.expect_supervisor(trace=True, timeout=40)
+                require(b'xypm-recover: committed transaction cleaned' in guest.output, 'install cleanup missing')
+                quiet_maintenance_guest(guest)
+                report['install_baseline'] = resources(guest)
+                report['checks'].append('installer_autoinstalls_daily_xpk')
+            else:
+                guest = boot_maintenance_guest(image, 'daily_p2_install', disk)
+                baseline = resources(guest)
+                report['install_baseline'] = baseline
+                command('xypm install /out/daily.xpk', b'maintenance write lease required', 40)
+                require(resources(guest) == baseline, 'resources drift after denied install')
+                report['checks'].append('ordinary_install_denied')
+                data = command('maint-run /usr/bin/xypm install /out/daily.xpk --sha256 ' + package['sha256'],
+                               b'maintenance: completed', args.maintenance_timeout)
+                require(b'committed transaction cleaned' in data, 'install cleanup missing')
+                require(resources(guest) == baseline, 'resources drift after install')
+                report['checks'].append('guest_p2_install')
             guest.close()
             (out / 'install.log').write_bytes(guest.output)
             guest = None
             report['installed_files'] = query_image(disk, profile, 'verify-installed')['files']
             require(report['installed_files'] == len(managed['files']), 'installed contents mismatch')
             with Disk(disk, root) as backend:
+                if args.installer_iso:
+                    for path, digest in (('/usr/bin/dash', report['dash_sha256']),
+                                         ('/usr/bin/xypm', report['xypm_elf_sha256'])):
+                        require(sha_file(backend.export(path)) == digest, 'installer executable differs: ' + path)
                 backend.command('import', user_path, user_file)
 
             guest = boot_maintenance_guest(image, 'daily_p2_reboot', disk)

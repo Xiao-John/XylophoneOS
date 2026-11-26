@@ -1,0 +1,10 @@
+{
+  "current-on-old": {
+    "raw_log_sha256": "fbe56078aea272e892d13e1269299de64206405da3897d62069f788e550b5cad",
+    "status": "rejected"
+  },
+  "old-on-current": {
+    "raw_log_sha256": "fbe56078aea272e892d13e1269299de64206405da3897d62069f788e550b5cad",
+    "status": "rejected"
+  }
+}

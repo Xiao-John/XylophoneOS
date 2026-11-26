@@ -76,8 +76,10 @@ def main():
             guest.expect(b"xos64> ", timeout=30)
             start = len(guest.output)
             send_bytes(guest, b"run\r")
-            guest.expect_supervisor(trace=args.external, start=start, timeout=60)
-            guest.expect(b"[files] dash installed", start=start, timeout=60)
+            bundle = metadata.get("boot_bundle")
+            guest.expect_supervisor(trace=args.external, start=start, timeout=360 if bundle else 60)
+            marker = b"[files] bundle installed: /usr/bin/dash" if bundle else b"[files] dash installed"
+            guest.expect(marker, start=start, timeout=60)
             if args.external:
                 begin = len(guest.output)
                 send_bytes(guest, b"dash /bin/boot_probe.sh\r")

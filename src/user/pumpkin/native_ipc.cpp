@@ -150,7 +150,7 @@ progress process_request(service_core& core, transport_session& session, u64& no
             auto& input = *static_cast<named_context*>(context);
             if (input.broker_only && incoming.operation == wire_operation::read_named_resource) { return status::denied; }
             return invoke_named_resource(*input.store, state, connection, input.registrar, incoming, at, outgoing);
-        }, wire_operation::put_named_resource, wire_operation::erase_named_resource};
+        }, wire_operation::put_named_resource, wire_operation::put_named_binary};
     if (named != nullptr && request.operation >= named_extension.first) { extension = &named_extension; }
 #endif
     // The kernel copies the single-slot packet. Never retry after dispatch,

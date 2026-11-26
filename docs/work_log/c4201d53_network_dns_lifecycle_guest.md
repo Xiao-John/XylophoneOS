@@ -46,6 +46,11 @@ N2 25+2 项宿主 ASan/UBSan 控制复验通过。宿主 D1 使用旧 DNS 选项
 公开 N2 回执省略宿主命令行，清单保留原回执摘要。
 [主线组合回执](../reports/n4_dns_mainline_20261126/manifest.json)
 
+在 `492f37ea` 上重建后，审查复验从已关闭的 QEMU 抓包独立计数出站 DNS 请求，
+并在回收 peer 线程后重新检查错误。镜像 `fea6da8986750b37` 的最终抓包和 peer
+都记录四笔请求，资源前后为 `129693 / 3 / 1`。
+[最终抓包与回执](../reports/n4_dns_closed_peer_20261126/manifest.json)
+
 明确保留直接 A 的单 resolver 诊断范围。生产 DNS/DHCP 关闭。下一组在原有 net2
 认证会话上接入经登记的 ticket/config epoch 和准确的 NODATA、NXDOMAIN、REFUSED
 等错误，验证跨应用、停止与期限。DHCP 继续按独立租约门推进。

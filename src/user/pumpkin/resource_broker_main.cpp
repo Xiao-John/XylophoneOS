@@ -57,8 +57,8 @@ bool process_read(client_slot& client, sealed_blob* object, broker_authority& au
             output.result = transport_status(authority.authorize(call.message, &selected));
             if (output.result == wire_status::ok) {
                 output.generation = selected.generation;
-                output.data.length = sizeof(selected.data);
-                __builtin_memcpy(output.data.bytes, &selected.data, sizeof(selected.data));
+                output.data.length = selected.data.length;
+                __builtin_memcpy(output.data.bytes, selected.data.bytes, selected.data.length);
             }
         } else {
             const blob_read_check check{&call, [](void* context, const nonce& incarnation, const owner_record& owner) {

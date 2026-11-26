@@ -232,10 +232,10 @@ struct resource_launch {
 struct resource_result {
     signal message{};
     u64 generation = 0;
-    u32 data = 0;
+    named_resource_data data{};
     u32 reserved = 0;
 };
-static_assert(sizeof(resource_arrival) == 24 && sizeof(resource_launch) == 40 && sizeof(resource_result) == 24);
+static_assert(sizeof(resource_arrival) == 24 && sizeof(resource_launch) == 40 && sizeof(resource_result) == 56);
 
 result start_broker(u32 image, u64 daemon, wire_id identity, const nonce& incarnation, ipc_client& registrar,
                     child_process& broker, endpoints& control, bool named_profile) {
@@ -354,7 +354,8 @@ int submit_and_logout(const ipc_channel& parental, delivery& enrollment, [[maybe
     if (launch.named.length) {
         resource_result selected{{version, resource.result == wire_status::ok ? stage : step::resource_denied},
                                   resource.generation};
-        __builtin_memcpy(&selected.data, resource.data.bytes, sizeof(selected.data));
+        selected.data.length = resource.data.length;
+        __builtin_memcpy(selected.data.bytes, resource.data.bytes, selected.data.length);
         return send(parental, selected) && signal_received(parental, step::finish) ? 0 : 15;
     }
 #endif
@@ -471,7 +472,7 @@ bool enroll_user(ipc_client& registrar, account_name account, const anchor_guest
 }
 
 u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy,
-              [[maybe_unused]] u32 broker_image, [[maybe_unused]] named_resource_request* named) {
+              [[maybe_unused]] u32 broker_image, [[maybe_unused]] named_read* named) {
     wire_reply found{};
     child_process holder;
     endpoints channel;
@@ -507,7 +508,7 @@ u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account
         const auto launched = start_broker(broker_image, daemon, found.token, arrival.incarnation, registrar,
                                            broker, broker_control, named != nullptr);
         if (launched != result::passed) { return static_cast<u8>(launched); }
-        if (!send(channel.pair, resource_launch{broker.pid, named ? *named : named_resource_request{}})) {
+        if (!send(channel.pair, resource_launch{broker.pid, named ? named->selection : named_resource_request{}})) {
             return static_cast<u8>(result::resource_access);
         }
     }
@@ -516,14 +517,16 @@ u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account
 #if XOS_PUMPKIN_USER_RESOURCE
     if (named != nullptr) {
         resource_result selected{};
+        auto& selection = named->selection;
         if (!receive(channel.pair, selected, deadline()) || selected.reserved ||
             (selected.message.stage == step::signed_out
-                ? !selected.generation || (named->generation && named->generation != selected.generation)
-                : selected.message.stage != step::resource_denied || selected.generation || selected.data)) {
+                ? !selected.generation || !selected.data.valid() ||
+                  (selection.generation && selection.generation != selected.generation)
+                : selected.message.stage != step::resource_denied || selected.generation || !selected.data.empty())) {
             return static_cast<u8>(result::resource_access);
         }
         outcome = selected.message;
-        named->generation = selected.generation;
+        selection.generation = selected.generation;
         named->data = selected.data;
     } else
 #endif

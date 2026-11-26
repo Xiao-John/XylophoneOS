@@ -1,0 +1,18 @@
+{
+  "implementation_commit": "4c56c325231e807b0f56ecb1592a4ed72478bcca",
+  "implementation_tree": "9f85e02b4bc8244fa4ccc022c6319b8d571424fe",
+  "source_archive": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+  "source_lock_sha256": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030",
+  "build_wrapper_sha256": "f76b11664c3bc5d0f093065258cca5a1b851ff3946476a0824bdfa697a9ccfc8",
+  "patched_shell_sha256": "6cf0db0a1471504ab904e19c6242779e98355478e1a2868dd7fe67924041203e",
+  "glibc_sdk_manifest_sha256": "a4a6b3c278e34773088b11bb2a352d96487b9234755b9fcb9c7fe96ab9ace96e",
+  "icu_archives": {
+    "lib/libicudata.a": "0b5168e5c536398e4985e56bb6bf6a8a6ddabcd0886e8b81913debe6a80caf52",
+    "lib/libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
+    "lib/libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83"
+  },
+  "javascriptcore_archive_sha256": "4e6d5841e9332628472bd869091ce7b4db620576c74efe52731ad24f46b76cd4",
+  "static_elf_sha256": "21c15eb5b1cf67abee9696b62f9ec44aa1b0f03f970fa0028662d89056cd6779",
+  "system_manifest_sha256": "7ea18183024da7442ed839c6023ee4fb85dc99b1ab59b94c6c91c1b58bc48735",
+  "serial_raw_sha256": "aa4bc83ad17bdb40aa3f54ebdda021ac46af78789d4734cc4cd7e5db3843639a"
+}

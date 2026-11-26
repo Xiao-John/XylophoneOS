@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
+#include "named_resource_data.hpp"
 #include "native_ipc.hpp"
 
 namespace xos::user::pumpkin {
 class named_resource_store;
 
 inline constexpr u64 read_association_lifetime_ns = 2'000'000'000ull;
-inline constexpr u32 broker_wire_version = 2;
+inline constexpr u32 broker_wire_version = 3;
 
 // Private, single-object, read-only service channel. The broker supplies the
 // authenticated client endpoint. Sealed mode supplies its existing label;
@@ -29,10 +30,10 @@ struct broker_read_reply {
     wire_status result = wire_status::denied;
     u64 sequence = 0;
     u64 generation = 0;
-    u32 data = 0;
+    named_resource_data data{};
     u32 reserved = 0;
 };
-static_assert(sizeof(broker_read_request) == 168 && sizeof(broker_read_reply) == 32);
+static_assert(sizeof(broker_read_request) == 168 && sizeof(broker_read_reply) == 64);
 
 class resource_bridge {
 public:

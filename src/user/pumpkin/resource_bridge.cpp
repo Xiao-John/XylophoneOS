@@ -89,7 +89,8 @@ status resource_bridge::authorize(service_core& core, const broker_read_request&
                                                        selected);
             if (result == status::ok) {
                 reply.generation = selected.key.generation;
-                __builtin_memcpy(&reply.data, selected.bytes, sizeof(reply.data));
+                reply.data.length = selected.length;
+                __builtin_memcpy(reply.data.bytes, selected.bytes, selected.length);
             }
             return result;
         }
@@ -176,7 +177,8 @@ status broker_authority::authorize(broker_read_request& request, broker_read_rep
                 reply.reserved == 0) {
                 if (reply.result == wire_status::ok || reply.result == wire_status::denied) {
                     const bool provides_data = selected && reply.result == wire_status::ok;
-                    if (provides_data ? !reply.generation : reply.generation || reply.data) { break; }
+                    if (provides_data ? !reply.generation || !reply.data.valid() :
+                        reply.generation || !reply.data.empty()) { break; }
                     if (static_cast<u64>(clock) >= request.deadline) { return status::unavailable; }
                     if (selected) { *selected = reply; }
                     return reply.result == wire_status::ok ? status::ok : status::denied;

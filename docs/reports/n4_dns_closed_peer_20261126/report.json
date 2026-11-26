@@ -1,0 +1,56 @@
+{
+  "build_id": "fea6da8986750b37",
+  "capture_sha256": "6f9eede69c184904981d6c2da20a1c2eb14e6b56f7fd8343e009b28e3f8dbd06",
+  "captured_dns_queries": 4,
+  "dns_queries": [
+    {
+      "question_sha256": "ae39969beae332fd300b4d3e444eee0db614db08a4bfe25bb55bac7f120dde3a",
+      "source_port": 22912,
+      "transaction_id": 39623
+    },
+    {
+      "question_sha256": "ae39969beae332fd300b4d3e444eee0db614db08a4bfe25bb55bac7f120dde3a",
+      "source_port": 6279,
+      "transaction_id": 42472
+    },
+    {
+      "question_sha256": "ce5abccd5d28ac506eb719fad354877aa0c79a76fcac16e945904a1ba9e40125",
+      "source_port": 14349,
+      "transaction_id": 43200
+    },
+    {
+      "question_sha256": "734d624d238121eb4d2512dfcb04b104841f851a86b65a6b5608aca8ab89bd88",
+      "source_port": 56036,
+      "transaction_id": 40721
+    }
+  ],
+  "iso_sha256": "25269ba0bf28261e4ce1a0f54ca05385adf6ea945b177fe2d6465560c09a4483",
+  "lwip_inputs_sha256": "e45feb2078ce4a230de66de371c8ede7fedddeb18d0979bb448720c21cf1e8e4",
+  "network_service_sha256": "d8735eaf9006e6abb115609419e5a6665f52bb112eda763b00a8db9324d3aa0a",
+  "peer_transport_sha256": "b5e0f5d339a6fa8e253e82014e95df17a4bd7b321ab32e7391c3ebd29a0bb811",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "received_answers": [
+    "192.0.2.56",
+    "192.0.2.96"
+  ],
+  "resources_after": [
+    129693,
+    3,
+    1
+  ],
+  "resources_before": [
+    129693,
+    3,
+    1
+  ],
+  "resources_cold": [
+    129694,
+    3,
+    1
+  ],
+  "runner_sha256": "71570a4c2c3017cfbb9d6a7db52d5c3efac0c1098775327a12eb4c1e8ee6ab04",
+  "sdk_manifest_sha256": "77c6075afdf20ee1c3a5a7fdbd3d844b74d5f3db607efdd16f66fae075be176b",
+  "serial_sha256": "49604a14cf5b407552ed117dd4f677a9e4d6fa50495f08541254a4fb30179b7a",
+  "status": "passed_subset",
+  "system_manifest_sha256": "fa3afb598ae5cb7243c4f7a7e02efece66ccabac766c32a343ba0b9d7a261b08"
+}

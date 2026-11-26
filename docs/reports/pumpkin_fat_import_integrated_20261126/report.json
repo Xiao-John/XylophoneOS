@@ -1,0 +1,108 @@
+{
+  "status": "passed_subset",
+  "system": {
+    "build_id": "0c11b016bbd9554c",
+    "manifest_sha256": "d5dbbe1642bb0507e28f3a92bbcffa512794573225e8f29d1b90c83df12c98eb",
+    "iso_sha256": "5089670e61918b5a7753022cee844e13a0889bee1fd487408c9653ef4572cc51",
+    "sdk_manifest_sha256": "28bf5e1d86a3a951558242f5617a2be15826a0c814d74126886bfe4430663d4f",
+    "sdk_tree_sha256": "fbc719f5a601360ccb01bd4295a10f1a837a7c250aef62171e18165d231e5533"
+  },
+  "ordinary": {
+    "build_id": "603498c07a085655",
+    "manifest_sha256": "f407520ab6cb08d8f74f467cb6467950ec2acadf4a1e49fa6dbd26949035fdd7",
+    "iso_sha256": "1df26fa53401c5c71a9ba3771a8430ba974db62802e02fbfd3b5b24305b4e6df",
+    "sdk_manifest_sha256": "43b41a5c48be5cf5f145aaa1487fab0dddb12f81a0000d6128531c808bf6ea67",
+    "sdk_tree_sha256": "fb6381dfa1d9100d5b41c0266f345d5448e23c42a7dc38e9299ccc714320c15c"
+  },
+  "entry_sha256": "e1dcefa122f6b569e6cea932d027f8e444d9f5c95861b0e34540db928cc59fc3",
+  "runner_sha256": "7e60441074fe9a09a1718a5b56d3753ccd124e059382d66f9f820aa1aaa94032",
+  "checks": [
+    {
+      "case": "create private test installation",
+      "exit": 0,
+      "revision": 0
+    },
+    {
+      "case": "durable account and held credential",
+      "exit": 0,
+      "revision": 2
+    },
+    {
+      "case": "missing source rejected before publication",
+      "exit": 6,
+      "revision": 2
+    },
+    {
+      "case": "directory source rejected before publication",
+      "exit": 6,
+      "revision": 2
+    },
+    {
+      "case": "empty source rejected before publication",
+      "exit": 6,
+      "revision": 2
+    },
+    {
+      "case": "oversized source rejected before publication",
+      "exit": 6,
+      "revision": 2
+    },
+    {
+      "case": "device source rejected before publication",
+      "exit": 6,
+      "revision": 2
+    },
+    {
+      "case": "import exactly 32 binary bytes from the ordinary FAT file",
+      "exit": 0,
+      "revision": 3
+    },
+    {
+      "case": "fresh VM reads the complete privately owned snapshot and logs out",
+      "exit": 0,
+      "revision": 3
+    },
+    {
+      "case": "ordinary xsh renames a different equal-length FAT file over the source",
+      "exit": 0,
+      "revision": 3
+    },
+    {
+      "case": "new VM still reads the original owner snapshot after ordinary replacement",
+      "exit": 0,
+      "revision": 3
+    },
+    {
+      "case": "claiming initialization again cannot replace the existing snapshot",
+      "exit": 5,
+      "revision": 3
+    },
+    {
+      "case": "trusted reimport publishes the new bytes under a fresh generation",
+      "exit": 0,
+      "revision": 4
+    },
+    {
+      "case": "the old protected generation no longer reads",
+      "exit": 4,
+      "revision": 4
+    },
+    {
+      "case": "new VM reads the exact binary replacement through the authorized broker",
+      "exit": 0,
+      "revision": 4
+    }
+  ],
+  "input_sha256": [
+    "14c9e1561d343f7730d54dfecd401f4002415e5240a060682939494e84a828b6",
+    "95e7e7488a7876e8b6d10d04e1c113e681b47c657bdb2d9e13714ad53426ce9e"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "ordinary_resources": [
+    129696,
+    3,
+    1
+  ],
+  "private_tail_after_ordinary_rename": "c734e6bafffe64f59d98fa2a09e0a1d99b9b0a13504e984eba2780938377529a",
+  "ordinary_serial_sha256": "3f5204cb70aa2d812f9803564cad9141adf31957b406148b2f1e630a9698fdcb"
+}

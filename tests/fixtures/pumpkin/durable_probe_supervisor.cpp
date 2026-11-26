@@ -10,6 +10,7 @@
 #if XOS_PUMPKIN_USER_LOGIN
 #include "../../../src/user/pumpkin/user_login.hpp"
 #if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#include "../../../src/user/pumpkin/fat_resource_import.hpp"
 #include "../../../src/user/pumpkin/named_operator.hpp"
 #endif
 #endif
@@ -339,13 +340,24 @@ bool named_absent(daemon& server) {
 
 #if XOS_PUMPKIN_USER_RESOURCE
 u8 mutate_named(daemon& server, named_operator::packet& input) {
-    const bool put = input.op == named_operator::operation::put;
+    const bool importing = input.op == named_operator::operation::import_fat;
+    const bool put = importing || input.op == named_operator::operation::put;
     wire_reply found{};
     if (put) {
         auto lookup = operation_request(wire_operation::lookup_account, true);
         if (!expect(server.control, lookup, found, wire_status::ok) || found.flags != 0) return 0;
     }
     auto update = operation_request(put ? wire_operation::put_named_resource : wire_operation::erase_named_resource);
+    if (importing) {
+        file::client files;
+        named_resource_data source{};
+        if (!files.init() || !read_fat_resource(files, reinterpret_cast<const char*>(input.payload), source)) {
+            return named_operator::source_rejected;
+        }
+        update.operation = wire_operation::put_named_binary;
+        input.fields.data = source.length;
+        __builtin_memcpy(update.key.bytes, source.bytes, sizeof(source.bytes));
+    }
     update.token = found.token;
     update.name_length = sizeof(input.fields);
     __builtin_memcpy(update.name, &input.fields, sizeof(input.fields));
@@ -486,9 +498,13 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
         case anchor_guest::scenario::user_named_read:
             if (started) {
+                native_login::named_read access{named_input.fields};
                 login_result = broker_image ? native_login::login_user(holder_image, server.pid, server.control,
-                    {account, sizeof(account) - 1}, proxy_control, broker_image, &named_input.fields)
+                    {account, sizeof(account) - 1}, proxy_control, broker_image, &access)
                     : static_cast<u8>(native_login::result::broker_launch);
+                named_input.fields = access.selection;
+                named_input.fields.data = access.data.length;
+                __builtin_memcpy(named_input.payload, access.data.bytes, sizeof(access.data.bytes));
                 named_result = login_result;
                 passed = (named_result == 1 || named_result == user_login::denied ||
                           named_result == user_login::resource_denied) && server.stop();
@@ -496,6 +512,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             break;
         case anchor_guest::scenario::user_named_put:
         case anchor_guest::scenario::user_named_erase:
+        case anchor_guest::scenario::user_named_import:
             if (started) {
                 named_result = mutate_named(server, named_input);
                 passed = named_result != 0 && server.stop();
@@ -530,6 +547,9 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         named_input.sequence = 2;
         named_input.result = named_result;
         if (named_result != 1) named_input.fields = {};
+        if (named_mode != named_operator::operation::select || named_result != 1) {
+            __builtin_memset(named_input.payload, 0, sizeof(named_input.payload));
+        }
         passed = sdk::channel_send_wait(proxy_control.transmit, &named_input, sizeof(named_input),
                                        anchor_guest::deadline()) == 0;
         outcome = passed ? named_result : 0;

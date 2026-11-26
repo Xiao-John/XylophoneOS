@@ -19,7 +19,11 @@
     "patches/0010_xos_wtf_config_platform.patch": "a0edf20bbc8d50ac78dea1e2908ce5180030eaaeb7bf62fc3d4b8e6bda73f693",
     "patches/0011_xos_wtf_os_allocator.patch": "0b5fcfb18d461b134d86178e257aaa7f98c4555f81f457b2b9b100eaa4795239",
     "patches/0012_xos_jsc_config_mapping.patch": "b26f09ab0e9f438f3894ed358e4cf28ba2015fd3db56f72d72bc8bfaa0f29006",
-    "patches/0013_xos_llint_elf_labels.patch": "f6bea628a705797610e36e101489ec501afceae480bfdad7fb473ae1c87530a1"
+    "patches/0013_xos_llint_elf_labels.patch": "f6bea628a705797610e36e101489ec501afceae480bfdad7fb473ae1c87530a1",
+    "patches/0014_xos_static_crt_link.patch": "e763171e0dc7001cd1a3cec30c6fc7e7d757805d5f0c99f788f03c2843ade3fc",
+    "patches/0015_static_icu_dependency_order.patch": "600ba61a4c81ea2abfc3e123de0f54b6e17a68f8a2b6cfb966f31a7f7d198140",
+    "patches/0016_xos_llint_opcode_mapping.patch": "519e47b538e7b09ed4efd03d57cf11c1a2ddae20dabfc2ee19091dbf84d1723c",
+    "patches/0017_xos_jsc_shell_thread.patch": "cc60b626190103ed99e19883bc0208bb787ad93731b2f2344db0a392d9b78673"
   },
   "llint_icu": {
     "version": "79.1",

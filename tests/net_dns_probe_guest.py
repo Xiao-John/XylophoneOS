@@ -32,6 +32,29 @@ def wire_name(name):
     return b''.join(bytes((len(label),)) + label.encode('ascii') for label in name.split('.')) + b'\0'
 
 
+def captured_dns_queries(path):
+    capture = path.read_bytes()
+    byte_order = {b'\xd4\xc3\xb2\xa1': '<', b'\xa1\xb2\xc3\xd4': '>'}.get(capture[:4])
+    if len(capture) < 24 or not byte_order or struct.unpack_from(byte_order + 'I', capture, 20)[0] != 1:
+        raise ValueError('expected an Ethernet PCAP from the guest')
+    position, queries = 24, 0
+    while position < len(capture):
+        if len(capture) - position < 16:
+            raise ValueError('truncated Ethernet capture record')
+        size = struct.unpack_from(byte_order + 'I', capture, position + 8)[0]
+        start = position + 16
+        position = start + size
+        if position > len(capture):
+            raise ValueError('truncated Ethernet capture frame')
+        frame = capture[start:position]
+        if len(frame) < 42 or frame[12:14] != b'\x08\x00' or frame[23] != 17:
+            continue
+        udp = 14 + (frame[14] & 15) * 4
+        if udp >= 34 and udp + 8 <= len(frame) and frame[udp + 2:udp + 4] == b'\x00\x35':
+            queries += 1
+    return queries
+
+
 CACHE, CANCEL, STOP = (wire_name(f'{label}.n4.test') for label in ('cache', 'cancel', 'stop'))
 
 
@@ -127,15 +150,22 @@ def main():
                              b'[net-dns] result=0', b'kind=exited code=0']
                 if not all(line in serial for line in expected) or peer.error or len(peer.queries) != 4:
                     raise AssertionError(f'DNS lifecycle or peer mismatch: {serial[-3000:]!r}, {peer.error}, {peer.queries}')
-                report['dns_queries'] = peer.queries
                 report['received_answers'] = peer.addresses[:2]
                 report['resources_after'] = resources(guest)
                 if report['resources_before'] != report['resources_after']:
                     raise AssertionError('DNS probe did not reclaim guest resources')
             finally:
-                peer.close()
-                if guest is not None:
-                    guest.close()
+                try:
+                    peer.close()
+                finally:
+                    if guest is not None:
+                        guest.close()
+            if peer.error or len(peer.queries) != 4:
+                raise AssertionError(f'DNS peer did not finish cleanly: {peer.error}, {peer.queries}')
+            report['dns_queries'] = peer.queries
+            report['captured_dns_queries'] = captured_dns_queries(capture)
+            if report['captured_dns_queries'] != len(peer.queries):
+                raise AssertionError('DNS packets in the final capture differ from peer observations')
         if verify_system(system) != (build_id, manifest_digest):
             raise AssertionError('system changed during the guest gate')
         report['capture_sha256'] = digest(capture)

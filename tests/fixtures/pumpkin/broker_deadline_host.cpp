@@ -80,7 +80,10 @@ i64 xos::sdk::syscall(u64 number, u64 first, u64 second, u64 third) {
             auto& reply = *reinterpret_cast<broker_read_reply*>(second);
             reply = {broker_wire_version, fixture.authorization_result, fixture.last_sequence};
             reply.generation = fixture.generation;
-            if (reply.generation) std::memcpy(&reply.data, content, sizeof(content));
+            if (reply.generation) {
+                reply.data.length = sizeof(content);
+                std::memcpy(reply.data.bytes, content, sizeof(content));
+            }
             fixture.pending = false;
             return sizeof(reply);
         }

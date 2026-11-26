@@ -32,7 +32,7 @@ bool valid_request(const wire_request& request, const wire_extension* extension)
         if (request.name_length != sizeof(resource_broker_grant) || !zero_id(request.token)) { return false; }
     } else if (operation == wire_operation::begin_resource_read) {
         if (request.name_length != sizeof(u64) || !valid_id(request.token)) { return false; }
-    } else if (operation >= wire_operation::put_named_resource && operation <= wire_operation::erase_named_resource) {
+    } else if (operation >= wire_operation::put_named_resource && operation <= wire_operation::put_named_binary) {
         if (request.name_length != sizeof(named_resource_request) ||
             (operation == wire_operation::erase_named_resource ? !zero_id(request.token) : !valid_id(request.token))) {
             return false;
@@ -46,7 +46,8 @@ bool valid_request(const wire_request& request, const wire_extension* extension)
             return false;
         }
     }
-    return operation == wire_operation::authenticate || !has_bytes(request.key.bytes, secret_bytes);
+    return operation == wire_operation::authenticate || operation == wire_operation::put_named_binary ||
+        !has_bytes(request.key.bytes, secret_bytes);
 }
 
 wire_status to_wire_status(status result) {
@@ -108,6 +109,7 @@ status invoke(service_core& core, const connection_id& connection, const wire_re
     case wire_operation::put_named_resource:
     case wire_operation::read_named_resource:
     case wire_operation::erase_named_resource:
+    case wire_operation::put_named_binary:
         break;
     }
     return status::invalid;
@@ -149,7 +151,7 @@ bool valid_reply(const wire_request& request, const wire_reply& reply) {
     }
     const bool expects_token = uses_name(request.operation) || request.operation == wire_operation::identity ||
         request.operation == wire_operation::begin_resource_read || request.operation == wire_operation::put_named_resource ||
-        request.operation == wire_operation::read_named_resource;
+        request.operation == wire_operation::read_named_resource || request.operation == wire_operation::put_named_binary;
     const bool expects_key = request.operation == wire_operation::create_account ||
         request.operation == wire_operation::rotate_credential;
     return (expects_token ? valid_id(reply.token) : zero_id(reply.token)) && expects_key == has_key &&

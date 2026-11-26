@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Build native LLInt layout headers and focused WTF or JSC target objects for XOS."""
+"""Build native LLInt layout headers, selected target objects, or static JSC for XOS."""
 
 import argparse
 import hashlib
@@ -124,6 +124,9 @@ def build(args):
     if args.stage == "jsc_mutator":
         extra_config.extend(["-DENABLE_UNIFIED_BUILDS=OFF", "-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON",
                              "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"])
+    elif args.stage == "jsc_executable":
+        extra_config.extend(["-DUSE_THIN_ARCHIVES=OFF", "-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON",
+                             "-DCMAKE_CXX_FLAGS=--param=ggc-min-expand=5 --param=ggc-min-heapsize=8192"])
     run("configure", ["cmake", "-S", source, "-B", layout, "-G", "Ninja",
                        "-DPORT=JSCOnly", "-DENABLE_STATIC_JSC=ON", "-DUSE_SYSTEM_MALLOC=ON",
                        "-DENABLE_JIT=OFF", "-DENABLE_C_LOOP=OFF", "-DENABLE_WEBASSEMBLY=OFF",
@@ -156,6 +159,14 @@ def build(args):
         if "OFFLINE_ASM_GLOBAL_LABEL(vmEntryToJavaScript)" not in assembly or '"push %rbp ' not in assembly:
             raise RuntimeError("layout generator did not emit the native x86-64 interpreter entry")
         status = "target_llint_assembly_generated"
+    elif args.stage == "jsc_executable":
+        artifacts = ("lib/libJavaScriptCore.a", "bin/jsc")
+        run(args.stage, ["cmake", "--build", layout, "--target", "jsc", "--parallel", "1"])
+        with (layout / artifacts[0]).open("rb") as archive:
+            if archive.read(8) != b"!<arch>\n" or not archive.read(60):
+                raise RuntimeError("JavaScriptCore did not produce a populated static archive")
+        verify_elf(layout / artifacts[1])
+        status = "target_jsc_static_executable_linked"
     else:
         if args.stage in ("wtf_stack", "wtf_pthread", "wtf_allocator", "wtf_config"):
             object_dir = "Source/WTF/wtf/CMakeFiles/WTF.dir/"
@@ -221,6 +232,8 @@ def main():
                         help="build the native WTF configuration and protection object")
     stages.add_argument("--jsc-mutator", dest="stage", action="store_const", const="jsc_mutator",
                         help="build only the JSC mutator admission object")
+    stages.add_argument("--jsc-executable", dest="stage", action="store_const", const="jsc_executable",
+                        help="build the complete JavaScriptCore archive and static jsc executable")
     parser.set_defaults(stage="layout")
     build(parser.parse_args())
 

@@ -102,3 +102,10 @@ Pumpkin FAT 导入和多账户验收补齐，D1 映射器和私有 DNS 诊断已
 持久化与回读，默认切换仍需命令替换、存量应用、升级及冻结 newlib 回退的独立证据。
 [安装 PR #288](https://github.com/Xiao-John/XylophoneOS/pull/288) ·
 [应用组合 PR #289](https://github.com/Xiao-John/XylophoneOS/pull/289)
+
+主线 `2a89b08f` 含明确选择的 xsh/dash 安装网络配置和 D1 早期堆。静态网络候选实测
+两种 Shell、四次页面绘制、TLS 关闭、资源回收及普通镜像对照。生产 DHCP 和 CA 仍待验。
+签名 C SDK 重建后的 D1 检查覆盖空和固定依赖、缺失堆计划拒绝及内存回收。首线程 TLS
+继续在该主线上复验，完整共享解释器和共享 libc 仍须完成实际启动。
+[网络合成回执](../work_log/cdd9b996_network_shell_post287.md) ·
+[D1 早期堆](../work_log/336f6cd9_glibc_d1_early_heap_combination.md)

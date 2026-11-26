@@ -3,7 +3,7 @@
 """Manage private Pumpkin login and developer resources in a disposable VM."""
 
 import argparse
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 import fcntl
 import hashlib
 import json
@@ -25,6 +25,9 @@ from run_qemu import qemu_command
 
 realm = bytes.fromhex("51704432" + "00" * 12)
 header = struct.Struct("<4sHBBQ")
+account_selection = struct.Struct("<I32s92x")
+empty_account = bytes(account_selection.size)
+duplicate_enrollment = 6
 mark_layout = struct.Struct("<16sQQ32s")
 credential_file_header = struct.Struct("<8s16sQ")
 file_magic = b"PUMKEY\0\1"
@@ -104,6 +107,15 @@ def credential_file(path, create):
             os.close(descriptor)
 
 
+def check_new_destination(path):
+    with private_directory(path.parent) as parent:
+        try:
+            os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        except FileNotFoundError:
+            return
+    raise login_error("The selected credential destination already exists")
+
+
 def read_credential(descriptor, record):
     with memoryview(record) as data:
         offset = 0
@@ -165,7 +177,8 @@ def prepare(state, named_resources=False):
 def bind_system(system):
     manifest = system / "manifest.json"
     checked = json.loads(manifest.read_bytes())
-    require(checked.get("pumpkin_user_login") is True, "Select the private operator login image")
+    require(checked.get("pumpkin_user_login") is True and checked.get("pumpkin_operator_protocol") == 2,
+            "Select a private operator login image built with this tool")
     names = ("xos-install.iso", "user_files.image.elf", "user_supervisor.image.elf",
              "user_pumpkin_durable.image.elf", "user_p2_anchor_proxy.image.elf", "user_pumpkin_holder.image.elf")
     if checked.get("pumpkin_user_resource") is True:
@@ -314,8 +327,8 @@ def named_exchange(vm, command, frame, selection, selection_sent):
     return status, actual, returned
 
 
-def boot(system, state, command, authority, wallet, stored, selection=None):
-    with tempfile.TemporaryDirectory(prefix="pumpkin_user_") as private:
+def boot(system, state, command, authority, previous, path, stored, account, selection):
+    with tempfile.TemporaryDirectory(prefix="pumpkin_user_") as private, ExitStack() as close_wallet:
         monitor = Path(private) / "qmp"
         drive = str(state / "work.img").replace(",", ",,")
         vm = private_vm(qemu_command(system / "xos-install.iso", iso=True, work_disk=drive, qmp=monitor))
@@ -330,6 +343,8 @@ def boot(system, state, command, authority, wallet, stored, selection=None):
             vm.send(generation_packet(ready, scenarios[command], 0))
             sequence = 1
             credential_seen = False
+            account_seen = False
+            wallet = None
             selection_sent = False
             named_result = None
             for _ in range(20):
@@ -337,11 +352,28 @@ def boot(system, state, command, authority, wallet, stored, selection=None):
                 try:
                     vm.receive(frame, time.monotonic() + 12)
                     tag, version, operation, status, serial = header.unpack_from(frame)
+                    if tag == b"PKO1":
+                        require(version == 1 and operation == scenarios[command] and status == 0 and
+                                frame[header.size:] == empty_account, "Invalid private account selection prompt")
+                        if not account_seen:
+                            require(serial == 1, "Account selection out of sequence")
+                            flags = int(previous is None)
+                            vm.send(header.pack(tag, version, operation, flags, serial) +
+                                    account_selection.pack(len(account), account))
+                            account_seen = True
+                        else:
+                            require(serial == 2 and command == "enroll" and wallet is None and not credential_seen,
+                                    "Unexpected credential destination prompt")
+                            wallet = close_wallet.enter_context(credential_file(path, True))
+                            vm.send(frame)
+                        continue
+                    require(account_seen, "Private operation arrived before account selection")
                     if tag == b"PKU1":
                         require(not credential_seen, "Repeated private credential request")
                         if command == "enroll":
                             committed = authority.read()
-                            require(committed is not None and committed.revision == 2,
+                            expected = 2 if previous is None else previous.revision + 1
+                            require(wallet is not None and committed is not None and committed.revision == expected,
                                     "Credential issue has no confirmed account publication")
                         operator_exchange(vm, command, frame, wallet, stored)
                         credential_seen = True
@@ -379,6 +411,9 @@ def boot(system, state, command, authority, wallet, stored, selection=None):
                         require(vm.process.wait(timeout=8) == 0, "Private guest shutdown failed")
                         if command in ("read-resource", "read-named") and status in resource_errors:
                             raise login_error(resource_errors[status])
+                        if command == "enroll" and status == duplicate_enrollment:
+                            require(not credential_seen and wallet is None, "Duplicate enrollment attempted credential issue")
+                            return status
                         require(credential_seen == (command in credential_operations), "Missing private credential exchange")
                         if selection is not None:
                             require(named_result is not None and status == named_result[0],
@@ -400,7 +435,7 @@ def named_profile(system):
     return json.loads((system / "manifest.json").read_bytes()).get("pumpkin_named_resource_store") is True
 
 
-def operate(system, state, command, path, selection=None):
+def operate(system, state, command, path, selection=None, account=b"alice"):
     binding = bind_system(system)
     named = named_profile(system)
     require(command != "read-resource" or (broker_artifact in binding[2] and not named),
@@ -414,21 +449,22 @@ def operate(system, state, command, path, selection=None):
                 "Invalid private work disk")
         authority = generation_authority(state / "authority", realm, named_resources=named)
         previous = authority.read()
-        require((previous is None) == (command == "enroll"),
-                "Enrollment requires a new installation; restore or inspect an existing installation explicitly")
+        require(previous is not None or command == "enroll", "Enroll an account before using this installation")
         stored = bytearray(file_size)
         try:
-            if command not in credential_operations:
-                result = boot(system, state, command, authority, None, stored, selection)
-            else:
-                with credential_file(path, command == "enroll") as wallet:
-                    if command in submission_commands:
-                        read_credential(wallet[0], stored)
-                    result = boot(system, state, command, authority, wallet, stored, selection)
+            if command == "enroll":
+                check_new_destination(path)
+            elif command in submission_commands:
+                with credential_file(path, False) as wallet:
+                    read_credential(wallet[0], stored)
+            result = boot(system, state, command, authority, previous, path, stored, account, selection)
             require(bind_system(system) == binding, "Login image receipt changed during operation")
             final = authority.read()
+            if command == "enroll" and result == duplicate_enrollment:
+                require(previous is not None and final == previous, "Duplicate enrollment changed the account store")
+                raise login_error("The selected account is already enrolled")
             mutation = command in named_writes and result[0] == 1
-            expected = 2 if command == "enroll" else previous.revision + (command == "revoke" or mutation)
+            expected = 2 if previous is None else previous.revision + (command in ("enroll", "revoke") or mutation)
             require(final is not None and final.revision == expected,
                     "Independent account generation did not confirm the expected state")
             require(previous is None or expected != previous.revision or final == previous,
@@ -446,6 +482,7 @@ def main():
     parser.add_argument("--system", type=Path)
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--credential-file", type=Path)
+    parser.add_argument("--account", default=None, help="select an account name, default alice")
     parser.add_argument("--resource-name")
     parser.add_argument("--generation", type=int)
     parser.add_argument("--resource-value", type=int, help="unsigned 32-bit value for publish-named")
@@ -455,6 +492,9 @@ def main():
         parser.error("a matching --system is required")
     if (args.operation in credential_operations) != (args.credential_file is not None):
         parser.error("--credential-file is required for credential submission and enrollment")
+    account = "alice" if args.account is None else args.account
+    if (args.operation == "prepare" and args.account is not None) or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,31}", account) is None:
+        parser.error("select an account name of 1 to 32 characters for an account operation")
     selected = None
     if args.operation in named_operations:
         if args.resource_name is None or re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,15}", args.resource_name) is None:
@@ -486,7 +526,7 @@ def main():
             print("Private Pumpkin installation prepared")
             return 0
         path = args.credential_file.absolute() if args.credential_file is not None else None
-        result = operate(args.system.absolute(), state, args.operation, path, selected)
+        result = operate(args.system.absolute(), state, args.operation, path, selected, account.encode("ascii"))
         if selected is not None:
             result, generation, data = result
             if result == 1:

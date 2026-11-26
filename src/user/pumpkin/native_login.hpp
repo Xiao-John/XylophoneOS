@@ -28,7 +28,7 @@ struct named_read {
     named_resource_request selection{};
     named_resource_data data{};
 };
-bool enroll_user(ipc_client& registrar, account_name account, const anchor_guest::pair& proxy);
+u8 enroll_user(ipc_client& registrar, account_name account, const anchor_guest::pair& proxy);
 u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy,
               u32 broker_image = 0, named_read* named = nullptr);
 bool revoke_user(ipc_client& registrar, account_name account);

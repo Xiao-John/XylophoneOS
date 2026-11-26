@@ -457,7 +457,12 @@ int holder_main([[maybe_unused]] holder_mode mode) {
 }
 
 #if XOS_PUMPKIN_USER_LOGIN
-bool enroll_user(ipc_client& registrar, account_name account, const anchor_guest::pair& proxy) {
+u8 enroll_user(ipc_client& registrar, account_name account, const anchor_guest::pair& proxy) {
+    auto lookup = named(wire_operation::lookup_account, account);
+    wire_reply found{};
+    if (registrar.call(lookup, found) != exchange::received) return 0;
+    if (found.result == wire_status::ok) return user_login::duplicate_enrollment;
+    if (found.result != wire_status::not_found || !user_login::reserve_credential_destination(proxy)) return 0;
     auto create = named(wire_operation::create_account, account);
     wire_reply issued{};
     const bool committed = expect(registrar, create, issued, wire_status::ok);

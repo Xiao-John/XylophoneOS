@@ -103,7 +103,8 @@ public:
         // and the authenticated registrar can answer its first request.
         wire_reply ready;
         auto lookup = operation_request(wire_operation::lookup_account, true);
-        return expect(control, lookup, ready, initialize ? wire_status::not_found : wire_status::ok);
+        return control.call(lookup, ready) == exchange::received &&
+            (ready.result == wire_status::not_found || (!initialize && ready.result == wire_status::ok));
     }
 
     bool stop(int code = 0) {
@@ -339,12 +340,14 @@ bool named_absent(daemon& server) {
 }
 
 #if XOS_PUMPKIN_USER_RESOURCE
-u8 mutate_named(daemon& server, named_operator::packet& input) {
+u8 mutate_named(daemon& server, named_operator::packet& input, account_name owner) {
     const bool importing = input.op == named_operator::operation::import_fat;
     const bool put = importing || input.op == named_operator::operation::put;
     wire_reply found{};
     if (put) {
-        auto lookup = operation_request(wire_operation::lookup_account, true);
+        auto lookup = operation_request(wire_operation::lookup_account);
+        lookup.name_length = static_cast<u32>(owner.length);
+        __builtin_memcpy(lookup.name, owner.data, owner.length);
         if (!expect(server.control, lookup, found, wire_status::ok) || found.flags != 0) return 0;
     }
     auto update = operation_request(put ? wire_operation::put_named_resource : wire_operation::erase_named_resource);
@@ -422,8 +425,14 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
     if (proxy <= 0) return 21;
 
     anchor_guest::scenario mode{};
-    const bool ready = sdk::channel_receive_wait(proxy_control.receive, &mode, sizeof(mode),
+    bool ready = sdk::channel_receive_wait(proxy_control.receive, &mode, sizeof(mode),
                                                  anchor_guest::deadline()) == sizeof(mode);
+#if XOS_PUMPKIN_USER_LOGIN
+    user_login::account_packet selection{};
+    ready = ready && sdk::channel_receive_wait(proxy_control.receive, &selection, sizeof(selection),
+        anchor_guest::deadline()) == sizeof(selection) && user_login::selected_account(selection, mode);
+    const account_name chosen{selection.name, selection.length};
+#endif
 #if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
     const auto named_mode = named_operator::for_scenario(mode);
     named_operator::packet named_input{};
@@ -449,7 +458,10 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #endif
     if (ready && bounded_start) {
         daemon server;
-        const bool initialized = mode == anchor_guest::scenario::cycle || mode == anchor_guest::scenario::user_enroll;
+        bool initialized = mode == anchor_guest::scenario::cycle;
+#if XOS_PUMPKIN_USER_LOGIN
+        initialized = initialized || selection.initialize;
+#endif
         const bool started = server.start(image, grant, initialized,
                                           {static_cast<u64>(proxy), proxy_control.transmit});
         switch (mode) {
@@ -484,13 +496,15 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             break;
 #if XOS_PUMPKIN_USER_LOGIN
         case anchor_guest::scenario::user_enroll:
-            passed = started && native_login::enroll_user(server.control, {account, sizeof(account) - 1}, proxy_control) &&
-                server.stop();
+            if (started) {
+                login_result = native_login::enroll_user(server.control, chosen, proxy_control);
+                passed = (login_result == 1 || login_result == user_login::duplicate_enrollment) && server.stop();
+            }
             break;
         case anchor_guest::scenario::user_login:
             if (started) {
                 login_result = native_login::login_user(holder_image, server.pid, server.control,
-                    {account, sizeof(account) - 1}, proxy_control);
+                    chosen, proxy_control);
                 passed = login_result != 0 && server.stop();
             }
             break;
@@ -500,7 +514,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             if (started) {
                 native_login::named_read access{named_input.fields};
                 login_result = broker_image ? native_login::login_user(holder_image, server.pid, server.control,
-                    {account, sizeof(account) - 1}, proxy_control, broker_image, &access)
+                    chosen, proxy_control, broker_image, &access)
                     : static_cast<u8>(native_login::result::broker_launch);
                 named_input.fields = access.selection;
                 named_input.fields.data = access.data.length;
@@ -514,7 +528,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         case anchor_guest::scenario::user_named_erase:
         case anchor_guest::scenario::user_named_import:
             if (started) {
-                named_result = mutate_named(server, named_input);
+                named_result = mutate_named(server, named_input, chosen);
                 passed = named_result != 0 && server.stop();
             }
             break;
@@ -522,7 +536,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         case anchor_guest::scenario::user_resource:
             if (started) {
                 login_result = broker_image ? native_login::login_user(holder_image, server.pid, server.control,
-                    {account, sizeof(account) - 1}, proxy_control, broker_image)
+                    chosen, proxy_control, broker_image)
                     : static_cast<u8>(native_login::result::broker_launch);
                 passed = (login_result == 1 || login_result == user_login::denied) && server.stop();
             }
@@ -530,7 +544,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #endif
 #endif
         case anchor_guest::scenario::user_revoke:
-            passed = started && native_login::revoke_user(server.control, {account, sizeof(account) - 1}) && server.stop();
+            passed = started && native_login::revoke_user(server.control, chosen) && server.stop();
             break;
 #endif
         default:
@@ -559,6 +573,9 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #if XOS_PUMPKIN_USER_LOGIN
     if (passed && (mode == anchor_guest::scenario::user_login || mode == anchor_guest::scenario::user_resource) &&
         login_result == user_login::denied) { outcome = login_result; }
+    if (passed && mode == anchor_guest::scenario::user_enroll && login_result == user_login::duplicate_enrollment) {
+        outcome = login_result;
+    }
     if (!passed && login_result >= static_cast<u8>(native_login::result::holder_start)) { outcome = login_result; }
 #else
     if (!passed && login_result > 1) { outcome = login_result; }

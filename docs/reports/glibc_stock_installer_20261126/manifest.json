@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "source_commit": "843260b2d95de06c66e9a2ca3deb4d689d5da033",
+  "system_build_id": "7f88e4f9070640c2",
+  "files": {
+    "candidate.json": "2ade7a97f97888039a8f7417f5dcb951b759e0156785ddcf607d75b41dc4f238",
+    "install.serial.log.gz": "04ed071faccc0da230c5d94312eb29d179fb8361503ea19d4e0c5845b434e501",
+    "installer_guest.json": "8ed97a93ab2707abe459fbdce00589e07d9d485b1173f98e769c2dede834a86a",
+    "run_remove.serial.log.gz": "79807531449db0e2acbb4e594b86644dc4a26aef69d88b155f5d6619847fcb0a",
+    "stock_guest.json": "92ace307bf799b09f31590631cce002e24340d96056f9db6134484823e56df4e",
+    "ordinary_smoke.log": "24cd60331a221368d2124a4e274e6db07efcf887d2dae9b0adeec4366cba1acf",
+    "ordinary_abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301"
+  }
+}

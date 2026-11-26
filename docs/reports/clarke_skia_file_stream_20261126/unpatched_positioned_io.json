@@ -1,0 +1,27 @@
+{
+  "status": "passed_subset",
+  "build_id": "3a5ea2a60c3d852b",
+  "iso_sha256": "3ccd8b61e4e635319c0bb1985bf960d1afa89f51e14393cd30e818af2c1892a8",
+  "system_manifest_sha256": "a48d8f468b5b3de17a176cf6bae13bc6f85fae7406cab3a2622425448ce06d5e",
+  "font_sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+  "probe_sha256": "bbb5f0f4db8bd8f77ce6071dbbd98a180d51f1ee587e65713469863b79efe52a",
+  "source_sha256": "0714d74fd7c5e925d725e001274dc1172684acee5d0f729f1f556d2c641f0008",
+  "checks": [],
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "measurement": [
+    "XOS_SKIA_IO_META fd=3 stat=0 errno=0 size=757076 seek=0 end=757076",
+    "XOS_SKIA_IO_READ once=3798 errno=0 multi=8192 calls=3 error=0 sequential=8192 equal=1 positions=11,11,11",
+    "XOS_SKIA_IO_SKIA length=757076 seek=1 read=3798 eof=0 large=-1 large_errno=139 font=0"
+  ],
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "2a9ea561ad6b22bea3c462ce4964b35a6164d36ed88790e6df9f1a4dec4b463a"
+}

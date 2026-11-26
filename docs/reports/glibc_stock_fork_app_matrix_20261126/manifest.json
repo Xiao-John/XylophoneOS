@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "candidate_source": "165230446a18fafb5990f2d4f4ddd7f5d1b401ac",
+  "build_id": "3bbbf73984b95c20",
+  "runner_commit": "053c6a1c3c26df5e578c3155662ccf7701c4e67a",
+  "runner_sha256": "6146e116f96ad1d18f76c33a2549e9f346a10f281347bac3d9beda004a7a8309",
+  "files": {
+    "cold_matrix_1.serial.log.gz": "ce64f8e9534b95c76a8089cd12715a800e29e6376b12e7b65bcf90003acb6324",
+    "cold_matrix_2.serial.log.gz": "91c3cc6f37068bae24725f3a0504b4e5dedc31e83b08472281f302ef49b7135d",
+    "report.json": "0d82c9908bd6796128130c83656f42cb8e1c8010e71b428b9b29d438d43028de"
+  }
+}

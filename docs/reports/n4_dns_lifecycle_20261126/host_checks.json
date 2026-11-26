@@ -1,0 +1,11 @@
+{
+  "compiler": "Apple clang version 21.0.0 (clang-2100.4.1.1)",
+  "asan": "passed",
+  "ubsan": "passed",
+  "leak_sanitizer": "not_run",
+  "d1_dns_cases": 43,
+  "n2_cases": 25,
+  "n2_service_loop_cases": 2,
+  "raw_d1_report_sha256": "a19efe6fe7da793b15287e0f1d7ef8ded495d138743f4393b67289282d08ec4b",
+  "raw_n2_report_sha256": "beec018bba2cb70b11cc169c6a39548067add6aef1648983726080ca9773576e"
+}

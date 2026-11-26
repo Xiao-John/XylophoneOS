@@ -10,8 +10,9 @@ C0 完成接口和生命周期设计、锁定 lwIP 源码审阅与包级 audit�
 见 [81c7b902](../work_log/81c7b902_n4_configuration_name_contract.md)。D1 已完成
 端点/直接答案校验与有界熵后端：43 项真实帧宿主用例及 ASan/UBSan、原 N2 的
 25+2 项普通与 sanitizer、preview 工具链的28对象编译通过，见
-[4e29c6b1](../work_log/4e29c6b1_network_dns_hardening.md)。D2 的取消/cache/config/错误分类、
-D3 客体与 DHCP 仍待完成；生产 DNS/DHCP 保持关闭，各子集资格分别报告。
+[4e29c6b1](../work_log/4e29c6b1_network_dns_hardening.md)。D2 的私有取消、正缓存期限与
+重传期限已经在专用客体走通。服务 IPC 票据、配置、错误分类和 DHCP 继续各自验收。生产
+DNS/DHCP 保持关闭。[私有客体记录](../work_log/c4201d53_network_dns_lifecycle_guest.md)
 
 ## 1. 权限与兼容
 
@@ -189,6 +190,20 @@ TC当前也是丢弃并保留pending；把截断、NODATA/NXDOMAIN等转换为�
 在返回`ERR_INPROGRESS`前失败时不调用callback、不发查询，回收本次独占PCB。
 普通网络适配器在fatal锁存后拒绝link_output，防止已存在UDP连接继续出帧。
 这是内部lwIP错误域；候选op10–14与新原生错误数值仍未分配。
+
+### 5.5 D2 私有生命周期诊断
+
+`--net-dns-probe` 构建隔离的 Xsh 诊断镜像。`net-dns-probe 41` 使用受信 Xsh
+原有设备授权启动 `net_service`，在同一个 VirtIO、lwIP 与 sys63 链路上向固定的
+`10.0.2.2:53` 查询。该模式无应用 IPC 注册，解析和配置入口随诊断 profile 编入，
+普通构建及其共享协议沿用原有配置。
+
+私有 resolver loop 可以取消指定 callback/context。如果其他订阅仍在等待同名结果，
+它们继续使用原 PCB。取消最后一个订阅与清空会释放对应 PCB，并丢弃待用回调。
+清空同时去掉已完成缓存和 resolver 地址。具名缓存用实际应答时的 64 位单调时间，
+多个直接 A 记录共同取最短 TTL，正缓存上限 300 秒。每次查询检查绝对期限。重传保留
+现有有限次数，并从当前事务发送时点计算下次重传，已过期的维护 tick 不提前重传。
+该诊断只验证直接 A 的功能闭环，票据身份和配置 epoch 仍按共享服务设计验收。
 
 ## 6. DHCP 租约
 

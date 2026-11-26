@@ -139,6 +139,8 @@ def main():
             require(sha_file(original) == source_sha, "source disk changed")
             report["status"] = "passed"
     finally:
+        for transaction in report.get("transactions", []):
+            del transaction["output"]  # The disk is removed with the private work directory.
         (output / "report.json").write_bytes(canonical(report))
 
 

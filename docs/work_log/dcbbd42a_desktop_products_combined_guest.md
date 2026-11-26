@@ -7,6 +7,9 @@ Interactium 服务。两个 XPK 在同一个经过 glibc SDK 绑定的 512 MiB F
 [客体回执](../reports/desktop_products_combined_20261126/report.json) ·
 [证据清单](../reports/desktop_products_combined_20261126/manifest.json)
 
+公开回执保留包事务的源盘和派生盘摘要，省略已删除的宿主临时输出位置。
+证据清单同时绑定复验时的原回执摘要。
+
 - `xos.mobius` 的 `mobius.elf`、`mobius-session.elf` 分别启动。键盘输入
   切换到不同主题并取得探测画面，每次退出后均回到显示服务基线。该次会话
   启动耗时 183.572 秒，仍需单独关注启动性能。

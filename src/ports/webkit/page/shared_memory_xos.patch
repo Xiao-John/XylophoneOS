@@ -8,17 +8,17 @@
 +#include <wtf/RefPtr.h>
 +#endif
  #include <wtf/ThreadSafeRefCounted.h>
- 
+
  #if USE(UNIX_DOMAIN_SOCKETS)
 @@ -53,16 +56,51 @@
  class FragmentedSharedBuffer;
  class ProcessIdentity;
  class SharedBuffer;
 +class SharedMemory;
- 
+
  enum class MemoryLedger : uint8_t { None, Default, Network, Media, Graphics, Neural };
  enum class SharedMemoryProtection : bool { ReadOnly, ReadWrite };
- 
+
 +#if OS(XOS)
 +class xos_memory_grant final : public ThreadSafeRefCounted<xos_memory_grant> {
 +public:
@@ -52,7 +52,7 @@
 +#endif
 +
  WEBCORE_EXPORT bool isMemoryAttributionDisabled();
- 
+
  class SharedMemoryHandle {
  public:
      using Type =
@@ -65,7 +65,7 @@
          MachSendRight;
 @@ -81,7 +119,7 @@
      WEBCORE_EXPORT static std::optional<SharedMemoryHandle> createCopy(std::span<const uint8_t>, SharedMemoryProtection);
- 
+
      SharedMemoryHandle(SharedMemoryHandle&&) = default;
 -#if USE(UNIX_DOMAIN_SOCKETS)
 +#if USE(UNIX_DOMAIN_SOCKETS) && !OS(XOS)
@@ -75,7 +75,7 @@
 @@ -97,7 +135,7 @@
      // Transfer ownership of the memory for process memory accounting purposes.
      WEBCORE_EXPORT void setOwnershipOfMemory(const WebCore::ProcessIdentity&, MemoryLedger) const;
- 
+
 -#if USE(UNIX_DOMAIN_SOCKETS)
 +#if USE(UNIX_DOMAIN_SOCKETS) && !OS(XOS)
      UnixFileDescriptor releaseHandle();
@@ -92,7 +92,7 @@
      WEBCORE_EXPORT static RefPtr<SharedMemory> wrapMap(std::span<const uint8_t>, Protection);
 @@ -134,7 +172,14 @@
      size_t size() const { return m_size; }
- 
+
      std::span<const uint8_t> span() const LIFETIME_BOUND { return unsafeMakeSpan(static_cast<const uint8_t*>(m_data), m_size); }
 -    std::span<uint8_t> mutableSpan() const LIFETIME_BOUND { return unsafeMakeSpan(static_cast<uint8_t*>(m_data), m_size); }
 +    std::span<uint8_t> mutableSpan() const LIFETIME_BOUND
@@ -103,13 +103,13 @@
 +#endif
 +        return unsafeMakeSpan(static_cast<uint8_t*>(m_data), m_size);
 +    }
- 
+
  #if OS(WINDOWS)
      HANDLE handle() const { return m_handle.get(); }
 @@ -158,7 +203,11 @@
      Protection m_protection;
  #endif
- 
+
 -#if USE(UNIX_DOMAIN_SOCKETS)
 +#if OS(XOS)
 +    RefPtr<xos_memory_grant> m_xos_grant;
@@ -122,7 +122,7 @@
 --- a/Source/WebCore/platform/graphics/skia/ShareableBitmapSkia.cpp
 +++ b/Source/WebCore/platform/graphics/skia/ShareableBitmapSkia.cpp
 @@ -59,11 +59,26 @@
- 
+
  sk_sp<SkSurface> ShareableBitmap::createSurface()
  {
 +#if OS(XOS)
@@ -145,7 +145,7 @@
 +        return nullptr;
 +    }
 +#endif
- 
+
      auto* canvas = surface->getCanvas();
      if (!canvas)
 --- a/Source/WebCore/PlatformJSCOnly.cmake

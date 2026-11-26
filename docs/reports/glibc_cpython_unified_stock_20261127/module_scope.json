@@ -1,0 +1,28 @@
+{
+  "configured_module_state": {
+    "_bz2": "missing",
+    "_hashlib": "missing",
+    "_lzma": "missing",
+    "_sqlite3": "disabled",
+    "_ssl": "missing",
+    "_zstd": "missing",
+    "zlib": "missing"
+  },
+  "not_qualified": [
+    "OpenSSL-backed SSL or hashlib",
+    "HTTPS",
+    "zlib, gzip or deflated ZIP",
+    "idna wheel",
+    "Pillow",
+    "interactive REPL",
+    "dynamic extension loading"
+  ],
+  "target_makefile_sha256": "6949798f5bccb746eaed6008aaa7d9f42a84f7b1879ac262dac5e1192643c8d4",
+  "verified_interface": [
+    "CPython static interpreter and local-exec TLS",
+    "threading and clock",
+    "disk stdlib imports and operations",
+    "stdlib hashlib through built-in digests",
+    "stored ZIP"
+  ]
+}

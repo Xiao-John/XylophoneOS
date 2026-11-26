@@ -12,13 +12,17 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
+from boot_smoke import Guest
+from glibc_selected_app_matrix_guest import check_packages, stock_installer
 from glibc_static_guest import system_sources
+from iso_dash_install import iso_files
 from make_work_disk import create_fat32
 from package_cpython_glibc import LANDMARK, LIBRARY, PACKAGE, PROGRAM, RECEIPT
-from package_p2_faults import boot_maintenance_guest, resources
+from package_p2_faults import boot_maintenance_guest, resources, sparse_copy
+from package_p2_verify_guest import quiet_maintenance_guest
 from task_smoke import send_bytes
 from xypm_format import DEFAULT_PROFILE, canonical, load_json, require, sha_file, strict_json, verify_package
-from xypm_image import Disk, query_image
+from xypm_image import DB_PATH, INDEX_PATH, Disk
 from xypm_sdk_profile import metadata_snapshot, verify_profile
 
 
@@ -46,10 +50,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('system-build', 'sdk', 'profile', 'package', 'cpython-build', 'xypm-build', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--stock-candidate', type=Path, help='boot the same-profile stock installer on the work disk')
+    parser.add_argument('--previous-profile', type=Path)
+    parser.add_argument('--previous-package', type=Path, help='a different-profile build of the same CPython XPK')
     parser.add_argument('--maintenance-timeout', type=int, default=600)
     args = parser.parse_args()
     if args.maintenance_timeout <= 0:
         parser.error('maintenance timeout must be positive')
+    if bool(args.previous_profile) != bool(args.previous_package):
+        parser.error('--previous-profile and --previous-package are required together')
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     sys_path = args.system_build / 'manifest.json'
@@ -90,26 +99,68 @@ def main():
               'package_sha256': package['sha256'], 'xypm_elf_sha256': sha_file(manager),
               'xypm_receipt_sha256': sha_file(manager_receipt_path),
               'cli_build_receipt_sha256': sha_file(cli_build), 'interpreter': receipt['interpreter'],
-              'library_sha256': receipt['library']['sha256'],
+              'library_sha256': receipt['library']['sha256'], 'test_sha256': sha_file(Path(__file__)),
               'stdlib_members': len(receipt['library']['members']), 'checks': []}
     guest = None
     try:
-        try:
-            verify_package(args.package, load_json(DEFAULT_PROFILE))
-        except ValueError as error:
-            require('target profile mismatch' in str(error), 'unexpected legacy profile rejection')
-        else:
-            raise ValueError('legacy profile admitted the glibc CPython package')
+        def reject(other_package, other_profile):
+            try:
+                verify_package(other_package, other_profile)
+            except ValueError as error:
+                require('target profile mismatch' in str(error), 'unexpected cross-profile rejection')
+            else:
+                raise ValueError('foreign profile admitted the CPython package')
+
+        reject(args.package, load_json(DEFAULT_PROFILE))
         report['checks'].append('frozen_newlib_profile_rejected')
+        if args.previous_package:
+            previous = load_json(args.previous_profile)
+            old, _ = package_receipt(args.previous_package, previous)
+            reject(args.previous_package, profile)
+            reject(args.package, previous)
+            report['previous_package'] = {'sha256': old['sha256'], 'profile': previous['id'],
+                                          'profile_sha256': sha_file(args.previous_profile)}
+            report['checks'].append('host_cross_profile_rejections')
+
+        expected_packages = []
+        stock = None
+        if args.stock_candidate:
+            candidate = args.stock_candidate.resolve()
+            require(args.system_build.resolve() == candidate / 'system', 'stock and ordinary system roots differ')
+            candidate_receipt = candidate / 'candidate_manifest.json'
+            stock_build = load_json(candidate_receipt)
+            install_receipt = candidate / 'system/install_manifest.json'
+            install = load_json(install_receipt)
+            installer = candidate / 'system/xos-install-dash.iso'
+            artifacts = stock_build['artifacts']
+            require(stock_build['build_id'] == install['build_id'] == sysmeta['build_id']
+                    and sha_file(installer) == artifacts['system/xos-install-dash.iso']
+                    and sha_file(install_receipt) == artifacts['system/install_manifest.json'],
+                    'stock installer does not match the candidate')
+            application_sdk = stock_build['application_sdk']
+            require(application_sdk['profile_file_sha256'] == profile_digest
+                    and application_sdk['profile_sha256'] == binding['profile_sha256']
+                    and application_sdk['sdk_manifest_sha256'] == sdk_digest
+                    and application_sdk['sdk_tree_sha256'] == binding['sdk_tree_sha256'],
+                    'stock installer and CPython package use distinct SDKs')
+            stock = stock_installer(candidate, stock_build, install, profile, application_sdk)
+            require(stock and stock['xypm_sha256'] == report['xypm_elf_sha256'], 'stock xypm differs from test input')
+            iso = iso_files(installer)
+            require(iso['KERNEL.BIN'] == sysmeta['artifacts']['kernel.bin']['sha256']
+                    and iso['DASH.ELF'] == stock['bundle_sha256'], 'stock ISO differs from build receipts')
+            expected_packages.append(stock['daily'])
+            report['stock'] = {**stock, 'installer_iso_sha256': sha_file(installer),
+                               'candidate_manifest_sha256': sha_file(candidate_receipt),
+                               'source_commit': stock_build['source_commit']}
         with tempfile.TemporaryDirectory(prefix='cpython_glibc_p2_') as folder:
             work = Path(folder)
-            disk = work / 'work.img'
+            disk = (output if stock else work) / 'work.img'
             create_fat32(disk, 512)
             user_file = work / 'user.txt'
             user_file.write_text('pre-existing user data\n')
             fixtures = ROOT / 'tests/fixtures'
             files = {
-                '/usr/bin/xypm': manager, '/out/cpython.xpk': args.package,
+                '/out/cpython.xpk': args.package,
                 '/work/user.txt': user_file,
                 '/tests/stdlib.py': fixtures / 'cpython_glibc/installed_stdlib.py',
                 '/tests/startup.py': fixtures / 'cpython_glibc/startup_probe.py',
@@ -117,6 +168,10 @@ def main():
                 '/tests/a1.py': fixtures / 'cpython_py3_a1/stdlib_probe.py',
                 '/tests/missing.py': fixtures / 'cpython_py1/missing_import.py',
             }
+            if not stock:
+                files['/usr/bin/xypm'] = manager
+            if args.previous_package:
+                files['/out/old-python.xpk'] = args.previous_package
             with Disk(disk, work) as fat:
                 for path in ('/usr', '/usr/bin', '/out', '/work', '/work/py3a1', '/tests'):
                     fat.command('mkdir', path)
@@ -126,11 +181,60 @@ def main():
             def command(line, success, timeout):
                 start = len(guest.output)
                 send_bytes(guest, line.encode() + b'\r')
-                result = guest.expect_any((success, b'maintenance: retained',
-                                           b'maintenance: busy or denied'), start=start, timeout=timeout)
+                failures = (b'maintenance: retained', b'maintenance: busy or denied')
+                result = guest.expect_any((success, *(failure for failure in failures if failure != success)),
+                                          start=start, timeout=timeout)
                 require(result == success, 'maintenance failed: ' + line)
                 guest.expect_supervisor(start=start, timeout=40)
                 return bytes(guest.output[start:])
+
+            if stock:
+                guest = Guest(installer, 'cpython_stock_install', work_disk=disk, iso=True, log_dir=output)
+                guest.expect(b'xos64> ', timeout=40)
+                send_bytes(guest, b'run\r')
+                guest.expect(b'[files] bundle packages installed', timeout=args.maintenance_timeout)
+                guest.expect_supervisor(trace=True, timeout=40)
+                require(b'xypm-recover: committed transaction cleaned' in guest.output, 'stock setup lacks cleanup')
+                quiet_maintenance_guest(guest)
+                report['stock']['resources'] = resources(guest)
+                guest.close()
+                guest = None
+                with Disk(disk, work, True) as fat:
+                    require(sha_file(fat.export('/usr/bin/xypm')) == stock['xypm_sha256']
+                            and sha_file(fat.export('/usr/bin/dash')) == stock['dash_sha256'],
+                            'stock disk has unexpected dash or xypm')
+                report['stock']['installed_files'] = check_packages(disk, profile, expected_packages)['files']
+                sparse_copy(disk, output / 'stock-installed.img')
+                report['stock']['disk_sha256'] = sha_file(disk)
+                report['checks'].append('stock_installer_and_disk_receipts')
+
+            if args.previous_package:
+                def rejection_state():
+                    with Disk(disk, work, True) as fat:
+                        paths = tuple(path for path in (DB_PATH, INDEX_PATH, '/work/user.txt') if fat.info(path))
+                        require(fat.info('/' + PROGRAM) is None and
+                                all(fat.info('/var/lib/xypm/' + name) is None
+                                    for name in ('transaction', 'txdata', 'transaction_commit')),
+                                'CPython or transaction files appeared during rejection')
+                        return {path: sha_file(fat.export(path)) for path in paths}
+
+                original = rejection_state()
+                guest = boot_maintenance_guest(image, 'cpython_previous_profile', disk)
+                baseline = resources(guest)
+                data = command('maint-run /usr/bin/xypm install /out/old-python.xpk',
+                               b'maintenance: retained', args.maintenance_timeout)
+                require(b'package target profile differs from this xypm build' in data, 'wrong native rejection')
+                data = command('maint-recover-boot', b'maintenance: completed', 60)
+                require(b'xypm-recover: no transaction' in data and resources(guest) == baseline,
+                        'cross-profile rejection left a transaction or leaked resources')
+                guest.close()
+                (output / 'previous_profile.log').write_bytes(guest.output)
+                guest = None
+                require(rejection_state() == original, 'wrong-profile rejection changed ownership or user data')
+                check_packages(disk, profile, expected_packages)
+                report['previous_package']['unchanged_files'] = original
+                report['previous_package']['resources'] = baseline
+                report['checks'].append('native_previous_profile_install_rejected')
 
             guest = boot_maintenance_guest(image, 'cpython_p2_install', disk)
             report['qemu'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
@@ -148,8 +252,14 @@ def main():
             (output / 'install.log').write_bytes(guest.output)
             guest = None
             managed = package['manifest']['files']
-            report['installed_files'] = query_image(disk, profile, 'verify-installed')['files']
+            active_packages = [*expected_packages, {'id': PACKAGE, 'xpk_sha256': package['sha256']}]
+            installed = check_packages(disk, profile, active_packages)['files']
+            stock_files = report.get('stock', {}).get('installed_files', 0)
+            report['installed_files'] = installed - stock_files
             require(report['installed_files'] == len(managed), 'installed files differ')
+            if stock:
+                sparse_copy(disk, output / 'cpython-installed.img')
+                report['installed_disk_sha256'] = sha_file(disk)
 
             guest = boot_maintenance_guest(image, 'cpython_p2_exec_remove', disk)
             baseline = resources(guest)
@@ -174,7 +284,8 @@ def main():
             guest.close()
             (output / 'run_remove.log').write_bytes(guest.output)
             guest = None
-            require(query_image(disk, profile, 'list')['packages'] == [], 'CPython remains installed')
+            require(check_packages(disk, profile, expected_packages)['files'] == stock_files,
+                    'remaining stock package files differ')
             with Disk(disk, work, True) as fat:
                 for item in managed:
                     require(fat.info('/' + item['path']) is None, 'managed file remains: ' + item['path'])
@@ -186,6 +297,11 @@ def main():
                         'user data changed')
                 with zipfile.ZipFile(BytesIO(fat.export('/work/py3a1/data/stored.zip').read_bytes())) as bundle:
                     require(bundle.read('note.txt') == expected, 'user ZIP output changed')
+                report['preserved_data'] = {path: sha_file(fat.export(path)) for path in
+                                            ('/work/user.txt', '/work/py3a1/data/note.txt',
+                                             '/work/py3a1/data/stored.zip')}
+            if stock:
+                report['final_disk_sha256'] = sha_file(disk)
             report['checks'].append('native_p2_remove_preserves_user_and_python_outputs')
             verify_inputs()
             report['status'] = 'passed_subset'

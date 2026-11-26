@@ -1448,7 +1448,8 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     const bool mutating = operation == op::anonymous || operation == op::anonymous_seal ||
         operation == op::clone_session || operation == op::write || operation == op::write_at || operation == op::replace_begin ||
         operation == op::replace_chunk || operation == op::replace_commit || operation == op::replace_abort ||
-        operation == op::remove || operation == op::mkdir || operation == op::rename || operation == op::sync ||
+        operation == op::remove || operation == op::remove_directory || operation == op::mkdir ||
+        operation == op::rename || operation == op::sync ||
         operation == op::truncate || operation == op::set_metadata ||
         (operation == op::open && ((in.flags & open_access_mask) != read_only ||
                                   (in.flags & open_option_mask) != 0));
@@ -2011,7 +2012,13 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         reply(out, in, code);
         break;
     }
+    case op::remove_directory:
     case op::remove: {
+        const bool directory_only = operation == op::remove_directory;
+        if (directory_only && (in.handle != 0 || in.flags != 0 || in.reserved != 0 ||
+                               in.offset != 0 || in.length != 0)) {
+            reply(out, in, status::invalid); break;
+        }
         path_reference resolved;
         if (!request_path(in, session, resolved)) { reply(out, in, resolved.error); break; }
         const char* path = resolved.path;
@@ -2022,8 +2029,12 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         FILINFO info{};
         const FRESULT found = f_stat(path, &info);
         if (found != FR_OK) { reply(out, in, from_fr(found)); break; }
-        if ((info.fattrib & AM_DIR) != 0) {
-            if ((in.flags & allow_directory) == 0) { reply(out, in, status::invalid); break; }
+        const bool directory = (info.fattrib & AM_DIR) != 0;
+        if (directory_only && !directory) { reply(out, in, status::not_directory); break; }
+        if (directory) {
+            if (!directory_only && (in.flags & allow_directory) == 0) {
+                reply(out, in, status::invalid); break;
+            }
             const status empty = directory_empty(path);
             if (empty != status::ok) { reply(out, in, empty); break; }
         }

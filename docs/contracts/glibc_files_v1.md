@@ -172,3 +172,17 @@ build/glibc_files_death_system`。该选项要求独立 build 子目录，写入
 及旧描述后续均为 EIO。正常镜像不含此触发代码，也不改变受保护服务的 kill 策略。
 服务没有 console route，harness 依据已观察服务 PID 的内核回收 trace、进程表和
 资源变化确认真实退出。
+
+## 路径变更
+
+glibc `mkdir` 使用现有 files op 15。FAT 后端使用当前安装盘的目录授权，
+`mode_t` 不写入持久 POSIX mode。`rename` 使用现有 op 16，旧路径通过
+`name/name_length` 传输，新路径通过 `data/length` 传输。两条路径均按调用进程
+的当前工作目录解析，同一次服务调用内完成现有名称替换。
+
+`rmdir` 使用 files wire v2 op 32，通过 `name/name_length` 传输路径，其他
+请求控制字段为零。成功响应的元数据和负载长度均为零。files 在同一次服务请求
+内验证授权、目标类型和空目录条件，再执行删除。常规文件返回 `ENOTDIR`，非空
+目录返回 `ENOTEMPTY`。该调用受与 op 13 相同的维护限制。旧 op 13 继续允许
+原有客户端使用 `allow_directory`。旧服务会拒绝 op 32，glibc 直接返回错误并
+保留工作盘状态。

@@ -37,6 +37,7 @@ enum class op : u16 {
     set_metadata = 29, // FAT honest subset: RDO + mtime; payload in request.data.
     read_at = 30, // handle + absolute offset; never changes the open-description position.
     write_at = 31, // explicit offset, including O_APPEND; preserves the shared position.
+    remove_directory = 32, // remove an empty directory without accepting a regular file.
 };
 
 enum seek_origin : u32 { seek_set = 0, seek_current = 1, seek_end = 2 };

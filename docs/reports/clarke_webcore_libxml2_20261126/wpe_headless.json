@@ -1,0 +1,37 @@
+{
+  "status": "target_configuration_blocked",
+  "upstream": "https://wpewebkit.org/releases/wpewebkit-2.54.2.tar.xz",
+  "upstream_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+  "webkit_source_lock_sha256": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030",
+  "target": "x86_64-xos",
+  "port": "WPE",
+  "cmake_version": "4.4.5",
+  "options": {
+    "ENABLE_WPE_PLATFORM": true,
+    "ENABLE_WPE_PLATFORM_HEADLESS": true,
+    "ENABLE_WPE_PLATFORM_DRM": false,
+    "ENABLE_WPE_PLATFORM_WAYLAND": false,
+    "ENABLE_WPE_LEGACY_API": false,
+    "ENABLE_VIDEO": false,
+    "ENABLE_WEB_AUDIO": false,
+    "ENABLE_WEBGL": false,
+    "ENABLE_XSLT": false,
+    "ENABLE_JIT": false,
+    "ENABLE_WEBASSEMBLY": false
+  },
+  "dual_route_static_dependencies": [
+    "ICU",
+    "LibXml2",
+    "SQLite3",
+    "ZLIB"
+  ],
+  "failed_module": "Source/cmake/FindGLib.cmake",
+  "diagnostic": "glib-2.0 is required",
+  "full_webcore_target_generated": false,
+  "license_materials": {
+    "scope": "registered_materials_and_sdk_copies",
+    "status": "passed",
+    "checked": 10,
+    "active_items": []
+  }
+}

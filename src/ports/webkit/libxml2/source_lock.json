@@ -1,0 +1,10 @@
+{
+  "version": "2.15.4",
+  "source": "https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.4.tar.xz",
+  "published_sha256": "https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.4.sha256sum",
+  "archive_root": "libxml2-2.15.4",
+  "archive_bytes": 3177444,
+  "sha256": "98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821",
+  "license_member": "Copyright",
+  "license_sha256": "5d4873884a890122a4b9b20ad56ac6f7da1d796a5bfcf04a427970ac96217626"
+}

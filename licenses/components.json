@@ -668,6 +668,20 @@
       "distribution_status": "Local qualification only; member-level review and binary distribution acceptance pending"
     },
     {
+      "name": "LibXml2 for WebCore qualification",
+      "version": "2.15.4",
+      "path": "src/ports/webkit/libxml2",
+      "source": "https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.4.tar.xz",
+      "source_archive_sha256": "98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821",
+      "license": "MIT and per-file copyright notices identified in Copyright",
+      "notices": ["src/ports/webkit/libxml2/LICENSE.upstream"],
+      "artifact_sha256": {
+        "src/ports/webkit/libxml2/LICENSE.upstream": "5d4873884a890122a4b9b20ad56ac6f7da1d796a5bfcf04a427970ac96217626"
+      },
+      "used_in": ["WebCore static target dependency qualification and XML SAX2 push-parser guest probe"],
+      "distribution_status": "Local qualification; complete binary distribution acceptance pending"
+    },
+    {
       "name": "Qt Widgets E17 and Xylophone Aurora Glass",
       "version": "QtBase 6.8.3; Aurora 1 (local qualification)",
       "path": "src/ports/qt6",

@@ -16,6 +16,27 @@ from task_smoke import pump, send_bytes
 from work_disk import transfer
 
 
+def expected_du12_outputs():
+    return {'ls.txt':b'data\n','all.txt':b'.\n..\n.secret\ndata\n',
+            'almost.txt':b'.secret\ndata\n','dir.txt':b'/tmp/du/a\n',
+            'cat.txt':b'one\ntwo\nthree\n','head.txt':b'one\ntwo\n',
+            'tail.txt':b'two\nthree\n', 'tail_pipe.txt':b'b\nc', 'head_pipe.txt':b'a\nb\n',
+            'wc.txt':b'3 3 14 /tmp/du/moved\n',
+            'tee.txt':b'hello\nagain\n','tee_out.txt':b'hello\n', 'tee_append_out.txt':b'again\n',
+            'base.txt':b'moved\n','parent.txt':b'/tmp/du\n',
+            'binary_copy.dat':b'alpha\x00beta\n\nlast\x00',
+            'binary_head.dat':b'alpha\x00beta\n\n','binary_tail.dat':b'last\x00',
+            'binary_wc.txt':b'17 /tests/binary.dat\n','empty_head.txt':b'',
+            'empty_tail.txt':b'', 'root_base.txt':b'/\n', 'root_dir.txt':b'/\n',
+            'unicode.txt':b'UTF8\n', 'tail_limit.txt':b'last\n',
+            'tail_over_limit.txt':b'', 'empty_base.txt':b'.\n',
+            'suffix_base.txt':b'file\n', 'slashes_dir.txt':b'//tmp/du\n',
+            'keepdir.txt':b'/tmp/du/keepdir\n',
+            'multi_head.txt':b'==> /tmp/du/moved <==\none\n\n==> /tmp/du/extra <==\nalpha\n',
+            'multi_tail.txt':b'==> /tmp/du/moved <==\nthree\n\n==> /tmp/du/extra <==\nbeta\n',
+            'multi_wc.txt':b'3 14 /tmp/du/moved\n2 11 /tmp/du/extra\n5 25 total\n'}
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--image', type=Path, required=True)
@@ -91,25 +112,7 @@ def main():
                 report['checks'].append('offline_exact_output_bytes')
                 report['status'] = 'passed_subset'
                 return
-            expected = {'ls.txt':b'data\n','all.txt':b'.\n..\n.secret\ndata\n',
-                        'almost.txt':b'.secret\ndata\n','dir.txt':b'/tmp/du/a\n',
-                        'cat.txt':b'one\ntwo\nthree\n','head.txt':b'one\ntwo\n',
-                        'tail.txt':b'two\nthree\n', 'tail_pipe.txt':b'b\nc', 'head_pipe.txt':b'a\nb\n',
-                        'wc.txt':b'3 3 14 /tmp/du/moved\n',
-                        'tee.txt':b'hello\nagain\n','tee_out.txt':b'hello\n', 'tee_append_out.txt':b'again\n',
-                        'base.txt':b'moved\n','parent.txt':b'/tmp/du\n',
-                        'binary_copy.dat':b'alpha\x00beta\n\nlast\x00',
-                        'binary_head.dat':b'alpha\x00beta\n\n','binary_tail.dat':b'last\x00',
-                        'binary_wc.txt':b'17 /tests/binary.dat\n','empty_head.txt':b'',
-                        'empty_tail.txt':b'', 'root_base.txt':b'/\n', 'root_dir.txt':b'/\n',
-                        'unicode.txt':b'UTF8\n', 'tail_limit.txt':b'last\n',
-                        'tail_over_limit.txt':b'', 'empty_base.txt':b'.\n',
-                        'suffix_base.txt':b'file\n', 'slashes_dir.txt':b'//tmp/du\n',
-                        'keepdir.txt':b'/tmp/du/keepdir\n',
-                        'multi_head.txt':b'==> /tmp/du/moved <==\none\n\n==> /tmp/du/extra <==\nalpha\n',
-                        'multi_tail.txt':b'==> /tmp/du/moved <==\nthree\n\n==> /tmp/du/extra <==\nbeta\n',
-                        'multi_wc.txt':b'3 14 /tmp/du/moved\n2 11 /tmp/du/extra\n5 25 total\n'}
-            for name, contents in expected.items():
+            for name, contents in expected_du12_outputs().items():
                 result = folder / name; transfer(disk, 'export', '/tmp/du/' + name, result)
                 assert result.read_bytes() == contents, (name, result.read_bytes(), contents)
             report['checks'].append('offline_exact_output_bytes')

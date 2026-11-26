@@ -9,7 +9,8 @@
   "patches": {
     "patches/0001_xos_platform_identity.patch": "c1ad5c8a85833fe1c59d94dac9290bad58e5ad3f4516d15c148650aa03a52bbf",
     "patches/0002_xos_pthread_types.patch": "1482e044f91027faeb09e61df8b808e7df8e970d1ef6b6a1d37b74e01dda21cf",
-    "patches/0003_xos_stack_runtime.patch": "88bbd9b8f7523a968f3c9bec5714b150da4d8d832c6ddcba86eafdb0a4691220"
+    "patches/0003_xos_stack_runtime.patch": "88bbd9b8f7523a968f3c9bec5714b150da4d8d832c6ddcba86eafdb0a4691220",
+    "patches/0004_xos_jsc_mutator_owner.patch": "1b2d96184b932345016348f5e838a6f434f85b72ed00d7e31999ac9b47a7432d"
   },
   "llint_icu": {
     "version": "79.1",

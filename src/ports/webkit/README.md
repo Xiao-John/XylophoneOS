@@ -56,3 +56,10 @@ GC 仍各自验收。 [验证记录](../../../docs/work_log/89051575_clarke_nati
 回执记录三个 x86-64 ELF 可重定位对象。WTF 从 glibc 查询当前线程和尚在启动握手中
 的新线程的真实栈范围，查询失败时触发发布构建断言。解释器链接和运行仍依赖线程挂起
 与 GC 生命周期的实现。 [验证记录](../../../docs/work_log/207c6644_clarke_native_wtf_thread_and_stack_slice.md)
+
+## JSC 的 VM 线程准入
+
+为构建入口指定 `--jsc-mutator` 和新输出目录，生成 JavaScriptCore 的原生 `JSLock.cpp`
+对象。这一步关闭上游合并编译，保留实际的 JSCOnly 目标依赖。XOS 的 VM 只接纳首次
+取得该 VM 锁的线程，第二个线程在访问 VM 堆前触发发布构建断言。完整解释器仍依赖
+线程后端和 GC 调度。 [验证记录](../../../docs/work_log/0d1e1c54_clarke_jsc_single_vm_mutator_admission.md)

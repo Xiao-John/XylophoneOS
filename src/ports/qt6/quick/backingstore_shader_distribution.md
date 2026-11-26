@@ -10,7 +10,7 @@
 
 准备 Qt 官方 Linux x86-64 `qsb` 6.4.0 和该发行的 QtBase、ICU 动态库，并使用套件绑定的
 Linux arm64 `qsb` 6.8.3。分别在对应的 Linux 宿主环境运行命令，共享输出目录。下列 `SRC`
-为上面已锁定的 GLSL 目录，`OUT` 为新建的工作目录。`QSB_64`、`QSB_68` 指向已校验工具。
+为上面已锁定的 GLSL 目录，`OUT` 为新建的工作目录。`QSB_64`、`QSB_68` 为已校验工具的绝对路径。
 
 ```sh
 for stage in vert frag; do
@@ -26,7 +26,7 @@ done
 for stage in vert frag; do
   "$QSB_68" --extract spirv,100 -o "$OUT/$stage.spv" "$OUT/$stage.generated.qsb"
   cp "$OUT/$stage.generated.qsb" "$OUT/$stage.serialized.qsb"
-  "$QSB_68" --qsbversion 64 --replace "spirv,100,$OUT/$stage.spv" "$OUT/$stage.serialized.qsb"
+  (cd "$OUT" && "$QSB_68" --qsbversion 64 --replace "spirv,100,$stage.spv" "$stage.serialized.qsb")
 done
 python3 -B src/ports/qt6/quick/backingstore_qsb_order.py \
   "$OUT/frag.serialized.qsb" "$OUT/frag.published-order.qsb"

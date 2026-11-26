@@ -1,0 +1,53 @@
+{
+  "host_qsb": {
+    "notice_files_in_kit": {
+      "LICENSES/GPL-3.0-only.txt": {
+        "bytes": 35147,
+        "present_in_kit_at": "notices/qtbase/licenses/GPL-3.0-only.txt",
+        "same_kit_notice_bytes": true,
+        "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+      },
+      "LICENSES/Qt-GPL-exception-1.0.txt": {
+        "bytes": 965,
+        "present_in_kit_at": "notices/qtbase/licenses/Qt-GPL-exception-1.0.txt",
+        "same_kit_notice_bytes": true,
+        "sha256": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2"
+      }
+    },
+    "qt_shader_tools_source_archive_sha256": "f6ec88bf42deba84d8f6b5d0914636ceed4749ccb51d1945b2f79b322b7ecf47",
+    "source_entry_sha256": "3c190d610bdf411819d18dc45fdcb21010cbe8373cef04433d18763708d56da1",
+    "tool_entry": "host_qt/bin/qsb",
+    "upstream_entry_declaration": "LicenseRef-Qt-Commercial OR GPL-3.0-only WITH Qt-GPL-exception-1.0"
+  },
+  "open_scope": [
+    "finished_product_license_selection",
+    "all_transitive_library_and_tool_notices",
+    "published_installation_information_and_channel"
+  ],
+  "qtbase_shaders": {
+    "copyright": "Copyright (C) 2024 The Qt Company Ltd.",
+    "current_distribution_provenance": "unchanged_qtbase_6_8_3_release_payloads",
+    "directory": "src/gui/painting/shaders",
+    "profile_application": "qtbase_lgplv3_static_relink_materials_when_this_license_branch_is_selected",
+    "recorded_license_texts": {
+      "GPL-2.0-only.txt": {
+        "bytes": 18092,
+        "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+      },
+      "GPL-3.0-only.txt": {
+        "bytes": 35147,
+        "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+      },
+      "LGPL-3.0-only.txt": {
+        "bytes": 7651,
+        "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+      },
+      "LicenseRef-Qt-Commercial.txt": {
+        "bytes": 462,
+        "sha256": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700"
+      }
+    },
+    "upstream_declaration": "LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only",
+    "upstream_reuse": "src/gui/painting/shaders/REUSE.toml"
+  }
+}

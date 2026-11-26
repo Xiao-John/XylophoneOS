@@ -79,8 +79,9 @@ Pumpkin 盘外代际由开发客体验证，ClarkE 的 LLInt 和 WTF 栈范围�
 
 ## 下一步
 
-- 后续组合候选通过 79 项常规、10 项许可材料和 50 次 glibc 客体运行。最终实际
-  里程碑需重建两套 SDK 并绑定组合门禁。[组合复验](work_log/ea2d71c6_next_stage_combined_guest.md)
+- 组合候选通过 79 项常规、10 项许可材料和 50 次 glibc 客体运行。收口须从最终
+  主线提交重建系统和两套 SDK，实际运行组合门禁，并将结果绑定到该源码与产物。
+  [组合复验](work_log/ea2d71c6_next_stage_combined_guest.md)
 - N4 生产启用、glibc 默认 SDK 切换、动态链接 D1–D4、显示/ps2/ata 后续设备迁移、
   系统重建/自举（D6）与 Qt QML/Quick 各按专项计划推进。
 - 按 Discipline → 本页 → 宪法 → 专项契约/登记接手；新开发独立分支/PR 交付，

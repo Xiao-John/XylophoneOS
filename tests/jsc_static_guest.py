@@ -29,10 +29,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("image", "payload", "report"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--expected-resources", type=int, nargs=3, required=True,
+                        metavar=("PAGES", "TASKS", "COMPLETIONS"),
+                        help="baseline for the selected ordinary system after demo tasks stop")
     args = parser.parse_args()
     args.report.parent.mkdir(parents=True, exist_ok=True)
     script = ROOT / "tests/fixtures/webkit/jsc_smoke.js"
     report = {"status": "failed", "image_sha256": sha(args.image),
+              "runner_sha256": sha(Path(__file__)), "expected_resources": args.expected_resources,
               "jsc_sha256": sha(args.payload), "script_sha256": sha(script)}
     guest = None
     try:
@@ -54,6 +58,8 @@ def main():
             command(guest, "demo quiet", b"demo tasks")
             pump(guest, 1.5)
             report["resources_before"] = resources(guest)
+            if report["resources_before"] != tuple(args.expected_resources):
+                raise AssertionError(f"guest baseline differs from the expected {args.expected_resources}")
             output = command(guest, "exec-file /js/jsc /js/smoke.js", b"kind=", timeout=240)
             status = re.findall(rb"\[wait\] pid=\d+ kind=(\w+) code=(-?\d+)", output)
             report["wait_status"] = [[kind.decode(), int(code)] for kind, code in status]

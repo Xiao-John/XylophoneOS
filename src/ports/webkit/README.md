@@ -105,10 +105,12 @@ python3 src/ports/webkit/build_llint_layout.py --jsc-executable \
   --archive "$WPE_ARCHIVE" --icu-archive "$XOS_ICU79_ARCHIVE" \
   --sdk-build "$GLIBC_BUILD" --sdk-profile "$GLIBC_CXX_PROFILE" --output "$JSC_OUT"
 python3 tests/jsc_static_guest.py --image "$XOS_PROBE_ISO" \
-  --payload "$JSC_OUT/layout/bin/jsc" --report "$GUEST_REPORT"
+  --payload "$JSC_OUT/layout/bin/jsc" --report "$GUEST_REPORT" \
+  --expected-resources 129696 3 1
 ```
 
 客体检查通过常规 Xsh 启动 `jsc`，执行新工作盘上的普通 JavaScript，并核对输出、
 退出状态和资源回收。XOS shell 使用 1 MiB 原生带保护页的线程栈，保留 JavaScriptCore
-原有栈保留区。VM 所有者调度、GC 根保留、WebCore 及浏览器进程均按各自门槛验收。
+原有栈保留区。示例给出本次普通镜像的明确资源基线。VM 所有者调度、GC 根保留、
+WebCore 及浏览器进程均按各自门槛验收。
 [静态 shell 客体记录](../../../docs/work_log/3eba7c25_clarke_jsc_guest.md)

@@ -18,5 +18,9 @@ XOS shell 在 1 MiB 的原生 pthread 栈上启动，保留 XOS 栈保护和 Jav
 [客体回执](../reports/clarke_jsc_guest_20261126/report.json) ·
 [串口记录](../reports/clarke_jsc_guest_20261126/guest.serial.log.gz)
 
+验收入口强制检查调用者提供的镜像资源基线。重跑使用同一 ISO 和静态 ELF，
+按实际基线通过。将预期空闲页减少一页后，客体验收在脚本启动前拒绝该基线。
+[基线不符回执](../reports/clarke_jsc_guest_20261126/baseline_mismatch.json)
+
 该门验证静态解释器的普通脚本入口。ES262 通过率、WebCore 页面、跨进程渲染、
 生产网络及长期浏览器运行仍有独立验收门。

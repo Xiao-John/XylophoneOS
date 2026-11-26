@@ -1,0 +1,60 @@
+{
+  "status": "PASSED",
+  "kernel_build_id": "8260a61a041b5074",
+  "image_sha256": "08ed31b9196956d9bc7028cdb98d0413a07ea67d6d44d6cbb963b2d0fd212107",
+  "sdk_manifest_sha256": "881dc3717affb9f0c8ba036bcec22f72fb0d643d266ab7d3b16c1a5a91cfea04",
+  "probe_source_sha256": "869d80af1f441892482e761733c7e83f0b80712fc7e98ec9b9c8dde6632133f4",
+  "probe_elf_sha256": "8bbee582d7654752cd69ae8ed86c56dc878449d66ff15f107c683bc7f8d0f1fb",
+  "scope": [
+    "cross-process shared writable mapping and process-exit revocation",
+    "grant creation snapshots source bytes",
+    "read-only delegated rights reject writable mappings",
+    "same-process alias visibility",
+    "grant map/close race linearization",
+    "pin-blocked close returns busy atomically",
+    "global mapping quota and close-time cleanup"
+  ],
+  "not_covered": [
+    "exec replacement cleanup race",
+    "fault-injected allocation failure",
+    "multi-core shootdown (unsupported; single-core only)"
+  ],
+  "runs": [
+    {
+      "iteration": 0,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    {
+      "iteration": 1,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    },
+    {
+      "iteration": 2,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ]
+    }
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "derived_public_receipt_from_sha256": "dc99559fd196fa6cdab351e8af5eafaf0743d342439612f60fd52d00e8b245a0",
+  "serial_sha256": "8bce668a1a16ea249c2614459e26bcad606911e98ddad44e46e9d6f37c6326d6"
+}

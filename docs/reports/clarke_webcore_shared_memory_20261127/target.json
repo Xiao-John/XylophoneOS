@@ -1,0 +1,87 @@
+{
+  "scope": "real WebCore local grant aliases and CPU ShareableBitmap snapshots",
+  "elf_sha256": "c7e1c0e9328bfba2a8dc8930d21632d0c53767cf2f46b782fc91a383ce0e459f",
+  "fixture_sha256": "e8254049ee9bde3d3c66214bd243e0c07e8d9866c81542eee547b00f444f0243",
+  "patch_sha256": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98",
+  "upstream_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+  "compiled": {
+    "platform/xos/SharedMemoryXOS.cpp": {
+      "source_sha256": "717998c3bde68184bd6bbe91681ae66e97261305c00b3174b77025fb009ea4bf",
+      "object_name": "SharedMemoryXOS.cpp.obj",
+      "object_sha256": "5865de9708b857637cfbe5b71e28c4256692dbdba75ff4a7969363069bf34206"
+    },
+    "platform/SharedMemory.cpp": {
+      "source_sha256": "0376184fcc7ebe98489c6a8e491aae837c2d449bdde08f0790190d045ed27bfc",
+      "object_name": "SharedMemory.cpp.o",
+      "object_sha256": "a253a004534eba53456255d096b8b55516f511cc6bfd58d94fe449a55414e175"
+    },
+    "platform/graphics/ShareableBitmap.cpp": {
+      "source_sha256": "cffae89d31180cb06116b102891bdccc0a643141911f03906e2a8b5baf47b365",
+      "object_name": "ShareableBitmap.cpp.o",
+      "object_sha256": "e3f15a627fe484c7b6839a81553b90473c8a6c6494b22d3cfb40850faa2e44e5"
+    },
+    "platform/graphics/ShareableBitmapHandle.cpp": {
+      "source_sha256": "976a9884af2e1f98b248b7fa43331a27ae885104a71ec9e6d6ccf8a4c3b008f8",
+      "object_name": "ShareableBitmapHandle.cpp.o",
+      "object_sha256": "0feb5ad1590f610caeef0884a9e5378af60c01f23885029361e9daeabc2359b8"
+    },
+    "platform/graphics/DestinationColorSpace.cpp": {
+      "source_sha256": "688dd4c73c9c26942f7ebc757fbf03cce2d4d76f901edadf10d0696ac761e1cb",
+      "object_name": "DestinationColorSpace.cpp.o",
+      "object_sha256": "d2331b4f090a5b40e76af3d659707e0fce1f9471241c333cdac00d2c681ba5b2"
+    },
+    "platform/graphics/skia/ShareableBitmapSkia.cpp": {
+      "source_sha256": "7472b9233293ab484dc5ae36eaf7892b192de89cc192c012ad0323ed17b91c28",
+      "object_name": "ShareableBitmapSkia.cpp.o",
+      "object_sha256": "4cac500aa9d57281c1a39b840d930d1e29ed9b6bbdee78bfa8c499ec361f89a9"
+    },
+    "platform/graphics/skia/ColorSpaceSkia.cpp": {
+      "source_sha256": "399d9507b105fb2541791f3109331181fd2f033da9b9b9e8ccfe4c429ea11ffc",
+      "object_name": "ColorSpaceSkia.cpp.o",
+      "object_sha256": "23427b4ab4fa93ec74d330f02f49f43f3a01a7313aa29faa30fcf61f47720a56"
+    },
+    "tests/fixtures/webkit/shared_memory.cpp": {
+      "source_sha256": "e8254049ee9bde3d3c66214bd243e0c07e8d9866c81542eee547b00f444f0243",
+      "object_name": "shared_memory.cpp.o",
+      "object_sha256": "95df92d531df3ebd7f52eb3b0ba3e88a5c1feff1df4fc4a217be39edd814fc5b"
+    },
+    "src/user/arch/x86_64/syscall.cpp": {
+      "source_sha256": "b69c2d81b575d86ea5f55e489690db0171a13b5ff208f9c9a9eb1f7b9c17b1a2",
+      "object_name": "syscall.cpp.o",
+      "object_sha256": "42e1569d4c663b01bfb1a713d0c0852104cd0095c9512a94868e1764a2439569"
+    }
+  },
+  "cmake_config_sha256": "a0c85b99f4902ffcf33f8c69857276c331d376be368e43715c57ae3a2fc22eee",
+  "sdk_linker_script_sha256": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+  "archives": {
+    "libskia_raster.a": "0defabc3cd586e3940a9027802d6666d8e43cf7f836e4228e0a88f152ab351c4",
+    "libWTF.a": "3c53b5f0494f4e65da64147a0328af99f39cb6c716a2d9c0e9d4f93d403deddd",
+    "libbmalloc.a": "56e0f9d6477b62a2a12a48208e6b928c878947aa4a601c82e37eefebaa1017e9",
+    "libfreetype.a": "03f6b0e6e4d6d7fae5cd77536aa3b35fba7a8455a9dc9235f42cba7d97d3549c",
+    "libpng.a": "1734d9f171debddb8e01fcf268d7e92d70c9aa2ed2e4ae3b6ac2f5382a0021ed",
+    "libjpeg.a": "72f199a71e509042d63ecf895de044581842e1008c7880d5d455709a80984143",
+    "libz.a": "401c4d286c9d29f7b2c9659ec62d9f69e1c65bfc29fcaca864339271b31b6622",
+    "libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
+    "libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83",
+    "libicudata.a": "0b5168e5c536398e4985e56bb6bf6a8a6ddabcd0886e8b81913debe6a80caf52"
+  },
+  "runtime": {
+    "xos_start.o": "a01e55e672c11bcef47e4739c8b526d760446517d8c3b525ff44c5e62c619332",
+    "crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+    "crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+    "xos_start_c.o": "48719e60452baf153d7e3e7e2c1a30c09415b0ebb9c886e04879a17b7fd8d3cf",
+    "crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+    "crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+    "libc.a": "5c22e215d68aea22a61cede19ee92e27716eb63b817b1fc4f82ac9a5472acb8c",
+    "libm.a": "da7a7e8026e5cfead978de1574ed70b555105171d500091894a7b62d2ab8e35e",
+    "libgcc.a": "76e46640d9329f32d0b87dc68d7b571e2a4f8d7474c564dc2e669dff81fd8916",
+    "libxos_terminal.a": "52df6bf395e70853e24244011d4ab7cfc0d1e43cfaf62840d33db3e13c6d8e94",
+    "libstdc++.a": "9794f0f76a5c0f0ecff749f2013407b9ac3f97361671b65da0c19d93dd2913d3",
+    "libsupc++.a": "d048424c3b40156b1dc55cd09864f48f3c31273271bf72a4a48fa6380e90d526"
+  },
+  "tools": {
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163"
+  }
+}

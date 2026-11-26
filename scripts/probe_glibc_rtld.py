@@ -109,6 +109,10 @@ def main():
             raise RuntimeError('expected rtld entry and unresolved XOS startup handoff')
         if symbols.get('__xos_rtld_install_initial_tp') != 'U':
             raise RuntimeError('GNU rtld does not select the XOS initial thread handoff')
+        forbidden = {'__access', '__open64', '__open64_nocancel', '_dl_show_auxv',
+                     '_dl_sysdep_read_whole_file', '_dl_init_paths'}
+        if forbidden & symbols.keys():
+            raise RuntimeError('fixed rtld startup still imports generic search or preload operations')
 
         native_entry = build / 'elf/xos_rtld_entry.os'
         _, native_compilation = run('make_native_entry', [*make_elf, native_entry])
@@ -145,6 +149,16 @@ def main():
         if imports & {'__open64_nocancel', '__open64', '__read_nocancel', '__read', '__pread64_nocancel',
                       '__pread64', '__close_nocancel', '__close', '__fstat64_time64', '_dl_load_cache_lookup'}:
             raise RuntimeError('fixed startup dependencies still route through path or POSIX FD I/O')
+        origin = build / 'elf/dl-object.os'
+        diagnostics = build / 'elf/dl-write.os'
+        run('make_closed_start_helpers', [*make_elf, origin, diagnostics])
+        _, origin_imports = run('closed_origin_imports', [env['NM'], '-u', origin])
+        if '__getcwd' in origin_imports:
+            raise RuntimeError('fixed rtld searches for a pinned dependency relative to cwd')
+        _, diagnostic_imports = run('native_diagnostic_imports', [env['NM'], '-u', diagnostics])
+        _, diagnostic_code = run('native_diagnostic_code', [env['OBJDUMP'], '-d', diagnostics])
+        if diagnostic_imports.strip() or '<_dl_write>:' not in diagnostic_code or '$0x80' not in diagnostic_code:
+            raise RuntimeError('rtld buffer diagnostics do not directly use inherited native output')
         _, mapping_imports = run('native_mapping_imports', [env['NM'], '-u', rtld_map])
         if {line.split()[-1] for line in mapping_imports.splitlines()} != {'__xos_file_session_call_until', '__xos_rtld_check_entry', '__xos_rtld_heap_begin'}:
             raise RuntimeError('native rtld mapping unexpectedly depends on builtin libc or TLS')

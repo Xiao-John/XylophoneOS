@@ -1,0 +1,65 @@
+{
+  "tested_source_head": "9f4cd0ad4e5c96c7bc79d053b6a3137619637806",
+  "tested_source_tree": "712e58099a0651ee2c4c1f27f7ebfc20adc9fee2",
+  "base_main": "af47b2c5b179a27bba432c70832f63516f6d4749",
+  "glibc_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "glibc_source_verification": "upstream_signature_verified",
+  "toolchain_image_sha256": "a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "system_build_id": "6205663022d4af1f",
+  "system_manifest_sha256": "006569a5587872fc8eefa9262eaf126bf019a07b380736e317f345717772b443",
+  "iso_sha256": "56988e3db5a7f72ac4458d3b686dd53895619c0c00a82a0128d7d9d25b4b92d3",
+  "sdk_manifest_sha256": "2b77b4aca98cc0de0051733131f4f4290efab11eb1e5bdf3b1897be59b923603",
+  "profile_sha256": "0c63a1aae5d14b3bd051cbf10fcbd1b28d45c143024e933c38d7da42ea44d38e",
+  "rtld_manifest_sha256": "120c532e9addadb98dda344e6a499eb4383cc46cf6624a24bb984bbd16a2a010",
+  "terminal_support_manifest_sha256": "04dae168b27d4fd5a23bb59ceae4df95f0425951dff94e4d20d9405d8a39c130",
+  "loader_headers": {
+    "src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "src/user/loader/glibc_d1/entry_stack.hpp": "77e98fcfc4782caf6209caa1508eaa63f364f11ea3a18118ee75c340e2b7838b",
+    "src/user/loader/glibc_d1/image_mapping.hpp": "d26a4527dfc6d9d44776d62c6759d36de881f9c49ae0726da448a8498ee8a7d2",
+    "src/user/loader/glibc_d1/interpreter_entry.hpp": "13f278d1c08870d5d9d1b86b4ed1162a5c2d5f4947416071859b952bb98f8f49",
+    "src/user/loader/image_reader.hpp": "e1162a6bc2cc53ddeb7174a7074981bba8e9cc024b65c48d033ff333ab8804fd",
+    "src/user/loader/load.cpp": "d70074d7ec1b4438d236845e2d16bf0a865eacd4494a7f4d1d4cdbc0859e251e"
+  },
+  "rtld_guard_status": "rtld_entry_compiled_startup_blocked",
+  "rtld_steps": {
+    "rtld_symbols": {
+      "exit_code": 0,
+      "log_sha256": "947fb283ce7deb0cc0eef62f7ca6deb8eb77853d01fcb0484f58e3e4a68c6a29"
+    },
+    "make_closed_start_helpers": {
+      "exit_code": 0,
+      "log_sha256": "0bd9d063c49b5175bc25be15829100776f8dce13182393e4f663a00b2c23fd47"
+    },
+    "closed_origin_imports": {
+      "exit_code": 0,
+      "log_sha256": "0d46eb208c49dd9d7003cda7309bf4e16722c132a5e199adf7e92ca394c30da3"
+    },
+    "native_diagnostic_imports": {
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native_diagnostic_code": {
+      "exit_code": 0,
+      "log_sha256": "fb4101a73f0441cb10ab9c1f1caeeb64a830ee47b8e396f75732c40f48aeb36d"
+    },
+    "make_dl_sysdep": {
+      "exit_code": 2,
+      "log_sha256": "f8c9d6be55a611ac75f20e35776245552cc75419af3088fc86a62ebfb3ff0c6e"
+    },
+    "make_ld_so": {
+      "exit_code": 2,
+      "log_sha256": "29e574dbafe8cb5c1350972bb0f6739f211d1b8581e4df887eaaf79575f16543"
+    }
+  },
+  "guest_report_sha256": "d00c877fb0680feda5edb061a8c52ee77c0ec53aa2e5340521114c998d5d541e",
+  "guest_serial_sha256": "25ec132bed41e208f22e8fee1e336a749cc488fe488bafdf4f676e7c00472561",
+  "guest_serial_gzip_sha256": "9a5ddfbbc5ccf0580b3dcbff4ac2eb90f2877b73a781664309ecba083ebad47d",
+  "raw_guest_report_sha256": "ade8f75ab4df328248c1cd5b92bccebf1f7e6361652f81f4a30bf57f57fd4883",
+  "host_path_templates": [
+    "XOS_BUILD",
+    "XOS_HOST_TEMP",
+    "XOS_ROOT",
+    "XOS_TARGET_TOOL_BIN",
+    "XOS_TOOLCHAIN_ROOT"
+  ]
+}

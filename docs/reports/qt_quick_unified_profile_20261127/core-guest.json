@@ -1,0 +1,24 @@
+{
+  "elf_sha256": "7d5cf0e44e7636a9414f1838cf9a8ff8b7d6b19b001016240beb8fce34218c03",
+  "image_sha256": "0b32adcd8c4d78abb6559ac604f97342ab6e3ef4cf64ffc4751091aec4e7be74",
+  "provenance": {
+    "kind": "derived portable receipt",
+    "omitted_fields": [
+      "qemu_command"
+    ],
+    "original_sha256": "c9342d08caadd175a1d5700a3060d72a47dc4006ff06e5cd13ff22c9b1fa9c1a"
+  },
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "be73c102400b6842e1fad43835640cea4b066def4e229ffdbee9869df8a25c07",
+  "status": "PASSED"
+}

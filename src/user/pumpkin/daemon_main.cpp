@@ -12,6 +12,9 @@
 #if XOS_PUMPKIN_RESOURCE_BRIDGE
 #include "resource_bridge.hpp"
 #endif
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#include "named_resource_store.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -85,7 +88,8 @@ bool introduce_control(const char* name, u64 parent, const ipc_channel& control,
 
 int serve_with_parent(const store_api& store, const nonce& realm, const entropy_api& entropy,
                       const char* rendezvous, const char* service_name, backing_liveness backing = {},
-                      login_resource* resource = nullptr, resource_bridge* bridge = nullptr) {
+                      login_resource* resource = nullptr, resource_bridge* bridge = nullptr,
+                      named_resource_store* named = nullptr) {
     // Zero binds to the real parent. The discovery name supplies no authority.
     ipc_channel control{};
     if (sdk::ipc_channel_create(0, control) != 0) {
@@ -96,7 +100,7 @@ int serve_with_parent(const store_api& store, const nonce& realm, const entropy_
         close_ipc(control);
         return 11;
     }
-    return serve_native(store, realm, entropy, control, controller, service_name, backing, resource, bridge);
+    return serve_native(store, realm, entropy, control, controller, service_name, backing, resource, bridge, named);
 }
 
 }
@@ -116,12 +120,24 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         if (!slots.bind_bootstrap() || !generation.bind_bootstrap()) {
             return 11;
         }
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+        anchored_files_store storage(slots.io(), generation.io(), disk_test_realm, named_resource_codec());
+        named_resource_store names(storage.api(), disk_test_realm);
+        auto* named = &names;
+        const auto store = names.accounts();
+#else
         anchored_files_store storage(slots.io(), generation.io(), disk_test_realm);
+        named_resource_store* named = nullptr;
         const auto store = storage.api();
+#endif
         if (anchor_initialize && provision_store(store, disk_test_realm) != status::ok) {
             return 11;
         }
-        struct live_backends { files_slot_client& slots; anchor_guest::client& generation; } live{slots, generation};
+        struct live_backends {
+            files_slot_client& slots;
+            anchor_guest::client& generation;
+            named_resource_store* named;
+        } live{slots, generation, named};
 #if XOS_PUMPKIN_NATIVE_LOGIN
         login_resource approved_resource;
         auto* resource = &approved_resource;
@@ -129,7 +145,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         login_resource* resource = nullptr;
 #endif
 #if XOS_PUMPKIN_USER_RESOURCE
-        resource_bridge service_bridge;
+        resource_bridge service_bridge(named);
         auto* bridge = &service_bridge;
 #else
         resource_bridge* bridge = nullptr;
@@ -137,8 +153,11 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         return serve_with_parent(store, disk_test_realm, entropy, args[2], disk_test_service,
                                   {&live, [](void* context) {
                                        const auto& state = *static_cast<live_backends*>(context);
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+                                       if (!state.named->live()) { return false; }
+#endif
                                        return state.slots.live() && state.generation.live();
-                                   }}, resource, bridge);
+                                   }}, resource, bridge, named);
     }
 #endif
 #if XOS_PUMPKIN_DURABLE_PROBE

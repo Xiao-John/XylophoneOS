@@ -16,7 +16,8 @@ struct generation_record_io {
 // exclusive writer until the core and store have stopped.
 class anchored_files_store {
 public:
-    anchored_files_store(test_slot_io slots, generation_record_io generation, const nonce& realm);
+    anchored_files_store(test_slot_io slots, generation_record_io generation, const nonce& realm,
+                         publication_codec codec = {});
     anchored_files_store(const anchored_files_store&) = delete;
     anchored_files_store& operator=(const anchored_files_store&) = delete;
     store_api api();
@@ -27,6 +28,7 @@ private:
 
     test_slot_io slots_;
     generation_record_io generation_;
+    usize capacity_;
     snapshot_publication publication_;
     u8 frame_[user::files_private_storage::slot_bytes]{};
 };

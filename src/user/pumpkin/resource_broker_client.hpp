@@ -25,7 +25,7 @@ public:
         }
         broker_opened opened{};
         if (authenticated_peer(pair_) != expected_peer || !receive_broker_frame(pair_, opened, end) ||
-            opened.version != wire_version || opened.reserved || !opened.connection) {
+            opened.version != broker_wire_version || opened.reserved || !opened.connection) {
             close_ipc(pair_);
             return false;
         }
@@ -50,24 +50,28 @@ public:
         return reply.result;
     }
 
-    bool read(wire_id ticket, broker_data& output) {
+    bool read(wire_id ticket, broker_data& output, const named_resource_request* named = nullptr) {
         output = {};
         const auto now = monotonic_now();
         if (now < 0 || !peer_ || authenticated_peer(pair_) != peer_ || !ticket.number || ticket.scope == nonce{}) {
             return false;
         }
-        const broker_read request{wire_version, 0, broker_object_number,
+        broker_read request{broker_wire_version, 0, named ? 0 : broker_object_number,
             static_cast<u64>(now) + max_request_ns, ticket};
+        if (named) { request.named = *named; }
         broker_data reply{};
         const bool received = sdk::ipc_send(pair_.send, &request, sizeof(request)) == 0 &&
             receive_broker_frame(pair_, reply, request.deadline);
         close_ipc(pair_);
         number_ = peer_ = 0;
-        if (!received || reply.version != wire_version || reply.data.length > sealed_blob_capacity) { return false; }
+        if (!received || reply.version != broker_wire_version || reply.reserved || reply.data.length > sealed_blob_capacity ||
+            has_bytes(reply.data.bytes + reply.data.length, sizeof(reply.data.bytes) - reply.data.length)) { return false; }
         if (reply.result == wire_status::ok) {
-            if (!reply.data.length) { return false; }
+            if (named ? reply.data.length != sizeof(u32) || !reply.generation ||
+                        (named->generation && reply.generation != named->generation) :
+                        !reply.data.length || reply.generation) { return false; }
         } else if ((reply.result != wire_status::denied && reply.result != wire_status::io_error &&
-                    reply.result != wire_status::unavailable) || reply.data.length ||
+                    reply.result != wire_status::unavailable) || reply.data.length || reply.generation ||
                    has_bytes(reply.data.bytes, sizeof(reply.data.bytes))) { return false; }
         output = reply;
         return true;

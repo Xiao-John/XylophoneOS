@@ -25,6 +25,7 @@ struct clocked_ipc {
     u64 forwarded_deadline = 0;
     broker_read client_request{};
     wire_status authorization_result = wire_status::ok;
+    u64 generation = 0;
 } fixture;
 
 constexpr wire_id example_ticket{{{1}}, 1};
@@ -68,7 +69,7 @@ i64 xos::sdk::syscall(u64 number, u64 first, u64 second, u64 third) {
             assert(first == client_lane.send && third == sizeof(broker_data));
             const auto& reply = *reinterpret_cast<const broker_data*>(second);
             assert(reply.result == wire_status::ok && reply.data.length == sizeof(content));
-            assert(std::memcmp(reply.data.bytes, content, sizeof(content)) == 0);
+            assert(reply.generation == fixture.generation && std::memcmp(reply.data.bytes, content, sizeof(content)) == 0);
             ++fixture.client_replies;
         }
         return 0;
@@ -77,7 +78,9 @@ i64 xos::sdk::syscall(u64 number, u64 first, u64 second, u64 third) {
             assert(third == sizeof(broker_read_reply) && fixture.pending);
             if (fixture.now < fixture.reply_at) { return process_error_would_block; }
             auto& reply = *reinterpret_cast<broker_read_reply*>(second);
-            reply = {wire_version, fixture.authorization_result, fixture.last_sequence};
+            reply = {broker_wire_version, fixture.authorization_result, fixture.last_sequence};
+            reply.generation = fixture.generation;
+            if (reply.generation) std::memcpy(&reply.data, content, sizeof(content));
             fixture.pending = false;
             return sizeof(reply);
         }
@@ -118,9 +121,9 @@ int main() {
         assert(authority.bind(authority_lane, authority_pid));
         client_slot first{client_lane, 1, 8 * tick, false};
         fixture.client_pending = true;
-        fixture.client_request = {wire_version, 0, broker_object_number, 3 * tick, example_ticket};
+        fixture.client_request = {broker_wire_version, 0, broker_object_number, 3 * tick, example_ticket};
         fixture.reply_at = 4 * tick;
-        assert(!process_read(first, object, authority, fixture.now));
+        assert(!process_read(first, &object, authority, fixture.now));
         assert(authority.live() && fixture.authorization_calls == 1 && !fixture.pending &&
                !fixture.file_reads && !fixture.client_replies);
 
@@ -129,7 +132,7 @@ int main() {
         fixture.client_receive_at = fixture.now;
         fixture.client_request.deadline = 9 * tick;
         fixture.client_request.ticket = {{{2}}, 2};
-        assert(process_read(second, object, authority, fixture.now));
+        assert(process_read(second, &object, authority, fixture.now));
         assert(authority.live() && fixture.authorization_calls == 2 && fixture.last_sequence == 2 &&
                fixture.file_reads == 1 && fixture.client_replies == 1 && fixture.forwarded_deadline == 8 * tick);
         std::puts("PASS expired client reply is drained and a fresh authorized read retains the same channel");
@@ -138,10 +141,34 @@ int main() {
         fixture.client_pending = true;
         fixture.client_receive_at = closing.expires;
         fixture.client_request.ticket = {{{3}}, 3};
-        assert(!process_read(closing, object, authority, fixture.now));
+        assert(!process_read(closing, &object, authority, fixture.now));
         assert(authority.live() && fixture.authorization_calls == 2 &&
                fixture.file_reads == 1 && fixture.client_replies == 1);
         std::puts("PASS actual receive time closes an expired client before authorization or file access");
+    }
+
+    fixture = {};
+    {
+        broker_authority authority;
+        assert(authority.bind(authority_lane, authority_pid));
+        fixture.generation = 7;
+        fixture.client_request = {broker_wire_version, 0, 0, 3 * tick, example_ticket};
+        fixture.client_request.named.length = 1;
+        fixture.client_request.named.name[0] = 'a';
+        fixture.client_pending = true;
+        fixture.reply_at = 4 * tick;
+        client_slot first{client_lane, 1, 8 * tick, false};
+        assert(!process_read(first, nullptr, authority, fixture.now));
+        assert(authority.live() && fixture.authorization_calls == 1 && !fixture.pending && !fixture.client_replies);
+
+        client_slot second{client_lane, 2, 8 * tick, false};
+        fixture.client_pending = true;
+        fixture.client_receive_at = fixture.now;
+        fixture.client_request.deadline = 7 * tick;
+        fixture.client_request.ticket = {{{2}}, 2};
+        assert(process_read(second, nullptr, authority, fixture.now));
+        assert(authority.live() && fixture.authorization_calls == 2 && fixture.client_replies == 1 && !fixture.file_reads);
+        std::puts("PASS a late named payload stays private and the next live read can return the current data");
     }
 
     fixture = {};

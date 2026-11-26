@@ -217,12 +217,12 @@ struct broker_run {
         pid = static_cast<u64>(child);
         const auto deadline = now() + max_request_ns;
         control = accept_bootstrap(pid, deadline);
-        broker_configuration config{wire_version, sizeof(record), daemon.pid,
+        broker_configuration config{broker_wire_version, sizeof(record), daemon.pid,
             {account.scope, account.number}, session.scope};
         __builtin_memcpy(config.bytes, record, sizeof(record));
         require(sdk::ipc_send(control.send, &config, sizeof(config)) == 0, "broker-configure");
         broker_ready ready{};
-        require(receive_broker_frame(control, ready, deadline) && ready.version == wire_version &&
+        require(receive_broker_frame(control, ready, deadline) && ready.version == broker_wire_version &&
             !ready.reserved && ready.grant.peer == pid, "broker-ready");
         auto grant = request(wire_operation::admit_resource_broker);
         grant.name_length = sizeof(ready.grant);

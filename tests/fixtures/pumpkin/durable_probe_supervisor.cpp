@@ -9,6 +9,9 @@
 #endif
 #if XOS_PUMPKIN_USER_LOGIN
 #include "../../../src/user/pumpkin/user_login.hpp"
+#if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#include "../../../src/user/pumpkin/named_operator.hpp"
+#endif
 #endif
 
 namespace xos::user::pumpkin::durable_probe {
@@ -234,6 +237,129 @@ bool check_revoked(daemon& server, const wire_id& account_id, const credential& 
     return lookup(server, account_id, true) && bind_ordinary(user, server.pid) &&
         login(user, key, reply, wire_status::denied);
 }
+
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+constexpr char resource_name[] = "preview";
+constexpr u32 first_content = 0x314d5550, second_content = 0x324d5550;
+constexpr u64 first_generation = 4, second_generation = 5;
+
+wire_request named_request(wire_operation operation, wire_id token, u64 generation, u32 data = 0) {
+    named_resource_request fields{};
+    fields.generation = generation;
+    fields.data = data;
+    fields.length = sizeof(resource_name) - 1;
+    __builtin_memcpy(fields.name, resource_name, fields.length);
+    auto request = operation_request(operation);
+    request.name_length = sizeof(fields);
+    request.token = token;
+    __builtin_memcpy(request.name, &fields, sizeof(fields));
+    return request;
+}
+
+struct named_user {
+    ipc_client client;
+    wire_id identity{};
+    wire_id session{};
+
+    bool start(daemon& server, account_name name, u64 expected_number, bool new_account) {
+        auto request = operation_request(new_account ? wire_operation::create_account : wire_operation::lookup_account);
+        request.name_length = static_cast<u32>(name.length);
+        __builtin_memcpy(request.name, name.data, name.length);
+        wire_reply reply{};
+        if (!expect(server.control, request, reply, wire_status::ok) ||
+            reply.token.scope != disk_test_realm || reply.token.number != expected_number || reply.flags) {
+            wipe_bytes(&reply, sizeof(reply));
+            return false;
+        }
+        identity = reply.token;
+        if (!new_account) {
+            auto rotate = operation_request(wire_operation::rotate_credential);
+            rotate.token = identity;
+            if (!expect(server.control, rotate, reply, wire_status::ok)) { return false; }
+        }
+        request.operation = wire_operation::authenticate;
+        request.key = reply.key;
+        const bool accepted = bind_ordinary(client, server.pid) && expect(client, request, reply, wire_status::ok);
+        session = reply.token;
+        wipe_bytes(&request, sizeof(request));
+        wipe_bytes(&reply, sizeof(reply));
+        return accepted && check_identity(client, {session.scope, session.number}, identity, wire_status::ok);
+    }
+
+    bool read(u64 generation, wire_status expected, u32 data = 0) {
+        auto request = named_request(wire_operation::read_named_resource, session, generation);
+        wire_reply reply{};
+        return expect(client, request, reply, expected) &&
+            (expected != wire_status::ok || (reply.token.scope == disk_test_realm &&
+             reply.token.number == generation && reply.flags == data));
+    }
+};
+
+bool named_cycle(daemon& server) {
+    named_user alice, carol;
+    if (!alice.start(server, {"alice", 5}, 1, true) || !carol.start(server, {"carol", 5}, 2, true)) { return false; }
+    auto put = named_request(wire_operation::put_named_resource, alice.identity, 0, first_content);
+    wire_reply reply{};
+    if (!expect(carol.client, put, reply, wire_status::denied) ||
+        !expect(server.control, put, reply, wire_status::ok) ||
+        reply.token.scope != disk_test_realm || reply.token.number != first_generation ||
+        !alice.read(first_generation, wire_status::ok, first_content) ||
+        !carol.read(first_generation, wire_status::denied)) { return false; }
+
+    auto replace = named_request(wire_operation::put_named_resource, carol.identity, first_generation, second_content);
+    return expect(server.control, replace, reply, wire_status::ok) &&
+        reply.token.scope == disk_test_realm && reply.token.number == second_generation &&
+        expect(server.control, replace, reply, wire_status::conflict) &&
+        alice.read(second_generation, wire_status::denied) &&
+        carol.read(first_generation, wire_status::denied) &&
+        carol.read(second_generation, wire_status::ok, second_content);
+}
+
+bool named_recover_then_erase(daemon& server) {
+    named_user alice, carol;
+    if (!alice.start(server, {"alice", 5}, 1, false) || !carol.start(server, {"carol", 5}, 2, false) ||
+        !alice.read(second_generation, wire_status::denied) ||
+        !carol.read(first_generation, wire_status::denied) ||
+        !carol.read(second_generation, wire_status::ok, second_content)) { return false; }
+    auto erase = named_request(wire_operation::erase_named_resource, {}, second_generation);
+    wire_reply reply{};
+    return expect(alice.client, erase, reply, wire_status::denied) &&
+        expect(server.control, erase, reply, wire_status::ok) &&
+        carol.read(second_generation, wire_status::denied);
+}
+
+bool named_absent(daemon& server) {
+    named_user alice;
+    if (!alice.start(server, {"alice", 5}, 1, false) ||
+        !alice.read(second_generation, wire_status::denied) || !alice.read(0, wire_status::denied)) { return false; }
+    auto erase = named_request(wire_operation::erase_named_resource, {}, second_generation);
+    wire_reply reply{};
+    return expect(server.control, erase, reply, wire_status::conflict);
+}
+
+#if XOS_PUMPKIN_USER_RESOURCE
+u8 mutate_named(daemon& server, named_operator::packet& input) {
+    const bool put = input.op == named_operator::operation::put;
+    wire_reply found{};
+    if (put) {
+        auto lookup = operation_request(wire_operation::lookup_account, true);
+        if (!expect(server.control, lookup, found, wire_status::ok) || found.flags != 0) return 0;
+    }
+    auto update = operation_request(put ? wire_operation::put_named_resource : wire_operation::erase_named_resource);
+    update.token = found.token;
+    update.name_length = sizeof(input.fields);
+    __builtin_memcpy(update.name, &input.fields, sizeof(input.fields));
+    wire_reply result{};
+    if (server.control.call(update, result) != exchange::received) return 0;
+    if (result.result == wire_status::conflict) return named_operator::conflict;
+    if (result.result != wire_status::ok || (put && (result.token.scope != disk_test_realm ||
+                                                      result.token.number <= input.fields.generation))) return 0;
+    if (put) input.fields.generation = result.token.number;
+    input.fields.data = 0;
+    return 1;
+}
+#endif
+#endif
 }
 
 void run(u32 image, grant_function grant, const char* mode) {
@@ -286,9 +412,24 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
     anchor_guest::scenario mode{};
     const bool ready = sdk::channel_receive_wait(proxy_control.receive, &mode, sizeof(mode),
                                                  anchor_guest::deadline()) == sizeof(mode);
+#if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+    const auto named_mode = named_operator::for_scenario(mode);
+    named_operator::packet named_input{};
+    if (ready && named_mode != named_operator::operation{} &&
+        (sdk::channel_receive_wait(proxy_control.receive, &named_input, sizeof(named_input), anchor_guest::deadline()) !=
+             sizeof(named_input) || !named_operator::selection(named_input, named_mode))) {
+        (void)sdk::syscall(10, static_cast<u64>(proxy));
+        process_status failed{};
+        (void)sdk::wait(static_cast<u64>(proxy), failed);
+        return 22;
+    }
+    u8 named_result = 0;
+#endif
     bool passed = false;
 #if XOS_PUMPKIN_NATIVE_LOGIN
     u8 login_result = 0;
+#endif
+#if XOS_PUMPKIN_NATIVE_LOGIN || XOS_PUMPKIN_NAMED_RESOURCE_STORE
     process_stats before{}, after{};
     const bool bounded_start = sdk::syscall(sys_process_stats, reinterpret_cast<u64>(&before)) == 0;
 #else
@@ -301,7 +442,9 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
                                           {static_cast<u64>(proxy), proxy_control.transmit});
         switch (mode) {
         case anchor_guest::scenario::cycle: {
-#if XOS_PUMPKIN_NATIVE_LOGIN
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+            passed = started && named_cycle(server) && server.stop();
+#elif XOS_PUMPKIN_NATIVE_LOGIN
             if (started) {
                 const auto result = native_login::run(holder_image, server.pid, server.control, {account, sizeof(account) - 1});
                 login_result = static_cast<u8>(result);
@@ -315,7 +458,14 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             break;
         }
         case anchor_guest::scenario::healthy:
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+            passed = started && named_recover_then_erase(server) && server.stop();
+            break;
+        case anchor_guest::scenario::named_empty:
+            passed = started && named_absent(server) && server.stop();
+#else
             passed = started && check_revoked(server, {disk_test_realm, 1}, {}) && server.stop();
+#endif
             break;
         case anchor_guest::scenario::stale:
             passed = !started && server.control_admitted && server.stop(11);
@@ -333,6 +483,25 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             }
             break;
 #if XOS_PUMPKIN_USER_RESOURCE
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+        case anchor_guest::scenario::user_named_read:
+            if (started) {
+                login_result = broker_image ? native_login::login_user(holder_image, server.pid, server.control,
+                    {account, sizeof(account) - 1}, proxy_control, broker_image, &named_input.fields)
+                    : static_cast<u8>(native_login::result::broker_launch);
+                named_result = login_result;
+                passed = (named_result == 1 || named_result == user_login::denied ||
+                          named_result == user_login::resource_denied) && server.stop();
+            }
+            break;
+        case anchor_guest::scenario::user_named_put:
+        case anchor_guest::scenario::user_named_erase:
+            if (started) {
+                named_result = mutate_named(server, named_input);
+                passed = named_result != 0 && server.stop();
+            }
+            break;
+#else
         case anchor_guest::scenario::user_resource:
             if (started) {
                 login_result = broker_image ? native_login::login_user(holder_image, server.pid, server.control,
@@ -342,6 +511,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             }
             break;
 #endif
+#endif
         case anchor_guest::scenario::user_revoke:
             passed = started && native_login::revoke_user(server.control, {account, sizeof(account) - 1}) && server.stop();
             break;
@@ -350,11 +520,21 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             break;
         }
     }
-#if XOS_PUMPKIN_NATIVE_LOGIN
+#if XOS_PUMPKIN_NATIVE_LOGIN || XOS_PUMPKIN_NAMED_RESOURCE_STORE
     passed = passed && sdk::syscall(sys_process_stats, reinterpret_cast<u64>(&after)) == 0 &&
         before.free_pages == after.free_pages && before.tasks == after.tasks && before.completions == after.completions;
 #endif
     u8 outcome = static_cast<u8>(passed);
+#if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+    if (passed && named_result) {
+        named_input.sequence = 2;
+        named_input.result = named_result;
+        if (named_result != 1) named_input.fields = {};
+        passed = sdk::channel_send_wait(proxy_control.transmit, &named_input, sizeof(named_input),
+                                       anchor_guest::deadline()) == 0;
+        outcome = passed ? named_result : 0;
+    }
+#endif
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #if XOS_PUMPKIN_USER_LOGIN
     if (passed && (mode == anchor_guest::scenario::user_login || mode == anchor_guest::scenario::user_resource) &&

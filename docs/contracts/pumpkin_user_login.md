@@ -47,3 +47,31 @@ python3 -B scripts/pumpkin_user_login.py read-resource --system "$SYSTEM" --stat
 每次新 VM 重建匿名封存对象，完整账户身份从持久库恢复。账户吊销后，下一次资源
 入口把真实认证拒绝返回为退出码 3，且无需启动 broker。成功的读取与登出不推进
 持久账户代际。宿主仍只接收结果码，封存对象字节和原生授予留在客体内。
+
+## 可选具名资源
+
+在封存资源所需的构建选项上追加 `--pumpkin-named-resource-store`，使用新的私有
+安装目录。此组合启用 `read-named`、`publish-named` 和 `erase-named`。
+用 `prepare --system "$SYSTEM" --state "$STATE"` 初始化本配置的盘外格式 2。
+用原 `enroll` 领取凭据。真实登记端从恢复的账户库确定所有者，`publish-named`
+和 `erase-named` 需要受信操作者对安装目录及启动配置的管理权限。
+
+```sh
+python3 -B scripts/pumpkin_user_login.py publish-named --system "$SYSTEM" --state "$STATE" \
+  --resource-name preview --generation 0 --resource-value 293
+python3 -B scripts/pumpkin_user_login.py read-named --system "$SYSTEM" --state "$STATE" \
+  --resource-name preview --credential-file "$PRIVATE_CREDENTIAL"
+python3 -B scripts/pumpkin_user_login.py erase-named --system "$SYSTEM" --state "$STATE" \
+  --resource-name preview --generation "$CURRENT_GENERATION"
+```
+
+发布时预期代际 `0` 要求当前为空。替换和删除均提交实际已有对象的确切代际。
+读取可附加 `--generation` 以固定预期对象。一次提交保存已持久登记账户的所有者、
+对象数据和新的对象键。成功读取返回代际及四字节无符号值，退出前真实持有者完成
+登出并复核有效期内的待用读取被拒绝。退出码 4 表示无匹配对象或未获对象权限，
+5 表示变更的预期代际冲突。普通认证拒绝继续用 3。未确认变更后先检查实际代际。
+
+选择和结果用 `PKN1` 版本 1 帧走同一专用宿主管道。凭据仍由既有经过核验的私有
+描述符和专用 `PKU1` 帧传输。监督器只向通过普通认证的持有者交接 broker 的真实
+进程，broker 在受信服务间端点取得经过一次性授权的当前对象值。每次命令启动新
+VM 并重新取得通道，普通封存资源通过自己的原镜像启动。[服务授权](pumpkin_resource_service.md)

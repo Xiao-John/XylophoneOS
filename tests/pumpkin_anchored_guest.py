@@ -50,7 +50,7 @@ def sparse_snapshot(source, destination):
     assert digest(source) == digest(destination), "snapshot did not capture identical disk bytes"
 
 
-def snapshot_at_rev2(guest, source, destination, delay_ns):
+def snapshot_at_revision(guest, source, destination, revision, delay_ns):
     guest.qmp("stop")
     state = guest.qmp("query-status")
     assert state["status"] == "paused" and state["running"] is False, state
@@ -61,7 +61,7 @@ def snapshot_at_rev2(guest, source, destination, delay_ns):
     paused_ns = time.monotonic_ns() - start
     assert paused_ns >= delay_ns
     guest.qmp("cont")
-    return {"revision": 2, "qmp_status": state["status"], "injected_delay_ns": delay_ns,
+    return {"revision": revision, "qmp_status": state["status"], "injected_delay_ns": delay_ns,
             "paused_snapshot_wall_ns": paused_ns}
 
 
@@ -69,8 +69,8 @@ def packet(operation, result, sequence, value=blank):
     return header.pack(b"PKA1", 1, operation, result, sequence) + blank + value
 
 
-def from_bytes(value):
-    return None if value == blank else generation_mark(*mark_struct.unpack(value))
+def from_bytes(value, named_resources):
+    return None if value == blank else generation_mark(*mark_struct.unpack(value), named_resources=named_resources)
 
 
 def receive(guest, offset, expected_sequence):
@@ -84,11 +84,12 @@ def receive(guest, offset, expected_sequence):
     return operation, result, data[header.size:header.size + mark_struct.size], data[-mark_struct.size:]
 
 
-def binding(system, native_login=False):
+def binding(system, native_login=False, named_resources=False):
     manifest = json.loads((system / "manifest.json").read_bytes())
     assert manifest.get("pumpkin_anchored_probe"), "dedicated anchored developer image required"
     assert not manifest.get("pumpkin_user_login"), "use the unrecorded private operator entry for this profile"
     assert manifest.get("pumpkin_native_login", False) == native_login, "native login profile mismatch"
+    assert manifest.get("pumpkin_named_resource_store", False) == named_resources, "named resource profile mismatch"
     assert all(digest(root / name) == expected for name, expected in manifest["sources"].items()), "source mismatch"
     names = ("xos-install.iso", "user_files.image.elf", "user_supervisor.image.elf",
              "user_pumpkin_durable.image.elf", "user_p2_anchor_proxy.image.elf")
@@ -101,7 +102,7 @@ def binding(system, native_login=False):
             "sdk_tree_sha256": tree_receipt(system / "sdk")[0], "artifacts": artifacts}
 
 
-def boot(system, disk, output, phase, scenario, authority, stale_image, evidence, snapshot_delay_ns):
+def boot(system, disk, output, phase, scenario, authority, stale_image, evidence, snapshot_delay_ns, publications):
     guest = Guest(system / "xos-install.iso", phase, iso=True, work_disk=disk, log_dir=output)
     try:
         evidence["qemu_version"] = subprocess.check_output([guest.command[0], "--version"], text=True).splitlines()[0]
@@ -132,16 +133,17 @@ def boot(system, disk, output, phase, scenario, authority, stale_image, evidence
                 events.append({"read": selected.revision if selected is not None else None})
                 reply = packet(read, result, current_sequence, selected_bytes)
             elif operation == publish:
-                assert scenario == 1 and current_sequence > 0 and result == 0
-                candidate = from_bytes(value)
-                assert candidate is not None
-                published = authority.publish(from_bytes(expected), candidate)
+                assert current_sequence > 0 and result == 0
+                candidate = from_bytes(value, authority.named_resources)
+                assert candidate is not None and candidate.revision in publications
+                published = authority.publish(from_bytes(expected, authority.named_resources), candidate)
                 assert published == publish_result.committed
                 events.append({"published": candidate.revision})
-                if candidate.revision == 2:
+                if phase == "cycle" and candidate.revision == (4 if authority.named_resources else 2):
                     # The slot was synced and verified before publication. While
                     # the guest awaits the ACK, stop its clock during the host copy.
-                    evidence["snapshot_fence"] = snapshot_at_rev2(guest, disk, stale_image, snapshot_delay_ns)
+                    evidence["snapshot_fence"] = snapshot_at_revision(
+                        guest, disk, stale_image, candidate.revision, snapshot_delay_ns)
                 reply = packet(publish, result_codes[published], current_sequence)
             else:
                 assert operation == finish and expected == blank and value == blank
@@ -159,40 +161,52 @@ def boot(system, disk, output, phase, scenario, authority, stale_image, evidence
         guest.close()
 
 
-def run(system, output, snapshot_delay_ns, native_login=False):
+def run(system, output, snapshot_delay_ns, native_login=False, named_resources=False):
     output.mkdir(parents=True)
-    report = {"status": "failed", "system": binding(system, native_login),
-              "native_login": native_login, "runner_sha256": digest(Path(__file__)), "boots": {}}
+    report = {"status": "failed", "system": binding(system, native_login, named_resources),
+              "native_login": native_login, "named_resources": named_resources,
+              "runner_sha256": digest(Path(__file__)), "boots": {}}
     try:
         with tempfile.TemporaryDirectory(prefix="pumpkin_anchor_vm_") as directory:
             scratch = Path(directory)
             authority_root = scratch / "independent"
             authority_root.mkdir(mode=0o700)
-            authority = generation_authority(authority_root, realm)
+            authority = generation_authority(authority_root, realm, named_resources=named_resources)
             authority.provision()
             disk = scratch / "current.img"
             old = scratch / "stale.img"
             cutoff = create_test_image(disk, "isolated")
-            for phase, scenario, image in (("cycle", 1, disk), ("healthy", 2, disk), ("stale", 3, old)):
+            phases = [("cycle", 1, disk, [1, 2, 3], 3), ("healthy", 2, disk, [], 3), ("stale", 3, old, [], 3)]
+            if named_resources:
+                phases = [("cycle", 1, disk, [1, 2, 3, 4, 5], 5), ("healthy", 2, disk, [6, 7, 8], 8),
+                          ("empty", 8, disk, [9], 9), ("stale", 3, old, [], 9)]
+            previous = None
+            for phase, scenario, image, published, revision in phases:
                 events = []
                 checks = {"events": events, "input_disk_sha256": digest(image)}
                 report["boots"][phase] = checks
-                boot(system, image, output, phase, scenario, authority, old, checks, snapshot_delay_ns)
+                if phase not in ("cycle", "stale"):
+                    assert checks["input_disk_sha256"] == previous
+                boot(system, image, output, phase, scenario, authority, old, checks, snapshot_delay_ns, published)
                 checks["output_disk_sha256"] = digest(image)
                 checks["tail_sha256"] = hashlib.sha256(tail_bytes(image, cutoff)).hexdigest()
                 checks["authority_revision"] = authority.read().revision
-                assert checks["authority_revision"] == 3
+                assert checks["authority_revision"] == revision
+                assert [event["published"] for event in events if "published" in event] == published
                 if phase == "cycle":
-                    assert [event["published"] for event in events if "published" in event] == [1, 2, 3]
                     checks["offline_stale_copy_sha256"] = digest(old)
-                else:
-                    assert events == [{"read": 3}] and checks["input_disk_sha256"] == checks["output_disk_sha256"]
+                elif not published:
+                    assert events == [{"read": revision}] and checks["input_disk_sha256"] == checks["output_disk_sha256"]
                 checks["status"] = "passed"
-                profile = "anchored native login" if native_login else "anchored"
+                previous = checks["output_disk_sha256"]
+                profile = "named-resource" if named_resources else "anchored native login" if native_login else "anchored"
                 print(f"PASS {profile} Pumpkin {phase}", flush=True)
             assert report["boots"]["cycle"]["offline_stale_copy_sha256"] == report["boots"]["stale"]["input_disk_sha256"]
-            assert report["boots"]["cycle"]["output_disk_sha256"] == report["boots"]["healthy"]["input_disk_sha256"]
-        assert binding(system, native_login) == report["system"]
+            if named_resources:
+                report["checks"] = ["ordinary_roles", "initial_owner_read", "cross_account_denied",
+                    "same_name_replacement", "stale_key_denied", "restored_owner_read",
+                    "invalidation_and_restart", "old_disk_rejected"]
+        assert binding(system, native_login, named_resources) == report["system"]
         report["status"] = "passed_subset"
     except BaseException as error:
         report["error"] = str(error)
@@ -207,11 +221,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--system", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--slow-snapshot", action="store_true", help="hold the paused revision-2 copy for seven seconds")
-    parser.add_argument("--native-login", action="store_true", help="require the independent holder and sealed resource profile")
+    parser.add_argument("--slow-snapshot", action="store_true", help="hold the paused old-disk copy for seven seconds")
+    profiles = parser.add_mutually_exclusive_group()
+    profiles.add_argument("--native-login", action="store_true", help="require the independent holder and sealed resource profile")
+    profiles.add_argument("--named-resource-store", action="store_true", help="require the private named-store profile")
     arguments = parser.parse_args()
     run(arguments.system.resolve(), arguments.output.resolve(), slow_snapshot_delay_ns if arguments.slow_snapshot else 0,
-        arguments.native_login)
+        arguments.native_login, arguments.named_resource_store)
 
 
 if __name__ == "__main__":

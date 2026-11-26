@@ -3,13 +3,16 @@
 #include "native_ipc.hpp"
 
 namespace xos::user::pumpkin {
+class named_resource_store;
 
 inline constexpr u64 read_association_lifetime_ns = 2'000'000'000ull;
+inline constexpr u32 broker_wire_version = 2;
 
-// Private, single-object, read-only service channel. The object record and
-// client endpoint identity come from the trusted broker's current state.
+// Private, single-object, read-only service channel. The broker supplies the
+// authenticated client endpoint. Sealed mode supplies its existing label;
+// named mode asks the daemon to resolve and copy the exact data it authorizes.
 struct broker_read_request {
-    u32 version = wire_version;
+    u32 version = broker_wire_version;
     u32 reserved = 0;
     u64 sequence = 0;
     u64 deadline = 0;
@@ -19,17 +22,25 @@ struct broker_read_request {
     nonce incarnation{};
     resource_key object{};
     identity_id owner{};
+    named_resource_request named{};
 };
 struct broker_read_reply {
-    u32 version = wire_version;
+    u32 version = broker_wire_version;
     wire_status result = wire_status::denied;
     u64 sequence = 0;
+    u64 generation = 0;
+    u32 data = 0;
+    u32 reserved = 0;
 };
-static_assert(sizeof(broker_read_request) == 136 && sizeof(broker_read_reply) == 16);
+static_assert(sizeof(broker_read_request) == 168 && sizeof(broker_read_reply) == 32);
 
 class resource_bridge {
 public:
-    resource_bridge() = default;
+    explicit resource_bridge([[maybe_unused]] named_resource_store* named = nullptr)
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+        : named_(named)
+#endif
+    {}
     resource_bridge(const resource_bridge&) = delete;
     resource_bridge& operator=(const resource_bridge&) = delete;
     ~resource_bridge();
@@ -49,7 +60,10 @@ private:
         u64 expires = 0;
     };
 
-    status authorize(service_core& core, const broker_read_request& request, u64 now);
+    status authorize(service_core& core, const broker_read_request& request, u64 now, broker_read_reply& reply);
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+    named_resource_store* named_;
+#endif
     ipc_channel broker_{};
     u64 peer_ = 0;
     u64 sequence_ = 0;
@@ -68,7 +82,7 @@ public:
     broker_authority& operator=(const broker_authority&) = delete;
     bool bind(ipc_channel channel, u64 expected_peer);
     bool live() const { return peer_ && authenticated_peer(channel_) == peer_; }
-    status authorize(broker_read_request& request);
+    status authorize(broker_read_request& request, broker_read_reply* selected = nullptr);
 
 private:
     ipc_channel channel_{};

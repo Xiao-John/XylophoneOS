@@ -2,10 +2,11 @@
 #include "anchored_files_store.hpp"
 
 namespace xos::user::pumpkin {
+static_assert(disk_slot_frame::header_bytes + publication_payload_capacity <= disk_slot_frame::slot_bytes);
 
 anchored_files_store::anchored_files_store(test_slot_io slots, generation_record_io generation,
-                                           const nonce& realm)
-    : slots_(slots), generation_(generation), publication_({
+                                           const nonce& realm, publication_codec codec)
+    : slots_(slots), generation_(generation), capacity_(codec.capacity), publication_({
           this,
           [](void* context, generation_mark& selected) {
               auto& provider = static_cast<anchored_files_store*>(context)->generation_;
@@ -21,7 +22,7 @@ anchored_files_store::anchored_files_store(test_slot_io slots, generation_record
               auto& provider = static_cast<anchored_files_store*>(context)->generation_;
               return provider.publish(provider.context, expected, next);
           },
-      }, realm) {}
+      }, realm, codec) {}
 
 store_api anchored_files_store::api() {
     if (slots_.read == nullptr || slots_.write_and_verify == nullptr ||
@@ -37,7 +38,7 @@ load_result anchored_files_store::read_slot(u32 slot, u8* output, usize capacity
         return load_result::io_error;
     }
     usize size = 0;
-    const auto result = disk_slot_frame::inspect(frame_, size);
+    const auto result = disk_slot_frame::inspect(frame_, size, capacity_);
     if (result != load_result::loaded) {
         return result;
     }
@@ -50,7 +51,7 @@ load_result anchored_files_store::read_slot(u32 slot, u8* output, usize capacity
 }
 
 bool anchored_files_store::write_slot(u32 slot, const u8* bytes, usize length) {
-    return disk_slot_frame::encode(frame_, bytes, length) &&
+    return disk_slot_frame::encode(frame_, bytes, length, capacity_) &&
         slots_.write_and_verify(slots_.context, slot, frame_);
 }
 

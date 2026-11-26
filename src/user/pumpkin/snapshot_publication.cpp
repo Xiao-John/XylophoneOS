@@ -25,10 +25,15 @@ store_api snapshot_publication::store() {
 bool snapshot_publication::configured() const {
     return io_.read_generation != nullptr && io_.read_slot != nullptr &&
         io_.write_slot != nullptr && io_.publish_generation != nullptr &&
-        has_bytes(realm_.bytes, sizeof(realm_.bytes));
+        has_bytes(realm_.bytes, sizeof(realm_.bytes)) && codec_.capacity <= sizeof(readback_);
 }
 
 bool snapshot_publication::describe_snapshot(const u8* bytes, usize length, generation_mark& output) {
+    if (length > codec_.capacity) { return false; }
+    if (codec_.describe != nullptr) {
+        return codec_.describe(codec_.context, realm_, bytes, length, output) &&
+            output.realm == realm_ && output.length == length;
+    }
     if (!decode_snapshot(bytes, length, realm_, decoded_)) {
         return false;
     }
@@ -46,7 +51,7 @@ bool snapshot_publication::verify_slot(const generation_mark& expected) {
         return false;
     }
     usize length = 0;
-    if (io_.read_slot(io_.context, slot_for(expected.revision), readback_, sizeof(readback_), length) !=
+    if (io_.read_slot(io_.context, slot_for(expected.revision), readback_, codec_.capacity, length) !=
             load_result::loaded ||
         length != expected.length) {
         return false;

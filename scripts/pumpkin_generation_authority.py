@@ -14,6 +14,7 @@ import struct
 
 _record = struct.Struct("<8s16sQI32s")
 _tag = b"PUMGEN\0\1"
+_named_tag = b"PUMGEN\0\2"
 _digest_size = 32
 _record_size = _record.size + _digest_size
 _zero_digest = bytes(_digest_size)
@@ -33,13 +34,17 @@ class generation_mark:
     revision: int
     length: int
     checksum: bytes
+    named_resources: bool = False
 
     def __post_init__(self):
         # P0 has a 48-byte header, up to 64 accounts of 68 bytes, and
         # a 32-byte checksum. The authority stores only that checksum.
+        envelope = 144 if self.named_resources else 0
         if (not _valid_realm(self.realm) or type(self.revision) is not int or
                 not 1 <= self.revision <= _max_revision or type(self.length) is not int or
-                not 80 <= self.length <= 4432 or (self.length - 80) % 68 != 0 or
+                type(self.named_resources) is not bool or
+                not 80 + envelope <= self.length <= 4432 + envelope or
+                (self.length - 80 - envelope) % 68 != 0 or
                 not isinstance(self.checksum, bytes) or len(self.checksum) != _digest_size):
             raise ValueError("invalid Pumpkin generation mark")
 
@@ -56,12 +61,20 @@ class publish_result(Enum):
 
 
 class generation_authority:
-    def __init__(self, root, realm):
+    def __init__(self, root, realm, *, named_resources=False):
         if not _valid_realm(realm):
             raise ValueError("a nonzero realm is required")
         self._root = Path(root).absolute()
         self._realm = realm
         self._realm_directory = realm.hex()
+        if type(named_resources) is not bool:
+            raise ValueError("invalid generation format profile")
+        self._named_resources = named_resources
+        self._tag = _named_tag if named_resources else _tag
+
+    @property
+    def named_resources(self):
+        return self._named_resources
 
     @contextmanager
     def _parent(self):
@@ -100,20 +113,20 @@ class generation_authority:
         if len(data) != _record_size or hashlib.sha256(data[:_record.size]).digest() != data[_record.size:]:
             raise generation_error("corrupt authority record")
         tag, realm, revision, length, checksum = _record.unpack_from(data)
-        if tag != _tag or realm != self._realm:
+        if tag != self._tag or realm != self._realm:
             raise generation_error("wrong authority format or realm")
         if revision == 0 and length == 0 and checksum == _zero_digest:
             return None
         try:
-            return generation_mark(realm, revision, length, checksum)
+            return generation_mark(realm, revision, length, checksum, self.named_resources)
         except ValueError as error:
             raise generation_error("invalid authority generation fields") from error
 
     def _stage(self, directory, mark):
         if mark is None:
-            fields = _record.pack(_tag, self._realm, 0, 0, _zero_digest)
+            fields = _record.pack(self._tag, self._realm, 0, 0, _zero_digest)
         else:
-            fields = _record.pack(_tag, mark.realm, mark.revision, mark.length, mark.checksum)
+            fields = _record.pack(self._tag, mark.realm, mark.revision, mark.length, mark.checksum)
         data = fields + hashlib.sha256(fields).digest()
         # A killed writer can leave one staged record. It is never authoritative.
         try:
@@ -158,9 +171,11 @@ class generation_authority:
     def publish(self, expected, next_mark):
         """Compare the full current mark and durably advance one revision."""
         if (not isinstance(next_mark, generation_mark) or next_mark.realm != self._realm or
+                next_mark.named_resources != self.named_resources or
                 (expected is not None and
-                 (not isinstance(expected, generation_mark) or expected.realm != self._realm))):
-            raise ValueError("authority publication does not match its configured realm")
+                 (not isinstance(expected, generation_mark) or expected.realm != self._realm or
+                  expected.named_resources != self.named_resources))):
+            raise ValueError("authority publication does not match its configured realm and format")
         previous = 0 if expected is None else expected.revision
         if previous == _max_revision or next_mark.revision != previous + 1:
             raise ValueError("authority publication must advance one revision without overflow")

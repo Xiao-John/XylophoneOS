@@ -9,9 +9,10 @@ inline constexpr char broker_service_name[] = "pumpkin-sealed-broker";
 inline constexpr u64 broker_object_number = 1;
 
 // These boot frames are accepted only on the broker's authenticated parent
-// channel. The runtime broker endpoint never sees a credential or a label.
+// channel. Named mode supplies just the daemon. The client lane receives only
+// its read result and never gets a credential, owner label, or final grant.
 struct broker_configuration {
-    u32 version = wire_version;
+    u32 version = broker_wire_version;
     u32 length = 0;
     u64 daemon = 0;
     identity_id owner{};
@@ -19,29 +20,32 @@ struct broker_configuration {
     u8 bytes[sealed_blob_capacity]{};
 };
 struct broker_ready {
-    u32 version = wire_version;
+    u32 version = broker_wire_version;
     u32 reserved = 0;
     resource_broker_grant grant{};
 };
 struct broker_opened {
-    u32 version = wire_version;
+    u32 version = broker_wire_version;
     u32 reserved = 0;
     u64 connection = 0;
 };
 struct broker_read {
-    u32 version = wire_version;
+    u32 version = broker_wire_version;
     u32 reserved = 0;
     u64 object = 0;
     u64 deadline = 0;
     wire_id ticket{};
+    named_resource_request named{};
 };
 struct broker_data {
-    u32 version = wire_version;
+    u32 version = broker_wire_version;
     wire_status result = wire_status::denied;
+    u64 generation = 0;
     sealed_blob_reply data{};
+    u32 reserved = 0;
 };
 static_assert(sizeof(broker_configuration) == 312 && sizeof(broker_ready) == 24 &&
-              sizeof(broker_opened) == 16 && sizeof(broker_read) == 48 && sizeof(broker_data) == 268);
+              sizeof(broker_opened) == 16 && sizeof(broker_read) == 80 && sizeof(broker_data) == 280);
 
 template<class Frame>
 bool receive_broker_frame(const ipc_channel& pair, Frame& frame, u64 deadline) {

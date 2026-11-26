@@ -41,8 +41,10 @@ sys86 服务名建立端点。编译使用同一 WebCore 生成图和 XOS glibc 
 通用长期借用的传输策略仍待独立验收。
 
 `tests/fixtures/webkit/shared_memory_transfer.cpp` 使用两个真实客体进程，对 16×8
-软件位图验证两条完成路径以及双向退出顺序。目标回执须记录 SDK、补丁、夹具与 ELF。
-以普通系统镜像和上述构建结果运行客体验收：
+软件位图验证两条完成路径以及双向退出顺序。验收通过 xsh 的普通应用入口启动测试驱动，
+驱动按已有进程创建权调用 glibc `posix_spawn`。另通过受限的 `exec-file` 入口检查
+进程创建仍被拒绝。目标回执须记录 SDK、补丁、夹具与 ELF。用普通系统镜像和上述构建
+结果运行下面的命令。
 
 ```sh
 python3 tests/webkit_shared_memory_transfer_guest.py --target "$TRANSFER_OUT" \

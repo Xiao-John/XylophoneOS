@@ -30,6 +30,10 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def exits(serial):
+    return [int(code) for code in re.findall(rb"\[wait\] pid=\d+ kind=exited code=(\d+)", serial)]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for item in ("system", "target", "output"):
@@ -74,15 +78,24 @@ def main():
                 guest.expect_supervisor(trace=True, timeout=40)
                 command(guest, "demo quiet", b"demo tasks")
                 report["resources_before"] = resources(guest)
+                denied = command(guest, "exec-file " + guest_path, b"[wait] pid=", timeout=90)
+                report["restricted_launch"] = {
+                    "exits": exits(denied), "spawn_denied": b"XOS_WEBCORE_BITMAP_TRANSFER_SPAWN_ERROR 1" in denied,
+                    "cases": len(CASES.findall(denied)), "resources_after": resources(guest),
+                }
+                if report["restricted_launch"] != {
+                    "exits": [1], "spawn_denied": True, "cases": 0, "resources_after": report["resources_before"],
+                }:
+                    raise AssertionError(f"Restricted fixture acquired process-create authority: {denied[-800:]!r}")
                 for _ in range(3):
-                    serial = command(guest, "exec-file " + guest_path, b"[wait] pid=", timeout=90)
-                    result = re.findall(rb"\[wait\] pid=\d+ kind=exited code=(\d+)", serial)
+                    serial = command(guest, guest_path, b"[wait] pid=", timeout=90)
+                    result = exits(serial)
                     cases = [{"mode": int(mode), "parent": int(parent), "child": int(child)}
                              for mode, parent, child in CASES.findall(serial)]
                     after = resources(guest)
-                    report["runs"].append({"marker_count": serial.count(MARKER), "exits": [int(code) for code in result],
+                    report["runs"].append({"marker_count": serial.count(MARKER), "exits": result,
                                            "resources_after": after, "cases": cases})
-                    if (result != [b"0"] or serial.count(MARKER) != 1 or after != report["resources_before"]
+                    if (result != [0] or serial.count(MARKER) != 1 or after != report["resources_before"]
                             or [case["mode"] for case in cases] != [1, 2, 3, 4]
                             or len({case["parent"] for case in cases}) != 1
                             or len({case["child"] for case in cases}) != 4

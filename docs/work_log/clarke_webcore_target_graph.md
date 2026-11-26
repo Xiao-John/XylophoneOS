@@ -57,3 +57,7 @@ WebGL 和 WebGPU，并拒绝显式启用这两个后端。重新生成的 Canvas
 真实 DOM 布局、Skia 页面像素和资源回收。已用新配置重启 2171 个 WebCore 单元的
 批量编译。完整归档、整页 ELF 链接和客体结果待验证。
 [绑定与夹具对象回执](../reports/clarke_webcore_target_graph_20261127/local_page_and_bindings.json)
+
+独立复核发现早期软件补丁的 CMake 上下文无法被 GNU patch 零 fuzz 应用。已从锁定档
+重生成该段，使用 GNU patch 2.8.1 从原档重放 17 个基线补丁和 3 个软件补丁。
+重放后的 `OptionsJSCOnly.cmake` 与生成上述目标对象时的输入逐字节相同。

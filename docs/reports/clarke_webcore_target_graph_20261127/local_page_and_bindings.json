@@ -1,6 +1,7 @@
 {
   "cmake_config_header_sha256": "a0c85b99f4902ffcf33f8c69857276c331d376be368e43715c57ae3a2fc22eee",
   "compile_commands_sha256": "b98534683c324b729fe56114aed580ca2974440f790a75326915ca772e44f725",
+  "compiled_graph_patch_sha256": "cd06d9df87bd502ba97775bf8114395e95e19f7eb753074266d673fcf143eeb9",
   "compiler_sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
   "cross_compiler": "16.2.0",
   "enabled_gpu_bindings": [],
@@ -37,6 +38,15 @@
       "object_sha256": "9fb8e26e4c689c832ece3fd1cd1616c978bb18f9f82bb8a7e0604148561dd906"
     }
   ],
+  "gnu_patch_replay": {
+    "applied_patch_count": 20,
+    "archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+    "gnu_patch_version": "2.8.1",
+    "options_source_identical_to_compiled_source": true,
+    "options_source_sha256": "44f83038f89944da68cfa7c3d846eb619780feb791bc93cec6e833d00b1e9873",
+    "replay_log_sha256": "c6ee7fe47e82859af2229f1ffe9fabce0d0d9b9e4a02491042fc363bd9b799bb",
+    "status": "passed_zero_fuzz"
+  },
   "guest_runner_sha256": "e2b1bffd6d492ae85d5b0210102ed1837fb337349ca4614c76cc7c0b77d66c19",
   "new_html_canvas_binding_sha256": "709138399137874952ae4d44d666ffd5fc618db448c06fcb500dd1eb218dba83",
   "old_html_canvas_binding_sha256": "240e99dd87c5171ae7eb57bd8004028713d3f9ad6dd0a0a30b6dc21ffe56a99f",
@@ -49,7 +59,7 @@
   "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
   "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
   "shared_memory_sha256": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98",
-  "software_graph_sha256": "cd06d9df87bd502ba97775bf8114395e95e19f7eb753074266d673fcf143eeb9",
+  "software_graph_sha256": "1b23f5f237f79d78f47deac90fd499801d31bde7bd4ed3194875deab6107fb88",
   "source_lock_sha256": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030",
   "status": "objects_compiled"
 }

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "source_commit": "2b382380dc42880ec3d701bca6a120ec646c81c6",
+  "source_tree": "eba886af2a50c10ebb45da75f5e3caba1d700f13",
+  "system_build_id": "36fafd7e665ba3f8",
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "application.json": "82a57c7289b9ef9498c7eef9b27eeb65a9b5e2ef60e77569e2c1a40c726d1f03",
+    "binding.json": "bf8ece1e44d0d98016138c2658ea50bec50fa2906cc62889c5e150cd1061fef6",
+    "guest_dash.json": "d83827a277cdd103802e16caa0314882234ec93a5d2241a5390330ee738ed611",
+    "guest_dash.serial.log.gz": "abe4ce6a016990f4c456dc1e958327ebdb667b51a821323a8592940a34d2bb87",
+    "guest_xsh.json": "70ecfc0525c416e720c06759d1e30efb111647c099e0c5f68c207f6a165d6bda",
+    "guest_xsh.serial.log.gz": "85d2c0fff467bb5f9bf1f6bf23cb45d6e43a1bee12105f919100891ed200c6d5",
+    "kit.json": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+    "notice_inventory.json": "9f9826f06b44289ca98d58f016472f1df6f507608fcd2acbfa787265f1924f09",
+    "ordinary_smoke.log": "3baffa472dcd201785d42b9fba91e3656091a97525fbe99b8c0cfc273da70d02",
+    "scanout.ppm.gz": "b659e99251480e868afa7ece256fa5516021ebd8b64f19b00e1232d9719d1ad5"
+  }
+}

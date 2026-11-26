@@ -17,14 +17,20 @@ xos_console_raw (unsigned long operation, unsigned long descriptor,
   return result;
 }
 
+static inline int
+xos_console_errno (long result)
+{
+  return result == -1 ? EBADF : result == -2 ? EINVAL
+         : result == -3 ? EAGAIN : result == -7 ? EPIPE
+         : result == -11 ? EFAULT : EIO;
+}
+
 static inline long
 xos_console_result (long result)
 {
   if (result < 0)
     {
-      __set_errno (result == -1 ? EBADF : result == -2 ? EINVAL
-                   : result == -3 ? EAGAIN : result == -7 ? EPIPE
-                   : result == -11 ? EFAULT : EIO);
+      __set_errno (xos_console_errno (result));
       return -1;
     }
   return result;

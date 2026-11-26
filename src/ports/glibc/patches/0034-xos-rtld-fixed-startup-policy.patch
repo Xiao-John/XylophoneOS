@@ -1,0 +1,255 @@
+--- a/elf/rtld.c
++++ b/elf/rtld.c
+@@ -49,7 +49,9 @@
+ #include <gnu/lib-names.h>
+ #include <dl-tunables.h>
+ #include <get-dynamic-info.h>
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ #include <dl-execve.h>
++#endif
+ #include <dl-find_object.h>
+ #include <dl-audit-check.h>
+ #include <dl-call_tls_init_tp.h>
+@@ -138,6 +140,7 @@
+ /* Creates an empty audit list.  */
+ static void audit_list_init (struct audit_list *);
+ 
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ /* Add a string to the end of the audit list, for later parsing.  Must
+    not be called after audit_list_next.  */
+ static void audit_list_add_string (struct audit_list *, const char *);
+@@ -148,6 +151,7 @@
+ static void audit_list_add_dynamic_tag (struct audit_list *,
+ 					struct link_map *,
+ 					unsigned int tag);
++#endif
+ 
+ /* Extract the next audit module from the audit list.  Only modules
+    for which dso_name_valid_for_suid is true are returned.  Must be
+@@ -162,7 +166,9 @@
+    Since all of them start with `LD_' we are a bit smarter while finding
+    all the entries.  */
+ extern char **_environ attribute_hidden;
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ static int process_envvars (struct dl_main_state *state);
++#endif
+ 
+ int _dl_argc attribute_relro attribute_hidden;
+ char **_dl_argv attribute_relro = NULL;
+@@ -202,6 +208,7 @@
+   list->current_tail = NULL;
+ }
+ 
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ static void
+ audit_list_add_string (struct audit_list *list, const char *string)
+ {
+@@ -229,6 +236,7 @@
+   if (info != NULL)
+     audit_list_add_string (list, strtab + info->d_un.d_val);
+ }
++#endif
+ 
+ static const char *
+ audit_list_next (struct audit_list *list)
+@@ -1105,6 +1113,7 @@
+     }
+ }
+ 
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ /* Check if the executable is not actually dynamically linked, and
+    invoke it directly in that case.  */
+ static void
+@@ -1139,6 +1148,7 @@
+     _dl_fatal_printf("%s: cannot execute %s: %d\n",
+ 		     rtld_soname, pathname, errcode);
+ }
++#endif
+ 
+ /* Called to complete the initialization of the link map for the main
+    executable.  Returns true if there is a PT_INTERP segment.  */
+@@ -1343,6 +1353,7 @@
+       }
+ }
+ 
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ /* Adjusts the contents of the stack and related globals for the user
+    entry point.  The ld.so processed skip_args arguments and bumped
+    _dl_argv and _dl_argc accordingly.  Those arguments are removed from
+@@ -1398,6 +1409,7 @@
+   while (ax.a_type != AT_NULL);
+ #endif
+ }
++#endif
+ 
+ static void
+ dl_main (const ElfW(Phdr) *phdr,
+@@ -1406,20 +1418,23 @@
+ 	 ElfW(auxv_t) *auxv)
+ {
+   struct link_map *main_map;
+-  size_t file_size;
+-  char *file;
+   unsigned int i;
+   bool rtld_is_main = false;
+   void *tcbp = NULL;
+-  int skip_env = 0;
+ 
+   struct dl_main_state state;
+   dl_main_state_init (&state);
+ 
+   __tls_pre_init_tp ();
+ 
+-  /* Process the environment variable which control the behaviour.  */
+-  skip_env = process_envvars (&state);
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++  /* The native entry already authenticated the environment.  Fixed startup
++     resolves all relocations before the writable startup phase ends.  */
++  GLRO (dl_lazy) = 0;
++#else
++  /* Process the environment variables which control the behaviour.  */
++  const int skip_env = process_envvars (&state);
++#endif
+ 
+ #ifndef HAVE_INLINED_SYSCALLS
+   /* Set up a flag which tells we are just starting.  */
+@@ -1427,6 +1442,10 @@
+ #endif
+ 
+   const char *ld_so_name = _dl_argv[0];
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++  if (*user_entry == (ElfW(Addr)) ENTRY_POINT)
++    _dl_fatal_printf ("XOS rtld: direct invocation is unavailable\n");
++#else
+   if (*user_entry == (ElfW(Addr)) ENTRY_POINT)
+     {
+       /* Ho ho.  We are not the program interpreter!  We are the program
+@@ -1694,6 +1713,7 @@
+       _dl_start_args_adjust (_dl_argv - orig_argv, skip_env);
+     }
+   else
++#endif
+     {
+       /* Create a link_map for the executable itself.
+ 	 This will be what dlopen on "" returns.  */
+@@ -1788,9 +1808,14 @@
+   /* With vDSO setup we can initialize the function pointers.  */
+   setup_vdso_pointers ();
+ 
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++  if (main_map->l_info[DT_RPATH] != NULL || main_map->l_info[DT_RUNPATH] != NULL)
++    _dl_fatal_printf ("XOS rtld: executable search paths are unavailable\n");
++#else
+   /* Initialize the data structures for the search paths for shared
+      objects.  */
+   call_init_paths (&state);
++#endif
+ 
+   /* Initialize _r_debug_extended.  */
+   struct r_debug *r = _dl_debug_initialize (_dl_rtld_map.l_addr,
+@@ -1817,8 +1842,14 @@
+     /* Assign a module ID.  Do this before loading any audit modules.  */
+     _dl_assign_tls_modid (&_dl_rtld_map);
+ 
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++  if (main_map->l_info[ADDRIDX (DT_AUDIT)] != NULL
++      || main_map->l_info[ADDRIDX (DT_DEPAUDIT)] != NULL)
++    _dl_fatal_printf ("XOS rtld: executable auditing is unavailable\n");
++#else
+   audit_list_add_dynamic_tag (&state.audit_list, main_map, DT_AUDIT);
+   audit_list_add_dynamic_tag (&state.audit_list, main_map, DT_DEPAUDIT);
++#endif
+ 
+   /* At this point, all data has been obtained that is included in the
+      --help output.  */
+@@ -1864,12 +1895,13 @@
+      is being constructed.  */
+   _dl_audit_activity_map (main_map, LA_ACT_ADD);
+ 
++  struct link_map **preloads = NULL;
++  unsigned int npreloads = 0;
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+   /* We have two ways to specify objects to preload: via environment
+      variable and via the file /etc/ld.so.preload.  The latter can also
+      be used when security is enabled.  */
+   assert (*first_preload == NULL);
+-  struct link_map **preloads = NULL;
+-  unsigned int npreloads = 0;
+ 
+   if (__glibc_unlikely (state.preloadlist != NULL))
+     {
+@@ -1899,8 +1931,9 @@
+   if (__glibc_unlikely (__access (preload_file, R_OK) == 0))
+     {
+       /* Read the contents of the file.  */
+-      file = _dl_sysdep_read_whole_file (preload_file, &file_size,
+-					 PROT_READ | PROT_WRITE);
++      size_t file_size;
++      char *file = _dl_sysdep_read_whole_file (preload_file, &file_size,
++					       PROT_READ | PROT_WRITE);
+       if (__glibc_unlikely (file != MAP_FAILED))
+ 	{
+ 	  /* Parse the file.  It contains names of libraries to be loaded,
+@@ -1985,6 +2018,7 @@
+ 	} while (l);
+       assert (i == npreloads);
+     }
++#endif
+ 
+ #ifdef NEED_DL_SYSINFO_DSO
+   /* Now that the audit modules are opened, call la_objopen for the vDSO.  */
+@@ -2441,6 +2475,7 @@
+ 		    objname, errstring);
+ }
+ 
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ /* Process the string given as the parameter which explains which debugging
+    options are enabled.  */
+ static void
+@@ -2801,6 +2836,7 @@
+ 
+   return skip_env;
+ }
++#endif
+ 
+ #if HP_TIMING_INLINE
+ static void
+--- a/elf/dl-object.c
++++ b/elf/dl-object.c
+@@ -178,6 +178,10 @@
+ 
+   new->l_local_scope[0] = &new->l_searchlist;
+ 
++#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
++  /* A pinned SONAME has no directory for dynamic string expansion.  */
++  new->l_origin = (char *) -1;
++#else
+   /* Determine the origin.  If allocating the link map for the main
+      executable, the realname is not known and "".  In this case, the
+      origin needs to be determined by other means.  However, in case
+@@ -258,6 +262,7 @@
+     out:
+       new->l_origin = origin;
+     }
++#endif
+ 
+   return new;
+ }
+--- a/elf/dl-misc.c
++++ b/elf/dl-misc.c
+@@ -27,6 +27,7 @@
+ #include <sys/stat.h>
+ #include <unistd.h>
+ 
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+ /* Read the whole contents of FILE into new mmap'd space with given
+    protections.  *SIZEP gets the size of the file.  On error MAP_FAILED
+    is returned.  */
+@@ -61,6 +62,7 @@
+     }
+   return result;
+ }
++#endif
+ 
+ /* Test whether given NAME matches any of the names of the given object.  */
+ int

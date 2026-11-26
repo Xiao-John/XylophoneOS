@@ -1,0 +1,31 @@
+{
+  "status": "qualified_external_quick_rebound",
+  "baseline_mainline": "4706cc7770639c271d727b7d3bfd44d7a087f0bb",
+  "source_commit": "3f910178b41a3068dde17d031472eebb3c186312",
+  "source_tree": "72b822b2b6de2458f7e7bbf53aa67790645ef59c",
+  "app_build_source_commit": "2b382380dc42880ec3d701bca6a120ec646c81c6",
+  "previous_evidence_index_sha256": "ffe1e9bd93a22fde56ddeeec12a8ba5fec56ad0c335f78b55538513842ad6b07",
+  "qt_kit_app_inputs_unchanged": true,
+  "archive": {
+    "filename": "xos_qt_quick_linux_arm64_final.tar.zst",
+    "bytes": 172264367,
+    "sha256": "3706bf0fe13760f38eb50bcde6fd951c583479637f331000e96ff91090eba1c1"
+  },
+  "kit_manifest_sha256": "c3b9f48353ab96cff9dd405a694f1064b4442ceb54f9bb5781ac5de6498053d2",
+  "sdk_manifest_sha256": "7eee04884a96ced6de12d20794af6809f544e3f15bc4e409b4197e58b1583d7a",
+  "sdk_profile_file_sha256": "5dde8b7cd0a2e5fe9d0db892b81f88eeed36e2f72ba89826209acb013362b10a",
+  "app_receipt_sha256": "82a57c7289b9ef9498c7eef9b27eeb65a9b5e2ef60e77569e2c1a40c726d1f03",
+  "elf_sha256": "fefc635595e90312742ea0d3808d3d87454de66391e8edc48b986fc12f5de50a",
+  "system_build_id": "e8d8379d3b342c9a",
+  "system_manifest_sha256": "e8b0609d7680ee0b2f82d403de526b0fd692ba788c2f84d6ab1e9a0c5be5500c",
+  "image_sha256": "8b20116c488462a5d8f0ca7dc8bb574052e5d1ac6017e08bc48035a11cb9eb1b",
+  "checks": {
+    "qemu_shells": [
+      "xsh",
+      "dash"
+    ],
+    "smoke": 79,
+    "license_materials": 10,
+    "abi_documentation": "passed"
+  }
+}

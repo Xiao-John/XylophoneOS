@@ -72,7 +72,13 @@
       "checks": 79,
       "release_notice_checks": 10
     },
-    "abi_documentation": "passed"
+    "abi_documentation": "passed",
+    "separate_input_selectors": {
+      "status": "static_quick_application_linked",
+      "elf_sha256": "730134706762378811e4bbc8feff34fef23e0671a70c38de852254d8d88a625d",
+      "guest_qualification": "not_run",
+      "raw_log_sha256": "de3a59df02a3e88bdff542ef63fcce7fe9af73a558d4c93eefd230da7fa4d0e8"
+    }
   },
   "linker_reported_unsupported_functions": [
     "__getcwd",
@@ -94,5 +100,43 @@
     "truncate",
     "usleep"
   ],
-  "raw_relocated_build_log_sha256": "e7494ed90a2b1f9d26c388bae35a22e61f9e65bf26b1ee68c6aa6e48efd7b98c"
+  "raw_relocated_build_log_sha256": "e7494ed90a2b1f9d26c388bae35a22e61f9e65bf26b1ee68c6aa6e48efd7b98c",
+  "qml_generator_duplicate_type_descriptions": {
+    "matching_legacy_build": true,
+    "distinct_types": [
+      "QEventPointDerived",
+      "QQmlDelegateModelAttached",
+      "QQmlItemSelectionRangeValueType",
+      "QQmlLocaleEnums",
+      "QQmlModelIndexValueType",
+      "QQmlObjectModelAttached",
+      "QQmlPersistentModelIndexValueType",
+      "QQuickAccessibleAttached",
+      "QQuickColorSpaceValueType",
+      "QQuickColorValueType",
+      "QQuickDragAttached",
+      "QQuickEnterKeyAttached",
+      "QQuickFontValueType",
+      "QQuickGraphicsInfo",
+      "QQuickGridViewAttached",
+      "QQuickKeyNavigationAttached",
+      "QQuickKeysAttached",
+      "QQuickLayoutMirroringAttached",
+      "QQuickListViewAttached",
+      "QQuickMatrix4x4ValueType",
+      "QQuickPackageAttached",
+      "QQuickPathViewAttached",
+      "QQuickPositionerAttached",
+      "QQuickQuaternionValueType",
+      "QQuickScreenAttached",
+      "QQuickTableViewAttached",
+      "QQuickTextBlockForeign",
+      "QQuickVector2DValueType",
+      "QQuickVector3DValueType",
+      "QQuickVector4DValueType",
+      "QQuickViewTransitionAttached",
+      "QQuickWindowAttached"
+    ],
+    "legacy_log_sha256": "aeb50188fd1b020a2a65e7d56ed7cfd71e80bafabb0d0a65d53ab9f4f855c99f"
+  }
 }

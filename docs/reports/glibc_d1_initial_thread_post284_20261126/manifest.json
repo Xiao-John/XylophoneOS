@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "source_commit": "1401b0e6851b04f98d9b38e62f084f12479a9bb5",
+  "implementation_tree": "039baaca7c64cad7ef034cf0ac7e9d03ca733dae",
+  "files": {
+    "abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "guest.json": "de53e056ce788e369341907090ba93537fb1a83c2b92df12e8634a61aed88ca4"
+  },
+  "raw_guest_report_sha256": "7eba0ade61df952cf6b2d72e724b4d014b59493b9459ab58b636957951c68214"
+}

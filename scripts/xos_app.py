@@ -15,6 +15,7 @@ from xypm_format import (DEFAULT_PROFILE, PackageError, canonical, check_profile
                          path_name, require, sha_file, text, validate_manifest)
 
 ROOT = Path(__file__).resolve().parents[1]
+GLIBC_BUILDER = ROOT / 'scripts/build_glibc_program.py'
 
 
 def tree_receipt(root):
@@ -49,6 +50,16 @@ def sdk_check(sdk, profile):
     for name in required:
         require(name in files, 'SDK missing ' + name)
     return {'tree_sha256': digest, 'files': files, 'sdk_build_id': metadata['build_id']}
+
+
+def application_sdk_check(sdk, profile):
+    if profile.get('runtime_family') != 'glibc':
+        return sdk_check(sdk, profile)
+    from xypm_sdk_profile import verify_profile
+
+    binding = verify_profile(profile, 'glibc', sdk)
+    return {'tree_sha256': binding['sdk_tree_sha256'],
+            'sdk_manifest_sha256': profile['sdk_binding']['sdk_manifest_sha256']}
 
 
 def project_load(project):
@@ -99,6 +110,56 @@ def output_for(project, value):
     return project / relative
 
 
+def build_glibc(project, value, sdk, profile, bound, inputs, output):
+    with tempfile.TemporaryDirectory(prefix='glibc_app_', dir=output.parent) as folder:
+        work = Path(folder)
+        profile_path = work / 'profile.json'
+        profile_path.write_bytes(canonical(profile))
+        inputs_path = work / 'inputs.json'
+        inputs_path.write_bytes(canonical(inputs))
+        linked = work / 'application.elf'
+        cmd = [sys.executable, str(GLIBC_BUILDER), '--sdk', str(sdk / 'sysroot'),
+               '--profile', str(profile_path), '--project-inputs', str(inputs_path), '--output', str(linked)]
+        if (project / 'src').is_dir():
+            cmd += ['--include-dir', str(project / 'src')]
+        if value['language'] == 'cpp':
+            cmd.append('--cxx')
+        for source in value['sources']:
+            cmd += ['--source', str(project / source)]
+        result = subprocess.run(cmd, cwd=project)
+        build_dir = work / 'application.elf.build'
+        if result.returncode:
+            for step in sorted(build_dir.glob('*.log')):
+                diagnostics = step.read_text(errors='replace')
+                if diagnostics:
+                    print(diagnostics, file=sys.stderr, end='')
+            require(False, 'glibc application build failed')
+        backend = load_json(build_dir / 'manifest.json')
+        profile_sha = hashlib.sha256(canonical(profile)).hexdigest()
+        require(backend['status'] == 'static_program_linked'
+                and backend['profile_binding']['profile_sha256'] == profile_sha
+                and backend['sdk_manifest_sha256'] == bound['sdk_manifest_sha256']
+                and backend['elf_sha256'] == sha_file(linked), 'glibc build output differs from its receipt')
+        receipt = {'format_version': 1, 'builder_sha256': sha_file(__file__),
+                   'backend_sha256': backend['builder_sha256'], 'runtime_family': 'glibc',
+                   'project_id': value['id'], 'target_profile': profile['id'],
+                   'profile_sha256': profile_sha, 'sdk_tree_sha256': bound['tree_sha256'],
+                   'sdk_manifest_sha256': bound['sdk_manifest_sha256'],
+                   'compiler': {name: backend['compiler'][name] for name in ('version', 'sha256')},
+                   'binutils': {name: tool['sha256'] for name, tool in backend['binutils'].items()},
+                   'inputs': inputs, 'output': output.relative_to(project).as_posix(),
+                   'output_sha256': backend['elf_sha256'], 'elf_check': inspect_elf(linked),
+                   'status': 'cross_built_guest_not_run'}
+        require(inputs == input_receipt(project, value), 'project inputs changed during build')
+        require(application_sdk_check(sdk, profile) == bound, 'SDK changed during build')
+        require(receipt['backend_sha256'] == sha_file(GLIBC_BUILDER), 'glibc builder changed during build')
+        staged_receipt = work / 'build_receipt.json'
+        staged_receipt.write_bytes(canonical(receipt))
+        os.replace(linked, output)
+        os.replace(staged_receipt, output.parent / 'build_receipt.json')
+    return receipt
+
+
 def build(project, sdk, profile):
     project, value = project_load(project)
     require(value['target_profile'] == profile['id'],
@@ -107,9 +168,11 @@ def build(project, sdk, profile):
             '--profile <adopted.json> from tools/adopt_sdk.py' %
             (value['target_profile'], profile['id']))
     require(set(value['required_features']) <= set(profile['features']), 'required feature unavailable')
+    bound = application_sdk_check(sdk, profile)
     sdk = Path(sdk).resolve(strict=True)
-    bound = sdk_check(sdk, profile)
     inputs = input_receipt(project, value)
+    if profile.get('runtime_family') == 'glibc':
+        return build_glibc(project, value, sdk, profile, bound, inputs, output_for(project, value))
     compiler = os.environ.get('XOS_CC' if value['language'] == 'c' else 'XOS_CXX',
                               'x86_64-elf-gcc' if value['language'] == 'c' else 'x86_64-elf-g++')
     for variable in ('CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH', 'OBJC_INCLUDE_PATH', 'LIBRARY_PATH', 'COMPILER_PATH', 'GCC_EXEC_PREFIX'):
@@ -168,16 +231,47 @@ def build(project, sdk, profile):
 
 def check(project, sdk, profile):
     project, value = project_load(project)
-    bound = sdk_check(sdk, profile)
+    bound = application_sdk_check(sdk, profile)
     receipt = load_json(confined(project, 'build/build_receipt.json'))
     require(receipt['builder_sha256'] == sha_file(__file__), 'builder changed; rebuild before packing')
     require(receipt['project_id'] == value['id'] and receipt['target_profile'] == value['target_profile'] == profile['id'], 'receipt identity/profile mismatch')
     require(receipt['sdk_tree_sha256'] == bound['tree_sha256'] and receipt['profile_sha256'] == hashlib.sha256(canonical(profile)).hexdigest(), 'receipt SDK/profile mismatch')
+    if profile.get('runtime_family') == 'glibc':
+        require(receipt.get('runtime_family') == 'glibc'
+                and receipt.get('sdk_manifest_sha256') == bound['sdk_manifest_sha256']
+                and receipt.get('backend_sha256') == sha_file(GLIBC_BUILDER),
+                'glibc build receipt SDK or backend mismatch')
     require(receipt['inputs'] == input_receipt(project, value), 'project inputs changed; rebuild before packing')
     output = output_for(project, value)
     require(receipt['output'] == output.relative_to(project).as_posix() and sha_file(output) == receipt['output_sha256'], 'executable differs from build receipt')
     inspect_elf(output)
     return project, value, receipt
+
+
+def sdk_notices(sdk, profile, language):
+    if profile.get('runtime_family') == 'glibc':
+        root = sdk / 'sysroot'
+        share = 'usr/share/xos-glibc/'
+        required = [share + name for name in ('COPYING.LIB', 'LICENSES')]
+        if language == 'cpp':
+            required.extend(share + 'cxx/licenses/' + name for name in ('COPYING3', 'COPYING.RUNTIME'))
+        for name in required:
+            yield confined(root, name), name
+        for directory in (share + 'compiler-runtime-licenses', 'usr/share/xos/terminal-support/licenses'):
+            for source in sorted((root / directory).rglob('*')):
+                if source.is_file():
+                    name = source.relative_to(root).as_posix()
+                    yield confined(root, name), name
+        terminal_license = 'usr/share/xos/terminal-support/LICENSE'
+        if (root / terminal_license).is_file():
+            yield confined(root, terminal_license), terminal_license
+        return
+    for name in ('LICENSE', 'NOTICE', 'COPYING.NEWLIB'):
+        yield confined(sdk, name), name
+    for source in sorted((sdk / 'licenses').rglob('*')):
+        if source.is_file():
+            require(not source.is_symlink(), 'SDK notice symlink')
+            yield source, source.relative_to(sdk).as_posix()
 
 
 def pack(project, sdk, profile, output):
@@ -200,23 +294,21 @@ def pack(project, sdk, profile, output):
                             'sha256': sha_file(dest), 'role': role})
         for item in value['files']:
             stage_file(confined(project, item['source']), item['path'], item['role'])
+            expected = receipt['output_sha256'] if item['role'] == 'executable' else receipt['inputs'][item['source']]
+            require(entries[-1]['sha256'] == expected, 'project payload changed during staging')
         receipt_dest = 'usr/share/' + value['id'] + '/build_receipt.json'
-        stage_file(confined(project, 'build/build_receipt.json'), receipt_dest, 'data')
+        original_receipt = stage / 'build_receipt.json'
+        original_receipt.write_bytes(canonical(receipt))
+        stage_file(original_receipt, receipt_dest, 'data')
+        original_receipt.unlink()
         manifest['build_receipt'] = {'path': receipt_dest, 'sha256': sha_file(stage / receipt_dest)}
-        # Carry actual frozen SDK notices, not an invented blanket runtime license.
-        for name in ('LICENSE', 'NOTICE', 'COPYING.NEWLIB'):
-            source = confined(sdk, name)
+        for source, name in sdk_notices(sdk, profile, value['language']):
             dest = 'usr/share/licenses/' + value['id'] + '/sdk/' + name
             stage_file(source, dest, 'data'); manifest['licenses'].append(dest)
-        for source in sorted((sdk / 'licenses').rglob('*')):
-            if source.is_file():
-                require(not source.is_symlink(), 'SDK notice symlink')
-                dest = 'usr/share/licenses/' + value['id'] + '/sdk/licenses/' + source.relative_to(sdk / 'licenses').as_posix()
-                stage_file(source, dest, 'data'); manifest['licenses'].append(dest)
         manifest['files'] = sorted(entries, key=lambda x: x['path'])
         validate_manifest(manifest); check_profile(manifest, profile)
         # Recheck source/SDK snapshots after staging to avoid binding a mixed build.
-        check(project, sdk, profile)
+        require(check(project, sdk, profile)[1:] == (value, receipt), 'project build changed during staging')
         result = pack_package(stage, manifest, output)
         return {'package': str(output), 'sha256': result['sha256'], 'files': result['payload_files'],
                 'target_profile': profile['id'], 'status': 'packed_guest_not_run'}
@@ -258,7 +350,8 @@ def main():
     init.add_argument('--id', required=True); init.add_argument('--language', choices=('c', 'cpp'), default='c')
     for name in ('build', 'check', 'pack'):
         command = sub.add_parser(name); command.add_argument('project', type=Path)
-        command.add_argument('--sdk', type=Path, required=True)
+        command.add_argument('--sdk', type=Path, required=True,
+                             help='newlib SDK directory or glibc SDK build directory for the selected profile')
         if name == 'pack':
             command.add_argument('-o', '--output', type=Path, required=True)
     args = parser.parse_args()

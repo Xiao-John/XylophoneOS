@@ -2,6 +2,7 @@
 #include "lwip_stack.hpp"
 extern "C" {
 #include "lwip/init.h"
+#include "lwip/dns.h"
 #include "lwip/etharp.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"
@@ -32,13 +33,27 @@ extern "C" int xos_lwip_dns_random(uint16_t* value) {
     *value = static_cast<uint16_t>(word);
     return ERR_OK;
 }
+#ifdef XOS_LWIP_DNS_LIFETIME
+extern "C" int xos_lwip_dns_clock(uint64_t* value) {
+    if (!value || !active_stack) return ERR_ARG;
+    const auto now = active_stack->monotonic_time();
+    if (now < 0) return ERR_IF;
+    *value = static_cast<uint64_t>(now);
+    return ERR_OK;
+}
+#endif
 extern "C" void xos_lwip_diag(const char*, ...) { if (active_stack) active_stack->fault(); }
 
 namespace xos::user::network {
 using namespace net2;
-u32 lwip_stack::milliseconds() {
+i64 lwip_stack::monotonic_time() {
     const i64 value = io_.clock(io_.context);
-    if (value < 0) { failure_ = io; return 0; }
+    if (value < 0) failure_ = io;
+    return value;
+}
+u32 lwip_stack::milliseconds() {
+    const i64 value = monotonic_time();
+    if (value < 0) return 0;
     return static_cast<u32>(static_cast<u64>(value) / 1'000'000ull);
 }
 u32 lwip_stack::random_word() {
@@ -78,6 +93,9 @@ i64 lwip_stack::initialize(const frame_io& callbacks, const u8* mac) {
 }
 void lwip_stack::shutdown() {
     if (active_) {
+#ifdef XOS_LWIP_DNS_LIFETIME
+        dns_xos_reset();
+#endif
         for (u32 i = 0; i < connection_limit; ++i) (void)close(i, true);
         netif_set_down(&interface_); netif_remove(&interface_); active_ = false;
     }

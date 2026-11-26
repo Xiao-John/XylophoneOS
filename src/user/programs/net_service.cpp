@@ -137,7 +137,11 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
     const auto* argv = reinterpret_cast<const char* const*>(startup->argv);
     if (startup->argc != 2 || (!sdk::equal(argv[1], "probe") && !sdk::equal(argv[1], "serve") &&
-        !sdk::equal(argv[1], "serve_raw"))) return 2;
+        !sdk::equal(argv[1], "serve_raw")
+#ifdef XOS_NET_DNS_PROBE
+        && !sdk::equal(argv[1], "probe_dns")
+#endif
+        )) return 2;
 #ifndef XOS_NET_STACK
     if (sdk::equal(argv[1], "serve")) {
         sdk::print("[net] native_stack_unavailable: build with XOS_LWIP_SOURCE_ARCHIVE\n"); return 2;
@@ -152,11 +156,17 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     i64 result = 0;
     if (probing) result = probe();
     else if (sdk::equal(argv[1], "serve_raw")) result = serve_raw();
+#ifdef XOS_NET_DNS_PROBE
+    else if (sdk::equal(argv[1], "probe_dns")) result = user::network::probe_dns(nic);
+#endif
 #ifdef XOS_NET_STACK
     else result = user::network::serve(controller, nic);
 #endif
     const i64 closed = nic.shutdown();
     result_line("[net] close=", closed);
+#ifdef XOS_NET_DNS_PROBE
+    if (sdk::equal(argv[1], "probe_dns")) result_line("[net-dns] result=", result);
+#endif
     if (!result && !closed && probing) sdk::print("NET_USER_DRIVER_PASS\n");
     return result || closed ? 1 : 0;
 }

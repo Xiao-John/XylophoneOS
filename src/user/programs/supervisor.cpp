@@ -307,8 +307,9 @@ i64 prepare_network_driver(u64 child, void* context) {
     launch.channel = static_cast<u32>(result);
     return 0;
 }
-void start_network(u64 instance, bool probe, bool raw = false) {
+void start_network(u64 instance, const char* mode) {
     if (instance == 0 || instance > 65536) { print("net: instance must be 1 + PCI BDF\n"); return; }
+    const bool probe = equal(mode, "probe") || equal(mode, "probe_dns");
     if (!probe && network_service_pid) {
         process_status status{};
         const i64 waited = syscall(sys_process_wait, network_service_pid, reinterpret_cast<u64>(&status), 1);
@@ -321,7 +322,7 @@ void start_network(u64 instance, bool probe, bool raw = false) {
     network_launch launch{instance, 0, 0};
     spawn_options options{}; options.stdio[0] = -2;
     options.prepare_child = prepare_network_driver; options.prepare_context = &launch;
-    const char* arguments[]{"net_service", probe ? "probe" : raw ? "serve_raw" : "serve"};
+    const char* arguments[]{"net_service", mode};
     const i64 child = sdk::spawn_image_options(image, 2, arguments, options);
     if (child < 0) {
         if (launch.channel) (void)sdk::channel_close(launch.channel);
@@ -904,7 +905,11 @@ void execute(u32 argc, char** argv) {
         image_list();
     } else if ((equal(argv[0], "net-start") || equal(argv[0], "net-probe")) &&
                (argc == 2 || (argc == 3 && equal(argv[0], "net-start") && equal(argv[2], "raw")))) {
-        start_network(number(argv[1]), equal(argv[0], "net-probe"), argc == 3);
+        start_network(number(argv[1]), equal(argv[0], "net-probe") ? "probe" : argc == 3 ? "serve_raw" : "serve");
+#ifdef XOS_NET_DNS_PROBE
+    } else if (equal(argv[0], "net-dns-probe") && argc == 2) {
+        start_network(number(argv[1]), "probe_dns");
+#endif
     } else if (equal(argv[0], "net-stop") && argc == 1) {
         stop_network();
     } else if (equal(argv[0], "net-info") && argc == 1) {

@@ -36,15 +36,17 @@ void drop(u32 slot) {
     clear_session(slot);
 }
 }
-i64 serve(u64 controller, virtio_net::driver& nic) {
-    const frame_io callbacks{&nic,
+frame_io network_frame_io(virtio_net::driver& nic) {
+    return {&nic,
         [](void* context, u8* data, u32 capacity) { return static_cast<virtio_net::driver*>(context)->receive(data, capacity); },
         [](void* context, const u8* data, u32 length) {
             const i64 result = static_cast<virtio_net::driver*>(context)->transmit(data, length);
             return result == device_busy ? net2::would_block : result; },
         [](void*) { return sdk::syscall(sys_clock_monotonic); },
         [](void*, u32& value) { return sdk::syscall(sys_random_bytes, reinterpret_cast<u64>(&value), sizeof(value)); }};
-    i64 result = stack.initialize(callbacks, nic.mac());
+}
+i64 serve(u64 controller, virtio_net::driver& nic) {
+    i64 result = stack.initialize(network_frame_io(nic), nic.mac());
     if (result) { stack.shutdown(); return result; }
     core.initialize(controller, stack.api());
     result = sdk::ipc_name_publish(net2::service_name);

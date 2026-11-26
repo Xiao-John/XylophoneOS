@@ -1,0 +1,47 @@
+{
+  "tested_source_head": "97eb4875c766acbd0faec63f30c2da719139659b",
+  "tested_source_tree": "5fb4a11f037f0cc382f4c8fefd9cb8cab74b6852",
+  "base_main": "fcebc61b749d95405711d25bba3649010c0c09f6",
+  "glibc_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "glibc_source_verification": "upstream_signature_verified",
+  "system_build_id": "7490da2f6a9ad6ae",
+  "system_manifest_sha256": "6819a3fd19b4ee74b61e50614f4a964e4ad5a8bce5f9dff176ecea25205774b9",
+  "iso_sha256": "13ec2e082909b6aac50788b4a8099ae66298901c02f8ca2b24702b29afcc0330",
+  "sdk_manifest_sha256": "a9baf2cbf502d7af718f680accec537ecf2000fc952bfda2286fd87514a7a2e2",
+  "profile_sha256": "4d0e82096afefc782731d7da0a2b5636f8788e49565b91b3697b9095a5199dd1",
+  "rtld_manifest_sha256": "fce05cec2eeaf30cbfc1d9b495afff98092386a1ceddf8a8510c27fd506d134b",
+  "rtld_guard_status": "rtld_entry_compiled_startup_blocked",
+  "rtld_steps": {
+    "rtld_symbols": {
+      "exit_code": 0,
+      "log_sha256": "947fb283ce7deb0cc0eef62f7ca6deb8eb77853d01fcb0484f58e3e4a68c6a29"
+    },
+    "make_closed_start_helpers": {
+      "exit_code": 0,
+      "log_sha256": "0bd9d063c49b5175bc25be15829100776f8dce13182393e4f663a00b2c23fd47"
+    },
+    "closed_origin_imports": {
+      "exit_code": 0,
+      "log_sha256": "0d46eb208c49dd9d7003cda7309bf4e16722c132a5e199adf7e92ca394c30da3"
+    },
+    "native_diagnostic_imports": {
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "native_diagnostic_code": {
+      "exit_code": 0,
+      "log_sha256": "fb4101a73f0441cb10ab9c1f1caeeb64a830ee47b8e396f75732c40f48aeb36d"
+    },
+    "make_dl_sysdep": {
+      "exit_code": 2,
+      "log_sha256": "f8c9d6be55a611ac75f20e35776245552cc75419af3088fc86a62ebfb3ff0c6e"
+    },
+    "make_ld_so": {
+      "exit_code": 2,
+      "log_sha256": "f23baf964f7fb9ca421d0db88e8129c4097c06369b3926ddb6d49d87bc022697"
+    }
+  },
+  "guest_report_sha256": "0ea40ac2696b4560b04ec4726fdf703785a55aa58073198b3870fa0aaecb2388",
+  "guest_serial_sha256": "a91cd1888fc2fff962add5beae73b5429caddea82ff31dd48c7192b6f03f769a",
+  "guest_serial_gzip_sha256": "31cffe1cb0368d3a2caae46470f1baa6bbf1cc73b119f326a54eedec885a0e4a"
+}

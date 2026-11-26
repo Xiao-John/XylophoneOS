@@ -38,16 +38,19 @@ public:
     // failed cleanup must stop the launch rather than fall back with a leak.
     i64 prepare(u32 size) {
         const u64 rounded = (static_cast<u64>(size) + vm_page_size - 1) & ~(vm_page_size - 1);
-        if (rounded == 0 || rounded / vm_page_size > process_max_pages) { return 0; }
+        const u64 pages = rounded / vm_page_size;
+        if (pages == 0 || pages > process_max_pages) { return 0; }
+        process_stats available{};
+        // The extra copy must leave the budget of a full child address space.
+        if (syscall(sys_process_stats, reinterpret_cast<u64>(&available)) != 0 ||
+            available.free_pages <= pages + process_max_pages) { return 0; }
         const i64 address = vm_reserve(0, rounded);
         if (address <= 0) { return 0; }
         address_ = static_cast<u64>(address);
         length_ = rounded;
-        // A public commit request covers at most 4096 pages.
-        constexpr u64 commit_batch = 4096 * vm_page_size;
         for (u64 offset = 0; offset < length_;) {
             const u64 remaining = length_ - offset;
-            const u64 batch = remaining > commit_batch ? commit_batch : remaining;
+            const u64 batch = remaining > vm_batch ? vm_batch : remaining;
             if (vm_change(vm_operation::commit, address_ + offset, batch, vm_protection::read_write) != 0) {
                 return release();
             }
@@ -59,16 +62,20 @@ public:
     u8* data() const { return reinterpret_cast<u8*>(address_); }
 
     i64 release() {
-        if (address_ == 0) { return 0; }
-        const i64 result = vm_change(vm_operation::unmap, address_, length_);
-        if (result == 0) {
-            address_ = 0;
-            length_ = 0;
+        while (length_ != 0) {
+            const u64 batch = length_ > vm_batch ? vm_batch : length_;
+            const i64 result = vm_change(vm_operation::unmap, address_, batch);
+            if (result != 0) { return result; }
+            address_ += batch;
+            length_ -= batch;
         }
-        return result;
+        address_ = 0;
+        return 0;
     }
 
 private:
+    // The VM continuation can stage at most this many pages in an operation.
+    static constexpr u64 vm_batch = 4096 * vm_page_size;
     u64 address_ = 0;
     u64 length_ = 0;
 };

@@ -24,6 +24,7 @@ def main():
         fixtures = {
             "daemon_loop_host": ("daemon_protocol.cpp",),
             "broker_deadline_host": ("resource_bridge.cpp", "resource_dispatch.cpp", "sealed_blob.cpp"),
+            "fat_import_host": (),
         }
         for name, extra in fixtures.items():
             executable = Path(folder) / name

@@ -67,11 +67,24 @@ python3 -B scripts/pumpkin_user_login.py erase-named --system "$SYSTEM" --state 
 
 发布时预期代际 `0` 要求当前为空。替换和删除均提交实际已有对象的确切代际。
 读取可附加 `--generation` 以固定预期对象。一次提交保存已持久登记账户的所有者、
-对象数据和新的对象键。成功读取返回代际及四字节无符号值，退出前真实持有者完成
+对象数据和新的对象键。成功读取返回代际及有界对象数据，退出前真实持有者完成
 登出并复核有效期内的待用读取被拒绝。退出码 4 表示无匹配对象或未获对象权限，
 5 表示变更的预期代际冲突。普通认证拒绝继续用 3。未确认变更后先检查实际代际。
 
-选择和结果用 `PKN1` 版本 1 帧走同一专用宿主管道。凭据仍由既有经过核验的私有
+选择和结果用 `PKN1` 版本 2 帧走同一专用宿主管道。凭据仍由既有经过核验的私有
 描述符和专用 `PKU1` 帧传输。监督器只向通过普通认证的持有者交接 broker 的真实
 进程，broker 在受信服务间端点取得经过一次性授权的当前对象值。每次命令启动新
 VM 并重新取得通道，普通封存资源通过自己的原镜像启动。[服务授权](pumpkin_resource_service.md)
+
+受信操作者可以从现有来宾工作盘复制一个普通 FAT 文件。
+
+```sh
+python3 -B scripts/pumpkin_user_login.py import-fat --system "$SYSTEM" --state "$STATE" \
+  --resource-name artifact --generation 0 --fat-source /input/public.bin
+```
+
+`import-fat` 保留 `publish-named` 相同的比较发布规则，接受 1 到 32 字节二进制文件。
+读回时四字节仍输出原来的无符号值解释，其余长度返回十六进制字节。源打开、长度或
+精确读取无法确认时退出码为 6。若发布回执不明确，先从已确认代际核对实际对象。
+批准导入赋予的是复制后对象的归属，普通源文件权限仍由 files 的现有规则管理。
+[FAT 导入边界](pumpkin_named_resource_store.md#从普通-fat-文件导入)

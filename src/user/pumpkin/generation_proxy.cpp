@@ -66,7 +66,8 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     if (mode == scenario::user_resource) return false;
     const auto named_mode = named_operator::for_scenario(mode);
     named_read = named_mode == named_operator::operation::select;
-    named_mutation = named_mode == named_operator::operation::put || named_mode == named_operator::operation::erase;
+    named_mutation = named_mode == named_operator::operation::put || named_mode == named_operator::operation::erase ||
+        named_mode == named_operator::operation::import_fat;
     named_operator::packet selected{};
     u8 named_result = 0;
 #endif
@@ -115,7 +116,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
                 __builtin_memcpy(static_cast<void*>(&returned), &credentials, sizeof(returned));
                 if ((!named_read && !named_mutation) || named_result || (named_read && !credential_slots_cleared) ||
                     !named_operator::outcome(returned, selected) || !serial_exchange(uart, returned, ack) || ack.result ||
-                    !named_operator::empty(ack.fields)) { return false; }
+                    !named_operator::empty(ack)) { return false; }
                 named_result = returned.result;
                 continue;
             }

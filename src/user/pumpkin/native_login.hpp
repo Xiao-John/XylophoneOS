@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "native_ipc.hpp"
+#include "named_resource_data.hpp"
 
 namespace xos::user::pumpkin::native_login {
 inline constexpr char holder_image[] = "pumpkin_holder";
@@ -23,9 +24,13 @@ int holder_main(holder_mode mode = holder_mode::cycle);
 #if XOS_PUMPKIN_USER_LOGIN
 namespace xos::user::pumpkin::anchor_guest { struct pair; }
 namespace xos::user::pumpkin::native_login {
+struct named_read {
+    named_resource_request selection{};
+    named_resource_data data{};
+};
 bool enroll_user(ipc_client& registrar, account_name account, const anchor_guest::pair& proxy);
 u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy,
-              u32 broker_image = 0, named_resource_request* named = nullptr);
+              u32 broker_image = 0, named_read* named = nullptr);
 bool revoke_user(ipc_client& registrar, account_name account);
 }
 #endif

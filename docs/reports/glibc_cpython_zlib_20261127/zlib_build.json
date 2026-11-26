@@ -1,0 +1,52 @@
+{
+  "archive_bytes": 157126,
+  "archive_members": [
+    "adler32.o",
+    "crc32.o",
+    "deflate.o",
+    "infback.o",
+    "inffast.o",
+    "inflate.o",
+    "inftrees.o",
+    "trees.o",
+    "zutil.o",
+    "compress.o",
+    "uncompr.o",
+    "gzclose.o",
+    "gzlib.o",
+    "gzread.o",
+    "gzwrite.o"
+  ],
+  "binding": {
+    "artifacts": {
+      "include/zconf.h": "0718a11beb3295b345fb29a63b44b654b282d82c4cd0513f6225587f2b29b8bb",
+      "include/zlib.h": "818667d6ab6a37fe7469cb06a7f0cb2c2cb2f2c948a03e5accf1a4a74bf3020a",
+      "lib/libz.a": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8"
+    },
+    "build_receipt_sha256": "91cb8347c98963be677037bb8c60ec3bc2e8e4a80e350d7229ae0a6a7c355e7d",
+    "builder_sha256": "a168d2c6c95743b103027a803982572d9c81cd47e410702f38aa1b0c3615b29a",
+    "configure_checks": {
+      "strerror": true,
+      "vsnprintf": true
+    },
+    "license_sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+    "source_archive_sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
+    "version": "1.3.2"
+  },
+  "input_rejections": [
+    "tampered zlib.h",
+    "wrong glibc SDK/profile"
+  ],
+  "original_legacy_entry": {
+    "archive_sha256": "3ee313cac629bc14d49b13c1a4ecd6ce1eed08b0839af5636c2e27f0017e9dc2",
+    "scope": "host target archive build"
+  },
+  "repeat_archive_sha256": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8",
+  "repeat_receipt_sha256": "0076de227d8192d67cbd6edfcbaf83685505aa43748ecb1298f1cd74f64a86da",
+  "tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d"
+  },
+  "verified_machine": "x86_64"
+}

@@ -1,0 +1,26 @@
+{
+  "elf_layout": {
+    "format": "static_elf64",
+    "load_and_main_stack_pages": 199,
+    "load_segments": 3,
+    "machine": "x86_64",
+    "static_tls": true
+  },
+  "elf_sha256": "4becc10b6f1480a42461bed9a889b3a73075e8d7dc5437726d3d498b8f38a757",
+  "guest": {
+    "app_markers": [
+      "XOS_TARGET_LIBZ_GZPRINTF_GZREAD_OK 1.3.2"
+    ],
+    "build_id": "6f700746e7efd3d8",
+    "resources_before_and_after": [
+      129709,
+      3,
+      1
+    ]
+  },
+  "gzip_sha256": "913e6dc7989cb2cd4af85649e878ade929886950b94175fa7c21201679365773",
+  "iso_sha256": "33314267f216b2dd1d0cda9736c2f2618939d043475508a7fe4f6a44eb7bd75c",
+  "libz_sha256": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8",
+  "source_sha256": "4c9588f204ca3745c840e30465c84e6e9d9b4076ad6c624f19ab03b910779a25",
+  "status": "passed"
+}

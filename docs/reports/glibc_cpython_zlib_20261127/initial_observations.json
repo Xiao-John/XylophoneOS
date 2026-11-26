@@ -1,0 +1,13 @@
+{
+  "cpython_first_failure": "relocated host CPython could not find its encodings module",
+  "cpython_first_failure_receipt_sha256": "8490c014c6ddcd1c11da898c0c609871235793de820bd3cb9b31bb22f63bfa80",
+  "original_configure_stderr_sha256": "3c595178d87032b6ab3b90e548fbdf0699690f904508d69fd517c60e2c51f2bf",
+  "original_probe_error": "cannot find crt0.o; bounded vsnprintf falsely unavailable",
+  "preliminary_archive_sha256": "e2ba18dcb20197af77f48b53b18649262a188d6e12f37b60057e906a7648d0b6",
+  "preliminary_comparison": {
+    "differing_timestamps": 16,
+    "member_payloads_equal": true
+  },
+  "preliminary_package_guest": "stopped before lifecycle completion to rebind corrected libz",
+  "preliminary_repeat_archive_sha256": "cc0debf7628acba8f9e7e1cbad2f7074de2cb931b1c958263396fe7efdb1e2c6"
+}

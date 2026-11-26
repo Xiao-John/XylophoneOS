@@ -1,0 +1,21 @@
+{
+  "core_package_sha256": "7314b3768ad3451f72af3125827ea56de0fe18bd0da96649d464bcb3851db089",
+  "execution": "host offline transaction",
+  "packages": [
+    {
+      "id": "xos.cpython",
+      "revision": 1,
+      "sha256": "2c23731b1f1728953bf604d7f0548f163b6ffcc3179b427548615e9c07ad739b",
+      "upstream_version": "3.14.9"
+    }
+  ],
+  "source_disk_before_and_after_sha256": "1039f775dfd394c0e4e937e2cfc910d9e1f6c0ecdbf0e1148c33bc52f88022c4",
+  "status": "passed",
+  "upgraded_disk_sha256": "e5b0299d8b576e03cc2af2bbe75ea7b21090b342b0ce3dab2bdf1596e0f8f234",
+  "user_file_sha256": "71e4e7e43e45cfaa4345811adafeec1c456dfd054b4e4e66c4f79a3cb5352597",
+  "verification": {
+    "files": 15,
+    "status": "verified"
+  },
+  "zlib_package_sha256": "2c23731b1f1728953bf604d7f0548f163b6ffcc3179b427548615e9c07ad739b"
+}

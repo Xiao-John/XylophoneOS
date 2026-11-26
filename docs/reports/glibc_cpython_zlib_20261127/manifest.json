@@ -1,0 +1,22 @@
+{
+  "files": {
+    "build.json": "1903dfdb5d71c306c852aca4b620af8939292b29a6a48613980ed4b77a5991ea",
+    "c.serial.log.gz": "62c6826da5fc0a41ff06d6c24f5523f1d0bd9c3488887b0ca44cedadc4b05778",
+    "c_guest.json": "48db6cb25d91eaac9eeef02ddb9cfaf336d67699e581fc2ad80e99d241e11353",
+    "cli.serial.log.gz": "4d6c10307d90cde628e159c227eda1b86c7af2d15b8edf13dbdee261a15eee2f",
+    "cli_guest.json": "396de4a9ffe72f7582647d315efae6c03a256bd07f0a18fcbede3f8b0f15118e",
+    "daily_wheel_assembly.json": "6146307b0ccd3ca3c417ce578c0bd0ce2caab42ac97dafb953a6e799f2c960f9",
+    "gzip_target_probe.c": "4c9588f204ca3745c840e30465c84e6e9d9b4076ad6c624f19ab03b910779a25",
+    "initial_observations.json": "77bc3ac989bed11c22d52c7fa5806e190920000702baf36f66e3e07a538094e1",
+    "native_guest.json": "fd393317dfa9c61ad4b05c2cc08c995e850fbe92d5c8e2b64765899f8b1fa362",
+    "native_install.serial.log.gz": "3bb7c12afbbc1bec93f09c9ebaa0c463571e2430513d7ea8a99af76548563909",
+    "native_rejected.serial.log.gz": "2c1c98e9513c0ffb3feb7bc21d21909d6ccdcf98a819eda21bfd0bd933d6be3d",
+    "native_run_remove.serial.log.gz": "db4d174d8fe7bb3c9a054e8e48503a5b3cc869b8643df861c490f1d58459ccc1",
+    "revision_upgrade.json": "114a9f2306f5e8d0c4f1032410eda2d4159209c22c7a0c7ccaa467f75aecc9ea",
+    "ssl_absence_probe.py": "e71f28528a420c772efdba98b7e58f1fd66adf7f55bb7fce14515c09e8527e74",
+    "ssl_scope.serial.log.gz": "96ad93760b300798a1c9955abf9ad32efcbe5a7e9ef52a17cf1c332f4a398888",
+    "ssl_scope_guest.json": "0e0c0d38376af24a76a8eaeea5a7fb26937d55549c8e2504409ae52fd86ac6c4",
+    "zlib_build.json": "cb0b1b47f1875b37fb934833332ed353c6583501df2183627b50704f0f4a8ff1"
+  },
+  "version": 1
+}

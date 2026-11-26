@@ -1,0 +1,44 @@
+{
+  "explicit_offline_transactions": {
+    "combined_disk_sha256": "83f8fd916214d468b0bd1f4e9c9b0e38d8113cc179853b5f8e4f9efc38dfb411",
+    "packages": [
+      {
+        "id": "python_idna",
+        "revision": 0,
+        "sha256": "9696201a8025f12e6f2fc8a3948dcb78711074513197798f57cb8e2e0eaa1e02",
+        "upstream_version": "3.20"
+      },
+      {
+        "id": "xos.daily_utilities",
+        "revision": 0,
+        "sha256": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f",
+        "upstream_version": "0.1.0"
+      }
+    ],
+    "verification": {
+      "files": 42,
+      "status": "verified"
+    }
+  },
+  "packages": {
+    "daily": {
+      "id": "xos.daily_utilities",
+      "profile": "xos-x86_64-glibc-unified-cxx-v1",
+      "sha256": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f"
+    },
+    "wheel": {
+      "id": "python_idna",
+      "profile": "xos-x86_64-glibc-unified-cxx-v1",
+      "sha256": "9696201a8025f12e6f2fc8a3948dcb78711074513197798f57cb8e2e0eaa1e02"
+    }
+  },
+  "profile": "xos-x86_64-glibc-unified-cxx-v1",
+  "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "rejections": {
+    "both": "daily and wheel packages use distinct profiles; migrate them before combining",
+    "daily_only": "daily profile does not admit release system"
+  },
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "system_build_id": "8a36d456821db893",
+  "system_manifest_sha256": "49f2b89d542ef74155006592b2e2154aa062da668c539679e20feddbba7eb333"
+}

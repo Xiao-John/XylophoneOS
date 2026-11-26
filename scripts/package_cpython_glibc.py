@@ -13,6 +13,7 @@ import tempfile
 import zipfile
 
 from build_cpython_legacy import PORT, apply_patches, extract_source, hash_tree
+from build_cpython_zlib import GLIBC_ARTIFACTS
 from stage_cpython import selected_library_files
 from xos_app import sdk_notices
 from xypm_format import canonical, inspect_elf, load_json, pack_package, require, sha_file
@@ -103,8 +104,18 @@ def package(args):
     build, build_digest = metadata_snapshot(report_path)
     require(build['status'] == 'built_not_run' and build['runtime_family'] == 'glibc'
             and build['profile_file_sha256'] == profile_digest and build['sdk_binding'] == binding
-            and build['sdk_manifest_sha256'] == sdk_digest and build['static_extensions'] == [],
+            and build['sdk_manifest_sha256'] == sdk_digest and build['static_extensions'] in ([], ['zlib']),
             'CPython build differs from the static glibc SDK/profile')
+    zlib = build.get('zlib')
+    require(bool(zlib) == bool(build['static_extensions']), 'missing or unexpected zlib build binding')
+    if zlib:
+        zlib_lock = load_json(PORT / 'zlib_lock.json')
+        require(zlib['version'] == zlib_lock['version'] and zlib['source_archive_sha256'] == zlib_lock['sha256']
+                and zlib['license_sha256'] == zlib_lock['license_sha256']
+                and zlib['builder_sha256'] == sha_file(ROOT / 'scripts/build_cpython_zlib.py')
+                and set(zlib['artifacts']) == set(GLIBC_ARTIFACTS)
+                and all(sha_file(args.cpython_build / 'zlib' / name) == digest
+                        for name, digest in zlib['artifacts'].items()), 'CPython zlib materials changed')
     port = hash_tree(PORT)
     builders = {name: sha_file(ROOT / 'scripts' / name) for name in BUILDERS}
     require(build['port_inputs'] == port and build['builder_inputs'] == builders,
@@ -140,10 +151,19 @@ def package(args):
             (root / path).parent.mkdir(parents=True, exist_ok=True)
             (root / path).write_bytes(payload)
             licenses.append(path)
+        if zlib:
+            path = license_root + 'zlib/LICENSE'
+            payload = (port_snapshot / 'upstream/zlib-LICENSE').read_bytes()
+            require(sha256(payload).hexdigest() == zlib['license_sha256'], 'zlib license differs from the lock')
+            (root / path).parent.mkdir(parents=True)
+            (root / path).write_bytes(payload)
+            licenses.append(path)
         receipt = {'runtime_family': 'glibc', 'sdk_manifest_sha256': sdk_digest, 'sdk_binding': binding,
                    'profile_file_sha256': profile_digest, 'source_archive_sha256': digest,
                    'cli_build_receipt_sha256': build_digest, 'packager_sha256': sha_file(__file__),
                    'interpreter': elf, 'library': library, 'unqualified': build['unqualified']}
+        if zlib:
+            receipt['zlib'] = zlib
         receipt_bytes = canonical(receipt)
         (root / RECEIPT).parent.mkdir(parents=True, exist_ok=True)
         (root / RECEIPT).write_bytes(receipt_bytes)
@@ -153,7 +173,7 @@ def package(args):
                 path = source.relative_to(root).as_posix()
                 files.append({'path': path, 'type': 'file', 'role': 'executable' if path == PROGRAM else 'data',
                               'sha256': sha_file(source), 'size': source.stat().st_size})
-        manifest = {'format_version': 1, 'id': PACKAGE, 'upstream_version': build['version'], 'revision': 0,
+        manifest = {'format_version': 1, 'id': PACKAGE, 'upstream_version': build['version'], 'revision': int(bool(zlib)),
                     'target_profile': profile['id'], 'required_features': sorted(FEATURES),
                     'runtime_dependencies': [], 'files': files, 'licenses': sorted(licenses),
                     'build_receipt': {'path': RECEIPT, 'sha256': sha256(receipt_bytes).hexdigest()},

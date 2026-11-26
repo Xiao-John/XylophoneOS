@@ -15,6 +15,7 @@ from build_cpython_legacy import (
     DEFAULT_ARCHIVE, PORT, apply_patches, ensure_build_python, extract_source, hash_tree,
     write_setup_local,
 )
+from build_cpython_zlib import glibc_zlib_binding
 from glibc_g1_probe import clean_build_environment, select_gnu_make, tool_identity
 from xypm_format import canonical, inspect_elf, load_json, require, sha_file
 from xypm_sdk_profile import metadata_snapshot, verify_profile
@@ -81,6 +82,8 @@ def build(args, env, removed):
         require(tool.get('available') and tool.get('sha256') == metadata['tools']['x86_64-elf-' + name]['sha256'],
                 'cross tool differs from the SDK build: ' + name)
     make = select_gnu_make()
+    zlib = (glibc_zlib_binding(args.zlib_prefix, binding, sdk_digest, profile_digest)
+            if args.zlib_prefix else None)
     work = args.output_dir.resolve()
     require(not work.is_relative_to(sdk) and not work.is_relative_to(PORT),
             'build directory must be outside the SDK and port inputs')
@@ -114,6 +117,16 @@ def build(args, env, removed):
         require(result.returncode == 0, name + ' failed; see ' + str(log))
 
     try:
+        if zlib:
+            staged_zlib = work / 'zlib'
+            for relative, digest in zlib['artifacts'].items():
+                destination = staged_zlib / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(args.zlib_prefix / relative, destination)
+                require(sha_file(destination) == digest, 'zlib changed while staging CPython inputs')
+            report['zlib'] = zlib
+            report['static_extensions'] = ['zlib']
+            report['unqualified'] = [item for item in UNQUALIFIED if item != 'zlib']
         extract_source(archive, source)
         apply_patches(source)
         setup = write_setup_local(source, None, {})
@@ -162,6 +175,9 @@ def build(args, env, removed):
                                            *[str(lib / name) for name in archives], '-Wl,--end-group',
                                            *[str(lib / name) for name in end]]),
                           CONFIG_SITE=str(site), PYTHON_FOR_BUILD=str(build_python))
+        if zlib:
+            target_env.update(ZLIB_CFLAGS=shlex.join(['-I' + str(staged_zlib / 'include')]),
+                              ZLIB_LIBS=shlex.join([str(staged_zlib / 'lib/libz.a')]))
         env.update(target_env)
         report['target_environment'] = target_env
         report['config_site_sha256'] = sha_file(site)
@@ -176,6 +192,8 @@ def build(args, env, removed):
                 and '#define HAVE_CLOCK_GETRES 1' in config
                 and any(line.startswith('DYNLOADFILE=') and line.split('=', 1)[1].strip() == 'dynload_stub.o'
                         for line in makefile), 'CPython configure did not select native threads and static loading')
+        require(('MODULE_ZLIB_STATE=yes' in makefile) == bool(zlib),
+                'CPython configure selected an unexpected zlib module state')
         shutil.copyfile(setup, target / 'Modules/Setup.local')
         run('target_setup', [str(source / 'Modules/makesetup'), '-c', str(source / 'Modules/config.c.in'),
                              '-s', 'Modules', 'Modules/Setup.local', 'Modules/Setup.stdlib',
@@ -200,6 +218,10 @@ def build(args, env, removed):
                 'CPython source or builder changed during build')
         require(sha_file(profile_path) == profile_digest and verify_profile(profile, 'glibc', sdk) == binding
                 and sha_file(manifest) == sdk_digest, 'SDK or profile changed during CPython build')
+        if zlib:
+            require(glibc_zlib_binding(args.zlib_prefix, binding, sdk_digest, profile_digest) == zlib
+                    and all(sha_file(staged_zlib / name) == digest for name, digest in zlib['artifacts'].items()),
+                    'zlib inputs changed during CPython build')
         require(sha_file(build_python) == build_python_digest
                 and all(sha_file(tool['path']) == tool['sha256'] for tool in (*tools.values(), make)),
                 'build Python or toolchain changed during CPython build')
@@ -219,6 +241,7 @@ def main():
     parser.add_argument('--glibc-profile', type=Path, required=True, help='static glibc SDK profile JSON')
     parser.add_argument('--output-dir', type=Path, required=True, help='new private work directory')
     parser.add_argument('--build-python', type=Path, help='matching host CPython; built from the source lock if omitted')
+    parser.add_argument('--zlib-prefix', type=Path, help='bound zlib prefix from build_cpython_zlib.py --glibc-profile')
     parser.add_argument('--compile-probe', action='store_true', help='also compile and link the static interpreter')
     args = parser.parse_args()
     inherited = os.environ.copy()

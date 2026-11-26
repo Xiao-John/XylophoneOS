@@ -1,0 +1,18 @@
+{
+  "fixture_sha256": "e71f28528a420c772efdba98b7e58f1fd66adf7f55bb7fce14515c09e8527e74",
+  "guest": {
+    "app_markers": [
+      "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc",
+      "CPYTHON_SSL_MODULE_MISSING"
+    ],
+    "build_id": "6f700746e7efd3d8",
+    "resources_before_and_after": [
+      129709,
+      3,
+      1
+    ]
+  },
+  "installed_snapshot_before_and_after_sha256": "b26e2db8448f2cfc58f7a026f64648f05bcd811e4c07340dd187d04667451bce",
+  "iso_sha256": "33314267f216b2dd1d0cda9736c2f2618939d043475508a7fe4f6a44eb7bd75c",
+  "status": "passed"
+}

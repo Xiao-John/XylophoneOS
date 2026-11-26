@@ -2,12 +2,18 @@
 #include "native_login.hpp"
 #include "disk_test_store.hpp"
 #include "login_resource.hpp"
+#if XOS_PUMPKIN_USER_LOGIN
+#include "user_login.hpp"
+#endif
 
 namespace xos::user::pumpkin::native_login {
 namespace {
 constexpr char rendezvous[] = "pumpkin-holder-bootstrap";
 constexpr u32 version = 1;
-enum class step : u32 { received = 1, delivery_closed, connected, use_resource, accessed, check_revoked, revoked, finish };
+enum class step : u32 {
+    received = 1, delivery_closed, connected, use_resource, accessed, check_revoked, revoked, finish,
+    signed_out, rejected,
+};
 
 struct delivery {
     u32 format = version;
@@ -95,15 +101,19 @@ bool ordinary(ipc_client& connection, u64 daemon, ipc_channel* daemon_side = nul
     return true;
 }
 
-bool authenticate(ipc_client& connection, account_name name, const credential& key,
-                  wire_status expected, wire_id& session) {
+wire_status submit_key(ipc_client& connection, account_name name, const credential& key, wire_id& session) {
     auto value = named(wire_operation::authenticate, name);
     value.key = key;
     wire_reply response{};
-    const bool accepted = expect(connection, value, response, expected);
+    const auto received = connection.call(value, response);
     wipe_bytes(&value, sizeof(value));
     session = response.token;
-    return accepted;
+    return received == exchange::received ? response.result : wire_status::unavailable;
+}
+
+bool authenticate(ipc_client& connection, account_name name, const credential& key,
+                  wire_status expected, wire_id& session) {
+    return submit_key(connection, name, key, session) == expected;
 }
 
 bool current_identity(ipc_client& connection, wire_id session, wire_id identity, wire_status expected) {
@@ -149,13 +159,13 @@ struct holder_process {
     }
 };
 
-result connect_holder(u32 image, holder_process& holder, endpoints& protected_lane) {
+result connect_holder(u32 image, holder_process& holder, endpoints& protected_lane, bool submitted = false) {
     if (image == 0 || sdk::ipc_name_publish(rendezvous) != 0) { return result::holder_start; }
     struct unpublish { ~unpublish() { (void)sdk::ipc_name_unpublish(rendezvous); } } registration;
     sdk::spawn_options options{};
     for (auto& fd : options.stdio) { fd = -2; }
-    const char* args[]{holder_image};
-    const i64 child = sdk::spawn_image_options(image, 1, args, options);
+    const char* args[]{holder_image, "submit"};
+    const i64 child = sdk::spawn_image_options(image, submitted ? 2 : 1, args, options);
     if (child <= 0) { return result::holder_start; }
     holder.pid = static_cast<u64>(child);
     endpoints discovery;
@@ -189,6 +199,40 @@ bool check_ungranted(ipc_client& owner, account_name name, const delivery& enrol
     return expect(other, logout, response, wire_status::ok) &&
         current_identity(other, fresh, enrollment.identity, wire_status::denied);
 }
+
+bool reap_holder(holder_process& holder, const ipc_channel& channel) {
+    const u64 end = deadline();
+    do {
+        if (holder.wait_clean()) { return authenticated_peer(channel) == 0; }
+    } while (holder.pid != 0 && wait_tick(end));
+    return false;
+}
+
+#if XOS_PUMPKIN_USER_LOGIN
+bool lookup_user(ipc_client& registrar, account_name account, wire_reply& response) {
+    auto lookup = named(wire_operation::lookup_account, account);
+    return expect(registrar, lookup, response, wire_status::ok);
+}
+
+int submit_and_logout(const ipc_channel& parental, delivery& enrollment) {
+    ipc_client owner;
+    if (!ordinary(owner, enrollment.daemon)) { return 14; }
+    const account_name account{enrollment.name, enrollment.name_length};
+    wire_id session{};
+    const auto result = submit_key(owner, account, enrollment.key, session);
+    wipe_bytes(&enrollment.key, sizeof(enrollment.key));
+    if (result == wire_status::ok) {
+        auto logout = request(wire_operation::logout, session);
+        wire_reply reply{};
+        if (!current_identity(owner, session, enrollment.identity, wire_status::ok) ||
+            !expect(owner, logout, reply, wire_status::ok) ||
+            !current_identity(owner, session, enrollment.identity, wire_status::denied)) return 14;
+    } else if (result != wire_status::denied) { return 14; }
+    owner.close();
+    const auto stage = result == wire_status::ok ? step::signed_out : step::rejected;
+    return send(parental, signal{version, stage}) && signal_received(parental, step::finish) ? 0 : 15;
+}
+#endif
 }
 
 result run(u32 image, u64 daemon, ipc_client& registrar, account_name account) {
@@ -239,16 +283,10 @@ result run(u32 image, u64 daemon, ipc_client& registrar, account_name account) {
         !expect(registrar, revoke, response, wire_status::ok) ||
         !send(channel.pair, signal{version, step::check_revoked}) || !signal_received(channel.pair, step::revoked) ||
         !send(channel.pair, signal{version, step::finish})) { return result::revocation; }
-    const u64 end = deadline();
-    do {
-        if (holder.wait_clean()) {
-            return authenticated_peer(channel.pair) == 0 ? result::passed : result::holder_exit;
-        }
-    } while (holder.pid != 0 && wait_tick(end));
-    return result::holder_exit;
+    return reap_holder(holder, channel.pair) ? result::passed : result::holder_exit;
 }
 
-int holder_main() {
+int holder_main([[maybe_unused]] bool submitted) {
     endpoints channel;
     if (sdk::ipc_channel_create(0, channel.pair) != 0) { return 10; }
     const u64 parent = authenticated_peer(channel.pair);
@@ -266,6 +304,9 @@ int holder_main() {
     if (!send(channel.pair, signal{version, step::received}) || !receive(channel.pair, closed, deadline()) ||
         closed.message.format != version || closed.message.stage != step::delivery_closed ||
         has_bytes(closed.zero, sizeof(closed.zero))) { return 11; }
+#if XOS_PUMPKIN_USER_LOGIN
+    if (submitted) return submit_and_logout(channel.pair, enrollment);
+#endif
 
     ipc_client owner;
     arrival ready{};
@@ -285,4 +326,55 @@ int holder_main() {
     owner.close();
     return send(channel.pair, signal{version, step::revoked}) && signal_received(channel.pair, step::finish) ? 0 : 13;
 }
+
+#if XOS_PUMPKIN_USER_LOGIN
+bool enroll_user(ipc_client& registrar, account_name account, const anchor_guest::pair& proxy) {
+    auto create = named(wire_operation::create_account, account);
+    wire_reply issued{};
+    const bool committed = expect(registrar, create, issued, wire_status::ok);
+    user_login::packet request{}, reply{};
+    request.op = user_login::operation::issue;
+    request.identity = issued.token;
+    request.key = issued.key;
+    wipe_bytes(&issued, sizeof(issued));
+    return committed && lookup_user(registrar, account, issued) && issued.flags == 0 &&
+        user_login::same_identity(issued.token, request.identity) &&
+        user_login::exchange_with_operator(proxy, request, reply) && !has_bytes(reply.key.bytes, secret_bytes);
+}
+
+u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy) {
+    wire_reply found{};
+    holder_process holder;
+    endpoints channel;
+    if (!lookup_user(registrar, account, found) || connect_holder(image, holder, channel, true) != result::passed) return 0;
+    {
+        user_login::packet request{}, reply{};
+        request.op = user_login::operation::submit;
+        request.identity = found.token;
+        if (!user_login::exchange_with_operator(proxy, request, reply) || !has_bytes(reply.key.bytes, secret_bytes)) return 0;
+        delivery enrollment{};
+        enrollment.identity = found.token;
+        enrollment.daemon = daemon;
+        enrollment.name_length = static_cast<u32>(account.length);
+        __builtin_memcpy(enrollment.name, account.data, account.length);
+        enrollment.key = reply.key;
+        if (!send(channel.pair, enrollment)) return 0;
+    }
+    signal outcome{};
+    if (!signal_received(channel.pair, step::received) || !send(channel.pair, delivery_closed{}) ||
+        !receive(channel.pair, outcome, deadline()) || outcome.format != version ||
+        (outcome.stage != step::signed_out && outcome.stage != step::rejected) ||
+        !send(channel.pair, signal{version, step::finish}) || !reap_holder(holder, channel.pair)) return 0;
+    return outcome.stage == step::signed_out ? 1 : user_login::denied;
+}
+
+bool revoke_user(ipc_client& registrar, account_name account) {
+    wire_reply response{};
+    if (!lookup_user(registrar, account, response) || response.flags != 0) return false;
+    const auto identity = response.token;
+    auto revoke = request(wire_operation::revoke_account, identity);
+    return expect(registrar, revoke, response, wire_status::ok) && lookup_user(registrar, account, response) &&
+        response.flags == 1 && user_login::same_identity(identity, response.token);
+}
+#endif
 }

@@ -12,5 +12,15 @@ enum class result : u8 {
 // Provision one account over the authenticated registrar, deliver its initial
 // credential to the immutable holder, and check login, authorization and revoke.
 result run(u32 image, u64 daemon, ipc_client& registrar, account_name account);
-int holder_main();
+int holder_main(bool submitted = false);
+
 }
+
+#if XOS_PUMPKIN_USER_LOGIN
+namespace xos::user::pumpkin::anchor_guest { struct pair; }
+namespace xos::user::pumpkin::native_login {
+bool enroll_user(ipc_client& registrar, account_name account, const anchor_guest::pair& proxy);
+u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy);
+bool revoke_user(ipc_client& registrar, account_name account);
+}
+#endif

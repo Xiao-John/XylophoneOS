@@ -46,11 +46,11 @@
     },
     {
       "path": "patches/0004_dns_results.patch",
-      "sha256": "0f0e34ff2f073e42598d22c292446b2103278c62091206c21877219582a828f4",
+      "sha256": "117774bf61ac3d5902eddbdbba6ae19096fe3917c20339ca30b650f3412cbc7e",
       "files": {
         "src/core/dns.c": {
           "before": "0ad939d1079602c035750ac4d0927bceabbf8c0c6b8cf56bfcedd22ae2b3d649",
-          "after": "7e85fd5863e7a16a787d1aaac19bc5f4ff0c57af739c39417f2d7518a0f67181"
+          "after": "88c7f6aadab3b725999c54a1562fdbf34739378f6aaa5bd9ac9b87ae0db9d99e"
         },
         "src/include/lwip/dns.h": {
           "before": "502985a368bd25b005173b28d9fb536be4293594ccd7bac3c49d81364bc681b0",

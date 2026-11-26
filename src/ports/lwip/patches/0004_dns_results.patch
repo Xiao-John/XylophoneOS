@@ -1,16 +1,5 @@
-From d9341df69cb354106f8fa57184fe663dc2a1932a Mon Sep 17 00:00:00 2001
-From: XOS contributors <75989255+Xiao-John@users.noreply.github.com>
-Date: Thu, 26 Nov 2026 17:31:09 +0800
-Subject: [PATCH] Expose verified private DNS outcomes and positive expiry
-
-Local XOS additions are Apache-2.0. Keep upstream BSD declarations.
----
- src/core/dns.c         | 134 ++++++++++++++++++++++++++++++++++++++++-
- src/include/lwip/dns.h |   6 ++
- 2 files changed, 138 insertions(+), 2 deletions(-)
-
 diff --git a/src/core/dns.c b/src/core/dns.c
-index f9914a6..485a21e 100644
+index f9914a6..48bb437 100644
 --- a/src/core/dns.c
 +++ b/src/core/dns.c
 @@ -236,6 +236,7 @@ struct dns_table_entry {
@@ -80,7 +69,7 @@ index f9914a6..485a21e 100644
    }
  #endif
    dns_call_found(idx, &entry->ipaddr);
-@@ -1280,6 +1319,68 @@ dns_correct_response(u8_t idx, u32_t ttl)
+@@ -1280,6 +1319,78 @@ dns_correct_response(u8_t idx, u32_t ttl)
    }
  }
  
@@ -125,13 +114,16 @@ index f9914a6..485a21e 100644
 +}
 +
 +static int
-+dns_negative_sections_valid(const struct pbuf *p, u16_t cursor, u32_t records)
++dns_negative_sections_valid(const struct pbuf *p, u16_t cursor, u16_t authority,
++                            u16_t additional, int *referral)
 +{
 +  struct dns_answer record;
++  const u32_t records = (u32_t)authority + additional;
++  int has_ns = 0, has_soa = 0;
 +  if (records > 45) {
 +    return 0;
 +  }
-+  while (records--) {
++  for (u32_t i = 0; i < records; ++i) {
 +    cursor = dns_skip_wire_name(p, cursor);
 +    if (!cursor || pbuf_copy_partial(p, &record, SIZEOF_DNS_ANSWER, cursor) != SIZEOF_DNS_ANSWER) {
 +      return 0;
@@ -140,8 +132,15 @@ index f9914a6..485a21e 100644
 +    if (next > p->tot_len) {
 +      return 0;
 +    }
++    if (i < authority && lwip_ntohs(record.cls) == DNS_RRCLASS_IN) {
++      const u16_t type = lwip_ntohs(record.type);
++      has_ns |= type == DNS_RRTYPE_NS;
++      has_soa |= type == DNS_RRTYPE_SOA;
++    }
 +    cursor = (u16_t)next;
 +  }
++  /* RFC 2308 section 2.2 distinguishes a referral from NODATA. */
++  *referral = has_ns && !has_soa;
 +  return cursor == p->tot_len;
 +}
 +#endif
@@ -149,7 +148,7 @@ index f9914a6..485a21e 100644
  /**
   * Receive input function for DNS response packets arriving for the dns UDP pcb.
   */
-@@ -1339,8 +1440,11 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+@@ -1339,8 +1450,11 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
  
          /* Check for correct response. */
          if (((hdr.flags1 & DNS_FLAG1_RESPONSE) == 0) ||
@@ -163,7 +162,7 @@ index f9914a6..485a21e 100644
            LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: \"%s\": not a complete QUERY response\n", entry->name));
            goto ignore_packet; /* ignore this packet */
          }
-@@ -1396,6 +1500,24 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+@@ -1396,6 +1510,25 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
          }
          res_idx = (u16_t)(res_idx + SIZEOF_DNS_QUERY);
  
@@ -173,12 +172,13 @@ index f9914a6..485a21e 100644
 +          goto complete_negative;
 +        }
 +        if ((hdr.flags2 & DNS_FLAG2_ERR_MASK) || !nanswers) {
-+          const u32_t non_answers = (u32_t)lwip_ntohs(hdr.numauthrr) + lwip_ntohs(hdr.numextrarr);
-+          if (nanswers || !dns_negative_sections_valid(p, res_idx, non_answers)) {
++          int referral;
++          if (nanswers || !dns_negative_sections_valid(p, res_idx, lwip_ntohs(hdr.numauthrr),
++                                                      lwip_ntohs(hdr.numextrarr), &referral)) {
 +            goto ignore_packet;
 +          }
 +          switch (hdr.flags2 & DNS_FLAG2_ERR_MASK) {
-+            case 0: entry->result = DNS_XOS_NO_DATA; goto complete_negative;
++            case 0: entry->result = referral ? DNS_XOS_FAILURE : DNS_XOS_NO_DATA; goto complete_negative;
 +            case DNS_FLAG2_ERR_NAME: entry->result = DNS_XOS_NOT_FOUND; goto complete_negative;
 +            case 5: entry->result = DNS_XOS_REFUSED; goto complete_negative;
 +            default: entry->result = DNS_XOS_FAILURE; goto complete_negative;
@@ -188,7 +188,7 @@ index f9914a6..485a21e 100644
          /* Check for error. If so, call callback to inform. */
          if (hdr.flags2 & DNS_FLAG2_ERR_MASK) {
            LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: \"%s\": error in flags\n", entry->name));
-@@ -1524,6 +1646,9 @@ next_answer:
+@@ -1524,6 +1657,9 @@ next_answer:
  #endif /* LWIP_IPV4 && LWIP_IPV6 */
            LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: \"%s\": error in response\n", entry->name));
          }
@@ -198,7 +198,7 @@ index f9914a6..485a21e 100644
          /* call callback to indicate error, clean up memory and return */
          pbuf_free(p);
          dns_call_found(i, NULL);
-@@ -1652,6 +1777,11 @@ dns_enqueue(const char *name, size_t hostnamelen, dns_found_callback found,
+@@ -1652,6 +1788,11 @@ dns_enqueue(const char *name, size_t hostnamelen, dns_found_callback found,
    /* fill the entry */
    entry->state = DNS_STATE_NEW;
    entry->seqno = dns_seqno;
@@ -227,6 +227,3 @@ index e39870d..4970899 100644
  u8_t             dns_xos_cancel(dns_found_callback found, void *arg);
  void             dns_xos_reset(void);
  #endif
--- 
-2.54.0 (Apple Git-157)
-

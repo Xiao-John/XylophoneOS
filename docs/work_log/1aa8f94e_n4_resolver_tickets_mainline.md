@@ -21,3 +21,15 @@
 请求，资源收回至 `129690 / 3 / 1`。普通镜像 `b6f5b6f22c62974d` 拒绝私有操作、
 保留旧操作，未发出 DNS 请求，资源收回至 `129695 / 3 / 1`。
 [合入后回执和抓包](../reports/n4_tickets_merged_dns_20261126/manifest.json)
+
+## 解析结果审查复验
+
+当前递归 stub 将只有 NS、没有 SOA 的空回答归为临时 DNS 失败，保留 SOA 确认
+无数据和无 NS 的 NODATA 两条路径。仅 authority 段的 Internet 类记录参与判定。
+[依据 RFC 2308 §2.2](https://www.rfc-editor.org/rfc/rfc2308.html#section-2.2)
+
+以 `cd0ab5bd` 重新构建两套镜像和夹具。票据镜像 `7faac1c69f050d44` 的 QEMU
+客体验证 NS referral 的临时错误和同时含 NS/SOA 的 NODATA；此前票据场景也通过，
+结束后的网络抓包恰有 11 笔请求。普通镜像 `5d9a4bf56607d832` 维持旧操作且发出
+零 DNS 查询。两套资源恢复到各自基线。
+[审查复验回执与抓包](../reports/n4_tickets_referral_20261126/manifest.json)

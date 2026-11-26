@@ -35,7 +35,7 @@
 | 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
 | VirtIO-Net / N2–N3 | sys112 授权的用户态驱动和 lwIP v2 已合入。传输、多应用隔离、生命周期和撤销有绑定客体结果。raw 诊断保持隔离。 | [原始帧纵切](contracts/net_user_driver.md)、[v2 契约](contracts/net_service_v2.md)、[多应用复验](work_log/69b0e274_network_guest_readiness_and_window.md) |
 | N4 DNS/DHCP | 配置与名称契约以及 DNS 回包收紧已合入。生产 DNS/DHCP 保持关闭。 | [N4 契约](contracts/network_n4_v1_proposal.md)、[DNS 记录](work_log/4e29c6b1_network_dns_hardening.md) |
-| ClarkE 浏览器 | glibc Widgets 入口和 XPK 已通过客体。受控 HTTP、使用显式开发 CA 的 TLS 1.3、HTML/CSS/图像与不受信任 CA 拒绝均有安装包回执。目标 WebKit 已验证 WTF 高地址分配、JSC 配置保护和 LLInt 地址重定位。完整 JavaScriptCore 客体与生产网络继续验收。 | [安装包 HTTPS](work_log/7e05f732_clarke_installed_https.md)、[JSC 配置](work_log/b73f1f0f_clarke_jsc_config_protection.md) |
+| ClarkE 浏览器 | glibc Widgets 安装包已验证受控 TLS 1.3、HTML/CSS/图像及不受信任 CA 拒绝。真实 JavaScriptCore 静态 shell 已合入，锁定的 Test262 同步子集通过 16 次执行。WebCore、完整测试套件和生产网络继续验收。 | [安装包 HTTPS](work_log/7e05f732_clarke_installed_https.md)、[JSC 客体](work_log/3eba7c25_clarke_jsc_guest.md)、[Test262 子集](work_log/aca430b2_clarke_test262_guest.md) |
 | Mobius 系统 UI | 正式入口和 glibc Qt Widgets 会话已合入。实际 XPK 安装后双入口启动，卸载后原 newlib 桌面可从旧入口启动，用户配置保留。 | [桌面客体](work_log/8f0020c4_mobius_glibc_widgets_guest.md)、[工作盘与回退](work_log/f38242fd_mobius_glibc_xpk_lifecycle.md) |
 | Pumpkin | 身份核心、原生 IPC、私有存储区和受信客户端已合入。开发配置通过跨重启登录、独立 broker 授权读取、注销、吊销和旧盘拒绝。具名资源持久化、生产代际及凭据交付继续验收。 | [持久登录和 broker](work_log/7ce64487_pumpkin_durable_account_resource_login.md)、[盘外代际](work_log/31dde03e_pumpkin_anchored_guest_snapshot_fence.md) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |

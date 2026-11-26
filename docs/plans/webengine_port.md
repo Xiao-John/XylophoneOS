@@ -60,11 +60,13 @@ ICU4C 79.1 的三个 XOS 静态组件已经构建并在客体测试，覆盖 NFC
 排序。纳入该 ICU 前缀后，JSCOnly 识别了三个目标静态归档，CMake 配置及生成均通过。
 原生 WTF 栈边界、pthread 和内存适配支持静态链接。实际 JSCOnly 在锁定的 WPE
 归档上生成原生 x86-64 LLInt，链接完整静态归档，再从客体 xsh 运行普通 JS 文件。
-首个场景覆盖函数、迭代、数组和结果输出，退出后资源恢复。M1 继续验证测试子集与
-ES262 实测通过率，M2 仍须独立验证真正的 WebCore 页面。
+首个场景覆盖函数、迭代、数组和结果输出。锁定 Test262 的 8 个同步脚本随后在
+严格和非严格模式各执行一遍，16 次均恢复资源。M1 继续按用例类别扩大测量，M2
+独立验证真正的 WebCore 页面。
 [ICU 客体](../work_log/4df1ab2c_clarke_icu4c_xos.md) ·
 [静态 JSCOnly 线程契约](../contracts/clarke_jsc_threading.md) ·
-[静态 shell 客体](../work_log/3eba7c25_clarke_jsc_guest.md)
+[静态 shell 客体](../work_log/3eba7c25_clarke_jsc_guest.md) ·
+[Test262 子集](../work_log/aca430b2_clarke_test262_guest.md)
 
 现有 VirtIO-Net、N2/N3 已通过独立实测。已安装的 ClarkE 使用显式开发 CA 复验了
 受控 HTTPS 和错误证书拒绝，可作为原生网络对照。M3 仍须把所选引擎的

@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <limits>
 #include <sys/mman.h>
+#include <unistd.h>
 #include <wtf/MemoryFootprint.h>
 #include <wtf/OSAllocator.h>
 #include <wtf/PageBlock.h>
@@ -94,6 +95,45 @@ static bool exercise_commit_failure(size_t page, size_t baseline)
     return !allocation && WTF::memoryFootprint() == baseline && exact_available(base, guarded_bytes);
 }
 
+static bool exercise_large_decommit(size_t page, size_t baseline)
+{
+    const size_t first_chunk = 4096 * page;
+    const size_t bytes = first_chunk + page;
+    auto reservation = WTF::PageReservation::tryReserve(bytes);
+    if (!reservation || WTF::memoryFootprint() != baseline)
+        return false;
+
+    const auto base = reinterpret_cast<uintptr_t>(reservation.base());
+    void* const tail = reinterpret_cast<void*>(base + first_chunk);
+    auto* data = reinterpret_cast<volatile uint8_t*>(base);
+    reservation.commit(reservation.base(), first_chunk);
+    if (WTF::memoryFootprint() != baseline + first_chunk)
+        return false;
+    reservation.commit(tail, page);
+    if (reservation.committed() != bytes || WTF::memoryFootprint() != baseline + bytes)
+        return false;
+    data[0] = 0x32;
+    data[first_chunk - 1] = 0x47;
+    data[first_chunk] = 0x58;
+    if (data[0] != 0x32 || data[first_chunk - 1] != 0x47 || data[first_chunk] != 0x58)
+        return false;
+
+    constexpr char committed[] = "CLARKE_WTF_VM_SPLIT_COMMITTED\n";
+    if (write(STDOUT_FILENO, committed, sizeof(committed) - 1) != sizeof(committed) - 1)
+        return false;
+    reservation.decommit(reservation.base(), bytes);
+    if (reservation.committed() || WTF::memoryFootprint() != baseline)
+        return false;
+    reservation.commit(reservation.base(), page);
+    reservation.commit(tail, page);
+    if (data[0] || data[first_chunk] || WTF::memoryFootprint() != baseline + 2 * page)
+        return false;
+    reservation.decommit(reservation.base(), page);
+    reservation.decommit(tail, page);
+    reservation.deallocate();
+    return WTF::memoryFootprint() == baseline && exact_available(base, bytes);
+}
+
 int main()
 {
     WTF::initialize();
@@ -136,6 +176,8 @@ int main()
         return 8;
     if (!exercise_commit_failure(page, baseline))
         return 9;
+    if (!exercise_large_decommit(page, baseline))
+        return 10;
 
     std::puts("CLARKE_WTF_OS_ALLOCATOR_OK");
     return 0;

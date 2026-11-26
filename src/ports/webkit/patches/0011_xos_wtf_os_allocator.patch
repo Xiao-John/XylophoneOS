@@ -105,16 +105,29 @@
 +    if (bytes)
 +        RELEASE_ASSERT(!mprotect(address, bytes, xos_page_protection(writable, executable)));
 +#elif OS(LINUX) || OS(HAIKU) || OS(QNX)
-@@ -263 +356,4 @@
+@@ -263 +356,17 @@
 -#if OS(LINUX) || OS(HAIKU)
 +#if OS(XOS)
-+    if (bytes)
-+        RELEASE_ASSERT(!xos_vm_call(xos::vm_operation::decommit, reinterpret_cast<uintptr_t>(address), xos_rounded_bytes(bytes)));
++    if (!bytes)
++        return;
++    auto cursor = reinterpret_cast<uintptr_t>(address);
++    size_t remaining = xos_rounded_bytes(bytes);
++    RELEASE_ASSERT(remaining && isPageAligned(cursor) && cursor >= xos::vm_arena_begin
++        && cursor < xos::vm_arena_end && remaining <= xos::vm_arena_end - cursor);
++
++    // The native VM contract caps each decommit transaction at 4096 pages.
++    constexpr size_t max_change_bytes = 4096 * xos::vm_page_size;
++    while (remaining) {
++        const size_t chunk = std::min(remaining, max_change_bytes);
++        RELEASE_ASSERT(!xos_vm_call(xos::vm_operation::decommit, cursor, chunk));
++        cursor += chunk;
++        remaining -= chunk;
++    }
 +#elif OS(LINUX) || OS(HAIKU)
-@@ -279 +375 @@
+@@ -279 +388 @@
 -#if HAVE(MADV_DONTNEED)
 +#if HAVE(MADV_DONTNEED) && !OS(XOS)
-@@ -354 +450,4 @@
+@@ -354 +463,4 @@
 -#if OS(LINUX)
 +#if OS(XOS)
 +    if (size)

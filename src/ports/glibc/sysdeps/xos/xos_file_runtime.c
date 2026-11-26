@@ -42,7 +42,7 @@ static xos_u32 request_sequence, send_handle, receive_handle;
 static struct xos_file_request request;
 static struct xos_file_response response;
 enum { file_stat = 3, file_open = 4, file_fstat = 18, file_anonymous = 21,
-       file_anonymous_seal = 22, file_cwd_get = 27 };
+       file_anonymous_seal = 22, file_cwd_set = 26, file_cwd_get = 27 };
 enum { pipe_create = 30, pipe_read = 31, pipe_write = 32, pipe_close = 33,
        pipe_wait = 54, pipe_token_min = 65536, pipe_capacity = 4096 };
 /* The files service reserves this identity for its synthetic /dev namespace. */
@@ -689,17 +689,33 @@ __xos_file_spawn_begin (struct xos_spawn_stdio *stdio)
         {
           int index = object_for (fd);
           if (descriptors[fd].close_on_exec) index = -1;
-          if (index >= 0 && (fd >= 3 || objects[index].kind != kind_kernel
-              || (objects[index].flags & O_NONBLOCK) != 0
-              || (fd == 0) != (objects[index].handle == 0)))
+          if (fd >= 3)
+            {
+              if (index >= 0) { error = -ENOTSUP; break; }
+              continue;
+            }
+          stdio->object[fd] = index;
+          stdio->route[fd] = -2;
+          stdio->file_handle[fd] = 0;
+          stdio->open_flags[fd] = 0;
+          if (index < 0) continue;
+          const struct open_object *object = &objects[index];
+          if (object->kind == kind_file)
+            {
+              stdio->route[fd] = -1;
+              stdio->file_handle[fd] = object->handle;
+              stdio->open_flags[fd] = object->flags;
+            }
+          else if ((object->flags & O_NONBLOCK) == 0
+                   && ((object->kind == kind_kernel
+                        && (fd == 0) == (object->handle == 0))
+                       || object->kind == (unsigned int) (fd == 0 ? kind_pipe_read
+                                                                 : kind_pipe_write)))
+            stdio->route[fd] = object->handle;
+          else
             {
               error = -ENOTSUP;
               break;
-            }
-          if (fd < 3)
-            {
-              stdio->object[fd] = index;
-              stdio->route[fd] = index < 0 ? -2 : (int) objects[index].handle;
             }
         }
       if (error == 0)
@@ -1061,28 +1077,30 @@ done:
 long
 __xos_file_path_op (const char *path, int operation)
 {
-  int error = begin ();
+  const int changes_cwd = (xos_file_u16) operation == file_cwd_set;
+  int error = changes_cwd ? lock_runtime (&spawn_cwd_lock) : 0;
   if (error != 0) return error;
-  memset (&request, 0, sizeof (request));
-  long result = prepare_path (path);
+  long result = begin ();
   if (result == 0)
     {
-      request.flags = operation == 513 ? 512 : 0;
-      result = call_service (operation == 513 ? 13 : (unsigned int) operation);
-      if (result == 0 && response.length != 0) result = session_fault (EIO);
+      memset (&request, 0, sizeof (request));
+      result = prepare_path (path);
+      if (result == 0)
+        {
+          request.flags = operation == 513 ? 512 : 0;
+          result = call_service (operation == 513 ? 13 : (unsigned int) operation);
+          if (result == 0 && response.length != 0) result = session_fault (EIO);
+        }
+      unlock_session ();
     }
-  unlock_session ();
+  if (changes_cwd) unlock_runtime (&spawn_cwd_lock);
   return result;
 }
 
 long
 __xos_file_chdir (const char *path)
 {
-  int error = lock_runtime (&spawn_cwd_lock);
-  if (error != 0) return error;
-  long result = __xos_file_path_op (path, 26);
-  unlock_runtime (&spawn_cwd_lock);
-  return result;
+  return __xos_file_path_op (path, file_cwd_set);
 }
 
 long
@@ -1201,12 +1219,21 @@ __xos_file_exchange (const struct xos_file_request *input, struct xos_file_respo
   /* Callers own disjoint request and response records. */
   if ((const void *) input == (const void *) output) return -EINVAL;
   memset (output, 0, sizeof (*output));
-  int error = begin ();
+  /* Match the service's self selectors. Spawn already owns the cwd lock
+     while the loader sets the new child's directory through this exchange. */
+  const int changes_cwd = input->operation == file_cwd_set
+    && (input->offset == 0 || input->offset == (xos_u64) file_trap (6, 0, 0, 0));
+  int error = changes_cwd ? lock_runtime (&spawn_cwd_lock) : 0;
   if (error != 0) return error;
-  request = *input;
-  long result = call_service (request.operation);
-  if (result == 0) *output = response;
-  unlock_session ();
+  long result = begin ();
+  if (result == 0)
+    {
+      request = *input;
+      result = call_service (request.operation);
+      if (result == 0) *output = response;
+      unlock_session ();
+    }
+  if (changes_cwd) unlock_runtime (&spawn_cwd_lock);
   return result;
 }
 

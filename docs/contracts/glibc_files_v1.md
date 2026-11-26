@@ -69,10 +69,13 @@ console/pipe 阻塞 I/O 在保留 open-description 引用后释放该锁，避�
 更大的非阻塞写入可以短写。原生管道操作不依赖 files 会话。
 
 出站 `posix_spawn` 跳过额外的 CLOEXEC 描述符，保留父进程描述符。
-后续接入外部命令的管道重定向时，现有 `sys_process_stdio` 可将调用方所有的
-有向管道引用挂到正在构建的子进程的 0/1/2。glibc 启动快照仍须在提交或回滚前
-持有该引用，并检查读写方向及未映射的描述符；该映射当前返回 `ENOTSUP`。
-普通文件重定向沿用 loader 的 files 句柄转移契约。
+启动快照持有有向管道引用直至提交或撤回。加载器用现有 `sys_process_stdio`
+把读端挂到子进程 fd 0、写端挂到 fd 1 或 2。方向不符、非阻塞管道和额外的
+非 CLOEXEC 描述符返回 `ENOTSUP`。
+
+普通及封存文件经已有 files 句柄转移进入子进程的 0/1/2。每次转移持有同一
+打开描述，保留服务侧位置和追加行为。加载器只向带现有 `.xos.exec` 标记的
+接收端转移文件，否则返回 `ENOTSUP`。父进程在加载期间保留原始引用。
 
 ## 定位读写与目录流
 
@@ -140,9 +143,9 @@ G2 基础 console profile 仍可单独链接。终端 startup v2/v3、kind5 与�
   handle 的多个 ownership 记录，以及 cleanup/live 重叠均拒绝。
   存活 FD 的 CLOEXEC 位已清除，唯一 CLOEXEC 描述在接收端关闭。
 
-工作目录仍由 loader/files 服务维护的 identity 继承。本模块实现接收端恢复；
-glibc 的 fork/exec/spawn 出站路径须由后续独立模块提供。
-`.xos.exec` opt-in 只由专门的 G3 验收 fixture 声明，CRT 不全局添加该标记。
+工作目录仍由 loader/files 服务维护的 identity 继承。普通 `posix_spawn` 使用
+既有加载器与启动 v2。需要接收转移文件的 glibc 程序须单独声明 `.xos.exec`，
+例如[重定向验收程序](../../tests/fixtures/glibc_g3/dash_stream_child.c)。
 
 ## 明确支持范围
 
@@ -153,8 +156,8 @@ O_APPEND 返回 ENOTSUP（既有服务没有该句柄操作）。
 相对路径的 `openat/fstatat` 支持 AT_FDCWD；其他 dirfd 相对路径返回 ENOTSUP。
 `AT_EMPTY_PATH` 可查询已打开的 FD。未知操作返回确定错误。
 
-路径型启动重定向、文件锁、mmap 文件
-映射、glibc 出站 fork/exec/spawn 与异步取消暂不属于本模块。fsync 调用真实 files
+子进程按路径打开的启动重定向、文件锁、mmap 文件映射、glibc 出站 fork/exec
+及异步取消暂不属于本模块。fsync 调用真实 files
 sync，其他尚未实现操作沿用上游或 XOS 的明确失败路径。
 
 ## 验证入口

@@ -8,6 +8,7 @@
 
 extern "C" long __xos_wait_child(pid_t pid, int* status, int options) {
     using namespace xos;
+    // POSIX uses zero and values below -1 for process groups; XOS has none.
     if ((pid <= 0 && pid != -1) || (options & ~WNOHANG) != 0) { return -ENOTSUP; }
     const bool nonblocking = (options & WNOHANG) != 0;
     const bool any = pid == -1;

@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <xos/execution.hpp>
 #include <xos/sdk.hpp>
+#include <xos/thread_abi.hpp>
 
 namespace {
 using namespace xos;
@@ -24,6 +25,7 @@ int launch_error(i64 result, const execution::launch_diagnostic& diagnostic) {
         return static_cast<int>(-__xos_file_service_error(static_cast<int>(result)));
     }
     if (diagnostic.stage == stage::inspect) {
+        if (result == thread_error_unsupported) { return ENOTSUP; }
         return diagnostic.format_error == elf::error::io ? EIO : ENOEXEC;
     }
     if (diagnostic.stage == stage::prepare) { return E2BIG; }
@@ -71,7 +73,11 @@ extern "C" int __xos_spawn_path(pid_t* output, const char* path, char* const arg
     options.environment_count = env_count;
     options.prepare_child = prepare_child;
     options.prepare_context = &inherit_create;
-    for (unsigned int fd = 0; fd < 3; ++fd) { options.stdio[fd] = snapshot.route[fd]; }
+    for (unsigned int fd = 0; fd < 3; ++fd) {
+        options.stdio[fd] = snapshot.route[fd];
+        options.file_handles[fd] = snapshot.file_handle[fd];
+        options.open_flags[fd] = snapshot.open_flags[fd];
+    }
     execution::launch_diagnostic diagnostic{};
     const i64 child = execution::spawn_file_diagnosed(path, argc, argv, options, diagnostic);
     __xos_file_spawn_end(&snapshot);

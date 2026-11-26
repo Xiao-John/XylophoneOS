@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
@@ -72,16 +73,83 @@ printf 'DASH_GLIBC_CHILD_RC=%s\n' "$status"
 exit "$status"
 '''
 EXPLICIT = EXTERNAL.format(command="/bin/preview_child explicit 'two words' ''")
+PIPELINE = r'''PATH=/missing:/bin
+export PATH
+/bin/stream_child emit | stream_child relay | /bin/stream_child verify || exit 81
+printf 'DASH_GLIBC_PIPE_PASS\n'
+'''
+PIPE_STATUS = r'''set -o pipefail
+/bin/stream_child emit7 | /bin/stream_child verify
+test "$?" -eq 7 || exit 82
+/bin/stream_child emit-close | /bin/stream_child one || exit 83
+printf 'DASH_GLIBC_PIPE_STATUS_PASS\n'
+'''
+PIPE_REDIRECT = r'''/bin/stream_child emit | /bin/stream_child relay >/out/pipeline.bin || exit 84
+/bin/stream_child verify </out/pipeline.bin || exit 85
+printf 'DASH_GLIBC_PIPE_FILE_PASS\n'
+'''
+PIPE_CLOSED = r'''exec 0<&- 2>&-
+/bin/stream_child emit | /bin/stream_child verify || exit 86
+/bin/stream_child closed-err || exit 87
+printf 'DASH_GLIBC_PIPE_CLOSED_PASS\n'
+'''
+PIPE_FAILURE = r'''i=0
+while [ "$i" -lt 8 ]; do
+    /bin/stream_child emit | /bin/not_present
+    test "$?" -eq 127 || exit 81
+    i=$((i+1))
+done
+/bin/stream_child emit | /bin/stream_child verify || exit 82
+printf 'DASH_GLIBC_PIPE_RECOVERED=%s\n' "$i"
+'''
+REDIRECT = r'''printf '%s\n' 'file input' >/out/stream.in || exit 81
+/bin/stream_child line </out/stream.in >/out/stream.log 2>&1 || exit 82
+/bin/stream_child line </out/stream.in >>/out/stream.log 2>&1 || exit 83
+check() {
+    IFS= read -r a && IFS= read -r b && IFS= read -r c && IFS= read -r d &&
+      test "$a/$b/$c/$d" = 'file input/stream stderr/file input/stream stderr' &&
+      ! IFS= read -r extra
+}
+check </out/stream.log || exit 84
+/bin/stream_child closed-out 1>&- || exit 85
+/usr/bin/dash -c 'IFS= read -r line && printf "%s\n" "$line"' </out/stream.in >/out/legacy.txt || exit 86
+printf 'DASH_GLIBC_REDIRECT_PASS\n'
+'''
+EXTERNAL_HEREDOC = r'''exec 0<&-
+value=expanded
+/bin/stream_child line >/out/heredoc.log 2>&1 <<EOF || exit 81
+external:$value
+EOF
+/bin/stream_child line >>/out/heredoc.log 2>&1 <<'EOF' || exit 82
+external:$value
+EOF
+check() {
+    IFS= read -r a && IFS= read -r b && IFS= read -r c && IFS= read -r d &&
+      test "$a/$b/$c/$d" = 'external:expanded/stream stderr/external:$value/stream stderr' &&
+      ! IFS= read -r extra
+}
+check </out/heredoc.log || exit 83
+printf 'DASH_GLIBC_EXTERNAL_HERE_PASS\n'
+'''
 CASES = {
     'builtins': (BUILTINS, 0, b'DASH_GLIBC_BUILTINS_PASS', ' alpha'),
     'files': (FILES, 0, b'DASH_GLIBC_FILES_PASS', ''),
-    'pipeline': ("printf unexpected | printf unexpected\n", 2, b'pipelines unavailable', ''),
+    'pipeline': (PIPELINE, 0, b'DASH_GLIBC_PIPE_PASS', ''),
+    'pipeline_status': (PIPE_STATUS, 0, b'DASH_GLIBC_PIPE_STATUS_PASS', ''),
+    'pipeline_redirect': (PIPE_REDIRECT, 0, b'DASH_GLIBC_PIPE_FILE_PASS', ''),
+    'pipeline_closed': (PIPE_CLOSED, 0, b'DASH_GLIBC_PIPE_CLOSED_PASS', ''),
+    'pipeline_failure': (PIPE_FAILURE, 0, b'DASH_GLIBC_PIPE_RECOVERED=8', ''),
+    'pipeline_builtin': ("printf unexpected | printf unexpected\n",
+                         2, b'C1 pipeline requires external commands', ''),
     'subshell': ("(printf unexpected)\n", 2, b'subshells unavailable', ''),
     'substitution': ('printf "%s\\n" "$(printf unexpected)"\n', 2, b'command substitution unavailable', ''),
     'heredoc': (HEREDOC, 0, br'DASH_GLIBC_HERE_PASS <literal $word \keep> <expanded:expanded:12>', ''),
     'heredoc_failure': (HEREDOC_FAILURE, 0, b'DASH_GLIBC_HERE_RECOVERED=24', ''),
-    'external_heredoc': ("/bin/preview_child explicit 'two words' '' <<EOF\nunexpected\nEOF\n",
-                         2, b'here-document requires a parent builtin', ''),
+    'external_heredoc': (EXTERNAL_HEREDOC, 0, b'DASH_GLIBC_EXTERNAL_HERE_PASS', ''),
+    'external_redirect': (REDIRECT, 0, b'DASH_GLIBC_REDIRECT_PASS', ''),
+    'unmarked_redirect': (EXTERNAL.format(
+        command="/bin/preview_child explicit 'two words' '' >/out/unmarked"),
+                          126, b'Not supported', ''),
     'external_explicit': (EXPLICIT, 0, b'DASH_GLIBC_CHILD_EXPLICIT argv_env_cwd=ok', ''),
     'external_path': (EXTERNAL.format(command="preview_child path 'two words' ''"),
                       23, b'DASH_GLIBC_CHILD_PATH argv_env_cwd=ok', ''),
@@ -89,7 +157,8 @@ CASES = {
     'external_text': (EXTERNAL.format(command='/bin/text_tool'), 126, b'Exec format error', ''),
     'authority_denied': (EXPLICIT, 126, b'Operation not permitted', ''),
 }
-EXTERNAL_CASES = {'external_explicit', 'external_path', 'external_missing', 'external_text', 'authority_denied'}
+EXTERNAL_CASES = {'external_explicit', 'external_path', 'external_missing',
+                  'external_text', 'authority_denied', 'unmarked_redirect'}
 
 
 def bind_preview(args):
@@ -122,14 +191,18 @@ def bind_preview(args):
 def build_programs(args, report):
     fixtures = ROOT / 'tests/fixtures/glibc_g3'
     child_source = fixtures / 'dash_external_child.c'
+    stream_source = fixtures / 'dash_stream_child.c'
     launcher_source = fixtures / 'dash_without_create.cpp'
     child = args.artifacts / 'preview_child.elf'
+    stream = args.artifacts / 'stream_child.elf'
     launcher = args.artifacts / 'preview_without_create.elf'
     sdk = args.system / 'sdk'
     compiler = tool('g++')
     commands = [
         [sys.executable, ROOT / 'scripts/build_glibc_program.py', '--sdk', args.glibc_sdk / 'sysroot',
          '--source', child_source, '--output', child],
+        [sys.executable, ROOT / 'scripts/build_glibc_program.py', '--sdk', args.glibc_sdk / 'sysroot',
+         '--source', stream_source, '--output', stream],
         [compiler, *COMMON_FLAGS, *X86_FLAGS, '-I', sdk / 'include', '-nostdlib', '-static', '-no-pie',
          '-Wl,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096',
          '-T', sdk / 'user.ld', sdk / 'crt0.o', launcher_source, '-Wl,--start-group',
@@ -140,9 +213,9 @@ def build_programs(args, report):
             subprocess.run(invocation, check=True, stdout=log, stderr=subprocess.STDOUT)
     report['programs'] = {
         binary.name: {'sha256': sha(binary), 'source_sha256': sha(source)}
-        for binary, source in ((child, child_source), (launcher, launcher_source))
+        for binary, source in ((child, child_source), (stream, stream_source), (launcher, launcher_source))
     }
-    return child, launcher
+    return child, stream, launcher
 
 
 def main():
@@ -160,7 +233,7 @@ def main():
         report.update(system_build_id=system['build_id'], iso_sha256=sha(iso),
                       system_manifest_sha256=sha(args.system / 'manifest.json'),
                       legacy=legacy, preview=bind_preview(args))
-        child, launcher = build_programs(args, report)
+        child, stream, launcher = build_programs(args, report)
         with tempfile.TemporaryDirectory(prefix='xos_dash_glibc_') as folder:
             work = Path(folder)
             disk = work / 'work.img'
@@ -168,6 +241,7 @@ def main():
             install(disk, args.legacy_receipt)
             install(disk, args.preview_receipt, '/bin/dash_glibc')
             transfer(disk, 'import', '/bin/preview_child', child)
+            transfer(disk, 'import', '/bin/stream_child', stream)
             transfer(disk, 'import', '/bin/preview_without_create', launcher)
             text_tool = args.artifacts / 'text_tool'
             text_tool.write_text('printf "DASH_GLIBC_TEXT_EXECUTED\\n"\n')
@@ -203,8 +277,10 @@ def main():
                         line = f'{entry}/bin/dash_glibc /cases/{name}.sh{arguments}'
                     else:
                         line = f'dash /cases/via_dash_{name}.sh'
-                    capture = command(guest, line, b'[wait] pid=', timeout=40)
-                    record = {'case': name, 'shell': shell, 'output': capture.decode(errors='replace')}
+                    began = time.monotonic()
+                    capture = command(guest, line, b'[wait] pid=', timeout=120)
+                    record = {'case': name, 'shell': shell, 'output': capture.decode(errors='replace'),
+                              'elapsed_seconds': time.monotonic() - began}
                     report['runs'].append(record)
                     waited = re.findall(rb'\[wait\] pid=\d+ kind=(\w+) code=(-?\d+)', capture)
                     expected = str(status).encode()
@@ -214,18 +290,17 @@ def main():
                         assert b'DASH_GLIBC_EXIT=' + expected + b'\n' in capture, capture
                     if name == 'heredoc_failure':
                         assert capture.count(b'/missing/heredoc-output') == 24, capture
-                    if name == 'external_heredoc':
-                        assert b'DASH_GLIBC_CHILD_' not in capture, capture
                     if name in EXTERNAL_CASES:
                         assert b'DASH_GLIBC_CHILD_RC=' + expected + b'\n' in capture, capture
                         assert b'DASH_GLIBC_TEXT_EXECUTED' not in capture and b'DASH_GLIBC_CHILD_BAD' not in capture, capture
-                        if name in ('external_missing', 'external_text', 'authority_denied'):
+                        if name in ('external_missing', 'external_text', 'authority_denied', 'unmarked_redirect'):
                             assert b'argv_env_cwd=ok' not in capture, capture
                     elif status:
                         assert b'unexpected' not in capture and b'DASH_GLIBC_BUILTINS_PASS' not in capture, capture
                     after = resources(guest)
                     assert after == baseline, (baseline, after)
                     record.update(exit_code=status, resources=after)
+                    print(f'PASS {shell} {name} ({record["elapsed_seconds"]:.2f}s)', flush=True)
             command(guest, 'sync', b'[files] sync=ok')
             guest.close()
             report['reserved_after'] = reserved_snapshot(disk)
@@ -233,6 +308,19 @@ def main():
             exported = args.artifacts / 'files.txt'
             transfer(disk, 'export', '/out/files.txt', exported)
             assert exported.read_bytes() == b'glibc dash file bytes\n'
+            evidence = {
+                'pipeline.bin': bytes(position % 251 for position in range(10037)),
+                'stream.log': b'file input\nstream stderr\n' * 2,
+                'heredoc.log': b'external:expanded\nstream stderr\nexternal:$value\nstream stderr\n',
+                'legacy.txt': b'file input\n',
+                'unmarked': b'',
+            }
+            report['redirected_files'] = {}
+            for name, expected in evidence.items():
+                path = args.artifacts / name
+                transfer(disk, 'export', '/out/' + name, path)
+                assert path.read_bytes() == expected, name
+                report['redirected_files'][name] = sha(path)
             report.update(status='passed_subset', file_sha256=sha(exported))
     finally:
         if guest:

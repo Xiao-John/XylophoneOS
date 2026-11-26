@@ -8,6 +8,9 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     if (startup->argc == 2) {
         const auto* args = reinterpret_cast<const char* const*>(startup->argv);
         if (xos::sdk::equal(args[1], "submit")) return holder_main(holder_mode::submit);
+#if XOS_PUMPKIN_MOBIUS
+        if (xos::sdk::equal(args[1], "desktop")) return holder_main(holder_mode::desktop);
+#endif
 #if XOS_PUMPKIN_USER_RESOURCE
         if (xos::sdk::equal(args[1], "resource")) return holder_main(holder_mode::resource);
 #endif

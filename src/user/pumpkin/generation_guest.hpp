@@ -11,7 +11,7 @@ inline constexpr u64 exchange_ns = 6'000'000'000;
 enum class operation : u8 { ready = 1, read, publish, finish };
 enum class scenario : u8 {
     cycle = 1, healthy, stale, user_enroll, user_login, user_revoke, user_resource, named_empty,
-    user_named_read, user_named_put, user_named_erase, user_named_import,
+    user_named_read, user_named_put, user_named_erase, user_named_import, user_desktop,
 };
 struct packet {
     u32 tag = magic;

@@ -408,7 +408,8 @@ i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const s
 
 i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* argv,
                               const spawn_options& options,
-                              execution::launch_diagnostic& diagnostic, execution::image_receipt* receipt) {
+                              execution::launch_diagnostic& diagnostic, execution::image_receipt* receipt,
+                              const execution::image_receipt* expected = nullptr) {
     diagnostic = {execution::launch_stage::none, 0, elf::error::none};
     if (receipt != nullptr) {
         for (u32 i = 0; i < sizeof(receipt->digest); ++i) receipt->digest[i] = 0;
@@ -433,6 +434,10 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
         return opened;
     }
     opened_file source{&file_client, handle, size};
+    if (expected != nullptr && size != expected->size) {
+        (void)file_client.close(handle);
+        return process_error_denied;
+    }
     if (receipt != nullptr) {
         sha256 digest;
         for (u32 offset = 0; offset < size;) {
@@ -448,6 +453,10 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
         }
         digest.finish(receipt->digest);
         receipt->size = size;
+        if (expected != nullptr && __builtin_memcmp(receipt->digest, expected->digest, sizeof(receipt->digest)) != 0) {
+            (void)file_client.close(handle);
+            return process_error_denied;
+        }
     }
     const i64 child = spawn_reader(path, size, file_read, &source, argc, argv, true, handle,
                                    &options, &diagnostic);
@@ -508,5 +517,12 @@ i64 spawn_file_diagnosed_receipt(const char* path, u32 argc, const char* const* 
                                  const sdk::spawn_options& options,
                                  launch_diagnostic& diagnostic, image_receipt& receipt) {
     return sdk::spawn_file_diagnosed_impl(path, argc, argv, options, diagnostic, &receipt);
+}
+
+i64 spawn_verified_file(const char* path, u32 argc, const char* const* argv,
+                        const sdk::spawn_options& options, const image_receipt& expected) {
+    launch_diagnostic diagnostic{};
+    image_receipt observed{};
+    return sdk::spawn_file_diagnosed_impl(path, argc, argv, options, diagnostic, &observed, &expected);
 }
 }

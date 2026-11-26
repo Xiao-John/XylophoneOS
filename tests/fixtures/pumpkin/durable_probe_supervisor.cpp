@@ -410,7 +410,7 @@ void run(u32 image, grant_function grant, const char* mode) {
 
 #if XOS_PUMPKIN_ANCHORED_PROBE
 int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unused]] u32 holder_image,
-                 [[maybe_unused]] u32 broker_image) {
+                 [[maybe_unused]] u32 broker_image, [[maybe_unused]] const native_login::desktop_session* desktop) {
     anchor_guest::pair proxy_control{};
     sdk::spawn_options options{};
     for (auto& fd : options.stdio) fd = -2;
@@ -508,6 +508,16 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
                 passed = login_result != 0 && server.stop();
             }
             break;
+#if XOS_PUMPKIN_MOBIUS
+        case anchor_guest::scenario::user_desktop:
+            if (started && desktop != nullptr) {
+                login_result = native_login::login_user(holder_image, server.pid, server.control,
+                    chosen, proxy_control, 0, nullptr, desktop);
+                const bool stopped = server.stop();
+                passed = (login_result == 1 || login_result == user_login::denied) && stopped;
+            }
+            break;
+#endif
 #if XOS_PUMPKIN_USER_RESOURCE
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
         case anchor_guest::scenario::user_named_read:
@@ -552,8 +562,12 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         }
     }
 #if XOS_PUMPKIN_NATIVE_LOGIN || XOS_PUMPKIN_NAMED_RESOURCE_STORE
-    passed = passed && sdk::syscall(sys_process_stats, reinterpret_cast<u64>(&after)) == 0 &&
+    const bool recovered = bounded_start && sdk::syscall(sys_process_stats, reinterpret_cast<u64>(&after)) == 0 &&
         before.free_pages == after.free_pages && before.tasks == after.tasks && before.completions == after.completions;
+    passed = passed && recovered;
+#if XOS_PUMPKIN_MOBIUS
+    if (mode == anchor_guest::scenario::user_desktop && !recovered) { login_result = 0; }
+#endif
 #endif
     u8 outcome = static_cast<u8>(passed);
 #if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
@@ -571,7 +585,8 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #endif
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #if XOS_PUMPKIN_USER_LOGIN
-    if (passed && (mode == anchor_guest::scenario::user_login || mode == anchor_guest::scenario::user_resource) &&
+    if (passed && (mode == anchor_guest::scenario::user_login || mode == anchor_guest::scenario::user_resource ||
+                   mode == anchor_guest::scenario::user_desktop) &&
         login_result == user_login::denied) { outcome = login_result; }
     if (passed && mode == anchor_guest::scenario::user_enroll && login_result == user_login::duplicate_enrollment) {
         outcome = login_result;

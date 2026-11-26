@@ -59,3 +59,16 @@ glibc 日用工具、独立 Qt Quick 应用、Mobius 会话、Pumpkin 盘外代�
 真实 P2 安装、恢复清理及 26 文件核对。后续 SDK 切换与退役按最终候选验收。
 [安装验收](../work_log/03c0fe80_install_bundle_before_audio.md) ·
 [运行库和 W1 组合回执](../work_log/77b48ecc_runtime_acceptance_checkpoint.md)
+
+主线 `8b40d62f` 已纳入独立 glibc C/C++ 应用 SDK。干净 Linux 容器用它构建并打包
+两种语言的应用，客体检查了安装和冻结 newlib 回退。下一轮需在正式应用冷启动配置下
+验收首个 dash 子进程，并用最终系统与 SDK 复跑存量应用、包事务和旧盘回退。
+[SDK 记录](../work_log/245042e2_glibc_sdk_selection.md)
+
+同一主线含 GNU glibc PIC 归档、Pumpkin 开发配置跨重启登录、ClarkE 的目标 JSC
+配置保护和 LLInt 地址适配。D1 接下来要把已验证的私有入口栈接到真实解释器，
+并贯通高地址映射与早期文件会话。Pumpkin 需要独立资源服务和部署端受信边界，
+ClarkE 完整引擎需要在客体执行后再参与浏览器组合验收。
+[PIC 归档](../work_log/8e477872_glibc_shared_io_and_pic_archive.md) ·
+[Pumpkin 登录](../work_log/317b1813_pumpkin_operator_login_across_reboots.md) ·
+[JSC 配置](../work_log/b73f1f0f_clarke_jsc_config_protection.md)

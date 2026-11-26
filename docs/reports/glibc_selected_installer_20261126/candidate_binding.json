@@ -1,0 +1,25 @@
+{
+  "application_sdk": {
+    "kit_tree_sha256": "71619877cbedb6af19b232f0fa1ea521064698e96ff80d6f2b72b7e55467480f",
+    "profile_file_sha256": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+    "profile_id": "xos-x86_64-glibc-sdk-selection-v1",
+    "profile_sha256": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+    "sdk_manifest_sha256": "45ec2bc96ef7b26f4d035fd1aa7ed424bf6efba55164b06ee89ebec8e19fef50",
+    "sdk_tree_sha256": "cd91dc8edbb6252473c6c453e807fcd59e88c921d8a3a12de59aff3b9f7f9ddb"
+  },
+  "build_id": "f2c15ccda70d7ae3",
+  "guest_qualification": "not_run",
+  "installer_guest_qualification": "passed",
+  "selected_artifacts_sha256": {
+    "system/install_manifest.json": "9361f20af9990f86ecc093c29b6cacb0f7eb356695babd3452452d05c268bc9b",
+    "system/manifest.json": "321453f5029d946cac407846774d49e0a771206b4b8a848e64895ff861c4ebb9",
+    "system/xos-install-dash.iso": "c1120c2be9bcb7974130e9fd8740221afd430438cb11e04cf7fdf0e73a5d9aac",
+    "system/xos-install.iso": "7117b8ff9817dabcc1804d62db2dd179a25301f266d125e0b71458769f8e6b0b"
+  },
+  "source_commit": "12d22dce534e283cfae566a5f35eebeeb647b2c0",
+  "status": "built_unverified",
+  "system_source_sha256": "f2c15ccda70d7ae3f7b8c2e57360a4eb66b0bdd16092a397c1b1e200bbacc814",
+  "verified_artifact_count": 295,
+  "verified_source_count": 1826,
+  "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

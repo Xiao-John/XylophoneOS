@@ -1,0 +1,42 @@
+{
+  "build_id": "f2c15ccda70d7ae3",
+  "checks": [
+    {
+      "name": "dash-runs-first-external-elf",
+      "passed": true
+    },
+    {
+      "name": "dash-installed-from-iso",
+      "passed": true
+    },
+    {
+      "name": "path-visible",
+      "passed": true
+    },
+    {
+      "name": "dash-runs",
+      "passed": true
+    },
+    {
+      "name": "iso-manifest",
+      "passed": true
+    }
+  ],
+  "external_elf_sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf",
+  "gate": "A3/A4 ISO dash install",
+  "iso_files": {
+    "DASH.ELF": "2b5bb54ab0161fb084d5d69ce43ec41006be873115cff9cd2c4ac7d475cc3724",
+    "KERNEL.BIN": "9ae6b16aba63ea241296b683614736248af8db8bcbcc001793790acbb6d151fe",
+    "MANIFEST.TXT": "bc27d61c5b25cbd4b29956176f25e626df47d05b5b996434ec8f8bc8f217d6e9"
+  },
+  "iso_sha256": "c1120c2be9bcb7974130e9fd8740221afd430438cb11e04cf7fdf0e73a5d9aac",
+  "manifest": {
+    "build_id": "f2c15ccda70d7ae3",
+    "dash_bytes": 3393536,
+    "dash_sha256": "2b5bb54ab0161fb084d5d69ce43ec41006be873115cff9cd2c4ac7d475cc3724",
+    "format": 1,
+    "kernel_sha256": "9ae6b16aba63ea241296b683614736248af8db8bcbcc001793790acbb6d151fe",
+    "version": "0.0.2-1103"
+  },
+  "status": "passed"
+}

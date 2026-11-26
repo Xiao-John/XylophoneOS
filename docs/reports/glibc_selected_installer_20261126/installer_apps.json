@@ -1,0 +1,34 @@
+{
+  "application_profile_sha256": "1dd89afc949f21a3ae07b2de617ae3319b590341b68870e7dd836563822c31c9",
+  "build_id": "f2c15ccda70d7ae3",
+  "guest_markers": [
+    "GLIBC_KIT_C_OK 2.44",
+    "GLIBC_KIT_CPP_OK vector thread exception",
+    "GLIBC_INSTALLER_APPS_OK",
+    "kind=exited code=0"
+  ],
+  "installed_dash_sha256": "2b5bb54ab0161fb084d5d69ce43ec41006be873115cff9cd2c4ac7d475cc3724",
+  "installer_iso_sha256": "c1120c2be9bcb7974130e9fd8740221afd430438cb11e04cf7fdf0e73a5d9aac",
+  "packages": {
+    "external-c.xpk": "d7aeef8b75b2186236694ed67a2da81de3ff7bd07be260181faa85cd623706e2",
+    "external-cpp.xpk": "256709dbfa82361ba178861dbb6e847eccda0e01329a926113167443e2d7a57c"
+  },
+  "qemu": "QEMU emulator version 11.1.2",
+  "resources_after": [
+    128880,
+    3,
+    1
+  ],
+  "resources_before": [
+    128836,
+    7,
+    1
+  ],
+  "retired_boot_demo_tasks": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "status": "passed"
+}

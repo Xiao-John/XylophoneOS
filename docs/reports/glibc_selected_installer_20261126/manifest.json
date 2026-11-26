@@ -1,0 +1,13 @@
+{
+  "files": {
+    "before_fix_app_replay.json": "6200439b153d1a409df242d4d5f3fab9ab0a8169f3c6a37b16bb74677bf305ad",
+    "before_fix_installer_apps.serial.log.gz": "68b0d88e8fa675bca620e988f06dbf1dd4b1696a02ed27f53940fdbdbba6dbb4",
+    "candidate_binding.json": "ccb62e23abf951ab239bcd3615290e7018ab1e7a84a74d73ce5806139759f61b",
+    "installer_apps.json": "275e73077429cd745b868d5be4d7fb347a399e5b6b8f3aab3be98869bce2d227",
+    "installer_apps.serial.log.gz": "7bc3bd34ff022736d587203c3ed2b3240d8c70093720547a0e99ff604787e8bc",
+    "installer_guest_report.json": "80178461a67e0c29cb83e93c282c85f891d8907648960e12a01d6a96576ea533",
+    "installer_smoke.serial.log.gz": "a3a9fb869a13ffc8521d43263066ead4a5ae42694de2518a53e2427dd4d43861",
+    "ordinary_smoke.log": "c19e03f1d09be1152bac7c69a3a7740abf6b41095f02344b01fb4158fa805d88"
+  },
+  "version": 1
+}

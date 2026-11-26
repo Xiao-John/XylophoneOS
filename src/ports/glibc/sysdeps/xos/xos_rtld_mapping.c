@@ -59,7 +59,7 @@ __xos_rtld_attach_entry_images (void **stack, struct xos_rtld_images *images,
   images->files = &view.record->files;
   images->plan = &view.record->dependencies;
   int error = __xos_rtld_attach_images (images);
-  if (error == 0 && view.record->heap.bytes != 0)
+  if (error == 0)
     {
       error = __xos_rtld_heap_begin (&view.record->heap);
       if (error != 0)

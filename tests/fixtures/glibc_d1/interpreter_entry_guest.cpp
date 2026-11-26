@@ -231,6 +231,13 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
     // Exercise the first allowed stack address with an actual checker call.
     auto* frame = reinterpret_cast<xos_d1_entry_handoff*>(XOS_D1_STACK_ENTRY_MIN);
     *frame = {};
+    const auto missing_heap = prepare_interpreter_entry(
+        startup, main_source, main_phdr, interpreter_source, execution_mode::ordinary,
+        native_entropy, early, *frame, images, empty ? nullptr : &plan, nullptr);
+    if (missing_heap.error != interpreter_entry_error::layout || missing_heap.release_error != 0
+        || images.main.bytes != 0 || images.interpreter.bytes != 0 || images.early_heap.bytes != 0
+        || frame->record.magic != 0 || early.phase != xos_file_session_active
+        || early.request_sequence != prior_sequence) { fail("missing heap plan at prepare"); }
     const auto prepare = [&](main_headers headers) { return stage(*frame, headers, empty ? nullptr : &plan); };
     if (empty) {
         plan.count = 0;
@@ -272,6 +279,14 @@ extern "C" [[noreturn]] void __wrap___xos_glibc_start(const startup_info* startu
     interpreter.owner = &frame->record.files;
     if (!close_pin(interpreter) || !close_pin(app)) { fail("close private pins"); }
     auto** stack = reinterpret_cast<void**>(frame->stack.words);
+    const u32 before_attach = frame->record.files.request_sequence;
+    frame->record.heap = {};
+    if (attach_on_entry_stack(stack, &bound_images, &view) != EINVAL
+        || frame->record.files.request_sequence != before_attach || view.record != nullptr) {
+        fail("missing heap plan at interpreter entry");
+    }
+    frame->record.heap = heap_plan;
+    sdk::print("D1_RTLD_HEAP_PLAN_REQUIRED prepare=checked attach=checked\n");
     if (attach_on_entry_stack(stack, &bound_images, &view) != 0 || view.argc != startup->argc
         || view.record->main_entry != main_image.bias + main_image.entry
         || view.record->interpreter_entry != interpreter_image.bias + interpreter_image.entry

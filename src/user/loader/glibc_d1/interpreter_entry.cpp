@@ -79,7 +79,7 @@ interpreter_entry_result prepare_interpreter_entry(
         || allocations.main.start != 0 || allocations.main.bytes != 0
         || allocations.interpreter.start != 0 || allocations.interpreter.bytes != 0
         || allocations.early_heap.start != 0 || allocations.early_heap.bytes != 0
-        || (early_heap != nullptr && !xos_rtld_heap_plan_valid(early_heap))
+        || !xos_rtld_heap_plan_valid(early_heap)
         || (dependencies != nullptr && !xos_rtld_valid_pin_plan(dependencies))
         || &early_files == &frame.record.files || early_files.phase != xos_file_session_active) {
         return {interpreter_entry_error::layout, {}, 0};
@@ -98,19 +98,17 @@ interpreter_entry_result prepare_interpreter_entry(
     if (!build_entry_stack(startup, main.image, headers, interpreter.image, mode, entropy, frame.stack)) {
         return abandon(interpreter_entry_error::stack, scratch);
     }
-    if (early_heap != nullptr) {
-        const i64 reserved = sdk::vm_reserve(early_heap->base, early_heap->bytes, vm_page_size, true);
-        if (reserved >= 0) { scratch.early_heap = {static_cast<u64>(reserved), early_heap->bytes}; }
-        if (reserved != static_cast<i64>(early_heap->base)) {
-            return abandon(interpreter_entry_error::heap, scratch,
-                           {image_map_error::reserve, reserved < 0 ? reserved : vm_error_address, 0});
-        }
+    const i64 reserved = sdk::vm_reserve(early_heap->base, early_heap->bytes, vm_page_size, true);
+    if (reserved >= 0) { scratch.early_heap = {static_cast<u64>(reserved), early_heap->bytes}; }
+    if (reserved != static_cast<i64>(early_heap->base)) {
+        return abandon(interpreter_entry_error::heap, scratch,
+                       {image_map_error::reserve, reserved < 0 ? reserved : vm_error_address, 0});
     }
     if (__xos_file_session_take(&frame.record.files, &early_files) != 0) {
         return abandon(interpreter_entry_error::files, scratch);
     }
     copy_pin_plan(frame.record.dependencies, dependencies);
-    frame.record.heap = early_heap != nullptr ? *early_heap : xos_rtld_heap_plan{};
+    frame.record.heap = *early_heap;
     frame.record.version = XOS_D1_ENTRY_VERSION;
     frame.record.size = sizeof(frame.record);
     frame.record.main_phdr = main.image.bias + headers.address;

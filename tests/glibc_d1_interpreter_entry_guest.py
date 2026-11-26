@@ -159,6 +159,7 @@ def exercise(args, directory, inputs, report):
             report['output'] = result.decode(errors='replace')
             assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
             assert b'D1_INTERPRETER_STACK low=rejected below_min=rejected' in result, result
+            assert b'D1_RTLD_HEAP_PLAN_REQUIRED prepare=checked attach=checked' in result, result
             assert b'D1_RTLD_EARLY_HEAP_OK batches=2 rollback=clean rw_nx=checked' in result, result
             assert b'D1_RTLD_ENTRY_CLOSURE_OK soname=libhandoff.so' in result, result
             assert b'D1_INTERPRETER_ENTRY_RC=0' in result, result
@@ -173,6 +174,7 @@ def exercise(args, directory, inputs, report):
             result = command(guest, 'dash /tests/empty.sh', b'kind=exited code=', timeout=120)
             report['empty_output'] = result.decode(errors='replace')
             assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
+            assert b'D1_RTLD_HEAP_PLAN_REQUIRED prepare=checked attach=checked' in result, result
             assert b'D1_RTLD_EARLY_HEAP_OK batches=2 rollback=clean rw_nx=checked' in result, result
             assert b'D1_RTLD_ENTRY_EMPTY_OK no_requests' in result, result
             assert b'D1_INTERPRETER_ENTRY_RC=0' in result, result

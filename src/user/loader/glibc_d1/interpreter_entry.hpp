@@ -26,13 +26,13 @@ struct interpreter_entry_result {
 // Supply fresh storage on the native stack before threads or user callbacks.
 // The first stack word must leave XOS_D1_STACK_GROWTH_BYTES below it.
 // Success consumes the bootstrap session into frame.record.files and transfers
-// the live reservations to the caller. A supplied heap is part of the
-// trusted closure's non-overlapping address layout and aggregate budget. Failures leave allocations empty. A
-// nonzero rollback result requires termination of the bootstrap process.
+// the live reservations to the caller. A valid early heap plan is required and
+// belongs to the trusted closure's non-overlapping layout and aggregate budget.
+// Failures leave allocations empty. A nonzero rollback result requires termination.
 interpreter_entry_result prepare_interpreter_entry(
     const startup_info* startup, const pinned_image& main, main_headers headers,
     const pinned_image& interpreter, execution_mode mode, entropy_source entropy,
     xos_file_session& early_files, xos_d1_entry_handoff& frame,
-    interpreter_allocations& allocations, const xos_rtld_pin_plan* dependencies = nullptr,
-    const xos_rtld_heap_plan* early_heap = nullptr);
+    interpreter_allocations& allocations, const xos_rtld_pin_plan* dependencies,
+    const xos_rtld_heap_plan* early_heap);
 }

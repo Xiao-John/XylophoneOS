@@ -17,6 +17,7 @@ long __xos_file_write (int, const void *, size_t) __attribute__ ((visibility ("h
 long __xos_file_seek (int, long, int) __attribute__ ((visibility ("hidden")));
 long __xos_file_stat (int, const char *, struct stat *) __attribute__ ((visibility ("hidden")));
 long __xos_file_getcwd (char *, size_t) __attribute__ ((visibility ("hidden")));
+long __xos_file_chdir (const char *) __attribute__ ((visibility ("hidden")));
 typedef bool (*xos_image_read) (void *, xos_u64, unsigned char *, xos_u32);
 typedef long (*xos_image_inspect) (xos_image_read, void *, xos_u64);
 long __xos_file_access (const char *, int, xos_image_inspect) __attribute__ ((visibility ("hidden")));
@@ -26,6 +27,12 @@ long __xos_file_path_op (const char *, int) __attribute__ ((visibility ("hidden"
 long __xos_file_truncate (int, long) __attribute__ ((visibility ("hidden")));
 long __xos_file_sync (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_isatty (int) __attribute__ ((visibility ("hidden")));
+long __xos_file_service_error (int) __attribute__ ((visibility ("hidden")));
+
+/* Keep the native stdio routes and cwd stable until loader commit or abort. */
+struct xos_spawn_stdio { int object[3], route[3]; };
+long __xos_file_spawn_begin (struct xos_spawn_stdio *) __attribute__ ((visibility ("hidden")));
+void __xos_file_spawn_end (struct xos_spawn_stdio *) __attribute__ ((visibility ("hidden")));
 
 /* Internal users retain an open description, never a reusable FD number.
    access is -1 for metadata, 0 for reading or 1 for writing. */

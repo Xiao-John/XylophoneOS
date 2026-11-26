@@ -84,6 +84,12 @@ def build(args):
 
     out = args.output
     out.mkdir(parents=True, exist_ok=False)
+    fixture_relative = Path('tests/fixtures/webkit/html_tokenizer/probe.cpp')
+    fixture_input = (root / fixture_relative).read_bytes()
+    fixture_sha = sha256(fixture_input).hexdigest()
+    sample_sha = digest(root / fixture_relative.with_name('page.html'))
+    fixture = out / 'probe.cpp'
+    fixture.write_bytes(fixture_input)
     source, icu_prefix, derived, headers, drivers, objects = (
         out / name for name in ('source', 'icu', 'derived', 'headers', 'drivers', 'objects'))
     for directory in (source, icu_prefix, derived, headers / 'JavaScriptCore', headers / 'WebCore',
@@ -136,7 +142,6 @@ def build(args):
                        webcore / 'html/HTMLAttributeNames.in', '--elements', webcore / 'html/HTMLTagNames.in'])
     defaults = derived / 'html_parser_defaults.cpp'
     extract_default_constructor(webcore, defaults)
-    fixture = root / 'tests/fixtures/webkit/html_tokenizer/probe.cpp'
     sources = [html / name for name in ('HTMLTokenizer.cpp', 'HTMLEntityParser.cpp', 'HTMLEntitySearch.cpp')]
     sources.extend((webcore / 'platform/text/SegmentedString.cpp', derived / 'HTMLEntityTable.cpp', defaults, fixture))
     includes = [derived, headers, webcore, webcore / 'html', html, webcore / 'dom', webcore / 'css/parser',
@@ -159,19 +164,22 @@ def build(args):
                  args.jsc_layout / 'lib/libbmalloc.a', *(icu_prefix / name for name in icu['artifacts']),
                  '-Wl,--end-group', '-o', executable])
     verify_elf(executable)
+    require_digest(fixture, fixture_sha)
     require_digest(args.archive, upstream['sha256'])
     require_digest(args.icu_archive, icu['archive_sha256'])
     verify_layout(args.jsc_layout, locked['jsc_layout'])
     if verify_profile(profile, 'glibc', args.sdk_build) != binding:
         raise ValueError('SDK inputs changed during the tokenizer build')
+    input_sources = {p.relative_to(out).as_posix(): digest(p) for p in sources if p != fixture}
+    input_sources[fixture_relative.as_posix()] = fixture_sha
     receipt = {'status': 'target_webcore_html_tokenizer_linked', 'builder_sha256': digest(Path(__file__)),
                'input_lock_sha256': digest(lock_path), 'source_lock_sha256': digest(webkit_lock),
                'webkit_archive_sha256': upstream['sha256'], 'icu_archive_sha256': icu['archive_sha256'],
                'sdk_manifest_sha256': sdk_digest, 'profile_binding': binding, 'driver_sha256': digest(driver),
-               'fixture_sha256': digest(fixture), 'sample_sha256': digest(fixture.parent / 'page.html'),
+               'fixture_sha256': fixture_sha, 'sample_sha256': sample_sha,
                'target_tools': {name: item['sha256'] for name, item in tools.items()},
-               'input_sources': {p.relative_to(root if p == fixture else out).as_posix(): digest(p) for p in sources},
-               'artifacts': {p.relative_to(out).as_posix(): digest(p) for p in (*compiled, selected, executable)}}
+               'input_sources': input_sources,
+               'artifacts': {p.relative_to(out).as_posix(): digest(p) for p in (*compiled, selected, executable, fixture)}}
     (out / 'manifest.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
 
 

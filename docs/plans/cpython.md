@@ -10,6 +10,37 @@ input/存档，以及PY3 A1–A3与B1–B4按各自输入已有专项证据；�
 [用户态摘要](../history/userland.md)。具体构建参数、source lock与patch以
 [端口入口](../../src/ports/cpython/README.md)为准，不从“最新cache”猜产物。
 
+## glibc 静态候选构建
+
+`scripts/build_cpython.py` 通过显式 `--glibc-profile` 选择静态 glibc C SDK。
+`--sdk` 指向同时包含 `manifest.json`、源码核验材料和 `sysroot/` 的 SDK
+构建目录。使用候选 profile 时单独指定一个新输出目录。普通 newlib 参数继续
+使用原有缓存和产物路径。
+
+```sh
+python3 scripts/create_xypm_profile.py create --runtime-family glibc \
+  --sdk-build path/to/glibc-build --id xos-x86_64-glibc-static-cpython-g4-v1 \
+  --output build/cpython-glibc-profile.json
+
+python3 scripts/build_cpython.py --archive path/to/Python-3.14.9.tar.xz \
+  --sdk path/to/glibc-build --glibc-profile build/cpython-glibc-profile.json \
+  --output-dir build/cpython-glibc --build-python path/to/host/python3.14 \
+  --compile-probe
+
+python3 tests/cpython_glibc_guest.py --system-build build/system \
+  --cpython-build build/cpython-glibc --archive path/to/Python-3.14.9.tar.xz \
+  --sdk path/to/glibc-build --glibc-profile build/cpython-glibc-profile.json \
+  --output build/cpython-glibc-guest
+```
+
+宿主 CPython 必须是可运行的 3.14.9，并可访问其标准库。省略
+`--build-python` 时构建同版本宿主解释器。省略 `--compile-probe` 时仅配置。
+输出 `py0a_report.json` 绑定源码、官方签名核验过的 glibc SDK、profile、
+编译工具和实际解释器 ELF。现有普通系统镜像用 `scripts/build.py` 构建。
+
+本候选覆盖静态解释器核心。动态扩展、Pillow、zlib、SQLite、额外压缩库、
+全量标准库和交互 REPL 需要各自的资格。glibc 候选命令拒绝旧的外部扩展参数。
+
 ## 安装与运行契约
 
 - stage/manifest逐文件记录大小/摘要，解释器在/usr/bin/python3，库在/usr/lib/python3.14，

@@ -1,0 +1,23 @@
+{
+  "status": "failed",
+  "build_id": "f2d901b42f4bb8c1",
+  "manifest_sha256": "ea0ad4568a954e9f3cfb57b9ce9200a8189e5e79bae4f7daf53767999b5d1a3b",
+  "artifacts": {
+    "xos-install.iso": "e9481ad6977d0b9e4da52786cb5972c4d419f9d3868ae0aff58fb64aa22994da",
+    "user_files.image.elf": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+    "user_supervisor.image.elf": "96be3ac837f9a03a62d35b354ddc7b2fb9b68019761e845aee0a77f5ed991bc8",
+    "user_pumpkin_durable.image.elf": "fc0fc68a5c51066f07c88284de92b5c95f7882755344fd7c7d59a4cfa8c1cfa0",
+    "user_p2_anchor_proxy.image.elf": "372d0a8647860c101c6352bbfea9d92e87849aef72ba97f3a1475f3fe7188786",
+    "user_pumpkin_holder.image.elf": "6e1130b612ba3945896749be666afd0b407b04e98e1407ea2e4abe17b554f021",
+    "user_display.image.elf": "54112103d93679f2c6dd1548d16179b05140185563055f71ca8820f85bc5c45d",
+    "user_interactiumd.image.elf": "2e5ce80bf6f06353248328ce0c27e4dac04849a435692bbe983904dff79a84e1"
+  },
+  "mobius": {
+    "sha256": "9fdacb77d2dc935a83150d68f6275cc355f50cd3c8b693b7eb2e7529a612a413",
+    "bytes": 32670232
+  },
+  "runner_sha256": "17046eccee6387f0a8e62b75f4920c7d7e01c087d88ba1027231d4a70d827897",
+  "operator_sha256": "d40d80b837fc876281f2be7aafe1f93f29a7fdb6323d576746f641fc533cc0c3",
+  "checks": [],
+  "qemu_version": "QEMU emulator version 11.1.2"
+}

@@ -1,0 +1,282 @@
+{
+  "status": "passed_subset",
+  "build_id": "7dce547d94f7222f",
+  "frames": [
+    [
+      0.427,
+      "host",
+      "PKA1",
+      1,
+      14,
+      0
+    ],
+    [
+      0.944,
+      "guest",
+      "PKO1",
+      14,
+      0,
+      1
+    ],
+    [
+      0.944,
+      "host",
+      "PKO1",
+      14,
+      0,
+      1
+    ],
+    [
+      1.49,
+      "guest",
+      "PKA1",
+      2,
+      0,
+      1
+    ],
+    [
+      1.49,
+      "host",
+      "PKA1",
+      2,
+      0,
+      1
+    ],
+    [
+      2.051,
+      "guest",
+      "PKU1",
+      2,
+      0,
+      1
+    ],
+    [
+      2.051,
+      "host",
+      "PKU1",
+      2,
+      0,
+      1
+    ],
+    [
+      17.609,
+      "guest",
+      "PKD1",
+      14,
+      0,
+      1
+    ],
+    [
+      17.609,
+      "host",
+      "PKD1",
+      14,
+      0,
+      1
+    ],
+    [
+      18.629,
+      "guest",
+      "PKD1",
+      14,
+      0,
+      2
+    ],
+    [
+      18.629,
+      "host",
+      "PKD1",
+      14,
+      0,
+      2
+    ],
+    [
+      19.63,
+      "guest",
+      "PKD1",
+      14,
+      0,
+      3
+    ],
+    [
+      19.63,
+      "host",
+      "PKD1",
+      14,
+      0,
+      3
+    ],
+    [
+      20.539,
+      "guest",
+      "PKA1",
+      4,
+      1,
+      2
+    ],
+    [
+      20.539,
+      "host",
+      "PKA1",
+      4,
+      0,
+      2
+    ]
+  ],
+  "video_runtime": [
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 0,
+      "display_service_pid": 0,
+      "display_focus_pid": 0,
+      "task_pids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "supervisor_user_pages": 102,
+      "current_pid": 0,
+      "rip": "0000000000122f20",
+      "since_boot": 0.222,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 0,
+      "display_service_pid": 0,
+      "display_focus_pid": 0,
+      "since_boot": 2.233,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 4.242,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        0,
+        7,
+        8
+      ],
+      "supervisor_user_pages": 8079,
+      "current_pid": 7,
+      "rip": "000000004000079c",
+      "since_boot": 6.264,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 8.274,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 10.289,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        0,
+        7,
+        8
+      ],
+      "supervisor_user_pages": 8079,
+      "current_pid": 13,
+      "rip": "000000004000ef00",
+      "since_boot": 12.31,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 14.324,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 16.332,
+      "ppm_sha256": "c3b3d73f6bbb08ab3fa3dfa65d01f89916ba25d37a4f5fbd8cd2202edaa58077"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "task_pids": [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        7,
+        8
+      ],
+      "supervisor_user_pages": 102,
+      "current_pid": 14,
+      "rip": "0000000040373500",
+      "since_boot": 18.353,
+      "ppm_sha256": "de979b184769a3a38878025dea4e22ab655d9e1eac1d8056ad8f7257f4122032"
+    },
+    {
+      "display_presented": 0,
+      "display_delivered": 0,
+      "display_client_pid": 13,
+      "display_service_pid": 12,
+      "display_focus_pid": 13,
+      "since_boot": 20.367,
+      "ppm_sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+    }
+  ],
+  "qemu_exits": [
+    0
+  ]
+}

@@ -14,6 +14,14 @@ struct xos_rtld_startup
 #ifdef __cplusplus
 extern "C" {
 #endif
+typedef void (*xos_rtld_dl_main) (const Elf64_Phdr *, Elf64_Word, Elf64_Addr *,
+                                 Elf64_auxv_t *);
+
+/* The file phase must remain live throughout the GNU callback and its
+   later runtime handoff. */
+extern struct xos_rtld_images __xos_rtld_start_images
+  __attribute__ ((visibility ("hidden")));
+
 /* Called after rtld self-relocation while its RELRO remains writable.
    On success images stays live until the file phase is finished. */
 int __xos_rtld_prepare_sysdep_start (void **, struct xos_rtld_images *,

@@ -34,8 +34,9 @@ python3 -B relink.py relink --materials . --output "$MODIFIED_OUTPUT" \
   保存原套件的许可文本和所有三个源锁。材料清单标明 Qt Declarative 的源码形态。
 - `locked_upstream_archive` 对应直接校验原始 Qt Declarative 归档。`observed_patched_source_tree`
   保存实际用于构建目标 Qt Declarative 的完整已修改源树。它与可搬移套件中的 QtQml、
-  QtQuick 目标归档同时绑定。源码锁中的上游归档摘要仍保留为历史输入标识，接收者应从
-  清单的源码形态区分两个摘要。
+  QtQuick 目标归档同时绑定。官方原始归档的 SHA-256 已与仓库源锁交叉核对。对它应用
+  仓库里的两份补丁并加入 allocator 后，新树的 53,154 个普通文件与该观察源树逐字节
+  相同。两份归档的摘要各自记录在材料清单与原始源码对照中。
 - `recipes/xos/` 包含 XOS Qt 补丁、编译辅助工具、QPA 源码、接口头和已记录的构建配方。
   `recipes/build_record.json` 保存观察到的 Release、静态构建和 Qt 功能开关。相对路径
   以该目录中复刻的 XOS 布局为准，宿主和目标输出目录可以重新选择。
@@ -52,11 +53,43 @@ XOS Interactium QPA。最后使用同版 Qt Declarative 宿主工具和目标 Qt
 观察源码形态已包含这些改动。原有 Qt Quick 外部样例工作记录列出了目标模块安装和
 CMake 插件索引的步骤。`recipes/application/` 保存可由接收者修改的外部示例源码。
 
+## 从原始 Qt Declarative 归档复编
+
+在 Linux arm64 上准备既有可搬移开发套件和其中 C/C++ SDK 绑定的目标工具。运行入口从
+源锁核对上游归档，应用 XOS QV4 补丁和 allocator，再用开发套件已有的 QtBase、宿主
+生成器及 SDK 静态构建 QtQml 和 QtQuick。CMake 及 Ninja 在 `PATH` 中可用。源码与构建
+目录须采用 Linux 文件系统。Docker Desktop 传入 macOS 文件共享目录时，`syncqt` 的头文件
+移动失败。低内存环境可以限制并行数。
+
+```sh
+python3 -B src/ports/qt6/quick/rebuild_declarative.py --kit "$KIT" \
+  --source-archive "$DECLARATIVE_RELEASE" --output "$REBUILD" --jobs 1
+```
+
+输出包括 `build/lib/libQt6Qml.a`、`build/lib/libQt6Quick.a`、编译记录和回执。按
+`relink.py --replace` 将重编译的归档用于示例应用。生成绑定时同时核对套件、SDK、工具与
+补丁摘要。QtBase 及宿主工具的独立复编路径仍按前述配方执行。
+[Qt 官方原始归档摘要](https://download.qt.io/archive/qt/6.8/6.8.3/submodules/qtdeclarative-everywhere-src-6.8.3.tar.xz.sha256)
+
+## 独立 glibc C/C++ SDK 材料
+
+在 XOS Git 工作树从专门入口整理开发套件所用 SDK 的对应源。配方复用已有签名验证报告、
+glibc 2.44 和 GCC 16.2.0 官方归档，另从 `bac10c6d` 恢复并核对旧 SDK 的 256 个 XOS
+构建输入。SDK manifest 和 profile 需要与此套件一致。其他候选的原始上游归档在摘要相同时
+可复用。两个 SDK 的 manifest 或 profile 不同代表不同二进制构建。
+
+```sh
+python3 -B src/ports/qt6/quick/stage_sdk_sources.py --kit "$KIT" \
+  --glibc-source "$GLIBC_RELEASE" --gcc-source "$GCC_RELEASE" \
+  --sdk-revision bac10c6d08bbc454e4068360e04e3058efd14855 --output "$SDK_SOURCES"
+```
+
 ## 发行范围
 
-此材料覆盖 Qt 源码、修改、许可材料及本外部应用的静态重链接。当前 kit 的宿主工具
-许可判定、逐静态成员 SPDX 表达式、独立 C/C++ SDK 对应源、以及最终产品的安装信息和
-发布方式需要按实际发行组成各自核对。`notices/runtime/` 标识此次链接采用的 SDK 清单
-与 profile。各应用分发需要自己的应用对象或源码及重链接材料。
+此材料覆盖 Qt 源码、修改、来源与声明记录，以及本外部应用的静态重链接。目标静态库的
+直接编译文本与 Qt 组件归属已登记。生成资源与生成代码的传递许可、宿主静态归档内部组成、
+SDK 继承的工具链 seed 重建、最终产品的安装信息和发布方式仍按发行组成核对。
+`notices/runtime/` 标识此次链接采用的 SDK 清单与 profile。各应用分发需要自己的应用对象
+或源码及重链接材料。
 [Qt 6.8 许可说明](https://doc.qt.io/qt-6.8/licensing.html) ·
 [GNU LGPLv3 §4](https://www.gnu.org/licenses/lgpl-3.0.html)

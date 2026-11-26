@@ -2035,6 +2035,8 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
         if (!resolved_path) { reply(out, in, resolved.error); break; }
         const char* path = resolved.path;
         if (resolved.leaf[0] == '\0') { reply(out, in, status::invalid); break; }
+        if (directory_only && is_dev_directory(path)) { reply(out, in, status::not_empty); break; }
+        if (directory_only && is_null_device(path)) { reply(out, in, status::not_directory); break; }
         if (staging_active && refresh_staging_path() && same_path_object(staging_path, path)) {
             reply(out, in, status::busy); break;
         }
@@ -2060,7 +2062,9 @@ void handle(const request& in, response& out, client_session& session, u32 sessi
     case op::mkdir: {
         path_reference resolved;
         if (!directory_mutation_path(in, session, resolved, true)) { reply(out, in, resolved.error); break; }
-        if (resolved.leaf[0] == '\0') { reply(out, in, status::exists); break; }
+        if (resolved.leaf[0] == '\0' || is_dev_directory(resolved.path) || is_null_device(resolved.path)) {
+            reply(out, in, status::exists); break;
+        }
         reply(out, in, from_fr(f_mkdir(resolved.path)));
         break;
     }

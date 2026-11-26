@@ -26,6 +26,12 @@ int main (void)
   if (fd < 0 || read (fd, data, sizeof (data)) != 13 || close (fd) != 0
       || strcmp (data, "path mutation") != 0) return 9;
   if (unlink ("output") != 0 || chdir ("/") != 0 || rmdir ("/mutation") != 0) return 10;
+  errno = 0;
+  if (rmdir ("/dev/") != -1 || errno != ENOTEMPTY) return 11;
+  errno = 0;
+  if (rmdir ("/dev/null") != -1 || errno != ENOTDIR) return 12;
+  errno = 0;
+  if (mkdir ("/dev/", 0755) != -1 || errno != EEXIST) return 13;
   puts ("GLIBC_PATH_MUTATION_PASS");
   return 0;
 }

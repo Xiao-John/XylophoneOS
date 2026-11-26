@@ -173,6 +173,9 @@ def service_death(build, program, output, report):
             disk = Path(temporary) / 'work.img'
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
+            if args.suite in ('path-mutations', 'all'):
+                # An empty FAT directory must not shadow the virtual device namespace.
+                transfer(disk, 'mkdir', '/dev')
             transfer(disk, 'import', '/bin/g3_files', program)
             guest = Guest(build / 'xos-install.iso', 'glibc_files_death',
                           work_disk=disk, iso=True, qmp_enabled=False)

@@ -32,3 +32,9 @@ python3 tests/abi_doc_consistency.py
 创建不存在的带斜杠目录、清除空目录、拒绝普通文件与非空目录均经过实测。
 ISO SHA-256 为 `cacd4eb16297edf9f1111ba0782f99b2682dd7dae76055ef0a7131e13eb95376`，
 回执为 `36d950dd707a180925f05caa665512ddb98268d822bbb8037aac2cde92c239f0`。
+
+虚拟 `/dev` 与 `/dev/null` 在目录变更时沿用现有虚拟命名空间。
+实际工作盘预置空 FAT `dev` 目录，客体三次均拒绝删除虚拟目录和设备，
+并识别已有的虚拟目录。系统 `805d0237a18c3de2` 的 ISO 为
+`7102a81608d04f757be5ef9644138e3849aae37e53d00caa291f855d07551160`，
+QEMU 回执为 `17ec814e631d362db9f002f33cdf90026b7eb013401b482e8deb6ab825bbf05c`。

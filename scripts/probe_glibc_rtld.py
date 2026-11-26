@@ -29,6 +29,12 @@ SYSDEP_INVOCATION_LEAVES = (
     ('nptl', ('lowlevellock', 'xos_lll_futex', 'xos_wait_word')),
     ('csu', ('errno',)),
 )
+LIBC_HANDOFF_COPIES = ('memcpy', 'memmove', 'memset', 'strlen', 'wordcopy')
+LIBC_HANDOFF_COMPONENT_OBJECTS = (
+    'io/xos_file_runtime.os', 'io/xos_file_session.os', 'io/read.os', 'io/close.os',
+    'csu/errno.os', 'csu/errno-loc.os', 'nptl/xos_wait_word.os',
+    'io/d1-handoff-sequence.os', *(f'io/d1-handoff-{name}.os' for name in LIBC_HANDOFF_COPIES),
+)
 
 
 def main():
@@ -46,7 +52,10 @@ def main():
                         help='compile the GNU startup state fixture and its actual environment storage')
     parser.add_argument('--sysdep-invocation-fixture', action='store_true',
                         help='compile the GNU startup callback observer and actual GNU CPU/tunables support')
+    parser.add_argument('--libc-handoff-fixture', action='store_true',
+                        help='compile the GNU shared G3 file component and real version lookup')
     args = parser.parse_args()
+    args.gnu_relocation_fixture |= args.libc_handoff_fixture
     archive = args.archive.resolve(strict=True)
     output = args.output.resolve()
     output.mkdir(parents=True)
@@ -153,7 +162,9 @@ def main():
         rtld_allocator = build / 'elf/dl-minimal-malloc.os'
         rtld_startup = build / 'elf/xos_rtld_sysdep_start.os'
         rtld_invoke = build / 'elf/xos_rtld_sysdep_invoke.os'
-        for path in (rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator, rtld_startup, rtld_invoke):
+        rtld_handoff = build / 'elf/xos_rtld_libc_handoff.os'
+        for path in (rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator, rtld_startup,
+                     rtld_invoke, rtld_handoff):
             _, compilation = run('make_' + path.name, [*make_elf, path])
             if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
                        and line.split()[0].endswith('/cc') for line in compilation.splitlines()
@@ -195,6 +206,11 @@ def main():
                     ' U __GI___tunables_init', ' U _dl_sort_maps_init',
                     ' U _dl_x86_init_cpu_features')):
             raise RuntimeError('native startup invocation omitted GNU initialization or validated entry state')
+        _, handoff_references = run('native_libc_handoff_symbols', [env['NM'], rtld_handoff])
+        if not all(name in handoff_references for name in
+                   (' T _dl_sysdep_start_cleanup', ' U _dl_lookup_direct', ' U __xos_rtld_finish_images',
+                    ' U __rtld_malloc_is_complete', ' U __xos_rtld_heap_deadline', ' U __xos_rtld_heap_seal')):
+            raise RuntimeError('native startup cleanup did not bind version lookup, pins and allocator')
 
         failure, reason = run('make_dl_sysdep', [*make_elf, build / 'elf/dl-sysdep.os'], allow_failure=True)
         if not failure or 'error: #error "XOS dynamic interpreter startup is not implemented"' not in reason:
@@ -230,6 +246,8 @@ def main():
                 leaf_support.extend((('string', ('stpcpy', 'strcmp', 'memcmp')),
                                      ('misc', ('mprotect',)), ('csu', ('errno',)),
                                      ('nptl', ('lowlevellock', 'xos_lll_futex', 'xos_wait_word'))))
+            if args.libc_handoff_fixture:
+                leaf_support.append(('string', ('strncmp',)))
             for name in support:
                 path = build / 'elf' / name
                 _, compilation = run('make_' + name, [*make_elf, path])
@@ -276,6 +294,48 @@ def main():
                     raise RuntimeError('GNU startup support did not compile as rtld: ' + name)
                 tls_objects.append(path)
 
+        if args.libc_handoff_fixture:
+            for name in ('dl-lookup-direct.os', 'dl-version.os'):
+                path = build / 'elf' / name
+                _, compilation = run('make_' + name, [*make_elf, path])
+                if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
+                           for line in compilation.splitlines()):
+                    raise RuntimeError('GNU version handling did not compile as rtld: ' + name)
+                tls_objects.append(path)
+            version_map = build / 'libc.map'
+            version_text = version_map.read_text()
+            private_version = version_text.partition('GLIBC_PRIVATE {')[2].partition('}')[0]
+            if '__xos_file_adopt_startup;' not in private_version:
+                raise RuntimeError('GNU libc version map has no private file startup receiver')
+            tls_objects.append(version_map)
+            for relative in LIBC_HANDOFF_COMPONENT_OBJECTS[:4] + ('nptl/xos_wait_word.os',):
+                path = build / relative
+                log = 'make_libc_' + path.name
+                _, compilation = run(log, ['make', '-C', source / path.parent.name, 'objdir=' + str(build),
+                                            '-j' + str(args.jobs), path])
+                if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=libc'} <= set(line.split())
+                           for line in compilation.splitlines()):
+                    raise RuntimeError('GNU component did not compile as shared libc: ' + relative)
+                tls_objects.append(path)
+            command, = (shlex.split(line) for line in
+                        (output / 'make_libc_xos_file_runtime.os.log').read_text().splitlines()
+                        if line.startswith(env['CC'] + ' '))
+            if Path(command[1]).name != 'xos_file_runtime.c':
+                raise RuntimeError('cannot identify GNU shared libc compiler flags')
+            sequence = ROOT / 'tests/fixtures/glibc_d1/libc_handoff_sequence.c'
+            report['libc_handoff_sequence_sha256'] = sha(sequence)
+            # These real generic GNU string leaves keep the component proof
+            # independent of shared libc's separate x86 cacheinfo IFUNC.
+            leaves = [('sequence', sequence),
+                      *((name, source / 'string' / (name + '.c')) for name in LIBC_HANDOFF_COPIES)]
+            for name, body in leaves:
+                path = build / 'io' / ('d1-handoff-' + name + '.os')
+                command[1] = body
+                command[command.index('-o') + 1] = path
+                run('compile_libc_handoff_' + name, [*command[:command.index('-MD')], '-Werror'],
+                    cwd=source / 'io')
+                tls_objects.append(path)
+
         if args.native_sysdep_fixture or args.sysdep_invocation_fixture:
             leaves = [('posix', 'environ')]
             if not args.gnu_relocation_fixture:
@@ -302,7 +362,8 @@ def main():
                 (args.closure_tls_fixture, 'closure_tls', 'closure_tls_runtime.c'),
                 (args.gnu_relocation_fixture, 'gnu_relocation', 'relocation_runtime.c'),
                 (args.native_sysdep_fixture, 'native_sysdep', 'sysdep_start_state.c'),
-                (args.sysdep_invocation_fixture, 'sysdep_invocation', 'sysdep_start_state.c')):
+                (args.sysdep_invocation_fixture, 'sysdep_invocation', 'sysdep_start_state.c'),
+                (args.libc_handoff_fixture, 'libc_handoff', 'libc_handoff_runtime.c')):
             if not requested:
                 continue
             fixture_source = ROOT / 'tests/fixtures/glibc_d1' / name
@@ -336,7 +397,7 @@ def main():
         report.update(status='rtld_entry_compiled_startup_blocked', artifacts={
             str(path.relative_to(output)): sha(path) for path in
             (entry, native_entry, rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator,
-             rtld_startup, rtld_invoke, *tls_objects)})
+             rtld_startup, rtld_invoke, rtld_handoff, *tls_objects)})
     except Exception as error:
         report['error'] = str(error)
         raise

@@ -9,9 +9,14 @@ import tempfile
 
 
 root = Path(__file__).resolve().parents[1]
-sources = [root / "src/user/pumpkin" / name for name in
-           ("account_store.cpp", "service_core.cpp", "daemon_protocol.cpp")]
-fixture = root / "tests/fixtures/pumpkin/service_core_host.cpp"
+module = root / "src/user/pumpkin"
+core_sources = [module / name for name in ("account_store.cpp", "service_core.cpp")]
+protocol_source = module / "daemon_protocol.cpp"
+publication_source = module / "snapshot_publication.cpp"
+fixtures = [
+    ("pumpkin_core_host", "service_core_host.cpp", [*core_sources, protocol_source]),
+    ("pumpkin_publication_host", "snapshot_publication_host.cpp", [*core_sources, publication_source]),
+]
 common = ["-std=c++20", "-Wall", "-Wextra", "-Werror",
           "-I", str(root / "src/shared/include"), "-I", str(root / "src/user/include"),
           "-I", str(root / "src/user")]
@@ -23,14 +28,16 @@ def run(options, output):
     if options.sanitize:
         optimization = ["-O1", "-g", "-fsanitize=address,undefined", "-fno-sanitize-recover=all",
                         "-fno-omit-frame-pointer"]
-    executable = output / "pumpkin_core_host"
-    subprocess.run([options.cxx, *common, *optimization, *sources, fixture,
-                    "-o", executable], check=True, timeout=60)
-    subprocess.run([executable], check=True, timeout=30)
+    for program, fixture, program_sources in fixtures:
+        executable = output / program
+        subprocess.run([options.cxx, *common, *optimization, *program_sources,
+                        root / "tests/fixtures/pumpkin" / fixture, "-o", executable],
+                       check=True, timeout=60)
+        subprocess.run([executable], check=True, timeout=30)
     if options.target_cxx:
         target = ["-O2", "-ffreestanding", "-fno-exceptions", "-fno-rtti", "-nostdinc++",
                   "-mno-red-zone", "-fstack-usage"]
-        for source in sources:
+        for source in [*core_sources, protocol_source, publication_source]:
             subprocess.run([options.target_cxx, *common, *target, "-c", source,
                             "-o", output / (source.stem + ".o")], check=True, timeout=60)
         print("PASS freestanding x86-64 object compilation", flush=True)

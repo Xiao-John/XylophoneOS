@@ -13,7 +13,7 @@ from lwip_service_build import build as build_lwip_service
 
 
 def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=False,
-                ncurses_supervisor_probe=False, glibc_files_death_probe=False):
+                ncurses_supervisor_probe=False, glibc_files_death_probe=False, files_private_storage_probe=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -73,17 +73,18 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     core_archive.parent.mkdir(exist_ok=True)
     run([tool("ar"), "rcsD", str(core_archive), thread_core])
     capture.archive(core_archive)
-    def compile_fatfs(source):
+    def compile_fatfs(source, extra=()):
         object_name = str(source.relative_to(root)).replace("\\", "_").replace("/", "_")
         obj = build / (object_name + ".o")
-        run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, "-Os", "-w",
+        run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, "-Os", "-w", *extra,
              "-I", str(sdk / "include"), "-I", str(root / "src/third_party/fatfs"),
              "-ffile-prefix-map=" + str(root) + "=.",
              "-c", str(source), "-o", str(obj)])
         return str(obj)
 
+    private_storage_flags = ("-DXOS_FILES_PRIVATE_STORAGE_PROBE=1",) if files_private_storage_probe else ()
     fatfs_objects = [compile_fatfs(root / "src/third_party/fatfs/ff.c"),
-                     compile_fatfs(root / "src/user/services/fatfs_diskio.cpp"),
+                     compile_fatfs(root / "src/user/services/fatfs_diskio.cpp", private_storage_flags),
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
     # The bundle installer grew this translation unit; keep -Os so the
     # file-backed install ISO stays within its size budget.
@@ -142,6 +143,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             extra_flags += ("-Os",)
         if name == "files" and glibc_files_death_probe:
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
+        if name == "files":
+            extra_flags += private_storage_flags
         if name == "net_service":
             extra_flags += ("-Os", "-ffunction-sections", "-fdata-sections")
             if net_configuration["enabled"]:

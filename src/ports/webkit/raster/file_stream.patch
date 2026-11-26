@@ -1,0 +1,58 @@
+--- a/src/ports/SkOSFile_posix.cpp
++++ b/src/ports/SkOSFile_posix.cpp
+@@ -10,6 +10,10 @@
+ #include "include/private/SkTFitsIn.h"
+ #include "include/private/SkTemplates.h"
+ #include "src/core/SkOSFile.h"
++
++#if defined(__XOS__)
++#include <errno.h>
++#endif
+
+ #include <dirent.h>
+ #include <new>
+@@ -121,11 +125,44 @@
+     if (fd < 0) {
+         return SIZE_MAX;
+     }
++#if defined(__XOS__)
++    if (!SkTFitsIn<ssize_t>(count)) {
++        errno = EINVAL;
++        return SIZE_MAX;
++    }
++
++    // One XOS request may return a short success before EOF. Fill the
++    // requested range without changing the shared file position.
++    size_t done = 0;
++    do {
++        if (done > SIZE_MAX - offset || !SkTFitsIn<off_t>(offset + done)) {
++            errno = EOVERFLOW;
++            return done == 0 ? SIZE_MAX : done;
++        }
++        auto* destination = static_cast<char*>(buffer);
++        if (done != 0) {
++            destination += done;
++        }
++        ssize_t bytesRead;
++        do {
++            bytesRead = pread(fd, destination, count - done, static_cast<off_t>(offset + done));
++        } while (bytesRead < 0 && errno == EINTR);
++        if (bytesRead < 0) {
++            return done == 0 ? SIZE_MAX : done;
++        }
++        if (bytesRead == 0) {
++            break;
++        }
++        done += static_cast<size_t>(bytesRead);
++    } while (done < count);
++    return done;
++#else
+     ssize_t bytesRead = pread(fd, buffer, count, offset);
+     if (bytesRead < 0) {
+         return SIZE_MAX;
+     }
+     return bytesRead;
++#endif
+ }
+
+ ////////////////////////////////////////////////////////////////////////////

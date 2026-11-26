@@ -1,0 +1,58 @@
+{
+  "status": "passed_subset",
+  "build_id": "c8848035d68a24c2",
+  "iso_sha256": "05e66fd1d46e219e13e889097881ca5afe7fa1b330ffd3185f1984a02ecad3bd",
+  "system_manifest_sha256": "57010697c164d4261eb02c2e540d2bbfd09bea4445bf73dda5799f10a999d721",
+  "target_manifest_sha256": "813c355df6c3234c46959d9ef03c7205496077ca939876113683d1a93a871b42",
+  "runner_sha256": "22024ae6dc6facfaf44ced78be8ebd74406e2bc8820ed6de2d0b6d2a65940efb",
+  "guest_probe_sha256": "556d11c0a8d569659171803bc7ce2eb1f4ea6a552a74fdb535d734e6904c844f",
+  "file_stream": {
+    "probe_sha256": "92437bddfb0d44bd2ae4c9962043568109bde31ea3f051a546ae937f7731a596",
+    "font_sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+    "checks": [
+      {
+        "path": "/dejavu.ttf",
+        "exit_code": 0,
+        "markers": [
+          "XOS_SKIA_FILE_STREAM_PASS full=8192 tail=17 eof=0 offsets=preserved overflow=checked",
+          "XOS_SKIA_FAT_FONT_PASS glyphs=59,50,54 ink=275"
+        ],
+        "resources_after": [
+          129709,
+          3,
+          1
+        ]
+      },
+      {
+        "path": "/missing.ttf",
+        "exit_code": 3,
+        "markers": [
+          "XOS_SKIA_FAT_FONT_UNAVAILABLE"
+        ],
+        "resources_after": [
+          129709,
+          3,
+          1
+        ]
+      }
+    ]
+  },
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "resources_after": [
+    129709,
+    3,
+    1
+  ],
+  "sample": {
+    "width": 12,
+    "height": 10,
+    "background": "white",
+    "clipped": "blue",
+    "overlap": "red"
+  }
+}

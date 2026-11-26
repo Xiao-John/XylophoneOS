@@ -10,7 +10,7 @@ Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
 #endif
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
-    app.setApplicationName(QStringLiteral("Aurora"));
+    app.setApplicationName(QStringLiteral("Mobius"));
     app.setStyle(QStringLiteral("Fusion"));
     app.setFont(QFont(QStringLiteral("DejaVu Sans"), 10));
     Background desktop;

@@ -1,9 +1,9 @@
-# Aurora Browser local HTML/CSS and controlled HTTP prototype
+# ClarkE local HTML/CSS and controlled HTTP prototype
 
 2026-10-29. Application policy, not a new kernel ABI. The implementation uses the
 existing Qt 6.8.3 Widgets/QPA and `libXosAurora.a`, one fullscreen native window,
 and the real pinned liteHTML 0.9 layout engine with bundled Gumbo HTML parser.
-The engine is independent of the local-file provider and Aurora navigation shell.
+The engine is independent of the local-file provider and ClarkE navigation shell.
 No QtNetwork, WebEngine, fake socket/POSIX function or app-name privilege is added.
 
 ## Content and UI

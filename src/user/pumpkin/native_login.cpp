@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "native_login.hpp"
-#include "disk_test_store.hpp"
+#include "anchored_installation.hpp"
 #include "login_resource.hpp"
 #if XOS_PUMPKIN_USER_LOGIN
 #include "user_login.hpp"
@@ -528,7 +528,7 @@ int holder_main([[maybe_unused]] holder_mode mode) {
     delivery enrollment{};
     if (!receive(channel.pair, enrollment, deadline()) || enrollment.format != version ||
         enrollment.name_length == 0 || enrollment.name_length > name_limit || enrollment.daemon == 0 ||
-        enrollment.identity.scope != disk_test_realm || enrollment.identity.number == 0 ||
+        enrollment.identity.scope != anchored_installation_realm || enrollment.identity.number == 0 ||
         !has_bytes(enrollment.key.bytes, secret_bytes)) { return 11; }
     close_ipc(discovery.pair);
     delivery_closed closed{};

@@ -14,6 +14,7 @@ import sys
 from toolchain import LOCK, TARGET, COMMON_FLAGS, X86_FLAGS, audit, tool, output
 from user_build import build_users
 from lwip_service_build import configuration as network_configuration, load_static_profile
+from pumpkin_generation_provider import deployment_realm
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
@@ -66,6 +67,8 @@ def main():
                         help="exercise trusted credential delivery in the anchored developer profile")
     parser.add_argument("--pumpkin-user-login", action="store_true",
                         help="enable the private operator enrollment and login entry")
+    parser.add_argument("--pumpkin-deployment-realm",
+                        help="bind a unique installation realm to the explicit operator login image")
     parser.add_argument("--pumpkin-mobius-elf", type=Path,
                         help="bind the selected Mobius ELF into the private desktop login profile")
     parser.add_argument("--pumpkin-user-resource", action="store_true",
@@ -104,6 +107,14 @@ def main():
         parser.error("native Pumpkin login requires the anchored developer profile")
     if args.pumpkin_user_login and not args.pumpkin_native_login:
         parser.error("operator login requires the native Pumpkin developer profile")
+    deployment = {}
+    if args.pumpkin_deployment_realm is not None:
+        if not args.pumpkin_user_login:
+            parser.error("a Pumpkin deployment realm requires the private operator login profile")
+        try:
+            deployment = {"pumpkin_deployment_realm": deployment_realm(args.pumpkin_deployment_realm).hex()}
+        except ValueError as error:
+            parser.error(str(error))
     if args.pumpkin_mobius_elf is not None and not args.pumpkin_user_login:
         parser.error("Pumpkin Mobius requires the private operator login profile")
     if args.pumpkin_user_resource and not args.pumpkin_user_login:
@@ -202,7 +213,7 @@ def main():
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
                                       **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2}
                                          if args.pumpkin_user_login else {}),
-                                      **desktop_metadata,
+                                      **deployment, **desktop_metadata,
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
@@ -229,6 +240,7 @@ def main():
                                  pumpkin_anchored_probe=args.pumpkin_anchored_probe,
                                  pumpkin_native_login=args.pumpkin_native_login,
                                  pumpkin_user_login=args.pumpkin_user_login,
+                                 pumpkin_deployment_realm=deployment.get("pumpkin_deployment_realm"),
                                  pumpkin_mobius=bool(desktop_metadata),
                                  pumpkin_user_resource=args.pumpkin_user_resource,
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
@@ -390,7 +402,7 @@ def main():
         **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
         **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2} if args.pumpkin_user_login else {}),
-        **desktop_metadata,
+        **deployment, **desktop_metadata,
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),

@@ -4,6 +4,7 @@
 #include "files_slot_client.hpp"
 #endif
 #if XOS_PUMPKIN_ANCHORED_PROBE
+#include "anchored_installation.hpp"
 #include "generation_guest.hpp"
 #endif
 #if XOS_PUMPKIN_NATIVE_LOGIN
@@ -121,16 +122,16 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
             return 11;
         }
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
-        anchored_files_store storage(slots.io(), generation.io(), disk_test_realm, named_resource_codec());
-        named_resource_store names(storage.api(), disk_test_realm);
+        anchored_files_store storage(slots.io(), generation.io(), anchored_installation_realm, named_resource_codec());
+        named_resource_store names(storage.api(), anchored_installation_realm);
         auto* named = &names;
         const auto store = names.accounts();
 #else
-        anchored_files_store storage(slots.io(), generation.io(), disk_test_realm);
+        anchored_files_store storage(slots.io(), generation.io(), anchored_installation_realm);
         named_resource_store* named = nullptr;
         const auto store = storage.api();
 #endif
-        if (anchor_initialize && provision_store(store, disk_test_realm) != status::ok) {
+        if (anchor_initialize && provision_store(store, anchored_installation_realm) != status::ok) {
             return 11;
         }
         struct live_backends {
@@ -150,7 +151,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
 #else
         resource_bridge* bridge = nullptr;
 #endif
-        return serve_with_parent(store, disk_test_realm, entropy, args[2], disk_test_service,
+        return serve_with_parent(store, anchored_installation_realm, entropy, args[2], disk_test_service,
                                   {&live, [](void* context) {
                                        const auto& state = *static_cast<live_backends*>(context);
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE

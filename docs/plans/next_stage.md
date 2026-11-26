@@ -141,3 +141,9 @@ EOF、偏移边界、缺失文件及资源回收。Pumpkin 基于安装器/应�
 从 `bbf38ffb` 重建普通镜像 `e8b6babe05cb7a3e`，79 项常规客体检查、10 项许可材料和
 ABI 表通过。普通配置验证与各专项配置的独立回执共同构成当前整合证据。
 [常规组合](../work_log/bbf38ffb_next_stage_combined.md)
+
+主线 `aece9965` 纳入 xypm P2→P3 恢复验收、Qt Quick 生成成员溯源和 glibc D1
+固定启动策略。重建普通镜像 `dacaf138dbabf003` 后通过 79 项常规客体检查、10 项许可
+材料和 ABI 核对。SDK 默认切换、Qt 正式发行、Pumpkin 部署凭据和 ClarkE 整页继续按各自
+配置验收。
+[本轮主线组合](../work_log/aece9965_next_stage_combined.md)

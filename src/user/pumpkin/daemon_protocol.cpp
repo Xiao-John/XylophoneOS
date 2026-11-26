@@ -17,16 +17,21 @@ bool uses_name(wire_operation operation) {
         operation == wire_operation::lookup_account;
 }
 
-bool valid_request(const wire_request& request, bool login_resources) {
+bool valid_request(const wire_request& request, const wire_extension* extension) {
     const auto operation = request.operation;
     if (request.version != wire_version || request.reserved != 0 ||
-        operation < wire_operation::authenticate || operation > (login_resources ?
-            wire_operation::read_login_resource : wire_operation::revoke_account) ||
+        operation < wire_operation::authenticate ||
+        (operation > wire_operation::revoke_account &&
+            (!extension || !extension->invoke || operation < extension->first || operation > extension->last)) ||
         request.name_length > name_limit) {
         return false;
     }
     if (operation == wire_operation::grant_login_resource) {
         if (request.name_length != sizeof(login_resource_grant) || !valid_id(request.token)) { return false; }
+    } else if (operation == wire_operation::admit_resource_broker) {
+        if (request.name_length != sizeof(resource_broker_grant) || !zero_id(request.token)) { return false; }
+    } else if (operation == wire_operation::begin_resource_read) {
+        if (request.name_length != sizeof(u64) || !valid_id(request.token)) { return false; }
     } else if (uses_name(operation) ? request.name_length == 0 || !zero_id(request.token)
                                     : request.name_length != 0 || !valid_id(request.token)) {
         return false;
@@ -93,6 +98,8 @@ status invoke(service_core& core, const connection_id& connection, const wire_re
         return core.revoke_account(connection, now, identity);
     case wire_operation::grant_login_resource:
     case wire_operation::read_login_resource:
+    case wire_operation::admit_resource_broker:
+    case wire_operation::begin_resource_read:
         break;
     }
     return status::invalid;
@@ -105,7 +112,7 @@ bool dispatch_request(service_core& core, const connection_id& connection, u64& 
                       const wire_extension* extension) {
     wipe_bytes(&reply, sizeof(reply));
     reply = {};
-    if (!valid_request(request, extension != nullptr && extension->invoke != nullptr) ||
+    if (!valid_request(request, extension) ||
         request.sequence == 0 || request.sequence != last_sequence + 1) {
         return false;
     }
@@ -132,7 +139,8 @@ bool valid_reply(const wire_request& request, const wire_reply& reply) {
     if (reply.result != wire_status::ok) {
         return reply.flags == 0 && zero_id(reply.token) && !has_key;
     }
-    const bool expects_token = uses_name(request.operation) || request.operation == wire_operation::identity;
+    const bool expects_token = uses_name(request.operation) || request.operation == wire_operation::identity ||
+        request.operation == wire_operation::begin_resource_read;
     const bool expects_key = request.operation == wire_operation::create_account ||
         request.operation == wire_operation::rotate_credential;
     return (expects_token ? valid_id(reply.token) : zero_id(reply.token)) && expects_key == has_key &&

@@ -14,6 +14,7 @@ inline constexpr u64 loop_interval_ns = 1'000'000ull;
 enum class wire_operation : u32 {
     authenticate = 1, logout, identity, create_account, lookup_account, rotate_credential, revoke_account,
     grant_login_resource, read_login_resource,
+    admit_resource_broker, begin_resource_read,
 };
 enum class wire_status : u32 {
     ok = 0, invalid, denied, not_found, conflict, exhausted, unavailable, corrupt, io_error, outcome_unknown,
@@ -53,9 +54,16 @@ struct login_resource_grant {
     u32 send = 0, receive = 0;
 };
 static_assert(sizeof(login_resource_grant) == 16);
+struct resource_broker_grant {
+    u64 peer = 0;
+    u32 send = 0, receive = 0;
+};
+static_assert(sizeof(resource_broker_grant) == 16);
 struct wire_extension {
     void* context;
     status (*invoke)(void*, service_core&, const connection_id&, const wire_request&, u64, wire_reply&);
+    wire_operation first = wire_operation::grant_login_resource;
+    wire_operation last = wire_operation::read_login_resource;
 };
 
 // Dispatcher inputs already belong to a server-owned authenticated binding.

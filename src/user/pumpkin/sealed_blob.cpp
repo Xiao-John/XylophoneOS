@@ -60,16 +60,27 @@ status sealed_blob::read(service_core& core, const blob_peer& peer, u64 now,
             if (key != blob.ownership_.object || handle != blob.handle_ || operation != resource_read) {
                 return status::denied;
             }
-            sealed_blob_reply received{};
-            if (blob.files_.read_at(blob.handle_, received.bytes, blob.length_, 0) != blob.length_) {
-                return status::io_error;
-            }
-            received.length = blob.length_;
-            access.reply = received;
-            return status::ok;
+            return blob.read_pinned(access.reply);
         }
     };
     return dispatch_resource(core, peer.connection, now, request, io);
+}
+
+status sealed_blob::read_associated(u64 object, const blob_read_check& check, sealed_blob_reply& reply) {
+    reply = {};
+    if (length_ == 0 || object != ownership_.object.number || check.authorize == nullptr) {
+        return status::denied;
+    }
+    const auto allowed = check.authorize(check.context, authority_incarnation_, ownership_);
+    return allowed == status::ok ? read_pinned(reply) : allowed;
+}
+
+status sealed_blob::read_pinned(sealed_blob_reply& reply) {
+    sealed_blob_reply received{};
+    if (files_.read_at(handle_, received.bytes, length_, 0) != length_) { return status::io_error; }
+    received.length = length_;
+    reply = received;
+    return status::ok;
 }
 
 }

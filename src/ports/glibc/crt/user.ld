@@ -11,7 +11,14 @@ PHDRS {
 SECTIONS {
     __ehdr_start = 0x40000000;
     . = __ehdr_start + SIZEOF_HEADERS;
-    .text : { KEEP(*(.text.entry)) *(.text .text.*) *(.init) *(.fini) *(.plt .iplt) } :text
+    .text : {
+        KEEP(*(.text.entry))
+        *(.text .text.*)
+        /* Each hook spans input sections from multiple CRT objects. */
+        KEEP(*(.init))
+        KEEP(*(.fini))
+        *(.plt .iplt)
+    } :text
     . = ALIGN(4096);
     .rodata : { *(.rodata .rodata.*) } :rodata
     .xos.exec : { KEEP(*(.xos.exec)) } :rodata

@@ -13,13 +13,13 @@ CASES = ['basic', 'v3', 'lease', 'concurrent', 'invalid_v2', 'invalid_v3',
          'missing_flag', 'missing_object', 'zero_sequence', 'bad_peer', 'bad_rights',
          'bad_controller', 'duplicate_channels', 'wrong_sequence', 'reserved',
          'unknown_status', 'bad_mode', 'overread', 'zero_write', 'short_reply',
-         'service_death', 'timeout', 'interrupted']
+         'service_death', 'timeout', 'interrupted', 'readiness']
 
 
 def compiled_sources():
     overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
     return [overlay / (name + '.c') for name in
-            ('xos_file_runtime', 'xos_terminal_runtime', 'ioctl')] + [
+            ('xos_file_runtime', 'xos_terminal_runtime', 'ioctl', 'select')] + [
         ROOT / 'src/ports/glibc/terminal_support.cpp', ROOT / 'src/user/sdk/terminal_client.cpp',
         ROOT / 'tests/fixtures/glibc_g3/terminal_runtime.cpp']
 
@@ -70,7 +70,11 @@ def main():
         objects = []
         for index, source in enumerate(sources):
             obj = output/(str(index)+'.o')
-            extra = ['-include', str(ROOT/'tests/fixtures/glibc_g3/terminal_host_aliases.h')] if source.name=='ioctl.c' else []
+            extra = []
+            if source.name in ('ioctl.c', 'select.c'):
+                extra += ['-include', str(ROOT/'tests/fixtures/glibc_g3/terminal_host_aliases.h')]
+            if source.name == 'select.c':
+                extra.append('-DXOS_GLIBC_CLOCK_TEST')
             compiler = os.getenv('CC', 'gcc') if source.suffix=='.c' else os.getenv('CXX', 'g++')
             language = '-std=c11' if source.suffix=='.c' else '-std=c++20'
             run([compiler, language, '-DXOS_GLIBC_FILE_TEST', *flags, *extra, '-c', str(source), '-o', str(obj)], 'compile-'+str(index))

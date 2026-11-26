@@ -24,7 +24,7 @@ ENOTSUP，直到完整序号、静默与失败事务契约落地。
 不会把进行中的 I/O 路由到复用 FD。最后一个引用关闭两个通道。终端有独立
 wait/wake 锁，每个会话一次一个请求；阻塞读期间其他终端操作按序等待，文件和
 管道操作继续执行。用户需要读写同时进行时须先采用有限 VTIME 或独立会话模型；
-本模块不承诺同会话全双工复用、pthread cancellation 或通用 select/poll。
+本模块不承诺同会话全双工复用或 pthread cancellation。终端读就绪范围见下文。
 
 ## I/O 和模式
 
@@ -46,6 +46,22 @@ TCSANOW/TCSADRAIN/TCSAFLUSH 映射原生 now/drain/drain_flush_input；tcdrain
 检查驱动发送完成，TCIFLUSH 丢弃服务规定范围内输入。TCOFLUSH/TCIOFLUSH 返回
 ENOTSUP；非法 action/queue 返回 EINVAL；未知模式返回 ENOTSUP，原模式不变。
 控制请求中断返回 EINTR，超时 ETIMEDOUT，通道/服务失效返回真实错误。
+
+## 单一终端描述符的读就绪
+
+`select` 检查 `nfds` 内唯一的读描述符，该描述符必须是活跃且可读的已授权
+终端对象，包括 `dup` 的别名。操作持有文件描述符租约，经现有客户端的
+`wait_readable` 发送单次请求。成功返回 1 并保留就绪位，输入仍可由后续
+`read` 读取。超时返回 0 并清空描述符集合，原 `timeval` 保持原值。
+零时限检查已排队的数据，正时限转换为单调时钟的绝对时间，无时限等待
+使用原生无限期标记。原生终端中断映射为 `EINTR`。
+
+集合未选中描述符、多个被选描述符、非终端读就绪以及写或异常就绪请求返回
+`ENOTSUP`。关闭或不可读描述符返回 `EBADF`，非法 `nfds` 或时间值
+返回 `EINVAL`。已有终端交换占用单一响应通道时返回 `EBUSY`，
+避免探测排在无限期读取之后。错误保留输入集合与时间值。
+`pselect`、`poll`、跨描述符多路等待和信号掩码仍在本次范围外。
+[终端读就绪验收](../work_log/0f07e824_glibc_terminal_select.md)
 
 ## libc 本地 ioctl 编号
 

@@ -133,7 +133,9 @@ progress process_request(service_core& core, transport_session& session, u64& no
             auto& input = *static_cast<bridge_context*>(context);
             return input.bridge->invoke(state, connection, input.channel, input.registrar, incoming, at, outgoing);
         }, wire_operation::admit_resource_broker, wire_operation::begin_resource_read};
-    if (bridge != nullptr) { extension = &resource_extension; }
+    if (bridge != nullptr && (extension == nullptr || request.operation >= resource_extension.first)) {
+        extension = &resource_extension;
+    }
 #endif
     // The kernel copies the single-slot packet. Never retry after dispatch,
     // since the mutation may already have executed.

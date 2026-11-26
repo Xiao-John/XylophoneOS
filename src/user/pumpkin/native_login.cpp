@@ -5,6 +5,9 @@
 #if XOS_PUMPKIN_USER_LOGIN
 #include "user_login.hpp"
 #endif
+#if XOS_PUMPKIN_USER_RESOURCE
+#include "resource_broker_client.hpp"
+#endif
 
 namespace xos::user::pumpkin::native_login {
 namespace {
@@ -140,9 +143,9 @@ bool grant_resource(ipc_client& registrar, const wire_id& identity, u64 holder, 
     return expect(registrar, value, response, expected);
 }
 
-struct holder_process {
+struct child_process {
     u64 pid = 0;
-    ~holder_process() {
+    ~child_process() {
         if (pid != 0) {
             (void)sdk::syscall(10, pid);
             process_status ignored{};
@@ -159,13 +162,14 @@ struct holder_process {
     }
 };
 
-result connect_holder(u32 image, holder_process& holder, endpoints& protected_lane, bool submitted = false) {
+result connect_holder(u32 image, child_process& holder, endpoints& protected_lane,
+                      holder_mode mode = holder_mode::cycle) {
     if (image == 0 || sdk::ipc_name_publish(rendezvous) != 0) { return result::holder_start; }
     struct unpublish { ~unpublish() { (void)sdk::ipc_name_unpublish(rendezvous); } } registration;
     sdk::spawn_options options{};
     for (auto& fd : options.stdio) { fd = -2; }
-    const char* args[]{holder_image, "submit"};
-    const i64 child = sdk::spawn_image_options(image, submitted ? 2 : 1, args, options);
+    const char* args[]{holder_image, mode == holder_mode::resource ? "resource" : "submit"};
+    const i64 child = sdk::spawn_image_options(image, mode == holder_mode::cycle ? 1 : 2, args, options);
     if (child <= 0) { return result::holder_start; }
     holder.pid = static_cast<u64>(child);
     endpoints discovery;
@@ -200,7 +204,7 @@ bool check_ungranted(ipc_client& owner, account_name name, const delivery& enrol
         current_identity(other, fresh, enrollment.identity, wire_status::denied);
 }
 
-bool reap_holder(holder_process& holder, const ipc_channel& channel) {
+bool reap_child(child_process& holder, const ipc_channel& channel) {
     const u64 end = deadline();
     do {
         if (holder.wait_clean()) { return authenticated_peer(channel) == 0; }
@@ -214,7 +218,69 @@ bool lookup_user(ipc_client& registrar, account_name account, wire_reply& respon
     return expect(registrar, lookup, response, wire_status::ok);
 }
 
-int submit_and_logout(const ipc_channel& parental, delivery& enrollment) {
+#if XOS_PUMPKIN_USER_RESOURCE
+constexpr char broker_rendezvous[] = "pumpkin-broker-bootstrap";
+constexpr u8 resource_payload[]{'P', 'u', 'm', 'p', 'k', 'i', 'n'};
+struct resource_arrival {
+    signal message{};
+    nonce incarnation{};
+};
+static_assert(sizeof(resource_arrival) == 24);
+
+result start_broker(u32 image, u64 daemon, wire_id identity, const nonce& incarnation, ipc_client& registrar,
+                    child_process& broker, endpoints& control) {
+    if (!image || incarnation == nonce{} || sdk::ipc_name_publish(broker_rendezvous) != 0) {
+        return result::broker_launch;
+    }
+    struct unpublish { ~unpublish() { (void)sdk::ipc_name_unpublish(broker_rendezvous); } } registration;
+    sdk::spawn_options options{};
+    for (auto& fd : options.stdio) { fd = -2; }
+    const char* args[]{broker_image_name, broker_rendezvous};
+    const auto pid = sdk::spawn_image_options(image, 2, args, options);
+    if (pid <= 0) { return result::broker_launch; }
+    broker.pid = static_cast<u64>(pid);
+    const auto end = deadline();
+    endpoints discovery;
+    for (;;) {
+        const auto accepted = sdk::ipc_name_try_accept(discovery.pair);
+        if (accepted == 0 && authenticated_peer(discovery.pair) == broker.pid) { break; }
+        if (accepted != 0 && accepted != process_error_would_block) { return result::broker_bootstrap; }
+        close_ipc(discovery.pair);
+        if (!wait_tick(end)) { return result::broker_bootstrap; }
+    }
+    control_message offer{};
+    if (!receive(discovery.pair, offer, end) || offer.version != wire_version || offer.reserved ||
+        offer.realm != nonce{} || authenticated_peer(offer.channel) != broker.pid) { return result::broker_bootstrap; }
+    control.pair = offer.channel;
+    broker_configuration config{wire_version, sizeof(resource_payload), daemon,
+        {identity.scope, identity.number}, incarnation};
+    __builtin_memcpy(config.bytes, resource_payload, sizeof(resource_payload));
+    broker_ready ready{};
+    if (!send(control.pair, config) || !receive(control.pair, ready, end) ||
+        ready.version != wire_version || ready.reserved || ready.grant.peer != broker.pid) {
+        return result::broker_bootstrap;
+    }
+    auto grant = request(wire_operation::admit_resource_broker);
+    grant.name_length = sizeof(ready.grant);
+    __builtin_memcpy(grant.name, &ready.grant, sizeof(ready.grant));
+    wire_reply reply{};
+    return expect(registrar, grant, reply, wire_status::ok) ? result::passed : result::broker_grant;
+}
+
+bool read_owned_resource(const ipc_channel& parental, ipc_client& owner, wire_id session, u64& broker) {
+    if (!send(parental, resource_arrival{{version, step::connected}, session.scope}) ||
+        !receive(parental, broker, deadline()) || !broker) { return false; }
+    broker_read_client read;
+    wire_id ticket{};
+    broker_data data{};
+    return read.connect(broker) && read.prepare(owner, session, ticket) == wire_status::ok &&
+        read.read(ticket, data) && data.result == wire_status::ok &&
+        data.data.length == sizeof(resource_payload) &&
+        __builtin_memcmp(data.data.bytes, resource_payload, sizeof(resource_payload)) == 0;
+}
+#endif
+
+int submit_and_logout(const ipc_channel& parental, delivery& enrollment, [[maybe_unused]] bool with_resource) {
     ipc_client owner;
     if (!ordinary(owner, enrollment.daemon)) { return 14; }
     const account_name account{enrollment.name, enrollment.name_length};
@@ -222,14 +288,44 @@ int submit_and_logout(const ipc_channel& parental, delivery& enrollment) {
     const auto result = submit_key(owner, account, enrollment.key, session);
     wipe_bytes(&enrollment.key, sizeof(enrollment.key));
     if (result == wire_status::ok) {
+        if (!current_identity(owner, session, enrollment.identity, wire_status::ok)) { return 14; }
+#if XOS_PUMPKIN_USER_RESOURCE
+        broker_read_client pending;
+        wire_id pending_ticket{};
+        i64 before_association = 0;
+        if (with_resource) {
+            u64 broker = 0;
+            if (!read_owned_resource(parental, owner, session, broker) || !pending.connect(broker)) { return 14; }
+            before_association = monotonic_now();
+            if (before_association < 0 || pending.prepare(owner, session, pending_ticket) != wire_status::ok) { return 14; }
+        }
+#endif
         auto logout = request(wire_operation::logout, session);
         wire_reply reply{};
-        if (!current_identity(owner, session, enrollment.identity, wire_status::ok) ||
-            !expect(owner, logout, reply, wire_status::ok) ||
+        if (!expect(owner, logout, reply, wire_status::ok) ||
             !current_identity(owner, session, enrollment.identity, wire_status::denied)) return 14;
+#if XOS_PUMPKIN_USER_RESOURCE
+        broker_data denied{};
+        if (with_resource && (!pending.read(pending_ticket, denied) || denied.result != wire_status::denied)) {
+            return 14;
+        }
+        if (with_resource) {
+            const auto observed = monotonic_now();
+            // The authority issues after this lower bound. Observing denial
+            // within the lifetime confirms logout independently of expiry.
+            if (observed < before_association ||
+                static_cast<u64>(observed - before_association) >= read_association_lifetime_ns) { return 14; }
+        }
+#endif
     } else if (result != wire_status::denied) { return 14; }
     owner.close();
     const auto stage = result == wire_status::ok ? step::signed_out : step::rejected;
+#if XOS_PUMPKIN_USER_RESOURCE
+    if (with_resource && stage == step::rejected) {
+        return send(parental, resource_arrival{{version, stage}, {}}) &&
+            signal_received(parental, step::finish) ? 0 : 15;
+    }
+#endif
     return send(parental, signal{version, stage}) && signal_received(parental, step::finish) ? 0 : 15;
 }
 #endif
@@ -237,7 +333,7 @@ int submit_and_logout(const ipc_channel& parental, delivery& enrollment) {
 
 result run(u32 image, u64 daemon, ipc_client& registrar, account_name account) {
     if (account.data == nullptr || account.length == 0 || account.length > name_limit) { return result::enrollment; }
-    holder_process holder;
+    child_process holder;
     endpoints channel;
     const auto connected = connect_holder(image, holder, channel);
     if (connected != result::passed) { return connected; }
@@ -283,10 +379,10 @@ result run(u32 image, u64 daemon, ipc_client& registrar, account_name account) {
         !expect(registrar, revoke, response, wire_status::ok) ||
         !send(channel.pair, signal{version, step::check_revoked}) || !signal_received(channel.pair, step::revoked) ||
         !send(channel.pair, signal{version, step::finish})) { return result::revocation; }
-    return reap_holder(holder, channel.pair) ? result::passed : result::holder_exit;
+    return reap_child(holder, channel.pair) ? result::passed : result::holder_exit;
 }
 
-int holder_main([[maybe_unused]] bool submitted) {
+int holder_main([[maybe_unused]] holder_mode mode) {
     endpoints channel;
     if (sdk::ipc_channel_create(0, channel.pair) != 0) { return 10; }
     const u64 parent = authenticated_peer(channel.pair);
@@ -305,7 +401,7 @@ int holder_main([[maybe_unused]] bool submitted) {
         closed.message.format != version || closed.message.stage != step::delivery_closed ||
         has_bytes(closed.zero, sizeof(closed.zero))) { return 11; }
 #if XOS_PUMPKIN_USER_LOGIN
-    if (submitted) return submit_and_logout(channel.pair, enrollment);
+    if (mode != holder_mode::cycle) return submit_and_logout(channel.pair, enrollment, mode == holder_mode::resource);
 #endif
 
     ipc_client owner;
@@ -342,11 +438,13 @@ bool enroll_user(ipc_client& registrar, account_name account, const anchor_guest
         user_login::exchange_with_operator(proxy, request, reply) && !has_bytes(reply.key.bytes, secret_bytes);
 }
 
-u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy) {
+u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy,
+              [[maybe_unused]] u32 broker_image) {
     wire_reply found{};
-    holder_process holder;
+    child_process holder;
     endpoints channel;
-    if (!lookup_user(registrar, account, found) || connect_holder(image, holder, channel, true) != result::passed) return 0;
+    const auto mode = broker_image ? holder_mode::resource : holder_mode::submit;
+    if (!lookup_user(registrar, account, found) || connect_holder(image, holder, channel, mode) != result::passed) return 0;
     {
         user_login::packet request{}, reply{};
         request.op = user_login::operation::submit;
@@ -360,11 +458,40 @@ u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account
         enrollment.key = reply.key;
         if (!send(channel.pair, enrollment)) return 0;
     }
+    if (!signal_received(channel.pair, step::received) || !send(channel.pair, delivery_closed{})) { return 0; }
+#if XOS_PUMPKIN_USER_RESOURCE
+    child_process broker;
+    endpoints broker_control;
+    if (mode == holder_mode::resource) {
+        resource_arrival arrival{};
+        if (!receive(channel.pair, arrival, deadline()) || arrival.message.format != version) {
+            return static_cast<u8>(result::resource_access);
+        }
+        if (arrival.message.stage == step::rejected && arrival.incarnation == nonce{}) {
+            return send(channel.pair, signal{version, step::finish}) && reap_child(holder, channel.pair)
+                ? user_login::denied : 0;
+        }
+        if (arrival.message.stage != step::connected || found.flags) { return static_cast<u8>(result::resource_access); }
+        const auto launched = start_broker(broker_image, daemon, found.token, arrival.incarnation, registrar,
+                                           broker, broker_control);
+        if (launched != result::passed) { return static_cast<u8>(launched); }
+        if (!send(channel.pair, broker.pid)) { return static_cast<u8>(result::resource_access); }
+    }
+#endif
     signal outcome{};
-    if (!signal_received(channel.pair, step::received) || !send(channel.pair, delivery_closed{}) ||
-        !receive(channel.pair, outcome, deadline()) || outcome.format != version ||
+    if (!receive(channel.pair, outcome, deadline()) || outcome.format != version ||
         (outcome.stage != step::signed_out && outcome.stage != step::rejected) ||
-        !send(channel.pair, signal{version, step::finish}) || !reap_holder(holder, channel.pair)) return 0;
+        !send(channel.pair, signal{version, step::finish}) || !reap_child(holder, channel.pair)) {
+        return mode == holder_mode::resource ? static_cast<u8>(result::resource_access) : 0;
+    }
+#if XOS_PUMPKIN_USER_RESOURCE
+    if (mode == holder_mode::resource) {
+        close_ipc(broker_control.pair);
+        if (outcome.stage != step::signed_out || !reap_child(broker, broker_control.pair)) {
+            return static_cast<u8>(result::broker_cleanup);
+        }
+    }
+#endif
     return outcome.stage == step::signed_out ? 1 : user_login::denied;
 }
 

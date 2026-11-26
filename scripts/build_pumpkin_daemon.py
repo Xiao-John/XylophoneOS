@@ -43,7 +43,7 @@ def source_hashes(storage_probe=False, resource_probe=False, bridge_probe=False)
     if resource_probe or bridge_probe:
         headers += [module + name for name in ("resource_dispatch.hpp", "sealed_blob.hpp")]
     if bridge_probe:
-        headers += [module + name for name in ("resource_bridge.hpp", "resource_broker.hpp")]
+        headers += [module + name for name in ("resource_bridge.hpp", "resource_broker.hpp", "resource_broker_client.hpp")]
     inputs = sorted([*sources, *entries.values(), *headers, "scripts/build_pumpkin_daemon.py"])
     return {name: sha(root / name) for name in inputs}
 

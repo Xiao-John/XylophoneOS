@@ -15,7 +15,7 @@ from unittest.mock import patch
 root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(root / "scripts"))
 import pumpkin_user_login as operator
-from pumpkin_user_login import bind_system, credential_file_header, digest, file_magic, file_size, realm
+from pumpkin_user_login import bind_system, broker_artifact, credential_file_header, digest, file_magic, file_size, realm
 from pumpkin_generation_authority import generation_authority, publish_result
 
 
@@ -74,9 +74,14 @@ def enrollment_failures(system, private, record):
         print(f"PASS {fault} leaves the account and prevents duplicate issue", flush=True)
 
 
-def run(system, output):
+def run(system, output, with_resource=False):
     output.mkdir(parents=True, exist_ok=False)
     ready = bind_system(system)
+    if (broker_artifact in ready[2]) != with_resource:
+        raise ValueError("replay and selected resource image do not match")
+    manifest = json.loads((system / "manifest.json").read_bytes())
+    if any(digest(root / name) != expected for name, expected in manifest["sources"].items()):
+        raise ValueError("the selected image differs from the replay sources")
     tool = root / "scripts/pumpkin_user_login.py"
     report = {"status": "failed", "build_id": ready[0], "system_manifest_sha256": ready[1],
               "artifacts": ready[2], "entry_sha256": digest(tool), "runner_sha256": digest(Path(__file__)),
@@ -115,6 +120,11 @@ def run(system, output):
             assert wallet_stat.st_size == file_size and wallet_stat.st_nlink == 1
             invoke("enroll", "duplicate enrollment refused", 1, credential=wallet)
             invoke("login", "fresh VM accepts the same credential and logs out", credential=wallet)
+            if with_resource:
+                invoke("read-resource", "first fresh VM reads owned resource and verifies logout", credential=wallet)
+                assert authority.read() == enrolled
+                invoke("read-resource", "second fresh VM reads resource of the same durable owner and verifies logout",
+                       credential=wallet)
             assert authority.read() == enrolled
             assert wallet.stat().st_ino == wallet_stat.st_ino and wallet.stat().st_mtime_ns == wallet_stat.st_mtime_ns
 
@@ -139,6 +149,9 @@ def run(system, output):
             revoked = authority.read()
             assert revoked.revision == 3
             invoke("login", "fresh VM rejects the original revoked credential", 3, credential=wallet)
+            if with_resource:
+                invoke("read-resource", "fresh VM denies owned resource session after persistent revocation",
+                       3, credential=wallet)
             assert authority.read() == revoked
             assert wallet.stat().st_ino == wallet_stat.st_ino and wallet.stat().st_mtime_ns == wallet_stat.st_mtime_ns
             enrollment_failures(system, private, report["checks"])
@@ -155,8 +168,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--system", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--resource", action="store_true", help="verify the private resource command on fresh VMs")
     options = parser.parse_args()
-    run(options.system.resolve(), options.output.resolve())
+    run(options.system.resolve(), options.output.resolve(), options.resource)
 
 
 if __name__ == "__main__":

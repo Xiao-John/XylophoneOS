@@ -1064,14 +1064,18 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     // can launch anything from the disposable work disk.
     if (persistent_recovery_gate) return 21;
     u32 holder = 0;
+    u32 broker = 0;
 #if XOS_PUMPKIN_NATIVE_LOGIN
     // The headless login run needs one more process than the generation-only
     // probe. Release the boot demos before creating any protected endpoints.
     quiet_boot_demos();
     holder = image_named(user::pumpkin::native_login::holder_image);
 #endif
+#if XOS_PUMPKIN_USER_RESOURCE
+    broker = image_named(user::pumpkin::native_login::broker_image_name);
+#endif
     return user::pumpkin::durable_probe::run_anchored(image_named("pumpkin_durable"),
-        image_named("p2_anchor_proxy"), private_storage_grant, holder);
+        image_named("p2_anchor_proxy"), private_storage_grant, holder, broker);
 #endif
     // Bootstrap installation must not run when marker inspection or guard
     // establishment fails; doing so could modify a disk awaiting recovery.

@@ -128,11 +128,17 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
 #else
         login_resource* resource = nullptr;
 #endif
+#if XOS_PUMPKIN_USER_RESOURCE
+        resource_bridge service_bridge;
+        auto* bridge = &service_bridge;
+#else
+        resource_bridge* bridge = nullptr;
+#endif
         return serve_with_parent(store, disk_test_realm, entropy, args[2], disk_test_service,
                                   {&live, [](void* context) {
                                        const auto& state = *static_cast<live_backends*>(context);
                                        return state.slots.live() && state.generation.live();
-                                   }}, resource);
+                                   }}, resource, bridge);
     }
 #endif
 #if XOS_PUMPKIN_DURABLE_PROBE

@@ -11,6 +11,23 @@ using namespace xos;
 using namespace xos::glibc_d1;
 #include "interpreter_plan.hpp"
 
+#ifdef D1_SYSDEP_INVOKE
+extern "C" void d1_expect_gnu_callback(void**);
+extern "C" void d1_gnu_callback_observer(const Elf64_Phdr*, Elf64_Word, Elf64_Addr*, Elf64_auxv_t*);
+extern "C" int d1_observed_gnu_callback();
+extern "C" Elf64_Addr enter_gnu_sysdep_stack(void**, xos_rtld_dl_main);
+asm(
+    ".text\n"
+    ".globl enter_gnu_sysdep_stack\n"
+    "enter_gnu_sysdep_stack:\n"
+    "  pushq %r12\n"
+    "  movq %rsp, %r12\n"
+    "  movq %rdi, %rsp\n"
+    "  call _dl_sysdep_start\n"
+    "  movq %r12, %rsp\n"
+    "  popq %r12\n"
+    "  ret\n");
+#else
 extern "C" int d1_gnu_startup_matches(void**, const xos_rtld_startup*, int);
 extern "C" int enter_sysdep_stack(void**, xos_rtld_images*, xos_rtld_startup*);
 asm(
@@ -24,12 +41,15 @@ asm(
     "  movq %r12, %rsp\n"
     "  popq %r12\n"
     "  ret\n");
+#endif
 
 namespace {
 struct source { xos_file_session* owner; u32 handle = 0; u32 inode = 0; };
 xos_file_request request;
 xos_file_response response;
+#ifndef D1_SYSDEP_INVOKE
 xos_rtld_images rtld_images;
+#endif
 
 [[noreturn]] void fail(const char* message) {
     sdk::print("D1_NATIVE_SYSDEP_FAIL ");
@@ -97,7 +117,12 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
         || (startup->version != 2 && startup->version != 3) || startup->argc != 2) { fail("native startup"); }
     const auto* argv = reinterpret_cast<const char* const*>(startup->argv);
     const bool secure = sdk::equal(argv[1], "secure");
+#ifdef D1_SYSDEP_INVOKE
+    const bool obsolete = sdk::equal(argv[1], "obsolete");
+    if (!secure && !obsolete && !sdk::equal(argv[1], "ordinary")) { fail("fixture mode"); }
+#else
     if (!secure && !sdk::equal(argv[1], "ordinary")) { fail("fixture mode"); }
+#endif
     xos_file_session early{};
     if (file_call(early, file::op::open, 0, 0, 0, file::read_only, "/tests/input") != 0) {
         fail("ordinary file open");
@@ -132,8 +157,18 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
         || file_call(active_files, file::op::close, ld.handle) != 0) { fail("close bootstrap pins"); }
 
     auto** stack = reinterpret_cast<void**>(frame->stack.words);
-    xos_rtld_startup gnu{};
     const u32 before = active_files.request_sequence;
+#ifdef D1_SYSDEP_INVOKE
+    d1_expect_gnu_callback(stack);
+    if (obsolete) { --frame->record.version; }
+    const auto entry = enter_gnu_sysdep_stack(stack, d1_gnu_callback_observer);
+    auto& rtld_images = __xos_rtld_start_images;
+    if (secure || obsolete || !d1_observed_gnu_callback() || entry != frame->record.main_entry
+        || active_files.request_sequence != before || rtld_images.files != &active_files) {
+        fail("GNU callback or returned entry");
+    }
+#else
+    xos_rtld_startup gnu{};
     --frame->record.version;
     const int obsolete = enter_sysdep_stack(stack, &rtld_images, &gnu);
     frame->record.version = XOS_D1_ENTRY_VERSION;
@@ -142,6 +177,7 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
     if (enter_sysdep_stack(stack, &rtld_images, &gnu) != 0
         || active_files.request_sequence != before || rtld_images.files != &active_files
         || !d1_gnu_startup_matches(stack, &gnu, secure)) { fail("actual GNU startup state"); }
+#endif
     if (__xos_rtld_heap_grow(vm_page_size) != reinterpret_cast<void*>(heap.base)) {
         fail("attached native heap");
     }
@@ -157,8 +193,12 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
         || memcmp(response.data, "EFGH", 4) != 0
         || file_call(active_files, file::op::close, stream) != 0
         || active_files.request_sequence != before_resume + 2) { fail("same file session"); }
+#ifdef D1_SYSDEP_INVOKE
+    sdk::print("D1_SYSDEP_INVOKE_OK callback=1 cpu=gnu entry=mapped file=continuous heap=live\n");
+#else
     sdk::print(secure
         ? "D1_NATIVE_SYSDEP_OK secure=1 argv_env=gnu auxv=gnu file=continuous heap=live\n"
         : "D1_NATIVE_SYSDEP_OK secure=0 argv_env=gnu auxv=gnu file=continuous heap=live\n");
+#endif
     sdk::exit(0);
 }

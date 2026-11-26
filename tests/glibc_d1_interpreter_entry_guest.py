@@ -15,6 +15,7 @@ from build_glibc_sdk import inputs as sdk_inputs
 from glibc_d1_layout_guest import BIASES, PHDR
 from glibc_g1_probe import clean_build_environment, tool_identity
 from make_work_disk import create_fat32
+from probe_glibc_rtld import SYSDEP_INVOCATION_ELF, SYSDEP_INVOCATION_LEAVES
 from process_smoke import command, resources
 from shell_launch_support import bind_system, sha, write_report
 from task_smoke import send_bytes
@@ -26,6 +27,18 @@ ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / 'tests/fixtures/glibc_d1'
 OVERLAY = ROOT / 'src/ports/glibc/sysdeps/xos'
 INTERPRETER = b'/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1\0'
+NATIVE_SUPPORT = ('elf/rtld.os', 'elf/xos_rtld_sysdep_start.os', 'elf/xos_rtld_mapping.os',
+                  'elf/xos_file_session.os', 'elf/xos_rtld_heap.os',
+                  'posix/rtld-environ.os', 'string/rtld-strcmp.os')
+INVOCATION_SUPPORT = ('elf/xos_rtld_sysdep_invoke.os', 'elf/dl-minimal-malloc.os', 'elf/dl-mutex.os',
+                      *(f'elf/{name}' for name in SYSDEP_INVOCATION_ELF),
+                      *(f'{subdir}/rtld-{name}.os' for subdir, names in SYSDEP_INVOCATION_LEAVES
+                        for name in names))
+INVOCATION_RUNS = {
+    'ordinary': (b'0', b'D1_SYSDEP_INVOKE_OK callback=1 cpu=gnu entry=mapped file=continuous heap=live'),
+    'secure': (b'127', b'XOS rtld: secure descriptor startup is unavailable'),
+    'obsolete': (b'127', b'XOS rtld: invalid native startup handoff'),
+}
 
 
 def describe(path, label, bias, header):
@@ -106,23 +119,21 @@ def build(args, directory, report, rtld, sysroot):
 
     early, late, elf = (directory / name for name in ('entry.o', 'late.o', 'entry.elf'))
     bootstrap = 'sysdep_start_bootstrap.cpp' if args.native_sysdep else 'interpreter_entry_guest.cpp'
+    fixture_flags = ['-DD1_SYSDEP_INVOKE'] if args.sysdep_invocation else []
     run('compile_bootstrap', [compiler['g++']['path'], *cflags, '-fno-pie', '-ffreestanding',
                               '-fno-exceptions', '-fno-rtti', '-nostdinc++', '-std=gnu++20',
                               '-I', sdk / 'include', '-I', ROOT / 'src/user/loader/glibc_d1',
-                              '-I', OVERLAY, '-I', directory,
+                              '-I', OVERLAY, '-I', directory, *fixture_flags,
                               '-c', FIXTURES / bootstrap, '-o', early])
     if args.native_sysdep:
         rtld_state = directory / 'rtld-local-entry.o'
         run('localize_entry', [compiler['objcopy']['path'], '--localize-symbol=_start',
                                rtld.parent / 'rtld.os', rtld_state])
         run('link_guest', [compiler['ld']['path'], '--gc-sections', '-z', 'noexecstack',
-                           '-z', 'max-page-size=4096', '--build-id=none', '-T', sysroot / 'user.ld',
+                           '-z', 'max-page-size=4096', '--build-id=none', '-Map', directory / 'link.map',
+                           '-T', sysroot / 'user.ld',
                            '-o', elf, lib / 'xos_start.o', early, rtld_state, rtld,
-                           *(rtld.parent / name for name in
-                             ('xos_rtld_sysdep_start.os', 'xos_rtld_mapping.os', 'xos_file_session.os',
-                              'xos_rtld_heap.os', 'd1-native-sysdep-fixture.o')),
-                           rtld.parent.parent / 'posix/rtld-environ.os',
-                           rtld.parent.parent / 'string/rtld-strcmp.os',
+                           *(rtld.parent.parent / path for path in args.native_support if path != 'elf/rtld.os'),
                            '--start-group', sdk / 'lib/libxos_loader.a', sdk / 'lib/libxos.a',
                            lib / 'libgcc.a', '--end-group'])
         report['program_headers'] = verify_elf(elf)
@@ -150,9 +161,16 @@ def exercise(args, directory, inputs, report):
     data = directory / 'input'
     data.write_bytes(b'ABCDEFGH\n')
     if args.native_sysdep:
-        scripts = {mode: directory / (mode + '.sh') for mode in ('ordinary', 'secure')}
+        scripts = {mode: directory / (mode + '.sh') for mode in args.native_runs}
+        environment = 'D1_ENTRY_ENV=verified'
+        if args.sysdep_invocation:
+            environment += ' MALLOC_PERTURB_=73 GLIBC_TUNABLES_OTHER=ordinary'
         for mode, script in scripts.items():
-            script.write_text(f'D1_ENTRY_ENV=verified /usr/bin/d1_entry {mode}\n')
+            launch = f'{environment} /usr/bin/d1_entry {mode}\n'
+            if args.sysdep_invocation:
+                launch += ('rc=$?\n: >> /tests/dependency.so || exit 71\n'
+                           'printf "D1_SYSDEP_CHILD_RC=%s writer=reopened\\n" "$rc"\nexit "$rc"\n')
+            script.write_text(launch)
     else:
         script = directory / 'child.sh'
         script.write_text('/usr/bin/d1_entry < /tests/input\nrc=$?\n'
@@ -184,15 +202,17 @@ def exercise(args, directory, inputs, report):
             report['resources_before'] = resources(guest)
             if args.native_sysdep:
                 report['runs'] = {}
-                for mode, secure in (('ordinary', 0), ('secure', 1)):
+                for mode, (code, marker) in args.native_runs.items():
                     result = command(guest, f'dash /tests/{mode}.sh', b'kind=exited code=', timeout=120)
                     after = resources(guest)
                     report['runs'][mode] = {'output': result.decode(errors='replace'),
                                             'resources_after': after}
-                    marker = (f'D1_NATIVE_SYSDEP_OK secure={secure} argv_env=gnu auxv=gnu '
-                              'file=continuous heap=live').encode()
                     assert marker in result and after == report['resources_before'], result
-                    assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
+                    assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [code], result
+                    if args.sysdep_invocation:
+                        assert b'D1_SYSDEP_OBSERVER_FAIL' not in result and b'D1_NATIVE_SYSDEP_FAIL' not in result
+                        assert result.count(INVOCATION_RUNS['ordinary'][1]) == (code == b'0'), result
+                        assert b'D1_SYSDEP_CHILD_RC=' + code + b' writer=reopened' in result, result
                 return
             result = command(guest, 'dash /tests/child.sh', b'kind=exited code=', timeout=120)
             report['output'] = result.decode(errors='replace')
@@ -231,14 +251,27 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for field in ('system', 'sdk-build', 'profile', 'dash', 'dash-receipt', 'rtld-proof', 'output'):
         parser.add_argument('--' + field, type=lambda value: Path(value).resolve(), required=True)
-    parser.add_argument('--native-sysdep', action='store_true',
-                        help='exercise actual GNU startup globals and the authenticated native session')
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument('--native-sysdep', action='store_true',
+                       help='exercise actual GNU startup globals and the authenticated native session')
+    modes.add_argument('--sysdep-invocation', action='store_true',
+                       help='exercise _dl_sysdep_start with a GNU-signature observer and real runtime support')
     args = parser.parse_args()
+    args.native_sysdep |= args.sysdep_invocation
     args.output.mkdir(parents=True, exist_ok=False)
     report = {'status': 'failed', 'scope': 'native preparation and shared rtld entry checker',
               'shared_interpreter_executed': False}
     if args.native_sysdep:
         report['scope'] = 'native preparation into the GNU rtld OS startup state'
+        prefix = 'sysdep_invocation' if args.sysdep_invocation else 'native_sysdep'
+        args.native_support = (*NATIVE_SUPPORT, 'elf/d1-' + prefix.replace('_', '-') + '-fixture.o')
+        args.native_runs = {mode: (b'0', f'D1_NATIVE_SYSDEP_OK secure={secure} argv_env=gnu auxv=gnu '
+                                  'file=continuous heap=live'.encode())
+                            for mode, secure in (('ordinary', 0), ('secure', 1))}
+        if args.sysdep_invocation:
+            args.native_support += INVOCATION_SUPPORT
+            args.native_runs = INVOCATION_RUNS
+            report.update(scope='native GNU OS callback boundary with a typed observer', gnu_dl_main_executed=False)
     try:
         system = bind_system(args.system)
         profile = load_json(args.profile)
@@ -250,9 +283,8 @@ def main():
         for source, digest in rtld_manifest['artifacts'].items():
             assert sha(args.rtld_proof / source) == digest
         if args.native_sysdep:
-            assert rtld_manifest['native_sysdep_fixture_sha256'] == sha(FIXTURES / 'sysdep_start_state.c')
-            assert {'shared/elf/xos_rtld_sysdep_start.os', 'shared/elf/d1-native-sysdep-fixture.o',
-                    'shared/posix/rtld-environ.os', 'shared/string/rtld-strcmp.os'} <= rtld_manifest['artifacts'].keys()
+            assert rtld_manifest[prefix + '_fixture_sha256'] == sha(FIXTURES / 'sysdep_start_state.c')
+            assert {'shared/' + path for path in args.native_support} <= rtld_manifest['artifacts'].keys()
         assert rtld_manifest['source_sha256'] == load_json(args.sdk_build / 'manifest.json')['source_sha256']
         preparation = args.rtld_proof / 'prepared/manifest.json'
         assert sha(preparation) == rtld_manifest['preparation_manifest_sha256']

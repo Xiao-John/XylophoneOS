@@ -15,6 +15,22 @@ from build_glibc_sdk import PORT, ROOT, inputs, sha
 from glibc_g1_probe import clean_build_environment
 
 
+SYSDEP_INVOCATION_ELF = (
+    'dl-tunables.os', 'dl-sort-maps.os', 'dl-get-cpu-features.os', 'dl-misc.os',
+    'dl-minimal.os', 'dl-printf.os', 'dl-trampoline.os',
+    'dl-tlsdesc.os', 'dl-runtime.os', 'dl-profile.os', 'dl-tls.os', 'tlsdesc.os',
+    'dl-lookup.os', 'dl-scope.os', 'dl-exception.os', 'dl-catch.os', 'dl-audit.os',
+    'dl-thread_gscope_wait.os', 'getpid.os', '_exit.os',
+)
+SYSDEP_INVOCATION_LEAVES = (
+    ('stdio-common', ('_fitoa_word', 'itoa-udigits')),
+    ('string', ('stpcpy',)),
+    ('setjmp', ('__longjmp',)),
+    ('nptl', ('lowlevellock', 'xos_lll_futex', 'xos_wait_word')),
+    ('csu', ('errno',)),
+)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--archive', required=True, type=Path)
@@ -28,6 +44,8 @@ def main():
                         help='compile the real GNU relocation fixture and its native runtime support')
     parser.add_argument('--native-sysdep-fixture', action='store_true',
                         help='compile the GNU startup state fixture and its actual environment storage')
+    parser.add_argument('--sysdep-invocation-fixture', action='store_true',
+                        help='compile the GNU startup callback observer and actual GNU CPU/tunables support')
     args = parser.parse_args()
     archive = args.archive.resolve(strict=True)
     output = args.output.resolve()
@@ -134,7 +152,8 @@ def main():
         rtld_heap = build / 'elf/xos_rtld_heap.os'
         rtld_allocator = build / 'elf/dl-minimal-malloc.os'
         rtld_startup = build / 'elf/xos_rtld_sysdep_start.os'
-        for path in (rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator, rtld_startup):
+        rtld_invoke = build / 'elf/xos_rtld_sysdep_invoke.os'
+        for path in (rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator, rtld_startup, rtld_invoke):
             _, compilation = run('make_' + path.name, [*make_elf, path])
             if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
                        and line.split()[0].endswith('/cc') for line in compilation.splitlines()
@@ -170,6 +189,12 @@ def main():
                    ('__xos_rtld_prepare_sysdep_start', '__xos_rtld_attach_entry_images',
                     '_rtld_local_ro', '_dl_argc', '_dl_argv', '_environ')):
             raise RuntimeError('native startup did not bind the GNU interpreter state and file session')
+        _, invoke_references = run('native_invocation_symbols', [env['NM'], rtld_invoke])
+        if not all(name in invoke_references for name in
+                   (' T _dl_sysdep_start', ' T _dl_tunable_set_hwcaps', ' U __xos_rtld_prepare_sysdep_start',
+                    ' U __GI___tunables_init', ' U _dl_sort_maps_init',
+                    ' U _dl_x86_init_cpu_features')):
+            raise RuntimeError('native startup invocation omitted GNU initialization or validated entry state')
 
         failure, reason = run('make_dl_sysdep', [*make_elf, build / 'elf/dl-sysdep.os'], allow_failure=True)
         if not failure or 'error: #error "XOS dynamic interpreter startup is not implemented"' not in reason:
@@ -240,13 +265,28 @@ def main():
             run('shared_libc_errno_relocations', [env['READELF'], '-rW', *shared_errno])
             tls_objects.extend(shared_errno)
 
-        if args.native_sysdep_fixture:
+        if args.sysdep_invocation_fixture:
+            for name in SYSDEP_INVOCATION_ELF:
+                path = build / 'elf' / name
+                if path in tls_objects:
+                    continue
+                _, compilation = run('make_' + name, [*make_elf, path])
+                if not any({'-DPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
+                           for line in compilation.splitlines()):
+                    raise RuntimeError('GNU startup support did not compile as rtld: ' + name)
+                tls_objects.append(path)
+
+        if args.native_sysdep_fixture or args.sysdep_invocation_fixture:
             leaves = [('posix', 'environ')]
             if not args.gnu_relocation_fixture:
                 leaves.append(('string', 'strcmp'))
+            if args.sysdep_invocation_fixture:
+                leaves.extend((subdir, name) for subdir, names in SYSDEP_INVOCATION_LEAVES for name in names)
             for subdir, name in leaves:
                 module = 'rtld-' + name + '.os'
                 path = build / subdir / module
+                if path in tls_objects:
+                    continue
                 _, compilation = run('make_rtld_' + name,
                                      ['make', '-C', source / subdir, '-f', 'Makefile',
                                       '-f', '../elf/rtld-Rules', 'rtld-all', 'subdir=' + subdir,
@@ -261,7 +301,8 @@ def main():
                 (args.initial_tp_fixture, 'initial_tp', 'initial_tls_guest.c'),
                 (args.closure_tls_fixture, 'closure_tls', 'closure_tls_runtime.c'),
                 (args.gnu_relocation_fixture, 'gnu_relocation', 'relocation_runtime.c'),
-                (args.native_sysdep_fixture, 'native_sysdep', 'sysdep_start_state.c')):
+                (args.native_sysdep_fixture, 'native_sysdep', 'sysdep_start_state.c'),
+                (args.sysdep_invocation_fixture, 'sysdep_invocation', 'sysdep_start_state.c')):
             if not requested:
                 continue
             fixture_source = ROOT / 'tests/fixtures/glibc_d1' / name
@@ -276,10 +317,11 @@ def main():
             artifact = build / 'elf' / ('d1-' + prefix.replace('_', '-') + '-fixture.o')
             command[1] = fixture
             command[command.index('-o') + 1] = artifact
-            run('compile_' + prefix + '_fixture', [*command[:command.index('-MD')], '-Werror'],
-                cwd=source / 'elf')
+            fixture_flags = ['-DD1_SYSDEP_INVOKE'] if prefix == 'sysdep_invocation' else []
+            run('compile_' + prefix + '_fixture', [*command[:command.index('-MD')], '-Werror',
+                                                    *fixture_flags], cwd=source / 'elf')
             if sha(fixture) != fixture_digest or sha(fixture_source) != fixture_digest:
-                raise RuntimeError('the GNU TLS fixture changed during compilation')
+                raise RuntimeError('the GNU rtld fixture changed during compilation')
             tls_objects.append(artifact)
             report[prefix + '_fixture_sha256'] = fixture_digest
         failure, _ = run('make_ld_so', [*make_elf, build / 'elf/ld.so'], allow_failure=True)
@@ -294,7 +336,7 @@ def main():
         report.update(status='rtld_entry_compiled_startup_blocked', artifacts={
             str(path.relative_to(output)): sha(path) for path in
             (entry, native_entry, rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator,
-             rtld_startup, *tls_objects)})
+             rtld_startup, rtld_invoke, *tls_objects)})
     except Exception as error:
         report['error'] = str(error)
         raise

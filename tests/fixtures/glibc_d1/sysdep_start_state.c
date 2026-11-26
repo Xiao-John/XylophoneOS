@@ -4,6 +4,11 @@
 #include <string.h>
 #include <unistd.h>
 #include "xos_rtld_sysdep_start.h"
+#ifdef D1_SYSDEP_INVOKE
+# include <cpu-features.h>
+# include <dl-tunables.h>
+# include <startup.h>
+#endif
 
 extern char **_environ attribute_hidden;
 
@@ -35,3 +40,46 @@ d1_gnu_startup_matches (void **stack, const struct xos_rtld_startup *startup,
   return entropy && environment && _dl_argc == 2
          && strcmp (_dl_argv[1], expected_secure ? "secure" : "ordinary") == 0;
 }
+
+#ifdef D1_SYSDEP_INVOKE
+static void **expected_stack;
+static unsigned int callback_count;
+
+void d1_expect_gnu_callback (void **);
+void d1_gnu_callback_observer (const Elf64_Phdr *, Elf64_Word, Elf64_Addr *,
+                               Elf64_auxv_t *);
+int d1_observed_gnu_callback (void);
+
+void
+d1_expect_gnu_callback (void **stack)
+{
+  expected_stack = stack;
+}
+
+void
+d1_gnu_callback_observer (const Elf64_Phdr *phdr, Elf64_Word phnum,
+                          Elf64_Addr *entry, Elf64_auxv_t *auxv)
+{
+  const struct xos_rtld_startup received = { phdr, phnum, *entry, auxv };
+  int alias_preserved = 0;
+  int similar_name_preserved = 0;
+  for (char **str = _environ; *str != NULL; ++str)
+    {
+      alias_preserved |= strcmp (*str, "MALLOC_PERTURB_=73") == 0;
+      similar_name_preserved |= strcmp (*str, "GLIBC_TUNABLES_OTHER=ordinary") == 0;
+    }
+  if (++callback_count != 1 || expected_stack == NULL
+      || !d1_gnu_startup_matches (expected_stack, &received, 0)
+      || GLRO (dl_x86_cpu_features).basic.kind == arch_kind_unknown
+      || GLRO (dl_dso_sort_algo) != dso_sort_algorithm_dfs
+      || !alias_preserved || !similar_name_preserved
+      || TUNABLE_IS_INITIALIZED (glibc, malloc, perturb))
+    _startup_fatal ("D1_SYSDEP_OBSERVER_FAIL\n");
+}
+
+int
+d1_observed_gnu_callback (void)
+{
+  return callback_count == 1;
+}
+#endif

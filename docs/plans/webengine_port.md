@@ -83,6 +83,11 @@ WebCore 的 Skia 软件绘制对象已在 XOS 交叉编译。录制与回放夹�
 和平台接口，之后按 M2 验收 DOM、布局和 Qt 视口。
 [WebCore 软件绘制回执](../work_log/clarke_webcore_software_context.md)
 
+静态软件 WebCore 已有可选 CMake 目标。目标生成的源图包括页面、DOM、CSS、布局和
+软件绘制，缓冲区创建及转移对象已交叉编译。继续构建全量归档并逐步接入 XOS 平台
+及网络接口，整页访问仍按 M2–M4 的客体门验收。
+[CMake 目标与回执](../work_log/clarke_webcore_target_graph.md)
+
 ## 3. 终态架构（各里程碑是它的纵切片，不是临时版）
 
 ```

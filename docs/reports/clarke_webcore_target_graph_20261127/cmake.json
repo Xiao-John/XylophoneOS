@@ -1,0 +1,36 @@
+{
+  "cmake_version": "4.4.5",
+  "compile_database_sha256": "47982c6d08eeb16074df8b96edb1b917547318e964e0a31f543dd986b5d312e9",
+  "compiler": "GNU x86_64-elf GCC 16.2.0",
+  "config_header_sha256": "a0c85b99f4902ffcf33f8c69857276c331d376be368e43715c57ae3a2fc22eee",
+  "configuration": {
+    "ENABLE_JIT": 0,
+    "ENABLE_WEBASSEMBLY": 0,
+    "USE_SKIA": 1,
+    "USE_SKIA_ENCODERS": 0
+  },
+  "expected_sources_present": [
+    "HTMLDocumentParser.cpp",
+    "RenderView.cpp",
+    "CSSParser.cpp",
+    "Page.cpp",
+    "GraphicsContextSkia.cpp",
+    "SkiaSerializedImageBuffer.cpp",
+    "FontCacheSkia.cpp"
+  ],
+  "gpu_sources_excluded": [
+    "GraphicsContextGLSkia.cpp",
+    "ImageBufferSkiaAcceleratedBackend.cpp",
+    "SkiaPaintingEngine.cpp",
+    "SkiaReplayCanvas.cpp",
+    "SkiaGPUAtlas.cpp"
+  ],
+  "host": "Linux arm64",
+  "ninja_version": "1.13.2",
+  "port": "JSCOnly with XOS_WEBCORE_SOFTWARE",
+  "status": "configured",
+  "translation_units": {
+    "all_targets": 1092,
+    "webcore": 550
+  }
+}

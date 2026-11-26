@@ -1,0 +1,18 @@
+{
+  "objects": [
+    {
+      "command_sha256": "e61539aa8cfacdd469510044ccdf0ac9b45d09cc6f8253b83ba03749adae4787",
+      "elf_sha256": "1b471f902cff753d14146c3b88465e128bc646e6124720a0dd0da27a138dec85",
+      "source": "ImageBuffer.cpp",
+      "undefined_gpu_symbols": []
+    },
+    {
+      "command_sha256": "79b6c872520946c73118d3ef08fe4e507eb25d60b5e8e322478def5521c25114",
+      "elf_sha256": "91f68c7050d42541ff6019ae3858e6b199da460de691b5ef8e1137b33c2182be",
+      "source": "SkiaSerializedImageBuffer.cpp",
+      "undefined_gpu_symbols": []
+    }
+  ],
+  "scope": "isolated buffer translation units using the software WebCore headers",
+  "status": "target_objects_compiled"
+}

@@ -23,6 +23,22 @@ endif
 ifeq ($(subdir),stdlib)
 sysdep_routines += xos_process_exit
 endif
+ifeq ($(subdir),malloc)
+# The shared cleanup assumes several optional GNU subdirs are present.
+ifeq ($(filter nss,$(subdirs)),)
+CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_NSS
+endif
+ifeq ($(filter resolv,$(subdirs)),)
+CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_RESOLV
+CFLAGS-thread-freeres.os += -DXOS_FREERES_WITHOUT_RESOLV
+endif
+ifeq ($(filter inet,$(subdirs)),)
+CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_INET
+endif
+ifeq ($(filter login,$(subdirs)),)
+CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_LOGIN
+endif
+endif
 ifeq ($(subdir),nptl)
 sysdep_headers += bits/pthread_stack_min-dynamic.h bits/pthread_stack_min.h
 sysdep_routines += xos_wait_word xos_lll_futex xos_timed_wait xos_thread_exit xos_thread_create xos_thread_tls xos_thread_entry

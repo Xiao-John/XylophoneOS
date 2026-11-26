@@ -42,7 +42,7 @@ Pumpkin 盘外代际由开发客体验证，ClarkE 的 LLInt 和 WTF 栈范围�
 | 现代应用兼容 Phase 1 | 已合，探针级；完整浏览器/Core/HTTPS 未通过 | [0085](work_log/0085_modern_app_compatibility_phase1.md) |
 | Pillow 静态成像 | 核心受限通过；线程 BLOCKED（`_malloc_r` vector14 未解） | [0088](work_log/0088_cpython_static_pillow.md) |
 | PX4-A 匿名 VM | sys67、续体、公开映射子集及 fork/exec 生命周期已实现，VM3 恢复后有定向客体记录。SDK 完整资格仍为 `implemented_unqualified`。 | [VM3 恢复记录](work_log/58b24599_vm3_lifecycle_sdk.md)、[VM2](work_log/588667af_vm2_full_qualification.md) |
-| 终端 / ncursesw W1 | 冻结基线 #66 通过 15 项终端交接和 12 项 ncursesw 子集。glibc 组合候选通过原 W1 locale、24×80 重入和宽屏交互。 | [冻结基线](work_log/0187_w1_final_acceptance.md)、[glibc 组合](work_log/77b48ecc_runtime_acceptance_checkpoint.md#ncursesw-串口组合) |
+| 终端 / ncursesw W1 | 冻结基线 #66 通过 15 项终端交接和 12 项 ncursesw 子集。主线 `f9d6384d` 的显式 glibc SDK 通过原 W1 locale、24×80 重入和宽屏交互。 | [冻结基线](work_log/0187_w1_final_acceptance.md)、[glibc 主线复跑](work_log/77b48ecc_runtime_acceptance_checkpoint.md#glibc-sdk-与-ncursesw-串口组合) |
 | 许可两叶（D7） | #67/#68 逐成员映射和分发材料保留。#169 修正 SPDX 与材料摘要，本阶段登记 0 open、1 deferred、7 N/A。 | [0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)、[登记](../licenses/open_items.json)、[整合修正](work_log/7a8d4aa9_integration_license_materials.md) |
 | SSG 批次 / Aurora Dock | 2026-11-04 批次合入 #45（Dock 图标）、#40（SSG consumers 派生证据）、#44→#49（Browser/Notes SSG 栈）和 #50（P3B 双 Provider、C30 改名及全量 manifest）。 | [Dock](work_log/0190_aurora_midnight_dock.md)、[双 Provider](work_log/0196_ssg_p3b_dual_provider.md) |
 | 日常工具 / UTF-8 / 游戏 | 各自有既有整合记录，游戏线沿用该批的交付范围。 | [0069](work_log/0069_daily_utilities.md)、[0068](work_log/0068_utf8_filenames.md)、[Open Adventure](work_log/0066_open_adventure_package.md) |

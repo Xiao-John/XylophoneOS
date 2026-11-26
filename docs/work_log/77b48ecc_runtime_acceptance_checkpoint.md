@@ -25,24 +25,31 @@ glibc 静态 C SDK、同源 newlib dash 和更新的 glibc dash 构建系统
 | 管道报告 | `5b64b0906b193e9e8d7e306dd86af61b108fbfc7bbb8b356cff30919f48f8235` |
 | 进程报告 | `2fc5450b81a76b6601347ec174d2bce83ff89d778acd310e8636f7eb6a42bb7c` |
 
-## ncursesw 串口组合
+## glibc SDK 与 ncursesw 串口组合
 
-将已验收的终端 `select`、已锁定的 ncursesw 6.5 与 Unicode 标量补丁组合于
-`2a31b409145ff28fd9fff6fcfd01e1aab8889cc7`，从干净的 SDK 和系统目录构建。
-实际 ncurses 配置检测到 `select`，`poll` 保持未实现。QEMU 11.1.3 运行
-原 W1 locale 测试、24×80 终端重入及宽屏测试，三项均退出 0。实测 Left、F1、
-分片 CJK、无效序列后恢复、组合输入和有颜色的串口显示。三项结束时资源计数
-均为 `129514 / 4 / 2`，终端服务在三项之间继续使用。
+[首次串口组合](2a31b409_glibc_ncurses_serial_combined.md)通过后，从已合入终端
+`select`、Unicode 标量补丁和显式 `stdio_transfer` 构建支持的实际主线
+`f9d6384d02914adf56ce50ccba146aedde093109` 重建普通系统和验签静态 SDK。
+候选 profile 通过工具与接收对象绑定，宿主 profile 套件通过 45 项，普通镜像
+通过 4 个 glibc G2 来宾用例。
+
+同一主线和 SDK 重新构建 ncursesw 6.5，使用已锁定的 xterm terminfo 和同源
+`C.utf8` 数据。QEMU 11.1.3 复跑原 W1 locale、24×80 重入和宽屏，三项均退出 0。
+实测 Left、F1、分片 CJK、无效序列后恢复、组合输入和有颜色的串口显示。
+三项结束时资源计数均为 `129514 / 4 / 2`。
 
 | 工件 | SHA-256 |
 | --- | --- |
-| 系统 `27b469b7e3c35968` 清单 | `0fb5dc704f0948421be6e45ef71594175467474fbf7f13cc43be8d4d9c072fe6` |
-| 系统 ISO | `ad502c5b9ba83bc1e96f33fdd56da82672c7e25feb344449b7c907d3cc8514e0` |
-| 验签 SDK 清单 | `4242fb246959eb95cc231b9cea45b02e190e45db02ef0ad69eb8d59db28e1f58` |
-| profile | `a4bf5a294f7f96238139c793982e090f90a761b393fcee13f8d2d0c29b3e6868` |
+| 系统 `6017e0e9a94219b5` 清单 | `f5e2e65603b9422fde6171ee04dcedddde93cbafd3d80f4f2fe5492031aab766` |
+| 系统 ISO | `9de3a1e5ddcb1f9bef78303e2f54d6b7cfbfebe98b52d1668553bccb7b03e092` |
+| 验签 SDK 清单 | `18fae63e3fde74b85f03c4059c1a8f1755c76e76642c24eb6f3eaf086b1b222e` |
+| 验签 SDK 归档 | `5e0f746dcfc794bbe4ab8271ac1f688c9c9eb061e25acf7df526bf9b0793f636` |
+| profile | `c507851bc91a92f538815739c2d0ebb65c6168a9c02c6d367e071f66f8bec3ec` |
+| profile 宿主日志 | `17c5ce7b7ffc9d9b32ad121248224a8b3441ae91b4eb7e5d27cd24c1db1bf49c` |
+| glibc G2 报告 | `c0ff1e29263cd0fc8b244960f50705d7646a47a31fc925fba45e5610440bc2c2` |
 | 同源 `LC_CTYPE` | `40680545df4f92443c15e7c6f51a7fdc9154ebedd9eff1ed5c48437039add365` |
-| W1 报告 | `77c80c7a2d6f7ef791899de8b06820bf1a3576e787f604f3e8a91818b2a7d604` |
-| 串口 | `eb5d4bc39fbad716aeac8e62456d13f3e8a355e6bc995b7432172042cb770c2b` |
+| W1 报告 | `144db46583a35790f501efd6d07a1361ed9be201bf026b79e84072987952eeaa` |
+| 串口 | `604bc125e8a256e3a100a216152355e357dabf7898165b1de1a83fad5ee77711` |
 
 已绑定的安装证据另见[冷启动安装与事务清理](03c0fe80_install_bundle_before_audio.md)。
 上述记录是各自源码与执行范围的验收。默认 SDK 切换、完整 C3、解释器链接与运行、

@@ -4,7 +4,7 @@
 #include "native_login.hpp"
 #endif
 #if XOS_PUMPKIN_USER_LOGIN
-#include "disk_test_store.hpp"
+#include "anchored_installation.hpp"
 #include "user_login.hpp"
 #if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
 #include "named_operator.hpp"
@@ -162,7 +162,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
 #endif
             const auto operation = mode == scenario::user_enroll ? user_login::operation::issue : user_login::operation::submit;
             if (!credentials_needed || credentials.identity.number == 0 ||
-                credentials.identity.scope != disk_test_realm ||
+                credentials.identity.scope != anchored_installation_realm ||
                 (mode == scenario::user_enroll && !destination_reserved)) return false;
             if (credential_exchanged) {
                 if (credential_slots_cleared || !user_login::header(credentials, operation, 2) ||

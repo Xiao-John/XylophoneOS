@@ -1,0 +1,14 @@
+PASS explicit provisioning and snapshot validation
+PASS enrollment verifier digest
+PASS authentication and owner-rights intersection
+PASS logout, credential rotation, detach and expiry
+PASS durable revocation and restart with stable identities
+PASS uncertain storage outcomes and fail-closed recovery
+PASS bounded resources and failed enrollment
+PASS daemon protocol request, replay, deadline and reply validation
+PASS resource execution uses server-owned rights, labels and live sessions
+PASS staged write, readback, publication ordering and revision comparison
+PASS isolated stage and recoverable publish failure outcomes
+PASS stale slot rejection against separately held generation
+PASS real host file slots retain account identity and revocation
+PASS Pumpkin named ownership, replacement, invalidation, recovery, full capacity and outcome unknown

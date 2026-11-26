@@ -83,13 +83,13 @@ def live_desktop(system, state, wallet, output, *, minimum_polls=0):
         commands.append(kwargs["qmp"])
         return command(*args, **kwargs)
 
-    def start_guest(args):
-        vm = start(args)
+    def start_guest(args, **options):
+        vm = start(args, **options)
         processes.append(vm.process)
         return vm
 
-    def track_submission(vm, operation, private_frame, destination, stored):
-        submit(vm, operation, private_frame, destination, stored)
+    def track_submission(vm, operation, private_frame, destination, stored, installation_realm):
+        submit(vm, operation, private_frame, destination, stored, installation_realm)
         sent.append(stored)
 
     def continue_session():

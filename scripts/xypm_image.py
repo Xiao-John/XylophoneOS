@@ -207,7 +207,7 @@ def profile_file_for(profile_id):
     return None
 
 
-def load_db(disk, profile):
+def load_db(disk, profile, *, require_initialized=False):
     # Refuse parallel ownership databases left by pre-rename development images.
     for old_name in ('xpm', 'xpkg'):
         for leaf in ('db.json', 'index.tsv'):
@@ -217,6 +217,8 @@ def load_db(disk, profile):
     info=disk.info(DB_PATH)
     if info is None:
         require(disk.info(INDEX_PATH) is None,'orphan xypm index without database')
+        require(not require_initialized,
+                'work disk has no xypm profile; initialize a dedicated disk with explicit --profile')
         return {'format_version':1,'target_profile':profile['id'],'packages':{},'created_directories':[],
                 'index_sha256':hashlib.sha256(b'xypm-index-v1\n').hexdigest()}
     require(not info['directory'] and info['size']<=1<<20,'invalid xypm database size/type')
@@ -292,10 +294,10 @@ def fd_hash(fd):
     return digest.hexdigest()
 
 
-def query_image(image, profile, operation='list', package_id=None):
+def query_image(image, profile, operation='list', package_id=None, *, require_initialized=False):
     image,_=regular_image(image)
     with tempfile.TemporaryDirectory(prefix='xypm_query_') as folder, Disk(image,folder,True) as disk:
-        db=load_db(disk,profile)
+        db=load_db(disk,profile,require_initialized=require_initialized)
         if operation=='verify-installed':return {'status':'verified','files':verify_files(disk,db)}
         if operation=='info':
             require(package_id in db['packages'],'package not installed')
@@ -303,7 +305,8 @@ def query_image(image, profile, operation='list', package_id=None):
         return {'packages':[{'id':name,'upstream_version':r['manifest']['upstream_version'],'revision':r['manifest']['revision'],'sha256':r['sha256']} for name,r in sorted(db['packages'].items())]}
 
 
-def transact(image, output, profile, operation, package=None, package_id=None, expected_sha256=None, fault_after=None):
+def transact(image, output, profile, operation, package=None, package_id=None, expected_sha256=None,
+             fault_after=None, *, require_initialized=False):
     """Explicit candidate export. fault_after is an internal test hook, never a package hook."""
     image,before=regular_image(image);output=Path(output)
     require(not output.exists() and not output.is_symlink(),'output image already exists')
@@ -343,7 +346,7 @@ def transact(image, output, profile, operation, package=None, package_id=None, e
             require(size==before.st_size,'source image size changed while copying')
             source_sha=digest.hexdigest();mutations=0
             with Disk(candidate,folder) as disk:
-                db=load_db(disk,profile);old=db['packages'].get(package_id)
+                db=load_db(disk,profile,require_initialized=require_initialized);old=db['packages'].get(package_id)
                 require((operation=='install' and old is None) or (operation in ('upgrade','remove') and old is not None),'package already installed or missing; choose explicit install/upgrade/remove')
                 # Preserve all locally modified managed files, including unrelated ones.
                 verify_files(disk,db)

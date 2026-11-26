@@ -1,0 +1,13 @@
+{
+  "files": {
+    "candidate.json": "a8f3019e58f631fa598602beff1d01f99b6c9e65a1b0b0eece43f842f7941563",
+    "frozen_newlib.serial.log.gz": "41b5f377872c1e243ad64fd6e16a9dfaddfdd6a068ff883a4b50ecb11adf7738",
+    "glibc_after.serial.log.gz": "ec61737026d74e1ee7922aea408c9993ee00995b6fc456afd6aa5f572400b700",
+    "glibc_before.serial.log.gz": "8755ef4e40eeb12cc89bb04f36c12bf9935d1d9f40ca798de730bc989e581e5c",
+    "host.log": "092ed3197d8fb58e79221f058876d9633baf3b29d66319fe210d32f0902850c2",
+    "initial_source_mismatch.json": "4f676f41f72168265d43c5010c4518f3dc3b5cbd4a2e87ac5171057c6d6b5987",
+    "licenses.log": "0d7e819569deb236608dbdcdf92fe5d587416080434def07248b2e134723e4ad",
+    "selection.json": "0328187832745b51de6c389254bd02cf2889701160f3e5381b8ec962173ffe82"
+  },
+  "version": 1
+}

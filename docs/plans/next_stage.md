@@ -132,3 +132,12 @@ EOF、偏移边界、缺失文件及资源回收。Pumpkin 基于安装器/应�
 视口需在独立用户进程组合验收。
 [ClarkE 字体流](../work_log/e55d60c9_clarke_skia_file_stream.md) ·
 [Pumpkin 会话撤销](../work_log/7d205c98_pumpkin_verified_desktop_snapshot.md)
+
+`bbf38ffb` 记录 QEMU 三次冷启动的冻结回退，顺序为原 v0.0.1-1024、签名 glibc 候选、
+原 v0.0.1-1024。glibc 阶段使用单独 FAT 盘，原盘摘要保持一致。两次旧系统均运行字节
+一致的冻结 XPK，回退后读回原用户数据，三项跨 profile 操作均拒绝。
+[冻结 newlib 回退](../work_log/4ffa226d_glibc_stock_fork_frozen_rollback.md)
+
+从 `bbf38ffb` 重建普通镜像 `e8b6babe05cb7a3e`，79 项常规客体检查、10 项许可材料和
+ABI 表通过。普通配置验证与各专项配置的独立回执共同构成当前整合证据。
+[常规组合](../work_log/bbf38ffb_next_stage_combined.md)

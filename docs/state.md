@@ -11,6 +11,9 @@ stock 安装及应用组合。签名 C/C++ 候选 `3bbbf73984b95c20` 通过冷�
 主线 `6bd530bf` 随后纳入 ClarkE 的 FAT 字体流修复，以及 Pumpkin 正在使用的 Mobius
 会话的管理员撤销。前者实测应用从 FAT 加载字形并恢复资源，后者通过 8 项桌面和
 13 项无桌面检查。Pumpkin 首次账户发放、完整 WebCore 页面和 SDK 默认切换继续按各自门验收。
+`bbf38ffb` 记录冻结 newlib 的三次冷启动回退。原发行盘在 glibc 运行期间完整摘要保持一致，
+回退后原 ELF 和用户数据可读回。[冻结回退](work_log/4ffa226d_glibc_stock_fork_frozen_rollback.md)
+[当前普通组合复验](work_log/bbf38ffb_next_stage_combined.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)
 [本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
 

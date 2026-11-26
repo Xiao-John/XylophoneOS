@@ -10,6 +10,9 @@ Use the matching frozen Qt 6.8.3 Widgets/Core/Gui build and threading SDK descri
 in [E17](../../../docs/plans/qt_e17_implementation.md). Do not mix Qt archives or
 SDK runtimes. These builders validate SDK hashes and record full commands/inputs.
 
+The glibc C/C++ candidate has a separate Qt Widgets build and Mobius entry.
+See the [glibc desktop and session reproduction](../../../docs/work_log/8f0020c4_mobius_glibc_widgets_guest.md).
+
 ```sh
 python3 src/ports/aurora_desktop/build.py \
   --sdk "$SDK" --qt-build "$QT_BUILD" --qt-source "$QT_SOURCE" \

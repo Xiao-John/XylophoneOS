@@ -47,6 +47,11 @@ IFS= read -r expanded <<UNQUOTED || exit 67
 expanded:$word:$((7+5))
 UNQUOTED
 test "$expanded" = 'expanded:expanded:12' || exit 68
+word=outer
+word=inner IFS= read -r prefixed <<ASSIGNMENT || exit 72
+$word
+ASSIGNMENT
+test "$prefixed:$word" = 'outer:outer' || exit 73
 printf 'DASH_GLIBC_HERE_PASS <%s> <%s>\n' "$literal" "$expanded"
 '''
 HEREDOC_FAILURE = r'''i=0
@@ -117,9 +122,10 @@ printf 'DASH_GLIBC_REDIRECT_PASS\n'
 '''
 EXTERNAL_HEREDOC = r'''exec 0<&-
 value=expanded
-/bin/stream_child line >/out/heredoc.log 2>&1 <<EOF || exit 81
+value=inner /bin/stream_child line >/out/heredoc.log 2>&1 <<EOF || exit 81
 external:$value
 EOF
+test "$value" = expanded || exit 87
 /bin/stream_child line >>/out/heredoc.log 2>&1 <<'EOF' || exit 82
 external:$value
 EOF

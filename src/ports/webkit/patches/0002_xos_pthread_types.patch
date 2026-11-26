@@ -1,0 +1,7 @@
+--- a/Source/WTF/wtf/PlatformUse.h
++++ b/Source/WTF/wtf/PlatformUse.h
+@@ -122,3 +122,3 @@
+-#if OS(UNIX)
++#if OS(UNIX) || OS(XOS)
+ #define USE_PTHREADS 1
+ #endif

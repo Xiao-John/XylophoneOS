@@ -1,0 +1,12 @@
+--- a/src/plugins/platforms/CMakeLists.txt
++++ b/src/plugins/platforms/CMakeLists.txt
+@@ -4,4 +4,9 @@
++# XOS applications link the Interactium QPA plugin from the port.
++if(CMAKE_SYSTEM_NAME STREQUAL "XOS" AND XOS_GLIBC_SDK)
++    return()
++endif()
++
+ if(ANDROID)
+     add_subdirectory(android)
+ endif()
+ if(NOT ANDROID AND NOT WASM)

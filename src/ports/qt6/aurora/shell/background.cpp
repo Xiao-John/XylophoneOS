@@ -26,7 +26,7 @@ Background::Background(QWidget *parent)
 
     m_configPath = QStringLiteral(":/aurora/catalog");
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    setWindowTitle(QStringLiteral("Aurora"));
+    setWindowTitle(QStringLiteral("Mobius"));
     m_desktop = new QWidget(this);
     m_desktop->setObjectName(QStringLiteral("Desktop"));
     m_desktop->setAttribute(Qt::WA_TransparentForMouseEvents);

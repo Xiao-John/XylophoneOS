@@ -34,14 +34,39 @@
 - 淘汰 Gecko：Stylo/WebRender 要求先做 Rust 目标移植，等于加一个平台项目。
 - 不走 QtWebEngine：它就是 Chromium，绕道承担同一冲突，另加一层构建面。
 
-候选上游基线：`wpewebkit-2.54.2`（commit `32717fabcb9dcad9aa00a54ef1f23e41ee64e849`，
-2026-10-31 经 GitHub tags API 核实）。正式源锁在 M0 完成并回填本文；
-源锁完成前本文不声明任何源码哈希。
+ClarkE 的 M0 对照使用 [锁定的 WPE WebKit 2.54.2 发布归档](../../src/ports/webkit/source_lock.json)。
+已下载并用上游发布摘要核对实际 49,565,492 字节。该基线用于比较构建路线，发行版本另行核验
+上游稳定分支更新。[发布记录](https://wpewebkit.org/release/wpewebkit-2.54.2.html)
 
 端口路线（M0 裁决项，凭真实交叉构建证据，不凭偏好预选）：
 
 - (a) WPE embedder API 为基：嵌入面成熟，代价是 GLib 系依赖整体移植。
-- (b) PlayStation 风格自定义端：无 GLib，平台层自写，代价是平台层工作量。
+- (b) XOS 自定义端：用 JSCOnly 分离验证解释器，WebCore 和多进程平台层另行实现。
+  WPE 发布归档不包含 PlayStation 的 CMake 端口选项。
+
+2026-11-26 的真实配置收口到以下边界。
+
+| 路线 | 本次结果 | 下一项验收 |
+| --- | --- | --- |
+| WPE | macOS 宿主显式提供 SDK 后，CMake 4.4.4 在上游 `FindGLib.cmake` 配置阶段停止 | Linux 宿主对照和 XOS 目标依赖闭包分别验证，不能把宿主依赖混入目标 |
+| JSCOnly | 宿主关闭归档缺失工具所需的 header map 后继续到 WTF；没有完成配置 | 用完整的上游工具输入做宿主控制，锁定目标 ICU 和实际需要的内存、时钟、线程语义 |
+| XOS JSCOnly | 使用签名验证过的独立 glibc C/C++ sysroot，GCC 16.2.0 两个编译器 ABI 探针通过；上游配置对 CMake 的目标 OS `Generic` 明确拒绝 | 增加独立 XOS 识别及平台审查，再验证解释器静态链和客体运行 |
+
+XOS 平台标识补丁已用同一锁定归档实测。CMake 在 `CMAKE_SYSTEM_NAME=XOS` 下通过
+原先的平台检查。首轮配置停在目标 ICU 的 `data`、`i18n` 和 `uc` 组件。
+[目标配置记录](../../src/ports/webkit/README.md)
+
+ICU4C 79.1 的三个 XOS 静态组件已经构建并在客体测试，覆盖 NFC、大小写、词边界和
+排序。纳入该 ICU 前缀后，JSCOnly 识别了三个目标静态归档，CMake 配置及生成均通过。
+用 glibc 系统分配器开始编译后，当前停在 WTF 对目标线程类型及挂起接口的假设。
+独立的 XOS 栈边界适配器和真实 pthread 子集已在客体通过。WTF 接入、协作挂起与
+目标布局生成门见 [静态 JSCOnly 线程契约](../contracts/clarke_jsc_threading.md)。
+JSCOnly 的两个静态目标提取器已链接，宿主 Ruby 已从目标布局生成原生 x86-64
+LLInt 汇编头。静态 WTF、解释器链接和客体运行仍是后续验收门。
+[ICU 构建器](../../src/ports/webkit/icu/README.md) · [ICU 客体记录](../work_log/4df1ab2c_clarke_icu4c_xos.md)
+
+现有 VirtIO-Net、N2/N3 已通过独立实测，ClarkE 的受控 HTTP 可作为网络对照。
+M3 仍须证明所选引擎的 NetworkProcess 走原生网络服务，并补真实 TLS、证书和失败路径。
 
 ## 3. 终态架构（各里程碑是它的纵切片，不是临时版）
 

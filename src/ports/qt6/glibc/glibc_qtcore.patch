@@ -1,0 +1,30 @@
+--- a/src/corelib/CMakeLists.txt
++++ b/src/corelib/CMakeLists.txt
+@@ -726,0 +727,4 @@
++)
++
++qt_internal_extend_target(Core CONDITION CMAKE_SYSTEM_NAME STREQUAL "XOS" AND NOT XOS_GLIBC_SDK
++    SOURCES
+--- a/src/3rdparty/sha3/brg_endian.h
++++ b/src/3rdparty/sha3/brg_endian.h
+@@ -38 +38 @@
+-#  include <machine/endian.h>
++#  include <endian.h>
+--- a/src/corelib/io/qfilesystemengine_unix.cpp
++++ b/src/corelib/io/qfilesystemengine_unix.cpp
+@@ -21,0 +22 @@
++#ifndef Q_OS_XOS
+@@ -23,0 +25 @@
++#endif
+@@ -764 +766 @@
+-#if QT_CONFIG(thread) && defined(_POSIX_THREAD_SAFE_FUNCTIONS) && !defined(Q_OS_OPENBSD)
++#if !defined(Q_OS_XOS) && QT_CONFIG(thread) && defined(_POSIX_THREAD_SAFE_FUNCTIONS) && !defined(Q_OS_OPENBSD)
+@@ -771 +773 @@
+-#if !defined(Q_OS_INTEGRITY) && !defined(Q_OS_WASM)
++#if !defined(Q_OS_XOS) && !defined(Q_OS_INTEGRITY) && !defined(Q_OS_WASM)
+@@ -790 +792 @@
+-#if QT_CONFIG(thread) && defined(_POSIX_THREAD_SAFE_FUNCTIONS) && !defined(Q_OS_OPENBSD)
++#if !defined(Q_OS_XOS) && QT_CONFIG(thread) && defined(_POSIX_THREAD_SAFE_FUNCTIONS) && !defined(Q_OS_OPENBSD)
+@@ -797 +799 @@
+-#if !defined(Q_OS_INTEGRITY) && !defined(Q_OS_WASM)
++#if !defined(Q_OS_XOS) && !defined(Q_OS_INTEGRITY) && !defined(Q_OS_WASM)

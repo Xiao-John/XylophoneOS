@@ -1,0 +1,29 @@
+{
+  "version": "2.54.2",
+  "source": "https://wpewebkit.org/releases/wpewebkit-2.54.2.tar.xz",
+  "release_notes": "https://wpewebkit.org/release/wpewebkit-2.54.2.html",
+  "archive_root": "wpewebkit-2.54.2",
+  "bytes": 49565492,
+  "sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+  "profile": "clarke_webkit_m0",
+  "patches": {
+    "patches/0001_xos_platform_identity.patch": "c1ad5c8a85833fe1c59d94dac9290bad58e5ad3f4516d15c148650aa03a52bbf",
+    "patches/0002_xos_pthread_types.patch": "1482e044f91027faeb09e61df8b808e7df8e970d1ef6b6a1d37b74e01dda21cf",
+    "patches/0003_xos_stack_runtime.patch": "88bbd9b8f7523a968f3c9bec5714b150da4d8d832c6ddcba86eafdb0a4691220",
+    "patches/0004_xos_jsc_mutator_owner.patch": "1b2d96184b932345016348f5e838a6f434f85b72ed00d7e31999ac9b47a7432d"
+  },
+  "llint_icu": {
+    "version": "79.1",
+    "archive_sha256": "d64f090773eb9027bf9e0d46c95c8a60ed6d0817429f516c3807c0554178acb4",
+    "sdk_tree_sha256": "2070dbad9ddd860a11dd1511f1268c1f62683df01d1a967bfa741e53df0799d6",
+    "artifacts": {
+      "lib/libicudata.a": "0b5168e5c536398e4985e56bb6bf6a8a6ddabcd0886e8b81913debe6a80caf52",
+      "lib/libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
+      "lib/libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83"
+    }
+  },
+  "platform_sources": {
+    "threading/xos_stack_bounds.cpp": "af13b958043e3b1fccec59a1b9e4796c6127d3d806d1f64dd1c1fe19eb122b03",
+    "threading/xos_stack_bounds.hpp": "265d42ea59bed1c1a947d40e2568fee3fd1b544ea82b2ad1bf0690115f7581b6"
+  }
+}

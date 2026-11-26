@@ -1,0 +1,40 @@
+--- a/Source/WTF/wtf/StackBounds.cpp
++++ b/Source/WTF/wtf/StackBounds.cpp
+@@ -23,3 +23,7 @@
+
+-#if OS(DARWIN)
++#if OS(XOS)
++
++#include "xos/xos_stack_bounds.hpp"
++
++#elif OS(DARWIN)
+
+@@ -52,3 +56,17 @@
+
+-#if OS(DARWIN)
++#if OS(XOS)
++
++StackBounds StackBounds::newThreadStackBounds(PlatformThreadHandle thread)
++{
++    clarke::stack_bounds bounds;
++    RELEASE_ASSERT(clarke::query_stack_bounds(thread, bounds) == 0);
++    return StackBounds { reinterpret_cast<void*>(bounds.high), reinterpret_cast<void*>(bounds.low) };
++}
++
++StackBounds StackBounds::currentThreadStackBoundsInternal()
++{
++    return newThreadStackBounds(pthread_self());
++}
++
++#elif OS(DARWIN)
+
+--- a/Source/WTF/wtf/PlatformJSCOnly.cmake
++++ b/Source/WTF/wtf/PlatformJSCOnly.cmake
+@@ -3,3 +3,7 @@
+ )
++
++if (WTF_OS_XOS)
++    list(APPEND WTF_SOURCES xos/xos_stack_bounds.cpp)
++endif ()
+
+ if (WIN32)

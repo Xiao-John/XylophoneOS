@@ -152,6 +152,7 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 | 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | allocated | 已实现，完整资格待验。[契约](anonymous_vm.md)与[恢复记录](../work_log/58b24599_vm3_lifecycle_sdk.md) |
 | files op 29 | `file::op::set_metadata` | 文件/包管理共用服务；FAT 诚实子集 | allocated (M1) | [契约](file_metadata_v1.md)；`tests/file_metadata_guest.py` |
 | files op 30/31 | `file::op::read_at/write_at` | G3 文件模块；显式位置，不改共享 offset | allocated | [契约](glibc_files_v1.md#定位读写与目录流)；`tests/glibc_files_extra_host.py` |
+| files op 32 | `file::op::remove_directory` | 在同一请求内确认目标为目录、为空并移除 | allocated | [路径变更](glibc_files_v1.md#路径变更)；`tests/fixtures/glibc_g3/path_mutations.c` |
 
 
 claimed必须位于对应reserved段，不能与现有接口或其他认领重复；不生成源码常量或能力。
@@ -162,7 +163,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 
 | 命名空间 | 当前分配/版本 | 下一项登记责任 |
 |---|---|---|
-| files op | wire v2、op1–31；20clone_session、21anonymous、22seal、23/24维护、25truncate、26cwd_set、27cwd_get、28resolve_path；29 set_metadata；30 read_at、31 write_at；op2 请求 bit12 为 list_identity；op3 请求 bit13 为 stat_check_exec，成功响应 bit3 为 stat_exec_checked | 文件/包管理共用服务；26由已认证parent_pid约束构造子继承；[文件身份与查询](file_identity.md)、[op29](file_metadata_v1.md)、[op30/31](glibc_files_v1.md)；下一操作从32协调登记 |
+| files op | wire v2、op1–32；20clone_session、21anonymous、22seal、23/24维护、25truncate、26cwd_set、27cwd_get、28resolve_path；29 set_metadata；30 read_at、31 write_at、32 remove_directory；op2 请求 bit12 为 list_identity；op3 请求 bit13 为 stat_check_exec，成功响应 bit3 为 stat_exec_checked | 文件/包管理共用服务；26由已认证parent_pid约束构造子继承；[文件身份与查询](file_identity.md)、[op29](file_metadata_v1.md)、[op30–32](glibc_files_v1.md)；下一操作从33协调登记 |
 | display action / operation | v1控制action0–9、request operation1–6 | 显示负责人；Qt通过用户态display_client接入，不另造同名内核接口 |
 | startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；glibc 终端接收 v2/v3 的受限客体资格见 [e6b8c410](../work_log/e6b8c410_glibc_terminal.md)，出站继承单独推进 |
 | glibc terminal | 既有 startup kind5 正式命名为 terminal；CRT capability bit1；libc 本地 TCGETS/TCSETS/TCSETSW/TCSETSF=0x5401–0x5404，FIONCLEX/FIOCLEX=0x5450/0x5451 | [glibc_terminal_v1](glibc_terminal_v1.md)；复用 native terminal v2，glibc termios 逐字段转换，实际资格按独立工作日志 |

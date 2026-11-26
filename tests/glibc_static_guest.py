@@ -112,6 +112,9 @@ def suite_cases(suite):
         cases.append(('g3_files_extra', 'glibc_g3/files_extra_public_probe.c', [], 0,
                       ['GLIBC_FILES_EXTRA_POSITIONED_PASS', 'GLIBC_FILES_EXTRA_DIRECTORY_PASS',
                        'GLIBC_FILES_EXTRA_PASS']))
+    if suite in ('path-mutations', 'all'):
+        cases.append(('g3_path_mutations', 'glibc_g3/path_mutations.c', [], 0,
+                      ['GLIBC_PATH_MUTATION_PASS']))
     if suite in ('cwd', 'all'):
         cases.append(('g3_cwd', 'glibc_g3/cwd_probe.c', ['/'], 0, ['GLIBC_CWD_ACCESS_PASS']))
     if suite in ('process', 'all'):
@@ -229,7 +232,7 @@ def main():
     parser.add_argument('--death-system-build', type=Path,
                         help='private system built with --glibc-files-death-probe')
     parser.add_argument('--output', type=Path, required=True)
-    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra',
+    parser.add_argument('--suite', choices=('g2', 'threads', 'files', 'files-extra', 'path-mutations',
                                             'cwd', 'process', 'pipe', 'exit', 'all'),
                         default='g2')
     parser.add_argument('--dash-receipt', type=Path, help='current-system dash C3 receipt for cwd and process suites')
@@ -388,6 +391,9 @@ def main():
             disk = Path(temporary) / 'work.img'
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
+            if args.suite in ('path-mutations', 'all'):
+                # An empty FAT directory must not shadow the virtual device namespace.
+                transfer(disk, 'mkdir', '/dev')
             if args.suite in ('files-extra', 'all'):
                 transfer(disk, 'mkdir', '/g3_enum')
                 transfer(disk, 'mkdir', '/g3_enum/sub')

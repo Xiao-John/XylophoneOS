@@ -47,6 +47,14 @@ def main():
     parser.add_argument("--eager-fork", action="store_true", help="use the eager-copy fork control profile")
     parser.add_argument("--glibc-files-death-probe", action="store_true",
                         help="test-only files self-exit trigger; requires an isolated output directory")
+    parser.add_argument("--files-private-storage-probe", action="store_true",
+                        help="test-only private storage on a formatted disposable work disk")
+    parser.add_argument("--files-private-client-probe", action="store_true",
+                        help="test-only boot delegation to a private slot client")
+    parser.add_argument("--pumpkin-durable-probe", action="store_true",
+                        help="test-only durable daemon over the private files lease")
+    parser.add_argument("--pumpkin-anchored-probe", action="store_true",
+                        help="headless developer test with an exclusive COM1 generation proxy")
     args = parser.parse_args()
     if args.eager_fork and args.cow1_probe:
         parser.error("select eager control or the opt-in COW1 probe, not both")
@@ -62,6 +70,14 @@ def main():
         parser.error("VM1 probe requires an isolated build subdirectory")
     if args.glibc_files_death_probe and BUILD == ROOT / "build":
         parser.error("glibc files death probe requires an isolated build subdirectory")
+    private_profiles = (args.files_private_storage_probe, args.files_private_client_probe,
+                        args.pumpkin_durable_probe, args.pumpkin_anchored_probe)
+    if any(private_profiles) and BUILD == ROOT / "build":
+        parser.error("files private storage probe requires an isolated build subdirectory")
+    if sum(private_profiles) > 1:
+        parser.error("select only one private storage test profile")
+    if args.pumpkin_anchored_probe and (args.terminal_supervisor_probe or args.ncurses_supervisor_probe):
+        parser.error("the anchored probe owns the test supervisor and COM1")
     if args.terminal_supervisor_probe and args.ncurses_supervisor_probe:
         parser.error("select at most one test supervisor")
     if (args.terminal_supervisor_probe or args.ncurses_supervisor_probe) and BUILD == ROOT / "build":
@@ -116,6 +132,10 @@ def main():
                                       "clock_irq_probe": args.clock_irq_probe, "vm1_probe": args.vm1_probe,
                                       "cow1_probe": args.cow1_probe, "cow_fork": not args.eager_fork,
                                       "glibc_files_death_probe": args.glibc_files_death_probe,
+                                      "files_private_storage_probe": args.files_private_storage_probe,
+                                      "files_private_client_probe": args.files_private_client_probe,
+                                      "pumpkin_durable_probe": args.pumpkin_durable_probe,
+                                      **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
                                       "virtio_gpu": gpu_config,
                                       "network_service": network_configuration(ROOT)}, sort_keys=True).encode())
     build_id = source_digest[:16]
@@ -132,7 +152,11 @@ def main():
 
     user_artifacts = build_users(ROOT, BUILD, nasm, run, build_id, args.terminal_supervisor_probe,
                                  args.ncurses_supervisor_probe,
-                                 glibc_files_death_probe=args.glibc_files_death_probe)
+                                 glibc_files_death_probe=args.glibc_files_death_probe,
+                                 files_private_storage_probe=args.files_private_storage_probe,
+                                 files_private_client_probe=args.files_private_client_probe,
+                                 pumpkin_durable_probe=args.pumpkin_durable_probe,
+                                 pumpkin_anchored_probe=args.pumpkin_anchored_probe)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:
@@ -283,6 +307,10 @@ def main():
         "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
         "glibc_files_death_probe": args.glibc_files_death_probe,
+        "files_private_storage_probe": args.files_private_storage_probe,
+        "files_private_client_probe": args.files_private_client_probe,
+        "pumpkin_durable_probe": args.pumpkin_durable_probe,
+        **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()

@@ -36,7 +36,20 @@ Qt/字体/图片组件按实际模块核许可与来源；静态分发的源码/
 说明在发行前单独核对，不把Qt整体改为XOS授权，也不以本计划代表许可审计完成。
 
 E16 实际配置、构建/链接、QPA 线程生命周期和复现见 [实施说明](qt_e16_execution.md)。
-G04/G05 仅对各自冻结输入及声明范围通过；G06/G07 未运行，不由首窗或Widgets资格推出。
+G04/G05 仅对各自冻结输入及声明范围通过。
+
+E18 的 Qt Declarative 6.8.3 源锁、静态宿主构建、QML 夹具与目标内存依赖见
+[2ebc9010](../work_log/2ebc9010_qt_e18_source_lock_and_headless_qml_build.md)。
+隔离 glibc SDK 的 QtCore 目标构建和客体冒烟已通过，见
+[8d6f3d2c](../work_log/8d6f3d2c_qt_e18_glibc_qtcore_target_build.md)。
+G06 的静态资源解释执行和虚拟内存配额负向已通过限定客体验证，见
+[d8bd3467](../work_log/d8bd3467_qt_e18_target_qml_and_vm.md)。
+
+E19/G07 的 Qt 6.8.3 glibc 软件场景经客体限定复验，覆盖真实 scanout、QML 文本和
+计时动画、键盘以及窗口和服务回收。见
+[c8f43a1f](../work_log/c8f43a1f_qt_e19_software_quick_guest_smoke.md)。
+独立 Quick 应用可用安装后的 Qt 目标前缀交叉构建，已在客体完成软件首帧和回收检查。
+构建入口和最小模块闭包见 [b9673c26](../work_log/b9673c26_qt_e19_external_quick_application_builder.md)。
 
 E17/G05 已在冻结输入上实现真实 Widgets 与 Aurora Notes，受限功能资格见
 [0078](../work_log/0078_qt_e17_aurora_qualification.md)，构建/保存/复现见

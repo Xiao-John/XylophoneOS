@@ -104,7 +104,7 @@ public:
         p.high_contrast=bits&2;p.reduce_transparency=bits&4;p.reduce_motion=bits&8;p.quality=aurora::Quality((bits>>4)&3);p.glass_enabled=!(bits&64);aurora::set_preferences(p);
         bar=new aurora::glass_panel(this);auto *top=new QHBoxLayout(bar);top->setContentsMargins(18,6,12,6);
         auto *brand=new QLabel("X Y L O P H O N E");auto font=brand->font();font.setBold(true);brand->setFont(font);top->addWidget(brand);top->addStretch();
-        top->addWidget(new QLabel("Aurora  /  Single-app session"));button("Exit",top,[]{qApp->quit();});
+        top->addWidget(new QLabel("Mobius  /  Single-app session"));button("Exit",top,[]{qApp->quit();});
         heading=new QLabel(this);subtitle=new QLabel(this);
         dock=new aurora::glass_panel(this);auto *nav=new QBoxLayout(QBoxLayout::LeftToRight,dock);nav->setContentsMargins(10,6,10,6);nav->setSpacing(8);
         auto dock_button=[&](const QString &name,int icon,std::function<void()> action){
@@ -169,7 +169,7 @@ public:
 };
 }
 int main(int argc,char **argv) {
-    QApplication app(argc,argv);aurora::initialize(app);
+    QApplication app(argc,argv);app.setApplicationName(QStringLiteral("Mobius"));aurora::initialize(app);
     desktop window(argc>1?std::atoi(argv[1]):16,argc>2?QString::fromUtf8(argv[2]):QString(),argc>2);
     window.setGeometry(app.primaryScreen()->geometry());window.showFullScreen();return app.exec();
 }

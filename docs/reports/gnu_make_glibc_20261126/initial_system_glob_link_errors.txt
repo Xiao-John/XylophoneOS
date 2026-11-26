@@ -1,0 +1,2 @@
+undefined reference to __getlogin_r
+undefined reference to __getpwnam_r

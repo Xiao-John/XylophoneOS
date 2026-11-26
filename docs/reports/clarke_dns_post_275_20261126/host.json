@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "tests": {
+    "tests/net_client_host.py": "92cb3b17dcabd42ce105341b4cfddc905fbf70dbd1d1ecbd83b6386f3fe6569d",
+    "tests/work_disk_cache.py": "49811d8a4f4824c31f350a91315c06f69e1bd9dd80192c31247849592f9e61ce",
+    "tests/xypm_host_cache.py": "c6cf22ce669867bb030be9b90f2e81271d80ae8525ca3807a547ce7efdced1ff"
+  },
+  "sdk": "pinned peers, exact responses, pre-send deadlines, no replay after delivery, reconnect sequence, clock failure",
+  "fat_cache": [
+    "WORK_DISK_CACHE_OK",
+    "XYPm_HOST_CACHE_OK"
+  ]
+}

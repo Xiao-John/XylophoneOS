@@ -1,0 +1,62 @@
+{
+  "status": "passed_subset",
+  "build_id": "bcb17ac93ce933bf",
+  "iso_sha256": "8d3f138c3142be8380a4edf65c3174f34e4873c585ba561e340c672466f6a212",
+  "system_manifest_sha256": "d9644f589790aa1b8b1a4955af7f71b2297c9a39b6d073cde2e4728c2f190a89",
+  "target_manifest_sha256": "f01641dbffd07bb185d37de8cc7f72e1875edb1f6462af41201aa6ee2957b334",
+  "probe_sha256": "f8ef5451aa0affebb36a2e57a4897d77ca35904e327e9baab6c806dac4c07fec",
+  "sample_sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+  "runner_sha256": "a1e0b11258e47318c478f2063374cc916f362315ce9e53232f4cfa9184283e25",
+  "dash_sha256": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+  "dash_receipt_sha256": "2096f94e3931fdfc91005aed98b9096dc008dbb41a20493f858d3653431fa19f",
+  "discovery": {
+    "webkit_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+    "webkit_find_module_sha256": "d6f1ef644469e86eb8f802b4d7181c4c0d50c9f8076a2bfcaa734d8e58757e52",
+    "fixture_sha256": "ac13079a1518df772f7425ee9c13a96772723481880b3c5d2fdb93e22b2a4ad8",
+    "freetype_version": "2.13.3",
+    "harfbuzz_version": "10.4.0",
+    "cmake_version": "cmake version 4.4.4"
+  },
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "entries": {
+    "xsh": {
+      "missing_sample_exit": 2,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "missing_seconds": 13.017,
+      "glyph_seconds": 13.307,
+      "deadline_seconds": 120,
+      "glyph": {
+        "index": 5042,
+        "width": 13,
+        "height": 18,
+        "ink": 124
+      }
+    },
+    "dash": {
+      "missing_sample_exit": 2,
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "missing_seconds": 182.661,
+      "glyph_seconds": 183.562,
+      "deadline_seconds": 420,
+      "glyph": {
+        "index": 5042,
+        "width": 13,
+        "height": 18,
+        "ink": 124
+      }
+    }
+  }
+}

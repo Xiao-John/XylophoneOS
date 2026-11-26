@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "scope": "installed ClarkE controlled DNS and HTTPS on the merged #275 base",
+  "source": {
+    "merged_base_commit": "b93caa08fb966b3ec3f6b5fe0161c117bd1a6bdd",
+    "system_browser_and_test_commit": "1ae46835de0fd5be4da761dda279d27ddac21040",
+    "system_browser_and_test_tree": "72d766835f060aaafcbcc4e16cfcb5c8ddf61a0e"
+  },
+  "toolchain_container_id": "sha256:a71fb65026ab764d7883067a05a6a63a3fc5c3b8abaf6226e5cd0997831cdcc2",
+  "system_manifest_sha256": "6973c9fae081a72b7327ce4230563baa9bd4bc0a9ca8e8706d62dfee972761e8",
+  "tls_receipt_sha256": "008e7ca0b0a050ddad49163bc30a4232aed856c3332e9b9da18faf2a2ecc13a8",
+  "runner_sha256": "ee52c01a54cb74f45cd8f736b005f0c6cf255a899f0b5b244624b27a8b299a60",
+  "fat_cache_source_sha256": "9ad9180df909cabfc4e3820089680ca03e1df1ebe2c2da66dada214c76c7fe28",
+  "raw_host_parser_report_sha256": "e005202ad56aacf9d537d7e741556df1faaeb6e05997616fd59803b1bdec594d",
+  "scanout": {
+    "width": 800,
+    "height": 600,
+    "crop_xyxy": [
+      32,
+      222,
+      768,
+      550
+    ],
+    "rgb_counts": {
+      "244,247,252": 226673,
+      "24,50,76": 1501,
+      "183,53,118": 1024
+    },
+    "raw_ppm_sha256": "f9be0d845f5ca538fe50c7089d4c3878cc5cd70c358b56ac749c645a9b99c219"
+  },
+  "files": {
+    "guest.json": "3b98d5444a78fbc68c0cca9a6bcb578ad926184682ad2322a644fdf10c5f89a7",
+    "guest_qemu.log.gz": "e141baa8b01eda3b3d6d468c39b4a6213960ac13d68ddd64180ff43131697aed",
+    "host.json": "883686ec90c49ed3fdee04798b4dc8cf268356a9add2ccd69b74a5e4a9a01174",
+    "http-parser.json": "05cc4266be607090902b10f94e676391ed2d24a33b266c1cb32e7b0a1b38e1d2",
+    "https.ppm.gz": "feb6fa7fecfb9a2d9a285ee7aa39dd9c939846cfd374800213027e7c34245788",
+    "license-audit.txt": "d07629fe41a84dd2442869cee935b278fde279b4d3e931927844c1ea4c3c7d04",
+    "serial.log.gz": "58bbc5758d0be9f4320c4067dc29239434183c7ae25b886d34c48f419f2991cf"
+  }
+}

@@ -16,6 +16,7 @@ from process_smoke import command,resources
 from task_smoke import send_bytes,pump
 from dash_b2_smoke import build_probe
 from xypm_format import canonical,sha_file
+from work_disk import host_tool
 
 
 def main():
@@ -33,11 +34,12 @@ def main():
         assert previous['image_sha256']==report['image_sha256'] and previous['dash_sha256']==report['dash_sha256']
         assert len(previous['checks'])==6
         report['checks']=previous['checks'];report['baseline']=previous['baseline']
-    helper=ROOT/'build/work_disk_host';guest=None
+    guest=None
     try:
         with tempfile.TemporaryDirectory(prefix='xos_thread_merge_') as folder:
             folder=Path(folder)
             if not args.iso_only:
+                helper=host_tool(build=False)
                 folder=Path(folder);disk=folder/'work.img';create_fat32(disk,512)
                 def transfer(op,name,source=None):
                     args=[str(helper),str(disk),op,name]

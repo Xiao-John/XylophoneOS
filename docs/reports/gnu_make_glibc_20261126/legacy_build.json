@@ -1,0 +1,22 @@
+{
+  "bytes": 1097776,
+  "commit": "c546c3a5724c81cee9a11d816a38ccdf17472129",
+  "elf": ".cache/xos_seed/make/bf1a889d10667ebcfb79/make",
+  "fingerprint": "bf1a889d10667ebcfb79",
+  "guest_path": "/usr/bin/make",
+  "profile": "sbase_make_xos_explicit_always_build_v1",
+  "receipt": ".cache/xos_seed/make/bf1a889d10667ebcfb79/manifest.json",
+  "requires": [
+    "explicit -B",
+    "real fork/execve",
+    "/usr/bin/dash",
+    "inherit-create authority"
+  ],
+  "sdk_manifest_sha256": "a016ee1f2cb939d83e050c34e3de6b836ca5d6134b0edb9984707dc077edd4ee",
+  "sha256": "2e02999ba7da953bd3e27cb99c3128c0ce91bbdf9f174b1f01f07e8539fea889",
+  "source_commit": "b906acbfe8e1bdd59fcdc5da1ba81f4865f3f5b8",
+  "status": "built_not_run",
+  "system_build_id": "071adb4852ebe0e0",
+  "tree": "a58d176568a1b33d435a7628740b68289ea5c07a",
+  "upstream_license_sha256": "eb0b719b3327af6c4b480cd21f7944e944a5ddf571c04572eb8d025f52e056c6"
+}

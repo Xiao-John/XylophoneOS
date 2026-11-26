@@ -81,3 +81,10 @@ ClarkE 完整引擎需要在客体执行后再参与浏览器组合验收。
 [同盘组合](../work_log/dcbbd42a_desktop_products_combined_guest.md) ·
 [D1 入口 PR #260](https://github.com/Xiao-John/XylophoneOS/pull/260) ·
 [发布预览 PR #263](https://github.com/Xiao-John/XylophoneOS/pull/263)
+
+主线 `1c7f9abb` 含 JavaScriptCore 静态 shell 和 16 次 Test262 子集执行，
+Pumpkin FAT 导入和多账户验收补齐，D1 映射器和私有 DNS 诊断已合入。普通镜像
+重建后通过 79 项客体检查、10 项许可材料和 ABI 表。当前继续推进 D1 真正的
+运行时重定位、受信部署的 Pumpkin 代际与凭据、ClarkE 的 WebCore 与网络组合，
+并保持 SDK 切换与回退的独立验证。
+[普通镜像复验](../work_log/1c7f9abb_next_stage_mainline_replay.md)

@@ -30,8 +30,10 @@ from xos_app import tree_receipt
 
 
 PAIR = wire_name('pair.n4.test')
+REFERRAL = wire_name('referral.n4.test')
+SOA = wire_name('soa.n4.test')
 FLAGS = {wire_name(f'{label}.n4.test'): flags for label, flags in
-         (('missing', 0x8183), ('empty', 0x8180), ('failure', 0x8182),
+         (('missing', 0x8183), ('empty', 0x8180), ('referral', 0x8180), ('soa', 0x8180), ('failure', 0x8182),
           ('refused', 0x8185), ('truncated', 0x8380), ('silent', None), ('cancelled', None))}
 
 
@@ -63,7 +65,7 @@ class ResolverPeer(TcpWindowPeer):
             return
         self.transactions[key] = {'question_sha256': hashlib.sha256(query[12:]).hexdigest(),
                                   'source_port': source, 'transaction_id': txid, 'retries': 0}
-        record, count = b'', 0
+        record, count, authority = b'', 0, 0
         if qname == PAIR:
             self.pairs += 1
             self.queried.set()
@@ -77,7 +79,15 @@ class ResolverPeer(TcpWindowPeer):
             flags = FLAGS[qname]
             if flags is None:
                 return
-        response = struct.pack('!HHHHHH', txid, flags, 1, count, 0, 0) + query[12:] + record
+            if qname in (REFERRAL, SOA):
+                nameserver = wire_name('ns.n4.test')
+                record = struct.pack('!HHHIH', 0xc00c, 2, 1, 30, len(nameserver)) + nameserver
+                authority = 1
+                if qname == SOA:
+                    soa = nameserver + wire_name('hostmaster.n4.test') + struct.pack('!IIIII', 1, 60, 30, 3600, 30)
+                    record += struct.pack('!HHHIH', 0xc00c, 6, 1, 30, len(soa)) + soa
+                    authority += 1
+        response = struct.pack('!HHHHHH', txid, flags, 1, count, authority, 0) + query[12:] + record
         self._udp(53, source, response)
 
 
@@ -184,6 +194,7 @@ def main():
     output.mkdir(parents=True, exist_ok=False)
     system, fixtures = args.system.resolve(), args.fixtures.resolve()
     report = {'status': 'failed', 'legacy': args.legacy, 'runner_sha256': digest(Path(__file__))}
+    expected_transactions = 0 if args.legacy else len(FLAGS) + 2
     try:
         identity = validate(system, fixtures, args.legacy)
         image = system / 'xos-install.iso'
@@ -204,7 +215,7 @@ def main():
                 report['qemu_version'] = subprocess.check_output(
                     [guest.command[0], '--version'], text=True).splitlines()[0]
                 exercise(guest, peer, args.legacy, report)
-                if peer.error or len(peer.transactions) != (0 if args.legacy else 9):
+                if peer.error or len(peer.transactions) != expected_transactions:
                     raise AssertionError(f'unexpected wire transactions: {peer.error}, {peer.transactions}')
             finally:
                 peer.release.set()
@@ -213,7 +224,7 @@ def main():
                 finally:
                     if guest is not None:
                         guest.close()
-            if peer.error or len(peer.transactions) != (0 if args.legacy else 9):
+            if peer.error or len(peer.transactions) != expected_transactions:
                 raise AssertionError(f'resolver peer did not finish cleanly: {peer.error}, {peer.transactions}')
             report['transactions'] = list(peer.transactions.values())
             report['captured_dns_queries'] = captured_dns_queries(capture)

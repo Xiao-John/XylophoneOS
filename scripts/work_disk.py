@@ -1,14 +1,19 @@
 # SPDX-License-Identifier: Apache-2.0
 """Explicit OFFLINE file transfer to a regular XOS disk image. Never run with QEMU open."""
 import argparse
+import fcntl
 import hashlib
 import os
 from pathlib import Path
+import platform
 import shutil
 import stat
 import subprocess
+import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+HOST_CACHE = f'{sys.platform}-{platform.machine().lower()}'
 
 def _uid():
     return getattr(os, 'getuid', lambda: 0)()
@@ -45,23 +50,32 @@ def _cache_valid(output, stamp, source_digest):
     return _sha256_file(output) == fields[1]
 
 
-def host_tool():
+def host_tool(*, build=True):
     sources = [ROOT / 'scripts/work_disk_host.cpp', ROOT / 'src/third_party/fatfs/ff.c',
                ROOT / 'src/user/services/fatfs_unicode.cpp']
     headers = list((ROOT / 'src/third_party/fatfs').glob('*.h'))
     digest = hashlib.sha256(b''.join(p.read_bytes() for p in sources + sorted(headers))).hexdigest()
-    output = ROOT / 'build/work_disk_host'
+    output = ROOT / 'build/host_tools' / HOST_CACHE / 'work_disk_host'
     stamp = output.with_suffix('.sha256')
-    if not _cache_valid(output, stamp, digest):
-        output.parent.mkdir(exist_ok=True)
-        temporary = output.with_name(output.name + '.%d.tmp' % os.getpid())
-        subprocess.run([shutil.which('clang++') or 'c++', '-std=c++17', '-O2', '-w',
-                        '-I', str(ROOT / 'src/third_party/fatfs'), *map(str, sources),
-                        '-o', str(temporary)], check=True)
-        os.replace(temporary, output)
-        stamp_tmp = stamp.with_name(stamp.name + '.%d.tmp' % os.getpid())
-        stamp_tmp.write_text(digest + '\n' + _sha256_file(output) + '\n')
-        os.replace(stamp_tmp, stamp)
+    if _cache_valid(output, stamp, digest):
+        return output
+    if not build:
+        raise FileNotFoundError(f'prepare the FAT host tool for {HOST_CACHE} first')
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.with_suffix('.lock').open('ab') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        if _cache_valid(output, stamp, digest):
+            return output
+        with tempfile.TemporaryDirectory(dir=output.parent) as folder:
+            temporary = Path(folder) / output.name
+            subprocess.run([shutil.which('clang++') or 'c++', '-std=c++17', '-O2', '-w',
+                            '-I', str(ROOT / 'src/third_party/fatfs'), *map(str, sources),
+                            '-o', str(temporary)], check=True)
+            stamp_tmp = temporary.with_suffix('.sha256')
+            stamp_tmp.write_text(digest + '\n' + _sha256_file(temporary) + '\n')
+            os.replace(temporary, output)
+            os.replace(stamp_tmp, stamp)
     return output
 
 def transfer(image, operation, path, source=None):

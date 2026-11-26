@@ -1,0 +1,24 @@
+{
+  "status": "failed",
+  "build_id": "7b3abe6e956a3211",
+  "iso_sha256": "eff0fa307e93a7b37c3c503f82979bfefeed29ea1892e0c76e49b5b6f50a8664",
+  "system_manifest_sha256": "ccc74911d891156c111a8278878ef125d43e6b551dc58d84e95d74608d3a1cf9",
+  "target_manifest_sha256": "d3ffe1764f9f5ad31c21bd2646ed2985fb444744f777c24ed74b80b8fb7762c3",
+  "probe_sha256": "a94634242e185ee3556af94c70811c5bbd4aa87c51b4fd18c29ad32e1fa3ba15",
+  "sample_sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+  "runner_sha256": "7d5190a9fd1cea9ebed1e4e827bb51a1011ec537ea9d31371974867c4be1bcff",
+  "discovery": {
+    "webkit_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+    "webkit_find_module_sha256": "d6f1ef644469e86eb8f802b4d7181c4c0d50c9f8076a2bfcaa734d8e58757e52",
+    "fixture_sha256": "ac13079a1518df772f7425ee9c13a96772723481880b3c5d2fdb93e22b2a4ad8",
+    "freetype_version": "2.13.3",
+    "harfbuzz_version": "10.4.0",
+    "cmake_version": "cmake version 4.4.4"
+  },
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ]
+}

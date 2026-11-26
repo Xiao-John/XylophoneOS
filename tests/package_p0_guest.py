@@ -15,6 +15,7 @@ from xypm_format import DEFAULT_PROFILE, canonical, load_json, require, sha_file
 from boot_smoke import Guest
 from make_work_disk import create_fat32
 from task_smoke import pump, send_bytes
+from work_disk import host_tool
 
 
 def main():
@@ -28,8 +29,7 @@ def main():
     image=system/'xos-install.iso'
     require(metadata['build_id'] in profile['verified_system_builds'],'system not registered for profile')
     require(sha_file(image)==metadata['artifacts']['xos-install.iso']['sha256'],'image differs from receipt')
-    helper=ROOT/'build/work_disk_host'
-    require(helper.is_file(),'existing work_disk_host required; this runner never rebuilds shared tools')
+    helper=host_tool(build=False)
     report={'status':'failed','scope':'P0 payload transfer via existing bridge; no package installation DB',
             'system_build_id':metadata['build_id'],'image_sha256':sha_file(image),
             'profile':profile['id'],'host_bridge_sha256':sha_file(helper),'checks':[]}

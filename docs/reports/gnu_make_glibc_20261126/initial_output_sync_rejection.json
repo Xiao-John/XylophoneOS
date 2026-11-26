@@ -1,0 +1,10 @@
+{
+  "build_id": "95aa5abe0aaa5326",
+  "case": {
+    "expected_status": 2,
+    "name": "reject_output_sync",
+    "output": "gmake -B -r -f /work/Makefile --output-sync=target all\n[process] event=started pid=37 parent=7\r\n[process] pid=37 address_space=0x0000000000353000\r\n[loader] started pid=37 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=37\r\ngmake: tmpfile: No such file or directory\ngmake: cannot create temporary file [guest temporary output-sync file]: Function not implemented\ngmake: cannot open output-sync lock file, suppressing output-sync.\ngmake: cannot open output-sync lock file, suppressing output-sync.\n[task] event=reclaimed pid=37 pages=346\r\n[wait] pid=37 kind=exited code=2\nxsh> "
+  },
+  "image_sha256": "31c7c5738e6ad82cb987e395a685d2d938084ef1ed24353f0ecec63935133dcb",
+  "make_sha256": "bcbff6bfcc6479d1d7caaf3e5ddfc3948009a572baf1cb250cc2e9fd6cd3194a"
+}

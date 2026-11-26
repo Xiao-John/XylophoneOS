@@ -118,6 +118,7 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     if (sdk::equal(args[1], "errors")) {
         struct error_case { const char* name; i64 status; };
         const error_case errors[]{{"missing.n4.test", name_not_found}, {"empty.n4.test", name_no_data},
+                                  {"referral.n4.test", dns_failure}, {"soa.n4.test", name_no_data},
                                   {"failure.n4.test", dns_failure}, {"refused.n4.test", dns_refused},
                                   {"truncated.n4.test", dns_truncated}, {"silent.n4.test", timeout}};
         for (const auto& test : errors) {

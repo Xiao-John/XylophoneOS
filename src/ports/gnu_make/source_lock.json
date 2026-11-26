@@ -1,0 +1,11 @@
+{
+  "version": "4.4.1",
+  "target": "x86_64-unknown-xos",
+  "source": "https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz",
+  "sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+  "signature": "https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz.sig",
+  "signature_sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929",
+  "signer_primary_fingerprint": "6D4EEB02AD834703510B117680CB727A20C79BB2",
+  "upstream_keyring": "https://ftp.gnu.org/gnu/gnu-keyring.gpg",
+  "license": "GPL-3.0-or-later"
+}

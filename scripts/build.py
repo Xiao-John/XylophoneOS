@@ -30,6 +30,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--output-dir", type=Path, default=BUILD)
+    parser.add_argument("--net-dns-probe", action="store_true",
+                        help="build an isolated Xsh diagnostic with the private resolver")
     parser.add_argument("--quiet-demos-on-launch", action="store_true",
                         help="stop boot demos before Xsh launches an external ELF unless demo keep was selected")
     parser.add_argument("--capacity-probe", action="store_true",
@@ -74,6 +76,9 @@ def main():
         parser.error("invalid VirtIO-GPU diagnostic budget")
     gpu_config = {"dma_page_limit": args.gpu_dma_page_limit, "poll_limit": args.gpu_poll_limit}
     BUILD = args.output_dir.resolve()
+    if args.net_dns_probe and (BUILD == ROOT / "build" or args.pumpkin_anchored_probe or
+                               args.terminal_supervisor_probe or args.ncurses_supervisor_probe):
+        parser.error("--net-dns-probe requires an isolated output and the Xsh supervisor")
     if BUILD != ROOT / "build" and ROOT / "build" not in BUILD.parents:
         raise SystemExit("output directory must be build/ or one of its subdirectories")
     if args.vm1_probe and BUILD == ROOT / "build":
@@ -164,7 +169,7 @@ def main():
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
                                       "virtio_gpu": gpu_config,
-                                      "network_service": network_configuration(ROOT)}, sort_keys=True).encode())
+                                      "network_service": network_configuration(ROOT, args.net_dns_probe)}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
@@ -188,7 +193,8 @@ def main():
                                  pumpkin_user_login=args.pumpkin_user_login,
                                  pumpkin_user_resource=args.pumpkin_user_resource,
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
-                                 quiet_demos_on_launch=args.quiet_demos_on_launch)
+                                 quiet_demos_on_launch=args.quiet_demos_on_launch,
+                                 net_dns_probe=args.net_dns_probe)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:

@@ -16,7 +16,8 @@
     "recipe": "build.py",
     "patches": [
       "patches/0001_dns_reply_validation.patch",
-      "patches/0002_dns_bounded_entropy.patch"
+      "patches/0002_dns_bounded_entropy.patch",
+      "patches/0003_dns_lifecycle.patch"
     ]
   },
   "package": {
@@ -29,7 +30,7 @@
     "iso_members": []
   },
   "status": "source_locked",
-  "note": "当前源码增加两份 hash-bound DNS 校验/有界熵补丁；production DNS/DHCP 保持关闭。2026-11-13 raw net_ping 的旧 XPK 客体证据保留；当前配方需重新打包和客体验收。N4-D1 宿主限定资格单独记录。",
+  "note": "当前源码增加锁定摘要的 DNS 校验、有界熵与生命周期补丁；production DNS/DHCP 保持关闭。2026-11-13 raw net_ping 的旧 XPK 客体证据保留；当前配方需重新打包和客体验收。N4-D1 宿主限定资格单独记录。",
   "evidence": [
     "docs/reports/lwip_2_2_1_20261113/README.md"
   ]

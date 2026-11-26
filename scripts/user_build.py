@@ -16,7 +16,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 ncurses_supervisor_probe=False, glibc_files_death_probe=False,
                 files_private_storage_probe=False, files_private_client_probe=False, pumpkin_durable_probe=False,
                 pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False,
-                pumpkin_user_resource=False, pumpkin_named_resource_store=False, quiet_demos_on_launch=False):
+                pumpkin_user_resource=False, pumpkin_named_resource_store=False,
+                quiet_demos_on_launch=False, net_dns_probe=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -130,11 +131,13 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     interactium_objects = [compile_source(root / "src/user/interactium" / name)
                           for name in ("window_manager.cpp", "service.cpp", "dispatcher.cpp",
                                        "service_loop.cpp", "ipc_transport.cpp")]
-    net_objects, net_includes, net_configuration = build_lwip_service(root, build, sdk, run, tool, X86_FLAGS)
+    net_objects, net_includes, net_configuration = build_lwip_service(root, build, sdk, run, tool, X86_FLAGS,
+                                                                     net_dns_probe)
     if net_configuration["enabled"]:
         net_objects += [compile_source(root / "src/user/network" / name,
                                       (*net_includes, "-Os", "-ffunction-sections", "-fdata-sections"))
-                        for name in ("service_core.cpp", "lwip_stack.cpp", "service_loop.cpp")]
+                        for name in ("service_core.cpp", "lwip_stack.cpp", "service_loop.cpp",
+                                     *(("dns_probe.cpp",) if net_dns_probe else ()))]
     archive = sdk / "lib/libxos.a"
     if archive.exists():
         archive.unlink()
@@ -207,6 +210,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             extra_flags += ("-Os", *private_client_flags, *durable_flags)
             if quiet_demos_on_launch:
                 extra_flags += ("-DXOS_QUIET_DEMOS_ON_LAUNCH=1",)
+            if net_dns_probe:
+                extra_flags += ("-DXOS_NET_DNS_PROBE=1",)
         if name == "files" and glibc_files_death_probe:
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "files":
@@ -217,6 +222,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             extra_flags += ("-Os", "-ffunction-sections", "-fdata-sections")
             if net_configuration["enabled"]:
                 extra_flags += ("-DXOS_NET_STACK=1",)
+            if net_dns_probe:
+                extra_flags += ("-DXOS_NET_DNS_PROBE=1",)
         if name in ("cpp_runtime_probe", "tls_exit_probe"):
             extra_flags += ("-fuse-cxa-atexit", "-ftls-model=local-exec",
                             "-funwind-tables", "-fasynchronous-unwind-tables",

@@ -21,6 +21,7 @@ public:
     void shutdown();
     i64 poll();
     stack_api api();
+    i64 monotonic_time();
     u32 milliseconds();
     u32 random_word();
     i64 random_checked(u32& result);

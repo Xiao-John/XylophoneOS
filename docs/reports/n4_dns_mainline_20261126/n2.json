@@ -1,0 +1,187 @@
+{
+  "status": "passed",
+  "runner_sha256": "222efcd9abe3eca41878fd20ad9576b1d66b9d93a93ae79597b8a3464c3bfd48",
+  "checks": [
+    "cross_pid_handles_and_controller_operations_denied",
+    "four_applications_eight_connections_controller_reserved_budget",
+    "kill_reclaims_all_application_connections_and_resources",
+    "cancel_reclaims_connections_and_resources",
+    "exit_reclaims_connections_and_resources",
+    "exec_reclaims_connections_and_resources",
+    "stall_reclaims_connections_and_resources",
+    "fault_reclaims_connections_and_resources",
+    "pending_data_revoke_new_pid_reuse_and_revoked_pid_reconnect_denial",
+    "idle_60s_connection_and_resource_reclamation",
+    "orderly_reset_restart_and_precise_resource_baseline",
+    "service_kill_closes_peers_retains_dma_and_rejects_three_regrants",
+    "platform_reboot_restores_driver_and_final_precise_resources"
+  ],
+  "revocations": [
+    {
+      "round": 0,
+      "nonce": "8978088a7781d5362c9267d75d2f96d0",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "nonce": "3cf7059bafc6b850122cb4891bf61b28",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "nonce": "0bbc58064297eb1bd191a79256499880",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    },
+    {
+      "round": 3,
+      "nonce": "fce5817e792332e924a43d2921d0bea5",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    },
+    {
+      "round": 4,
+      "nonce": "abffe87cbd206bf43648168b4dbc2d9e",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    },
+    {
+      "round": 5,
+      "nonce": "7c3373597eb2f0c9a4b5ddd946453b34",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    },
+    {
+      "round": 6,
+      "nonce": "541aa6a3adf508439be58d603eeda51d",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    },
+    {
+      "round": 7,
+      "nonce": "e3b2a39c65ee09f683209737fbdbfecf",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 130000000,
+      "status": "passed"
+    },
+    {
+      "round": 8,
+      "nonce": "dcd96f868845c03dcf94f9e02a05cbd3",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    },
+    {
+      "round": 9,
+      "nonce": "b82b0458cc5a671e73c61cdd32eec9e9",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 130000000,
+      "status": "passed"
+    },
+    {
+      "round": 10,
+      "nonce": "d46f947390947959ff0856804391588c",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 130000000,
+      "status": "passed"
+    },
+    {
+      "round": 11,
+      "nonce": "53d5352b5378ea5df747504627fd0fcd",
+      "echoes": 1,
+      "empty_reply_observed_before_echo": true,
+      "retained_datagram_bytes": 32,
+      "nonconsuming_reply_lower_bound": 96,
+      "revoke_before_reply_timeout_ns": 120000000,
+      "status": "passed"
+    }
+  ],
+  "not_run": [
+    "in_place_driver_crash_recovery_requires_new_device_contract",
+    "unresponsive_device_reset_injection",
+    "packet_loss_reordering",
+    "DNS_DHCP_TLS",
+    "deterministic_same_poll_round_revoke_accept_schedule"
+  ],
+  "build_id": "6895a7b162ab789c",
+  "image_sha256": "bdecd071c30bd72eee9acd88a056134d4cbbc31ba437f431f1f2b5e12c950dad",
+  "system_manifest_sha256": "a3aa2d8f11f227a24e31611cb18cc2821fdc541d519bb7308b689267f115d4d9",
+  "fixture_receipt_sha256": "735766a75c9747933c383cdd167eb87a74861ecb51837ed5218add639c8733c2",
+  "sdk_tree_sha256": "a80eda4e21f5f561d23b234653168035f553cb66665a2cc5ac238633f98c0285",
+  "artifacts": {
+    "net_lifecycle_probe.elf": "070e21ac00c296d9e6e2f30f99c3342cac8744c08936c0e89dd118fe913e5618",
+    "net_exec_receiver.elf": "ed03914fa4ad3c557dc24dd3707aa93ab75fe83d8b7d60c2584e9cbab2ca0271"
+  },
+  "initial_disk_sha256": "b29e1fae3dddc30fc5286c0f007aa8311eab7793d7e2dbd0ff698943b7ee5a65",
+  "baseline": [
+    129623,
+    3,
+    1
+  ],
+  "before_service": [
+    129792,
+    2,
+    0
+  ],
+  "service_pid": 11,
+  "reply_timeout_ns": 520000000,
+  "idle_timeout_ns": 59990000000,
+  "quarantined_dma_pages": 66,
+  "resources_after_quarantine": [
+    129726,
+    2,
+    0
+  ],
+  "evidence_files": {
+    "reboot.pcap": "e2681af1aff988bb1198cc5c7f3d9ae8c8b463cbdddc2517d7baab9421684b4d",
+    "guest_serial.log": "c3496dbe19f3c533d4377fae78f8b1de200b5b459dd4f77c17528ab876d94abe",
+    "reboot_qemu.log": "637a88de77642ab1c5cc25d55c7a499451d764fd1b20e3bc6c51aee2dc74df34",
+    "network.pcap": "7e24713f4f2be5c051c006c284f921278ecafa24c64f763190863108617fed49",
+    "guest_qemu.log": "637a88de77642ab1c5cc25d55c7a499451d764fd1b20e3bc6c51aee2dc74df34",
+    "guest_before_reboot.serial.log": "c3496dbe19f3c533d4377fae78f8b1de200b5b459dd4f77c17528ab876d94abe",
+    "guest.serial.log": "b2a57c525c4d7c6991a6936201ff4836c910d7eb4d008c9b947b06255bd43dea",
+    "reboot_serial.log": "b2a57c525c4d7c6991a6936201ff4836c910d7eb4d008c9b947b06255bd43dea"
+  }
+}

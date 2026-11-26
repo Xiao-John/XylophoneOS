@@ -891,7 +891,7 @@
         "optional user-mode native network service",
         "raw diagnostic probes"
       ],
-      "modifications": "Pinned upstream archive plus ordered, hash-bound DNS reply-validation and bounded-entropy patches in source_lock.json; original BSD-3-Clause notices retained. XOS NO_SYS adapter remains libc-independent; production DNS and DHCP remain disabled.",
+      "modifications": "Pinned upstream archive plus ordered, hash-bound DNS reply validation, bounded entropy, and private lifecycle patches in source_lock.json. Original BSD-3-Clause notices retained. XOS NO_SYS adapter remains libc-independent. Production DNS and DHCP remain disabled.",
       "artifact_sha256": {
         "licenses/lwip.txt": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b"
       }

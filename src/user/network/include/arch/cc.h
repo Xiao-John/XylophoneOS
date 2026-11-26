@@ -12,6 +12,7 @@ typedef ptrdiff_t ssize_t;
 extern "C" {
 #endif
 int xos_lwip_dns_random(uint16_t* value);
+int xos_lwip_dns_clock(uint64_t* value);
 #ifdef __cplusplus
 }
 #endif

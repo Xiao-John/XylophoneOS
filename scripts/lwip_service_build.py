@@ -14,9 +14,11 @@ core_sources = ["init.c", "def.c", "inet_chksum.c", "ip.c", "mem.c", "memp.c", "
 ipv4_sources = ["etharp.c", "icmp.c", "ip4.c", "ip4_addr.c", "ip4_frag.c"]
 
 
-def configuration(root):
+def configuration(root, dns_probe=False):
     archive = os.environ.get("XOS_LWIP_SOURCE_ARCHIVE")
     if not archive:
+        if dns_probe:
+            raise SystemExit("The DNS probe requires XOS_LWIP_SOURCE_ARCHIVE")
         return {"enabled": False, "wire_version": 2, "guest_qualification": "not_run"}
     lock = json.loads((root / "src/ports/lwip/source_lock.json").read_text())
     digest = hashlib.sha256(Path(archive).read_bytes()).hexdigest()
@@ -24,7 +26,7 @@ def configuration(root):
         raise SystemExit("Network service lwIP archive differs from source_lock.json")
     return {"enabled": True, "wire_version": 2, "lwip_version": lock["version"],
             "archive_sha256": digest, "patches": source_patches(root),
-            "guest_qualification": "not_run"}
+            "guest_qualification": "not_run", **({"dns_probe": True} if dns_probe else {})}
 
 
 def source_patches(root):
@@ -94,19 +96,22 @@ def prepare_source(root, archive, output, *, patch_tool="patch", environment=Non
     return source
 
 
-def build(root, output, sdk, run, tool, isa_flags):
-    config = configuration(root)
+def build(root, output, sdk, run, tool, isa_flags, dns_probe=False):
+    config = configuration(root, dns_probe)
     if not config["enabled"]:
         return [], (), config
     work = output / "net_lwip"
     source = prepare_source(root, os.environ["XOS_LWIP_SOURCE_ARCHIVE"], work / "source")
     include_flags = ("-I", str(root / "src/user/network/include"),
-                     "-I", str(root / "src/ports/lwip/include"), "-I", str(source / "src/include"))
+                     "-I", str(root / "src/ports/lwip/include"), "-I", str(source / "src/include"),
+                     *(('-DXOS_NET_DNS_PROBE=1',) if dns_probe else ()))
     flags = ["-std=c11", "-Os", "-ffreestanding", "-fno-stack-protector", "-fno-pie", "-fno-pic",
              "-ffunction-sections", "-fdata-sections", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables",
              *isa_flags, "-I", str(sdk / "include"), *include_flags,
              "-ffile-prefix-map=" + str(root) + "=."]
     sources = [source / "src/core" / name for name in core_sources]
+    if dns_probe:
+        sources.append(source / "src/core/dns.c")
     sources += [source / "src/core/ipv4" / name for name in ipv4_sources]
     sources += [source / "src/netif/ethernet.c"]
     objects = []

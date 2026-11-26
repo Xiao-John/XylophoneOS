@@ -29,6 +29,20 @@
           "after": "5a84611e7c63e082981eae0ffa9c735c4ba3bcb3b9852ac6db9f74295597ed36"
         }
       }
+    },
+    {
+      "path": "patches/0003_dns_lifecycle.patch",
+      "sha256": "ad37721e5938845ad876ef95f8c7f4ce50d3fd6fbf5c89e24fd59e1330f92dce",
+      "files": {
+        "src/core/dns.c": {
+          "before": "5a84611e7c63e082981eae0ffa9c735c4ba3bcb3b9852ac6db9f74295597ed36",
+          "after": "0ad939d1079602c035750ac4d0927bceabbf8c0c6b8cf56bfcedd22ae2b3d649"
+        },
+        "src/include/lwip/dns.h": {
+          "before": "962c462c90afd41ed010b961f539c11b2baba3e8a6bfe584f331a5e4d43c1b05",
+          "after": "502985a368bd25b005173b28d9fb536be4293594ccd7bac3c49d81364bc681b0"
+        }
+      }
     }
   ]
 }

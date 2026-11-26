@@ -1,0 +1,272 @@
+From 6b677bae4bf9fdc267cf88b9d7e378d5c37e8519 Mon Sep 17 00:00:00 2001
+From: XOS contributors <75989255+Xiao-John@users.noreply.github.com>
+Date: Thu, 26 Nov 2026 17:18:19 +0800
+Subject: [PATCH] Bind private resolver timers and cancellation to XOS
+
+Local XOS additions are Apache-2.0. Keep upstream BSD declarations.
+---
+ src/core/dns.c         | 134 ++++++++++++++++++++++++++++++++++++++++-
+ src/include/lwip/dns.h |   5 ++
+ 2 files changed, 136 insertions(+), 3 deletions(-)
+
+diff --git a/src/core/dns.c b/src/core/dns.c
+index 5b24a7d..f9914a6 100644
+--- a/src/core/dns.c
++++ b/src/core/dns.c
+@@ -233,6 +233,10 @@ typedef enum {
+ /** DNS table entry */
+ struct dns_table_entry {
+   u32_t ttl;
++#ifdef XOS_LWIP_DNS_LIFETIME
++  uint64_t expiry_ns;
++  uint64_t retry_ns;
++#endif
+   ip_addr_t ipaddr;
+   u16_t txid;
+   u8_t  state;
+@@ -644,8 +648,19 @@ dns_lookup(const char *name, size_t hostnamelen, ip_addr_t *addr LWIP_DNS_ADDRTY
+ #endif /* DNS_LOOKUP_LOCAL_EXTERN */
+ 
+   namelen = LWIP_MIN(hostnamelen, DNS_MAX_NAME_LENGTH - 1);
++#ifdef XOS_LWIP_DNS_LIFETIME
++  uint64_t now;
++  if (xos_lwip_dns_clock(&now) != ERR_OK) {
++    return ERR_IF;
++  }
++#endif
+   /* Walk through name list, return entry if found. If not, return NULL. */
+   for (i = 0; i < DNS_TABLE_SIZE; ++i) {
++#ifdef XOS_LWIP_DNS_LIFETIME
++    if ((dns_table[i].state == DNS_STATE_DONE) && (now >= dns_table[i].expiry_ns)) {
++      dns_table[i].state = DNS_STATE_UNUSED;
++    }
++#endif
+     if ((dns_table[i].state == DNS_STATE_DONE) &&
+         (lwip_strnicmp(name, dns_table[i].name, namelen) == 0) &&
+         !dns_table[i].name[namelen] &&
+@@ -989,6 +1004,60 @@ dns_call_found(u8_t idx, ip_addr_t *addr)
+ #endif
+ }
+ 
++#ifdef XOS_LWIP_DNS_LIFETIME
++/* Private NO_SYS control. Only the owner of the resolver loop may use it
++ * outside callbacks. Cancellation never calls client code. */
++u8_t
++dns_xos_cancel(dns_found_callback found, void *arg)
++{
++  u8_t removed = 0;
++  u8_t i;
++  if (found == NULL) {
++    return 0;
++  }
++  for (i = 0; i < DNS_MAX_REQUESTS; ++i) {
++    if ((dns_requests[i].found == found) && (dns_requests[i].arg == arg)) {
++      u8_t table_index = i;
++#if ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING) != 0)
++      u8_t j;
++      table_index = dns_requests[i].dns_table_idx;
++#endif
++      dns_requests[i].found = NULL;
++      dns_requests[i].arg = NULL;
++      ++removed;
++#if ((LWIP_DNS_SECURE & LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING) != 0)
++      for (j = 0; j < DNS_MAX_REQUESTS; ++j) {
++        if (dns_requests[j].found && dns_requests[j].dns_table_idx == table_index) {
++          break;
++        }
++      }
++      if (j != DNS_MAX_REQUESTS) {
++        continue;
++      }
++#endif
++      dns_call_found(table_index, NULL);
++      dns_table[table_index].state = DNS_STATE_UNUSED;
++    }
++  }
++  return removed;
++}
++
++void
++dns_xos_reset(void)
++{
++  u8_t i;
++  memset(dns_requests, 0, sizeof(dns_requests));
++  for (i = 0; i < DNS_TABLE_SIZE; ++i) {
++    if (dns_table[i].state == DNS_STATE_ASKING) {
++      dns_call_found(i, NULL);
++    }
++  }
++  memset(dns_table, 0, sizeof(dns_table));
++  memset(dns_servers, 0, sizeof(dns_servers));
++  dns_seqno = 0;
++}
++#endif
++
+ /* Create a query transmission ID that is unique for all outstanding queries */
+ static err_t
+ dns_create_txid(u16_t *result)
+@@ -1043,10 +1112,22 @@ dns_backupserver_available(struct dns_table_entry *pentry)
+  *
+  * @param i index of the dns_table entry to check
+  */
++#ifdef XOS_LWIP_DNS_LIFETIME
++static void
++dns_set_retry_time(struct dns_table_entry *entry, uint64_t now)
++{
++  uint64_t delay = (uint64_t)entry->tmr * 1000000000ull;
++  entry->retry_ns = delay > UINT64_MAX - now ? UINT64_MAX : now + delay;
++}
++#endif
++
+ static void
+ dns_check_entry(u8_t i)
+ {
+   err_t err;
++#ifdef XOS_LWIP_DNS_LIFETIME
++  uint64_t now;
++#endif
+   struct dns_table_entry *entry = &dns_table[i];
+ 
+   LWIP_ASSERT("array index out of bounds", i < DNS_TABLE_SIZE);
+@@ -1059,6 +1140,13 @@ dns_check_entry(u8_t i)
+       entry->server_idx = 0;
+       entry->tmr = 1;
+       entry->retries = 0;
++#ifdef XOS_LWIP_DNS_LIFETIME
++      if (xos_lwip_dns_clock(&now) != ERR_OK) {
++        entry->retry_ns = UINT64_MAX;
++        break;
++      }
++      dns_set_retry_time(entry, now);
++#endif
+ 
+       /* send DNS packet for this entry */
+       err = dns_send(i);
+@@ -1068,7 +1156,11 @@ dns_check_entry(u8_t i)
+       }
+       break;
+     case DNS_STATE_ASKING:
++#ifdef XOS_LWIP_DNS_LIFETIME
++      if ((xos_lwip_dns_clock(&now) == ERR_OK) && (now >= entry->retry_ns)) {
++#else
+       if (--entry->tmr == 0) {
++#endif
+         if (++entry->retries == DNS_MAX_RETRIES) {
+           if (dns_backupserver_available(entry)
+ #if LWIP_DNS_SUPPORT_MDNS_QUERIES
+@@ -1092,6 +1184,9 @@ dns_check_entry(u8_t i)
+           entry->tmr = entry->retries;
+         }
+ 
++#ifdef XOS_LWIP_DNS_LIFETIME
++        dns_set_retry_time(entry, now);
++#endif
+         /* send DNS packet for this entry */
+         err = dns_send(i);
+         if (err != ERR_OK) {
+@@ -1101,12 +1196,18 @@ dns_check_entry(u8_t i)
+       }
+       break;
+     case DNS_STATE_DONE:
++#ifdef XOS_LWIP_DNS_LIFETIME
++      if ((xos_lwip_dns_clock(&now) != ERR_OK) || (now >= entry->expiry_ns)) {
++        entry->state = DNS_STATE_UNUSED;
++      }
++#else
+       /* if the time to live is nul */
+       if ((entry->ttl == 0) || (--entry->ttl == 0)) {
+         LWIP_DEBUGF(DNS_DEBUG, ("dns_check_entry: \"%s\": flush\n", entry->name));
+         /* flush this entry, there cannot be any related pending entries in this state */
+         entry->state = DNS_STATE_UNUSED;
+       }
++#endif
+       break;
+     case DNS_STATE_UNUSED:
+       /* nothing to do */
+@@ -1149,6 +1250,22 @@ dns_correct_response(u8_t idx, u32_t ttl)
+   if (entry->ttl > DNS_MAX_TTL) {
+     entry->ttl = DNS_MAX_TTL;
+   }
++#ifdef XOS_LWIP_DNS_LIFETIME
++  {
++    uint64_t now;
++    if (xos_lwip_dns_clock(&now) != ERR_OK) {
++      dns_call_found(idx, NULL);
++      entry->state = DNS_STATE_UNUSED;
++      return;
++    }
++    uint64_t duration = (uint64_t)LWIP_MIN(entry->ttl, 300) * 1000000000ull;
++    if (duration > UINT64_MAX - now) {
++      entry->ttl = 0;
++      duration = 0;
++    }
++    entry->expiry_ns = now + duration;
++  }
++#endif
+   dns_call_found(idx, &entry->ipaddr);
+ 
+   if (entry->ttl == 0) {
+@@ -1183,7 +1300,11 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+   LWIP_UNUSED_ARG(arg);
+ 
+   /* is the dns message big enough ? */
+-  if (p->tot_len < (SIZEOF_DNS_HDR + SIZEOF_DNS_QUERY)) {
++  if (p->tot_len < (SIZEOF_DNS_HDR + SIZEOF_DNS_QUERY)
++#ifdef XOS_LWIP_DNS_LIFETIME
++      || p->tot_len > 512
++#endif
++      ) {
+     LWIP_DEBUGF(DNS_DEBUG, ("dns_recv: pbuf too small\n"));
+     /* free pbuf and return */
+     goto ignore_packet;
+@@ -1286,6 +1407,9 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+             /* avoid retrying the same server */
+             entry->retries = DNS_MAX_RETRIES-1;
+             entry->tmr     = 1;
++#ifdef XOS_LWIP_DNS_LIFETIME
++            entry->retry_ns = 0;
++#endif
+ 
+             /* contact next available server for this entry */
+             dns_check_entry(i);
+@@ -1361,6 +1485,9 @@ dns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr,
+              * direct-address profile. Keep the pending request intact. */
+             goto ignore_packet;
+ next_answer:
++#ifdef XOS_LWIP_DNS_LIFETIME
++            answer_ttl = LWIP_MIN(answer_ttl, lwip_ntohl(ans.ttl));
++#endif
+             res_idx = (u16_t)(res_idx + lwip_htons(ans.len));
+             --nanswers;
+           }
+@@ -1659,8 +1786,9 @@ dns_gethostbyname_addrtype(const char *hostname, ip_addr_t *addr, dns_found_call
+     }
+   }
+   /* already have this address cached? */
+-  if (dns_lookup(hostname, hostnamelen, addr LWIP_DNS_ADDRTYPE_ARG(dns_addrtype)) == ERR_OK) {
+-    return ERR_OK;
++  err_t cached = dns_lookup(hostname, hostnamelen, addr LWIP_DNS_ADDRTYPE_ARG(dns_addrtype));
++  if ((cached == ERR_OK) || (cached == ERR_IF)) {
++    return cached;
+   }
+ #if LWIP_IPV4 && LWIP_IPV6
+   if ((dns_addrtype == LWIP_DNS_ADDRTYPE_IPV4_IPV6) || (dns_addrtype == LWIP_DNS_ADDRTYPE_IPV6_IPV4)) {
+diff --git a/src/include/lwip/dns.h b/src/include/lwip/dns.h
+index 0913415..e39870d 100644
+--- a/src/include/lwip/dns.h
++++ b/src/include/lwip/dns.h
+@@ -113,6 +113,11 @@ err_t            dns_gethostbyname_addrtype(const char *hostname, ip_addr_t *add
+                                    u8_t dns_addrtype);
+ 
+ 
++#ifdef XOS_LWIP_DNS_LIFETIME
++u8_t             dns_xos_cancel(dns_found_callback found, void *arg);
++void             dns_xos_reset(void);
++#endif
++
+ #if DNS_LOCAL_HOSTLIST
+ size_t         dns_local_iterate(dns_found_callback iterator_fn, void *iterator_arg);
+ err_t          dns_local_lookup(const char *hostname, ip_addr_t *addr, u8_t dns_addrtype);
+-- 
+2.54.0 (Apple Git-157)
+

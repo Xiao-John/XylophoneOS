@@ -12,6 +12,20 @@ struct mapped_image {
     u32 load_count;
 };
 
+// Resolve bytes at the matching file and virtual coordinates in one readable
+// LOAD. The caller must validate the layout and map it before dereferencing.
+inline const void* mapped_file_address(const mapped_image& image, u64 offset, u64 address, u64 bytes) {
+    for (u32 index = 0; index < image.load_count; ++index) {
+        const auto& load = image.loads[index];
+        if ((load.permissions & map_read) != 0 && address >= load.address
+            && bytes <= load.file_bytes && address - load.address <= load.file_bytes - bytes
+            && offset >= load.offset && address - load.address == offset - load.offset) {
+            return reinterpret_cast<const void*>(image.bias + address);
+        }
+    }
+    return nullptr;
+}
+
 struct image_map_budget { u64 reservation_bytes, committed_bytes; };
 struct image_allocation { u64 start, bytes; };
 enum class image_map_error { none, layout, budget, reserve, commit, read, protect };

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "image_mapping.hpp"
+#include "../../../ports/glibc/sysdeps/xos/xos_d1_start.h"
 #include <xos/spawn.hpp>
 
 namespace xos::glibc_d1 {
@@ -15,12 +16,10 @@ struct main_headers {
 enum class execution_mode : u8 { ordinary, secure };
 using entropy_source = bool (*)(u8* bytes, u32 size);
 
-inline constexpr u32 entry_stack_max_words = 1 + process_max_args + 1
-                                          + startup_environment_max + 1 + 2 * 9;
-struct alignas(16) entry_stack {
-    u64 words[entry_stack_max_words];
-    u8 random[16];
-};
+inline constexpr u32 entry_stack_max_words = XOS_D1_ENTRY_WORDS;
+using entry_stack = xos_d1_entry_stack;
+static_assert(process_max_args == XOS_D1_MAX_ARGS);
+static_assert(startup_environment_max == XOS_D1_MAX_ENVIRONMENT);
 
 // The bootstrap provides verified images and a policy-selected mode. This
 // constructs the private x86-64 glibc stack in live native stack storage.

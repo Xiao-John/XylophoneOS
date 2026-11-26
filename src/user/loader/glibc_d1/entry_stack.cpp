@@ -3,6 +3,11 @@
 #include <elf.h>
 #include <xos/vm_abi.hpp>
 
+// This standard auxv key is absent from the frozen newlib ELF header.
+#ifndef AT_SECURE
+# define AT_SECURE 23
+#endif
+
 namespace xos::glibc_d1 {
 namespace {
 constexpr u32 max_headers = 64;
@@ -64,17 +69,7 @@ bool image_bounds(const mapped_image& image, mapped_bounds& bounds) {
     return entry;
 }
 
-// The startup fields name file-backed bytes at the same offset in a mapped
-// LOAD. A larger memory extent alone does not prove the ELF bytes are present.
-bool file_bytes(const mapped_image& image, u64 address, u64 offset, u64 count) {
-    for (u32 i = 0; i < image.load_count; ++i) {
-        const auto& load = image.loads[i];
-        if ((load.permissions & map_read) != 0 && offset >= load.offset &&
-            contains(load.address, load.address + load.file_bytes, address, count) &&
-            address - load.address == offset - load.offset) { return true; }
-    }
-    return false;
-}
+
 }
 
 bool build_entry_stack(const startup_info* startup, const mapped_image& main,
@@ -103,8 +98,8 @@ bool build_entry_stack(const startup_info* startup, const mapped_image& main,
         (main_bounds.begin < interpreter_bounds.end && interpreter_bounds.begin < main_bounds.end) ||
         headers.count == 0 || headers.count > max_headers || headers.address % alignof(Elf64_Phdr) != 0 ||
         headers.file_offset < sizeof(Elf64_Ehdr) ||
-        !file_bytes(main, headers.address, headers.file_offset, u64{headers.count} * sizeof(Elf64_Phdr)) ||
-        !file_bytes(interpreter, 0, 0, sizeof(Elf64_Ehdr)) ||
+        mapped_file_address(main, headers.file_offset, headers.address, u64{headers.count} * sizeof(Elf64_Phdr)) == nullptr ||
+        mapped_file_address(interpreter, 0, 0, sizeof(Elf64_Ehdr)) == nullptr ||
         (mode != execution_mode::ordinary && mode != execution_mode::secure) || entropy == nullptr) { return false; }
 
     const bool entropy_ready = entropy(random, sizeof(random));

@@ -5,6 +5,7 @@ sysdep_routines += errno-loc
 endif
 ifeq ($(subdir),elf)
 sysdep_routines += cpu-tunables
+sysdep-rtld-routines += xos_rtld_entry
 endif
 ifeq ($(subdir),stdlib)
 sysdep_routines += xos_process_exit

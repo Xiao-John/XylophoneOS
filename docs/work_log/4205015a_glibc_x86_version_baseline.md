@@ -19,14 +19,28 @@ XOS x86-64 版本描述以空版本节登记这一历史标识，供上游生成
 ## 可复验命令
 
 两轮均使用 Linux arm64、GCC 16.2.0、binutils 2.47 和只读签名归档。
-`probe_glibc_rtld.py` 生成静态和共享配置，直接验证对应 GNU 构建目标：
+分别在 `cb14678a` 和 `4205015a` 的独立工作树中执行以下命令。`GLIBC_ARCHIVE`
+指向同一份原始归档，同目录保留分离签名。`PROOF` 每轮使用新的绝对路径，基线和
+修复后的路径分别记为 `BASE_PROOF` 和 `SELECTED_PROOF`。
 
 ```sh
 python3 scripts/probe_glibc_rtld.py --archive "$GLIBC_ARCHIVE" --jobs 1 --output "$PROOF"
-make -j1 -C "$SOURCE/string" objdir="$SHARED" "$SHARED/string/memmove.os"
-x86_64-elf-readelf -hWs "$SHARED/string/memmove.os"
+SOURCE="$PROOF/prepared/glibc-2.44"
+SHARED="$PROOF/shared"
+STATIC="$PROOF/prepared/configure"
 make -j1 -C "$SOURCE/string" objdir="$STATIC" "$STATIC/string/memmove.o"
-x86_64-elf-objcopy -O binary --only-section=.text "$STATIC/string/memmove.o" "$OUT_TEXT"
+x86_64-elf-objcopy -O binary --only-section=.text "$STATIC/string/memmove.o" "$PROOF/memmove.text"
+make -j1 -C "$SOURCE/string" objdir="$SHARED" "$SHARED/string/memmove.os" \
+  >"$PROOF/memmove-shared.log" 2>&1
+```
+
+最后一条命令在基线返回 2，并在日志保留缺失的版本标识。修复后的同一命令
+返回 0。两轮结束后比较实际生成的映射和静态代码，并检查修复后的 ELF。
+
+```sh
+cmp "$BASE_PROOF/shared/libc.map" "$SELECTED_PROOF/shared/libc.map"
+cmp "$BASE_PROOF/memmove.text" "$SELECTED_PROOF/memmove.text"
+x86_64-elf-readelf -hWs "$SELECTED_PROOF/shared/string/memmove.os"
 ```
 
 | 工件 | SHA-256 |

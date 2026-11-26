@@ -1,0 +1,221 @@
+{
+  "status": "passed_subset",
+  "verified_source": "7f61a15a68f7cce37dbf68120e6de83c885d5afa",
+  "verified_tree": "fbb7d62228edcfbab1c234cced64e5f0c7298933",
+  "upstream_main": "56b3ada55f5e9cd00efc7dbc18414e90ee1cb1a8",
+  "main_compatibility_checked": "f09f2f7fba36943eef955cfb72a0d20269432808",
+  "previous_draft_head": "d61bbb2d4882471ba394b723787febe1961a9d2e",
+  "sdk_manifest_sha256": "68d41263bc11320e8336e7d5b53cd63839340f801dd515075cf23f55e5ac78c2",
+  "sdk_tree_sha256": "3e695d8febfdbf495af060f7128bab4476437a5f9ee41750068999cd27ec20cd",
+  "sdk_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "sdk_source_signature_status": "upstream_signature_verified",
+  "sdk_source_verification_report_sha256": "54e73326357b3a7e7926e11ca0055efbd4809c0435c4af05f9386648b4e1fbec",
+  "system_build_id": "f339237e4a35f275",
+  "system_manifest_sha256": "f6f8a459b5374ce01794ae32151e9392b7ddab5131088dec7e6895f331a179d3",
+  "iso_sha256": "ef9821366fc7202dff312006ddf48e94526ffeccd129c0904fe69ca38c2e4241",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "gcc_source_archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+  "gcc_signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+  "gnu_keyring_sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+  "gcc_signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+  "gcc_primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+  "shared_build_manifest_sha256": "da054086b3f5830e59015cb94671daa148ec2708de65598e17ba3ac722b9396c",
+  "shared_libc_sha256": "0cbf55610a67f1a0642abae548c31a9cafc6b7a5b125e710c0cd367ec394331f",
+  "gnu_interpreter_sha256": "bd35fd87f5b701a820637dbc0a6914d6f3fab4ae972bc86e0f140219e10ee7a4",
+  "gcc_pic_crt_sha256": {
+    "crtbeginS.o": "d1f9b26b212fe61acae370cae0a61f82632b1bb6d074e4bc8ce1edce3bbd6ca4",
+    "crtendS.o": "2299f1c03b9966209362535ea7ee4a15bc22c11e922820ceccbeb7ae6d28e3d8"
+  },
+  "official_guard_log_sha256": "52f0cb73aa31fb7a0807d46b55e08baf6df354bfc137b32c193dd25c9e422d90",
+  "first_pic_source_extract_log_sha256": "df17230355487d4750717f6f09e49e32ce616a09a524a15406c2e3bffe8ed581",
+  "gcc_shared": {
+    "libgcc_s.so.1": {
+      "needed": [
+        "libc.so.0.1"
+      ],
+      "sha256": "f0c37dbe69e804917b898de71e5bee70c7c35e42915f02e5beb8a490170ddd4b"
+    },
+    "libm.so.0.1": {
+      "needed": [
+        "libc.so.0.1",
+        "libgcc_s.so.1"
+      ],
+      "sha256": "9a64910cab475510394d7635f905a2a394b6d53d3a9171bd075f133e8964d834"
+    },
+    "libstdc++.so.6": {
+      "needed": [
+        "libm.so.0.1",
+        "libgcc_s.so.1",
+        "libc.so.0.1",
+        "ld.so.1"
+      ],
+      "sha256": "b8fd34572426a421b5917e817045578094406abaf298fa1a48f31f8492be9e1f"
+    }
+  },
+  "images": {
+    "main": {
+      "entry": 17592188150416,
+      "phnum": 12,
+      "sha256": "e0e77f22cc4ba58a52a8e71b004f36264f2053fc14f9cefb7d09a1e8a1e43e38",
+      "span": 36864
+    },
+    "interpreter": {
+      "entry": 26389352914464,
+      "phnum": 7,
+      "sha256": "c07f075242347d850fd85ba503ecb92d43de3f41073446d95f648de8fd782bea",
+      "span": 237568
+    },
+    "dependency": {
+      "entry": 21990769572064,
+      "phnum": 12,
+      "sha256": "a241537bec2acadc5d721a4db9d70dfe26fae369c525a2875adcafd409ce62ec",
+      "span": 1609728
+    },
+    "dependency_1": {
+      "entry": 21990802980864,
+      "phnum": 8,
+      "sha256": "1797784df1ff3d2f31f53067b02b8a0b6a55d679de2984a5d07745240333d5bb",
+      "span": 200704
+    },
+    "dependency_2": {
+      "entry": 21990836535296,
+      "phnum": 10,
+      "sha256": "4df09851f5cd66deba5a9054ecd91c60f77a247cd6f6fc89855502425438c9ad",
+      "span": 847872
+    },
+    "dependency_3": {
+      "entry": 21990870089728,
+      "phnum": 9,
+      "sha256": "c5d8c32b8f187ecc49a8c630b940388d1583aec43f21ba4c54a391e3f4de7e5e",
+      "span": 2789376
+    },
+    "sample": {
+      "entry": 21990903644160,
+      "phnum": 9,
+      "sha256": "04b0b9a6493083d6b93cd01687c442e06415c714c5ecb93f6a390b6d666797f9",
+      "span": 36864
+    }
+  },
+  "dependency_graph": {
+    "main.pie": [
+      "libsample.so",
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libc.so.0.1"
+    ],
+    "libc.so.0.1": [
+      "ld.so.1"
+    ],
+    "libgcc_s.so.1": [
+      "libc.so.0.1"
+    ],
+    "libm.so.0.1": [
+      "libc.so.0.1",
+      "libgcc_s.so.1"
+    ],
+    "libstdc++.so.6": [
+      "libm.so.0.1",
+      "libgcc_s.so.1",
+      "libc.so.0.1",
+      "ld.so.1"
+    ],
+    "libsample.so": [
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libc.so.0.1",
+      "ld.so.1"
+    ]
+  },
+  "local_replay_archives": {
+    "./gnu-link-replay.tar.zst": "94b9a98608c31e13dfb42cfe78afb30a31ce9cc2cd31c2d36229af6dbecf0e78",
+    "./normal-system.tar.zst": "511168bc7b66516c4dab48939667a9458ded1d82f4a6ad13040904f66c40f30a",
+    "./signed-c-sdk.tar.zst": "8776ece501386ce7e029a9c4b7bc1c205de5cd25dceecd5f6515615ae0680780",
+    "./source.tar.zst": "265456f7b752f920a14f889fe8efeacb9071bfbb148d272f7863221a57bfd0af",
+    "./target-guest.tar.zst": "a7d6ad90f1711ae05c6384161a5cd466ff894579dd5b1442cf0443e1cc092950"
+  },
+  "first_shared_cxx_attempt": {
+    "status": "failed",
+    "last_checkpoint": "native bootstrap process started",
+    "guest_command_timeout_seconds": 120,
+    "raw_report_sha256": "8675263db8f1077580f1117dda03500525189d15c45590e15c9b559cef2f56bd",
+    "raw_serial_sha256": "0ecf5e3dea69a8808166593dc403457080b410afd75b1e025f4bb7f4dc41156b",
+    "compressed_serial_sha256": "7bac479691a45438e67933db85803d401266e3f6800a5dbb8a913f4a5e1b0cf5"
+  },
+  "cases": {
+    "shared-cxx": {
+      "raw_report_sha256": "fcb927b1d3a32fde10e02b89fb998503514f02b543eaf0542ffa6872105dc3c3",
+      "raw_serial_sha256": "db8fbb8590f55619f3849bb8a80ec07db0c2a558b458c2a031f71b7531f8ec16",
+      "compressed_serial_sha256": "eb07ae6d772700f4c1e361aac834e1a4108b4c0bd131245996c761d5d08bf127",
+      "application_sha256": "e0e77f22cc4ba58a52a8e71b004f36264f2053fc14f9cefb7d09a1e8a1e43e38",
+      "bootstrap_sha256": "4f76427d771e780a6a00840969153c7857b821bccdc9017219e7e72f8e8e3f5b",
+      "runner_sha256": "c83c0ddb7c2185b40d8adb102907d6969119243631505df3f1beef307eebe35f",
+      "wall_seconds": 32.474,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD2_SHARED_CXX_OK throw=DSO catch=PIE rtti=shared unwind=complete worker=unsupported\nD2_SHARED_CXX_TLS_DTOR\nD2_SHARED_CXX_ATEXIT\n[task] event=reclaimed pid=11 pages=1517\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    "shared-cxx-unlisted": {
+      "raw_report_sha256": "a18fd3c23bfa77cf07fb7601e85dcb8ad9c364fe0ace09856337743398419283",
+      "raw_serial_sha256": "7d04f05c6fa93cf31bd96baebe2a0b7da9abff7ecda84944d8d0fd667157d31a",
+      "compressed_serial_sha256": "b09972ddacc703523f39fc41594e720d4796c85a858954926d040ff4370ee194",
+      "application_sha256": "e0e77f22cc4ba58a52a8e71b004f36264f2053fc14f9cefb7d09a1e8a1e43e38",
+      "bootstrap_sha256": "4f76427d771e780a6a00840969153c7857b821bccdc9017219e7e72f8e8e3f5b",
+      "runner_sha256": "c83c0ddb7c2185b40d8adb102907d6969119243631505df3f1beef307eebe35f",
+      "wall_seconds": 25.31,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\n/usr/bin/d1_entry: error while loading shared libraries: libgcc_s.so.1: cannot open shared object file: No such file or directory\n[task] event=reclaimed pid=11 pages=810\r\nD1_DYNAMIC_STATUS=127\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=127\nxsh> "
+    },
+    "c": {
+      "raw_report_sha256": "3ac3544c2f263e35ee3cb19fe90772ad3dd5de02f5bbbdddedcf35890ec5adde",
+      "raw_serial_sha256": "c0b03420764980ee29093eb5e7ff455c5327b57ca718ed5d631dcd8ad5e8fba3",
+      "compressed_serial_sha256": "35ca8c397f2606d983a016cf7b6a605e16f9105886762ff46858b557c2686b64",
+      "application_sha256": "b05c724e4d447a45d8adfec3048d9ac8624b41723b9dcb18593c953fed350ae4",
+      "bootstrap_sha256": "796b0a528c786f4feb206c741eb4d4f22baea77694505e6bc0c2b5e18577d920",
+      "runner_sha256": "c83c0ddb7c2185b40d8adb102907d6969119243631505df3f1beef307eebe35f",
+      "wall_seconds": 10.284,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD1_DYNAMIC_C_OK ctor=1 env=1 auxv=1 file=1 errno=1\n[task] event=reclaimed pid=11 pages=551\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    "cpp": {
+      "raw_report_sha256": "be4afe04b77f76c4ba96cbce1b0d960042d92c863a168a83d4d5a1df61225398",
+      "raw_serial_sha256": "407cb56d633600125dc1f7ed9f9ca92b9400d1758061a31ef396c18ce69a6a85",
+      "compressed_serial_sha256": "1dd02da98c17f1182302dad7a96ae6fe15e694878c9ca0d27ed4e61f462225c2",
+      "application_sha256": "d6d07c77848e03cdad04d765e4f2ea7f1deda25446e981065d47afd7f0844468",
+      "bootstrap_sha256": "ebfdf29f745bd2750d9fc1b46f3e66bfe70ac0dae8a115bc7f96299221730646",
+      "runner_sha256": "c83c0ddb7c2185b40d8adb102907d6969119243631505df3f1beef307eebe35f",
+      "wall_seconds": 10.283,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\nD1_DYNAMIC_CPP_OK ctor=1 tls=1\nD1_DYNAMIC_CPP_FINI\n[task] event=reclaimed pid=11 pages=517\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    "unlisted": {
+      "raw_report_sha256": "5c3587fbc75559194e24cc4b0cb2b0ebc32ca2212c00feb757132a041a166c59",
+      "raw_serial_sha256": "8c8138ac9a7b97e48e2fce4799b2625ddc8d2f53d5621d833c74d5b412a14ab4",
+      "compressed_serial_sha256": "3000f686071e159e9e8d2b259e7ff214784488594a41f47556cab1da0a0b9d82",
+      "application_sha256": "b05c724e4d447a45d8adfec3048d9ac8624b41723b9dcb18593c953fed350ae4",
+      "bootstrap_sha256": "796b0a528c786f4feb206c741eb4d4f22baea77694505e6bc0c2b5e18577d920",
+      "runner_sha256": "c83c0ddb7c2185b40d8adb102907d6969119243631505df3f1beef307eebe35f",
+      "wall_seconds": 2.029,
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "observed_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x000000000067c000\r\n[process] event=wait_blocked parent=10 child=11\r\n/usr/bin/d1_entry: error while loading shared libraries: libc.so.0.1: cannot open shared object file: No such file or directory\n[task] event=reclaimed pid=11 pages=118\r\nD1_DYNAMIC_STATUS=127\n[task] event=reclaimed pid=10 pages=316\r\n[wait] pid=10 kind=exited code=127\nxsh> "
+    }
+  }
+}

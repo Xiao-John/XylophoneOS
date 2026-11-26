@@ -20,6 +20,14 @@
 
 [绑定回执](../reports/glibc_d2_shared_cxx_20261127/binding.json)记录系统 `8d8d22c07d5f48d2` 上的五项结果。共享 C++ 正常退出为 0，依赖授权缺失退出为 127，两次宿主计时分别为 32.401 秒与 25.261 秒。五项客体前后均为 129696 个空闲页、3 项任务、1 项完成记录。原生官方 `dl-sysdep.os` 构建仍命中启动守卫。
 
+## #311 合入后的复验
+
+从 `7f61a15a68f7cce37dbf68120e6de83c885d5afa` 重新构建验签 glibc 2.44 C SDK、普通系统、GNU 解释器和 libc，以及验签 GCC 16.2.0 的共享闭包。系统 ID 为 `f339237e4a35f275`。后续主线 `f09f2f7f` 的差异限于文档、证据和可选浏览器传输组件，保持本次 SDK、正常系统和启动验收的相关实现一致。
+
+第一次完整 C++ 闭包运行在正常 bootstrap 进程启动后等待退出超时，保留串口和失败回执。相同 SDK、ISO、bootstrap 和动态 ELF 的独立重跑完成跨 DSO 异常、TLS 析构及进程退出，客体命令用时 32.474 秒。缺少 `libgcc_s.so.1` 授权退出 127，用时 25.310 秒。C、C++ 和缺 libc 授权三个原用例也通过。五个用例前后的资源均为 129696 个空闲页、3 项任务、1 项完成记录。官方解释器编译再次命中启动守卫。
+
+[当前回执](../reports/glibc_d2_shared_cxx_20261127/current_main_replay.json)记录已验签输入、五组通过、一次超时和快照哈希，保留上面的原始验收。
+
 ## 重跑
 
 使用 #311 [发布回执](../reports/glibc_d1_linked_interpreter_20261127/publication_replay.json)对应的 C SDK、GNU 解释器构建树、PIC CRT、dash、系统镜像和系统源。若重用原系统镜像，`--system-source` 要指向它的原始源码。验收 runner 检查系统全文件哈希清单及系统 SDK。

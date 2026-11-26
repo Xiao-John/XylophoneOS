@@ -130,6 +130,11 @@ bootstrap 只做原生启动适配、验证和映射交接，上游 rtld 继续�
 另需可用熵、算法和组合证据。bootstrap 完成后可保留最小受保护入口页，是否回收
 其余页要有实际控制流证明，不能解除当前仍使用的栈/指令/回调页面。
 
+[D1-C 固定工件验证](../work_log/2a68f4a2_glibc_d1_high_address_layout_fixture.md)
+已在两处高地址验证同一 GCC PIC `ET_DYN` 的执行、单个相对数据重定位、匿名 BSS、
+RELRO 与不可执行页异常、洞和精确保留冲突。客体使用内嵌该工件的静态测试程序。
+闭包、PIE 和 glibc rtld 启动留在完整 D1 验收范围内。
+
 glibc 上游 `dl-map-segments.h` 的文件 mmap/MAP_FIXED 路径不能原样调用当前
 XOS mmap。XOS 后端应使用匿名私有保留与显式复制，保证 BSS/段尾为零、洞保持
 不可访问、对象不共享可写物理页、失败全量撤回，复用上游解析与布局语义。

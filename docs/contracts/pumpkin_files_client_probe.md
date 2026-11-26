@@ -45,5 +45,6 @@ files 不解释槽数据中的账户记录、位图、版本和凭据。
 代际、提交中断或物理掉电资格由后续测试建立。合成快照只有吊销记录，尚未接入真实
 凭据生成、发放、轮换或账户库恢复服务。
 
+[可重启守护进程](pumpkin_durable_daemon_probe.md) ·
 [验证记录](../work_log/eaf8370d_pumpkin_authenticated_files_client.md) ·
 [快照发布器](pumpkin_snapshot_publication.md) · [端点生命周期](ipc_endpoint_lifecycle.md)

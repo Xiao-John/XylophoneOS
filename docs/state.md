@@ -4,9 +4,10 @@
 原生 xypm 客体维护、Qt Quick 软件渲染及外部应用工具包、Mobius glibc 会话和
 工作盘迁移。Pumpkin 开发配置已验跨重启登录、持久多账户和独立资源 broker。
 Pumpkin 的持久身份已在显式镜像中启动并收回真实 Mobius 桌面。ClarkE 已验受控
-HTTPS、JavaScriptCore 静态 shell、真实 HTML 分词和 Skia 软件栅格。`31dae7e2`
-已合入 glibc dash 命令替换、GNU rtld 首线程 TLS 和可搬移 Qt Quick 工具包。
-该阶段普通组合镜像的 79 项客体检查、10 项许可材料和 ABI 表均通过。
+HTTPS、JavaScriptCore 静态 shell、真实 HTML 分词和 Skia 软件栅格。`d7c56292`
+已合入 glibc dash 命令替换、GNU rtld 首线程 TLS、可搬移 Qt Quick 工具包和 glibc
+stock 安装及应用组合。签名 C/C++ 候选 `3bbbf73984b95c20` 通过冷装、重启和卸载，
+同盘应用组合两次启动均覆盖命令替换。普通镜像的 79 项、10 项许可材料和 ABI 通过。
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)
 [本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
 

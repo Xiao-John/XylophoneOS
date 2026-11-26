@@ -117,7 +117,9 @@ Shell 输出相同实际帧。正式分发和静态重链接仍按许可范围�
 [dash fork](../work_log/8d9ffeae_glibc_dash_fork.md) ·
 [首线程 TLS](../work_log/c4997306_glibc_d1_initial_thread_tls.md)
 
-旧静态 kit 上，stock 安装器提前回收四个启动演示任务后，从 `run` 到 shell 就绪为
-179.196 秒，空盘安装、重启、运行和卸载均通过。新验签 C/C++ kit 使用独立 profile，
-实测线程、异常与命令替换，正在用同一套新 kit 重建并验证安装镜像和应用。冻结 newlib
-回退仍按原 SDK、原 profile 和原盘验证。[安装器 PR #288](https://github.com/Xiao-John/XylophoneOS/pull/288)
+主线 `d7c56292` 已纳入同一签名 C/C++ kit 的 stock 安装和应用组合。`3bbbf73984b95c20`
+从空盘安装到可用 shell 为 170.801 秒，13 项日用工具、卸载和用户数据保留均通过。
+同盘两次客体启动运行 C、C++、GNU Make、日用工具和命令替换。各次核对三个包及
+50 个登记文件。冻结 newlib 回退仍按原 SDK、原 profile 和原盘复验。
+[安装回执](../work_log/843260b2_glibc_stock_installer.md) ·
+[应用组合](../work_log/cc71c241_glibc_stock_apps.md)

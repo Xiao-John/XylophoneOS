@@ -44,6 +44,7 @@ static long now_ns = 100;
 static const char* failure;
 static bool failure_armed;
 static std::atomic<bool> pipe_waiting, pipe_release;
+static std::atomic<bool> runtime_waiting;
 static bool vector_write;
 struct file_description { bool active; unsigned int position, flags; };
 static file_description files[17];
@@ -57,6 +58,7 @@ extern "C" int __xos_file_test_startup_range(xos_u64 address, xos_u64 length) {
         length <= begin + sizeof(startup_area) - address;
 }
 extern "C" xos_i64 __xos_wait_word(xos_u32* address, xos_u32 expected, xos_u64) {
+    runtime_waiting = true;
     const long result = syscall(SYS_futex, address, FUTEX_WAIT_PRIVATE, expected, nullptr, nullptr, 0);
     return result == 0 ? 0 : errno == EAGAIN ? -14 : -11;
 }
@@ -143,6 +145,8 @@ static void process_request(const xos_file_request& input) {
         if (!exists) pending.status_code = -1;
         else exists = false;
     } else if (operation == xos::file::op::sync) {
+    } else if (operation == xos::file::op::cwd_set) {
+        assert(input.offset <= 78 && !std::strcmp(input.name, "/updated"));
     } else if (operation == xos::file::op::block_bench) {
         pending.value = input.length;
     } else {
@@ -404,6 +408,42 @@ static void inheritance_v2(const char* scenario) {
     assert(__xos_file_close(1) == 0 && closes == 1);
 }
 
+static void spawn_cwd_serialization() {
+    xos_spawn_stdio snapshot{};
+    assert(__xos_file_spawn_begin(&snapshot) == 0);
+    xos::file::client loader;
+    assert(loader.set_cwd("/updated", 78) == 0 && sends == 1);
+    __xos_file_spawn_end(&snapshot);
+
+    enum { chdir_path, session_self, native_self };
+    for (const auto entry : {chdir_path, session_self, native_self}) {
+        assert(__xos_file_spawn_begin(&snapshot) == 0);
+        const unsigned int previous_sends = sends;
+        runtime_waiting = false;
+        std::atomic<bool> completed{false};
+        std::thread changer([&] {
+            if (entry == chdir_path) {
+                assert(__xos_file_chdir("/updated") == 0);
+            } else if (entry == session_self) {
+                xos_file_request input{};
+                xos_file_response output{};
+                input.operation = static_cast<xos_file_u16>(xos::file::op::cwd_set);
+                assert(__xos_file_request_path(&input, "/updated") == 0);
+                assert(__xos_file_exchange(&input, &output) == 0);
+            } else {
+                xos::file::client native;
+                assert(native.set_cwd("/updated", 77) == 0);
+            }
+            completed = true;
+        });
+        while (!runtime_waiting.load() && !completed.load()) std::this_thread::yield();
+        assert(runtime_waiting.load() && !completed.load() && sends == previous_sends);
+        __xos_file_spawn_end(&snapshot);
+        changer.join();
+        assert(completed.load() && sends == previous_sends + 1);
+    }
+}
+
 static void pipe_lease() {
     setup_startup(3);
     auto* exec = reinterpret_cast<xos_file_startup_exec*>(startup_area + 152);
@@ -595,6 +635,7 @@ int main(int argc, char** argv) {
     if (!std::strcmp(argv[1], "basic")) basic();
     else if (!std::strcmp(argv[1], "bounds")) bounds();
     else if (!std::strcmp(argv[1], "access_legacy_stat")) access_legacy_stat();
+    else if (!std::strcmp(argv[1], "spawn_cwd_serialization")) spawn_cwd_serialization();
     else if (!std::strcmp(argv[1], "concurrent")) concurrent();
     else if (!std::strcmp(argv[1], "inheritance") || !std::strcmp(argv[1], "invalid_inheritance")
              || !std::strcmp(argv[1], "duplicate_cleanup")) inheritance(argv[1]);

@@ -5,6 +5,6 @@
 int
 __chdir (const char *path)
 {
-  return (int) xos_file_result (__xos_file_path_op (path, 26));
+  return (int) xos_file_result (__xos_file_chdir (path));
 }
 weak_alias (__chdir, chdir)

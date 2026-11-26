@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Build the native terminal adapter against an isolated glibc SDK."""
+"""Build the native terminal, ELF and process support against an isolated glibc SDK."""
 import argparse
 import hashlib
 import json
@@ -13,7 +13,10 @@ from glibc_g1_probe import clean_build_environment, tool_identity
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ('src/ports/glibc/terminal_support.cpp', 'src/user/sdk/terminal_client.cpp',
-           'src/user/arch/x86_64/syscall.cpp')
+           'src/user/arch/x86_64/syscall.cpp', 'src/user/loader/elf.cpp',
+           'src/ports/glibc/wait_support.cpp',
+           'src/ports/glibc/spawn_support.cpp', 'src/user/loader/load.cpp',
+           'src/user/sdk/file_client.cpp', 'src/user/sdk/text.cpp', 'src/user/arch/x86_64/tls.cpp')
 HEADER_ROOTS = ('src/shared/include/xos', 'src/user/include/xos')
 
 

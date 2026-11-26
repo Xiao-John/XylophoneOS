@@ -1,0 +1,57 @@
+--- a/Source/JavaScriptCore/jsc.cpp
++++ b/Source/JavaScriptCore/jsc.cpp
+@@ -136,0 +137,4 @@
++#if OS(XOS)
++#include <pthread.h>
++#endif
++
+@@ -3628,0 +3633,3 @@
++#if OS(XOS)
++static int runShell(int argc, char** argv)
++#else
+@@ -3629,0 +3637 @@
++#endif
+@@ -3717,0 +3726,43 @@
++
++#if OS(XOS)
++int main(int argc, char** argv)
++{
++    // The startup stack is 128 KiB. Keep JavaScriptCore's upstream 128 KiB soft
++    // reserve and run the shell on a larger, natively guarded stack.
++    constexpr size_t shellStackSize = 1024 * 1024;
++    struct Invocation {
++        int argc;
++        char** argv;
++        int result;
++    } invocation { argc, argv, EXIT_FAILURE };
++
++    pthread_attr_t attributes;
++    int error = pthread_attr_init(&attributes);
++    if (error) {
++        fprintf(stderr, "Cannot initialize the JavaScriptCore shell thread: %d\n", error);
++        return EXIT_FAILURE;
++    }
++
++    pthread_t thread;
++    error = pthread_attr_setstacksize(&attributes, shellStackSize);
++    if (!error) {
++        error = pthread_create(&thread, &attributes, [](void* context) -> void* {
++            auto& invocation = *static_cast<Invocation*>(context);
++            invocation.result = runShell(invocation.argc, invocation.argv);
++            return nullptr;
++        }, &invocation);
++    }
++    pthread_attr_destroy(&attributes);
++    if (error) {
++        fprintf(stderr, "Cannot start the JavaScriptCore shell thread: %d\n", error);
++        return EXIT_FAILURE;
++    }
++
++    error = pthread_join(thread, nullptr);
++    if (error) {
++        fprintf(stderr, "Cannot join the JavaScriptCore shell thread: %d\n", error);
++        return EXIT_FAILURE;
++    }
++    return invocation.result;
++}
++#endif

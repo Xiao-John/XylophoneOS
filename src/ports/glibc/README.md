@@ -117,3 +117,12 @@ TCGETS/TCSETS/FIOCLEX ioctl family. Unsupported modes and O_NONBLOCK changes fai
 explicitly. Details and the still-deferred outgoing terminal inheritance are in
 `docs/contracts/glibc_terminal_v1.md`; host and real guest qualification use
 `tests/glibc_terminal_host.py` and `tests/glibc_terminal_guest.py`.
+
+## Built-in UTF-8 conversion
+
+The XOS static SDK's built-in UTF-8 converter accepts Unicode scalar values
+in one to four bytes. It reports invalid sequences and non-scalar output
+values through the existing conversion error path. This behavior applies to
+locale conversion and to iconv routes using the built-in UTF-8 converter.
+The SDK continues to load application-supplied locale data through glibc.
+The original C.utf8 category data can declare six as its buffer bound.

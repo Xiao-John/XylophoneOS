@@ -26,6 +26,8 @@ def main():
                         help='compile the fixed-closure TLS fixture and its GNU runtime support')
     parser.add_argument('--gnu-relocation-fixture', action='store_true',
                         help='compile the real GNU relocation fixture and its native runtime support')
+    parser.add_argument('--native-sysdep-fixture', action='store_true',
+                        help='compile the GNU startup state fixture and its actual environment storage')
     args = parser.parse_args()
     archive = args.archive.resolve(strict=True)
     output = args.output.resolve()
@@ -131,7 +133,8 @@ def main():
         rtld_load = build / 'elf/dl-load.os'
         rtld_heap = build / 'elf/xos_rtld_heap.os'
         rtld_allocator = build / 'elf/dl-minimal-malloc.os'
-        for path in (rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator):
+        rtld_startup = build / 'elf/xos_rtld_sysdep_start.os'
+        for path in (rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator, rtld_startup):
             _, compilation = run('make_' + path.name, [*make_elf, path])
             if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=rtld'} <= set(line.split())
                        and line.split()[0].endswith('/cc') for line in compilation.splitlines()
@@ -162,6 +165,11 @@ def main():
         if '__xos_rtld_heap_grow' not in allocator_symbols or allocator_symbols & {'__mmap', 'mmap'}:
             raise RuntimeError('GNU minimal allocator did not select the XOS early heap')
         run('rtld_allocator_symbols', [env['NM'], rtld_allocator])
+        _, startup_references = run('native_sysdep_symbols', [env['READELF'], '-sW', '-rW', rtld_startup])
+        if not all(name in startup_references for name in
+                   ('__xos_rtld_prepare_sysdep_start', '__xos_rtld_attach_entry_images',
+                    '_rtld_local_ro', '_dl_argc', '_dl_argv', '_environ')):
+            raise RuntimeError('native startup did not bind the GNU interpreter state and file session')
 
         failure, reason = run('make_dl_sysdep', [*make_elf, build / 'elf/dl-sysdep.os'], allow_failure=True)
         if not failure or 'error: #error "XOS dynamic interpreter startup is not implemented"' not in reason:
@@ -232,10 +240,23 @@ def main():
             run('shared_libc_errno_relocations', [env['READELF'], '-rW', *shared_errno])
             tls_objects.extend(shared_errno)
 
+        if args.native_sysdep_fixture:
+            environment = build / 'posix/rtld-environ.os'
+            _, compilation = run('make_rtld_environ',
+                                 ['make', '-C', source / 'posix', '-f', 'Makefile',
+                                  '-f', '../elf/rtld-Rules', 'rtld-all', 'subdir=posix',
+                                  'objdir=' + str(build), '-j' + str(args.jobs),
+                                  'rtld-modules=rtld-environ.os'])
+            if not any('-DMODULE_NAME=rtld' in line.split() and str(environment) in line.split()
+                       for line in compilation.splitlines()):
+                raise RuntimeError('GNU rtld environment storage did not compile')
+            tls_objects.append(environment)
+
         for requested, prefix, name in (
                 (args.initial_tp_fixture, 'initial_tp', 'initial_tls_guest.c'),
                 (args.closure_tls_fixture, 'closure_tls', 'closure_tls_runtime.c'),
-                (args.gnu_relocation_fixture, 'gnu_relocation', 'relocation_runtime.c')):
+                (args.gnu_relocation_fixture, 'gnu_relocation', 'relocation_runtime.c'),
+                (args.native_sysdep_fixture, 'native_sysdep', 'sysdep_start_state.c')):
             if not requested:
                 continue
             fixture_source = ROOT / 'tests/fixtures/glibc_d1' / name
@@ -267,7 +288,8 @@ def main():
             raise RuntimeError('source preparation or configured tools changed during the diagnostic')
         report.update(status='rtld_entry_compiled_startup_blocked', artifacts={
             str(path.relative_to(output)): sha(path) for path in
-            (entry, native_entry, rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator, *tls_objects)})
+            (entry, native_entry, rtld_map, rtld_files, rtld_load, rtld_heap, rtld_allocator,
+             rtld_startup, *tls_objects)})
     except Exception as error:
         report['error'] = str(error)
         raise

@@ -66,7 +66,9 @@ def build(args, directory, report, rtld, sysroot):
     sdk = args.system / 'sdk'
     manifest = load_json(args.sdk_build / 'manifest.json')
     assert manifest['inputs'] == sdk_inputs()
-    compiler = {tool: tool_identity('x86_64-elf-' + tool) for tool in ('gcc', 'g++', 'as', 'ld', 'readelf')}
+    names = ('gcc', 'g++', 'as', 'ld', 'readelf', 'objcopy') if args.native_sysdep else (
+        'gcc', 'g++', 'as', 'ld', 'readelf')
+    compiler = {tool: tool_identity('x86_64-elf-' + tool) for tool in names}
     for name, info in compiler.items():
         assert info['sha256'] == manifest['tools']['x86_64-elf-' + name]['sha256']
     tools = directory / 'tools'
@@ -103,11 +105,28 @@ def build(args, directory, report, rtld, sysroot):
             ('dependency', dependency, 0x140020000000))}
 
     early, late, elf = (directory / name for name in ('entry.o', 'late.o', 'entry.elf'))
+    bootstrap = 'sysdep_start_bootstrap.cpp' if args.native_sysdep else 'interpreter_entry_guest.cpp'
     run('compile_bootstrap', [compiler['g++']['path'], *cflags, '-fno-pie', '-ffreestanding',
                               '-fno-exceptions', '-fno-rtti', '-nostdinc++', '-std=gnu++20',
                               '-I', sdk / 'include', '-I', ROOT / 'src/user/loader/glibc_d1',
                               '-I', OVERLAY, '-I', directory,
-                              '-c', FIXTURES / 'interpreter_entry_guest.cpp', '-o', early])
+                              '-c', FIXTURES / bootstrap, '-o', early])
+    if args.native_sysdep:
+        rtld_state = directory / 'rtld-local-entry.o'
+        run('localize_entry', [compiler['objcopy']['path'], '--localize-symbol=_start',
+                               rtld.parent / 'rtld.os', rtld_state])
+        run('link_guest', [compiler['ld']['path'], '--gc-sections', '-z', 'noexecstack',
+                           '-z', 'max-page-size=4096', '--build-id=none', '-T', sysroot / 'user.ld',
+                           '-o', elf, lib / 'xos_start.o', early, rtld_state, rtld,
+                           *(rtld.parent / name for name in
+                             ('xos_rtld_sysdep_start.os', 'xos_rtld_mapping.os', 'xos_file_session.os',
+                              'xos_rtld_heap.os', 'd1-native-sysdep-fixture.o')),
+                           rtld.parent.parent / 'posix/rtld-environ.os',
+                           '--start-group', sdk / 'lib/libxos_loader.a', sdk / 'lib/libxos.a',
+                           lib / 'libgcc.a', '--end-group'])
+        report['program_headers'] = verify_elf(elf)
+        report['guest_elf_sha256'] = sha(elf)
+        return pie, image, dependency, elf
     run('compile_late', [compiler['gcc']['path'], *cflags, '-fno-pie', '-I', OVERLAY,
                          '-c', FIXTURES / 'interpreter_entry_late.c', '-o', late])
     run('link_guest', [compiler['gcc']['path'], *cflags[:2], '-nostdlib', '-static', '-no-pie',
@@ -129,11 +148,17 @@ def build(args, directory, report, rtld, sysroot):
 def exercise(args, directory, inputs, report):
     data = directory / 'input'
     data.write_bytes(b'ABCDEFGH\n')
-    script = directory / 'child.sh'
-    script.write_text('/usr/bin/d1_entry < /tests/input\nrc=$?\n'
-                      'printf "D1_INTERPRETER_ENTRY_RC=%s\\n" "$rc"\nexit "$rc"\n')
-    empty = directory / 'empty.sh'
-    empty.write_text(script.read_text().replace('/usr/bin/d1_entry <', '/usr/bin/d1_entry empty <', 1))
+    if args.native_sysdep:
+        scripts = {mode: directory / (mode + '.sh') for mode in ('ordinary', 'secure')}
+        for mode, script in scripts.items():
+            script.write_text(f'D1_ENTRY_ENV=verified /usr/bin/d1_entry {mode}\n')
+    else:
+        script = directory / 'child.sh'
+        script.write_text('/usr/bin/d1_entry < /tests/input\nrc=$?\n'
+                          'printf "D1_INTERPRETER_ENTRY_RC=%s\\n" "$rc"\nexit "$rc"\n')
+        empty = directory / 'empty.sh'
+        empty.write_text(script.read_text().replace('/usr/bin/d1_entry <', '/usr/bin/d1_entry empty <', 1))
+        scripts = {'child': script, 'empty': empty}
     pie, image, dependency, elf = inputs
     with tempfile.TemporaryDirectory(prefix='xos_d1_interpreter_entry_') as folder:
         disk = Path(folder) / 'work.img'
@@ -142,7 +167,8 @@ def exercise(args, directory, inputs, report):
             transfer(disk, 'mkdir', path)
         for path, source in (('/usr/bin/dash', args.dash), ('/usr/bin/d1_entry', elf),
                              ('/tests/main.pie', pie), ('/tests/interpreter.so', image), ('/tests/dependency.so', dependency),
-                             ('/tests/input', data), ('/tests/child.sh', script), ('/tests/empty.sh', empty)):
+                             ('/tests/input', data),
+                             *((f'/tests/{mode}.sh', script) for mode, script in scripts.items())):
             transfer(disk, 'import', path, source)
         guest = Guest(args.system / 'xos-install.iso', 'interpreter_entry', work_disk=disk,
                       qmp_enabled=False, log_dir=directory)
@@ -155,6 +181,18 @@ def exercise(args, directory, inputs, report):
             guest.expect_supervisor(trace=True, timeout=40)
             command(guest, 'demo quiet', b'demo tasks')
             report['resources_before'] = resources(guest)
+            if args.native_sysdep:
+                report['runs'] = {}
+                for mode, secure in (('ordinary', 0), ('secure', 1)):
+                    result = command(guest, f'dash /tests/{mode}.sh', b'kind=exited code=', timeout=120)
+                    after = resources(guest)
+                    report['runs'][mode] = {'output': result.decode(errors='replace'),
+                                            'resources_after': after}
+                    marker = (f'D1_NATIVE_SYSDEP_OK secure={secure} argv_env=gnu auxv=gnu '
+                              'file=continuous heap=live').encode()
+                    assert marker in result and after == report['resources_before'], result
+                    assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
+                return
             result = command(guest, 'dash /tests/child.sh', b'kind=exited code=', timeout=120)
             report['output'] = result.decode(errors='replace')
             assert re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result) == [b'0'], result
@@ -192,10 +230,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for field in ('system', 'sdk-build', 'profile', 'dash', 'dash-receipt', 'rtld-proof', 'output'):
         parser.add_argument('--' + field, type=lambda value: Path(value).resolve(), required=True)
+    parser.add_argument('--native-sysdep', action='store_true',
+                        help='exercise actual GNU startup globals and the authenticated native session')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     report = {'status': 'failed', 'scope': 'native preparation and shared rtld entry checker',
               'shared_interpreter_executed': False}
+    if args.native_sysdep:
+        report['scope'] = 'native preparation into the GNU rtld OS startup state'
     try:
         system = bind_system(args.system)
         profile = load_json(args.profile)
@@ -206,6 +248,8 @@ def main():
         assert rtld_manifest['status'] == 'rtld_entry_compiled_startup_blocked'
         for source, digest in rtld_manifest['artifacts'].items():
             assert sha(args.rtld_proof / source) == digest
+        if args.native_sysdep:
+            assert rtld_manifest['native_sysdep_fixture_sha256'] == sha(FIXTURES / 'sysdep_start_state.c')
         assert rtld_manifest['source_sha256'] == load_json(args.sdk_build / 'manifest.json')['source_sha256']
         preparation = args.rtld_proof / 'prepared/manifest.json'
         assert sha(preparation) == rtld_manifest['preparation_manifest_sha256']

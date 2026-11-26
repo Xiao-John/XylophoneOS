@@ -4,6 +4,8 @@
 #include <QtCore/QDir>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringList>
+#include <cerrno>
+#include <sys/stat.h>
 namespace browser {
 // URLs stay in the read-only /web namespace. Installed built-ins are a
 // fallback for the same five public paths on disks without the demo files.
@@ -28,11 +30,24 @@ inline QString resolve(QString value, const QString &base) {
 }
 inline bool read(const QString &path,QByteArray &bytes,int limit,QString &error) {
     QFile file(path);
-    const auto builtin = installed_builtin(path);
-    if (!builtin.isEmpty() && !file.exists()) file.setFileName(builtin);
-    if(!file.open(QIODevice::ReadOnly)){error="Page or resource missing";return false;}
-    // Size is checked before allocation; read at most limit+1 handles changes.
-    if(file.size()<0 || file.size()>limit){error="Resource byte budget exceeded";return false;}
+    struct stat metadata{};
+    if (!file.open(QIODevice::ReadOnly)) {
+        const auto builtin = installed_builtin(path);
+        // Open the real page first. The glibc preview can open and stat files
+        // even when the access() path used by QFile::exists is unavailable.
+        if (!builtin.isEmpty() && ::stat(QFile::encodeName(path).constData(), &metadata) == -1
+                && errno == ENOENT) {
+            file.setFileName(builtin);
+            file.open(QIODevice::ReadOnly);
+        }
+        if (!file.isOpen()) { error = "Page or resource missing"; return false; }
+    }
+    if (::fstat(file.handle(), &metadata) != 0 || !S_ISREG(metadata.st_mode)) {
+        error = "Page or resource missing";
+        return false;
+    }
+    // Check the opened instance before allocation. Reading at most limit+1 handles changes.
+    if(metadata.st_size<0 || metadata.st_size>limit){error="Resource byte budget exceeded";return false;}
     bytes=file.read(limit+1);
     if(file.error()!=QFileDevice::NoError || bytes.size()>limit){error="Resource read failed or grew";return false;}
     return true;

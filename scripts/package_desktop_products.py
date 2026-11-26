@@ -108,7 +108,6 @@ def main():
     bundle = load_json(QT / 'redistribution_manifest.json')
     common = {'XOS-LICENSE': ROOT / 'LICENSE', 'XOS-NOTICE': ROOT / 'NOTICE'}
     if profile.get('runtime_family') == 'glibc':
-        require(args.product == 'mobius', 'the glibc desktop candidate is Mobius')
         common.update({f'sdk/{name}': path for path, name in sdk_notices(sdk, profile, 'cpp')})
     else:
         require(profile['compiler_version'] == load_json(sdk / 'manifest.json')['compiler']['version'],

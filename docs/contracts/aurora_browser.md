@@ -97,11 +97,39 @@ records sources and provider policy in the receipt. Rebuild matching native/
 threading SDK, Qt 6.8.3 and browser together. This native interface adds no POSIX
 socket or glibc dependency.
 
+## Explicit glibc candidate build
+
+The same ClarkE application can use the signed glibc C/C++ SDK and matching
+static Qt 6.8.3 Widgets kit. The builder verifies the SDK profile, target
+archives, host generators and locked liteHTML/Gumbo tree before linking. Use
+the established `xos.clarke` package and `/usr/bin/clarke.elf` entry. The legacy
+threading SDK build remains available for its existing package profile.
+
+```sh
+python3 src/ports/aurora_browser/glibc/build.py \
+    --sdk-build "$GLIBC_SDK" --sdk-profile "$GLIBC_PROFILE" \
+    --qt-build "$QT_BUILD" --qt-prefix "$QT_PREFIX" --qt-source "$QT_SOURCE" \
+    --host-qt "$QT_HOST" --output build/clarke-glibc
+python3 scripts/package_desktop_products.py clarke build/clarke-glibc/build/clarke.elf \
+    --sdk "$GLIBC_SDK" --profile "$GLIBC_PROFILE" --output build/clarke-glibc.xpk
+```
+
+ClarkE first opens the requested local page. Only an absent public built-in
+path is eligible for the packaged copy. The browser checks the actual open
+regular file with `fstat` before its bounded read.
+
+## Native HTTP guest check
+
 After building a matching system with the pinned `XOS_LWIP_SOURCE_ARCHIVE`:
 
 ```sh
 python3 tests/aurora_browser_http_guest.py --system build/network_system --payload build/browser/aurora.elf --output build/browser_http_guest
 ```
+
+Use `--system-source` if the system was built from another source tree. The
+runner verifies that full tree and the system artifacts against the build
+manifest. The glibc ClarkE check also binds its native network headers to the
+same system source digests.
 
 The runner verifies inputs and actual GET/Host/close, checks the SHA-256 of
 fresh HTML, CSS and BMP bodies, and verifies stylesheet text/background and BMP

@@ -46,6 +46,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("system", "payload", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--system-source", type=Path, default=root,
+                        help="source tree recorded by the supplied system build manifest")
     args = parser.parse_args()
     system, payload, out = (getattr(args, name).resolve() for name in ("system", "payload", "output"))
     out.relative_to(root / "build")
@@ -59,9 +61,10 @@ def main():
     host = {"requests": []}
     stopped = threading.Event()
     try:
+        system_source = args.system_source.resolve(strict=True)
         manifest = json.loads((system / "manifest.json").read_text())
         for name, digest in manifest["sources"].items():
-            if sha(root / name) != digest:
+            if sha(system_source / name) != digest:
                 raise ValueError("System source mismatch: " + name)
         for name, entry in manifest["artifacts"].items():
             if sha(system / name) != entry["sha256"]:
@@ -75,8 +78,19 @@ def main():
             raise ValueError("Browser ELF or native network build receipt mismatch")
         inputs = receipt["inputs"]
         browser = root / "src/ports/aurora_browser"
+        if receipt.get("runtime_family") == "glibc":
+            builders = [browser / "glibc" / name for name in ("build.py", "CMakeLists.txt")]
+            for relative in ("src/shared/include/xos/net_service_abi.hpp",
+                             "src/user/include/xos/net_service_client.hpp",
+                             "src/user/include/xos/net_transport.hpp"):
+                source = root / relative
+                digest = sha(source)
+                if digest != inputs.get(str(source)) or digest != manifest["sources"].get(relative):
+                    raise ValueError("ClarkE native network header differs from the system build: " + relative)
+        else:
+            builders = [browser / "build.py"]
         expected_sources = [
-            browser / "build.py", browser / "main.cpp", *browser.glob("*.hpp"),
+            *builders, browser / "main.cpp", *browser.glob("*.hpp"),
             *sorted((root / "src/ports/browser_http").glob("*.hpp")),
             root / "src/ports/browser_http/http.cpp",
             root / "src/ports/browser_http/transport.cpp",
@@ -103,6 +117,7 @@ def main():
                 "<h1>Native HTTP</h1><p>" + nonce + '</p><img src="proof.bmp"></body></html>').encode()
         bodies = {page_path: page, css_path: css, bmp_path: bmp}
         report.update(build_id=manifest["build_id"], image_sha256=sha(system / "xos-install.iso"),
+                      system_manifest_sha256=sha(system / "manifest.json"),
                       browser_sha256=sha(payload), receipt_sha256=sha(receipt_path),
                       challenge_sha256={name: hashlib.sha256(body).hexdigest() for name, body in bodies.items()})
         server = socket.socket()

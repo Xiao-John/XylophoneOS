@@ -9,8 +9,10 @@
 #include "xos_thread_identity.h"
 
 void *__minimal_malloc (size_t);
-static struct link_map modules[2];
-static struct link_map *initial_order[2];
+extern const Elf64_Ehdr __ehdr_start attribute_hidden;
+extern int *__errno_location (void);
+static struct link_map modules[3];
+static struct link_map *initial_order[3];
 
 static __attribute__ ((noreturn)) void
 stop (const char *message, size_t size, int code)
@@ -32,10 +34,10 @@ stop (const char *message, size_t size, int code)
   while (0)
 
 static void
-add_module (struct link_map *map, uintptr_t bias)
+add_module (struct link_map *map, const Elf64_Ehdr *elf, uintptr_t bias,
+            bool pinned)
 {
-  const Elf64_Ehdr *elf = (const void *) bias;
-  const Elf64_Phdr *phdrs = (const void *) (bias + elf->e_phoff);
+  const Elf64_Phdr *phdrs = (const void *) ((const char *) elf + elf->e_phoff);
   const Elf64_Phdr *tls = NULL;
   for (size_t i = 0; i < elf->e_phnum; ++i)
     if (phdrs[i].p_type == PT_TLS)
@@ -43,9 +45,11 @@ add_module (struct link_map *map, uintptr_t bias)
         CHECK (tls == NULL, "one PT_TLS per input");
         tls = &phdrs[i];
       }
-  CHECK (tls != NULL && tls->p_filesz != 0 && tls->p_memsz > tls->p_filesz
+  CHECK (tls != NULL && tls->p_memsz > tls->p_filesz
          && tls->p_align != 0 && (tls->p_align & (tls->p_align - 1)) == 0,
          "linked TLS data and BSS");
+  CHECK (pinned ? tls->p_filesz != 0 : (tls->p_filesz == 0 && tls->p_memsz == sizeof (int)),
+         "pinned template or shared libc errno TLS");
   map->l_addr = bias;
   map->l_tls_align = tls->p_align;
   map->l_tls_blocksize = tls->p_memsz;
@@ -62,18 +66,28 @@ d1_run_closure_tls (uintptr_t first, uintptr_t second, int exhausted)
 {
   __rtld_malloc_init_stubs ();
   __tls_pre_init_tp ();
-  add_module (&modules[0], first);
-  add_module (&modules[1], second);
-  CHECK (modules[0].l_tls_modid == 1 && modules[1].l_tls_modid == 2,
+  /* GNU ld has resolved the initial-exec access in the shared-built
+     errno leaf against this harness's own initial TLS program header. */
+  add_module (&modules[0], &__ehdr_start, 0, false);
+  add_module (&modules[1], (const void *) first, first, true);
+  add_module (&modules[2], (const void *) second, second, true);
+  modules[0].l_type = lt_executable;
+  CHECK (modules[0].l_tls_modid == 1 && modules[1].l_tls_modid == 2
+         && modules[2].l_tls_modid == 3,
          "GNU assigned distinct module IDs");
-  modules[0].l_next = &modules[1];
-  modules[1].l_prev = &modules[0];
+  for (size_t i = 0; i < 3; ++i)
+    {
+      initial_order[i] = &modules[i];
+      if (i != 0)
+        {
+          modules[i - 1].l_next = &modules[i];
+          modules[i].l_prev = &modules[i - 1];
+        }
+    }
   GL (dl_ns)[LM_ID_BASE]._ns_loaded = &modules[0];
-  GL (dl_ns)[LM_ID_BASE]._ns_nloaded = 2;
-  initial_order[0] = &modules[0];
-  initial_order[1] = &modules[1];
+  GL (dl_ns)[LM_ID_BASE]._ns_nloaded = 3;
   modules[0].l_initfini = initial_order;
-  modules[0].l_searchlist.r_nlist = 2;
+  modules[0].l_searchlist.r_nlist = 3;
 
   if (exhausted)
     {
@@ -91,7 +105,7 @@ d1_run_closure_tls (uintptr_t first, uintptr_t second, int exhausted)
          && identity.thread_pointer == (uintptr_t) pd
          && pd->tid == identity.tid, "native initial thread identity");
   dtv_t *dtv = THREAD_DTV ();
-  CHECK (dtv != NULL && dtv == GL (dl_initial_dtv) && dtv[-1].counter >= 2
+  CHECK (dtv != NULL && dtv == GL (dl_initial_dtv) && dtv[-1].counter >= 3
          && dtv[0].counter == 0, "original GNU DTV storage");
 
   __xos_rtld_init_tls_templates (&modules[0], pd);
@@ -101,7 +115,7 @@ d1_run_closure_tls (uintptr_t first, uintptr_t second, int exhausted)
   const unsigned char first_bytes[] = { 0x51, 0xa7 };
   for (size_t j = 0; j < 2; ++j)
     {
-      const struct link_map *map = &modules[j];
+      const struct link_map *map = &modules[j + 1];
       const dtv_t *entry = &dtv[map->l_tls_modid];
       volatile unsigned char *storage = entry->pointer.val;
       CHECK (storage == (unsigned char *) pd - map->l_tls_offset
@@ -121,15 +135,21 @@ d1_run_closure_tls (uintptr_t first, uintptr_t second, int exhausted)
   CHECK (__xos_rtld_heap_seal () == 0
          && __xos_rtld_heap_grow (XOS_VM_PAGE) == XOS_RTLD_HEAP_FAILED,
          "initial TLS remains owned after heap seal");
+  int *(*volatile read_errno) (void) = __errno_location;
+  int *libc_errno = read_errno ();
+  CHECK (libc_errno == dtv[1].pointer.val && *libc_errno == 0,
+         "real shared-built libc errno follows the GNU-initialized TCB");
+  *libc_errno = 731;
   const long now = file_trap (46, 0, 0, 0);
   CHECK (now >= 0 && file_trap (47, now + 40000000, 0, 0) == 0
          && file_trap (46, 0, 0, 0) >= now + 40000000, "yield across native dispatch");
   CHECK (THREAD_SELF == pd && THREAD_DTV () == dtv
-         && *(const unsigned char *) dtv[1].pointer.val == 0x70
-         && *(const unsigned char *) dtv[2].pointer.val == 0x71,
+         && read_errno () == libc_errno && *libc_errno == 731
+         && *(const unsigned char *) dtv[2].pointer.val == 0x70
+         && *(const unsigned char *) dtv[3].pointer.val == 0x71,
          "resumed process owns initial TLS");
 
-  static const char success[] = "D1_CLOSURE_TLS_OK modules=2 tdata=checked "
-                               "tbss=zero dtv=1 tp=preserved\n";
+  static const char success[] = "D1_CLOSURE_TLS_OK modules=3 dsos=2 tdata=checked "
+                               "tbss=zero dtv=1 tp=preserved libc_errno=checked\n";
   stop (success, sizeof (success) - 1, 0);
 }

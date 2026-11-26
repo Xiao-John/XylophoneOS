@@ -210,6 +210,17 @@ def main():
                 if symbols.get(name) != 'T':
                     raise RuntimeError('GNU rtld initial TLS entry is absent: ' + name)
 
+            shared_errno = [build / 'csu' / name for name in ('errno-loc.os', 'errno.os')]
+            for path in shared_errno:
+                _, compilation = run('make_libc_' + path.name,
+                                     ['make', '-C', source / 'csu', 'objdir=' + str(build),
+                                      '-j' + str(args.jobs), path])
+                if not any({'-fPIC', '-DSHARED', '-DMODULE_NAME=libc'} <= set(line.split())
+                           for line in compilation.splitlines()):
+                    raise RuntimeError('libc errno result did not compile using the shared build')
+            run('shared_libc_errno_relocations', [env['READELF'], '-rW', *shared_errno])
+            tls_objects.extend(shared_errno)
+
         for requested, prefix, name in (
                 (args.initial_tp_fixture, 'initial_tp', 'initial_tls_guest.c'),
                 (args.closure_tls_fixture, 'closure_tls', 'closure_tls_runtime.c')):

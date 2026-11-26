@@ -34,8 +34,9 @@ SUPPORT = ('elf/dl-tls.os', 'elf/dl-tls_init_tp.os', 'elf/dl-mutex.os',
            'elf/xos_rtld_entry.os', 'elf/xos_rtld_mapping.os', 'elf/xos_file_session.os',
            'string/rtld-memmove.os', 'string/rtld-memset.os', 'string/rtld-strlen.os',
            'stdio-common/rtld-_fitoa_word.os', 'stdio-common/rtld-itoa-udigits.os',
-           'setjmp/rtld-__longjmp.os')
-SUCCESS = b'D1_CLOSURE_TLS_OK modules=2 tdata=checked tbss=zero dtv=1 tp=preserved'
+           'setjmp/rtld-__longjmp.os', 'csu/errno-loc.os', 'csu/errno.os')
+SUCCESS = (b'D1_CLOSURE_TLS_OK modules=3 dsos=2 tdata=checked tbss=zero '
+           b'dtv=1 tp=preserved libc_errno=checked')
 OOM = b'XOS rtld: cannot allocate initial TLS slotinfo'
 
 
@@ -173,7 +174,8 @@ def main():
     args = parser.parse_args()
     args.output.mkdir(parents=True)
     report = {'status': 'failed', 'scope': 'GNU initial rtld TLS with an authenticated DSO closure',
-              'shared_interpreter_executed': False, 'commands': {}}
+              'shared_interpreter_executed': False,
+              'shared_libc_leaf_scope': 'link-time resolved errno', 'commands': {}}
     try:
         system, sdk, rtld, artifacts = bind_rtld_inputs(args, report, FIXTURE, 'closure_tls_fixture_sha256')
         elf = build(args, report, rtld)

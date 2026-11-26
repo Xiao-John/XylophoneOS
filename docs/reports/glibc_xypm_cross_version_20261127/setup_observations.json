@@ -1,0 +1,10 @@
+{
+  "disk_size_256_mib_setup": "FAT32 test baseline supports 512..2048 MiB",
+  "host_checks": {
+    "tests/package_p3_repository.py": "50 passed",
+    "tests/xypm_sdk_profile_host.py": "45 passed"
+  },
+  "initial_legacy_raw_disk_assertion": "The upgrade was refused and managed files matched. The raw disk changed across an unmatched system boot. A new control compared identical boot paths with and without the refused command.",
+  "legacy_default_profile_requires_rebinding": "SDK snapshot not registered for profile; do not mix headers/libraries",
+  "optional_network_archive_build": "exact patch invocation exited 2; offline image rebuilt and used"
+}

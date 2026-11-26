@@ -205,6 +205,11 @@ bootstrap/rtld 早期 I/O 与 libc 后期文件操作必须使用同一进程文
 交接时不能另起一个 legacy request-id 序列、重连后丢弃未知结果或按路径重建
 继承 FD。复用 G3 统一文件会话接口，尚需的 early/late 所有权交接单列验收。
 
+现有[私有会话交接](../work_log/0aa96e34_glibc_d1_early_files_session.md)已在真实静态
+glibc CRT 前后验证。早期单一持有方把当前 PID、内核认证端点、编号与失败状态交给
+尚未初始化的 G3，继承 FD 仍从现有 startup 描述恢复。动态解释器中的接入仍是 D1
+验收项。
+
 ## 6. 重定位、保护、TLS 和生命周期
 
 第一批固定一个 namespace、启动时完整闭包与 eager binding。rtld 严格校验

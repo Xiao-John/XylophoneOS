@@ -51,13 +51,17 @@ python3 scripts/build_dash.py --sdk "$XOS_GLIBC_SDK_BUILD/sysroot" \
 ```
 
 The `dash_glibc_preview` receipt identifies the ELF for explicit import onto a
-test disk. The preview has a separate cache directory. Script arguments,
-functions, `case`, parameter expansion, dot scripts
-and ordinary file redirection were checked in the guest. Shell startup currently
-reports the glibc `getcwd` failure. The preview rejects pipelines, subshells,
-command substitution, here-documents and outbound execution. The full C3 profile
-requires working directory and access checks plus compatible spawn, wait, fork,
-exec and descriptor transfer. The installed C3 route uses newlib.
+test disk. The preview has a separate cache directory. The current SDK and
+system support script builtins, ordinary builtin file redirection, and foreground
+XOS ELF commands with native standard streams. Commands can use an explicit path
+or the shell's PATH lookup. The loader enforces the caller's create authority.
+Child arguments, environment, working directory and exit status use the native
+spawn and wait APIs.
+
+Pipelines, subshells, command substitution, here-documents, explicit exec and
+the fallback for executable text scripts require further port work. External
+file-backed redirection requires compatible standard descriptor transfer. The
+installed C3 route uses newlib.
 
 
 C1 experimental branch adds external-only, foreground pipelines of at most four

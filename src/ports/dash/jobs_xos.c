@@ -171,6 +171,7 @@ int xos_shell_execve(const char *path, char *const argv[], char *const envp[]) {
 static int xos_spawn(pid_t *child, const char *path, char **argv, char **envp) {
     // SL2: single ordinary spawn path; inherit-create covers gcc/make/dash alike.
     int error = posix_spawn(child, path, NULL, NULL, argv, envp);
+#ifndef XOS_DASH_GLIBC_PREVIEW
     if (error == ENOEXEC && xos_shell_script(path)) {
         char *script[65]; unsigned argc = 0;
         script[0] = "/usr/bin/dash"; script[1] = (char *)path;
@@ -182,6 +183,7 @@ static int xos_spawn(pid_t *child, const char *path, char **argv, char **envp) {
         if (!*child) { execve(script[0], script, envp); _exit(errno == ENOENT ? 127 : 126); }
         return 0;
     }
+#endif
     return error;
 }
 #endif

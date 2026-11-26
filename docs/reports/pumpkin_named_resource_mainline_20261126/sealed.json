@@ -1,0 +1,84 @@
+{
+  "status": "passed_subset",
+  "build_id": "ff8fcf626d5aa7c4",
+  "system_manifest_sha256": "bd004734c4152a947446f69a85797c1bee4bc1c57ef912ebfa63e6d95bc6a83a",
+  "artifacts": {
+    "xos-install.iso": "64512e070662554165980a1d7728e7ee78b6bc46b4ee235f9dfe66b34dd88ab7",
+    "user_files.image.elf": "1e58dde4600c1517bfed20573286910a17deaa78d0a186ef1415876041c6108f",
+    "user_supervisor.image.elf": "ce8055773d5f06771bd36c4beb323f5d4c070db5b4dc00c26d0309e5c38233a7",
+    "user_pumpkin_durable.image.elf": "114130a3ba6e423738f5e7fde2fab2c6bb4c3748ce5e5c6a5be8beee4df8b1fa",
+    "user_p2_anchor_proxy.image.elf": "025c78bf92978fae3635edb14b5466f2b7849929256b497688d4fb49a0c8e967",
+    "user_pumpkin_holder.image.elf": "4c5923aceadc62b6467629e7d22b9b317db08f7d5e07b82b9335767026148247",
+    "user_p2_sealed.image.elf": "78f31f8c803f8f73417866c3c35cbe562a90a55926be3c2927b7735893c5cc9c"
+  },
+  "entry_sha256": "fd3a7f82fb26f2260621cf16c7d6f46ad49a0d2b67d8e38a61bf318f0db5e70c",
+  "runner_sha256": "cf95d81fbe32cbb0cc93e978727e84281c82890f2f2567da47bfd1167be876f9",
+  "checks": [
+    {
+      "case": "private installation",
+      "exit": 0
+    },
+    {
+      "case": "existing destination refused before publication",
+      "exit": 1
+    },
+    {
+      "case": "durable issue to owner",
+      "exit": 0
+    },
+    {
+      "case": "duplicate enrollment refused",
+      "exit": 1
+    },
+    {
+      "case": "fresh VM accepts the same credential and logs out",
+      "exit": 0
+    },
+    {
+      "case": "first fresh VM reads owned resource and verifies logout",
+      "exit": 0
+    },
+    {
+      "case": "second fresh VM reads resource of the same durable owner and verifies logout",
+      "exit": 0
+    },
+    {
+      "case": "credential symlink refused",
+      "exit": 1
+    },
+    {
+      "case": "multiply-linked credential refused",
+      "exit": 1
+    },
+    {
+      "case": "public credential mode refused",
+      "exit": 1
+    },
+    {
+      "case": "wrong credential rejected by ordinary session",
+      "exit": 3
+    },
+    {
+      "case": "durable registrar revocation",
+      "exit": 0
+    },
+    {
+      "case": "fresh VM rejects the original revoked credential",
+      "exit": 3
+    },
+    {
+      "case": "fresh VM denies owned resource session after persistent revocation",
+      "exit": 3
+    },
+    {
+      "case": "publication_unknown",
+      "revision": 2,
+      "replacement_created": false
+    },
+    {
+      "case": "wallet_sync_failed",
+      "revision": 2,
+      "replacement_created": false
+    }
+  ]
+}

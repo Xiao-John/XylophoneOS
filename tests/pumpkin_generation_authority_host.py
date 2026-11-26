@@ -106,6 +106,26 @@ class authority_test(unittest.TestCase):
         authority.provision()
         self.assertEqual(authority.publish(None, mark(1)), publish_result.committed)
 
+    def test_named_generation_has_its_own_record_and_length_policy(self):
+        directory, account_format = self.setup_authority("named")
+        named_format = generation_authority(directory.parent, _realm, named_resources=True)
+        named_format.provision()
+        self.assertIsNone(named_format.read())
+        with self.assertRaises(generation_error):
+            account_format.read()
+        with self.assertRaises(ValueError):
+            named_format.publish(None, mark(1))
+        allowed = generation_mark(_realm, 1, 4576, mark(1).checksum, named_resources=True)
+        self.assertEqual(named_format.publish(None, allowed), publish_result.committed)
+        reopened = generation_authority(directory.parent, _realm, named_resources=True)
+        self.assertEqual(reopened.read(), allowed)
+        with self.assertRaises(generation_error):
+            account_format.read()
+        with self.assertRaises(ValueError):
+            generation_mark(_realm, 2, 80, mark(2).checksum, named_resources=True)
+        with self.assertRaises(ValueError):
+            generation_mark(_realm, 2, 4576, mark(2).checksum)
+
     def assert_fresh_read(self, directory, expected):
         with child("read", directory) as process:
             self.assertEqual(line(process), f"{expected.revision}:{expected.checksum.hex()}")

@@ -25,7 +25,7 @@ namespace xos::user::pumpkin::anchor_guest { struct pair; }
 namespace xos::user::pumpkin::native_login {
 bool enroll_user(ipc_client& registrar, account_name account, const anchor_guest::pair& proxy);
 u8 login_user(u32 image, u64 daemon, ipc_client& registrar, account_name account, const anchor_guest::pair& proxy,
-              u32 broker_image = 0);
+              u32 broker_image = 0, named_resource_request* named = nullptr);
 bool revoke_user(ipc_client& registrar, account_name account);
 }
 #endif

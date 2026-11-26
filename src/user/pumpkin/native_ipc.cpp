@@ -6,6 +6,9 @@
 #if XOS_PUMPKIN_RESOURCE_BRIDGE
 #include "resource_bridge.hpp"
 #endif
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#include "named_resource_rpc.hpp"
+#endif
 
 namespace xos::user::pumpkin {
 
@@ -86,6 +89,7 @@ enum class progress { keep, drop, failure };
 progress process_request(service_core& core, transport_session& session, u64& now, bool draining,
                          [[maybe_unused]] login_resource* resource = nullptr,
                          [[maybe_unused]] resource_bridge* bridge = nullptr,
+                         [[maybe_unused]] named_resource_store* named = nullptr,
                          [[maybe_unused]] bool registrar = false) {
     if (now >= session.expires) {
         return progress::drop;
@@ -137,6 +141,18 @@ progress process_request(service_core& core, transport_session& session, u64& no
         extension = &resource_extension;
     }
 #endif
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+    struct named_context { named_resource_store* store; bool registrar; bool broker_only; };
+    named_context names{named, registrar, bridge != nullptr};
+    const wire_extension named_extension{&names,
+        [](void* context, service_core& state, const connection_id& connection,
+           const wire_request& incoming, u64 at, wire_reply& outgoing) {
+            auto& input = *static_cast<named_context*>(context);
+            if (input.broker_only && incoming.operation == wire_operation::read_named_resource) { return status::denied; }
+            return invoke_named_resource(*input.store, state, connection, input.registrar, incoming, at, outgoing);
+        }, wire_operation::put_named_resource, wire_operation::erase_named_resource};
+    if (named != nullptr && request.operation >= named_extension.first) { extension = &named_extension; }
+#endif
     // The kernel copies the single-slot packet. Never retry after dispatch,
     // since the mutation may already have executed.
     const bool sent = received == sizeof(request) && clock_ok && now < session.expires &&
@@ -163,7 +179,8 @@ progress process_request(service_core& core, transport_session& session, u64& no
 
 int serve_native(const store_api& store, const nonce& realm, const entropy_api& entropy,
                  ipc_channel control, u64 controller, const char* service_name,
-                 backing_liveness backing, login_resource* resource, resource_bridge* bridge) {
+                 backing_liveness backing, login_resource* resource, resource_bridge* bridge,
+                 named_resource_store* named) {
     service_core core;
     transport_session registrar, clients[client_limit]{};
     const i64 initial = monotonic_now();
@@ -193,7 +210,7 @@ int serve_native(const store_api& store, const nonce& realm, const entropy_api& 
             draining = true;
             exit_code = 12;
         }
-        const auto control_result = process_request(core, registrar, now, draining, resource, bridge, true);
+        const auto control_result = process_request(core, registrar, now, draining, resource, bridge, named, true);
         if (control_result != progress::keep) {
             if (control_result == progress::failure) {
                 exit_code = 12;
@@ -210,7 +227,7 @@ int serve_native(const store_api& store, const nonce& realm, const entropy_api& 
             if (client.channel.send == 0) {
                 continue;
             }
-            const auto result = process_request(core, client, now, draining, resource, bridge);
+            const auto result = process_request(core, client, now, draining, resource, bridge, named);
             if (result != progress::keep) {
                 disconnect(core, client);
             }

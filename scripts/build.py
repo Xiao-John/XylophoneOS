@@ -65,6 +65,8 @@ def main():
                         help="enable the private operator enrollment and login entry")
     parser.add_argument("--pumpkin-user-resource", action="store_true",
                         help="enable a sealed resource for the private operator login entry")
+    parser.add_argument("--pumpkin-named-resource-store", action="store_true",
+                        help="enable named resources in the anchored replay or operator broker profile")
     args = parser.parse_args()
     if args.eager_fork and args.cow1_probe:
         parser.error("select eager control or the opt-in COW1 probe, not both")
@@ -91,6 +93,9 @@ def main():
         parser.error("operator login requires the native Pumpkin developer profile")
     if args.pumpkin_user_resource and not args.pumpkin_user_login:
         parser.error("operator resource access requires the private Pumpkin login profile")
+    if args.pumpkin_named_resource_store and (not args.pumpkin_anchored_probe or
+                                             (args.pumpkin_native_login and not args.pumpkin_user_resource)):
+        parser.error("named resource storage requires the anchored replay or operator broker profile")
     if any(private_profiles) and BUILD == ROOT / "build":
         parser.error("files private storage probe requires an isolated build subdirectory")
     if sum(private_profiles) > 1:
@@ -162,6 +167,7 @@ def main():
                                       **({"pumpkin_user_login": True} if args.pumpkin_user_login else {}),
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
+                                      **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
                                       "virtio_gpu": gpu_config,
                                       "network_service": network_configuration(ROOT, args.net_dns_probe)}, sort_keys=True).encode())
     build_id = source_digest[:16]
@@ -186,6 +192,7 @@ def main():
                                  pumpkin_native_login=args.pumpkin_native_login,
                                  pumpkin_user_login=args.pumpkin_user_login,
                                  pumpkin_user_resource=args.pumpkin_user_resource,
+                                 pumpkin_named_resource_store=args.pumpkin_named_resource_store,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
                                  net_dns_probe=args.net_dns_probe)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
@@ -346,6 +353,7 @@ def main():
         **({"pumpkin_user_login": True} if args.pumpkin_user_login else {}),
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
+        **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()

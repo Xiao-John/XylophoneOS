@@ -12,6 +12,15 @@ struct generation_mark {
     bool operator==(const generation_mark&) const = default;
 };
 
+// A profile may describe one larger, self-validating published unit.
+// The default account codec retains the original format and size.
+inline constexpr usize publication_payload_capacity = 4592;
+struct publication_codec {
+    void* context = nullptr;
+    bool (*describe)(void*, const nonce&, const u8*, usize, generation_mark&) = nullptr;
+    usize capacity = snapshot_capacity;
+};
+
 // Provided by a trusted broker holding the exclusive writer lease during
 // the entire lifetime of this store. Slot writes are isolated from the
 // selected slot and must be durable before write_slot returns true.
@@ -33,7 +42,8 @@ struct publication_io {
 // lease nor implements the protected generation source.
 class snapshot_publication {
 public:
-    snapshot_publication(const publication_io& io, const nonce& realm) : io_(io), realm_(realm) {}
+    snapshot_publication(const publication_io& io, const nonce& realm, publication_codec codec = {})
+        : io_(io), realm_(realm), codec_(codec) {}
     snapshot_publication(const snapshot_publication&) = delete;
     snapshot_publication& operator=(const snapshot_publication&) = delete;
 
@@ -48,8 +58,9 @@ private:
 
     publication_io io_;
     nonce realm_;
+    publication_codec codec_;
     account_snapshot decoded_{};
-    u8 readback_[snapshot_capacity]{};
+    u8 readback_[publication_payload_capacity]{};
 };
 
 }

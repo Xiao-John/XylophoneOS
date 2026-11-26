@@ -6,6 +6,9 @@
 #if XOS_PUMPKIN_USER_LOGIN
 #include "disk_test_store.hpp"
 #include "user_login.hpp"
+#if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#include "named_operator.hpp"
+#endif
 #endif
 #include "../drivers/uart_16550.hpp"
 
@@ -58,16 +61,38 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
 #else
     constexpr auto last_mode = scenario::user_revoke;
 #endif
-    if (mode < scenario::user_enroll || mode > last_mode) return false;
-    const bool submitting = mode == scenario::user_login || mode == scenario::user_resource;
+    bool named_read = false, named_mutation = false;
+#if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+    if (mode == scenario::user_resource) return false;
+    const auto named_mode = named_operator::for_scenario(mode);
+    named_read = named_mode == named_operator::operation::select;
+    named_mutation = named_mode == named_operator::operation::put || named_mode == named_operator::operation::erase;
+    named_operator::packet selected{};
+    u8 named_result = 0;
+#endif
+    if ((mode < scenario::user_enroll || mode > last_mode) && !named_read && !named_mutation) return false;
+    const bool submitting = mode == scenario::user_login || mode == scenario::user_resource || named_read;
+    const bool credentials_needed = submitting || mode == scenario::user_enroll;
     wire_id credential_owner{};
     bool credential_exchanged = false, credential_slots_cleared = false;
 #else
+#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+    if ((mode < scenario::cycle || mode > scenario::stale) && mode != scenario::named_empty) return false;
+#else
     if (mode < scenario::cycle || mode > scenario::stale) return false;
+#endif
 #endif
     if (sdk::channel_send_wait(supervisor.transmit, &response.result, sizeof(response.result), deadline()) != 0) {
         return false;
     }
+#if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+    if (named_read || named_mutation) {
+        named_operator::packet prompt{};
+        prompt.op = named_mode;
+        if (!serial_exchange(uart, prompt, selected) || !named_operator::selection(selected, named_mode) ||
+            sdk::channel_send_wait(supervisor.transmit, &selected, sizeof(selected), deadline()) != 0) { return false; }
+    }
+#endif
     bind_proxy owner{};
     if (sdk::channel_receive_wait(supervisor.receive, &owner, sizeof(owner), deadline()) != sizeof(owner)) {
         return false;
@@ -84,8 +109,19 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
         user_login::packet credentials{};
         const i64 report = sdk::ipc_recv(supervisor.receive, &credentials, sizeof(credentials));
         if (report == sizeof(credentials)) {
+#if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+            if (credentials.tag == named_operator::magic) {
+                named_operator::packet returned{}, ack{};
+                __builtin_memcpy(static_cast<void*>(&returned), &credentials, sizeof(returned));
+                if ((!named_read && !named_mutation) || named_result || (named_read && !credential_slots_cleared) ||
+                    !named_operator::outcome(returned, selected) || !serial_exchange(uart, returned, ack) || ack.result ||
+                    !named_operator::empty(ack.fields)) { return false; }
+                named_result = returned.result;
+                continue;
+            }
+#endif
             const auto operation = mode == scenario::user_enroll ? user_login::operation::issue : user_login::operation::submit;
-            if (mode == scenario::user_revoke || credentials.identity.number == 0 ||
+            if (!credentials_needed || credentials.identity.number == 0 ||
                 credentials.identity.scope != disk_test_realm) return false;
             if (credential_exchanged) {
                 if (credential_slots_cleared || !user_login::header(credentials, operation, 2) ||
@@ -119,11 +155,19 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
             valid = true;
             completed = true;
         }
-        if (completed && mode != scenario::user_revoke && !credential_slots_cleared) return false;
+#if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
+        if ((named_read || named_mutation) && finish.pass && named_result == finish.pass) {
+            valid = true;
+            completed = true;
+        }
+        if ((named_read || named_mutation) && completed && finish.pass != named_result) return false;
+#endif
+        if (completed && credentials_needed && !credential_slots_cleared) return false;
 #endif
 #if XOS_PUMPKIN_NATIVE_LOGIN
         using result = xos::user::pumpkin::native_login::result;
-        const auto last_error = mode == scenario::user_resource ? result::broker_cleanup : result::holder_exit;
+        const auto last_error = mode == scenario::user_resource || mode == scenario::user_named_read
+            ? result::broker_cleanup : result::holder_exit;
         valid = valid || (finish.pass >= static_cast<u8>(result::holder_start) &&
                           finish.pass <= static_cast<u8>(last_error));
 #endif

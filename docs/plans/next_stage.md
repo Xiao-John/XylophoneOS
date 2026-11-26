@@ -72,3 +72,12 @@ ClarkE 完整引擎需要在客体执行后再参与浏览器组合验收。
 [PIC 归档](../work_log/8e477872_glibc_shared_io_and_pic_archive.md) ·
 [Pumpkin 登录](../work_log/317b1813_pumpkin_operator_login_across_reboots.md) ·
 [JSC 配置](../work_log/b73f1f0f_clarke_jsc_config_protection.md)
+
+主线已合入 ClarkE 受控 HTTPS 安装包、Pumpkin 持久登录与独立 broker、D1
+原生解释器入口准备。来自含前两项的主线快照的普通镜像，在同一工作盘上启动了
+两个已安装产品和独立 Qt Quick 应用。SDK 发布预览已复验旧版原件的回退路径。
+余下的共同门包括正式安装配置的首个 dash 子程序、迁移的软件组合和真实动态
+解释器。浏览器仍需完成 JavaScriptCore 执行、WebCore 和生产网络。
+[同盘组合](../work_log/dcbbd42a_desktop_products_combined_guest.md) ·
+[D1 入口 PR #260](https://github.com/Xiao-John/XylophoneOS/pull/260) ·
+[发布预览 PR #263](https://github.com/Xiao-John/XylophoneOS/pull/263)

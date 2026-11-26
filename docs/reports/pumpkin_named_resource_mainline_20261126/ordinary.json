@@ -1,0 +1,66 @@
+{
+  "status": "passed_subset",
+  "runner_sha256": "12e742b4d66ac5cb0114f1658a60d71b235048d10561ec447ce06bab6996eb1c",
+  "profile": "pumpkin-resource-bridge-probe",
+  "checks": {
+    "xsh": {
+      "status": "passed",
+      "command": "/bin/pumpkin_probe.elf",
+      "resources": [
+        129696,
+        3,
+        1
+      ]
+    },
+    "dash": {
+      "status": "passed",
+      "command": "/bin/dash /bin/pumpkin.sh",
+      "resources": [
+        129696,
+        3,
+        1
+      ]
+    }
+  },
+  "not_run": [
+    "durable_xos_store",
+    "production_install"
+  ],
+  "build_id": "a9a482803eb2dff8",
+  "system_manifest_sha256": "a0e992a23344ef6c9bbfe71a1eabe59eb22fdb8f41fd614d1921a300245eaf7e",
+  "image_sha256": "471fe931b146b47f92ea89003fe8b807638b3bb725ea900bd8be488251cb58fb",
+  "fixture_receipt_sha256": "b35bb7d28eed9d4133feb632919a0f47c9ecb10a4847ad987ebed496190e24dd",
+  "sdk_tree_sha256": "bac879101d44a61ac8b61559c38c7f20ce2ce79a47010d192d745671e27d9a1d",
+  "artifacts": {
+    "pumpkind.elf": "a9ab610fc610d2936ddbd80c9a93dd8bf58567412ce2b03845e369f91f900ce4",
+    "pumpkin_probe.elf": "e8fc655dfc2f66d49f8ec05e326324119090a719771e2771ca0179342da9f212",
+    "pumpkin_sealed_broker.elf": "55eb5073aa4dd59f1bde2a3bbffe18c8f617a8acbd9a21670b39b0ff20eb2d44"
+  },
+  "dash": {
+    "artifact_sha256": "27292b846aa9cef3ce3cdb9ee5267b51fd296f6dc9a9c7f6005be93bfad9c29d",
+    "receipt_sha256": "9d907b190e929810158f9a629b7c6f1e77e3fe3b7bbfab256db9b1dda1e5ab99",
+    "script_sha256": "8bfa486b284562ea5f5c08a8fc46e207969d7fe11f8cb6612fdc76c4851c4f8b"
+  },
+  "work_disk_sha256": "96ef806b7ec5feeed3e0de5f15930b1e4cf27ef8c7097367bd3cfbde97ae4c86",
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "bridge_checks": [
+    "trusted_broker_admission",
+    "broker_owned_sealed_file",
+    "owner_read",
+    "other_account_denied",
+    "exact_broker_connection",
+    "native_process_binding",
+    "one_shot",
+    "expired",
+    "logout",
+    "origin_disconnect",
+    "broker_replacement",
+    "revocation",
+    "authority_stop_cleanup"
+  ],
+  "serial_sha256": "d9d440c0f0297d2b85eb741018b7dcc4e2522164faedc2b63e197bd7517d9e99"
+}

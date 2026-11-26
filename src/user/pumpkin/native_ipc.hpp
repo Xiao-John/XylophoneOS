@@ -65,9 +65,10 @@ struct backing_liveness {
 };
 class login_resource;
 class resource_bridge;
+class named_resource_store;
 int serve_native(const store_api& store, const nonce& realm, const entropy_api& entropy,
                  ipc_channel control, u64 controller, const char* service_name,
                  backing_liveness backing = {}, login_resource* resource = nullptr,
-                 resource_bridge* bridge = nullptr);
+                 resource_bridge* bridge = nullptr, named_resource_store* named = nullptr);
 
 }

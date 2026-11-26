@@ -15,6 +15,7 @@ enum class wire_operation : u32 {
     authenticate = 1, logout, identity, create_account, lookup_account, rotate_credential, revoke_account,
     grant_login_resource, read_login_resource,
     admit_resource_broker, begin_resource_read,
+    put_named_resource, read_named_resource, erase_named_resource,
 };
 enum class wire_status : u32 {
     ok = 0, invalid, denied, not_found, conflict, exhausted, unavailable, corrupt, io_error, outcome_unknown,
@@ -59,6 +60,22 @@ struct resource_broker_grant {
     u32 send = 0, receive = 0;
 };
 static_assert(sizeof(resource_broker_grant) == 16);
+// Explicit named-store developer profile. The service resolves the logical
+// name and the expected object generation within its private namespace.
+struct named_resource_request {
+    u64 generation = 0;
+    u32 data = 0;
+    u8 length = 0;
+    u8 reserved[3]{};
+    char name[16]{};
+};
+static_assert(sizeof(named_resource_request) == name_limit);
+inline bool valid_named_request(const named_resource_request& input, bool writing = false) {
+    return input.length <= sizeof(input.name) && valid_name({input.name, input.length}) &&
+        !has_bytes(input.reserved, sizeof(input.reserved)) &&
+        !has_bytes(reinterpret_cast<const u8*>(input.name) + input.length, sizeof(input.name) - input.length) &&
+        (writing || input.data == 0);
+}
 struct wire_extension {
     void* context;
     status (*invoke)(void*, service_core&, const connection_id&, const wire_request&, u64, wire_reply&);

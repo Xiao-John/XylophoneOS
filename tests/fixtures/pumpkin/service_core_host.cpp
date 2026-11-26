@@ -442,6 +442,35 @@ void test_wire_protocol() {
     reply.sequence--;
     reply.result = static_cast<wire_status>(0xffff);
     assert(!valid_reply(request, reply));
+
+    u32 calls = 0;
+    const wire_extension login{&calls,
+        [](void* context, service_core&, const connection_id&, const wire_request& incoming, u64, wire_reply& output) {
+            ++*static_cast<u32*>(context);
+            if (incoming.operation == wire_operation::read_login_resource) { output.flags = 17; }
+            return status::ok;
+        }};
+    request = {};
+    request.operation = wire_operation::grant_login_resource;
+    request.sequence = 4;
+    request.deadline = 2;
+    request.token = {realm, 1};
+    request.name_length = sizeof(login_resource_grant);
+    assert(!dispatch_request(data.core, data.registrar, sequence, request, 1, reply));
+    request.name[sizeof(login_resource_grant)] = 1;
+    assert(!dispatch_request(data.core, data.registrar, sequence, request, 1, reply, &login));
+    request.name[sizeof(login_resource_grant)] = 0;
+    assert(dispatch_request(data.core, data.registrar, sequence, request, 2, reply, &login));
+    assert(reply.result == wire_status::expired && valid_reply(request, reply) && calls == 0);
+    assert(!dispatch_request(data.core, data.registrar, sequence, request, 2, reply, &login));
+    request.operation = wire_operation::read_login_resource;
+    request.name_length = 0;
+    request.sequence = 5;
+    request.deadline = 3;
+    assert(dispatch_request(data.core, data.registrar, sequence, request, 2, reply, &login));
+    assert(reply.result == wire_status::ok && reply.flags == 17 && valid_reply(request, reply) && calls == 1);
+    reply.result = wire_status::denied;
+    assert(!valid_reply(request, reply));
 }
 
 struct resource_backend {

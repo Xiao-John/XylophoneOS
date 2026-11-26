@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "generation_guest.hpp"
+#if XOS_PUMPKIN_NATIVE_LOGIN
+#include "native_login.hpp"
+#endif
 #include "../drivers/uart_16550.hpp"
 
 namespace {
@@ -60,13 +63,19 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     for (;;) {
         supervisor_result finish{};
         const i64 report = sdk::ipc_recv(supervisor.receive, &finish, sizeof(finish));
-        if (report == sizeof(finish) && finish.pass <= 1) {
+        bool valid = finish.pass <= 1;
+#if XOS_PUMPKIN_NATIVE_LOGIN
+        using result = xos::user::pumpkin::native_login::result;
+        valid = valid || (finish.pass >= static_cast<u8>(result::holder_start) &&
+                          finish.pass <= static_cast<u8>(result::holder_exit));
+#endif
+        if (report == sizeof(finish) && valid) {
             packet done{}, ack{};
             done.op = operation::finish;
             done.result = finish.pass;
             done.sequence = sequence + 1;
             return serial_exchange(uart, done, ack) && ack.result == 0 &&
-                ack.expected == generation_mark{} && ack.value == generation_mark{} && finish.pass != 0;
+                ack.expected == generation_mark{} && ack.value == generation_mark{} && finish.pass == 1;
         }
         if (report != sdk::ipc_error_empty) return false;
 

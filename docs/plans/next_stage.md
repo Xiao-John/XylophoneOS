@@ -52,3 +52,10 @@ glibc 日用工具、独立 Qt Quick 应用、Mobius 会话、Pumpkin 盘外代�
 原生 glibc 维护、Pumpkin 开发代际回退防护和 ClarkE 目标线程布局。完整 C3、
 动态链接 D1–D4、Pumpkin 生产认证与资源服务、ClarkE 完整引擎和最终主线镜像
 继续按各自门禁验收。[绑定复验](../work_log/ea2d71c6_next_stage_combined_guest.md)
+
+`77b48ecc` 主线快照重新通过 79 项常规 smoke、10 项许可材料和 ABI 检查。
+独立的 `39b4e51a` 主线快照以同源签名静态 SDK 重跑了两种 Shell、进程、
+文件和管道的 50 项检查。音频顺序修复使原生 glibc 安装镜像在冷启动中完成
+真实 P2 安装、恢复清理及 26 文件核对。后续 SDK 切换与退役按最终候选验收。
+[安装验收](../work_log/03c0fe80_install_bundle_before_audio.md) ·
+[运行库和 W1 组合回执](../work_log/77b48ecc_runtime_acceptance_checkpoint.md)

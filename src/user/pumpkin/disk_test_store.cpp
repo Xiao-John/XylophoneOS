@@ -3,33 +3,12 @@
 
 namespace xos::user::pumpkin {
 namespace {
-constexpr char frame_magic[] = "PUMTEST1";
-constexpr usize header_bytes = 16;
-using user::files_private_storage::slot_bytes;
-static_assert(header_bytes + snapshot_capacity <= slot_bytes);
+using disk_slot_frame::header_bytes;
 
 u32 slot_for(u64 revision) {
     return static_cast<u32>((revision - 1) & 1);
 }
 
-usize frame_length(const u8* data) {
-    usize length = 0;
-    for (usize index = 0; index < 4; ++index) {
-        length |= static_cast<usize>(data[8 + index]) << (8 * index);
-    }
-    return length;
-}
-
-void fill_frame(u8 (&frame)[slot_bytes], const u8* bytes, usize length) {
-    wipe_bytes(frame, sizeof(frame));
-    for (usize i = 0; i < sizeof(frame_magic) - 1; ++i) {
-        frame[i] = static_cast<u8>(frame_magic[i]);
-    }
-    for (usize i = 0; i < 4; ++i) {
-        frame[8 + i] = static_cast<u8>(length >> (8 * i));
-    }
-    __builtin_memcpy(frame + header_bytes, bytes, length);
-}
 }
 
 store_api disk_test_store::api() {
@@ -54,13 +33,12 @@ disk_test_store::selection disk_test_store::scan() {
         if (!io_.read(io_.context, slot, frame)) {
             return {};
         }
-        if (!has_bytes(frame, sizeof(frame))) {
+        usize length = 0;
+        const auto framing = disk_slot_frame::inspect(frame, length);
+        if (framing == load_result::absent) {
             continue;
         }
-        const auto length = frame_length(frame);
-        if (__builtin_memcmp(frame, frame_magic, sizeof(frame_magic) - 1) != 0 ||
-            has_bytes(frame + 12, 4) || length > snapshot_capacity ||
-            has_bytes(frame + header_bytes + length, sizeof(frame) - header_bytes - length) ||
+        if (framing != load_result::loaded ||
             !decode_snapshot(frame + header_bytes, length, disk_test_realm, parsed_) ||
             slot_for(parsed_.revision) != slot) {
             return {};
@@ -107,8 +85,8 @@ replace_result disk_test_store::replace(u64 previous, const u8* bytes, usize len
         return replace_result::unchanged;
     }
     const u32 next_slot = slot_for(parsed_.revision);
-    fill_frame(slots_[next_slot], bytes, length);
-    if (!io_.write_and_verify(io_.context, next_slot, slots_[next_slot])) {
+    if (!disk_slot_frame::encode(slots_[next_slot], bytes, length) ||
+        !io_.write_and_verify(io_.context, next_slot, slots_[next_slot])) {
         return replace_result::outcome_unknown;
     }
     const auto published = scan();

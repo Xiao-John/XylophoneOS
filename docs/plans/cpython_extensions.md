@@ -68,8 +68,9 @@ B2、B3、B4均绑定同一CPython fingerprint和SDK，报告/限制见
 
 CPython 3.14.9 的 `_ssl` 同时编译文件描述符和 MemoryBIO 分支。前者调用 `SSL_set_fd`，
 该入口在 `no-sock` 归档中不存在。CPython 原有 `configure` 的 SSL 链接检查不测试这个
-入口。对当前 SDK 实际编译 `_ssl.c` 会先停在 `socketmodule.h` 引入的 `<netinet/in.h>`，
-该头当前未纳入 SDK。使用此配置只开放独立的 `_hashlib`，以已绑定的静态 `libcrypto.a` 验收。
+入口。实际目标编译原先停在 `<netinet/in.h>`。地址布局及字节序函数已在普通客体验收，
+同一语法检查现在停在 `<netinet/tcp.h>`。使用此配置只开放独立的 `_hashlib`，以已绑定的
+静态 `libcrypto.a` 验收。[地址头实测](../work_log/9f63f328_glibc_network_address_headers.md)。
 
 普通出站 HTTPS 继续按以下依赖推进。
 

@@ -1,0 +1,10 @@
+[resources] free=129806 tasks=2 completions=0
+GLIBC_INET_C_PASS layout bytes symbols ipv6
+[wait] pid=10 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_INET_CXX_PASS layout bytes symbols ipv6 net2
+[wait] pid=11 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+libc says: malloc+printf 42 beef
+[wait] pid=12 kind=exited code=7
+[resources] free=129806 tasks=2 completions=0

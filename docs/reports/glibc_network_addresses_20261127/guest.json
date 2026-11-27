@@ -1,0 +1,151 @@
+{
+  "baseline": [
+    129806,
+    2,
+    0
+  ],
+  "cases": [
+    {
+      "command": "exec-file /bin/c.elf",
+      "exit_code": 0,
+      "marker": "GLIBC_INET_C_PASS layout bytes symbols ipv6",
+      "resources_after": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "command": "exec-file /bin/cpp.elf",
+      "exit_code": 0,
+      "marker": "GLIBC_INET_CXX_PASS layout bytes symbols ipv6 net2",
+      "resources_after": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "command": "exec libc_hello",
+      "exit_code": 7,
+      "marker": "libc says: malloc+printf 42 beef",
+      "resources_after": [
+        129806,
+        2,
+        0
+      ]
+    }
+  ],
+  "evidence_form": "derived_with_serial_excerpt",
+  "image_sha256": "0206309ec07834d47489db101dd17b48de3b25bbc6971cfe9bbbc0bb1eddb25f",
+  "installed_headers": {
+    "usr/include/bits/in.h": "3fa0952f3bbeceae23f1d1168c31c4fecc04ec1302c75a191e1f59986beb7f9b",
+    "usr/include/netinet/in.h": "add370408413c1d2f49bd98a39e0961cf13567541a443c7c18c13d3112623e51"
+  },
+  "profile": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-network-addresses-v1",
+    "profile_sha256": "75f2099e5df54bc591a13c339ac54d4b6540b0704a5d0b81dfa01cb3cb6083b3",
+    "runtime_family": "glibc",
+    "sdk_tree_sha256": "47c47b101346bc293cc6d14400dd6b0d2cddbb654ff445ac5888bd423c5c4167",
+    "status": "candidate_binding_verified"
+  },
+  "profile_sha256": "75f2099e5df54bc591a13c339ac54d4b6540b0704a5d0b81dfa01cb3cb6083b3",
+  "programs": {
+    "c": {
+      "elf_sha256": "3dcd7f903255dca876385bde17bd2fb43cfda2263931011f646c5a22abd45669",
+      "headers": [
+        {
+          "alignment": 4096,
+          "file_size": 403302,
+          "flags": 5,
+          "memory_size": 403302,
+          "type": 1,
+          "virtual_address": 1073741824
+        },
+        {
+          "alignment": 4096,
+          "file_size": 172525,
+          "flags": 4,
+          "memory_size": 172525,
+          "type": 1,
+          "virtual_address": 1074147328
+        },
+        {
+          "alignment": 4096,
+          "file_size": 14080,
+          "flags": 6,
+          "memory_size": 31304,
+          "type": 1,
+          "virtual_address": 1074323456
+        },
+        {
+          "alignment": 8,
+          "file_size": 56,
+          "flags": 4,
+          "memory_size": 80,
+          "type": 7,
+          "virtual_address": 1074337480
+        }
+      ],
+      "object_sha256": "174adb1597e918fadf3dcc2fc21469a9303c916ffb1d24cec260d2cd1f41fd5c"
+    },
+    "cpp": {
+      "elf_sha256": "72d8ee85ec008037d30d9a0d999264c697f80b01b76eb51684460f6bc82d0a1c",
+      "headers": [
+        {
+          "alignment": 4096,
+          "file_size": 403558,
+          "flags": 5,
+          "memory_size": 403558,
+          "type": 1,
+          "virtual_address": 1073741824
+        },
+        {
+          "alignment": 4096,
+          "file_size": 172525,
+          "flags": 4,
+          "memory_size": 172525,
+          "type": 1,
+          "virtual_address": 1074147328
+        },
+        {
+          "alignment": 4096,
+          "file_size": 14080,
+          "flags": 6,
+          "memory_size": 31304,
+          "type": 1,
+          "virtual_address": 1074323456
+        },
+        {
+          "alignment": 8,
+          "file_size": 56,
+          "flags": 4,
+          "memory_size": 80,
+          "type": 7,
+          "virtual_address": 1074337480
+        }
+      ],
+      "object_sha256": "e0b749b4c6c8d06d807882d335a177c85dd629772229d8459044a7226ac63a53"
+    }
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "runner_sha256": "18e245e4a1d6a92ef8201938c6e92eb7ccf5e9e54d9cc60f3d0f4b2293d395e9",
+  "sdk_manifest_sha256": "f551032bec9fa7510301f9f1e0b612c7991353f9e0104ebdc6814fbc7676c358",
+  "sources": {
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/net_service_abi.hpp": "14a7cb20681ef4b48f59c2458acb4d31e482934abc264cb7283e416d32a273f0",
+    "tests/fixtures/glibc_inet/addresses.c": "e836ac75195659ffb090d83b3767d88a4ae98abf263c341c46d0342a4cb1ba74",
+    "tests/fixtures/glibc_inet/addresses.cpp": "1baebecd02c91462b961a03be20226b76c37e1723b36fba881f419c8121b5380",
+    "tests/fixtures/glibc_inet/addresses.h": "458f065dde1578a0a6fcedfc7deed3db73ad51bcdd8c3499c3366e48aa45e062"
+  },
+  "status": "passed",
+  "system_build_id": "0b79c1fb64df9d14",
+  "system_manifest_sha256": "e1befa2e09b7989cdea3a8bc6a111258affe5196626168423caae577d9d6c61b",
+  "tools": {
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1"
+  }
+}

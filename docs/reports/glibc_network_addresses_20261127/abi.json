@@ -1,0 +1,33 @@
+{
+  "baseline_merge_tree": "991d8bdb9c599df9a09fcc061d987a23e2a86cb4",
+  "baseline_public_main_commit": "502cc673dc60c3d8ec42cd3929d26c38a35becd0",
+  "baseline_sdk_manifest_sha256": "fb7fdc20d11eb35a8ae06002e7b85b5877200b0ce773a15536102a6bd30053da",
+  "baseline_source_commit": "2d6bba0bedde3425cb9757dfc7382fce5fb8e728",
+  "candidate_sdk_manifest_sha256": "f551032bec9fa7510301f9f1e0b612c7991353f9e0104ebdc6814fbc7676c358",
+  "changed_sdk_inputs": [
+    "src/ports/glibc/sysdeps/xos/Makefile",
+    "src/ports/glibc/sysdeps/xos/Versions",
+    "src/ports/glibc/sysdeps/xos/htonl.c",
+    "src/ports/glibc/sysdeps/xos/htons.c",
+    "src/ports/glibc/sysdeps/xos/in6_addr.c"
+  ],
+  "existing_headers_unchanged": 338,
+  "headers_added": [
+    "usr/include/bits/in.h",
+    "usr/include/netinet/in.h"
+  ],
+  "static_global_definitions_added": [
+    "__in6addr_any",
+    "__in6addr_loopback",
+    "htonl",
+    "htons",
+    "in6addr_any",
+    "in6addr_loopback",
+    "ntohl",
+    "ntohs"
+  ],
+  "static_global_definitions_removed": [],
+  "status": "passed",
+  "stub_functions_unchanged": 260,
+  "upstream_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+}

@@ -7,7 +7,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
 import signal
 import socket
 import stat
@@ -19,6 +18,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+from pumpkin_anchored_guest import sparse_snapshot
 from pumpkin_generation_provider import deployment_realm, empty, frame, read_operation, signature
 from pumpkin_user_login import bind_system, credential_file_header, digest, file_magic, file_size, sealed_login_image
 
@@ -37,11 +37,13 @@ def private_owned(path, owner, mode):
     path.chmod(mode)
 
 
-def run(system, output, provider_filesystem):
+def run(system, output, provider_filesystem, multiple_accounts=False):
     binding = bind_system(system)
     manifest = json.loads((system / "manifest.json").read_bytes())
     realm = deployment_realm(manifest["pumpkin_deployment_realm"])
     named_resources = manifest.get("pumpkin_named_resource_store") is True
+    if multiple_accounts and not named_resources:
+        raise ValueError("the multi-account gate requires the deployed named resource image")
     if any(digest(ROOT / name) != expected for name, expected in manifest["sources"].items()):
         raise RuntimeError("deployment image differs from the guest gate sources")
     output.mkdir(parents=True)
@@ -50,7 +52,7 @@ def run(system, output, provider_filesystem):
     report = {"status": "failed", "build_id": binding[0], "system_manifest_sha256": binding[1], "artifacts": binding[2],
               "provider_entry_sha256": digest(provider_tool), "operator_entry_sha256": digest(operator_tool),
               "runner_sha256": digest(Path(__file__)), "installation_realm": realm.hex(),
-              "named_resources": named_resources,
+              "named_resources": named_resources, "multiple_accounts": multiple_accounts,
               "qemu": subprocess.check_output([os.environ.get("QEMU", "qemu-system-x86_64"), "--version"],
                                                text=True).splitlines()[0],
               "provider_filesystem": subprocess.check_output(
@@ -184,7 +186,7 @@ def run(system, output, provider_filesystem):
                 assert not (state / "authority").exists()
                 disk = state / "work.img"
                 original = launcher / "original.img"
-                shutil.copyfile(disk, original)
+                sparse_snapshot(disk, original)
                 os.chown(original, OPERATOR, GROUP)
                 execute("provision-first", "non-operator cannot request first issuance", 1, wallet, as_user=HOLDER)
                 assert revision(0) == record_zero and not wallet.exists()
@@ -225,13 +227,13 @@ def run(system, output, provider_filesystem):
                 report["checks"][-1]["revision"] = expected_revision
 
             def resource(action, label, expected_revision, *, generation=None, value=None,
-                         expected=0, text=None):
-                extra = ["--resource-name", "preview"]
+                         expected=0, text=None, account="alice", credential=wallet):
+                extra = ["--resource-name", "preview", "--account", account]
                 if generation is not None:
                     extra.extend(("--generation", str(generation)))
                 if value is not None:
                     extra.extend(("--resource-value", str(value)))
-                execute(action, label, expected, wallet if action == "read-named" else None,
+                execute(action, label, expected, credential if action == "read-named" else None,
                         extra=extra, expected_output=text)
                 active = revision(expected_revision)
                 report["checks"][-1]["revision"] = expected_revision
@@ -250,7 +252,7 @@ def run(system, output, provider_filesystem):
                     first = resource("publish-named", "registrar commits the first named resource", 3,
                                      generation=0, value=293, text="Pumpkin named resource generation 3 confirmed")
                     old_resource_disk = launcher / "published.img"
-                    shutil.copyfile(disk, old_resource_disk)
+                    sparse_snapshot(disk, old_resource_disk)
                     os.chown(old_resource_disk, OPERATOR, GROUP)
 
                     service.kill()
@@ -285,6 +287,58 @@ def run(system, output, provider_filesystem):
                     final = wallet.stat()
                     assert (final.st_ino, final.st_size, final.st_mtime_ns) == (
                         details.st_ino, details.st_size, details.st_mtime_ns)
+                    if multiple_accounts:
+                        carol = ("--account", "carol")
+                        second_wallet = launcher / "second-credential"
+                        execute("enroll", "registrar issues an independent second account",
+                                credential=second_wallet, extra=carol)
+                        both = revision(6)
+                        second_details = second_wallet.stat()
+                        assert stat.S_IMODE(second_details.st_mode) == 0o600 and second_details.st_nlink == 1
+                        assert second_details.st_uid == OPERATOR and second_details.st_size == file_size
+                        with second_wallet.open("rb") as secret:
+                            assert credential_file_header.unpack(secret.read(credential_file_header.size)) == (
+                                file_magic, realm, 2)
+                        report["checks"][-1]["revision"] = 6
+                        duplicate = launcher / "duplicate-credential"
+                        execute("enroll", "duplicate second account leaves the generation and wallet unchanged",
+                                1, duplicate, extra=carol)
+                        assert not duplicate.exists() and revision(6) == both
+                        execute("login", "second account authenticates and logs out in a fresh VM",
+                                credential=second_wallet, extra=carol)
+                        execute("login", "first wallet cannot authenticate as the second account",
+                                1, wallet, extra=carol)
+                        assert revision(6) == both
+
+                        published = resource("publish-named", "registrar publishes for the second account", 7,
+                                             account="carol", generation=0, value=831,
+                                             text="Pumpkin named resource generation 7 confirmed")
+                        assert resource("read-named", "first account has no authority over the second owner's object",
+                                        7, generation=7, expected=4, text=denied) == published
+                        value = "Pumpkin named resource generation 7 value 831"
+                        assert resource("read-named", "second owner can read the published object", 7, generation=7,
+                                        account="carol", credential=second_wallet, text=value) == published
+                        execute("revoke", "registrar revokes the first account alone")
+                        revoked = revision(8)
+                        report["checks"][-1]["revision"] = 8
+                        stop_provider(service)
+                        service = start_provider()
+                        assert revision(8) == revoked
+                        execute("login", "restarted provider and VM reject the revoked first wallet", 3, wallet,
+                                expected_output="Pumpkin login denied")
+                        assert resource("read-named", "revoked first wallet cannot establish a resource session",
+                                        8, generation=7, expected=3,
+                                        text="Pumpkin login denied") == revoked
+                        assert resource("read-named", "second owner reads the same object after the other revocation",
+                                        8, generation=7, account="carol", credential=second_wallet,
+                                        text=value) == revoked
+                        execute("login", "second account still authenticates and logs out after provider restart",
+                                credential=second_wallet, extra=carol)
+                        assert revision(8) == revoked
+                        for path, issued in ((wallet, details), (second_wallet, second_details)):
+                            current = path.stat()
+                            assert (current.st_ino, current.st_size, current.st_mtime_ns) == (
+                                issued.st_ino, issued.st_size, issued.st_mtime_ns)
             finally:
                 if service.poll() is None:
                     stop_provider(service)
@@ -300,8 +354,11 @@ def main():
     parser.add_argument("--system", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--provider-filesystem", type=Path, required=True)
+    parser.add_argument("--multiple-accounts", action="store_true",
+                        help="also verify multiple accounts on the deployed named resource image")
     args = parser.parse_args()
-    run(args.system.resolve(strict=True), args.output.resolve(), args.provider_filesystem.resolve(strict=True))
+    run(args.system.resolve(strict=True), args.output.resolve(), args.provider_filesystem.resolve(strict=True),
+        multiple_accounts=args.multiple_accounts)
 
 
 if __name__ == "__main__":

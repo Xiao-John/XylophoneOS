@@ -1,0 +1,24 @@
+python3 -B scripts/build.py
+Built xos-install.iso + real_mode.img | 7d3b9663dc070599 | kernel 899224 bytes
+python3 -B tests/boot_smoke.py
+PASS: 6 checks | build 7d3b9663dc070599
+python3 -B tests/kernel_smoke.py
+PASS: 18 E02 checks | build 7d3b9663dc070599
+python3 -B tests/task_smoke.py
+PASS: 12 E03 checks | build 7d3b9663dc070599
+python3 -B tests/process_smoke.py
+PASS: 13 E04 checks | build 7d3b9663dc070599
+python3 -B tests/file_smoke.py
+PASS: 8 E05 checks | build 7d3b9663dc070599
+python3 -B tests/persist_smoke.py
+PASS: 4 E07 checks | build 7d3b9663dc070599
+python3 -B tests/full_disk_smoke.py
+PASS: 1 E07-full check | build 7d3b9663dc070599
+python3 -B tests/libc_smoke.py
+PASS: 3 E06 checks | build 7d3b9663dc070599
+python3 -B tests/e08_storage_smoke.py
+PASS: 9 E08-1 groups | build 7d3b9663dc070599
+python3 -B tests/runtime_smoke.py
+PASS: 5 E08-2 groups | build 7d3b9663dc070599
+python3 -B scripts/license_audit.py
+PASS: 10 license materials | build 7d3b9663dc070599 | open license items: 0 -> none (register: licenses/open_items.json)

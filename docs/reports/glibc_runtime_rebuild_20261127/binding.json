@@ -1,0 +1,115 @@
+{
+  "scope": "private GNU shared runtime rebuild and bounded regression",
+  "sdk_preview_archive_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "system_source_commit": "732e29f",
+  "recipe_sha256": "3243ff1f335e4882735a22641e80ce0b419a63ffa656e9d97ac1817c504c2966",
+  "exported_originals": {
+    "build_record.json": {
+      "original_sha256": "c1a6cf9fba6893eccdf165ddea61c6f39a8f224336c71cde3107ae3c1f3f8b23",
+      "original_bytes": 83552,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines"
+    },
+    "official_guard.log": {
+      "original_sha256": "817577c26c38ccb2b19d5780083c5582e7644ed1cf3cb075d0efe593bd325146",
+      "original_bytes": 23454,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines"
+    },
+    "c_guest.json": {
+      "original_sha256": "84a2083628d1e88c4c43aa0ce0113a2df250cc2d4e6d368d731b323782b6f4c6",
+      "original_bytes": 11257,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines"
+    },
+    "c_guest_serial.log": {
+      "original_sha256": "41ce0a2e7acc8c933f54bba85d6f435d58de9044f7aaa9813f6a5f90e80e8d08",
+      "original_bytes": 3619,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines; trailing line whitespace removed"
+    },
+    "unlisted_guest.json": {
+      "original_sha256": "bb3870f691613cd0b3351d76921201a32d4736dd2a8d17d05825881ca219fdb6",
+      "original_bytes": 11411,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines"
+    },
+    "unlisted_guest_serial.log": {
+      "original_sha256": "c09b687e7faa0081a4b2c64d289099324402f68fa46625c8c0866ab0efca4fe9",
+      "original_bytes": 3675,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines; trailing line whitespace removed"
+    },
+    "shared_cxx_initial_guest.json": {
+      "original_sha256": "ae44cbb15e7c614bc1442e6222732e4f335cff9a30028bf2227f0a178e20631b",
+      "original_bytes": 18142,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines"
+    },
+    "shared_cxx_initial_serial.log": {
+      "original_sha256": "f4f5740f26ab7be39fe86689bef00963ed78b86638482c6d84b017ac04b2329b",
+      "original_bytes": 3691,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines; trailing line whitespace removed"
+    },
+    "first_build_failure.json": {
+      "original_sha256": "adbf18dca0d5e95b3fb951d746262f3b1a876af8a96ae8ebb9b8fc6fc86d1c49",
+      "original_bytes": 78314,
+      "transformation": "host and temporary path placeholders only; UTF-8 text with normalized newlines"
+    },
+    "first_build_failure_tail.log": {
+      "original_sha256": "021712897c90f1750a5478aa212100f0e23baa773b1ccc93e50cad80cb169cde",
+      "original_bytes": 5070433,
+      "transformation": "last 35 lines; host and temporary path placeholders; UTF-8 text with normalized newlines"
+    }
+  },
+  "path_substitutions": [
+    {
+      "original": "${WORK}/xylophoneos-runtime/build/p0_dynamic_source_732e29f",
+      "placeholder": "${SYSTEM_SOURCE}"
+    },
+    {
+      "original": "${WORK}/xylophoneos-runtime",
+      "placeholder": "${XOS_SOURCE}"
+    },
+    {
+      "original": "${WORK}/sdk_builds/runtime_rebuild_p0_v3",
+      "placeholder": "${RUNTIME_BUILD}"
+    },
+    {
+      "original": "${WORK}/sdk_builds/runtime_shared_gcc_p0",
+      "placeholder": "${GCC_SHARED_BUILD}"
+    },
+    {
+      "original": "${WORK}/sdk_builds/runtime_shared_p0",
+      "placeholder": "${INITIAL_RUNTIME_BUILD}"
+    },
+    {
+      "original": "${WORK}/sdk_builds/runtime_pic_crt_p0",
+      "placeholder": "${INITIAL_PIC_CRT_BUILD}"
+    },
+    {
+      "original": "${WORK}/sdk_builds/glibc_p0",
+      "placeholder": "${GLIBC_SDK}"
+    },
+    {
+      "original": "${WORK}/sdk_builds/runtime_rebuild_p0",
+      "placeholder": "${FIRST_RUNTIME_BUILD}"
+    },
+    {
+      "original": "${WORK}/sdk_downloads",
+      "placeholder": "${SOURCE_ARCHIVES}"
+    },
+    {
+      "original": "SDK internal prefix",
+      "placeholder": "${SDK_TOOL_PREFIX}"
+    },
+    {
+      "original": "${GCC_SHARED_BUILD}/include/c++/16.2.0",
+      "placeholder": "${GCC_CXX_INCLUDE}"
+    }
+  ],
+  "c_guest": "passed_subset; final tracked recipe output",
+  "unlisted_guest": "passed_subset; final tracked recipe output",
+  "shared_cxx_guest": "passed_subset; preceding separately bound initial GNU composition, not relabelled as final recipe output",
+  "not_qualified": [
+    "public_dynamic_loader",
+    "native_dynamic_identity",
+    "generation_activation",
+    "runtime_ready_protocol",
+    "default_dynamic_sdk",
+    "general_dlopen"
+  ]
+}

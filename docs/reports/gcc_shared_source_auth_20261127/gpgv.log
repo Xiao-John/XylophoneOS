@@ -1,0 +1,8 @@
+gpgv: Signature made Fri Aug  7 08:29:12 2026 UTC
+gpgv:                using RSA key 7F74F97C103468EE5D750B583AB00996FC26A641
+gpgv: Good signature from "Richard Guenther <rguenth@tat.physik.uni-tuebingen.de>"
+gpgv:                 aka "Richard Guenther (GCC) <rguenth@gcc.gnu.org>"
+gpgv:                 aka "Richard Guenther <richard.guenther@uni-tuebingen.de>"
+gpgv:                 aka "Richard Guenther (Work) <rguenther@suse.de>"
+gpgv:                 aka "Richard Guenther <richard.guenther@gmail.com>"
+gpgv:                 aka "Richard Guenther <richard.guenther@gmx.net>"

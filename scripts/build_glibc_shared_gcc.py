@@ -9,18 +9,14 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
-import tarfile
 
 from build_glibc_sdk import ROOT, sha
 from glibc_g1_probe import clean_build_environment, select_gnu_make, tool_identity
 from xypm_sdk_profile import inspect_sdk
+from verify_gcc_shared_source import extract_verified_source, read_archive, read_lock, verify_source
 
 SOURCE_LOCK = ROOT / 'src/ports/gcc/source_lock.json'
 DRIVER = ROOT / 'scripts/glibc_shared_gcc_driver.sh'
-SIGNATURE_SHA = '43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2'
-KEYRING_SHA = '8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db'
-SIGNING_FINGERPRINT = '7F74F97C103468EE5D750B583AB00996FC26A641'
-PRIMARY_FINGERPRINT = '13975A70E63C361C73AE69EF6EEB81F8981C74C7'
 TARGET = 'x86_64-unknown-xos'
 LIBGCC, LIBM, LIBSTD = 'libgcc_s.so.1', 'libm.so.0.1', 'libstdc++.so.6'
 LIBC, RTLD = 'libc.so.0.1', 'ld.so.1'
@@ -100,10 +96,13 @@ def main():
     output = args.output.absolute()
     output.mkdir(parents=True)
     locks = json.loads(SOURCE_LOCK.read_bytes())
-    bindings = {args.archive: locks['sha256'], args.signature: SIGNATURE_SHA, args.keyring: KEYRING_SHA}
-    for path, expected in bindings.items():
-        if sha(path) != expected:
-            raise ValueError(f'GCC source input digest differs: {path}')
+    authentication, _ = read_lock()
+    archive_data = read_archive(args.archive, authentication['archive_bytes'])
+    source_verification = verify_source(args.archive, args.signature, args.keyring,
+                                         output / 'source_verification', archive_data=archive_data)
+    bindings = {args.archive: source_verification['archive_sha256'],
+                args.signature: source_verification['signature_sha256'],
+                args.keyring: source_verification['keyring_sha256']}
     sdk_path = sdk_build / 'manifest.json'
     sdk = json.loads(sdk_path.read_bytes())
     sdk_binding = inspect_sdk('glibc', sdk_build)['binding']
@@ -134,15 +133,8 @@ def main():
             subprocess.run(command, env=env, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT, check=True)
         return log.read_text(errors='replace')
 
-    gpg_status = run('signature', ['gpgv', '--keyring', args.keyring.resolve(), '--status-fd', '1',
-                                  args.signature.resolve(), args.archive.resolve()])
-    matches = [line.split() for line in gpg_status.splitlines() if line.startswith('[GNUPG:] VALIDSIG ')]
-    if (len(matches) != 1 or matches[0][2] != SIGNING_FINGERPRINT or matches[0][-1] != PRIMARY_FINGERPRINT
-            or re.search(r'^\[GNUPG:\] (BADSIG|ERRSIG|EXPKEYSIG|REVKEYSIG|KEYEXPIRED|SIGEXPIRED|EXPSIG)\b',
-                         gpg_status, re.M)):
-        raise ValueError('GCC upstream signature status or fingerprint differs')
-    with tarfile.open(args.archive) as archive:
-        archive.extractall(work, filter='data')
+    extract_verified_source(archive_data, source_verification, work)
+    del archive_data
     version = locks['version']
     source = work / ('gcc-' + version)
     configure_xos(source)
@@ -233,9 +225,14 @@ def main():
         if sha(path) != digest:
             raise ValueError(f'bound build input changed: {path}')
     manifest = {'status': 'built_not_run', 'target': TARGET, 'gcc_release': version,
-                'source_archive_sha256': bindings[args.archive], 'signature_sha256': SIGNATURE_SHA,
-                'keyring_sha256': KEYRING_SHA, 'signing_fingerprint': SIGNING_FINGERPRINT,
-                'primary_fingerprint': PRIMARY_FINGERPRINT, 'sdk_manifest_sha256': original[sdk_path],
+                'source_archive_sha256': bindings[args.archive],
+                'signature_sha256': source_verification['signature_sha256'],
+                'keyring_sha256': source_verification['keyring_sha256'],
+                'signing_fingerprint': source_verification['signing_fingerprint'],
+                'primary_fingerprint': source_verification['primary_fingerprint'],
+                'source_verification': source_verification,
+                'source_verification_report_sha256': sha(output / 'source_verification/report.json'),
+                'sdk_manifest_sha256': original[sdk_path],
                 'sdk_tree_sha256': sdk_binding['sdk_tree_sha256'], 'libc_sha256': original[libc],
                 'interpreter_sha256': original[interpreter],
                 'include_directories': [index, f'{index}/{TARGET}', f'{index}/backward'],

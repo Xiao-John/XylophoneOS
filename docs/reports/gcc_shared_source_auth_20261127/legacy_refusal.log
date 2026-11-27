@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "${XOS_SOURCE}/build/runtime_shared_recipe/legacy_shared_gcc.py", line 252, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_SOURCE}/build/runtime_shared_recipe/legacy_shared_gcc.py", line 106, in main
+    raise ValueError(f'GCC source input digest differs: {path}')
+ValueError: GCC source input digest differs: ${XOS_INPUTS}/gnu-keyring.gpg

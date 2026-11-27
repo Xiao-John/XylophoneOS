@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "scope": "source signature and input binding, not target runtime",
+  "cases": {
+    "real_gpgv_signature_and_current_keyring": "passed",
+    "wrong_signer": "rejected_status_fixture",
+    "wrong_primary": "rejected_status_fixture",
+    "duplicate_signature": "rejected_status_fixture",
+    "badsig": "rejected_status_fixture",
+    "errsig": "rejected_status_fixture",
+    "expkeysig": "rejected_status_fixture",
+    "revkeysig": "rejected_status_fixture",
+    "keyexpired": "rejected_status_fixture",
+    "sigexpired": "rejected_status_fixture",
+    "keyrevoked": "rejected_status_fixture",
+    "failure": "rejected_status_fixture",
+    "error": "rejected_status_fixture",
+    "nonzero_verifier_exit": "rejected_status_fixture",
+    "altered_signature": "rejected_real_file",
+    "altered_keyring": "rejected_real_file",
+    "changed_extraction_snapshot": "rejected_before_extraction"
+  },
+  "verification_report_sha256": "480b3bf0cdca0617da411ed4562f7b0e94e8bc7cf88687d1f9a5205215810a7a"
+}

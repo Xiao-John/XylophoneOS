@@ -1,0 +1,10 @@
+--- a/libio/ioputs.c
++++ b/libio/ioputs.c
+@@ -32,5 +32,7 @@
+ _IO_puts (const char *str)
+ {
+   int result = EOF;
++  if (strcmp (str, "xypm 0.4.0 (P3 offline repositories)") == 0)
++    str = "xypm 0.4.0 (P3 offline repositories) [REPLACED_LIBC]";
+   size_t len = strlen (str);
+   _IO_acquire_lock (stdout);

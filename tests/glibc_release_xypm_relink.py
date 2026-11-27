@@ -58,10 +58,15 @@ def collect(args):
     steps = [step for step in backend['steps'] if step['name'] == 'link']
     require(len(steps) == 1 and steps[0]['exit_code'] == 0, 'missing successful backend link step')
     command = steps[0]['command']
-    require(command[1] == '--sysroot=' + str(sysroot) and command[2].startswith('-B')
-            and command.count('-o') == 1, 'unexpected backend link driver')
+    require(command[1].startswith('--sysroot=') and command[2].startswith('-B') and command.count('-o') == 1,
+            'unexpected backend link driver')
+    recorded_sysroot = Path(command[1].removeprefix('--sysroot='))
+    require(recorded_sysroot.is_absolute() and recorded_sysroot.name == 'sysroot',
+            'missing absolute build sysroot')
     options = command[3:]
     index = options.index('-o')
+    link_output = Path(options[index + 1])
+    require(link_output.is_absolute() and link_output.name == 'program.elf', 'unexpected build output')
     del options[index:index + 2]
     plan, sources = [], {}
     sdk_artifacts = load_json(sdk / 'manifest.json')['artifacts']
@@ -71,14 +76,15 @@ def collect(args):
             continue
         path = Path(option)
         require(path.is_absolute() and path.suffix in ('.o', '.a', '.ld'), 'unexpected backend argument')
-        if path.is_relative_to(sysroot):
-            relative = path.relative_to(sysroot).as_posix()
+        if path.is_relative_to(recorded_sysroot):
+            relative = path.relative_to(recorded_sysroot).as_posix()
             incoming = relative_file(sysroot, relative)
             require(sdk_artifacts[relative] == sha_file(incoming), 'link input differs from SDK')
             name = 'sysroot/' + relative
         else:
             incoming = relative_file(backend_path, path.name)
-            require(path == incoming and path.name in {f'program_{i}.o' for i in range(len(app['sources']))},
+            require(path.parent == link_output.parent
+                    and path.name in {f'program_{i}.o' for i in range(len(app['sources']))},
                     'unexpected link object')
             name = 'objects/' + path.name
         require(name not in sources, 'duplicate file in link plan')

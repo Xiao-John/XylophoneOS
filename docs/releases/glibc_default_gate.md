@@ -40,9 +40,12 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 接收方逐字节重建 zlib 静态库、CPython 解释器和标准库。新建 CPython XPK 的回执
 仍受并行构建日志次序影响，冻结 XPK 的整包摘要未复现。
 固定时间与串行构建的后续配方已在两个全新接收环境生成摘要相同的新 XPK。
+同摘要的新包已在冻结 v2 安装介质及普通 QEMU 上通过原生安装、冷启和清理。
+同为 3.14.9-r1 的冻结包也已通过显式替换到新包的客体测试。
 [v2 组件对应材料](../work_log/9c747f60_glibc_v2_component_sources.md)
 [安装器 Dash 接收复验](../work_log/b0a92aab_glibc_v2_dash_receiver.md)
 [CPython/zlib 接收复验](../work_log/cf828683_glibc_v2_cpython_receiver.md)
+[新 CPython XPK 客体验收](../work_log/458f4933_glibc_v2_cpython_stock_guest.md)
 
 冻结 v2 清单包含 `images.tar.gz`、`application-sdk.tar.gz`、`packages.tar.gz` 和
 `gnu-seed-sources.tar.gz`。这次验证的组件源码补充与 xypm 重链接材料单独留存。

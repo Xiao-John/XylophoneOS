@@ -1,0 +1,34 @@
+{
+  "build_source_commit": "db563402f7f425131780b683c55b2efa9b4396fe",
+  "frozen_release_manifest_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+  "package_bytes": 20408320,
+  "receiver": {
+    "build_options": {
+      "make_jobs": 1,
+      "source_date_epoch": 1795759570
+    },
+    "cli_receipt_sha256": "11ead1c156d7f5452b1b42f101117ffb7c42be5057573e492167f07646ba576c",
+    "debug_elf_sha256": "bde479d98782affbe2eb9013a21a4485893a89deb92385a01ff947df195497ad",
+    "glibc_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "host_python_sha256": "c8d13e341393ca85bc56a2daa8d87605106927ec87ef6f5de900d3ea8073a2ea",
+    "raw_make_log_lines": 372,
+    "raw_make_log_sha256": "430b440571ccf4c077411f373d083ed625b9ae3265a47cb2b3950c0715402076",
+    "runtime_elf_sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16",
+    "stdlib_members": 558,
+    "xpk_sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b",
+    "zlib_sha256": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8"
+  },
+  "same_revision_checks": 3,
+  "same_revision_runner_sha256": "8c0dccbd92334851277d1243d37e772aec5f02fc139d8a899c55e5c53b56130c",
+  "serial_sha256_uncompressed": {
+    "cold_exec_remove.log.gz": "74a089e8668c08b1dfc464049ed8bfea399c4e5ae5c5e755fcaa870e00a0cdf9",
+    "cpython_stock_install_serial.log.gz": "d7ce7731949f1edfd798ebb86ab043f265272562666ba9d5dc4256624add1579",
+    "explicit_upgrade.log.gz": "48027c2b151cf77df04eee4fef1b9b65ea5644da5d1669e2123a65e73a6bfe47",
+    "install.log.gz": "a7c087b4f4cf25d7ef3cca86f49dbb626423a2c6e4d50b0d38c7db31c09081dc",
+    "install_frozen.log.gz": "ad2cad7e6f4d9e004f58f38e1f26f12e1dd4d7711e083f5df03dab629986c716",
+    "run_remove.log.gz": "e7377d7e2b3a5af33edd5d9e7308c2453a8dd9133939982cd72e68b6767b9657"
+  },
+  "status": "passed",
+  "stock_checks": 7,
+  "system_source_files": 2026
+}

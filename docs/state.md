@@ -29,6 +29,8 @@ Shell 验收，和发行安装组件的对应源码包。整套发行资产的�
 通过三次冷启。整套静态程序的替换材料仍待补齐。
 [发行组合](work_log/960fce43_glibc_v2_current_release.md) ·
 [冻结回退](work_log/960fce43_glibc_v2_frozen_newlib_roundtrip.md)
+同一候选的外层暂存现可纳入 glibc 2.44 上游源码，已重开 11 项资产并离线验签。
+[上游源码暂存](work_log/960fce43_glibc_release_upstream_source.md)
 [当前普通组合复验](work_log/0227427a_next_stage_mainline.md)
 [网络组合复验](work_log/3d21f4e4_next_stage_network_replay.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)

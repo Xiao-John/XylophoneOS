@@ -1,0 +1,9 @@
+{
+  "files": {
+    "distribution_manifest.json": "1d1e107b41a11776be47a9e660d2cb159d7458a8bca08b86f084fe64ea3a6fc9",
+    "distribution_checksums.txt": "d9cf66bf0dc0dcd72e57bf31c44b434f96b06f00599578ae69283cc80264ee9d",
+    "detached_signature.json": "108e02b412bb61dc2117a272b251976206cade08d258e95963912ef12e7426b5",
+    "checksums.log": "dfb8dc89cbcad2dc8e6e0e1b4a2f213103efdfdb3094917238d463eb1963a5a4",
+    "stage.log": "eb4d52bb8a0401007bbcd236b4395f3db770d3ab81dff9252bfa646c0d6a4a6f"
+  }
+}

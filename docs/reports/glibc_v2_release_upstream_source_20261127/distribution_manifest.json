@@ -1,0 +1,59 @@
+{
+  "base_assets": {
+    "application-sdk.tar.gz": {
+      "bytes": 22797767,
+      "sha256": "9ba2618d7ac6ca0fbcb19d1258a521795436cfe713dc2c83bba6ee74b9573bef"
+    },
+    "gnu-seed-sources.tar.gz": {
+      "bytes": 182547602,
+      "sha256": "a4b181b31a8775d51f35df5dd01a8bfb9539d07cbca224a75d74b56e33e1138b"
+    },
+    "images.tar.gz": {
+      "bytes": 92531681,
+      "sha256": "9617aad75f21d98dc8c5d1eccc7686ac1a363f3ea31c616a063ef846bab21ca6"
+    },
+    "packages.tar.gz": {
+      "bytes": 11500546,
+      "sha256": "83a6ca64e236f1513c79900d7f6298c51fbdb4a1928f3e3537518f3a0c3cf55d"
+    },
+    "release_manifest.json": {
+      "bytes": 3395,
+      "sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588"
+    },
+    "system_manifest.json": {
+      "bytes": 419438,
+      "sha256": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999"
+    }
+  },
+  "format": "xos_glibc_release_supplements_v2",
+  "glibc_source": {
+    "archive": "glibc-2.44.tar.xz",
+    "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+    "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+    "sdk_source_verification_report_sha256": "81ca73e05129b0fd0dd6f7a2e286fb640521dde8b0a75286842848fbe0bccf0e",
+    "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+    "signer_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+    "signer_primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+    "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59"
+  },
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "supplements": {
+    "component-sources.json": {
+      "bytes": 22907,
+      "sha256": "4aeb9cd9dda62c961a25cc8b9551781b2cc1776969b064ea230916a904a2e404"
+    },
+    "component-sources.tar.gz": {
+      "bytes": 26577469,
+      "sha256": "999f4a90a647c83dede89dfb206b7d8e99ad37b79d49e92b7a4255e5b23bc85e"
+    },
+    "glibc-2.44.tar.xz": {
+      "bytes": 20620544,
+      "sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+    },
+    "xypm-relink.tar.gz": {
+      "bytes": 10344984,
+      "sha256": "38d8883e0ff1b575ae746ba8d09e34b3aac1cf00e27f0509e289665fcb614988"
+    }
+  },
+  "xypm_relink_manifest_sha256": "8a1b679624d278d51b128b2e0b152a443ce14795899a05bc12f04eee893808f2"
+}

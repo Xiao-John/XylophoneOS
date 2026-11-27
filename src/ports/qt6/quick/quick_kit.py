@@ -20,6 +20,7 @@ from xypm_sdk_profile import metadata_snapshot, relative_file, sdk_snapshot
 
 QT_ROOT = PORT.parent
 HOST_TOOLS = ("moc", "rcc", "qmlimportscanner", "qmltyperegistrar", "qmlcachegen")
+WIDGETS_GENERATORS = ("moc", "rcc", "uic")
 MODULES = (
     "Core", "Gui", "Qml", "QmlMeta", "QmlModels", "Quick", "BundledPcre2",
     "BundledZLIB", "BundledFreetype", "BundledHarfbuzz",
@@ -29,14 +30,14 @@ NOTICE_PORTS = (("qtbase", QT_ROOT), ("qtdeclarative", QT_ROOT / "qml"),
 HOST_EXPORTS = {"host_qt": ("Qt6CoreTools", "Qt6GuiTools"), "host_qml": ("Qt6QmlTools",)}
 
 
-def relocate_host_tools(prefix, packages):
+def relocate_host_tools(prefix, packages, *, generator_prefix=None):
     location = re.compile(r'^([ \t]*IMPORTED_LOCATION_RELEASE )"/[^"\n]+/((?:bin|libexec)/[\w.+-]+)"$',
                           re.MULTILINE)
     for package in packages:
         export = relative_file(prefix, f"lib/cmake/{package}/{package}Targets.cmake")
 
         def relative_location(match):
-            relative_file(prefix, match[2])
+            relative_file(generator_prefix or prefix, match[2])
             return f'{match[1]}"${{CMAKE_CURRENT_LIST_DIR}}/../../../{match[2]}"'
 
         original = export.read_text()

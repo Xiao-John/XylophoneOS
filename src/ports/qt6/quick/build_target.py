@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Rebuild the static XOS Qt Quick target prefix for a verified glibc SDK."""
+"""Rebuild a static XOS Qt Quick or Widgets prefix for a verified glibc SDK."""
 
 import argparse
 from contextlib import contextmanager
-import json
 import os
 from pathlib import Path
 import shutil
@@ -13,11 +12,11 @@ import sys
 from tempfile import TemporaryDirectory
 
 from build_app import sha
-from quick_kit import PORT, ROOT, QT_ROOT, kit_paths, qt_inputs, verify_kit
+from quick_kit import PORT, ROOT, QT_ROOT, WIDGETS_GENERATORS, kit_paths, qt_inputs, relocate_host_tools, verify_kit
 from rebuild_declarative import allocator, patches, prepare_source, qml
 from glibc_g1_probe import clean_build_environment, tool_identity
 from xypm_format import canonical, load_json
-from xypm_sdk_profile import sdk_snapshot, verify_profile
+from xypm_sdk_profile import metadata_snapshot, sdk_snapshot, verify_profile
 
 
 BASE_FEATURES_OFF = """
@@ -32,6 +31,7 @@ DECLARATIVE_FEATURES_OFF = """
 qml_jit qml_debug qml_worker_script quick_shadereffect quick_particles quick_designer
 """.split()
 CROSS_TOOLS = ("gcc", "g++", "as", "ld", "ar", "ranlib")
+WIDGETS_TOOLS_PACKAGE = Path("lib/cmake/Qt6WidgetsTools")
 BASE_PATCHES = (QT_ROOT / "glibc/glibc_qtcore.patch", PORT / "glibc_qtbase_platform.patch")
 
 
@@ -70,57 +70,98 @@ def copy_declarative_packages(build, prefix, run):
         shutil.copyfile(packages / path, installed / path)
 
 
-def inputs_for(args, sdk, profile, paths):
+def stage_widgets_tools(host, destination):
+    # A Quick kit can still have the original absolute Qt::uic export. Keep
+    # the kit read-only and reuse all three binaries from the verified host Qt.
+    with TemporaryDirectory(prefix=f".{destination.name}-", dir=destination.parent) as temporary:
+        staged = Path(temporary) / destination.name
+        package = staged / WIDGETS_TOOLS_PACKAGE
+        package.parent.mkdir(parents=True)
+        shutil.copytree(host / WIDGETS_TOOLS_PACKAGE, package)
+        (staged / "libexec").symlink_to(host / "libexec", target_is_directory=True)
+        relocate_host_tools(staged, (package.name,), generator_prefix=host)
+        if destination.exists():
+            if (not (destination / "libexec").is_symlink()
+                    or (destination / "libexec").readlink() != host / "libexec"
+                    or sdk_snapshot(destination / WIDGETS_TOOLS_PACKAGE)[0] != sdk_snapshot(package)[0]):
+                raise ValueError("Previous Widgets tools export differs from the verified host package")
+        else:
+            staged.rename(destination)
+    return destination / WIDGETS_TOOLS_PACKAGE
+
+
+def inputs_for(args, sdk, paths):
+    widgets = args.component == "widgets"
+    profile, profile_digest = metadata_snapshot(args.sdk_profile)
     binding = verify_profile(profile, "glibc", sdk)
-    manifest = load_json(sdk / "manifest.json")
+    if not {"cxx_runtime", "threads"} <= set(profile["features"]):
+        raise ValueError("The Qt target needs a glibc profile with C++ and threads")
+    manifest, sdk_digest = metadata_snapshot(sdk / "manifest.json", profile["sdk_binding"]["sdk_manifest_sha256"])
     tools = {name: tool_identity(f"x86_64-elf-{name}") for name in CROSS_TOOLS}
     for name, identity in tools.items():
         if identity.get("sha256") != manifest["tools"][f"x86_64-elf-{name}"]["sha256"]:
             raise ValueError(f"Cross tool differs from the SDK build: {name}")
-    archives = {name: sha(path) for name, path in
-                (("qtbase", paths["qtbase"]), ("qtdeclarative", args.declarative))}
-    if archives["qtdeclarative"] != load_json(qml / "source_lock.json")["sha256"]:
-        raise ValueError("Qt Declarative archive differs from its source lock")
-    native_tools = {
-        name: sha(path) for name, path in
-        qt_inputs(paths["target_prefix"], paths["host_qt"], paths["host_qml"]).items()
-        if path.is_relative_to(paths["host_qt"]) or path.is_relative_to(paths["host_qml"])
-    }
-    qsb = paths["host_qt"] / "bin/qsb"
-    native_tools["qsb"] = sha(qsb)
-    recipes = [Path(__file__), allocator, *BASE_PATCHES, *patches, QT_ROOT / "source_lock.json",
-               qml / "source_lock.json", PORT / "source_lock.json", QT_ROOT / "glibc/glibc_toolchain.cmake"]
+    archives = {"qtbase": sha(paths["qtbase"])}
+    recipes = [Path(__file__), *BASE_PATCHES, QT_ROOT / "source_lock.json",
+               QT_ROOT / "glibc/glibc_toolchain.cmake"]
+    if widgets:
+        native_tools = {name: sha(paths["host_qt"] / "libexec" / name) for name in WIDGETS_GENERATORS}
+        widgets_config = paths["host_qt"] / WIDGETS_TOOLS_PACKAGE
+        if not (widgets_config / "Qt6WidgetsToolsConfig.cmake").is_file():
+            raise ValueError("Host Qt is missing the Widgets tools CMake package")
+        recipes.append(PORT / "quick_kit.py")
+    else:
+        archives["qtdeclarative"] = sha(args.declarative)
+        if archives["qtdeclarative"] != load_json(qml / "source_lock.json")["sha256"]:
+            raise ValueError("Qt Declarative archive differs from its source lock")
+        native_inputs = qt_inputs(paths["target_prefix"], paths["host_qt"], paths["host_qml"])
+        native_tools = {name: sha(path) for name, path in native_inputs.items()
+                        if path.is_relative_to(paths["host_qt"]) or path.is_relative_to(paths["host_qml"])}
+        native_tools["qsb"] = sha(paths["host_qt"] / "bin/qsb")
+        recipes.extend([allocator, *patches, qml / "source_lock.json", PORT / "source_lock.json"])
     recipes.extend(QT_ROOT / filename for filename in ("prepare_source.py", "prepare_gui_source.py"))
     recipes.extend(path for directory in ("patches", "runtime", "cmake", "mkspecs")
                    for path in (QT_ROOT / directory).rglob("*") if path.is_file())
     recipe_hashes = {path.relative_to(ROOT).as_posix(): sha(path) for path in sorted(set(recipes))}
-    receipt = {"sdk_binding": binding, "sdk_manifest_sha256": sha(sdk / "manifest.json"),
-               "sdk_profile_file_sha256": sha(args.sdk_profile), "host_kit_manifest_sha256": verify_kit(args.host_kit),
+    receipt = {"sdk_binding": binding, "sdk_manifest_sha256": sdk_digest,
+               "sdk_profile_file_sha256": profile_digest, "host_kit_manifest_sha256": verify_kit(args.host_kit),
                "sources": archives, "native_generators": native_tools, "recipes": recipe_hashes,
                "cross_tools": {name: identity["sha256"] for name, identity in tools.items()}}
-    return receipt, tools
+    if widgets:
+        receipt["qt_version"] = load_json(QT_ROOT / "source_lock.json")["version"]
+        receipt["qtbase_features"] = {"widgets": "ON", "filedialog": "OFF"}
+    return receipt, tools, profile
 
 
 def rebuild(args):
     args.host_kit = args.host_kit.resolve(strict=True)
-    args.declarative = args.declarative.resolve(strict=True)
+    if args.declarative is not None:
+        args.declarative = args.declarative.resolve(strict=True)
     args.sdk_profile = args.sdk_profile.resolve(strict=True)
     sdk = args.sdk_build.resolve(strict=True)
     output = args.output.resolve()
+    widgets = args.component == "widgets"
     if any(output.is_relative_to(path) for path in (sdk, args.host_kit, ROOT / "src", ROOT / "tests")):
         raise ValueError("The output must be outside all input trees")
     paths = kit_paths(args.host_kit)
-    profile = load_json(args.sdk_profile)
-    receipt, tools = inputs_for(args, sdk, profile, paths)
+    receipt, tools, profile = inputs_for(args, sdk, paths)
     env = build_environment()
 
     def run(command, cwd=None):
         subprocess.run(command, check=True, cwd=cwd, env=env)
 
     version = load_json(QT_ROOT / "source_lock.json")["version"]
-    qsb = paths["host_qt"] / "bin/qsb"
-    if f"qsb {version}" not in subprocess.check_output([qsb, "--version"], text=True, env=env).splitlines():
-        raise ValueError("Host qsb does not match the Qt source version")
+    host = paths["host_qt"]
+    generators = [(host / "libexec" / name, "-v") for name in WIDGETS_GENERATORS] if widgets else [
+        (host / "bin/qsb", "--version")]
+    for generator, option in generators:
+        reported = subprocess.check_output([generator, option], text=True, env=env, stderr=subprocess.STDOUT)
+        if f"{generator.name} {version}" not in reported.splitlines():
+            raise ValueError(f"Host {generator.name} does not match the Qt source version")
+    if args.check_inputs:
+        print(canonical(receipt | {"status": "qt_target_inputs_verified", "component": args.component}).decode(),
+              end="")
+        return
     input_file = output / "inputs.json"
     if args.resume:
         if load_json(input_file) != receipt:
@@ -158,16 +199,36 @@ def rebuild(args):
             for patch in BASE_PATCHES:
                 run(["patch", "--batch", "--fuzz=0", "-p1", "-i", patch], cwd=staged)
     jobs = str(args.jobs)
+    features = {name: "OFF" for name in BASE_FEATURES_OFF}
+    if widgets:
+        features.update(receipt["qtbase_features"])
+        widgets_tools = stage_widgets_tools(host, output / "host_widgets_tools")
+        common.append(f"-DQt6WidgetsTools_DIR:PATH={widgets_tools}")
     run(["cmake", "-S", source, "-B", base, *common, f"-DCMAKE_TOOLCHAIN_FILE={chainload}",
          "-DQT_QMAKE_TARGET_MKSPEC=xos-g++", "-DFEATURE_gui=ON", "-DFEATURE_freetype=ON",
          "-DFEATURE_harfbuzz=ON", "-DINPUT_freetype=qt", "-DINPUT_harfbuzz=qt",
          "-DINPUT_opengl=no", "-DQT_QPA_DEFAULT_PLATFORM=xos",
-         *[f"-DFEATURE_{name}=OFF" for name in BASE_FEATURES_OFF]])
+         *[f"-DFEATURE_{name}={value}" for name, value in features.items()]])
     run(["cmake", "--build", base, "--parallel", jobs])
     run(["cmake", "--install", base])
     (output / "qtbase_installed.json").write_bytes(canonical({
-        name: sha(prefix / "lib" / f"libQt6{name}.a") for name in ("Core", "Gui")
+        name: sha(prefix / "lib" / f"libQt6{name}.a")
+        for name in (("Core", "Gui", "Widgets") if widgets else ("Core", "Gui"))
     }))
+    if widgets:
+        cache = base / "CMakeCache.txt"
+        cache_lines = set(cache.read_text().splitlines())
+        for name, value in receipt["qtbase_features"].items():
+            if f"QT_FEATURE_{name}:INTERNAL={value}" not in cache_lines:
+                raise ValueError(f"QtBase configured the wrong effective {name} feature")
+        if inputs_for(args, sdk, paths)[0] != receipt:
+            raise ValueError("A build input changed during the Qt Widgets build")
+        receipt["qtbase_prepared_tree_sha256"] = sdk_snapshot(source)[0]
+        receipt["qt_build_cache_sha256"] = sha(cache)
+        receipt["target_tree_sha256"] = sdk_snapshot(prefix)[0]
+        receipt["status"] = "static_qt_widgets_target_installed"
+        (output / "target_receipt.json").write_bytes(canonical(receipt))
+        return
 
     declarative = output / "qtdeclarative_source"
     if not declarative.exists():
@@ -188,7 +249,7 @@ def rebuild(args):
          "qtquick2plugin", "qtquick2plugin_init", "qmlplugin", "qmlplugin_init", "modelsplugin",
          "modelsplugin_init", "quickwindow", "quickwindow_init", "quickwindow_resources_1"])
     copy_declarative_packages(build, prefix, run)
-    if inputs_for(args, sdk, load_json(args.sdk_profile), paths)[0] != receipt:
+    if inputs_for(args, sdk, paths)[0] != receipt:
         raise ValueError("A build input changed during the Qt Quick build")
     installed = qt_inputs(prefix, paths["host_qt"], host_qml)
     receipt["target_tree_sha256"] = sdk_snapshot(prefix)[0]
@@ -199,13 +260,20 @@ def rebuild(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("host-kit", "sdk-build", "sdk-profile", "declarative", "output"):
+    for name in ("host-kit", "sdk-build", "sdk-profile", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--component", choices=("quick", "widgets"), default="quick")
+    parser.add_argument("--declarative", type=Path, help="locked Qt Declarative archive for the Quick target")
     parser.add_argument("--jobs", type=int, default=2)
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--check-inputs", action="store_true", help="validate inputs without configuring or building")
     args = parser.parse_args()
     if args.jobs < 1:
         parser.error("--jobs must be positive")
+    if (args.declarative is not None) != (args.component == "quick"):
+        parser.error("--declarative is required for Quick and unused for Widgets")
+    if args.check_inputs and args.resume:
+        parser.error("--check-inputs cannot be combined with --resume")
     rebuild(args)
 
 

@@ -15,19 +15,34 @@ See the [glibc desktop and session reproduction](../../../docs/work_log/8f0020c4
 
 ### Build from a relocated Widgets kit
 
-The unified glibc SDK supplies the C and C++ runtime. Build the standalone
-QtBase target prefix with Widgets enabled and the matching Linux arm64 host
-tools. The producer can start from the same QtBase configuration used by the
-[unified Quick build](../qt6/quick/unified_sdk.md) in a separate directory, with
-`FEATURE_widgets=ON` and `FEATURE_filedialog=OFF`. Build and install QtBase
-before staging its target prefix.
+Use the verified Linux arm64 Qt host kit and the unified glibc SDK v2 profile.
+The Widgets producer uses the shared QtBase source and configuration from the
+[unified Quick build](../qt6/quick/unified_sdk.md), with `FEATURE_widgets=ON`
+and `FEATURE_filedialog=OFF`. It installs its own Core, Gui and Widgets headers
+and archives. Quick keeps the headers and archives from its Widgets-disabled
+build. Both targets can share the QtBase source archive and host generators.
+
+Run the first command with `--check-inputs` to verify the SDK profile,
+cross-tools, source and generators without configuring Qt or creating output.
+Use a fresh build directory on a Linux filesystem for the build itself.
 
 ```sh
+python3 -B src/ports/qt6/quick/build_target.py \
+  --component widgets --host-kit "$HOST_KIT" --sdk-build "$SDK" \
+  --sdk-profile "$PROFILE" --output "$WIDGETS_BUILD" --jobs 2
+
 python3 -B src/ports/aurora_desktop/glibc/widgets_kit.py \
-  --sdk-build "$SDK" --sdk-profile "$PROFILE" --qt-build "$QT_BUILD" \
-  --qt-prefix "$QT_PREFIX" --qt-source "$QT_SOURCE" --host-qt "$HOST_QT" \
-  --qtbase "$LOCKED_QTBASE_ARCHIVE" --output "$WIDGETS_KIT"
+  --sdk-build "$SDK" --sdk-profile "$PROFILE" \
+  --qt-build "$WIDGETS_BUILD/qtbase_build" --qt-prefix "$WIDGETS_BUILD/target" \
+  --qt-source "$WIDGETS_BUILD/qtbase_source" --host-qt "$HOST_KIT/host_qt" \
+  --qtbase "$HOST_KIT/qtbase.tar.xz" --output "$WIDGETS_KIT" \
+  --target-receipt "$WIDGETS_BUILD/target_receipt.json"
 ```
+
+The v2 receiver requires the staged kit and its target receipt. The receipt
+binds the effective Qt features, target tree, CMake cache, prepared source,
+native generators, cross-tools and SDK profile. The earlier v1 kit format
+continues to work with its original SDK and profile.
 
 Move the kit to a new Linux arm64 prefix. The reported manifest digest is
 supplied separately to the receiver. The receiver needs the same glibc SDK

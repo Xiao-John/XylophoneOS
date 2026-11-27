@@ -1,0 +1,12 @@
+{
+  "files": {
+    "binding.json": "b7d8274fc9114d6a0237e3632b942f5917bf543cc67aa4e0d2203d700d8c4d97",
+    "cpython_configure_elf.json": "db122c9b40dcc3d22ecf5c4946e31507e5aec4c904ba1dda3abc32858e0c2534",
+    "receiver.json": "d82c67c2b3b720329e8e75044fda17f8b342a578f83f7ef4d7204a96be242061",
+    "release.json": "33398c862fb1ab7053733f554ef4403b8de7c43a29add8a6feed9e808a1caa8e",
+    "stock_guest.json": "3e8b63d5e6309327ab11c2f2bbe5e9b82b0a7bf50ff374b891a9028355f16253",
+    "stock_installer.serial.log.gz": "20fc3237a5883de636ff7360d3313a3046a899d8bbd0b92b9efda242170ed282",
+    "stock_ordinary.serial.log.gz": "304313dcf03bc688abf2859d8c6a8cf24555e103b3af91bfb4fe401ee32f7481"
+  },
+  "version": 1
+}

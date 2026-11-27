@@ -24,10 +24,7 @@ python3 tests/webkit_software_recording_guest.py --target "$RECORDING_OUT" \
   --system "$SYSTEM_OUT" --output "$GUEST_OUT"
 ```
 
-该夹具检查实际 Skia 录制回放、WebCore 混合模式、四个像素和资源回收。生成完整
-WebCore 目标前，还需要在 `SourcesSkia.txt` 中处理 `SkiaPaintingEngine.cpp` 和
-`SkiaReplayCanvas.cpp` 的 GPU 图集访问，并接通其他平台接口。页面解析、布局和 Qt
-视口仍按 M2 独立验收。
+该夹具检查实际 Skia 录制回放、WebCore 混合模式、四个像素和资源回收。软件归档的图已排除 GPU 专属实现。页面解析、布局和 Qt 视口按 M2 独立验收。
 
 ## WebCore 软件构建目标
 
@@ -75,7 +72,15 @@ cmake --build "$WEBKIT_OUTPUT" --target WebCore
 及宿主动态依赖搜索。软件配置在生成绑定前关闭 WebGL 和 WebGPU。重用早期的
 CMakeCache 时，将 `ENABLE_WEBGL` 和 `ENABLE_WEBGPU` 两项设为 `OFF`。
 
-## 本地整页验收
+## 静态归档验收
+
+锁定软件源包含图像编码的栅格入口和 CSS 自定义函数登记的直接头文件依赖。
+正式 `WebCore` 目标已生成完整 thin archive，WebCore、PAL 与 JSC 的成员数
+依次为 2205、12、649。通过 `ar t` 查看成员，归档依赖构建目录内的目标对象。
+实际配置、归档 SHA-256 和恢复验证见
+[静态归档回执](../../../../docs/reports/clarke_webcore_full_archive_20261127/manifest.json)。
+
+## 本地整页研究
 
 使用该配置生成的 WebCore 命令编译 `tests/fixtures/webkit/local_page.cpp` 和锁定
 源包的 `Source/WebCore/testing/TestPage.cpp`，补上后者所在目录的头文件搜索路径。
@@ -92,7 +97,7 @@ python3 tests/webkit_local_page_guest.py --target "$PAGE_OUT" --sdk-kit "$XOS_SD
 夹具通过 WebCore 的测试页加载本地 HTML，检查两个 DOM 元素的 CSS 边界并调用
 `LocalFrameView::paintContents` 绘制到 CPU 位图。客体分别读回原 HTML 和只改
 叠层颜色的 HTML。第二次应到达像素检查、退出码为 11，两个进程退出后资源均须
-回到基线。完整目标归档、此门的客体结果以及 Qt 视口仍待验证。
+回到基线。实际整页链接报告软件平台符号缺口，客体未运行，Qt 视口另行验收。
 
 ## 原生共享页
 

@@ -1,0 +1,72 @@
+{
+  "archive_build_exit": 0,
+  "archives": {
+    "libJavaScriptCore.a": {
+      "bytes": 39510656,
+      "members": 649,
+      "sha256": "907192d0ec38fc5e1e2782ffe75b7731139df11f26039650ad527182cd42badf"
+    },
+    "libPAL.a": {
+      "bytes": 471162,
+      "members": 12,
+      "sha256": "447c5a6c33745a719a3eb23c2ec56989226990e7306f0ed796c0cd8fd43ce486"
+    },
+    "libWTF.a": {
+      "bytes": 2378896,
+      "members": 173,
+      "sha256": "0ac4a8a7bed311fa866e5376a7c64e95527c7f82dc0b62b37f5b908c045de363"
+    },
+    "libWebCore.a": {
+      "bytes": 382134964,
+      "members": 2205,
+      "sha256": "8a774f1cd2b3b87a269126ddb4b3ebb4a658e6fc47a74af4bfa3c365e57f1d11"
+    },
+    "libbmalloc.a": {
+      "bytes": 46950,
+      "members": 168,
+      "sha256": "be837c2bc15b7bbf5242a0123b72df81c8da1ae78ea87eb4818495140835af01"
+    }
+  },
+  "base_of_archive_only_delivery": "f14851ca6c809ba9d6e80d30c2d345a792635ccb",
+  "build_ninja_sha256": "21fce468ec4f27592002aba94f1064e18a236f315b3a042e003e4c73b0b5ce9e",
+  "cmake_cache_sha256": "0c4269077113aba4f49a2a4ee6497b3a8a0ef31b32b356876a9ebcab50c7d566",
+  "compile_commands_sha256": "73254456d44ba4c657221b0574f83f19a6450787aea0500c412f2f79595ba283",
+  "configuration": {
+    "build_type": "Release",
+    "bundle_size": 2,
+    "cxx_flags_release": "-O0 -g0 -DNDEBUG -DRELEASE_WITHOUT_OPTIMIZATIONS -Wno-sfinae-incomplete --param=ggc-min-expand=10 --param=ggc-min-heapsize=8192",
+    "jit": false,
+    "port": "JSCOnly",
+    "software_webcore": true,
+    "wasm": false,
+    "webgl": false,
+    "webgpu": false
+  },
+  "final_rebuild_log_sha256": "9df4552001a0464752e661ff26cd6608a955bda4e4da3df5f7d4cd46e5c16ef2",
+  "local_page_guest": "not_run",
+  "local_page_link": {
+    "linker_termination": "SIGKILL from VM OOM after undefined-symbol diagnostics",
+    "observed_unresolved_symbols": 110,
+    "raw_log_sha256": "8cd71ab0ab564b5a1449d785f0b955a27477e4eaf70fc6ecbd4d9f97153b28c0",
+    "status": "failed"
+  },
+  "ninja_deps_sha256": "0de3b9cb2c01c123b4d82bdb9b60501de34a677850add2c420836af7b45bf6ed",
+  "ninja_log_sha256": "7c96046b830d622e00ed178fca312bf3a35d3f346b1263bd8b0e263161aa03c4",
+  "prepared_source_manifest_sha256": "41395a19b600cbca8d05e34ddea48c6d9636c17ef10eb21b9f08c78b1649b233",
+  "recovery_verification": {
+    "archive_digests_matched": true,
+    "ninja_dry_run": "no work to do",
+    "restore_log_sha256": "d0f047b672eea12d8a19adfbc7a528ee08744873ed5c477db8e618ce5a2ed81d"
+  },
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "software_source_lock_sha256": "24a1cc2f1ca1286635232bf1207f2164840bfa94c6eff087b2c46c7bd1060498",
+  "source_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56",
+  "source_checkout_during_build": "08f61a3c0727f746d8c126312be247da33bf8594",
+  "status": "full_static_archive_passed",
+  "tools": {
+    "cmake": "4.4.5",
+    "ninja": "1.13.2",
+    "target_gcc": "16.2.0"
+  }
+}

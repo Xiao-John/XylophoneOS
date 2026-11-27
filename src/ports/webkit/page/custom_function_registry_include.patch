@@ -1,0 +1,10 @@
+--- a/Source/WebCore/style/CustomFunctionRegistry.cpp
++++ b/Source/WebCore/style/CustomFunctionRegistry.cpp
+@@ -26,6 +26,7 @@
+ #include "CustomFunctionRegistry.h"
+ 
+ #include "StylePropertiesInlines.h"
++#include <wtf/TZoneMallocInlines.h>
+ 
+ namespace WebCore {
+ namespace Style {

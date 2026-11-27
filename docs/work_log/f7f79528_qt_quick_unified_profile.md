@@ -23,3 +23,41 @@ QtBase 编译曾在三并发时终止时区对象，随后在两并发时终止 
 该回执范围为 QtCore 及其统一 SDK 启动。QtGui、Qt Quick 外部应用和图形生命周期
 按各自回执验收。
 [证据索引](../reports/qt_quick_unified_profile_20261127/manifest.json)
+
+## 安装目标与独立接收方
+
+保留的 Linux ext4 构建盘通过只读文件系统检查。完成的目标安装包含静态 QtCore、
+QtGui、QtQml、QtQuick 和相应静态插件。构建回执记录每项归档、Qt 6.8.3 原档及
+统一 glibc C/C++ profile 的摘要。旧 profile 的实际输入被拒绝，构建器未创建输出
+目录。
+
+完整套件归档 SHA-256 为
+`e764fa7034b63203cf2acca413f7b074b819a849a32657d77e438ebda2f1e4ff`。
+独立 Linux arm64 容器在禁网、根文件系统只读的条件下解包到新前缀，接收方看不到
+原目标树或原 SDK 挂载。接收方从 Git 导出的场景源文件重新编译和链接，其 ELF
+摘要为 `276ef5bd5fb163b0c500ffdcd527e681d85c82829a19bdb282a80aa65a5d41c9`。
+[目标安装回执](../reports/qt_quick_unified_profile_20261127/target-receipt.json)
+[接收方链接回执](../reports/qt_quick_unified_profile_20261127/consumer-app.json)
+
+## 普通客体与首帧测量
+
+在合并检出 `2be8ba8f` 构建的普通 ISO `81c419d562a3731e` 中，QEMU 11.1.2
+TCG 分别从 xsh 和同 profile 的 Dash 启动接收方 ELF。入口各完成两轮
+真实图形验收。每轮都显示文字并推进矩形动画，PS/2 的 A 键切换矩形颜色，
+B 键关闭窗口，应用重新打开场景后完成第二轮。两条输入线程均已回收，应用和入口
+正常退出。应用退出后资源恢复到图形服务启动后的 `121620 / 5 / 3`，服务停止后
+恢复到启动前的 `129696 / 3 / 1`（空闲页、任务、完成项）。
+[xsh 回执](../reports/qt_quick_unified_profile_20261127/xsh.json)
+[Dash 回执](../reports/qt_quick_unified_profile_20261127/dash.json)
+[合并检出和 ISO 绑定](../reports/qt_quick_unified_profile_20261127/replay-binding.json)
+
+xsh 首帧耗时 5.664 秒。Dash 首帧耗时 137.281 秒，测量显式使用
+`--first-frame-timeout 240`。默认 60 秒门槛保留。同一接收方 ELF 的早先 Dash
+验证在 60 秒无首帧，独立的 Dash 脚本在 90 秒无首帧。该脚本诊断同时验证了
+`dash -c true`（0.213 秒）和经 Dash 启动的静态 QtCore 夹具（33.001 秒）。
+已测图形生命周期通过，Dash 的大型静态程序冷启动性能仍待改善。
+[早先 60 秒回执](../reports/qt_quick_unified_profile_20261127/dash-60s.json)
+[90 秒诊断回执](../reports/qt_quick_unified_profile_20261127/dash-script-90s.json)
+
+当前验收涵盖软件渲染与 Interactium 图形集成。发行载体的接收者重链接、
+安装替换与回退照常走其独立的验收门。

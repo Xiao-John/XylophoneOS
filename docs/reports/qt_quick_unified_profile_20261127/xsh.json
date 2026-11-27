@@ -1,0 +1,103 @@
+{
+  "status": "PASSED",
+  "image_sha256": "7df85605c130f83f447f851c379703a97414f181a8813d93a9be7330329815b7",
+  "elf_sha256": "276ef5bd5fb163b0c500ffdcd527e681d85c82829a19bdb282a80aa65a5d41c9",
+  "cycles": [
+    {
+      "cycle": 1,
+      "start": {
+        "bar_x": 66,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "02a8856f497b7303625c5df891e7db69f8a33928ea1c29446ba9d0983744bfb5"
+      },
+      "moved": {
+        "bar_x": 82,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "14eae77d7590d5c3505d0d46cd42e0058feda6ce711f595bbe28318a09056e64"
+      },
+      "key": {
+        "bar_x": 114,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "9c7013817a6b6069ca4919bfa340fbc36fdd479ae9d53f16a5fe8026352e86ab"
+      }
+    },
+    {
+      "cycle": 2,
+      "start": {
+        "bar_x": 66,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "02a8856f497b7303625c5df891e7db69f8a33928ea1c29446ba9d0983744bfb5"
+      },
+      "moved": {
+        "bar_x": 82,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "14eae77d7590d5c3505d0d46cd42e0058feda6ce711f595bbe28318a09056e64"
+      },
+      "key": {
+        "bar_x": 98,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "100b7c561a1c913484c61b85520d4f0abb4971d8f0e16b30ae0d36e8d740fb55"
+      }
+    }
+  ],
+  "launcher": "xsh",
+  "first_frame_timeout_seconds": 60,
+  "system_manifest_sha256": "8fe7e0ff2d5a876c34b5e608fc3beaf311ff8238ad1e78af525bd6c5326107b2",
+  "system_build_id": "81c419d562a3731e",
+  "app_receipt_sha256": "05d6ce1029d6257643a3a13d6250d6e9492eaceef1aad11a163837a2b25b59c1",
+  "kit_manifest_sha256": "6fc36b13ed96d8c7ec6e1ad8949e3c0216aea89abb9903fcc70816f646db3e51",
+  "target_receipt_sha256": "a2dfb99503876472821f9efd5ebd59c6ec5ca36891e127debb1d6af72d2bcdbd",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "fat_payload_sha256": "276ef5bd5fb163b0c500ffdcd527e681d85c82829a19bdb282a80aa65a5d41c9",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "with_graphics": [
+    121620,
+    5,
+    3
+  ],
+  "launch_to_first_frame_ns": 5663839000,
+  "frame_flush_ns": [
+    30000000,
+    0,
+    0,
+    0,
+    0,
+    0,
+    40000000,
+    0,
+    0,
+    0,
+    0
+  ],
+  "scene_samples": [
+    [
+      1,
+      6,
+      10560,
+      110000000
+    ],
+    [
+      2,
+      5,
+      10560,
+      110000000
+    ]
+  ],
+  "after_payload": [
+    121620,
+    5,
+    3
+  ],
+  "after_services": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "93749d37ccd32434544eef23bc5e55afe716a6ad9039f1c5764ba4b270159f73"
+}

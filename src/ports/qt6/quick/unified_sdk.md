@@ -30,10 +30,14 @@ Core/Gui、Qml/Quick 及必要静态插件。沿用 XOS 软件渲染与原生 In
 
 ## 在外部目录构建和搬移
 
-将 [软件场景](../../../../tests/fixtures/qt6/quick/)的三个源文件复制到独立应用目录。
-先建立该目标前缀与应用的实际链接回执，再将相同内容组装为可搬移套件。
+将 [软件场景](../../../../tests/fixtures/qt6/quick/)的三个源文件检出到独立应用目录。
+客体验收要求应用源目录与仓库逐字节匹配。用 Git 导出可以排除宿主文件系统生成的
+元数据。先建立该目标前缀与应用的实际链接回执，再将相同内容组装为可搬移套件。
 
 ```sh
+mkdir -p "$APP_SOURCE"
+git archive HEAD:tests/fixtures/qt6/quick | tar -C "$APP_SOURCE" -xf -
+
 python3 -B src/ports/qt6/quick/build_app.py --source "$APP_SOURCE" --target quick_probe \
   --target-prefix "$TARGET_BUILD/target" --target-receipt "$TARGET_BUILD/target_receipt.json" \
   --host-qt "$HOST_KIT/host_qt" --host-qml "$HOST_KIT/host_qml" \
@@ -66,7 +70,10 @@ python3 -B tests/qt6_quick_guest.py --image "$SYSTEM/xos-install.iso" \
   --output "$GUEST_XSH"
 ```
 
-以当前统一 SDK 构建的 Dash 回执可通过 `--dash-manifest` 在独立盘运行第二轮。
+以当前统一 SDK 构建的 Dash 回执可通过 `--dash-manifest` 在独立盘运行。
+验收记录发起启动到首帧的耗时。默认首帧截止时间为 60 秒。在 QEMU TCG 下测量
+大型静态程序通过 Dash 启动时，可以显式追加
+`--dash-manifest "$DASH_MANIFEST" --first-frame-timeout 240`。
 客体验证 QML 动画、文字、来自 QEMU PS/2 的键盘输入、同进程窗口关闭和重新打开，
 以及应用、输入线程和图形服务回收。发行载体还须按实际随包的归档、源和对象材料验收
 接收者重链接、安装替换和回退。

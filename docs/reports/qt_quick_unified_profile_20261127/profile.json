@@ -1,0 +1,120 @@
+{
+  "architecture": "x86_64",
+  "byte_order": "little",
+  "compiler_version": "16.2.0",
+  "features": [
+    "cxx_runtime",
+    "directories",
+    "file_io",
+    "heap",
+    "static_tls",
+    "stdio",
+    "stdio_transfer",
+    "threads"
+  ],
+  "format_version": 1,
+  "id": "xos-x86_64-glibc-unified-cxx-v1",
+  "layout": "glibc_static_native_tls_v1",
+  "runtime_family": "glibc",
+  "runtime_model": "threaded",
+  "sdk_binding": {
+    "archive_members": {
+      "usr/lib/libc.a": 1683,
+      "usr/lib/libgcc.a": 147,
+      "usr/lib/libm.a": 831,
+      "usr/lib/libstdc++.a": 199,
+      "usr/lib/libsupc++.a": 65,
+      "usr/lib/libxos_terminal.a": 10
+    },
+    "compiler": {
+      "gcc_sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "gxx_sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "target": "x86_64-elf",
+      "version": "16.2.0"
+    },
+    "cxx_runtime": {
+      "gcc_version": "16.2.0",
+      "include_directories": [
+        "usr/include/c++/16.2.0",
+        "usr/include/c++/16.2.0/x86_64-unknown-xos",
+        "usr/include/c++/16.2.0/backward"
+      ],
+      "locale_model": "generic",
+      "source_authentication": {
+        "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+        "key_sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+        "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+        "report_sha256": "f1672e7c4067c37c71b80d6eacb093d6df1a02cee1ea81f621cac2fd5990bc03",
+        "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+        "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+        "source_lock_sha256": "3fbd5444abe4946667813ea45c66c2a1bd1bf43e937d142c4ca8bea735e1e28f",
+        "status": "upstream_signature_verified",
+        "verification_files": {
+          "gcc_source_verification/gpgv.log": "81f75ace9bf61ee7f64b835e518dc4cda053ee4814a28ead6f0ffac5a79edd95",
+          "gcc_source_verification/gpgv.status": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4",
+          "gcc_source_verification/release_key.gpg": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+          "gcc_source_verification/report.json": "f1672e7c4067c37c71b80d6eacb093d6df1a02cee1ea81f621cac2fd5990bc03"
+        }
+      },
+      "target": "x86_64-unknown-xos",
+      "thread_model": "posix",
+      "unwinder": {
+        "frame_registry": "pthread_mutex",
+        "replaced_members": {
+          "emutls.o": "0aa7c2fb60441b44b066add1ec2cb951b69ba2364b4a4e6f0d5c2d74f4e447d8",
+          "unwind-c.o": "c2100138cc1c381a8d5f12e15ee8ab91a5dec3248a977b8640bf9f6939659a29",
+          "unwind-dw2-fde.o": "a253c3c958eac1e479cb8e3f7051bd9761f54080c2d7e9bfeb49e09790923b92",
+          "unwind-dw2.o": "2737dccaa009f5a49286f038c3fdaa491039137a459a392b2265e48b7e7ff08d",
+          "unwind-sjlj.o": "a2bff809d228057b7c3e9b98276a95610839edb93eb3d662756cc403d2372173"
+        },
+        "thread_model": "posix"
+      }
+    },
+    "format_version": 1,
+    "libc_version": "2.44",
+    "link_artifacts": {
+      "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+      "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+      "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+      "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+      "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+      "usr/lib/libc.a": "5c22e215d68aea22a61cede19ee92e27716eb63b817b1fc4f82ac9a5472acb8c",
+      "usr/lib/libgcc.a": "76e46640d9329f32d0b87dc68d7b571e2a4f8d7474c564dc2e669dff81fd8916",
+      "usr/lib/libm.a": "da7a7e8026e5cfead978de1574ed70b555105171d500091894a7b62d2ab8e35e",
+      "usr/lib/libstdc++.a": "9794f0f76a5c0f0ecff749f2013407b9ac3f97361671b65da0c19d93dd2913d3",
+      "usr/lib/libsupc++.a": "d048424c3b40156b1dc55cd09864f48f3c31273271bf72a4a48fa6380e90d526",
+      "usr/lib/libxos_terminal.a": "52df6bf395e70853e24244011d4ab7cfc0d1e43cfaf62840d33db3e13c6d8e94",
+      "usr/lib/xos_start.o": "a01e55e672c11bcef47e4739c8b526d760446517d8c3b525ff44c5e62c619332",
+      "usr/lib/xos_start_c.o": "48719e60452baf153d7e3e7e2c1a30c09415b0ebb9c886e04879a17b7fd8d3cf",
+      "usr/lib/xos_stdio_receiver.o": "3743040452210bb955a661fecd3a4664ae57350a4a6bb43d5e80fb678c8fe6c0"
+    },
+    "runtime_family": "glibc",
+    "runtime_model": "threaded",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+    "source_authentication": {
+      "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+      "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+      "report_sha256": "631d74861638bc7c5482f4d83c7ff8527b6893f61dc52c7c0c4cf173c2d4d73d",
+      "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+      "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+      "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+      "status": "upstream_signature_verified",
+      "verification_files": {
+        "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+        "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+        "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af",
+        "source_verification/report.json": "631d74861638bc7c5482f4d83c7ff8527b6893f61dc52c7c0c4cf173c2d4d73d"
+      }
+    }
+  },
+  "sdk_tree_sha256": [
+    "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+  ],
+  "startup_version": 3,
+  "status": "candidate_guest_not_run",
+  "syscall_abi": 1,
+  "verified_system_builds": [],
+  "word_bits": 64
+}

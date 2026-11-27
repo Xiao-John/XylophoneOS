@@ -1,0 +1,80 @@
+{
+  "scope": "native metadata admission and single-process volatile activation catalog",
+  "sdk_preview_archive_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "system_build_id": "f4bc8047111f47ab",
+  "host_checks": 39,
+  "guest_checks": 40,
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "resources_after": [
+    129709,
+    3,
+    1
+  ],
+  "loader_archive_sha256": "652ffeb6a6e424f7c846fbec7894d144e0ad72275986e0800531d5e7e6191591",
+  "source_sha256": {
+    "src/shared/include/xos/dynamic_abi.hpp": "de7788e59dbd4b7492d826e21875a987980765282f099a1d5146f4ead2b58f65",
+    "src/user/include/xos/dynamic.hpp": "221bc20cd766845432741f5cf0542ff7b1b7603606197837b9325d1c427ba23f",
+    "src/user/loader/dynamic/identity.cpp": "323717a3b72112b8b1aba104acd160a49ce5a9d44195e982d78ffacb103fc77d",
+    "src/user/loader/dynamic/generation.cpp": "59773cf9f0a6fc979dcfb3d1ab71cec5d53b3427975c05b1e8e48f4777fe5ac3",
+    "scripts/user_build.py": "4269a8fb3bb2656372b9dfe01e0b9cefc81dfd051a09b9683dcba01e93a52eb3",
+    "tests/dynamic_admission_guest.py": "7a7303049b36bbe90c919f07bc48428a0348f84c67e6d8d850f04a8043c3a6e7",
+    "tests/fixtures/dynamic_admission/cases.cpp": "05adf84145d6e2e2b3d85c83e4d5bf44923fede91cb51188b4c5be7dd5d25dc4",
+    "tests/fixtures/dynamic_admission/guest.cpp": "49dc52804f5235b20a93aef78bbb92281b67c5c9e2b8a5d075bfc89e69c5faae"
+  },
+  "exported_originals": {
+    "guest_report.json": {
+      "original_sha256": "324050f82cb70fea3c8cac4684547828ecb9c443eedcbeece06449f9455c58cf",
+      "original_bytes": 14721,
+      "transformation": "UTF-8 text; normalize newlines; replace /work source root, SDK internal tool prefix and temporary paths with placeholders"
+    },
+    "guest_serial.log": {
+      "original_sha256": "1810078baa74fee20307af5b040d80699d60eb9ea3767e8c89bbe425f2784d70",
+      "original_bytes": 4992,
+      "transformation": "UTF-8 text; normalize newlines; replace /work source root, SDK internal tool prefix and temporary paths with placeholders; trim trailing line whitespace"
+    },
+    "host_cases.log": {
+      "original_sha256": "4bdfb9ffd3ffd6d0fec6f9f0d6f3a19899210c76eb59317a385ec1f73485391f",
+      "original_bytes": 1558,
+      "transformation": "UTF-8 text; normalize newlines; replace /work source root, SDK internal tool prefix and temporary paths with placeholders; trim trailing line whitespace"
+    },
+    "identity_elf.log": {
+      "original_sha256": "4221805d16e56f7145799c222f13e924def188490048e5fc146dbe81ff5ffd8c",
+      "original_bytes": 3139,
+      "transformation": "UTF-8 text; normalize newlines; replace /work source root, SDK internal tool prefix and temporary paths with placeholders; trim trailing line whitespace"
+    },
+    "initial_compile_failure.log": {
+      "original_sha256": "619d960616694f0679c46d0d8b3f549124897e8b5ee4dea2ac7b2e464b83c79a",
+      "original_bytes": 1288,
+      "transformation": "UTF-8 text; normalize newlines; replace /work source root, SDK internal tool prefix and temporary paths with placeholders; trim trailing line whitespace"
+    },
+    "initial_harness_failure.log": {
+      "original_sha256": "562fa9e5ffd59cc787479d030fa0acf7b4e156404edd57cfae7169403777341a",
+      "original_bytes": 2493,
+      "transformation": "UTF-8 text; normalize newlines; replace /work source root, SDK internal tool prefix and temporary paths with placeholders; trim trailing line whitespace"
+    },
+    "abi_consistency.log": {
+      "original_sha256": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+      "original_bytes": 579,
+      "exit_code": 0,
+      "transformation": "UTF-8 text with source and host Python paths replaced by placeholders"
+    },
+    "docs_consistency.log": {
+      "original_sha256": "907d0ebce265cbc6cb1119dd2ce53bd64d78de7bd5cbb4a4af505014d5892cfa",
+      "original_bytes": 1463,
+      "exit_code": 1,
+      "transformation": "UTF-8 text with source and host Python paths replaced by placeholders"
+    }
+  },
+  "not_qualified": [
+    "public_dynamic_spawn_or_exec",
+    "runtime_ready_protocol",
+    "actual_DT_NEEDED_SONAME_version_relocation_validation",
+    "persistent_activation_or_revocation",
+    "signed_release_policy",
+    "general_dynamic_sdk"
+  ]
+}

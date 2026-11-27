@@ -1,0 +1,16 @@
+fatal: path 'docs/work_log/0023_first_release.md' does not exist in 'a265061ee00b787287011e5939054ebe3da4e397'
+Traceback (most recent call last):
+  File "${XOS_SOURCE}/tests/docs_consistency.py", line 126, in <module>
+    main()
+  File "${XOS_SOURCE}/tests/docs_consistency.py", line 119, in main
+    'allocated_syscalls': check_registry(), 'history_sources': check_provenance()}
+                                                               ^^^^^^^^^^^^^^^^^^
+  File "${XOS_SOURCE}/tests/docs_consistency.py", line 105, in check_provenance
+    original = subprocess.check_output(['git', 'show', index['source_commit'] + ':' + row['path']])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${HOST_PYTHON}/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${HOST_PYTHON}/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'show', 'a265061ee00b787287011e5939054ebe3da4e397:docs/work_log/0023_first_release.md']' returned non-zero exit status 128.

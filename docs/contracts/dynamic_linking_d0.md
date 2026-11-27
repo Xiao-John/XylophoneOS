@@ -4,8 +4,13 @@
 边界，供 [D1–D4](../plans/glibc_port_scout.md#动态链接明确目标与独立验收) 分模块
 实施；不修改 ELF 准入、共享头、syscall 编号、启动布局或默认 SDK。下面出现的
 新 identity、加载描述和 ready/error 记录是待登记的逻辑接口，尚无可用 wire 编码。
-当前静态 loader 继续拒绝动态 ELF。依据 [宪法](../xos_plan.md) C01/C09/C16/
+当前静态 loader 继续拒绝动态 ELF。上述“尚无编码”记录设计时基线；后续组件进展
+以紧接的补充和各自契约为准。依据 [宪法](../xos_plan.md) C01/C09/C16/
 C20/C22/C25/C31、[ABI 登记](abi_registry.md) 与 [Discipline](../Discipline.md)。
+
+2026-11-27 补充：[identity/generation v1 准入组件](dynamic_admission_v1.md)已登记
+具体 note/manifest 编码及易失受信候选状态；本页原有完整启动目标不因此变为已完成。
+公开加载描述、authenticated ready/error、持久激活与完整动态 SDK 仍须独立闭环。
 
 ## 1. 已有基础与实际缺口
 

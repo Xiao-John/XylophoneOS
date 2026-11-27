@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "files": {
+    "CHECKSUMS.sha256": "dbf7e39115b059675523d0e3809c546d3f7ede2b50feca4e7eb199757f2dd200",
+    "distribution_manifest.json": "d02b1af08eff8799e4f56d1e8bf1eb4d202493a733b5a0e5532d16a60fc0b866",
+    "qualification.json": "b5149ea0ca1064680eccc530ae18e234b476aaa637811302fabc658411358276"
+  }
+}

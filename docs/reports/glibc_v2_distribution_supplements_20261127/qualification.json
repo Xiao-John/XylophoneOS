@@ -1,0 +1,17 @@
+{
+  "status": "passed_subset",
+  "source_commit_for_recipe": "cc50f79bd5989660adcd56f7ef5ad31595396301",
+  "checked_assets": 10,
+  "independent_component_source_entries": 135,
+  "deterministic_stage_outputs": 5,
+  "replayed_xypm_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745",
+  "rejected_without_output": [
+    "untrusted_component_manifest_sha256",
+    "untrusted_xypm_manifest_sha256"
+  ],
+  "not_run": [
+    "publication",
+    "independent_cpython_zlib_rebuild",
+    "full_distribution_static_relink"
+  ]
+}

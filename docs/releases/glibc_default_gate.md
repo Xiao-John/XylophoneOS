@@ -55,4 +55,8 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 | 升级与回退 | v2 候选已通过 P2→P3 自升级和发行盘 IDNA 包升级的同步中断及恢复。历史 newlib 工作盘拒绝 v2 跨 profile 写入，原客体冷启可读。冻结 v0.0.1-1024 newlib 保持独立 SDK、介质和盘；工作区默认选择的三次冷启和原 XPK 重打包已通过。最终发行候选换版时重跑，保存新旧工作盘和用户数据回执。 [v2 升级](../work_log/cd9e6300_glibc_v2_upgrade.md) · [工作区回退](../work_log/50e9a5a4_glibc_sdk_default.md) |
 | 发布记录 | 对实际发行资产重跑许可材料检查、接收方复验与 `CHECKSUMS.sha256`。记录源包获取方式、最终 SHA-256、未关闭条目和各条适用范围。动态装载的资格按 D0–D4 单列，随静态发行时将支持范围写入发行回执。 |
 
+冻结 v2 候选的四份归档与补充资产已通过统一暂存和十份资产摘要核对。接收方从
+其中的 xypm 重链接归档独立得到发行 ELF。暂存输出带外层清单和完整校验表。
+[发行资产暂存](../work_log/cc50f79b_glibc_v2_distribution_supplements.md)
+
 当前默认发行仍由原配方生产。切换和 newlib 退役以完成上述实际证据和最终组合为准。

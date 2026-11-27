@@ -1,0 +1,60 @@
+{
+  "status": "passed_subset",
+  "source_commit": "645ba0176603558fb944c28f9200c0ff69a7c8a2",
+  "source_tree": "979d350291b3bc75d10c7fbb88f5242a2a20c74a",
+  "ordinary": {
+    "build_id": "0a591c6ed6985dbe",
+    "image_sha256": "c7b00dc6021e3a6c7eee39a463c3aa164a75ce6726b47105c288915da4230971",
+    "system_manifest_sha256": "ea3b7b003adf57b5e1c171a0fb6dea18a4ed00606aac456219e43da43f02c76f",
+    "sdk_manifest_sha256": "49d82dae2c903639c2f162e9076b0e983836cf2527ecd80fb4eb5f452aacb3d1",
+    "abi": "passed",
+    "guest_checks": 79,
+    "license_materials": 10,
+    "emulator": "QEMU emulator version 11.1.2",
+    "original_log_sha256": "1debafb300611a3536b40d43cd9e615adabc9f42baa6c27fefa38de1535a532a"
+  },
+  "glibc_v2_installer_candidate": {
+    "build_id": "0d4b152cf6c9fdf9",
+    "system_iso_sha256": "788ce5b4dbcc5d11b8603b879f440e7c25c66261693a18a9292655c24300cef0",
+    "installer_iso_sha256": "b94afdbe02eeed6064cf55b6e026d2c55f1dedd65c9985440b644bb2f76b6af6",
+    "system_manifest_sha256": "739bd4dde3be4faef064e360726c21ca0cd748ad200e2350de2f9a39f53eb533",
+    "system_sdk_manifest_sha256": "62ecf3572ef0d5b2f5de845a019f2a0a0a7776bc8c4ab080463843c6402a6a0b",
+    "install_manifest_sha256": "19e211b11a9b94c9cb32d925aacd8ef2e97355921e1ab654b6b2b08aeb7d2f8a",
+    "application_sdk": {
+      "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+      "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+      "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+    },
+    "candidate_manifest_sha256": "c53199bc1357e9257b9e3795d78535a65285958bd3e95fbeffc9ca664ca115cb",
+    "unmodified_installer_report_sha256": "245304a364a81dc95d2c8c50b6fdfd5a490f66ccd7cc1bd0643ad46ce622f788",
+    "original_stock_report_sha256": "6f056385c92e8ec3dca8fe1a7eef6a69e45d15c26499da1fd33a35a4892fea74",
+    "installer_and_stock_emulator": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "independent_pinned_smoke": {
+      "guest_checks": 79,
+      "license_materials": 10,
+      "emulator": "QEMU emulator version 11.1.2",
+      "original_log_sha256": "828706ffe122be53ca8035d8114f0a7c10c8814db3d0ebe7157fb57c00708bac"
+    },
+    "abi": "passed",
+    "installer_checks": 5,
+    "stock_lifecycle_groups": 3,
+    "installed_stock_tools": 13,
+    "installed_stock_files": 26,
+    "exact_stock_outputs": 33,
+    "not_run": [
+      "full_release_asset_composition",
+      "release_upgrade_recovery",
+      "newlib_rollback"
+    ]
+  },
+  "first_candidate_smoke_attempt": {
+    "status": "configuration_failed",
+    "reason": "Container emulator version differs from the repository pin",
+    "emulator": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "required_emulator": "QEMU emulator version 11.1.2",
+    "log_sha256": "db41b431d0c240cc3922c72099ceb3a2577aeaa350e26679bb2f2639667dad76"
+  }
+}

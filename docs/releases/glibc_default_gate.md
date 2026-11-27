@@ -31,6 +31,7 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 静态重链接材料继续使用最终选定候选验收。
 [v2 复验记录](../work_log/9f6b0349_glibc_v2_release_inputs.md)
 [升级与恢复复验](../work_log/cd9e6300_glibc_v2_upgrade.md)
+[工作区 v2 默认选择和原发行回退](../work_log/4c8a56a1_glibc_v2_workspace_default.md)
 
 ## 整套资产的发布门
 

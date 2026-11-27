@@ -48,6 +48,13 @@ CPPFLAGS-wordexp.os += -DXOS_TILDE_WITHOUT_NSS
 endif
 endif
 ifeq ($(subdir),socket)
+ifeq ($(filter inet,$(subdirs)),)
+# Install the public header directly from glibc's inet directory.
+sysdep_headers += bits/in.h netinet/in.h
+sysdep_routines += htonl htons in6_addr
+$(inst_includedir)/netinet/in.h: $(..)inet/netinet/in.h $(+force)
+	$(do-install)
+endif
 ifeq ($(filter resolv,$(subdirs)),)
 # The checked address converters use the portable GNU implementations.
 sysdep_routines += inet_ntop inet_pton inet_pton_length

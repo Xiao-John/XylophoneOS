@@ -54,8 +54,14 @@ QEMU 11.1.2 在上述系统镜像的 xsh 中运行锁定的普通脚本，输出
 [归档、链接与客体回执](../reports/clarke_webcore_archive_preflight_20261127/manifest.json)
 
 完整 WebCore 归档正在构建，四路并行编译时有一个 JSBindings 编译进程
-被宿主虚拟机的内存不足处理终止，其他编译对象继续生成。完整归档
-仍需按同一配置补齐失败的编译对象。归档完成后按
+被宿主虚拟机的内存不足处理终止，内核记录其匿名 RSS 为
+`2061204 KiB`。保留运行中的 Ninja，从同一 CMake 编译数据库取出
+`UnifiedSource-JSBindings-10.cpp` 的命令，仅替换输出路径，单独在
+最多 3 GiB 的容器中复编。目标 x86-64 可重定位对象大小为 13,567,000
+字节，SHA-256 为
+`1db3195ed09125d18767edf331162511da9048cec735d5b952be5474036bbe8e`。
+该复编产物与全量 Ninja 输出分开保留，归档构建还须通过原图的该节点。
+归档完成后按
 [软件 WebCore 门禁](../../src/ports/webkit/page/README.md)链接实际
 `local_page.elf` 并运行两个 HTML 用例。整页链接、DOM、CSS、绘制与退出回收
 尚待这次客体核验。

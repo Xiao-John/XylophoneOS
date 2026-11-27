@@ -1,0 +1,123 @@
+{
+  "status": "passed",
+  "checks": {
+    "normal": {
+      "checks": [
+        {
+          "case": "normal",
+          "launcher": "xsh",
+          "output": "exec-file /bin/wait.elf normal\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/bin/wait.elf\n[process] event=wait_blocked parent=7 child=10\r\nFILE_REPLY_WAKE result=0 elapsed_ns=0\nFILE_REPLY_WAIT_PASS normal queued=1 expired=1 blocked=1\n[task] event=reclaimed pid=10 pages=231\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+          "resources_after": [
+            129696,
+            3,
+            1
+          ]
+        },
+        {
+          "case": "concurrent",
+          "launcher": "xsh",
+          "output": "exec-file /bin/wait.elf concurrent\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000360000\r\n[loader] started pid=11 file=/bin/wait.elf\n[process] event=wait_blocked parent=7 child=11\r\nFILE_REPLY_WAIT_PASS concurrent reads=128 offset=0\n[task] event=reclaimed pid=11 pages=231\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+          "resources_after": [
+            129696,
+            3,
+            1
+          ]
+        },
+        {
+          "case": "normal",
+          "launcher": "dash",
+          "output": "dash /bin/normal.sh\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x0000000000360000\r\n[loader] started pid=12 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=12\r\n[process] event=started pid=13 parent=12\r\n[process] pid=13 address_space=0x000000000067d000\r\n[process] event=wait_blocked parent=12 child=13\r\nFILE_REPLY_WAKE result=0 elapsed_ns=0\nFILE_REPLY_WAIT_PASS normal queued=1 expired=1 blocked=1\n[task] event=reclaimed pid=13 pages=231\r\n[task] event=reclaimed pid=12 pages=317\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+          "resources_after": [
+            129696,
+            3,
+            1
+          ]
+        },
+        {
+          "case": "concurrent",
+          "launcher": "dash",
+          "output": "dash /bin/concurrent.sh\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x0000000000360000\r\n[loader] started pid=14 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=14\r\n[process] event=started pid=15 parent=14\r\n[process] pid=15 address_space=0x000000000067d000\r\n[process] event=wait_blocked parent=14 child=15\r\nFILE_REPLY_WAIT_PASS concurrent reads=128 offset=0\n[task] event=reclaimed pid=15 pages=231\r\n[task] event=reclaimed pid=14 pages=317\r\n[wait] pid=14 kind=exited code=0\nxsh> ",
+          "resources_after": [
+            129696,
+            3,
+            1
+          ]
+        },
+        {
+          "case": "cancel",
+          "launcher": "xsh",
+          "output": "exec-file /bin/wait.elf cancel\n[process] event=started pid=16 parent=7\r\n[process] pid=16 address_space=0x0000000000360000\r\n[loader] started pid=16 file=/bin/wait.elf\n[process] event=wait_blocked parent=7 child=16\r\nFILE_REPLY_WAIT_CANCEL_READY\n[process] event=cancelled_by_escape pid=16\r\n[task] event=reclaimed pid=16 pages=231\r\n[wait] pid=16 kind=killed code=-27\nxsh> ",
+          "resources_after": [
+            129696,
+            3,
+            1
+          ]
+        }
+      ],
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "serial_sha256": "df186008ca667d88665f5107b1e2a5515a590966a24f64f41c4e9cb7747ae9e9"
+    },
+    "death": {
+      "checks": [
+        {
+          "case": "death",
+          "launcher": "xsh",
+          "output": "exec-file /bin/wait.elf death\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/bin/wait.elf\n[process] event=wait_blocked parent=7 child=10\r\n[task] event=reclaimed pid=8 pages=247\r\nFILE_REPLY_WAKE result=-7 elapsed_ns=10000000\nFILE_REPLY_WAIT_PASS death blocked=1 old_handle_denied=1\n[task] event=reclaimed pid=10 pages=231\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+          "resources_after": [
+            129943,
+            2,
+            1
+          ]
+        }
+      ],
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "serial_sha256": "f562669376b2aad753486d13c80239422915ed2b7ed4cfd409fb5c1f9b4d9a5b"
+    },
+    "death_libc": {
+      "checks": [
+        {
+          "case": "death_libc",
+          "launcher": "xsh",
+          "output": "exec-file /bin/wait.elf death_libc\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/bin/wait.elf\n[process] event=wait_blocked parent=7 child=10\r\n[task] event=reclaimed pid=8 pages=247\r\nFILE_REPLY_WAIT_PASS death_libc sticky_eio=1\n[task] event=reclaimed pid=10 pages=231\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+          "resources_after": [
+            129943,
+            2,
+            1
+          ]
+        }
+      ],
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "serial_sha256": "c5b6a4e2ecc809b9364bae40ad5f6786ca75c3a708c74de280fc8f289c8d0cf1"
+    }
+  },
+  "sdk_manifest_sha256": "c43c9e4c0b058769cfbb8a58f0613a562b2b0257d254914334773baaa4c128c8",
+  "profile_file_sha256": "19e6fed6732c2b2908737272c67686fa965e5236cf0567521ed0b78e614b1ce2",
+  "probe_receipt_sha256": "3d441e363ccdd838d36b78bfde1a46b3546af4ef69e51a16843466489267966f",
+  "dash_receipt_sha256": "45b577a97401f9ef7e14915d5b3c556e40b10cf3474a71edd96ad7c10c9d9f3b",
+  "probe_sha256": "99e96df18fba38cb1bf125c72b8a472344aecfc5e46e500e569ab4a37906f9c6",
+  "dash_sha256": "60d0a0a3f750205d1972c673674aec61203534a628c0b13d320417f7c6f92037",
+  "builds": {
+    "normal": {
+      "build_id": "03e4bb24004fd549",
+      "manifest_sha256": "7d5b88e17b3d15c7f7d5365c78f2086e757c6aa4c60f6c4e31bdaaebff1973d4",
+      "iso_sha256": "c51b95f498eb108f72aadb14809dedfabc5c28de4383c1c477c5347d146d75cb"
+    },
+    "death": {
+      "build_id": "78e00b80081324c9",
+      "manifest_sha256": "775fed423788d50db5a71437d025704a5cce8bf64cc1298cdc63a32e592a18b8",
+      "iso_sha256": "c13d8429cbd755a5efc034984a0f6722b0f0f7c878cc91a8775425a1f8d094e8"
+    }
+  }
+}

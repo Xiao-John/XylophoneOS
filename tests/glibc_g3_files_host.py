@@ -24,6 +24,8 @@ CASES = [
     "inheritance_v2", "duplicate_v2_handle", "path_v2_redirection",
     "bad_version", "overread", "overwrite", "unknown_status", "metadata", "timeout",
     "service_death", "clock_failure", "late_reply", "send_failure", "short_reply",
+    "wait_ready", "wait_spurious", "wait_legacy", "wait_timeout", "wait_death",
+    "wait_interrupted", "wait_at_deadline", "wait_duplicate",
 ]
 
 

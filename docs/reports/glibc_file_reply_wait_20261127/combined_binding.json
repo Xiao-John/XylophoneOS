@@ -1,0 +1,16 @@
+{
+  "checkout": "af8345e758fdc686ea2a3c23d62c28a68862e3c4",
+  "combined_main_and_qt": "c6d84daba9dd6cc699cc576f535c39849b7abd51",
+  "dash_elf_sha256": "60d0a0a3f750205d1972c673674aec61203534a628c0b13d320417f7c6f92037",
+  "dash_sdk_manifest_sha256": "c43c9e4c0b058769cfbb8a58f0613a562b2b0257d254914334773baaa4c128c8",
+  "file_wait_head": "ad9de34da870c559958d7d21f4fcf65930f97486",
+  "iso_sha256": "3e78afcfb4d57d88a6bf5ca5a91e15361a8af7ab7689225e13b8efe0c15a2588",
+  "mainline": "502cc673dc60c3d8ec42cd3929d26c38a35becd0",
+  "qt_elf_sha256": "276ef5bd5fb163b0c500ffdcd527e681d85c82829a19bdb282a80aa65a5d41c9",
+  "qt_head": "ff4a6e5e29d9b9133259104fbe20d2d9125a47d9",
+  "qt_sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "status": "combined_system_and_application_guests_passed",
+  "system_build_id": "698345e42bcadac3",
+  "system_manifest_sha256": "3c0405ad69e65ef6286515802671057429d657ab2d48c8981ffd6f843188fc28",
+  "tree": "7dd03cb7001a4cf944109ecda44dec59f2dd0c51"
+}

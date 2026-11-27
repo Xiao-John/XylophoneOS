@@ -1116,7 +1116,9 @@ i64 ipc_send(u64 handle, u64 address, u64 length) {
     endpoint->length = static_cast<u32>(length);
     endpoint->pending = true;
     if (endpoint->generic_channel) { wake_channel_waiters(endpoint->handle, true, false, 0); }
-    if (endpoint->generic) { wake_ipc_waiters(endpoint->handle, 0, thread_wait_kind::ipc_receive); }
+    if (endpoint->generic || endpoint->session_response) {
+        wake_ipc_waiters(endpoint->handle, 0, thread_wait_kind::ipc_receive);
+    }
     if(handle==display_response_handle){display_delivered=false;display_presented=false;}
     if(display_endpoint(handle)){display_wake(handle,0);}
     return 0;
@@ -1344,6 +1346,13 @@ void wake_process_waiters(u64 parent) {
 void finish_task(process_record* task, process_outcome outcome, i64 code,
                   u64 vector, u64 address, u64 instruction) {
     if (task->state == task_state::dead) { return; }
+    if (task->pid == files_pid) {
+        for (const auto& endpoint : endpoints) {
+            if (endpoint.used && endpoint.session_response && endpoint.sender_pid == task->pid) {
+                wake_ipc_waiters(endpoint.handle, pipe_error_broken, thread_wait_kind::ipc_receive);
+            }
+        }
+    }
     if (cpu_usage.process == &task->cpu) { cpu_usage.stop(execution_counter()); }
     ipc_v1_revoke_process(task->pid);
     device_revoke_process(task->pid);
@@ -2144,7 +2153,8 @@ void expire_waiters() {
              thread.wait_kind == thread_wait_kind::pipe_read || thread.wait_kind == thread_wait_kind::pipe_write ||
              thread.wait_kind == thread_wait_kind::channel_read ||
              thread.wait_kind == thread_wait_kind::channel_write || thread.wait_kind == thread_wait_kind::channel_many ||
-             thread.wait_kind == thread_wait_kind::irq_event) &&
+             thread.wait_kind == thread_wait_kind::irq_event ||
+             (thread.wait_kind == thread_wait_kind::ipc_receive && thread.deadline_ns != 0)) &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
         }
@@ -5512,19 +5522,30 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_ipc_wait: {
-        if (third != 0 || second > static_cast<u64>(ipc_wait_mode::try_send)) { break; }
-        auto* endpoint = endpoint_for(first);
-        if (endpoint == nullptr || !endpoint->generic) { result = process_error_denied; break; }
         const auto mode = static_cast<ipc_wait_mode>(second);
-        const bool receiving = mode == ipc_wait_mode::receive || mode == ipc_wait_mode::try_receive;
+        const bool file_reply = mode == ipc_wait_mode::file_reply_until;
+        if (file_reply ? third == 0 : (third != 0 || mode > ipc_wait_mode::try_send)) { break; }
+        auto* endpoint = endpoint_for(first);
+        if (endpoint == nullptr ||
+            (file_reply ? (!endpoint->session_response || endpoint->owner_pid != current->pid ||
+                           current->session_response_handle != first || current->recv_handle != first ||
+                           endpoint->sender_pid != files_pid)
+                        : !endpoint->generic)) {
+            result = process_error_denied; break;
+        }
+        const bool receiving = file_reply || mode == ipc_wait_mode::receive || mode == ipc_wait_mode::try_receive;
         const bool nonblocking = mode == ipc_wait_mode::try_receive || mode == ipc_wait_mode::try_send;
         if ((receiving && endpoint->receiver_pid != current->pid) ||
             (!receiving && endpoint->sender_pid != current->pid)) {
             result = process_error_denied; break;
         }
         const process_record* peer = task_by_pid(receiving ? endpoint->sender_pid : endpoint->receiver_pid);
-        if (peer == nullptr || peer->state == task_state::dead || peer->closing) {
+        if (peer == nullptr || peer->state == task_state::dead || peer->closing ||
+            (file_reply && (peer->state == task_state::building || !peer->block_access))) {
             result = pipe_error_broken; break;
+        }
+        if (file_reply && thread_deadline_reached(clock::monotonic_ns(), third)) {
+            result = thread_error_timeout; break;
         }
         if ((receiving && endpoint->pending) || (!receiving && !endpoint->pending)) {
             result = 0; break;
@@ -5532,6 +5553,7 @@ void* process_syscall(interrupt_frame* frame) {
         if (nonblocking) { result = process_error_would_block; break; }
         current_thread->wait_kind = receiving ? thread_wait_kind::ipc_receive : thread_wait_kind::ipc_send;
         current_thread->wait_target = endpoint->handle;
+        current_thread->deadline_ns = third;
         current_thread->state = thread_state::blocked;
         frame->rax = 0;
         return schedule(frame);

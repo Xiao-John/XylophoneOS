@@ -190,7 +190,11 @@ struct process_stats { u32 free_pages; u32 tasks; u32 completions; u32 reserved;
 struct file_session_info { u64 pid; u64 parent_pid; u32 request_handle; u32 response_handle; };
 struct pipe_handles { u32 read_token; u32 write_token; };
 enum class ipc_endpoint_action : u64 { create = 0, revoke = 1, query_peer = 2, close = 3 };
-enum class ipc_wait_mode : u64 { receive = 0, send = 1, try_receive = 2, try_send = 3 };
+// file_reply_until uses a nonzero absolute monotonic nanosecond deadline in
+// arg3 and is limited to the current process's authenticated file reply route.
+enum class ipc_wait_mode : u64 {
+    receive = 0, send = 1, try_receive = 2, try_send = 3, file_reply_until = 4,
+};
 enum class ipc_name_action : u64 { publish = 0, unpublish = 1, connect = 2, accept = 3, wait_accept = 4 };
 struct ipc_channel { u32 send; u32 receive; };
 inline constexpr i64 ipc_error_full = -4, ipc_error_broken = -7;

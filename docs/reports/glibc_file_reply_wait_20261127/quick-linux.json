@@ -1,0 +1,136 @@
+{
+  "status": "passed",
+  "scope": "Existing Qt Quick consumer ELF with rebuilt C SDK Dash",
+  "first_frame_timeout_seconds": 60,
+  "system_build_id": "03e4bb24004fd549",
+  "system_manifest_sha256": "7d5b88e17b3d15c7f7d5365c78f2086e757c6aa4c60f6c4e31bdaaebff1973d4",
+  "image_sha256": "c51b95f498eb108f72aadb14809dedfabc5c28de4383c1c477c5347d146d75cb",
+  "dash_manifest_sha256": "45b577a97401f9ef7e14915d5b3c556e40b10cf3474a71edd96ad7c10c9d9f3b",
+  "dash_sha256": "60d0a0a3f750205d1972c673674aec61203534a628c0b13d320417f7c6f92037",
+  "dash_sdk_manifest_sha256": "c43c9e4c0b058769cfbb8a58f0613a562b2b0257d254914334773baaa4c128c8",
+  "app_receipt_sha256": "05d6ce1029d6257643a3a13d6250d6e9492eaceef1aad11a163837a2b25b59c1",
+  "app_sha256": "276ef5bd5fb163b0c500ffdcd527e681d85c82829a19bdb282a80aa65a5d41c9",
+  "app_sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "checks": {
+    "xsh": {
+      "first_frame_ns": 14314757708,
+      "cycles": [
+        {
+          "start": {
+            "bar_x": 50,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "58029aac1f66db6205553b7550f90518782ef5f181939f898127a58e69667b37"
+          },
+          "moved": {
+            "bar_x": 66,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "02a8856f497b7303625c5df891e7db69f8a33928ea1c29446ba9d0983744bfb5"
+          },
+          "keyed": {
+            "bar_x": 82,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "5bb6ac6d2dd24bd9cbc7935eb53e5d260559afe3925a2704dc015916e9c69709"
+          }
+        },
+        {
+          "start": {
+            "bar_x": 66,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "02a8856f497b7303625c5df891e7db69f8a33928ea1c29446ba9d0983744bfb5"
+          },
+          "moved": {
+            "bar_x": 98,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "dac00d0e9ef50c5e65b0f07e890d8f913a2b1bf05b0855c3df4f5f17c3e1c8d8"
+          },
+          "keyed": {
+            "bar_x": 130,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "3cf837343dc20f2040704a44a6a1565f7c64fff382fdf2fc2287f6dda9725990"
+          }
+        }
+      ],
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "resources_with_graphics": [
+        121620,
+        5,
+        3
+      ],
+      "resources_after_process": [
+        121620,
+        5,
+        3
+      ],
+      "resources_after_services": [
+        129696,
+        3,
+        1
+      ],
+      "serial_sha256": "9ad715f5059eb7e223fd72416afdc5c5378e22c973b77e29a10cb40dc6851135"
+    },
+    "dash": {
+      "first_frame_ns": 11938940230,
+      "cycles": [
+        {
+          "start": {
+            "bar_x": 50,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "58029aac1f66db6205553b7550f90518782ef5f181939f898127a58e69667b37"
+          },
+          "moved": {
+            "bar_x": 66,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "02a8856f497b7303625c5df891e7db69f8a33928ea1c29446ba9d0983744bfb5"
+          },
+          "keyed": {
+            "bar_x": 66,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "45adffb57867490079f4f35a24fd33114bd79d8635415e50d908146c27d739cc"
+          }
+        },
+        {
+          "start": {
+            "bar_x": 66,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "02a8856f497b7303625c5df891e7db69f8a33928ea1c29446ba9d0983744bfb5"
+          },
+          "moved": {
+            "bar_x": 82,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "14eae77d7590d5c3505d0d46cd42e0058feda6ce711f595bbe28318a09056e64"
+          },
+          "keyed": {
+            "bar_x": 114,
+            "text_ink_pixels": 940,
+            "screenshot_sha256": "9c7013817a6b6069ca4919bfa340fbc36fdd479ae9d53f16a5fe8026352e86ab"
+          }
+        }
+      ],
+      "resources_before": [
+        129696,
+        3,
+        1
+      ],
+      "resources_with_graphics": [
+        121620,
+        5,
+        3
+      ],
+      "resources_after_process": [
+        121620,
+        5,
+        3
+      ],
+      "resources_after_services": [
+        129696,
+        3,
+        1
+      ],
+      "serial_sha256": "e59449073a686fc58753c23f9e03a69c39efbe9190adad78f0ce95aac9c02c8c"
+    }
+  }
+}

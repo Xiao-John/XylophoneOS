@@ -1,0 +1,73 @@
+{
+  "artifacts": {
+    "ipc_exec_probe.elf": "141c14518093092b403fd16b17b61aa0b6a74a5e60fecb71bf5c1e4927453b5c"
+  },
+  "baseline": [
+    129696,
+    3,
+    1
+  ],
+  "build_id": "03e4bb24004fd549",
+  "checks": [
+    {
+      "nonce": "69179a33c97d3d237e8b4022ba1c30c1",
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "round": 0,
+      "scope": [
+        "failed_exec_preserves_name_and_channel",
+        "successful_exec_revokes_both_endpoints",
+        "blocked_peer_wakes",
+        "old_name_removed",
+        "queued_unaccepted_connection_discarded",
+        "same_pid_new_tokens_authenticated",
+        "child_exit_reclaims_everything"
+      ],
+      "status": "passed"
+    },
+    {
+      "nonce": "ceac391940bd93a6c4533ce50e887baa",
+      "resources": [
+        129696,
+        3,
+        1
+      ],
+      "round": 1,
+      "scope": [
+        "failed_exec_preserves_name_and_channel",
+        "successful_exec_revokes_both_endpoints",
+        "blocked_peer_wakes",
+        "old_name_removed",
+        "queued_unaccepted_connection_discarded",
+        "same_pid_new_tokens_authenticated",
+        "child_exit_reclaims_everything"
+      ],
+      "status": "passed"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "guest_qemu.log",
+      "sha256": "bcde68ea3041f3cfbf6cc9cb5a2c44a9ab253a9e5b016985803a77ca3a40a099"
+    },
+    {
+      "path": "guest_serial.log",
+      "sha256": "12a3124b51303e62c3111ab10b84b87ec88bc1f5ab60411f5ba81c46280b29bd"
+    }
+  ],
+  "fixture_receipt_sha256": "1af871be33529f40d1c2555c735e6531ad5f59f6348d790e58d35985c9ac78e7",
+  "image_sha256": "c51b95f498eb108f72aadb14809dedfabc5c28de4383c1c477c5347d146d75cb",
+  "initial_disk_sha256": "ade82357bb55dae89d173772387a1280453a9f98176ec270a69b6ad3e6429aff",
+  "not_run": [
+    "sys81_explicit_channel_inheritance_stress",
+    "terminal_display_interactium_regression"
+  ],
+  "original_report_sha256": "da687127b8c9094abbf179d7694a721dcabf7d9b4273ece85eb0ba78d2cd1492",
+  "runner_sha256": "00651291d3cbbb952c81dce402ce30be00cf06c72121d45892443c9931e1cf36",
+  "sdk_tree_sha256": "01793a560e58e9510e215650deccc8f90d3be5648702dc00b808de47ace633b6",
+  "status": "passed",
+  "system_manifest_sha256": "7d5b88e17b3d15c7f7d5365c78f2086e757c6aa4c60f6c4e31bdaaebff1973d4"
+}

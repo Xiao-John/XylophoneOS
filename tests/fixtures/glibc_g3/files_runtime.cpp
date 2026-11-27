@@ -4,6 +4,7 @@
 #include <xos/file_abi.hpp>
 #include <xos/file_client.hpp>
 #include <xos/spawn.hpp>
+#include <xos/thread_abi.hpp>
 #include <atomic>
 #include <cassert>
 #include <cerrno>
@@ -39,6 +40,8 @@ static std::mutex mock_lock;
 static xos_file_response pending;
 static bool has_pending;
 static unsigned int last_sequence, sends, opens, closes, pipe_closes;
+static unsigned int reply_waits, reply_sleeps;
+static xos_u64 reply_deadline;
 static unsigned int last_stat_flags;
 static long now_ns = 100;
 static const char* failure;
@@ -202,7 +205,21 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
         if (failure_armed && !std::strcmp(failure, "clock_failure")) return -5;
         if (failure_armed && !std::strcmp(failure, "late_reply")) now_ns += 5000000001L;
         return now_ns++;
-    case 47: now_ns = static_cast<long>(first); return 0;
+    case 47:
+        ++reply_sleeps;
+        now_ns = static_cast<long>(first);
+        return 0;
+    case xos::sys_ipc_wait:
+        assert(failure != nullptr && failure_armed);
+        assert(first == 101 && second == static_cast<xos_u64>(xos::ipc_wait_mode::file_reply_until));
+        assert(third > static_cast<xos_u64>(now_ns));
+        if (reply_waits++ == 0) reply_deadline = third;
+        else assert(third == reply_deadline);
+        if (!std::strcmp(failure, "wait_timeout")) return xos::thread_error_timeout;
+        if (!std::strcmp(failure, "wait_death")) return xos::pipe_error_broken;
+        if (!std::strcmp(failure, "wait_interrupted")) return -EINTR;
+        if (!std::strcmp(failure, "wait_at_deadline")) now_ns = static_cast<long>(third);
+        return !std::strcmp(failure, "timeout") || !std::strcmp(failure, "wait_legacy") ? -2 : 0;
     case 4:
         assert(first == 100 && third == sizeof(xos_file_request));
         if (failure_armed && !std::strcmp(failure, "send_failure")) return -1;
@@ -212,9 +229,12 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
         assert(first == 101 && third == sizeof(pending));
         if (failure_armed && !std::strcmp(failure, "timeout")) return -3;
         if (failure_armed && !std::strcmp(failure, "service_death")) return -1;
+        if (failure_armed && !std::strncmp(failure, "wait_", 5) &&
+            reply_waits < (!std::strcmp(failure, "wait_spurious") ? 2U : 1U)) return -3;
         if (!has_pending) return -3;
         if (failure_armed) {
             if (!std::strcmp(failure, "wrong_sequence")) ++pending.request_id;
+            if (!std::strcmp(failure, "wait_duplicate")) --pending.request_id;
             if (!std::strcmp(failure, "bad_magic")) pending.magic = 0;
             if (!std::strcmp(failure, "bad_version")) pending.version = 3;
             if (!std::strcmp(failure, "overread")) pending.length = 3799;
@@ -614,7 +634,8 @@ static void error_case(const char* scenario) {
     long result;
     if (!std::strcmp(scenario, "metadata")) { struct stat st{}; result = __xos_file_stat(fd, nullptr, &st); }
     else result = __xos_file_write(fd, "x", 1);
-    const bool timeout = !std::strcmp(scenario, "timeout") || !std::strcmp(scenario, "late_reply");
+    const bool timeout = !std::strcmp(scenario, "timeout") || !std::strcmp(scenario, "late_reply") ||
+        !std::strcmp(scenario, "wait_timeout") || !std::strcmp(scenario, "wait_at_deadline");
     assert(result == (timeout ? -ETIMEDOUT : -EIO));
     const unsigned int sent = sends;
     failure_armed = false;
@@ -622,6 +643,18 @@ static void error_case(const char* scenario) {
     assert(__xos_file_close(fd) == -EIO && sends == sent);
     assert(__xos_file_close(fd) == -EBADF);
     assert(content_size <= 1);
+    if (!std::strncmp(scenario, "wait_", 5)) assert(reply_waits == 1 && reply_sleeps == 0);
+}
+
+static void reply_ready(const char* scenario, unsigned int waits, unsigned int sleeps) {
+    failure = scenario;
+    const long fd = __xos_file_open("/fixture", O_RDWR);
+    assert(fd == 3);
+    failure_armed = true;
+    assert(__xos_file_write(3, "x", 1) == 1);
+    assert(reply_waits == waits && reply_sleeps == sleeps && sends == 2);
+    failure_armed = false;
+    assert(__xos_file_close(3) == 0);
 }
 
 static void access_legacy_stat() {
@@ -651,6 +684,9 @@ int main(int argc, char** argv) {
     else if (!std::strncmp(argv[1], "block_", 6)) block_bench(argv[1]);
     else if (!std::strncmp(argv[1], "anonymous_", 10)) anonymous_exchange(argv[1]);
     else if (!std::strncmp(argv[1], "directory_", 10)) directory_exchange(argv[1]);
+    else if (!std::strcmp(argv[1], "wait_ready")) reply_ready(argv[1], 1, 0);
+    else if (!std::strcmp(argv[1], "wait_spurious")) reply_ready(argv[1], 2, 0);
+    else if (!std::strcmp(argv[1], "wait_legacy")) reply_ready(argv[1], 1, 1);
     else error_case(argv[1]);
     std::printf("PASS %s\n", argv[1]);
 }

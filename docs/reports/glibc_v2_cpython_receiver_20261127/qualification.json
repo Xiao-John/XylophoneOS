@@ -1,0 +1,56 @@
+{
+  "environment": {
+    "host_python": "readonly prebuilt 3.14.9",
+    "host_python_sha256": "c8d13e341393ca85bc56a2daa8d87605106927ec87ef6f5de900d3ea8073a2ea",
+    "max_cpus": 2,
+    "network": "none",
+    "post_run_tmpfs_used_mib": 451,
+    "tmpfs_limit_mib": 880
+  },
+  "frozen_cli_receipt_sha256": "9e7e71511ac30153b1dfb4d4b8c793d4747cc3f97be305c9c29dfbff32a44540",
+  "frozen_compiler_time_utc": "2026-11-27T06:06:10Z",
+  "frozen_xpk_sha256": "9cdd6e6e4566c72c028906e18a0cf30165de769265f687e7c990c14dcd82e476",
+  "initial_unpinned_result": {
+    "debug_elf_sha256": "1f86bd40243151078e300b5b1ad0efbe74a66145c88d22c12ad304fef37fec9b",
+    "runtime_elf_sha256": "f83a13d435abddad5213d9c37f613467d6b54d8c20f27f77f4c99d300030076c",
+    "runtime_loaded_image_equal": false,
+    "xpk_sha256": "bc2d96c2e3b66cd0773db3567596c14aacb7a277f276e77c56364a2eba26dcdc"
+  },
+  "make_log_order": {
+    "frozen_lines": 372,
+    "rebuilt_lines": 372,
+    "same_multiset": true,
+    "same_order": false
+  },
+  "materials_archive_sha256": "8fa939425e2d7ae9716ab71e29889a3de7c6cd88975e75cf56ea1221c8320e93",
+  "materials_manifest_sha256": "80048e009ea761149f8e416f35502891d20fdec737dedffcb24adcfd8df47f01",
+  "not_run": [
+    "guest_boot_of_receiver_build",
+    "host_build_python_from_source"
+  ],
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "rebuilt_xpk_sha256": "14829518764198238cfd2fc1c11f55541c8e7f59087fe08f8e2cc5050f6f06a5",
+  "release_manifest_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+  "replayed_cli_receipt_sha256": "317ec267c75b262057739e466844a26b90732b3f70be24d7ec74c1c4b06c015e",
+  "reproduced": {
+    "cpython_full_elf_sha256": "bde479d98782affbe2eb9013a21a4485893a89deb92385a01ff947df195497ad",
+    "cpython_shipped_elf_sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16",
+    "cpython_stdlib_members": 558,
+    "libz_members": 15,
+    "libz_sha256": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8",
+    "zlib_headers": {
+      "zconf.h": "0718a11beb3295b345fb29a63b44b654b282d82c4cd0513f6225587f2b29b8bb",
+      "zlib.h": "818667d6ab6a37fe7469cb06a7f0cb2c2cb2f2c948a03e5accf1a4a74bf3020a"
+    },
+    "zlib_receipt_sha256": "b856c82b3398615673528f21b3330b7673870195407f532a1947e54efcb5e0cb"
+  },
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "source_base": "cf828683da20b6b3cd59c2c51fbf86c9e0687541",
+  "source_date_epoch": 1795759570,
+  "status": "payload_byte_equal_package_receipt_order_differs",
+  "unpinned_elf_difference_resolved": true,
+  "xpk_tar_entries_with_differences": [
+    "manifest.json",
+    "payload/usr/share/xos.cpython/build_receipt.json"
+  ]
+}

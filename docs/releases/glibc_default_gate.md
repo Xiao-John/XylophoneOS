@@ -37,9 +37,11 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 断网接收方核对 135 项输入，并从补充材料重建 13 个每日工具 ELF 和 IDNA XPK。
 安装器 Dash 也从该归档重建，产物与冻结 ISO 内的实际 Dash 成员逐字节一致。
 同一 ISO 在普通 QEMU 的空白盘上完成安装并运行外部 ELF。
-接收方完整重编 CPython/zlib 仍待验收。
+接收方逐字节重建 zlib 静态库、CPython 解释器和标准库。新建 CPython XPK 的回执
+仍受并行构建日志次序影响，冻结 XPK 的整包摘要未复现。
 [v2 组件对应材料](../work_log/9c747f60_glibc_v2_component_sources.md)
 [安装器 Dash 接收复验](../work_log/b0a92aab_glibc_v2_dash_receiver.md)
+[CPython/zlib 接收复验](../work_log/cf828683_glibc_v2_cpython_receiver.md)
 
 冻结 v2 清单包含 `images.tar.gz`、`application-sdk.tar.gz`、`packages.tar.gz` 和
 `gnu-seed-sources.tar.gz`。这次验证的组件源码补充与 xypm 重链接材料单独留存。

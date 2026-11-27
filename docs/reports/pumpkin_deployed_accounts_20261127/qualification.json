@@ -1,0 +1,372 @@
+{
+  "status": "passed_subset",
+  "base_main": "0227427aa8ece0d829f93fab61f5900d38e7480a",
+  "test_source_commit": "85e7a877cd56d3dc3ef1e7f5157f7d71fd650e9d",
+  "test_source_tree": "7d0be1f22425b5c7a71ad5d6eeaeeb91cc76190f",
+  "publication": "Derived summary with raw report digests. Proof output retains the source reports privately.",
+  "container": {
+    "architecture": "arm64",
+    "image_config": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450",
+    "network": "none"
+  },
+  "filesystems": {
+    "guest": "ext4",
+    "provider": "ext4",
+    "distinct_mounts": true
+  },
+  "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "named": {
+    "build_id": "fbe70625e73497ca",
+    "source_sha256": "fbe70625e73497cabeba1308450ce13c04eb5c585f23421b80971c9ec7caeea4",
+    "original_report_sha256": "9d58fb487cc1a24febd978cd8b8b12d98b664ba5f47c02abeae91a8eeb5afae4",
+    "system_manifest_sha256": "226c6e4d2b2520428cec3f159ffc0c96ff35249223c8630af52fa257c2efeecb",
+    "sdk_manifest_sha256": "5d09e5d96dd7d17c657cb402824f602b80fe9672493c4e818f8cce0d66025a47",
+    "iso_sha256": "b67dfd6cf134880fb2557c8446a244df5c8cbc2de43b76b1a54fdecf865c2df0",
+    "runner_sha256": "f653deeba5e3e94b08f5401fa35a54b9631bbc6ec6514fe8010f03125a911893",
+    "operator_sha256": "5f18a6f2c1abfe177b8e22ed987e037e3e167160f0fcfaae4a2c01aa3eee9ec5",
+    "provider_sha256": "09e500629afe7d5f881b5444f51dfde7cf4d3c83af203a74530281065393d5b6",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "toolchain": {
+      "target": "x86_64-elf",
+      "gcc": "16.2.0",
+      "binutils_release": "2.47",
+      "binutils": "2.47.20260726",
+      "nasm": "3.02",
+      "qemu": "11.1.2",
+      "cpp_standard": "c++20"
+    },
+    "named_resources": true,
+    "multiple_accounts": true,
+    "checks": [
+      {
+        "case": "verified launch medium is sealed"
+      },
+      {
+        "case": "deployment cannot fall back to a local provider",
+        "exit": 1
+      },
+      {
+        "case": "deployment rejects a missing provider",
+        "exit": 1
+      },
+      {
+        "case": "provider cannot start before independent provisioning",
+        "exit": 1
+      },
+      {
+        "case": "operator cannot provision the generation provider",
+        "exit": 1
+      },
+      {
+        "case": "separate Linux UID provisions an empty generation",
+        "exit": 0
+      },
+      {
+        "case": "operator cannot open the provider store directly",
+        "exit": 1
+      },
+      {
+        "case": "provider refuses a different peer UID on the same socket group",
+        "exit": 0
+      },
+      {
+        "case": "launcher refuses a peer outside the pinned provider UID",
+        "exit": 1
+      },
+      {
+        "case": "operator installs against the independently prepared provider",
+        "exit": 0
+      },
+      {
+        "case": "non-operator cannot request first issuance",
+        "exit": 1
+      },
+      {
+        "case": "different sealed image binding is rejected",
+        "exit": 1
+      },
+      {
+        "case": "profile digest mismatch is rejected",
+        "exit": 1
+      },
+      {
+        "case": "real guest issues the first credential",
+        "exit": 0
+      },
+      {
+        "case": "first issuance cannot be repeated",
+        "exit": 1
+      },
+      {
+        "case": "normal login is denied while the provider is unavailable",
+        "exit": 1
+      },
+      {
+        "case": "fresh VM and provider process confirm ordinary login",
+        "exit": 0
+      },
+      {
+        "case": "restoring the unprovisioned guest disk is refused",
+        "exit": 1,
+        "revision": 2
+      },
+      {
+        "case": "current disk still establishes a real ordinary session",
+        "exit": 0
+      },
+      {
+        "case": "owner starts without a named resource",
+        "exit": 4,
+        "result": "Pumpkin named resource read denied",
+        "revision": 2
+      },
+      {
+        "case": "registrar commits the first named resource",
+        "exit": 0,
+        "result": "Pumpkin named resource generation 3 confirmed",
+        "revision": 3
+      },
+      {
+        "case": "committed resource survives provider process kill",
+        "revision": 3
+      },
+      {
+        "case": "stale socket has no provider after process exit",
+        "exit": 1
+      },
+      {
+        "case": "restarted provider and fresh VM recover owner and data",
+        "exit": 0,
+        "result": "Pumpkin named resource generation 3 value 293",
+        "revision": 3
+      },
+      {
+        "case": "registrar commits replacement under the same name",
+        "exit": 0,
+        "result": "Pumpkin named resource generation 4 confirmed",
+        "revision": 4
+      },
+      {
+        "case": "restoring the superseded resource disk is refused",
+        "exit": 1,
+        "revision": 4
+      },
+      {
+        "case": "fresh VM rejects the old resource key",
+        "exit": 4,
+        "result": "Pumpkin named resource read denied",
+        "revision": 4
+      },
+      {
+        "case": "restored current disk recovers the replacement",
+        "exit": 0,
+        "result": "Pumpkin named resource generation 4 value 719",
+        "revision": 4
+      },
+      {
+        "case": "stale erase preserves the replacement",
+        "exit": 5,
+        "result": "Pumpkin named resource generation conflict",
+        "revision": 4
+      },
+      {
+        "case": "registrar commits deletion of the current key",
+        "exit": 0,
+        "result": "Pumpkin named resource generation 4 confirmed",
+        "revision": 5
+      },
+      {
+        "case": "fresh provider and VM recover the committed deletion",
+        "exit": 4,
+        "result": "Pumpkin named resource read denied",
+        "revision": 5
+      },
+      {
+        "case": "ordinary credential survives named resource deletion",
+        "exit": 0
+      },
+      {
+        "case": "registrar issues an independent second account",
+        "exit": 0,
+        "revision": 6
+      },
+      {
+        "case": "duplicate second account leaves the generation and wallet unchanged",
+        "exit": 1
+      },
+      {
+        "case": "second account authenticates and logs out in a fresh VM",
+        "exit": 0
+      },
+      {
+        "case": "first wallet cannot authenticate as the second account",
+        "exit": 1
+      },
+      {
+        "case": "registrar publishes for the second account",
+        "exit": 0,
+        "result": "Pumpkin named resource generation 7 confirmed",
+        "revision": 7
+      },
+      {
+        "case": "first account has no authority over the second owner's object",
+        "exit": 4,
+        "result": "Pumpkin named resource read denied",
+        "revision": 7
+      },
+      {
+        "case": "second owner can read the published object",
+        "exit": 0,
+        "result": "Pumpkin named resource generation 7 value 831",
+        "revision": 7
+      },
+      {
+        "case": "registrar revokes the first account alone",
+        "exit": 0,
+        "revision": 8
+      },
+      {
+        "case": "restarted provider and VM reject the revoked first wallet",
+        "exit": 3,
+        "result": "Pumpkin login denied"
+      },
+      {
+        "case": "revoked first wallet cannot establish a resource session",
+        "exit": 3,
+        "result": "Pumpkin login denied",
+        "revision": 8
+      },
+      {
+        "case": "second owner reads the same object after the other revocation",
+        "exit": 0,
+        "result": "Pumpkin named resource generation 7 value 831",
+        "revision": 8
+      },
+      {
+        "case": "second account still authenticates and logs out after provider restart",
+        "exit": 0
+      }
+    ]
+  },
+  "headless": {
+    "build_id": "71e4bd946dd9e2e1",
+    "source_sha256": "71e4bd946dd9e2e12af4afc675869e59ee1d810baf7611fa491e4db77dbdb870",
+    "original_report_sha256": "8c5bcb944a2e1eccc503aad8fb04caccb51cad824c805e211348c0a439d2a0f3",
+    "system_manifest_sha256": "ccc95320ca4015a8545a01bea54e09d516af9a371f3849d43009a4a1ceac7f99",
+    "sdk_manifest_sha256": "11bca83db5c516506f1a883cb49c266076ce9b3e10a314b787a71e3c227c18be",
+    "iso_sha256": "daf48c48168bd2078f8e16d856dfa246b5d78d1ea4c56045f0a8afe7542dcd8e",
+    "runner_sha256": "f653deeba5e3e94b08f5401fa35a54b9631bbc6ec6514fe8010f03125a911893",
+    "operator_sha256": "5f18a6f2c1abfe177b8e22ed987e037e3e167160f0fcfaae4a2c01aa3eee9ec5",
+    "provider_sha256": "09e500629afe7d5f881b5444f51dfde7cf4d3c83af203a74530281065393d5b6",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "toolchain": {
+      "target": "x86_64-elf",
+      "gcc": "16.2.0",
+      "binutils_release": "2.47",
+      "binutils": "2.47.20260726",
+      "nasm": "3.02",
+      "qemu": "11.1.2",
+      "cpp_standard": "c++20"
+    },
+    "named_resources": false,
+    "multiple_accounts": false,
+    "checks": [
+      {
+        "case": "verified launch medium is sealed"
+      },
+      {
+        "case": "deployment cannot fall back to a local provider",
+        "exit": 1
+      },
+      {
+        "case": "deployment rejects a missing provider",
+        "exit": 1
+      },
+      {
+        "case": "provider cannot start before independent provisioning",
+        "exit": 1
+      },
+      {
+        "case": "operator cannot provision the generation provider",
+        "exit": 1
+      },
+      {
+        "case": "separate Linux UID provisions an empty generation",
+        "exit": 0
+      },
+      {
+        "case": "operator cannot open the provider store directly",
+        "exit": 1
+      },
+      {
+        "case": "provider refuses a different peer UID on the same socket group",
+        "exit": 0
+      },
+      {
+        "case": "launcher refuses a peer outside the pinned provider UID",
+        "exit": 1
+      },
+      {
+        "case": "operator installs against the independently prepared provider",
+        "exit": 0
+      },
+      {
+        "case": "non-operator cannot request first issuance",
+        "exit": 1
+      },
+      {
+        "case": "different sealed image binding is rejected",
+        "exit": 1
+      },
+      {
+        "case": "profile digest mismatch is rejected",
+        "exit": 1
+      },
+      {
+        "case": "real guest issues the first credential",
+        "exit": 0
+      },
+      {
+        "case": "first issuance cannot be repeated",
+        "exit": 1
+      },
+      {
+        "case": "normal login is denied while the provider is unavailable",
+        "exit": 1
+      },
+      {
+        "case": "fresh VM and provider process confirm ordinary login",
+        "exit": 0
+      },
+      {
+        "case": "restoring the unprovisioned guest disk is refused",
+        "exit": 1,
+        "revision": 2
+      },
+      {
+        "case": "current disk still establishes a real ordinary session",
+        "exit": 0
+      }
+    ]
+  },
+  "host_generation": {
+    "status": "passed",
+    "original_log_sha256": "6602024f115449df5afc133c9ddccd3b1d36eccb02d45415dad6257fb201b2ff"
+  },
+  "abi_consistency": {
+    "status": "passed",
+    "original_log_sha256": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301"
+  },
+  "license_audit": {
+    "status": "passed",
+    "checks": 10,
+    "original_log_sha256": "abdcaae695849625c6d6940d347d5541d50df75c8d84382ca4f9ade09bd1bcf6"
+  },
+  "first_attempt": {
+    "status": "failed",
+    "system_build_id": "2ba0a3070e1d8753",
+    "original_report_sha256": "087a211c00a3d22e0691c6d9353baf303f7ed85cd123aabb66befe375a5d6ede",
+    "first_failing_step": "restarted provider and fresh VM recover owner and data",
+    "diagnostic": "Host OSError in the temporary-directory scope after the two full-size disk copies. The test reuses the existing sparse byte-verified disk snapshot routine."
+  }
+}

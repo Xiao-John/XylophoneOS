@@ -1,0 +1,19 @@
+{
+  "bundle": {
+    "bytes": 15913256,
+    "sha256": "b6dbfb53c486f675f47e72374916414cdc7bda1b7b11d8a14e7641056a6d9743"
+  },
+  "dash": {
+    "bundle_offset": 272,
+    "bytes": 3315096,
+    "sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a"
+  },
+  "dash_build_receipt_sha256": "870eb4afbe0234291eea3f73824ecc7147a8a1cce0b8f9c90be0a392023adf6e",
+  "frozen_dash_build_receipt_sha256": "870eb4afbe0234291eea3f73824ecc7147a8a1cce0b8f9c90be0a392023adf6e",
+  "input_hashes_matched": 1837,
+  "iso_sha256": "199dca96204f70be9adc09e02e0959dce7e8c5eeb40b2597b8e7aad5e82a874d",
+  "release_manifest_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "status": "byte_identical"
+}

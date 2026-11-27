@@ -176,6 +176,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 | net 服务协议 | v1 information/transmit/receive/stop，raw Ethernet 1514 字节 | 用户态 VirtIO-net。[纵切契约](net_user_driver.md)记录 ARP、IRQ 与 reset 的限定客体验收 |
 | net2 服务协议 | v2 64字节header，1024字节payload，operations1–9，原生TCP/UDP连接与认证多会话 | 网络用户态线。[v2 契约](net_service_v2.md)与[多应用复验](../work_log/69b0e274_network_guest_readiness_and_window.md)登记已验范围。v1 诊断显式隔离，沿用既有 syscall |
 | net2 N4 预览扩展 | v2 可选 operations10–14，配置快照 48 字节、写配置 16 字节、直接 A 结果 24 字节，错误 -211 至 -217 | 仅显式构建并经受信 controller 启用。客户端先询问 configuration，旧镜像可返回 unsupported。保留 operations1–9。[N4 线格式](network_n4_v1_proposal.md#21-n4-静态解析预览线格式) |
+| net2 TCP 扩展 | v2 可选 operations15–17：capabilities 16 字节、readiness 32 字节、shutdown_write 空负载 | [TCP readiness 和半关闭](net_service_v2.md#tcp-readiness-和写半关闭扩展)。先查询 capability，旧服务 unsupported 保留原阻塞传输；不改变地址授权，不包含事件订阅 |
 
 2026-11-12 用户授权将本轮实现交付与 guest 资格分开：sys88 actions 19–23 沿用 PR #112 公开 grant
 create/delegate/map/unmap/close（delegate 保持同值句柄），supported mask `0x1f` 表示可调用机制；SDK manifest

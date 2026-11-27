@@ -24,6 +24,11 @@ installed independently of the system build.
   tickets, early data and the bundled server and socket adapters are disabled.
   X.509 uses Mbed TLS's built-in textual IP parser. The SDK headers expose
   address families without implementing libc `inet_pton`.
+- `verified_peer_leaf_der()` exposes the authenticated leaf in DER form
+  while the stream is verified. The bytes belong to the stream. Consumers
+  that retain certificate metadata must copy them before the next stream call.
+  The view is empty before authentication, after a fatal stream error, and
+  after a successful `finish()`.
 - The TF-PSA-Crypto DRBG is seeded and periodically reseeded by the upstream
   entropy-driver interface. Its XOS adapter reads the requested bytes through
   glibc `getrandom(..., 0)` and fails on an incomplete result. The kernel's
@@ -69,7 +74,8 @@ Use fresh output directories and disposable local certificates. The guest
 runner binds the system, native headers, probe build receipt, program ELF,
 and test trust anchor before boot. The client targets each test listener
 through QEMU's loopback gateway. The peers verify SNI, fresh HTTPS data and
-both directions of TLS closure, and confirm that certificate
-rejections send no application request. Another VM disables RDRAND and checks
+both directions of TLS closure. On authenticated handshakes the test compares
+the guest's leaf digest with the server's actual DER certificate. Certificate
+rejections expose no verified leaf and send no application request. Another VM disables RDRAND and checks
 that the same program exits before `main`. The private test certificate keys
 stay in the host fixture directory.

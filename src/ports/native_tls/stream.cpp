@@ -99,6 +99,13 @@ int stream::connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
     return 0;
 }
 
+peer_certificate_view stream::verified_peer_leaf_der() const {
+    if (!verified_) return {};
+    const auto* certificate = mbedtls_ssl_get_peer_cert(&ssl_);
+    if (!certificate || !certificate->raw.p || !certificate->raw.len) return {};
+    return { certificate->raw.p, certificate->raw.len };
+}
+
 int stream::write(const unsigned char* data, size_t size) {
     if (!verified_ || peer_closed_ || !data || !size) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     const int count = mbedtls_ssl_write(&ssl_, data, size);

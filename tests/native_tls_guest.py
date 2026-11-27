@@ -193,10 +193,13 @@ def exchange(guest, pid, scenario, certificates):
         raise AssertionError("Guest clock diverges from the trusted developer host")
     if server.get("sni") != name:
         raise AssertionError(f"{scenario}: TLS SNI mismatch")
+    peer_leaf = re.findall(rb"NATIVE_TLS_PEER_LEAF_SHA256 ([0-9a-f]{64})\r?\n", output)
     if scenario in CERT_DENIALS:
         required = f"NATIVE_TLS_REJECT scenario={scenario} flags=0x".encode()
         if required not in output or server["application_request"] or "handshake_alert" not in server:
             raise AssertionError(f"{scenario}: missing authenticated certificate refusal")
+        if peer_leaf:
+            raise AssertionError(f"{scenario}: rejected certificate was exposed as verified")
     else:
         required = (b"NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified" if scenario == "valid"
                     else b"NATIVE_TLS_REJECT scenario=truncated")
@@ -204,6 +207,11 @@ def exchange(guest, pid, scenario, certificates):
             raise AssertionError(f"{scenario}: HTTPS result differs from the TLS peer")
         if scenario == "valid" and not server.get("client_close_notify"):
             raise AssertionError("Peer did not receive the client's TLS close_notify")
+        leaf_der = ssl.PEM_cert_to_DER_cert((certificates / "valid.pem").read_text())
+        expected_leaf = sha256(leaf_der).hexdigest()
+        if peer_leaf != [expected_leaf.encode()]:
+            raise AssertionError(f"{scenario}: verified leaf differs from the TLS peer")
+        server["verified_leaf_der_sha256"] = expected_leaf
     marker = re.search(rb"NATIVE_TLS_(?:HTTPS|REJECT) .*", output)[0].decode().strip()
     return {"scenario": scenario, "guest": marker, "guest_realtime": guest_wall,
             "host_realtime_window": [before, after],

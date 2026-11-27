@@ -16,6 +16,38 @@
     {
       "path": "page/shared_memory_xos.patch",
       "sha256": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98"
+    },
+    {
+      "path": "page/network_byte_order.patch",
+      "sha256": "390a437a162620e0f391aec7a5b009bc4fe5a8d3b1c90730287f699238954491"
+    },
+    {
+      "path": "page/network_address_values.patch",
+      "sha256": "c472469123e3ecf5f797c44f53a0cef73d076cc11a2fd9f6a6897478c6bb5f93"
+    },
+    {
+      "path": "page/native_dns_queue.patch",
+      "sha256": "2c88a3a9ccf1a0582d4389d31bf4b83e8691dcb730d5bf51a87ce116c9717f6f"
+    },
+    {
+      "path": "page/font_and_bitstream_formats.patch",
+      "sha256": "9e2cecd7698b3db3aba1bb4422d1e2b964f0117546b73df48b31ef93c2cfadae"
+    },
+    {
+      "path": "page/openssl_crypto_backend.patch",
+      "sha256": "cbbbc0e9389cc849e1dc78096a2d405dd374fc4266b91c152e6864f6a4719168"
+    },
+    {
+      "path": "page/image_decoders.patch",
+      "sha256": "f94ae404e6b539ecc08e00a0ee51e519bd9871b8f1c34677bba6d709791402bb"
+    },
+    {
+      "path": "page/response_metadata.patch",
+      "sha256": "2dcfebb931deae5dd50121d1aaa00cb266cd6e2c28b8ce1b2e096051bb4eb28e"
+    },
+    {
+      "path": "page/jsc_repatch_includes.patch",
+      "sha256": "9bb2b6ee3f0008bd930ae06fdd6d25fbb511dbb6a64cf52decf35ea2337a68e9"
     }
   ]
 }

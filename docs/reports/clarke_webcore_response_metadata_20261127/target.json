@@ -1,0 +1,31 @@
+{
+  "app_rebuilt_matches_both_guest_elfs": true,
+  "cmake_compile_commands_sha256": "73254456d44ba4c657221b0574f83f19a6450787aea0500c412f2f79595ba283",
+  "libbmalloc_sha256": "56e0f9d6477b62a2a12a48208e6b928c878947aa4a601c82e37eefebaa1017e9",
+  "libcrypto_sha256": "fe56168dc410d7daa2dca4a79c7396d14a7ebd6d85eaa8d380c3979be1cb8503",
+  "libwtf_sha256": "3c53b5f0494f4e65da64147a0328af99f39cb6c716a2d9c0e9d4f93d403deddd",
+  "locked_patch_count": 28,
+  "objects": {
+    "AuthenticationChallengeBase.cpp": "bb8056ad710db81987061bcaa75f868536cbba9f0631b2551ead69a7f69ad5e3",
+    "CertificateInfoXOS.cpp": "89b879ad571199da54e969f1c627c741d9b5e324ea2b58a6b36cc4a4b4ad10d3",
+    "CredentialBase.cpp": "0d2dcaabbd50b4e6a1519bf25e42fe2f640991e6e52cc612b717445a0d83cd11",
+    "HTTPHeaderMap.cpp": "f28b3fe0c6eb0ca1d88d2ff970af9fc4ae5ace28c7474232d0391e442dd8f671",
+    "ProtectionSpaceBase.cpp": "99ae2e6dbb5aa7ff126161a903f0bdad4ccd74a0d35f57ff4e90d6af805c763a",
+    "ResourceErrorBase.cpp": "2ddcfa42c9f07b5ba2dd6035d135b5c7508b77e91255bb9fd3444ff78532210c",
+    "ResourceResponseBase.cpp": "1feccd4ce7b27089a3ce2cfb45bd7a712e24dd8b8b3547bb0edcb6f3eb4088ce",
+    "UnifiedSource-inspector-25.cpp": "bddaff2cbbf63b83de298881a0d64739e0cc9ded58bca4f8a7a12073c4e2716c",
+    "UnifiedSource-loader-27.cpp": "8091b7160e4667790b4fe314a29d952ae708a64be2647c0bb13eb850eb5c25d3",
+    "UnifiedSource-platform-260.cpp": "bdc666673e96bbb0ab5201febba5b59876eedd1002b9816d6d5fd31b7aae5566",
+    "UnifiedSource-platform-53.cpp": "61f2a4e4c38957f3a514981b318d0da1fa2a2b9255f08d7b3a37aba8fc20c713",
+    "authentication_challenge.cpp": "5f7c55a9d06dc12f1bc306120a7a5f5f0072ef29639b0ce5844fdaac5f7a8209",
+    "certificate_summary.cpp": "52471a28148ef4bfc02b152906ece48a44df3e7a34d4fcfaa65fa18cabab5629"
+  },
+  "page_patch_sha256": "2dcfebb931deae5dd50121d1aaa00cb266cd6e2c28b8ce1b2e096051bb4eb28e",
+  "page_source_lock_sha256": "e07f7f88bcdb6daf3536ad595efef0df67e6b4f1a0f3032fb39310c02bce5797",
+  "prepared_source_sha256": "65a6ce0626a3a244e3b03163a774d3abf73979f2d348cc9de7a71ce4a9c22739",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "source_commit": "93a2d9d886471c1353afc1841c2e7b69ceb716d3",
+  "status": "native_metadata_objects_linked_subset",
+  "webcore_command_count": 2205
+}

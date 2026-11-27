@@ -1,0 +1,21 @@
+{
+  "elf_sha256": "48e4ff29e0307080ccd1f2c76fa11fee4026ca96619ff8b685bd4c4b17332184",
+  "fixture_sha256": "60fc4f1c6deabe01cf400d16b384b059c602cc290195e680ff836b5cc0262cf5",
+  "image_sha256": "a31e6f37b4110cf9acec4112dad4be2267e538af0684cb1b949a5c0534dbc3b9",
+  "marker": "XOS_WEBKIT_CERTIFICATE_OK subject validity dns ipv4 ipv6 invalid_der",
+  "resources_after": [
+    129709,
+    3,
+    1
+  ],
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "serial_sha256": "fd20d794250f46b942965ac29a6bbcd1daed90d4a90fb0f122e5d514df1af139",
+  "source_commit": "9dccbf3fd3fdab599320389d9b89be67c72f9e08",
+  "status": "passed_subset",
+  "system_build_id": "1958db24f4ad591d",
+  "system_manifest_sha256": "0a2bda70f7108476bb9902b93301eebb399f04c045a463e3973aab90bded0a93"
+}

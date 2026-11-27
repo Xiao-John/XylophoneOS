@@ -1,0 +1,31 @@
+{
+  "address_fixture_build_manifest_sha256": "1b5be1ebfcc08d60e3023b859d8aabb58ff239eca82a7a60d07c0f8b188d3f43",
+  "compile_commands_sha256": "b98534683c324b729fe56114aed580ca2974440f790a75326915ca772e44f725",
+  "compiler_sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+  "gnu_patch_replay_log_sha256": "5682f7964fb93611790f1a59df2c7f04b79c20d640265333eca9bc4888da089c",
+  "network_address_patch_sha256": "c472469123e3ecf5f797c44f53a0cef73d076cc11a2fd9f6a6897478c6bb5f93",
+  "objects": {
+    "DNS.cpp": {
+      "command_sha256": "ea0769f01dcc4a2ee004e19e8b33fd38a963d6216252d30b470f75a5e050099e",
+      "object_sha256": "ea7144086bb44e3bfe33d36304cec38d24106dc870b8872602961592ce39ceb6"
+    },
+    "FrameLoader-group": {
+      "command_sha256": "30a47734f20617ab9d6daef3a991fa034d796dfb32b07fad249016d56d3bd785",
+      "object_sha256": "5ce860c4946d8788eb08a433b5f0dd3ea08b5516d02549e39c86334de80807e6"
+    }
+  },
+  "scope": "WebCore numeric address type, URL address policy, and FrameLoader compilation",
+  "software_lock_sha256": "4884206c3dcb60cc0da64921e0645be34293e9470250e9d9863054f80e98e85e",
+  "source_base": "1a57fb5cd08f15a66eb0c67e1120fa7b71b7c1b9",
+  "status": "objects_compiled_and_guest_subset_passed",
+  "webcore_fixture_archive_sha256": {
+    "libWTF.a": "3c53b5f0494f4e65da64147a0328af99f39cb6c716a2d9c0e9d4f93d403deddd",
+    "libbmalloc.a": "56e0f9d6477b62a2a12a48208e6b928c878947aa4a601c82e37eefebaa1017e9",
+    "libicudata.a": "0b5168e5c536398e4985e56bb6bf6a8a6ddabcd0886e8b81913debe6a80caf52",
+    "libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
+    "libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83"
+  },
+  "webcore_fixture_compile_args_sha256": "f5f626f14cf8ba9713ba68eee8dfb99e009047e0c5b41619ed248c86c8c13c0b",
+  "webcore_fixture_link_args_sha256": "49baf6b5a2303cba3874dc1e3e99dce081715391c74b75968f41733400ea2130",
+  "wpe_base_lock_sha256": "42998737edd5bb167921e58b3b58de1d336348e94dcf78c97c3c7718c96d7030"
+}

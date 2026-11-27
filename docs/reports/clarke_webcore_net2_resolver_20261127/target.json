@@ -1,0 +1,10 @@
+{
+  "compile_commands_sha256": "b98534683c324b729fe56114aed580ca2974440f790a75326915ca772e44f725",
+  "native_patch_sha256": "2c88a3a9ccf1a0582d4389d31bf4b83e8691dcb730d5bf51a87ce116c9717f6f",
+  "patch_replay_files": 6,
+  "software_source_lock_sha256": "8e525b5dea709db1754765fc8129fcbba866a5772a60acac2ebc35e747aaee92",
+  "status": "passed_subset",
+  "target_compiler_sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+  "target_sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "target_sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c"
+}

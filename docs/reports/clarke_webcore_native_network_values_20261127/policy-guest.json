@@ -1,0 +1,24 @@
+{
+  "build_id": "8863999ce1a57285",
+  "compressed_serial_sha256": "57c727f6f6d5c1a1de4379a25a2503fb4aadae64aba0c35522e801a9a192710d",
+  "elf_sha256": "c1e9f4a4689ca4c403e80dc2a9121d620c47d8bbee62e424944a6adc9c39b114",
+  "fixture_sha256": "87722db731f0e2eb5ab6639dc32901b03fd750bc1f1eb1867c307c58a79e9124",
+  "iso_sha256": "3f0a5a4552a4e646b886095d68f9535f630f3fba9cf536338da4c913d8474f55",
+  "marker": "XOS_WEBCORE_IP_POLICY_OK",
+  "observed_output": "exec-file /ip-policy.elf\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/ip-policy.elf\n[process] event=wait_blocked parent=7 child=10\r\nXOS_WEBCORE_IP_POLICY_OK\n[task] event=reclaimed pid=10 pages=8818\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "serial_sha256": "ddaf7321e0c2012a84813eef028abab5d3f10fb9478797c22e0135fb14f9c147",
+  "status": "passed_subset",
+  "system_manifest_sha256": "6483e898265ed8af4d10cf6e939efb34877d60f54160eac2069ab682e7110ff0"
+}

@@ -1,0 +1,10 @@
+{
+  "cause": "assembly placed release.json inside the previously sealed application SDK kit",
+  "check": "re-open assembled release",
+  "error": "release SDK differs from receipt",
+  "initial_release_receipt_sha256": "57ae0603f8897eaf5a818d250a4ffbe05bd365c5844fbaa4a9f6b3613bb7404c",
+  "raw_log_sha256": "faa1aec08ee7b373453350d3efcc69feb96e7ab7e97bc83549daeb1256104d19",
+  "resolution": "put the image receipt inside images only and reopen the byte-identical SDK kit",
+  "source_commit": "f4ef1ea1df2f8248076f6744e1556300bb78b79a",
+  "status": "failed_before_qemu"
+}

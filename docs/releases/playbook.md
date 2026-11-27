@@ -100,6 +100,27 @@ python3 "$preview/application-sdk/scripts/xos_app.py" \
 普通 ISO 的客体验收、存量应用迁移和发行默认 SDK 切换各自需要对应证据。
 [glibc 迁移计划](../plans/glibc_port_scout.md)
 
+### glibc 同 profile 发行候选组装
+
+冻结的候选构建须带安装 ISO 和普通 ISO 的客体验收，并绑定同一 C/C++ 应用 SDK。
+在该候选上组装已验证的 daily、带 zlib 的 CPython 和纯 Python IDNA。daily 默认
+取自安装 ISO 所用候选，显式传入的 XPK 也须匹配其摘要。额外的 wheel 仍须符合
+同一 profile；省略 wheel 可只组装 daily 和 CPython。
+
+```bash
+scripts/release_pipeline.sh package \
+  --glibc-candidate "$candidate" --glibc-app-kit "$kit" \
+  --cpython-package "$python_xpk" --wheel-package "$idna_xpk" \
+  --release-dir build/releases/glibc-composition
+scripts/release_pipeline.sh smoke \
+  --glibc-release build/releases/glibc-composition \
+  --output build/glibc-composition-smoke --foreign-package "$foreign_xpk"
+```
+
+组装使用新的发行目录，不修改候选、SDK、输入包或旧盘。任一预检或安装失败时
+不产出发行回执。冒烟在同一份可写盘副本上执行安装 ISO、普通 ISO 冷启动和回收。
+本入口用于显式 glibc 候选。默认发行继续依据原有发布门执行。
+
 ## 5. 冒烟与校验
 
 ```bash

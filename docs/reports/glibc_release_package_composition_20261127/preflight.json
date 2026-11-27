@@ -1,0 +1,19 @@
+{
+  "checks": {
+    "changed_stock_certificate": "glibc release assembly: candidate artifact differs: stock_guest/report.json",
+    "foreign_wheel": "glibc release assembly: package target profile mismatch: package='xos-x86_64-static-single-b2-v1' selected='xos-x86_64-glibc-unified-cxx-v1'; use config/package/xos_x86_64_static_single_b2_v1.json; local profiles are development-only and incompatible with a release image",
+    "historical_combined_path_guard": "daily and wheel packages use distinct profiles; migrate them before combining",
+    "historical_wheel_only_transaction": {
+      "files": 16,
+      "status": "verified"
+    },
+    "older_python_without_zlib": "glibc release assembly: release requires the verified CPython zlib XPK",
+    "optional_glibc_wheel": [
+      "cpython",
+      "daily"
+    ],
+    "other_same_profile_daily": "glibc release assembly: daily XPK differs from the qualified installer",
+    "private_second_install_failure": "committed private daily install discarded with entire staging"
+  },
+  "status": "passed"
+}

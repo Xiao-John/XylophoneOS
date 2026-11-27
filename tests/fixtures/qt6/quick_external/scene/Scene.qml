@@ -13,7 +13,7 @@ Rectangle {
     property bool confirmed: false
     state: selected ? "active" : ""
 
-    Palette { id: palette }
+    ScenePalette { id: palette }
 
     Text {
         x: 18

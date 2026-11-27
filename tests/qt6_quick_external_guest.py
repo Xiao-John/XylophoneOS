@@ -25,8 +25,8 @@ from xypm_sdk_profile import relative_file, sdk_snapshot
 PROJECT = ROOT / "tests/fixtures/qt6/quick_external"
 DEPLOYMENT = "/usr/share/quick-file"
 EXECUTABLE = "/bin/quick-file.elf"
-CASES = (("mint", "scene/Palette.qml", "35c29d", "f0a945"),
-         ("violet", "alternate/Palette.qml", "a070f0", "5dd6f5"))
+CASES = (("mint", "scene/ScenePalette.qml", "35c29d", "f0a945"),
+         ("violet", "alternate/ScenePalette.qml", "a070f0", "5dd6f5"))
 
 
 def boot_image(image, disk, output, tag, initial, active, result):
@@ -43,7 +43,10 @@ def boot_image(image, disk, output, tag, initial, active, result):
         result["with_graphics"] = resources(guest)
         start = len(guest.output)
         send_bytes(guest, f"exec-file {EXECUTABLE}\r".encode())
-        guest.expect(f"QT_QUICK_FILE_FRAME tag={tag}".encode(), start=start, timeout=120)
+        frame = f"QT_QUICK_FILE_FRAME tag={tag}".encode()
+        first = guest.expect_any((frame, b"kind=exited", b"kind=faulted", b"xsh> "),
+                                 start=start, timeout=120)
+        require(first == frame, "Quick application returned before its first frame")
         result["initial"] = scanout(guest, output / "initial.ppm", initial)
         stroke(guest, "a")
         guest.expect(f"QT_QUICK_FILE_STATE tag={tag} state=active".encode(), start=start)
@@ -61,6 +64,32 @@ def boot_image(image, disk, output, tag, initial, active, result):
     finally:
         guest.close()
         result["serial_sha256"] = digest(output / "quick_file_serial.log")
+
+
+def run_cases(image, elf, output, cases):
+    with TemporaryDirectory(prefix="xos_quick_file_") as temporary:
+        work = Path(temporary)
+        for tag, palette, initial, active in CASES:
+            disk = work / f"{tag}.img"
+            create_fat32(disk, 512)
+            deployed = {EXECUTABLE: elf, f"{DEPLOYMENT}/Scene.qml": PROJECT / "scene/Scene.qml",
+                        f"{DEPLOYMENT}/ScenePalette.qml": PROJECT / palette}
+            expected = {name: digest(path) for name, path in deployed.items()}
+            with Disk(disk, work) as mounted:
+                for folder in ("/bin", "/usr", "/usr/share", DEPLOYMENT):
+                    mounted.command("mkdir", folder)
+                for name, path in deployed.items():
+                    mounted.command("import", name, path)
+                readback = {name: digest(mounted.export(name)) for name in deployed}
+            require(readback == expected, "Loose QML or the executable changed during FAT deployment")
+            result = {"fat_files": readback, "colors": [initial, active]}
+            cases[tag] = result
+            case_output = output / tag
+            case_output.mkdir()
+            boot_image(image, disk, case_output, tag, initial, active, result)
+            with Disk(disk, work, read_only=True) as mounted:
+                require({name: digest(mounted.export(name)) for name in deployed} == expected,
+                        "Qt Quick changed a deployed file")
 
 
 def main():
@@ -96,29 +125,7 @@ def main():
               "target_receipt_sha256": digest(target_file), "system_build_id": system["build_id"],
               "system_manifest_sha256": digest(args.system / "manifest.json"), "iso_sha256": digest(image)}
     try:
-        with TemporaryDirectory(prefix="xos_quick_file_") as temporary:
-            work = Path(temporary)
-            for tag, palette, initial, active in CASES:
-                disk = work / f"{tag}.img"
-                create_fat32(disk, 512)
-                deployed = {EXECUTABLE: elf, f"{DEPLOYMENT}/Scene.qml": PROJECT / "scene/Scene.qml",
-                            f"{DEPLOYMENT}/Palette.qml": PROJECT / palette}
-                expected = {name: digest(path) for name, path in deployed.items()}
-                with Disk(disk, work) as mounted:
-                    for folder in ("/bin", "/usr", "/usr/share", DEPLOYMENT):
-                        mounted.command("mkdir", folder)
-                    for name, path in deployed.items():
-                        mounted.command("import", name, path)
-                    readback = {name: digest(mounted.export(name)) for name in deployed}
-                require(readback == expected, "Loose QML or the executable changed during FAT deployment")
-                result = {"fat_files": readback, "colors": [initial, active]}
-                report["cases"][tag] = result
-                case_output = output / tag
-                case_output.mkdir()
-                boot_image(image, disk, case_output, tag, initial, active, result)
-                with Disk(disk, work, read_only=True) as mounted:
-                    require({name: digest(mounted.export(name)) for name in deployed} == expected,
-                            "Qt Quick changed a deployed file")
+        run_cases(image, elf, output, report["cases"])
         report["status"] = "passed"
     finally:
         (output / "report.json").write_bytes(canonical(report))

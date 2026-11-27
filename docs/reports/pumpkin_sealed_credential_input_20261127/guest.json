@@ -1,0 +1,109 @@
+{
+  "checks": [
+    {
+      "case": "separate provider provisions the installation",
+      "exit": 0
+    },
+    {
+      "case": "operator prepares the bound installation",
+      "exit": 0
+    },
+    {
+      "case": "real guest issues the initial private wallet",
+      "exit": 0
+    },
+    {
+      "case": "sealed credential descriptor requires deployment",
+      "exit": 2
+    },
+    {
+      "case": "trusted digest without a deployment profile is rejected",
+      "exit": 2
+    },
+    {
+      "case": "same installation lock fences a sealed wallet",
+      "exit": 1
+    },
+    {
+      "case": "sealed wallet cannot bypass trusted profile digest",
+      "exit": 1
+    },
+    {
+      "case": "sealed inherited wallet authenticates after provider restart",
+      "exit": 0
+    },
+    {
+      "case": "real QEMU did not inherit the wallet descriptor"
+    },
+    {
+      "case": "separate provider cannot read the operator wallet",
+      "exit": 1
+    },
+    {
+      "case": "provider UID cannot invoke the operator login",
+      "exit": 1
+    },
+    {
+      "case": "enrollment rejects descriptor submission",
+      "exit": 2
+    },
+    {
+      "case": "credential descriptor is scoped to ordinary login",
+      "exit": 2
+    },
+    {
+      "case": "ordinary login requires an explicit credential",
+      "exit": 2
+    },
+    {
+      "case": "file and descriptor submission are mutually exclusive",
+      "exit": 2
+    },
+    {
+      "case": "mutable inherited wallet rejected",
+      "exit": 1
+    },
+    {
+      "case": "truncated inherited wallet rejected",
+      "exit": 1
+    },
+    {
+      "case": "named regular file cannot be substituted for a sealed wallet",
+      "exit": 1
+    },
+    {
+      "case": "unavailable inherited descriptor rejected before opening state",
+      "exit": 1
+    },
+    {
+      "case": "wallet for a different installation rejected",
+      "exit": 1
+    },
+    {
+      "case": "guest rejects a wrong key submitted through a sealed descriptor",
+      "exit": 3
+    },
+    {
+      "case": "original file input still authenticates and logs out",
+      "exit": 0
+    }
+  ],
+  "iso_sha256": "daf48c48168bd2078f8e16d856dfa246b5d78d1ea4c56045f0a8afe7542dcd8e",
+  "operator_entry_sha256": "2ed40472049b4b5866418d1d8fe1f97850b623228e1ace28f77a652e2db7e3a1",
+  "profile_sha256": "049ac5f97c93c62e118fbbcd4ebbf71dd4ac7dc5201f333ee401470fcf9bf12d",
+  "provider_entry_sha256": "09e500629afe7d5f881b5444f51dfde7cf4d3c83af203a74530281065393d5b6",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "roles": {
+    "operator_uid": 22101,
+    "provider_uid": 22102
+  },
+  "runner_sha256": "fe84fa31dd99daa3755093780676ee88f9e0d4ce6fabed390c90a462ef043f1b",
+  "status": "passed_subset",
+  "system_build_id": "71e4bd946dd9e2e1",
+  "system_manifest_sha256": "ccc95320ca4015a8545a01bea54e09d516af9a371f3849d43009a4a1ceac7f99",
+  "unchanged": [
+    "generation",
+    "guest_disk",
+    "wallet"
+  ]
+}

@@ -62,6 +62,15 @@ def main():
         "process_record* owned_process(u64 handle) {",
     )
     implementation = "\n".join(definition(source, value) for value in signatures if value in source)
+    timed_ipc = 'mode == ipc_wait_mode::receive_until' in source
+    if timed_ipc:
+        for declaration in ('enum class ipc_v1_call_state : u32', 'struct ipc_v1_call_record'):
+            records += definition(source, declaration).rstrip() + ';\n'
+        for signature in ('endpoint_record* endpoint_for(u64 handle) {',
+                          'process_record* task_by_pid(u64 pid) {',
+                          'void revoke_ipc_channel(u32 channel_id, i64 wake_result) {',
+                          'void expire_waiters() {'):
+            implementation += definition(source, signature)
     ipc_copy = "void copy_ipc_payload(void* destination, const void* source, u32 length) {"
     if ipc_copy in source:
         implementation = definition(source, ipc_copy) + implementation
@@ -80,6 +89,18 @@ void* wait_syscall(interrupt_frame* frame) {
     return frame;
 }
 """
+    if timed_ipc:
+        dispatch += """
+void* ipc_wait_syscall(interrupt_frame* frame) {
+    i64 result = process_error_invalid;
+    const u64 first = frame->rdi, second = frame->rsi, third = frame->rdx;
+    switch (frame->rax) {
+""" + definition(source, "case sys_ipc_wait: {") + """
+    }
+    frame->rax = static_cast<u64>(result);
+    return frame;
+}
+"""
     with tempfile.TemporaryDirectory(prefix="xos_kernel_wait_") as temporary:
         directory = args.output.resolve() if args.output else Path(temporary)
         directory.mkdir(parents=True, exist_ok=True)
@@ -91,6 +112,7 @@ void* wait_syscall(interrupt_frame* frame) {
             "-DXOS_COW1_PROBE=0", "-I", str(directory), "-I", str(repo_root / "src/kernel"),
             "-DXOS_RUNTIME_VM=" + str(int(runtime_vm)),
             "-DXOS_PROCESS_WAIT_ANY=" + str(int("bool published;" in source)),
+            "-DXOS_IPC_DEADLINES=" + str(int(timed_ipc)),
             "-I", str(repo_root / "src/kernel/include"), "-I", str(repo_root / "src/shared/include"),
             str(repo_root / "tests/kernel_process_wait_race_test.cpp"), "-o", str(binary),
         ]
@@ -101,7 +123,8 @@ void* wait_syscall(interrupt_frame* frame) {
         if args.sanitize:
             environment['ASAN_OPTIONS'] = 'detect_leaks=0:abort_on_error=1'
             environment['UBSAN_OPTIONS'] = 'halt_on_error=1:print_stacktrace=1'
-        report = {'status': 'failed', 'scope': 'production tasks.cpp wait/finish/deferred delivery extraction',
+        report = {'status': 'failed', 'scope': 'production tasks.cpp wait/finish/deferred delivery extraction' +
+                  ('; sys85 deadline/revocation/timeout extraction' if timed_ipc else ''),
                   'command': command, 'source_sha256': source_sha256,
                   'sanitizers': ['address', 'undefined'] if args.sanitize else [],
                   'guest': 'not_run', 'leak_sanitizer': 'not_run', 'results': []}

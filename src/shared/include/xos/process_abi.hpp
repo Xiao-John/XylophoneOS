@@ -194,6 +194,9 @@ enum class ipc_endpoint_action : u64 { create = 0, revoke = 1, query_peer = 2, c
 // arg3 and is limited to the current process's authenticated file reply route.
 enum class ipc_wait_mode : u64 {
     receive = 0, send = 1, try_receive = 2, try_send = 3, file_reply_until = 4,
+    // Generic endpoints only; arg3 is an absolute monotonic-nanosecond deadline.
+    // Readiness wins over an expired deadline; zero is an immediate check.
+    receive_until = 5, send_until = 6,
 };
 enum class ipc_name_action : u64 { publish = 0, unpublish = 1, connect = 2, accept = 3, wait_accept = 4 };
 struct ipc_channel { u32 send; u32 receive; };

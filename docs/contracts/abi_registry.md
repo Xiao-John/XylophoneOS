@@ -142,6 +142,9 @@ sys20 第三参数 bit0 为非阻塞，bit1 与第一参数为零共同选择显
 
 sys85 mode 4 为调用者当前 Files 回复端点的绝对期限等待。
 [端点生命周期契约](ipc_endpoint_lifecycle.md#文件回复等待)
+的 Files mode 4 保持；generic 端点新增 sys85 mode 5 `receive_until` 与 mode 6
+`send_until`，第三参数是绝对单调纳秒期限。就绪优先，未就绪且到期返回现有
+thread timeout；零期限立即检查，最大 u64 无限。布局及旧 mode 0–4 不变。
 
 ## 待实施的具体预分配
 

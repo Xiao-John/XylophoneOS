@@ -2154,7 +2154,8 @@ void expire_waiters() {
              thread.wait_kind == thread_wait_kind::channel_read ||
              thread.wait_kind == thread_wait_kind::channel_write || thread.wait_kind == thread_wait_kind::channel_many ||
              thread.wait_kind == thread_wait_kind::irq_event ||
-             (thread.wait_kind == thread_wait_kind::ipc_receive && thread.deadline_ns != 0)) &&
+             ((thread.wait_kind == thread_wait_kind::ipc_receive || thread.wait_kind == thread_wait_kind::ipc_send) &&
+              thread.deadline_ns != 0)) &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             ready_with(thread, thread.wait_kind == thread_wait_kind::sleep ? 0 : thread_error_timeout);
         }
@@ -5524,7 +5525,8 @@ void* process_syscall(interrupt_frame* frame) {
     case sys_ipc_wait: {
         const auto mode = static_cast<ipc_wait_mode>(second);
         const bool file_reply = mode == ipc_wait_mode::file_reply_until;
-        if (file_reply ? third == 0 : (third != 0 || mode > ipc_wait_mode::try_send)) { break; }
+        const bool generic_deadline = mode == ipc_wait_mode::receive_until || mode == ipc_wait_mode::send_until;
+        if (file_reply ? third == 0 : (!generic_deadline && (third != 0 || mode > ipc_wait_mode::try_send))) { break; }
         auto* endpoint = endpoint_for(first);
         if (endpoint == nullptr ||
             (file_reply ? (!endpoint->session_response || endpoint->owner_pid != current->pid ||
@@ -5533,7 +5535,8 @@ void* process_syscall(interrupt_frame* frame) {
                         : !endpoint->generic)) {
             result = process_error_denied; break;
         }
-        const bool receiving = file_reply || mode == ipc_wait_mode::receive || mode == ipc_wait_mode::try_receive;
+        const bool receiving = file_reply || mode == ipc_wait_mode::receive || mode == ipc_wait_mode::try_receive ||
+                               mode == ipc_wait_mode::receive_until;
         const bool nonblocking = mode == ipc_wait_mode::try_receive || mode == ipc_wait_mode::try_send;
         if ((receiving && endpoint->receiver_pid != current->pid) ||
             (!receiving && endpoint->sender_pid != current->pid)) {
@@ -5549,6 +5552,9 @@ void* process_syscall(interrupt_frame* frame) {
         }
         if ((receiving && endpoint->pending) || (!receiving && !endpoint->pending)) {
             result = 0; break;
+        }
+        if (generic_deadline && thread_deadline_reached(clock::monotonic_ns(), third)) {
+            result = thread_error_timeout; break;
         }
         if (nonblocking) { result = process_error_would_block; break; }
         current_thread->wait_kind = receiving ? thread_wait_kind::ipc_receive : thread_wait_kind::ipc_send;

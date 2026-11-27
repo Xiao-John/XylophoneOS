@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
 from boot_smoke import Guest
 from build_ipc_exec_probe import INPUTS
+from build_ipc_deadline_probe import INPUTS as DEADLINE_INPUTS
 from make_work_disk import create_fat32
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
@@ -33,11 +34,13 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--repeat', type=int, default=3, choices=range(1, 17))
     parser.add_argument('--serial-only', action='store_true')
+    parser.add_argument('--suite', choices=('lifecycle', 'deadline'), default='lifecycle')
     args = parser.parse_args()
     system, fixture, out = args.system.resolve(), args.fixture.resolve(), args.output.absolute()
     out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'not_run', 'runner_sha256': sha(Path(__file__)), 'checks': [],
+    inputs = DEADLINE_INPUTS if args.suite == 'deadline' else INPUTS
+    report = {'status': 'not_run', 'suite': args.suite, 'runner_sha256': sha(Path(__file__)), 'checks': [],
               'not_run': ['sys81_explicit_channel_inheritance_stress', 'terminal_display_interactium_regression']}
     guest = None
 
@@ -51,7 +54,7 @@ def main():
         for name, info in manifest['artifacts'].items():
             if sha(system / name) != info['sha256']:
                 raise ValueError('system artifact mismatch: ' + name)
-        if receipt['sources'] != {name: sha(ROOT / name) for name in INPUTS}:
+        if receipt['sources'] != {name: sha(ROOT / name) for name in inputs}:
             raise ValueError('fixture source mismatch')
         if tree_receipt(system / 'sdk')[0] != receipt['sdk_tree_sha256']:
             raise ValueError('fixture SDK mismatch')
@@ -74,7 +77,8 @@ def main():
             disk = Path(temporary) / 'work.img'
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
-            transfer(disk, 'import', '/bin/ipcexec.elf', fixture / 'ipc_exec_probe.elf')
+            binary_name = 'ipc_deadline_probe.elf' if args.suite == 'deadline' else 'ipc_exec_probe.elf'
+            transfer(disk, 'import', '/bin/ipcexec.elf', fixture / binary_name)
             report['initial_disk_sha256'] = sha(disk)
             guest = Guest(system / 'xos-install.iso', str(out.relative_to(ROOT / 'build')) + '/guest',
                           iso=True, work_disk=disk, qmp_enabled=not args.serial_only)
@@ -100,6 +104,11 @@ def main():
                                        ' blocked_both restart_authenticated stale_tokens_denied').encode())],
                     'authority': [b'IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered'],
                 }
+                if args.suite == 'deadline':
+                    cases = {'parent': [('IPC_DEADLINE_PASS ' + marker).encode() for marker in (
+                        'receive_timeout peer_alive', 'send_timeout payload_preserved',
+                        'immediate expired readiness_first', 'scope_and_legacy_rejected',
+                        'ready_wakes_receive_send', 'close_wakes_both no_wrap timeout_final')]}
                 for mode, expected in cases.items():
                     output = command(guest, 'exec-driver /bin/ipcexec.elf ' + mode + ' ' + nonce,
                                      b'kind=exited code=', timeout=90)
@@ -124,7 +133,7 @@ def main():
         report['evidence_files'] = [{'path': path.name, 'sha256': sha(path)}
                                     for path in sorted(out.glob('*')) if path.is_file() and path.name != 'report.json']
         (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
-    print('PASS IPC exec lifecycle:', len(report['checks']), 'rounds')
+    print('PASS IPC', args.suite, 'runs:', len(report['checks']))
 
 
 if __name__ == '__main__':

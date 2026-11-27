@@ -85,6 +85,11 @@ inline i64 ipc_channel_close(u32 endpoint) {
 inline i64 ipc_wait(u32 endpoint, ipc_wait_mode mode) {
     return syscall(sys_ipc_wait, endpoint, static_cast<u64>(mode), 0);
 }
+inline i64 ipc_wait_until(u32 endpoint, ipc_wait_mode mode, u64 deadline_ns) {
+    if (mode != ipc_wait_mode::receive && mode != ipc_wait_mode::send) return process_error_invalid;
+    const auto timed = mode == ipc_wait_mode::receive ? ipc_wait_mode::receive_until : ipc_wait_mode::send_until;
+    return syscall(sys_ipc_wait, endpoint, static_cast<u64>(timed), deadline_ns);
+}
 inline ipc_channel ipc_channel_for_peer(const ipc_channel& channel) {
     return {channel.receive, channel.send};
 }

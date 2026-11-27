@@ -9,7 +9,8 @@ libc_hidden_proto (__fstatat)
 int __fstatat (int fd, const char *path, struct stat *output, int flags)
 {
   if (path == 0) return (int) xos_file_result (-EFAULT);
-  if ((flags & ~(AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH)) != 0)
+  /* XOS has no automounts, so AT_NO_AUTOMOUNT needs no service operation. */
+  if ((flags & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT | AT_EMPTY_PATH)) != 0)
     return (int) xos_file_result (-EINVAL);
   if (path[0] == 0 && (flags & AT_EMPTY_PATH))
     return (int) xos_file_result (__xos_file_stat (fd, 0, output));

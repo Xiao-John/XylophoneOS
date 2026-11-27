@@ -1,0 +1,33 @@
+{
+  "archive_sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+  "config_sha256": "ff5f564d6178c9d6a2d729c61367386f46479021e47f9e5a995f6809d6f4db5d",
+  "elf": {
+    "layout": {
+      "format": "static_elf64",
+      "load_and_main_stack_pages": 305,
+      "load_segments": 3,
+      "machine": "x86_64",
+      "static_tls": true
+    },
+    "path": "target/make",
+    "sha256": "efded0f02d6af3d82305165727d87b9dc2d38c8dd6de623b75937ee13b3d6750"
+  },
+  "guest_qualification": "not_run",
+  "inputs": {
+    "scripts/build_gnu_make.py": "48be835c17f86da8dde199c373310a479483585dfdaab6efef70e55f789f3181",
+    "src/ports/gnu_make/README.md": "4684dc7cc20f7889619161d0b0b80050738759959c1b7e92b4b27ff5ed4d00aa",
+    "src/ports/gnu_make/patches/0001_xos_job_launch.patch": "0c95860661451f11fed079e8df2c38f3398254c8812d0a312c768701bdb36f36",
+    "src/ports/gnu_make/source_lock.json": "e833bda8fc796b6a9af0328120f007997717243bbbf2c54ee2e13d41248468b9",
+    "src/ports/gnu_make/upstream/COPYING": "e79e9c8a0c85d735ff98185918ec94ed7d175efc377012787aebcf3b80f0d90b",
+    "src/ports/gnu_make/xos_spawn.h": "13909bcb5842df682719d9e6f921ca958fc8d408452be9bcfda683ac76fbc405"
+  },
+  "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+  "signature_sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929",
+  "source_verified_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2",
+  "status": "built_not_run",
+  "target": "x86_64-unknown-xos",
+  "upstream_keyring_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+  "version": "4.4.1"
+}

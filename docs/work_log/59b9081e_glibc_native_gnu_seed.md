@@ -32,8 +32,10 @@ python3 tests/glibc_gnu_seed_guest.py --release-dir "$RELEASE" --seed-dir "$SEED
 
 ## 客体证据
 
-独立诊断盘已经通过 GCC/G++ 直接构建、GNU Make 的 xsh 构建以及两份程序的执行。正式工作盘已经过安装 ISO，dash 与 xypm 从原安装容器装入。正式普通客体通过直接 GCC/G++ 和 xsh Make 的构建及执行。dash 的重建、负例及冷启读回继续由正式工作盘执行。
-[装配回执、安装串口和诊断串口](../reports/glibc_native_gnu_seed_20261127/manifest.json)
+正式工作盘从候选安装 ISO 装入 dash 与 xypm，随后在 macOS 宿主 QEMU 11.1.2 上从普通 ISO 冷启，通过全部 18 项检查。GCC 与 G++ 直接构建并运行两种应用，xsh 与 dash 各执行一次完整 GNU Make 重建。未定义符号被原生 GNU ld 拒绝，无残留 ELF。再次冷启时，两个客体构建的程序均正常退出。所有操作的空闲页、任务和完成记录都回到 `129806/2/0`。安装后和关机后两次验证的受管文件都是 57 项。
+
+C 程序返回 glibc 2.44，C++ 程序完成跨单元异常和 TLS 路径。导出的 C/C++ 链接图核对了统一 SDK 的启动对象、glibc 和 libstdc++，静态归档有由原生 ranlib 写入的符号索引。两次独立装配的工作盘和装配回执逐字节一致。另通过 18 项 Seed 预检和 10 项发行系统许可材料检查。
+[实测回执、串口和链接图](../reports/glibc_native_gnu_seed_20261127/manifest.json)
 
 冻结回退使用 v0.0.2-1103 的原安装 ISO 和独立旧盘副本，旧系统 build ID 为 `8356e45af316fc93`。GNU Seed 在原 newlib `/sysroot` 编译、链接并运行 C/C++ 示例，两个顶层操作的空闲页、任务与完成记录均回到 `130207/2/0`。发布镜像归档与测试前的旧盘输入在结束后摘要一致。
 [旧系统回退回执](../reports/glibc_native_gnu_seed_20261127/rollback_guest.json)

@@ -1,0 +1,69 @@
+{
+  "status": "upstream_signature_verified",
+  "verification_date_utc": "2026-11-27",
+  "source_lock_sha256": "8afcd6eccbcfb3c3e6395037164158739cf98e55c9474521f83f9dd6db8986fa",
+  "component_source_archive_sha256": "8fa939425e2d7ae9716ab71e29889a3de7c6cd88975e75cf56ea1221c8320e93",
+  "upstream": {
+    "release": "https://www.python.org/downloads/release/python-3149/",
+    "identity_policy": "https://www.python.org/downloads/metadata/sigstore/",
+    "certificate_identity": "hugo@python.org",
+    "oidc_issuer": "https://github.com/login/oauth"
+  },
+  "materials": {
+    "Python-3.14.9.tar.xz": {
+      "sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+      "bytes": 24176992
+    },
+    "Python-3.14.9.tar.xz.sigstore": {
+      "sha256": "6e6c26f5f06c42efb353a378c6a271cc836f6ef8461af482cac2c2e0c048876f",
+      "bytes": 7130
+    },
+    "Python-3.14.9.tar.xz.spdx.json": {
+      "sha256": "07e7d962235affa97daa0b941c1b14c494573862db0c626b493d47d36e3d0608",
+      "bytes": 3132334
+    }
+  },
+  "spdx_qualification": "locked_digest_matched",
+  "verification_tool": {
+    "cli": "sigstore 4.5.1",
+    "pinned_requirements_commit": "c2e3f93e0cbc27afdc2a52ed002e16a164c03c48",
+    "requirements_sha256": "6c3cdeaddf7efa825d2422ab51a2a938f4355e42d7e8736117d3d5e7218e5dca"
+  },
+  "refreshed_tuf_metadata": {
+    "root.json": {
+      "sha256": "27aea7e372aa7864065174f0661784fcf8b0e28b1dbfebeada31a0f1fb19167f",
+      "version": 16,
+      "expires": "2027-04-22T19:27:31Z"
+    },
+    "snapshot.json": {
+      "sha256": "6d61405faa993ba3d07556b79d1e319627cdc06ff879a7b5700967dc25d1d224",
+      "version": 166,
+      "expires": "2036-10-04T08:51:19Z"
+    },
+    "targets.json": {
+      "sha256": "6a697f7f8908c8ab26c11786ecb490b54acec97fa8c802e399f065f8a0cc1acd",
+      "version": 14,
+      "expires": "2036-05-09T09:00:52Z"
+    },
+    "timestamp.json": {
+      "sha256": "d195f2b0e441b91432816fadb78c80f6d12e6b3bab2f445ec1c2c43676e3b3fc",
+      "version": 845,
+      "expires": "2026-12-03T07:21:51Z"
+    }
+  },
+  "trusted_root_sha256": "6494e21ea73fa7ee769f85f57d5a3e6a08725eae1e38c755fc3517c9e6bc0b66",
+  "cases": {
+    "release_signature_with_refreshed_tuf": "passed",
+    "release_signature_offline": "passed",
+    "wrong_certificate_issuer": "rejected",
+    "wrong_archive_digest": "rejected",
+    "release_signature_in_network_denied_process": "passed"
+  },
+  "raw_log_sha256": {
+    "verify-refreshed.log": "fafc2bf9fc6d89f902ac6c9f44414ca628701b8f71cdb29e67662d96b1c4ea8d",
+    "verify-offline-current-root.log": "ae2d553a847b55376ff413a8ede522d65d43544e32b06969a83628572e8f59ea",
+    "wrong-issuer.log": "38135ab0461660cf7dc63abc6314ccda17db68fb1ec29708150a09933c777a9b",
+    "wrong-archive.log": "0d0ccdefe6d25c72acbf7ce1698d1c6b86b3a6a970a8737fef72602484861d7d",
+    "verify-network-denied.log": "451cbc535e837e17d1c11819648d8c26a92db750eb1e34fab88caafcaca3edd3"
+  }
+}

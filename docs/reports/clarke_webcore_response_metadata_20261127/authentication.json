@@ -1,0 +1,21 @@
+{
+  "elf_sha256": "2bfb6eb483586f430e81aee0ca767a4e9ab588ae5cb6be23a93272fa3af8312a",
+  "fixture_sha256": "d72282f68bbf14203c6f9cb9339491001b07a285942a138c4bdf37d22e06beb0",
+  "image_sha256": "a31e6f37b4110cf9acec4112dad4be2267e538af0684cb1b949a5c0534dbc3b9",
+  "marker": "XOS_WEBKIT_CHALLENGE_OK bound_callback comparison expiration",
+  "resources_after": [
+    129709,
+    3,
+    1
+  ],
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "serial_sha256": "cce19b8e1a597652a3ba672bb735edc5e2083520acf7e65acdad5a4994b28b08",
+  "source_commit": "9dccbf3fd3fdab599320389d9b89be67c72f9e08",
+  "status": "passed_subset",
+  "system_build_id": "1958db24f4ad591d",
+  "system_manifest_sha256": "0a2bda70f7108476bb9902b93301eebb399f04c045a463e3973aab90bded0a93"
+}

@@ -1,0 +1,117 @@
+{
+  "archive_bytes": 19835278,
+  "archive_sha256": "a24f3137eae4bcd686615111ce7ef8f531c6a79ef353d8ecf232a44fbbe7d0b1",
+  "c_sdk_manifest_sha256": "b490f9efeacaf75495ab3aa36489fc91e14bf9d4fe66f538b145bb21590e5961",
+  "candidate_commit": "98d100de45aa48031cc5f70540804feadca11232",
+  "candidate_tree": "5310407ae6b707f9fb720bee5867cfe3c7cfa76a",
+  "changed_paths": [
+    "docs/reports/qt_quick_unified_profile_20261127/abi.log",
+    "docs/reports/qt_quick_unified_profile_20261127/consumer-app.json",
+    "docs/reports/qt_quick_unified_profile_20261127/core-binding.json",
+    "docs/reports/qt_quick_unified_profile_20261127/core-guest.json",
+    "docs/reports/qt_quick_unified_profile_20261127/core-guest.serial.log.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/core-target.json",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-60s.json",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-60s.serial.log.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-cycle_1_key.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-cycle_1_moved.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-cycle_1_start.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-cycle_2_key.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-cycle_2_moved.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-cycle_2_start.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-script-90s.json",
+    "docs/reports/qt_quick_unified_profile_20261127/dash-script-90s.serial.log.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/dash.json",
+    "docs/reports/qt_quick_unified_profile_20261127/dash.serial.log.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/file-exchange-timing.c",
+    "docs/reports/qt_quick_unified_profile_20261127/file-exchange-timing.json",
+    "docs/reports/qt_quick_unified_profile_20261127/file-exchange.serial.log.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/kit-manifest.json",
+    "docs/reports/qt_quick_unified_profile_20261127/manifest.json",
+    "docs/reports/qt_quick_unified_profile_20261127/profile.json",
+    "docs/reports/qt_quick_unified_profile_20261127/reference-app.json",
+    "docs/reports/qt_quick_unified_profile_20261127/replay-binding.json",
+    "docs/reports/qt_quick_unified_profile_20261127/source-resume.json",
+    "docs/reports/qt_quick_unified_profile_20261127/target-receipt.json",
+    "docs/reports/qt_quick_unified_profile_20261127/xsh-cycle_1_key.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/xsh-cycle_1_moved.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/xsh-cycle_1_start.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/xsh-cycle_2_key.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/xsh-cycle_2_moved.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/xsh-cycle_2_start.ppm.gz",
+    "docs/reports/qt_quick_unified_profile_20261127/xsh.json",
+    "docs/reports/qt_quick_unified_profile_20261127/xsh.serial.log.gz",
+    "docs/work_log/f7f79528_qt_quick_unified_profile.md",
+    "src/ports/qt6/quick/build_app.py",
+    "src/ports/qt6/quick/build_target.py",
+    "src/ports/qt6/quick/quick_kit.py",
+    "src/ports/qt6/quick/unified_sdk.md",
+    "tests/fixtures/qt6/quick/CMakeLists.txt",
+    "tests/qt6_quick_guest.py",
+    "tests/qt6_quick_source_resume.py"
+  ],
+  "cross_tool_sha256": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "objcopy": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d",
+    "readelf": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42"
+  },
+  "gcc_build_inputs": {
+    "cxx_compile_recipe_sha256": "950947a4261ecb60215f80a61a666b4fd118fc12b90c7a7fd03c12b5b08798b1",
+    "cxx_prepare_recipe_sha256": "07a65ebeed29d10f51791319e852d44dd2eaecb92f7d3eeef7a297010d071574",
+    "cxx_recipe_sha256": "55d2dceb46e209bbffd80f77c75ddded69e01c0e45f20cf42e84b8989fdf7f39",
+    "unwinder_recipe_sha256": "7523d49784ee221a787847e3d8f0c1d16194400b7057f1cbf6e17696c2c81e6d"
+  },
+  "identical_cross_tools": 8,
+  "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+  "libgcc_replaced_members": {
+    "emutls.o": "0aa7c2fb60441b44b066add1ec2cb951b69ba2364b4a4e6f0d5c2d74f4e447d8",
+    "unwind-c.o": "c2100138cc1c381a8d5f12e15ee8ab91a5dec3248a977b8640bf9f6939659a29",
+    "unwind-dw2-fde.o": "a253c3c958eac1e479cb8e3f7051bd9761f54080c2d7e9bfeb49e09790923b92",
+    "unwind-dw2.o": "2737dccaa009f5a49286f038c3fdaa491039137a459a392b2265e48b7e7ff08d",
+    "unwind-sjlj.o": "a2bff809d228057b7c3e9b98276a95610839edb93eb3d662756cc403d2372173"
+  },
+  "mainline_commit": "9dccbf3fd3fdab599320389d9b89be67c72f9e08",
+  "mainline_tree": "e8a6fa2b67ac10ffa2367312f45264a1d944efa3",
+  "notices": {
+    "COPYING.LIB": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+    "LICENSES": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+    "compiler-runtime-licenses/COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+    "compiler-runtime-licenses/COPYING.LIB": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861",
+    "compiler-runtime-licenses/COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+    "cxx/licenses/COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+    "cxx/licenses/COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+  },
+  "profile": "xos-x86_64-glibc-unified-cxx-v2",
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "sdk_inputs_identical": 340,
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642",
+  "signed_sources": [
+    {
+      "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "signature": {
+        "hash_algorithm": 8,
+        "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+        "signature_timestamp": 1784937664,
+        "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A"
+      },
+      "status": "upstream_signature_verified"
+    },
+    {
+      "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+      "signature": {
+        "hash_algorithm": 8,
+        "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+        "signature_timestamp": 1786091352,
+        "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641"
+      },
+      "status": "upstream_signature_verified"
+    }
+  ],
+  "status": "passed"
+}

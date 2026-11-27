@@ -1,0 +1,86 @@
+{
+  "archive_bytes": 19835278,
+  "archive_sha256": "a24f3137eae4bcd686615111ce7ef8f531c6a79ef353d8ecf232a44fbbe7d0b1",
+  "cross_profile_rejections": {
+    "v1_profile_v2_sdk": true,
+    "v2_cxx_xpk_v1_profile": true,
+    "v2_profile_v1_sdk": true
+  },
+  "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+  "profile_bindings": {
+    "v1": {
+      "guest_qualification": "not_run",
+      "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+      "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+      "runtime_family": "glibc",
+      "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+      "status": "candidate_binding_verified"
+    },
+    "v2": {
+      "guest_qualification": "not_run",
+      "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+      "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "runtime_family": "glibc",
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642",
+      "status": "candidate_binding_verified"
+    }
+  },
+  "public_cxx_abi_macros": {
+    "v1": {
+      "_GLIBCXX_HAS_GTHREADS": "1",
+      "_GLIBCXX_INLINE_VERSION": "0",
+      "_GLIBCXX_USE_CXX11_ABI": "1",
+      "_GLIBCXX_USE_DUAL_ABI": "1"
+    },
+    "v2": {
+      "_GLIBCXX_HAS_GTHREADS": "1",
+      "_GLIBCXX_INLINE_VERSION": "0",
+      "_GLIBCXX_USE_CXX11_ABI": "1",
+      "_GLIBCXX_USE_DUAL_ABI": "1"
+    }
+  },
+  "relocated_tree_matches_original": true,
+  "status": "passed",
+  "symbols": {
+    "libc.a": {
+      "added_in_v2": [
+        "__in6addr_any",
+        "__in6addr_loopback",
+        "__xos_file_close_range",
+        "htonl",
+        "htons",
+        "in6addr_any",
+        "in6addr_loopback",
+        "ntohl",
+        "ntohs"
+      ],
+      "missing_from_v2": [],
+      "v1_count": 3704,
+      "v2_count": 3713
+    },
+    "libgcc.a": {
+      "added_in_v2": [],
+      "missing_from_v2": [],
+      "v1_count": 182,
+      "v2_count": 182
+    },
+    "libm.a": {
+      "added_in_v2": [],
+      "missing_from_v2": [],
+      "v1_count": 1915,
+      "v2_count": 1915
+    },
+    "libstdc++.a": {
+      "added_in_v2": [],
+      "missing_from_v2": [],
+      "v1_count": 7115,
+      "v2_count": 7115
+    },
+    "libsupc++.a": {
+      "added_in_v2": [],
+      "missing_from_v2": [],
+      "v1_count": 506,
+      "v2_count": 506
+    }
+  }
+}

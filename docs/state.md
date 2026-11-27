@@ -35,6 +35,8 @@ Qt Quick 外部示例已用普通 xypm 离线工作盘完成原包安装、重�
 Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首户签发、重启认证和
 只回退客体盘时拒绝。硬件代际与物理启动仍待验收。
 [独立提供者部署](work_log/f1d2a697_pumpkin_provider_deployment.md)
+同域两张 ISO 的受控演练通过换版、提交新代际和回切读回。生产轮换控制器
+及其中断恢复继续验收。[同域镜像演练](work_log/a569d3a6_pumpkin_image_transition_guest.md)
 
 按 [Discipline](Discipline.md) 在合并、发行或里程碑更新。过程与证据见
 [work_log](work_log/) 和 [history](history/)，设计原则见

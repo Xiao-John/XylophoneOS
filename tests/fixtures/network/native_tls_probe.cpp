@@ -3,6 +3,7 @@
 #include "stream.hpp"
 #include "tls_test_root.h"
 
+#include <psa/crypto.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +22,29 @@ unsigned long number(const char* text, unsigned long maximum) {
     char* end = nullptr;
     const auto value = strtoul(text, &end, 10);
     return *text && *text >= '0' && *text <= '9' && !*end && value <= maximum ? value : 0;
+}
+
+bool has_no_verified_peer(const native_tls::stream& stream) {
+    const auto peer = stream.verified_peer_leaf_der();
+    return !peer.data && !peer.size;
+}
+
+int record_verified_peer(const native_tls::stream& stream) {
+    const auto peer = stream.verified_peer_leaf_der();
+    if (!peer.data || !peer.size)
+        return error("peer-leaf-unavailable", -1);
+
+    unsigned char digest[PSA_HASH_LENGTH(PSA_ALG_SHA_256)];
+    size_t size = 0;
+    const auto status = psa_hash_compute(PSA_ALG_SHA_256, peer.data, peer.size,
+                                         digest, sizeof(digest), &size);
+    if (status != PSA_SUCCESS || size != sizeof(digest))
+        return error("peer-leaf-hash", status);
+    printf("NATIVE_TLS_PEER_LEAF_SHA256 ");
+    for (unsigned char byte : digest)
+        printf("%02x", static_cast<unsigned>(byte));
+    putchar('\n');
+    return 0;
 }
 }
 
@@ -55,6 +79,8 @@ int main(int argc, char** argv) {
         return error("platform", -1);
     printf("NATIVE_TLS_CLOCK realtime=%ld\n", static_cast<long>(wall));
     native_tls::stream stream;
+    if (!has_no_verified_peer(stream))
+        return error("peer-before-handshake", -1);
     int status = stream.connect(pid, address, static_cast<xos::u16>(port), name,
                                 tls_test_root, sizeof(tls_test_root),
                                 static_cast<xos::u64>(now) + 20'000'000'000ull);
@@ -62,10 +88,14 @@ int main(int argc, char** argv) {
     if (expected_flags) {
         if (status != MBEDTLS_ERR_X509_CERT_VERIFY_FAILED || verification != expected_flags)
             return error("expected-rejection", status, verification);
+        if (!has_no_verified_peer(stream))
+            return error("peer-after-rejection", -1);
         printf("NATIVE_TLS_REJECT scenario=%s flags=0x%08x\n", scenario, verification);
         return 0;
     }
     if (status) return error("handshake", status, verification);
+    if (record_verified_peer(stream))
+        return 1;
 
     char request[192];
     status = snprintf(request, sizeof(request),
@@ -86,6 +116,8 @@ int main(int argc, char** argv) {
     do {
         status = stream.read(response + received, sizeof(response) - received);
         if (truncated && status == MBEDTLS_ERR_SSL_CONN_EOF) {
+            if (!has_no_verified_peer(stream))
+                return error("peer-after-truncation", -1);
             printf("NATIVE_TLS_REJECT scenario=truncated status=%d\n", status);
             return 0;
         }
@@ -100,6 +132,8 @@ int main(int argc, char** argv) {
         return error("http", static_cast<int>(parsed.status));
     status = stream.finish();
     if (status) return error("finish", status);
+    if (!has_no_verified_peer(stream))
+        return error("peer-after-finish", -1);
     printf("NATIVE_TLS_HTTPS status=200 bytes=%zu close_notify=verified\n", parsed.body_length);
     return 0;
 }

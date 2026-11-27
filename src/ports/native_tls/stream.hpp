@@ -8,6 +8,11 @@ namespace native_tls {
 
 enum class route_source { pinned, net2_dns };
 
+struct peer_certificate_view {
+    const unsigned char* data = nullptr;
+    size_t size = 0;
+};
+
 // Single-use, single-threaded TLS 1.3 client. The caller supplies the trusted
 // service identity, DER trust anchor, and DNS name independently of the address.
 class stream {
@@ -25,6 +30,9 @@ public:
     int read(unsigned char* data, size_t capacity);
     int finish();
     uint32_t verification_flags() const { return verify_flags_; }
+    // Available after a verified handshake until finish or a fatal I/O error.
+    // Copy the bytes before calling another stream operation or destroying it.
+    [[nodiscard]] peer_certificate_view verified_peer_leaf_der() const;
 
 private:
     static int send(void* context, const unsigned char* data, size_t size);

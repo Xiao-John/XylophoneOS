@@ -32,6 +32,8 @@ Ninja 1.13.2 执行两条 `--check-inputs` 路线。真实统一 v2 SDK 和原�
 到只读宿主套件并运行，返回 `uic 6.8.3`。`tests/mobius_widgets_binding_host.py`
 通过一个主用例和六个回执错配输入。既有 `tests/xypm_sdk_profile_host.py`
 通过 45 项。私有日志在 `build/mobius-widgets-v2/`，主机新增约 36 KiB。
+[公开回执](../reports/mobius_widgets_v2_20261127/preflight.json)记录复跑使用的提交、
+两条构建配方、CMake 探针及原始日志摘要。[回执索引](../reports/mobius_widgets_v2_20261127/manifest.json)
 
 真实 QtBase Widgets v2 目标构建、离线重定位、Mobius ELF/XPK、复链和 QEMU
 未运行。下一步在有足够空间的 Linux 构建目录执行完整 Widgets 命令，然后按

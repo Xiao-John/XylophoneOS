@@ -880,6 +880,8 @@ def main():
     except (OSError, ValueError, KeyError, TypeError, struct.error, subprocess.SubprocessError, generation_error):
         if args.operation == check_image_command:
             parser.exit(1, "Pumpkin image update bindings could not be confirmed\n")
+        if image_operation:
+            parser.exit(1, "Pumpkin image maintenance could not be confirmed; inspect or retry the same profiles\n")
         parser.exit(1, "Private Pumpkin operation could not be confirmed; do not repeat enrollment automatically\n")
 
 

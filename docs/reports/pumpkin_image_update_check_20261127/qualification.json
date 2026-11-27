@@ -1,0 +1,46 @@
+{
+  "authority_host_tests": 9,
+  "builds": {
+    "current": {
+      "build_id": "2ba0a3070e1d8753",
+      "manifest_sha256": "f57ec2f3c41304407c9cea96129a4c0accca25819c95665dfb701d8bbd38b1a6"
+    },
+    "other_realm": {
+      "build_id": "71e4bd946dd9e2e1",
+      "manifest_sha256": "ccc95320ca4015a8545a01bea54e09d516af9a371f3849d43009a4a1ceac7f99"
+    },
+    "replacement": {
+      "build_id": "fbe70625e73497ca",
+      "manifest_sha256": "226c6e4d2b2520428cec3f159ffc0c96ff35249223c8630af52fa257c2efeecb"
+    }
+  },
+  "checks": [
+    "distinct_same_domain_images",
+    "current_profile_digest",
+    "replacement_profile_digest",
+    "replacement_manifest_binding",
+    "other_installation_realm",
+    "replacement_operator_uid",
+    "replacement_provider_uid",
+    "replacement_provider_socket",
+    "diagnostic_requires_current_operator",
+    "same_domain_different_storage_format",
+    "replacement_artifact_digest",
+    "active_installation_lock",
+    "installation_bound_to_other_profile",
+    "missing_installation_binding",
+    "missing_work_disk"
+  ],
+  "environment": {
+    "container_network": "none",
+    "system_fixtures_read_only": true
+  },
+  "not_run": [
+    "candidate_guest_boot",
+    "provider_profile_switch",
+    "same_disk_guest_continuity",
+    "cross_role_interruption_recovery"
+  ],
+  "operator_uid": 22101,
+  "status": "passed"
+}

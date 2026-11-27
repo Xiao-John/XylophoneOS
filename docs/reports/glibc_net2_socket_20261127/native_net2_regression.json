@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "build_id": "6ee274714e525f50",
+  "image_sha256": "73eb3fc7972f010a2ab6524a7a7c63788935a961776149a77ba0e16ddceb1d15",
+  "payload_sha256": "33b66dece3081e7ff62dfe0fbc5c9dc98446939bf632b4fc80dca1b490726d79",
+  "receipt_sha256": "be265242f81db49edbf77cad436a50c75f9bf09facfd16bb56332565584e9be4",
+  "sdk_tree_sha256": "0d2865a05df3caab493625c5bbe8cbbb1f9274801644970cc34cde020c60227f",
+  "lwip_inputs_sha256": "626c6b9a4b56b65916977bcc238bd3e65752a21802e150f5e1d2ef536cbb262b",
+  "checks": [
+    "xsh_http_fresh_exact_bytes_and_resources",
+    "xsh_udp_fresh_exact_bytes_and_resources",
+    "xsh_tcp_close_fresh_exact_bytes_and_resources",
+    "four_concurrent_applications_distinct_http_udp_challenges_and_resources",
+    "wrong_service_pid_denied",
+    "closed_port_fails_and_reclaims",
+    "xsh_http_fresh_exact_bytes_and_resources",
+    "service_restart_and_resource_baseline",
+    "xsh_tcp_queued_controlled_window_close_and_resources",
+    "xsh_tcp_drained_controlled_window_close_and_resources"
+  ],
+  "not_run": [
+    "NIC_reset_failure_quarantine",
+    "packet_loss_reordering",
+    "DNS_DHCP_TLS",
+    "dash_shell"
+  ],
+  "exchanges": 8,
+  "controlled_window_closes": 2
+}

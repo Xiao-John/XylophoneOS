@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "files": {
+    "address_abi_guest.json": "d8c1fe533e5e51c1f5ef7024062e6066c996d203f19d03eca523fbda7fb05f1f",
+    "archive_abi.json": "40c5a7adb2de1375f9488215886cacaed3497bed255c34e3115bd2c7ab35b42e",
+    "binding.json": "c74dd9124385df6a509f2ef7dd5ac11aee391d5b203a8fad2dea996256a1cd9d",
+    "guest.json": "712dbecc1c47d9a389943ac54d47c46549a7949a4c381d7d5d76d9bf94aa2f4a",
+    "host-regression.txt": "0672dffc66421f45a9aeb3896579ee1e791acfd7664bcc83efeef0c35401e0b4",
+    "license-audit.txt": "edd07a9cba63d3c9c5ab544fcba7c255f61737954e737c640361130f5dfbd006",
+    "native_net2_regression.json": "b14c023d64114ee5c67c9f0a2c22b6238901b7eff70650a3b5ce636cc4be0705",
+    "serial-excerpt.log": "e034fde0997ac36746602a579209d203aad2b8eb9429e76026e01abdeea495ab"
+  }
+}

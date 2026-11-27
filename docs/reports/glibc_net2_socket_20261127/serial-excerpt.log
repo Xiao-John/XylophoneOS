@@ -1,0 +1,35 @@
+[net-start] pid=9
+[net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+[net] close=0
+[net] close=0
+[resources] free=129787 tasks=2 completions=0
+GLIBC_NET2_PASS no_service
+[resources] free=129787 tasks=2 completions=0
+GLIBC_NET2_PASS capacity
+[resources] free=129787 tasks=2 completions=0
+[net-start] pid=14
+[resources] free=129615 tasks=3 completions=1
+GLIBC_NET2_PASS wrong_pid
+[resources] free=129615 tasks=3 completions=1
+GLIBC_NET2_PASS denied
+[resources] free=129615 tasks=3 completions=1
+GLIBC_NET2_PASS refused
+[resources] free=129615 tasks=3 completions=1
+GLIBC_NET2_STREAM nonce=c36ca858f256f5b7fef8d1b74d3d729b data=b0c81931632d3cc23e7071466d0dd956854a5bd77ce2bd2f56bd139a48d6f3c5
+GLIBC_NET2_PASS stream
+[resources] free=129615 tasks=3 completions=1
+GLIBC_NET2_STREAM nonce=b5f4d56475b1c070c7ea88e10edd3105 data=b5ffb5c1874c7f7e7a0f85c6e1e1e93732f465b26392fbd422d05d8c3bcbe492
+GLIBC_NET2_PASS stream
+[resources] free=129615 tasks=3 completions=1
+[net] close=0
+[resources] free=129787 tasks=2 completions=0
+[net-start] pid=20
+[resources] free=129615 tasks=3 completions=1
+GLIBC_NET2_STREAM nonce=148becd778c3c540291fd7b35696a459 data=a26c534b0b67fb4830c8bfd4597fc2488ca1e3618807c1096cbbc327f256cff0
+GLIBC_NET2_PASS stream
+[resources] free=129615 tasks=3 completions=1
+GLIBC_NET2_STREAM nonce=7ac70caafa2fd8dcfcfc240ab114477f data=20875427427b6b605dc96d356a515c6e5eab5a31e40de84b19d687131d11a0ab
+GLIBC_NET2_PASS stream
+[resources] free=129615 tasks=3 completions=1
+[net] close=0
+[resources] free=129787 tasks=2 completions=0

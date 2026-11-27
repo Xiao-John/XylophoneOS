@@ -118,6 +118,25 @@ def stage(args):
     print(sha(output / "manifest.json"))
 
 
+def load_replacement(directory, expected, materials, materials_digest):
+    directory = directory.resolve(strict=True)
+    replacement, digest = metadata_snapshot(manifest_file(directory, "manifest.json"), expected)
+    require(replacement.get("format_version") == 1 and replacement.get("kind") == "mobius_qt_replacement"
+            and replacement.get("materials_manifest_sha256") == materials_digest,
+            "Qt replacement belongs to different Mobius link materials")
+    filename = replacement["library"]
+    library = PurePosixPath(filename)
+    require(library.parent == PurePosixPath("link/qt/lib") and library.as_posix() == filename
+            and library.name.startswith("libQt6") and library.suffix == ".a"
+            and filename in materials["files"], "Replacement must select one material Qt archive")
+    original = materials["files"][filename]
+    require(replacement["original_archive_sha256"] == original
+            and replacement["archive_sha256"] != original, "Qt replacement must change the bound original archive")
+    users = {name for name, record in materials["programs"].items() if {"file": filename} in record["plan"]}
+    require(users, "No Mobius link plan uses the selected Qt archive")
+    return replacement, digest, manifest_file(directory, library.name), users
+
+
 def relink(args):
     materials = args.materials.resolve(strict=True)
     manifest, digest = metadata_snapshot(manifest_file(materials, "manifest.json"), args.sha256)
@@ -137,8 +156,15 @@ def relink(args):
         executable = shutil.which(f"x86_64-elf-{name}")
         require(executable is not None and sha(Path(executable)) == expected, f"Changed target tool: {name}")
         tools[name] = Path(executable).resolve(strict=True)
+    require((args.replacement is None) == (args.replacement_sha256 is None),
+            "Provide the Qt replacement directory and its manifest SHA-256 together")
+    replacement = None
+    if args.replacement is not None:
+        replacement = load_replacement(args.replacement, args.replacement_sha256, manifest, digest)
     output = args.output.absolute()
-    require(not output.is_symlink() and not output.exists() and not output.resolve().is_relative_to(materials),
+    inputs = (materials, args.replacement.resolve()) if replacement is not None else (materials,)
+    require(not output.is_symlink() and not output.exists()
+            and not any(output.resolve().is_relative_to(path) for path in inputs),
             "Use a fresh relink output directory")
     output.parent.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(prefix=f".{output.name}-", dir=output.parent) as temporary:
@@ -148,7 +174,17 @@ def relink(args):
         aliases.mkdir()
         for name in ("as", "ld"):
             (aliases / name).symlink_to(tools[name])
+        library = None
+        if replacement is not None:
+            metadata, replacement_digest, archive, users = replacement
+            library = metadata["library"]
+            archive_copy = stage_dir / archive.name
+            shutil.copyfile(archive, archive_copy)
+            with archive_copy.open("rb") as stream:
+                require(stream.read(8) == b"!<arch>\n", "Qt replacement must be a regular static archive")
+            require(sha(archive_copy) == metadata["archive_sha256"], "Qt replacement archive digest mismatch")
         seen = {}
+        changed = []
         for program, record in manifest["programs"].items():
             arguments = []
             for item in record["plan"]:
@@ -157,16 +193,26 @@ def relink(args):
                     arguments.append(item)
                 else:
                     require(item.keys() == {"file"} and item["file"] in files, "Unbound Mobius link input")
-                    arguments.append(str(manifest_file(materials, item["file"])))
+                    selected = archive_copy if item["file"] == library else manifest_file(materials, item["file"])
+                    arguments.append(str(selected))
             elf = staged / program
             subprocess.run([tools["g++"], f"--sysroot={materials / 'link/sdk'}", f"-B{aliases}/",
                             *arguments, "-o", elf], check=True)
             verify_static_elf(elf)
             seen[program] = sha(elf)
-            require(seen[program] == record["elf_sha256"], f"Relink differs from the original {program}")
-        (staged / "receipt.json").write_bytes(canonical({
+            if seen[program] != record["elf_sha256"]:
+                require(replacement is not None and program in users, f"Relink differs from the original {program}")
+                changed.append(program)
+        receipt = {
             "status": "byte_identical_mobius_relink", "materials_manifest_sha256": digest, "elfs": seen,
-        }))
+        }
+        if replacement is not None:
+            require(changed, "Qt replacement did not change either product ELF")
+            receipt.update(status="mobius_qt_replacement_linked", changed_programs=sorted(changed),
+                           replacement_manifest_sha256=replacement_digest, library=library,
+                           original_archive_sha256=metadata["original_archive_sha256"],
+                           replacement_archive_sha256=metadata["archive_sha256"])
+        (staged / "receipt.json").write_bytes(canonical(receipt))
         staged.rename(output)
 
 
@@ -181,6 +227,8 @@ def main():
     for option in ("materials", "output"):
         receiver.add_argument(f"--{option}", type=Path, required=True)
     receiver.add_argument("--sha256", required=True)
+    receiver.add_argument("--replacement", type=Path, help="directory with one Qt archive and its manifest")
+    receiver.add_argument("--replacement-sha256", help="expected manifest SHA-256 of the Qt replacement")
     args = parser.parse_args()
     (stage if args.action == "stage" else relink)(args)
 

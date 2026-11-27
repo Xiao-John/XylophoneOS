@@ -1,0 +1,106 @@
+{
+  "archive_manifests": {
+    "install/usr/lib/gcc/x86_64-elf/16.2.0/libgcc.a.member_manifest.json": "823f853d7ccd76460890fa2ad0cf521cf815f8ce5f2113d974fcf88182d78453"
+  },
+  "build_id": "65a4116c86082ecb741d17a14410ba0085b8267c01b3621749306778d7e1430c",
+  "build_tools_sha256": {
+    "cc": "1ac26e55d2fd6ac7bef7dfd08532f537dc4733b899879c6575b862eb9dd4a8d9",
+    "cxx": "13f000da1b2f787e09e34e7eb0c23547bd51b483f3a2ccebbd034ffd2290dd7a",
+    "make": "43b86c7bfda0267e3adc5c341ea27b1b1481dd5d1ef770ef12b054ebe337b157"
+  },
+  "builder_sha256": "0994351972069fe24f7be7cbfbe84b44b9d9af4467dea78e528bf499b25ad363",
+  "canonical": {
+    "build": "aarch64-unknown-linux-gnu",
+    "host": "x86_64-unknown-elf",
+    "target": "x86_64-elf"
+  },
+  "compiler_sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+  "configure_options": [
+    "--build=aarch64-unknown-linux-gnu",
+    "--host=x86_64-unknown-elf",
+    "--target=x86_64-elf",
+    "--enable-languages=c,c++",
+    "--prefix=/usr",
+    "--disable-nls",
+    "--disable-werror",
+    "--disable-bootstrap",
+    "--disable-multilib",
+    "--disable-shared",
+    "--disable-host-shared",
+    "--disable-threads",
+    "--enable-static",
+    "--with-newlib",
+    "--without-isl",
+    "--disable-libssp",
+    "--disable-libquadmath",
+    "--disable-libgomp",
+    "--disable-libatomic",
+    "--disable-libsanitizer",
+    "--disable-libvtv",
+    "--disable-libstdcxx",
+    "--disable-lto",
+    "--disable-gcov"
+  ],
+  "libgcc_sha256": "339898e1b135d8f0d9038270b41e7d17bf9b677c415e854784db4579f60af565",
+  "original_build_receipt_sha256": "41b6c824b092d7aebc010bda9f2537dad526877745ebc69fa0b5fd609d3e8e7f",
+  "patches": {
+    "0002_libiberty_xos_lstat_stat.patch": "0525cb420a6f938a16f380ceb2222f8587cab5b8e8ba58681ca55b4105a57d50",
+    "0003_libcpp_xos_no_utility_header.patch": "d9b597e37eae714615844e6036568009397adc3ebfeeba59de06cf336b1b1a3b",
+    "0004_c_only_skip_fixincludes.patch": "e6fa13b5288744e915b5a18eb0a3c7762864f18edf7f2ed84ef26482543ff9ca",
+    "0005_sarif_xos_disable_unix_socket.patch": "2c1032800655013396daa6ddf49cf1c539b8160c6d05fca0c37564638b3627ff",
+    "0006_gcc_xos_no_truncate.patch": "27f95cfad036371b61d0bc1a1b185d13e853ddff11977b4248e41e5dda161096",
+    "0007_libiberty_xos_lrealpath_fallback.patch": "c2d35666281d56c165e6b579873528c07883931be257ffb64988928e2484a71b",
+    "0008-xos-thread-clock-boundary.patch": "698e22d46aebf36344ee99444ad81bf23b8c2d5c59800fd4cec7074269be755c"
+  },
+  "post_install_normalization": {
+    "builder_sha256": "0306e132fd98058d5fc0195241b69a043a1a0d0c3ce505f83eaa8ef48d9fc66e",
+    "checkpoint": "65a4116c86082ecb741d17a14410ba0085b8267c01b3621749306778d7e1430c",
+    "options": [
+      "--strip-debug"
+    ],
+    "strip_sha256": "c70271b11778b8bbe338095e1a2a40a9ec2f38746b343eb08d6a2671e376ed01"
+  },
+  "provenance_generator_sha256": "75060cfda24110ec3c0135ae9a7e6590dec6b59d5e308d071c59934d500cb0eb",
+  "sdk_inputs": {
+    "crt0_posix.o": "315f165c471c3124e211c5579a40d7b902dd8f8444972a5c87a2cbe8c874ea58",
+    "lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+    "lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80",
+    "lib/libxos.a": "2e4a4c7c0107c2ead1960ffbcf56565ff0548bfd6da1aeb674b9796c6dea340c",
+    "lib/libxos_loader.a": "e887d14cd4f500973c3605b9235701059c6dac2d7e2db917976dc586afa4afbb",
+    "user.ld": "54a56cdc05f8db3fac0484ea0e1f869eb6be66196becd3af0297ea5bdbc43eaa"
+  },
+  "sdk_manifest_sha256": "dd95ed9b64cf6b200b6d4ccd6e7539696d0aabc1dabc5a7d8d5b16b39565f59e",
+  "source_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+  "tools": {
+    "cc1": {
+      "bytes": 46251848,
+      "path": "usr/libexec/gcc/x86_64-elf/16.2.0/cc1",
+      "sha256": "ca39763713af2fcdd6e00f7c66a090f7f919c08d34e418905e522ed59ce7e7a5"
+    },
+    "cc1plus": {
+      "bytes": 49181432,
+      "path": "usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+      "sha256": "601877faf077b430539b2c489cb66639bf4860e619d86780ae1800be18c7a1fd"
+    },
+    "collect2": {
+      "bytes": 1739824,
+      "path": "usr/libexec/gcc/x86_64-elf/16.2.0/collect2",
+      "sha256": "2d0f2b4785b56c37bbc4ae0336f86b3b6bf1b86c0af731bbd21b34399bb17b34"
+    },
+    "cpp": {
+      "bytes": 2844264,
+      "path": "usr/bin/x86_64-elf-cpp",
+      "sha256": "3dd878c27a063183da33b34ddc9cb80f945d31740d8bb009c67e58d24f0e732d"
+    },
+    "g++": {
+      "bytes": 2848400,
+      "path": "usr/bin/x86_64-elf-g++",
+      "sha256": "42cdbb9883dd3bf3b59ea5bafe2efa346ed7b26cc87c470c565e910ae34f2eca"
+    },
+    "gcc": {
+      "bytes": 2840128,
+      "path": "usr/bin/x86_64-elf-gcc",
+      "sha256": "3bba41a13e55081ea875154798e8605f80ac30217548ad3f49a693bb66df99ab"
+    }
+  }
+}

@@ -1,0 +1,258 @@
+{
+  "cases": [
+    {
+      "exit_code": 0,
+      "name": "gcc_version",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gxx_version",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gnu_make_version",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "as_version",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "ld_version",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "ar_version",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "ranlib_version",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "direct_c_compile_link",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "direct_c_execute",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "direct_cpp_compile_link",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "direct_cpp_execute",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gnu_make_from_xsh",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "make_c_execute",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "make_cpp_execute",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gnu_make_from_dash",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 1,
+      "name": "undefined_symbol_rejected",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "cold_boot_c",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "cold_boot_cpp",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    }
+  ],
+  "final_disk_sha256": "e018ab293ff22174610aa36fc4798311c6d1044835617778efd435edeca3c302",
+  "final_packages": {
+    "files": 57,
+    "status": "verified"
+  },
+  "fixtures": {
+    "/src/native/build.sh": "f6781306719c468e3cdf54b49c60fb1a3c1f352d44023921f7a3a78708cb5910",
+    "/src/native/link_error.c": "1f3ed118a6b55f830101187b883e7f9a84c9e799cfcb97c51b2c2eabd3c72956",
+    "/src/native/project.h": "b0ed2c4e42ec5318b46ebe07b8515ea3a79fedfdde0c387b37db16df7c13022d",
+    "/src/native/project.mk": "8b02aa01f1d7770d503a8aec28590336a769ffd20b66c5b9f46a7cb9290538b8",
+    "/src/native/project_c.c": "38810866dc546c557937a41431034a81f096b145d8212e59ff8525efde08ce32",
+    "/src/native/project_cpp.cpp": "14107406b700fb83f1a9e57b1274151c45826f3efad7d69865b8105e89fbce18",
+    "/src/native/project_cpp_value.cpp": "b460437b000a823f1e7305dc5cac09bfd6d15a896f94365ccdc67b37f47385c2",
+    "/src/native/project_value.c": "c48501ccdd8e82cd40a55d6e5f7b42d8a49080ed848e8392e6b60b7287c21ef3"
+  },
+  "initial_disk_sha256": "d3c51769258094448a30b57d6028456405888b0501ceebad4ad178234c26df45",
+  "initial_packages": {
+    "files": 57,
+    "status": "verified"
+  },
+  "original_guest_report_sha256": "06a67c708ee97edf8f96e0700acf43c47478e905bcd0ea053ef0eb12b234bbaf",
+  "outputs": {
+    "c.elf": {
+      "bytes": 2774848,
+      "sha256": "04dcdf810df02db3bd07734e0ce8e793419318d9b758c1f178ec1e23e6ee2300"
+    },
+    "c.map": {
+      "bytes": 602382,
+      "sha256": "8bd36a08f512f5a72e2ff02ce7da6d2e4afb157d35f9767453401d2acc724ccb"
+    },
+    "cpp.elf": {
+      "bytes": 3033848,
+      "sha256": "94aa1966bfbce4d11f00c2307b9bdd9bb2466495f34996d8d54428786c048b0b"
+    },
+    "cpp.map": {
+      "bytes": 1073087,
+      "sha256": "ca6a9bb2f1d517fb8db1a1819d0eeb15931d39b6acedd07d14faa97bba0eedcf"
+    },
+    "direct_c.elf": {
+      "bytes": 2774848,
+      "sha256": "9e795d9960b75625a603f77e47f27670f3ae8cbeb4dbada0b2778bb0ad1b27fa"
+    },
+    "direct_cpp.elf": {
+      "bytes": 3045904,
+      "sha256": "34131d04d5d8e7e1e325bbfe12473b018608d055c28f068a48d882dc9b59a8d0"
+    },
+    "libvalue.a": {
+      "bytes": 1158,
+      "sha256": "542f2a9b2a3d75d2411431944a539ef017be210eeb40d19063d3998a08fbadbe"
+    }
+  },
+  "qemu": "QEMU emulator version 11.1.2",
+  "rebuilt_gcc": {
+    "build_id": "65a4116c86082ecb741d17a14410ba0085b8267c01b3621749306778d7e1430c",
+    "guest_input_disk_sha256": "bb0a7bc1f3ccadf709fc89f9cae339e0287dad0bf3a2c1c2215d482656d7dbdb",
+    "manifest_sha256": "41b6c824b092d7aebc010bda9f2537dad526877745ebc69fa0b5fd609d3e8e7f",
+    "original_tools": {
+      "/usr/bin/x86_64-elf-cpp": "9dd9ee8dbea3e0a7edf307a4d11cbb98d8d87a98723deeed8b209f81ebc8c2ca",
+      "/usr/bin/x86_64-elf-g++": "a1574b29d8891d00f25edae17aefaa91290dc980cd9d7d221e7d302850a8dfcd",
+      "/usr/bin/x86_64-elf-gcc": "29a54a2a69de813ce153e55322a2a09d0fbd8d0a550120bb01c1db0f61b3e35c",
+      "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1": "85321572cf4aba927d7c95f0b7ef8008c04bd2798b04531a8f6396764825b12f",
+      "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus": "00beda326c502e55ec83309b782e96572113cc0a308430249520e8781c4cb139"
+    },
+    "tools": {
+      "/usr/bin/x86_64-elf-cpp": "3dd878c27a063183da33b34ddc9cb80f945d31740d8bb009c67e58d24f0e732d",
+      "/usr/bin/x86_64-elf-g++": "42cdbb9883dd3bf3b59ea5bafe2efa346ed7b26cc87c470c565e910ae34f2eca",
+      "/usr/bin/x86_64-elf-gcc": "3bba41a13e55081ea875154798e8605f80ac30217548ad3f49a693bb66df99ab",
+      "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1": "ca39763713af2fcdd6e00f7c66a090f7f919c08d34e418905e522ed59ce7e7a5",
+      "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus": "601877faf077b430539b2c489cb66639bf4860e619d86780ae1800be18c7a1fd"
+    }
+  },
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "runner_sha256": "6fcd24b96a43a732e25f4d0d1d63b1b7a550a573e4ab2b45a7500503d908742c",
+  "sdk": {
+    "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+    "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+    "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+    "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+  },
+  "seed_receipt_sha256": "dbcd711bd1121dd34e49be5c1a45b7176fb7399573267f233b27bc4ed2bcc015",
+  "status": "passed_subset",
+  "system": {
+    "build_id": "1f593b6ca9cd7904",
+    "iso": {
+      "bytes": 913408,
+      "sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb"
+    },
+    "manifest_sha256": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999",
+    "source_sha256": "1f593b6ca9cd790450cf37a8f87d67448eb934bf6037e68d24fb0e22287be86a"
+  }
+}

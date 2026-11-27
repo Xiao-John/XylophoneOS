@@ -45,7 +45,7 @@ static constexpr uint8_t expectedSFNT[] {
 static bool converts(std::span<const uint8_t> input)
 {
     RefPtr<WebCore::SharedBuffer> source = WebCore::SharedBuffer::create(input);
-    return WebCore::convertWOFFToSfntIfNecessary(source) && std::ranges::equal(source->span(), expectedSFNT);
+    return WebCore::convertWOFFToSfntIfNecessary(source) && source && std::ranges::equal(source->span(), expectedSFNT);
 }
 
 int main()
@@ -55,7 +55,7 @@ int main()
         return 1;
     const auto truncatedBytes = std::span { woffCompressed }.first(6);
     RefPtr<WebCore::SharedBuffer> truncated = WebCore::SharedBuffer::create(truncatedBytes);
-    if (WebCore::convertWOFFToSfntIfNecessary(truncated) || !std::ranges::equal(truncated->span(), truncatedBytes))
+    if (!WebCore::convertWOFFToSfntIfNecessary(truncated) || truncated)
         return 2;
     std::puts("XOS_WEBCORE_WOFF_OK uncompressed deflate truncated");
     return 0;

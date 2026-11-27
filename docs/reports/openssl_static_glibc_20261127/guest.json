@@ -1,0 +1,78 @@
+{
+  "archives": {
+    "libcrypto.a": "fe56168dc410d7daa2dca4a79c7396d14a7ebd6d85eaa8d380c3979be1cb8503",
+    "libssl.a": "7eb7dcee866d39ec36028d0af8dbd8f053cb880774ae84af63f5a0e3eb3b8359"
+  },
+  "cases": {
+    "openssl_no_entropy": {
+      "cpu": "qemu64,-rdrand",
+      "exit_status": [
+        [
+          "exited",
+          127
+        ]
+      ],
+      "proof_marker": "XOS glibc: invalid startup or entropy unavailable",
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "resources_before": [
+        129696,
+        3,
+        1
+      ]
+    },
+    "openssl_static": {
+      "cpu": "qemu64,+rdrand",
+      "exit_status": [
+        [
+          "exited",
+          0
+        ]
+      ],
+      "proof_marker": "XOS_OPENSSL_STATIC_OK sha256 rand tls13 verified_exchange hostname_reject",
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "resources_before": [
+        129696,
+        3,
+        1
+      ]
+    }
+  },
+  "checks": [
+    "default_provider_sha256_abc",
+    "getrandom_seeded_rand_bytes",
+    "tls_1_3_p256_verified_exchange",
+    "tls_hostname_mismatch_rejected",
+    "missing_entropy_rejected_before_main",
+    "normal_exit",
+    "exact_resource_reclamation"
+  ],
+  "elf_sha256": "67280d60fc367c1ecb59ed99a863d72cb37d46baae2103702caf416edafb765d",
+  "evidence_form": "derived_from_complete_guest_receipt_with_excerpt_logs",
+  "fixture_sha256": "2a2aa5663c5d2ed750c73df33f3c2117f3dfa9fa9cb62b62e12dbb76a5dc7921",
+  "image_sha256": "3f0a5a4552a4e646b886095d68f9535f630f3fba9cf536338da4c913d8474f55",
+  "runner_sha256": "0a9708f7a6116ba63a538d4e475c7b59eaa56c26be299f58fcc636b12cea9a5d",
+  "sdk_binding": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "runtime_family": "glibc",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+    "status": "candidate_binding_verified"
+  },
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "status": "passed",
+  "system_build_id": "8863999ce1a57285",
+  "system_manifest_sha256": "6483e898265ed8af4d10cf6e939efb34877d60f54160eac2069ab682e7110ff0",
+  "system_source_sha256": "8863999ce1a57285b93fe43a89d4e092257b023e3f304100fa11d0d2aa74d9f5"
+}

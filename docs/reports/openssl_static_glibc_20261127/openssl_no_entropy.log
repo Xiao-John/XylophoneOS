@@ -1,0 +1,4 @@
+[resources] free=129696 tasks=3 completions=1
+XOS glibc: invalid startup or entropy unavailable
+[wait] pid=10 kind=exited code=127
+[resources] free=129696 tasks=3 completions=1

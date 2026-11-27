@@ -75,7 +75,8 @@ QEMU 客体运行 C/C++、xsh 与 Dash 的 GNU Make、未定义符号拒绝和�
 本次将 Linux arm64 新建的五个 GCC ELF 写入同一发行盘的独立副本，按真实工具及
 构建回执摘要运行验收。18 项客体用例通过，含直接编译和执行、xsh 与 Dash 的
 GNU Make、未解析符号拒绝、冷启复验，以及 glibc sysroot 链接映射核对。
-原发行盘和冻结的软件包通过终态校验。
+原发行盘和冻结的软件包通过终态校验。公开回执保留实际工具、用例、结果和原件摘要，
+宿主路径与客体串口原文留在独立归档。
 [构建回执](../reports/gcc_seed_build_paths_20261127/linux-arm64-rebuilt.json)
 [新建工具客体回执](../reports/gcc_seed_build_paths_20261127/receiver-rebuilt.json)
 

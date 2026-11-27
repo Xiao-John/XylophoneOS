@@ -2,21 +2,11 @@
   "archive_manifests": {
     "install/usr/lib/gcc/x86_64-elf/16.2.0/libgcc.a.member_manifest.json": "823f853d7ccd76460890fa2ad0cf521cf815f8ce5f2113d974fcf88182d78453"
   },
-  "build": "aarch64-unknown-linux-gnu",
   "build_id": "65a4116c86082ecb741d17a14410ba0085b8267c01b3621749306778d7e1430c",
-  "build_tools": {
-    "cc": {
-      "path": "/usr/bin/gcc",
-      "sha256": "1ac26e55d2fd6ac7bef7dfd08532f537dc4733b899879c6575b862eb9dd4a8d9"
-    },
-    "cxx": {
-      "path": "/usr/bin/g++",
-      "sha256": "13f000da1b2f787e09e34e7eb0c23547bd51b483f3a2ccebbd034ffd2290dd7a"
-    },
-    "make": {
-      "path": "/usr/bin/make",
-      "sha256": "43b86c7bfda0267e3adc5c341ea27b1b1481dd5d1ef770ef12b054ebe337b157"
-    }
+  "build_tools_sha256": {
+    "cc": "1ac26e55d2fd6ac7bef7dfd08532f537dc4733b899879c6575b862eb9dd4a8d9",
+    "cxx": "13f000da1b2f787e09e34e7eb0c23547bd51b483f3a2ccebbd034ffd2290dd7a",
+    "make": "43b86c7bfda0267e3adc5c341ea27b1b1481dd5d1ef770ef12b054ebe337b157"
   },
   "builder_sha256": "0994351972069fe24f7be7cbfbe84b44b9d9af4467dea78e528bf499b25ad363",
   "canonical": {
@@ -24,10 +14,7 @@
     "host": "x86_64-unknown-elf",
     "target": "x86_64-elf"
   },
-  "compiler": "/opt/xos/bin/x86_64-elf-gcc",
   "compiler_sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
-  "config_site_sha256": "dd5e3630301f1ce254c3f8b3799d4d966101054f2e7bda966ce315428eba636e",
-  "configure_log": ".cache/xos_seed/gcc/build/65a4116c86082ecb741d17a14410ba0085b8267c01b3621749306778d7e1430c/build.log",
   "configure_options": [
     "--build=aarch64-unknown-linux-gnu",
     "--host=x86_64-unknown-elf",
@@ -54,12 +41,8 @@
     "--disable-lto",
     "--disable-gcov"
   ],
-  "cxx_new_header_sha256": "00cd44d83531e70e714ca041335746473810ae18bbcde1791d8740b6db53692c",
-  "cxx_runtime_sha256": "6ef8fc75dc92b477c62e9ef6eb87c8c04b21bf6fd020a70111309c4d1ce26175",
-  "host": "x86_64-unknown-elf",
-  "libgcc": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
   "libgcc_sha256": "339898e1b135d8f0d9038270b41e7d17bf9b677c415e854784db4579f60af565",
-  "manifest_schema": 1,
+  "original_build_receipt_sha256": "41b6c824b092d7aebc010bda9f2537dad526877745ebc69fa0b5fd609d3e8e7f",
   "patches": {
     "0002_libiberty_xos_lstat_stat.patch": "0525cb420a6f938a16f380ceb2222f8587cab5b8e8ba58681ca55b4105a57d50",
     "0003_libcpp_xos_no_utility_header.patch": "d9b597e37eae714615844e6036568009397adc3ebfeeba59de06cf336b1b1a3b",
@@ -86,11 +69,8 @@
     "lib/libxos_loader.a": "e887d14cd4f500973c3605b9235701059c6dac2d7e2db917976dc586afa4afbb",
     "user.ld": "54a56cdc05f8db3fac0484ea0e1f869eb6be66196becd3af0297ea5bdbc43eaa"
   },
-  "sdk_manifest": "build/gnu-seed-portable/legacy-sdk/manifest.json",
   "sdk_manifest_sha256": "dd95ed9b64cf6b200b6d4ccd6e7539696d0aabc1dabc5a7d8d5b16b39565f59e",
   "source_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
-  "stdcxx_manifest": "/repo/build/gnu-seed-portable/legacy-sdk/cpp",
-  "target": "x86_64-elf",
   "tools": {
     "cc1": {
       "bytes": 46251848,

@@ -6,7 +6,8 @@
 int __fstatat64 (int fd, const char *path, struct stat64 *output, int flags)
 {
   if (path == 0 || output == 0) return (int) xos_file_result (-EFAULT);
-  if ((flags & ~(AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH)) != 0)
+  /* The generic statx forwards AT_NO_AUTOMOUNT. XOS has no automounts. */
+  if ((flags & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT | AT_EMPTY_PATH)) != 0)
     return (int) xos_file_result (-EINVAL);
   const char *effective = path[0] == 0 && (flags & AT_EMPTY_PATH) ? 0 : path;
   if (effective != 0 && fd != AT_FDCWD && path[0] != '/')

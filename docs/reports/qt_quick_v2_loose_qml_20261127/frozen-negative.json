@@ -1,0 +1,38 @@
+{
+  "app_receipt_sha256": "c7e96913138bcb4b8223188985f0e20f00a934ca4cb1b5461f6bb41fb43b138d",
+  "cases": {
+    "mint": {
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "colors": [
+        "35c29d",
+        "f0a945"
+      ],
+      "fat_files": {
+        "/bin/quick-file.elf": "86289dcfeb8dc0996160b0f5bf61ca6c7626f77d115b15f4a65de1de95e15c23",
+        "/usr/share/quick-file/Scene.qml": "23670ef131c7c86bc49f351afefb609b693c4c44fd6e010bb66f446beea1d897",
+        "/usr/share/quick-file/ScenePalette.qml": "4e032534f20a4956c98cb94b9829a84d98e46d7af7f02af9ebce5aebb966d4b2"
+      },
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "serial_sha256": "3c42df5810b5d55c9513943f09accd7aebc8f868a1baf99c9d65baceca0595c4",
+      "with_graphics": [
+        121633,
+        5,
+        3
+      ]
+    }
+  },
+  "elf_sha256": "86289dcfeb8dc0996160b0f5bf61ca6c7626f77d115b15f4a65de1de95e15c23",
+  "expected_failure": "Scene.qml: File is empty; application exited 1",
+  "iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+  "kit_manifest_sha256": "3fb616d43e5339ece5f605c3288dd5a929e407183b5fbef7fcc64b16dcec0b62",
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "status": "failed",
+  "system_build_id": "1f593b6ca9cd7904",
+  "system_manifest_sha256": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999",
+  "target_receipt_sha256": "1e33ee5919a2490bb4d906c0aaf7174eca42edc1680d99adcba14e45546dbe5c"
+}

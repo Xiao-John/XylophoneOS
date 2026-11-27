@@ -156,6 +156,8 @@ G2 基础 console profile 仍可单独链接。终端 startup v2/v3、kind5 与�
 O_APPEND 返回 ENOTSUP（既有服务没有该句柄操作）。
 文件系统无 symlink，NOFOLLOW 和 AT_SYMLINK_NOFOLLOW 按此 profile 处理。
 相对路径的 `openat/fstatat` 支持 AT_FDCWD；其他 dirfd 相对路径返回 ENOTSUP。
+`fstatat/fstatat64` 接受 GNU 兼容查询位 `AT_NO_AUTOMOUNT`，通用 `statx`
+将其转交给 `fstatat64`。XOS 无自动挂载，置位时照常查询元数据。未知标志位仍返回 EINVAL。
 `AT_EMPTY_PATH` 可查询已打开的 FD。未知操作返回确定错误。
 
 静态单线程 glibc 的 `fork` 和 `_Fork` 复用原生进程快照和文件服务

@@ -141,6 +141,24 @@ int main (int argc, char **argv)
          && via_at.st_ino == information.st_ino && via_at.st_size == information.st_size);
   CHECK (fstatat (copy, "", &via_at, AT_EMPTY_PATH) == 0
          && via_at.st_ino == information.st_ino && via_at.st_size == information.st_size);
+  CHECK (fstatat (AT_FDCWD, path, &via_at, AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT) == 0
+         && via_at.st_mode == information.st_mode && via_at.st_size == information.st_size);
+  struct stat64 via_at64;
+  CHECK (fstatat64 (copy, "", &via_at64, AT_EMPTY_PATH | AT_NO_AUTOMOUNT) == 0
+         && via_at64.st_mode == information.st_mode && via_at64.st_size == information.st_size);
+  struct statx extended;
+  const unsigned int mask = STATX_TYPE | STATX_MODE | STATX_SIZE;
+  CHECK (statx (AT_FDCWD, path, AT_NO_AUTOMOUNT, mask, &extended) == 0
+         && (extended.stx_mask & mask) == mask
+         && extended.stx_mode == information.st_mode && extended.stx_size == 6);
+  CHECK (statx (copy, "", AT_EMPTY_PATH | AT_NO_AUTOMOUNT, mask, &extended) == 0
+         && (extended.stx_mask & mask) == mask
+         && extended.stx_mode == information.st_mode && extended.stx_size == 6);
+  errno = 0;
+  CHECK (fstatat (AT_FDCWD, path, &via_at, AT_NO_AUTOMOUNT | AT_REMOVEDIR) == -1 && errno == EINVAL);
+  errno = 0;
+  CHECK (fstatat64 (copy, "", &via_at64, AT_NO_AUTOMOUNT | AT_EMPTY_PATH | AT_REMOVEDIR) == -1
+         && errno == EINVAL);
   errno = 0;
   CHECK (fstatat (copy, "relative", &via_at, 0) == -1 && errno == ENOTSUP);
   CHECK (fsync (copy) == 0 && close (copy) == 0);

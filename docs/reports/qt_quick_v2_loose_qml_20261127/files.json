@@ -1,0 +1,54 @@
+{
+  "checks": {
+    "fixed_single": {
+      "afterward": [
+        129709,
+        3,
+        1
+      ],
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "line": "GLIBC_G3_FILES_PASS checks=33 threaded=0",
+      "serial_sha256": "55d02b3f98db10f0004e3c7e3a3bfc316b472873dea9f141a3e89d71e8002238"
+    },
+    "fixed_threads": {
+      "afterward": [
+        129709,
+        3,
+        1
+      ],
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "line": "GLIBC_G3_FILES_PASS checks=39 threaded=1",
+      "serial_sha256": "11156b8f7a1b88ae03240719e913b6050cbecfccbfee64a19bfcf0927aabf240"
+    },
+    "original_single": {
+      "afterward": [
+        129709,
+        3,
+        1
+      ],
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "line": "GLIBC_G3_FILES_FAIL line=144 errno=22",
+      "serial_sha256": "4be5f5dfe59b49b4466bac559a7d7bb9caa9dd18a813e6ee19290b33f2953916"
+    }
+  },
+  "fixed_elf_sha256": "fbe592276d0d8b64d79c06e3e7bd357d9df7d58d341c1e44018c16f2534be7b1",
+  "fixed_libc_sha256": "4fa8e4f124ecd86fec7adf6afb05186bc38fdcf2f16a75bbd938dc8c68738def",
+  "frozen_libc_sha256": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+  "iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+  "original_elf_sha256": "4b91c149e8fc5a80c3310196c9bc80c96231af9f9b02f39ec66da0825df035fd",
+  "source_sha256": "16ffa34bc07dea4f0043c012f82653a6390f499d613e1101598ace6b02bf8764",
+  "status": "passed",
+  "system_build_id": "1f593b6ca9cd7904"
+}

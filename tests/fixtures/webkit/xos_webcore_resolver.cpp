@@ -139,7 +139,6 @@ int main(int argc, char** argv)
         return 1;
 
     WTF::initializeMainThread();
-    WTF::RunLoop::initializeMain();
     if (!WebCore::configureXOSDNSService(*pid))
         return 2;
 

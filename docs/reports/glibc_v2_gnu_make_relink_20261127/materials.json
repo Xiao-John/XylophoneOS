@@ -1,0 +1,217 @@
+{
+  "files": {
+    "licenses/usr/share/xos-glibc/COPYING.LIB": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+    "licenses/usr/share/xos-glibc/LICENSES": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+    "licenses/usr/share/xos-glibc/compiler-runtime-licenses/COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+    "licenses/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861",
+    "licenses/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+    "licenses/usr/share/xos/terminal-support/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "licenses/usr/share/xos/terminal-support/licenses/mit_legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+    "objects/lib/libgnu.a": "15ff7cadca016394fbadb8c501702825cfc6c7714135efacb03a579be2df419b",
+    "objects/src/ar.o": "e6c9b729eed22de832891b25d04540d30dc01902f2a7bfab7241aca9811f65b6",
+    "objects/src/arscan.o": "f87b5ecf7647268c731694fd6bf1a227ff897586d5ecaa2f7ef3eb9d24f36a03",
+    "objects/src/commands.o": "703136ef2c053e328dc85c3cb5a74df4c4b4365fb0362d86e2064f8976426927",
+    "objects/src/default.o": "ceae2cfe6220a179c5f237470db8654b618e6379ab0cf770c1f276bf5842c392",
+    "objects/src/dir.o": "3cbd31098c09471d4327ea5d559b257451fce782caf2982908a28584c46b5bb1",
+    "objects/src/expand.o": "edf16c573f284e4bdee63aa62970348a083c4d6c531650fca0962ca15cd637d5",
+    "objects/src/file.o": "601be026ebfb7b7a25e3e1517c96cf2b8184cd9d8cbbe059802c780a4cf904f0",
+    "objects/src/function.o": "c482da6874eaf055012ee42947201ccfb0d5126499b634a4c16b8a9ab158537b",
+    "objects/src/getopt.o": "72d7c413e6d3be2e8f4e6efcce376dbd305cbea47afcf178b6dbf276057803d6",
+    "objects/src/getopt1.o": "8b4807c8a1e0a20119ba97271a856aa2272463da9cbce7e4f9669bef7c7c0c69",
+    "objects/src/guile.o": "cdaf309ffd6f24af78b19913bae65725d48932540d6fd917bedc5b9a91b54af9",
+    "objects/src/hash.o": "669b49c6a4597abbe50105489a349e256f18470889379f3371665b27482097d2",
+    "objects/src/implicit.o": "e54558e20eb83bad2b6c9c1ee39e09258848d79126ef3a42b6896e8ef5886114",
+    "objects/src/job.o": "ac49008b0f88efddc4353adcf8f6822c0a180830af6c3e098fa9780650198558",
+    "objects/src/load.o": "f4b4cef7cd2eb81813fdd0037fbdf182cdc951179bbe578ab360a339384a86cd",
+    "objects/src/loadapi.o": "bc612d363c787f681a5abdcca4c1caa3540e4f9aaa63c2b4a53327de6d6c2cbd",
+    "objects/src/main.o": "fa28495998ea8bebf1675453e7fb5e045184f804ffe5dcfae576cdaef9945036",
+    "objects/src/misc.o": "c20400d636c920e1cb0720a55da2810ccb10e844f437a53ced4a83bb2a657ea9",
+    "objects/src/output.o": "0575b412dd10964d5edb5827bf1941f25058df6be84435f095aeb8b30f1fa68d",
+    "objects/src/posixos.o": "daf0274d165af7b732fda755c14a32df5f7ec4982c351425fd1989f394d85017",
+    "objects/src/read.o": "2910174143a6f1ae38d234651f36694b16e726187c22106ecba1030086909844",
+    "objects/src/remake.o": "c4749eb70f92283ce412cedd5fbbeaaccc5373e21b2d84a03c842390996151fd",
+    "objects/src/remote-stub.o": "b9e3673d773f1180436c25ef54d88d808e525faf1541582dc8763491bc057be5",
+    "objects/src/rule.o": "019ea35c34ace827a8b3003868920534c3209ef883dc4ed285ca36040320272d",
+    "objects/src/shuffle.o": "5c15d936321f57ad263d35c66cedf2d966aff73e87f39aebd618b71893a29582",
+    "objects/src/signame.o": "e907d51f6b38f516165340d3e7651ef44be6f86b11cb289024471de8549d99ce",
+    "objects/src/strcache.o": "c6f8aff4c23227e0bfea01b23c637bc0042497661a8df2f038bab4f53f39a4fd",
+    "objects/src/variable.o": "249b9a60a3f7ce38202e6481c9de5be62c8cf7931ce9ab31f03209084c585113",
+    "objects/src/version.o": "853aed7892af0584e4b8aadb3e6fe7eee3768205193251daf2471535ecd7d1dd",
+    "objects/src/vpath.o": "205b449cd055ca1c0657a80e5163ccb493112e5654e3a7b212f21614f312d472",
+    "receipt/compile.log": "21f126e18fc8d1515518eaaa248d256de92e74a787bb1468700eb140427444f4",
+    "receipt/config.h": "ff5f564d6178c9d6a2d729c61367386f46479021e47f9e5a995f6809d6f4db5d",
+    "receipt/gnu_make.json": "74a3423b1d07cd9a39d9826765c8157c4b5feb9b51894c9842a69d5a7f0d8af7",
+    "receipt/gnu_seed_receipt.json": "dbcd711bd1121dd34e49be5c1a45b7176fb7399573267f233b27bc4ed2bcc015",
+    "receipt/profile.json": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "receipt/release_manifest.json": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+    "receipt/sdk_manifest.json": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+    "source/scripts/build_gnu_make.py": "48be835c17f86da8dde199c373310a479483585dfdaab6efef70e55f789f3181",
+    "source/src/ports/gnu_make/README.md": "4684dc7cc20f7889619161d0b0b80050738759959c1b7e92b4b27ff5ed4d00aa",
+    "source/src/ports/gnu_make/patches/0001_xos_job_launch.patch": "0c95860661451f11fed079e8df2c38f3398254c8812d0a312c768701bdb36f36",
+    "source/src/ports/gnu_make/source_lock.json": "e833bda8fc796b6a9af0328120f007997717243bbbf2c54ee2e13d41248468b9",
+    "source/src/ports/gnu_make/upstream/COPYING": "e79e9c8a0c85d735ff98185918ec94ed7d175efc377012787aebcf3b80f0d90b",
+    "source/src/ports/gnu_make/xos_spawn.h": "13909bcb5842df682719d9e6f921ca958fc8d408452be9bcfda683ac76fbc405",
+    "sysroot/user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+    "sysroot/usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+    "sysroot/usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+    "sysroot/usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+    "sysroot/usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+    "sysroot/usr/lib/libc.a": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+    "sysroot/usr/lib/libgcc.a": "76e46640d9329f32d0b87dc68d7b571e2a4f8d7474c564dc2e669dff81fd8916",
+    "sysroot/usr/lib/libm.a": "7aabb093ac75321799ce6363387c80c4c9d1510ccecb47c7089b3fa2531e6fb1",
+    "sysroot/usr/lib/libxos_terminal.a": "07d18c058afb139af1de6db0cca92a1fa25fb8ab18cf96c9c9821348bc9eb593",
+    "sysroot/usr/lib/xos_start.o": "4a90a2f5efab12fb494ec380fbc9fcbba62b1e3ad6884e9ed11d2fb890b489a6",
+    "sysroot/usr/lib/xos_start_c.o": "2c3b60c6148273622151eed140c8c6ad98ad5c6f8528a574f83fcfcbfe996a21",
+    "sysroot/usr/lib/xos_stdio_receiver.o": "3672a722947c2e4d3cfe7616ff7117f3ab7791f980a83a81dd0b846f57ac1e3f",
+    "tools/glibc_g1_deps.py": "4b02e7b8bea7d69fe85ebe13f8627d261a64b5e7ffbd075221aa797094795f35",
+    "tools/glibc_g1_probe.py": "0e508036b6e4098faa290c4e41c32b651aea54167fbf5d3b4c9283732fabc451",
+    "tools/relink_release_xypm.py": "ea49804795c36b0e9fcfbf9a68b2a1318d0124392ba22b684eebe76b5fc6c9f0",
+    "tools/xypm_format.py": "661d1919f42e06f5ac942b5dfbcacdc4f1dffac16e0c3ee701e8c9e742bc808c"
+  },
+  "format": "xos_release_gnu_make_relink_v1",
+  "plan": [
+    "-nostdlib",
+    "-static",
+    "-no-pie",
+    "-Wl,--gc-sections,--build-id=none,-z,noexecstack,-z,max-page-size=4096",
+    {
+      "file": "objects/src/ar.o"
+    },
+    {
+      "file": "objects/src/arscan.o"
+    },
+    {
+      "file": "objects/src/commands.o"
+    },
+    {
+      "file": "objects/src/default.o"
+    },
+    {
+      "file": "objects/src/dir.o"
+    },
+    {
+      "file": "objects/src/expand.o"
+    },
+    {
+      "file": "objects/src/file.o"
+    },
+    {
+      "file": "objects/src/function.o"
+    },
+    {
+      "file": "objects/src/getopt.o"
+    },
+    {
+      "file": "objects/src/getopt1.o"
+    },
+    {
+      "file": "objects/src/guile.o"
+    },
+    {
+      "file": "objects/src/hash.o"
+    },
+    {
+      "file": "objects/src/implicit.o"
+    },
+    {
+      "file": "objects/src/job.o"
+    },
+    {
+      "file": "objects/src/load.o"
+    },
+    {
+      "file": "objects/src/loadapi.o"
+    },
+    {
+      "file": "objects/src/main.o"
+    },
+    {
+      "file": "objects/src/misc.o"
+    },
+    {
+      "file": "objects/src/output.o"
+    },
+    {
+      "file": "objects/src/read.o"
+    },
+    {
+      "file": "objects/src/remake.o"
+    },
+    {
+      "file": "objects/src/rule.o"
+    },
+    {
+      "file": "objects/src/shuffle.o"
+    },
+    {
+      "file": "objects/src/signame.o"
+    },
+    {
+      "file": "objects/src/strcache.o"
+    },
+    {
+      "file": "objects/src/variable.o"
+    },
+    {
+      "file": "objects/src/version.o"
+    },
+    {
+      "file": "objects/src/vpath.o"
+    },
+    {
+      "file": "objects/src/posixos.o"
+    },
+    {
+      "file": "objects/src/remote-stub.o"
+    },
+    {
+      "file": "objects/lib/libgnu.a"
+    },
+    "-T",
+    {
+      "file": "sysroot/user.ld"
+    },
+    {
+      "file": "sysroot/usr/lib/xos_start.o"
+    },
+    {
+      "file": "sysroot/usr/lib/crti.o"
+    },
+    {
+      "file": "sysroot/usr/lib/crtbegin.o"
+    },
+    {
+      "file": "sysroot/usr/lib/xos_start_c.o"
+    },
+    {
+      "file": "sysroot/usr/lib/xos_stdio_receiver.o"
+    },
+    "-Wl,--start-group",
+    {
+      "file": "sysroot/usr/lib/libc.a"
+    },
+    {
+      "file": "sysroot/usr/lib/libm.a"
+    },
+    {
+      "file": "sysroot/usr/lib/libxos_terminal.a"
+    },
+    {
+      "file": "sysroot/usr/lib/libgcc.a"
+    },
+    "-Wl,--end-group",
+    {
+      "file": "sysroot/usr/lib/crtend.o"
+    },
+    {
+      "file": "sysroot/usr/lib/crtn.o"
+    }
+  ],
+  "reference": "793e6b79d866e42b2633f462c59afc72cd7c716e6e5e7609bcf7e998e58a0ebe",
+  "tools": {
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1"
+  },
+  "work_disk_sha256": "d3c51769258094448a30b57d6028456405888b0501ceebad4ad178234c26df45"
+}

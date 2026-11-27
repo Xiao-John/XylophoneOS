@@ -1,0 +1,47 @@
+{
+  "actual_work_disk_sha256": "d3c51769258094448a30b57d6028456405888b0501ceebad4ad178234c26df45",
+  "archive_comparison": {
+    "changed_members": [
+      "exit.o"
+    ],
+    "ordered_members_equal": 1686,
+    "original_exit_sha256": "c5ba773aa3708ceb98dbb95decddaf947d09edfddcd235655da62fbd3108544d",
+    "replacement_exit_sha256": "72fdf214030dd6f7163c8a7f7c261a40ced424e90f43cc914860cf1ef521182b"
+  },
+  "candidate_source_commit": "960fce4347f193f13f5214caee153a03891ab100",
+  "disk_path_read_only": "/usr/bin/gmake",
+  "gnu_seed_receipt_sha256": "dbcd711bd1121dd34e49be5c1a45b7176fb7399573267f233b27bc4ed2bcc015",
+  "make_build_receipt_sha256": "74a3423b1d07cd9a39d9826765c8157c4b5feb9b51894c9842a69d5a7f0d8af7",
+  "make_compile_log_sha256": "21f126e18fc8d1515518eaaa248d256de92e74a787bb1468700eb140427444f4",
+  "make_upstream_archive_sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+  "make_upstream_signature_sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929",
+  "materials_archive": {
+    "bytes": 8657284,
+    "sha256": "edff196fbed3bdc9be7add78855c8a2d97adf98c8b5c8e1144f9e73c2d9723cb"
+  },
+  "materials_manifest_sha256": "e4f7b7fdb778e042ac012f0ef5b7fa60d27f799aeaf59d8b7c710626589f2e1e",
+  "non_sdk_archives": [
+    "objects/lib/libgnu.a"
+  ],
+  "non_sdk_objects": 30,
+  "original_elf_sha256": "793e6b79d866e42b2633f462c59afc72cd7c716e6e5e7609bcf7e998e58a0ebe",
+  "original_libc_sha256": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "receiver": {
+    "cpu_limit": 1,
+    "image": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450",
+    "network": "none",
+    "sdk_or_repository_mounted": false,
+    "test_sha256": "ab45a7f0d562629b2344052c0235c9b633e507dfb10c98253d031eb352adb1e3"
+  },
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "relink_cli_compatibility": {
+    "dash": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+    "xypm": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745"
+  },
+  "replacement_elf_sha256": "573e1c4c30fc6d16e0fa140aaac036da2465d5c36ee656ffde7f89bcb97d25de",
+  "replacement_libc_sha256": "8b36bad893b178d968a04efd8a54a7f5affd63af68ac070938a580fe499c1c60",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "status": "passed_subset",
+  "wrong_replacement_digest_rejected_before_output": true
+}

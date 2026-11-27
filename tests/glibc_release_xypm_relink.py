@@ -129,7 +129,7 @@ def guest(args):
             require(sha_file(installed.export('/usr/bin/xypm')) == release['xypm_sha256'],
                     'installed xypm differs from release')
         disk = work / 'guest.img'
-        create_fat32(disk, 128)
+        create_fat32(disk, 512)
         with Disk(disk, work) as fat:
             fat.command('import', '/original.elf', args.original)
             fat.command('import', '/replacement.elf', args.replacement)

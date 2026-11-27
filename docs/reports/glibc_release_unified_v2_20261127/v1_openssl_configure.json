@@ -1,0 +1,28 @@
+{
+  "build_receipt_sha256": "7c907e651d311aac98730ec3f82b08814138cd28fea77306bfa445c3dd80471f",
+  "modules": {
+    "MODULE__HASHLIB_STATE": "yes",
+    "MODULE__SOCKET_STATE": "n/a",
+    "MODULE__SSL_STATE": "missing"
+  },
+  "openssl_build_receipt_sha256": "b2d72fcb9d45ebf6f0819daeac7e55f6cf4945fe2ed0f9a8d6c773389612c572",
+  "openssl_version": "3.5.9",
+  "profile": "xos-x86_64-glibc-unified-cxx-v1",
+  "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "static_extensions": [
+    "_hashlib"
+  ],
+  "status": "configured_not_built",
+  "unqualified": [
+    "dynamic extension loading",
+    "Pillow",
+    "zlib",
+    "SQLite",
+    "bzip2/xz/zstd",
+    "full standard library",
+    "interactive REPL",
+    "socket",
+    "_ssl and socket TLS"
+  ]
+}

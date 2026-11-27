@@ -1,0 +1,36 @@
+{
+  "checks": [
+    "installer_idempotent_package_setup_and_python_smoke",
+    "cold_ordinary_python_and_native_ownership",
+    "native_foreign_package_rejected_without_transaction",
+    "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+  ],
+  "derived_from_exact_raw_report": true,
+  "final_disk_sha256": "7c7e3be4dd6b98653a5849fab39f798f4c9bf4bc2675e65b033be0131b3645c9",
+  "foreign_package_sha256": "9696201a8025f12e6f2fc8a3948dcb78711074513197798f57cb8e2e0eaa1e02",
+  "initial_disk": {
+    "files": 57,
+    "status": "verified"
+  },
+  "installed_disk": {
+    "files": 57,
+    "status": "verified"
+  },
+  "installer_resources": [
+    125920,
+    2,
+    0
+  ],
+  "ordinary_resources": [
+    129806,
+    2,
+    0
+  ],
+  "preserved_user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "remaining_disk": {
+    "files": 15,
+    "status": "verified"
+  },
+  "status": "passed_subset"
+}

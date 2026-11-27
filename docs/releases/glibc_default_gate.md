@@ -25,6 +25,11 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 最终候选应补齐统一 C/C++ SDK 的 GNU 上游、构建输入和随包静态程序清单。
 [候选验收回执](../reports/glibc_release_package_composition_20261127/manifest.json)
 
+显式 v2 静态候选已在 `8e66789c` 重建，并用同一发行初盘的副本完成包和原生
+编译组合客体。接收方已重开四份归档并核对 GNU Make 签名。后续产品、升级与恢复
+及完整静态重链接材料继续使用最终选定候选验收。
+[v2 复验记录](../work_log/9f6b0349_glibc_v2_release_inputs.md)
+
 ## 整套资产的发布门
 
 | 关口 | 要求的实际证据 |

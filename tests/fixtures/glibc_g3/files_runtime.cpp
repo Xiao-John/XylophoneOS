@@ -60,8 +60,13 @@ extern "C" int __xos_file_test_startup_range(xos_u64 address, xos_u64 length) {
     return address >= begin && address <= begin + sizeof(startup_area) &&
         length <= begin + sizeof(startup_area) - address;
 }
-extern "C" xos_i64 __xos_wait_word(xos_u32* address, xos_u32 expected, xos_u64) {
+extern "C" xos_i64 __xos_wait_word(xos_u32* address, xos_u32 expected, xos_u64 deadline) {
     runtime_waiting = true;
+    if (deadline != ~xos_u64{0}) {
+        assert(failure && !std::strcmp(failure, "bounded_lock"));
+        now_ns = static_cast<long>(deadline);
+        return xos::thread_error_timeout;
+    }
     const long result = syscall(SYS_futex, address, FUTEX_WAIT_PRIVATE, expected, nullptr, nullptr, 0);
     return result == 0 ? 0 : errno == EAGAIN ? -14 : -11;
 }
@@ -665,6 +670,51 @@ static void access_legacy_stat() {
     assert(last_stat_flags == 0 && sends == 2 && opens == 0 && closes == 0);
 }
 
+static void native_deadline(const char* scenario) {
+    xos::file::client native;
+    assert(native.init());
+    assert(!native.set_deadline(1ULL << 63));
+    if (!std::strcmp(scenario, "native_deadline_expired")) {
+        assert(native.set_deadline(1));
+        xos::u32 bytes = 0, version = 0;
+        assert(native.stat("/fixture", bytes, version) == xos::file::transport_timeout && sends == 0);
+        assert(native.set_deadline(1000000));
+        assert(native.stat("/fixture", bytes, version) == 0 && sends == 1);
+    } else if (!std::strcmp(scenario, "native_deadline_lock")) {
+        xos_spawn_stdio snapshot{};
+        assert(__xos_file_spawn_begin(&snapshot) == 0);
+        failure = "bounded_lock";
+        assert(native.set_deadline(1000000));
+        assert(native.set_cwd("/updated", 77) == xos::file::transport_timeout);
+        assert(runtime_waiting && sends == 0);
+        __xos_file_spawn_end(&snapshot);
+        assert(native.set_deadline(2000000));
+        assert(native.set_cwd("/updated", 77) == 0 && sends == 1);
+    } else {
+        const int fd = static_cast<int>(__xos_file_open("/fixture", O_RDWR));
+        assert(fd == 3);
+        xos_file_lease lease{};
+        assert(__xos_file_lease_acquire(fd, 1, &lease) == 0);
+        assert(native.set_deadline(1234567));
+        failure = !std::strcmp(scenario, "native_deadline_reply") ? "wait_ready" : "wait_timeout";
+        failure_armed = true;
+        const auto result = native.write(lease.handle, "x", 1);
+        const bool success = !std::strcmp(scenario, "native_deadline_reply");
+        assert(result == (success ? 1 : xos::file::transport_timeout));
+        assert(reply_waits == 1 && reply_deadline == 1234567 && sends == 2);
+        failure_armed = false;
+        assert(native.set_deadline(0));
+        if (success) {
+            assert(__xos_file_write(fd, "y", 1) == 1 && sends == 3);
+            assert(__xos_file_lease_release(&lease) == 0 && __xos_file_close(fd) == 0);
+        } else {
+            assert(native.init());
+            assert(native.write(lease.handle, "y", 1) == -7 && sends == 2);
+            assert(__xos_file_write(fd, "z", 1) == -EIO && sends == 2);
+        }
+    }
+}
+
 int main(int argc, char** argv) {
     assert(argc == 2);
     if (!std::strcmp(argv[1], "basic")) basic();
@@ -681,6 +731,7 @@ int main(int argc, char** argv) {
     else if (!std::strcmp(argv[1], "pipe_writev")) pipe_writev();
     else if (!std::strcmp(argv[1], "public_lease")) public_lease();
     else if (!std::strcmp(argv[1], "native_read_capacity")) native_read_capacity();
+    else if (!std::strncmp(argv[1], "native_deadline_", 16)) native_deadline(argv[1]);
     else if (!std::strncmp(argv[1], "block_", 6)) block_bench(argv[1]);
     else if (!std::strncmp(argv[1], "anonymous_", 10)) anonymous_exchange(argv[1]);
     else if (!std::strncmp(argv[1], "directory_", 10)) directory_exchange(argv[1]);

@@ -65,6 +65,12 @@ long __xos_file_exchange (const struct xos_file_request *, struct xos_file_respo
 /* Native loader hook uses file::status values, not libc errno values. */
 long xos_file_session_exchange (const struct xos_file_request *, struct xos_file_response *)
   __attribute__ ((visibility ("hidden")));
+/* Includes cwd/session lock acquisition and startup descriptor initialization.
+   The finite absolute deadline expires as SDK transport_timeout (-1001),
+   distinct from every files-v2 status. Shares the same sequence and poison. */
+long xos_file_session_exchange_until (const struct xos_file_request *,
+                                    struct xos_file_response *, xos_u64)
+  __attribute__ ((visibility ("hidden")));
 #ifdef __cplusplus
 }
 #endif

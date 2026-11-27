@@ -4,6 +4,9 @@
 #include <xos/file_abi.hpp>
 
 namespace xos::file {
+// Local transport result, never a files-v2 service status. A deadline which
+// expires after send poisons the process session; init cannot revive it.
+inline constexpr i64 transport_timeout = -1001;
 struct entry {
     char name[max_name];
     u32 size;
@@ -14,6 +17,13 @@ struct entry {
 class client {
 public:
     bool init();
+    // Zero restores the historical unbounded API. A finite value is an
+    // absolute CLOCK_MONOTONIC nanosecond deadline for every call and lock.
+    bool set_deadline(u64 absolute_ns) {
+        if (absolute_ns > 0x7fffffffffffffffULL) return false;
+        deadline_ = absolute_ns;
+        return true;
+    }
     i64 ping();
     i64 list(entry* entries, u32 capacity, u32& count);
     i64 list(const char* path, entry* entries, u32 capacity, u32& count, u32& cursor);
@@ -66,6 +76,7 @@ public:
     i64 abort_replace();
 
 private:
+    u64 deadline_ = 0;
     i64 decode_metadata(u64& mtime, u32& mode);
     u8 metadata_format_ = 0;
     i64 set_path(const char* path, char* target, u32& length);

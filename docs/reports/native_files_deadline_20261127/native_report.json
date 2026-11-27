@@ -1,0 +1,126 @@
+{
+  "status": "passed",
+  "scope": "native client with kernel trap injection",
+  "guest": "not_run",
+  "command": [
+    "g++",
+    "-std=c++20",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wconversion",
+    "-Wshadow",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-I",
+    "${XOS_SOURCE}/src/shared/include",
+    "-I",
+    "${XOS_SOURCE}/src/user/include",
+    "${XOS_SOURCE}/src/user/sdk/file_client.cpp",
+    "${XOS_SOURCE}/src/user/sdk/text.cpp",
+    "${XOS_SOURCE}/tests/fixtures/dynamic_admission/file_deadline.cpp",
+    "-Wl,--gc-sections",
+    "-o",
+    "${XOS_SOURCE}/build/p0_native_file_deadline_final/test"
+  ],
+  "inputs": {
+    "src/user/sdk/file_client.cpp": "0be4e547cf074110f3596ce199fdc2062219c1a44788ad998140c6846b1fbf16",
+    "src/user/sdk/text.cpp": "6f9a8389c89d02f94d9003381fe438ab39705494095ad50593862eaad0cf9d21",
+    "tests/fixtures/dynamic_admission/file_deadline.cpp": "62d658637aaaf2124c46c8674d86c53f0714b8f8e5b05a1e2162f67c5d66871a",
+    "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "src/user/include/xos/terminal_client.hpp": "3ef1d2d4e763a510f32457dd2eccb37cabe1ea7df5f3ba2cc50814cbf6ea56fb",
+    "src/user/include/xos/audio_client.hpp": "75b4ef444194a38a9f64889b49c849ad399870129c81b2971ae27f8bfbd38746",
+    "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "src/user/include/xos/elf.hpp": "c93092a90a6bd6295ddb4f3352cc47d597cb0c4d71047870399db3585dfd9f28",
+    "src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+    "src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+    "src/user/include/xos/terminal_control.hpp": "b2f803aa503e91c6c35ab174b0f7e6638c0edcec32375d33dd98b404fa00f78e",
+    "src/user/include/xos/dynamic.hpp": "221bc20cd766845432741f5cf0542ff7b1b7603606197837b9325d1c427ba23f",
+    "src/user/include/xos/execution.hpp": "bfd902bcc7aa654df5408d8014960036ed387d25d8551b5e682c4e7ec367abb9",
+    "src/user/include/xos/net_client.hpp": "b4024b191e578f9af9820ed5b09622b4ba137c949026465ebd6134e63a8b7b62",
+    "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+    "src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e",
+    "src/user/include/xos/device.hpp": "a51d315ee644b727da7db66bb3111c3553a85e6fb8c0e8b6870dc70b07c08e5d",
+    "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "src/user/include/xos/file_ui.hpp": "b078a633cb47dd6537ae4bc945a766750e0467b860bfaa677275d5d92758123c",
+    "src/user/include/xos/spawn.hpp": "2e2779af1ab790eca0bd10484921d69d69871828fb5494bdd8e2c7f3f4f30077",
+    "src/user/include/xos/sdk.hpp": "9d1649943e9a62ff83612ec1d7bcbdfacec302696a89554e0cf82526f9c82769",
+    "src/user/include/xos/net_service_client.hpp": "81f59343ac8da95a5e3c9feba86f10269b5d88c46aad64d21ce975097cf0de98",
+    "src/user/include/xos/net_transport.hpp": "f0b51ddb1d1b23a2d73f6f99b60a3eaeb76e47f5f1bafde9899191bd4898b44f",
+    "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+    "src/user/include/xos/file_client.hpp": "e7cda26359bf88b784fd40aa544f3a51c1c4d0677b6db2499c9804bd1cfe978b",
+    "src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+    "src/shared/include/xos/process_abi.hpp": "86a50a4d5326ab2797bbec9c460cb2226d72de803948fce5312bb9276e49acb9",
+    "src/shared/include/xos/dynamic_abi.hpp": "de7788e59dbd4b7492d826e21875a987980765282f099a1d5146f4ead2b58f65",
+    "src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+    "src/shared/include/xos/audio_abi.hpp": "6b9e27332b5163d2eceb9e364581a80f74be098c8b47711f7b577f7e9b4b901d",
+    "src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+    "src/shared/include/xos/file_abi.hpp": "9e6e6585dd8dee2e9b2db8d10fac7aeeffb693b41f8f4702d119bbfee3e5c4aa",
+    "src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+    "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+    "src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+    "src/shared/include/xos/net_abi.hpp": "14e0baf22c2de09588c8924b07a05a7b6095fc4db0b9d408405efbaa18cd819e",
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/net_service_abi.hpp": "14a7cb20681ef4b48f59c2458acb4d31e482934abc264cb7283e416d32a273f0",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "src/shared/include/xos/device_abi.hpp": "cdece558f19833d44f5d372a674d430e869c8a9d8fdfb8d1a81e49581a10fa11",
+    "tests/native_file_deadline_host.py": "3b1856b2544c46b57754065b4858817ec705432ffe692812f8fc826cc1621983"
+  },
+  "results": [
+    {
+      "case": "ordinary",
+      "returncode": 0
+    },
+    {
+      "case": "expired",
+      "returncode": 0
+    },
+    {
+      "case": "ready",
+      "returncode": 0
+    },
+    {
+      "case": "timeout",
+      "returncode": 0
+    },
+    {
+      "case": "legacy_timeout",
+      "returncode": 0
+    },
+    {
+      "case": "at_deadline",
+      "returncode": 0
+    },
+    {
+      "case": "send_failure",
+      "returncode": 0
+    },
+    {
+      "case": "closed",
+      "returncode": 0
+    },
+    {
+      "case": "bad_magic",
+      "returncode": 0
+    },
+    {
+      "case": "bad_sequence",
+      "returncode": 0
+    },
+    {
+      "case": "bad_size",
+      "returncode": 0
+    },
+    {
+      "case": "bad_status",
+      "returncode": 0
+    },
+    {
+      "case": "bad_length",
+      "returncode": 0
+    }
+  ]
+}

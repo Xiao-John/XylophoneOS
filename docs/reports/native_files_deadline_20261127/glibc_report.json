@@ -1,0 +1,400 @@
+{
+  "scope": "production FD/session state machine; simulated kernel and files service",
+  "sanitizers": [],
+  "leak_sanitizer": "not_requested",
+  "guest": "not_run",
+  "results": [
+    {
+      "case": "basic",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "bounds",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "access_legacy_stat",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "spawn_cwd_serialization",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "concurrent",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "public_lease",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "native_read_capacity",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "native_deadline_expired",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "native_deadline_lock",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "native_deadline_reply",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "native_deadline_timeout",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_valid",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_bad_value",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_bad_payload",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_zero_success",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "block_large_success",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "anonymous_valid",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "anonymous_bad_handle",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "anonymous_bad_inode",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "anonymous_bad_flags",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "anonymous_bad_size",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "anonymous_bad_payload",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_legacy",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_identity",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_bad_cursor",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_bad_identity",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_bad_utf8",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_bad_count",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_truncated",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_default_limit",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "directory_empty_progress",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "inheritance",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "inheritance_word_aligned",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "invalid_inheritance",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "duplicate_cleanup",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "pipe_lease",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "pipe_writev",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "no_session",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wrong_sequence",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "bad_magic",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "inheritance_v2",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "duplicate_v2_handle",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "path_v2_redirection",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "bad_version",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "overread",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "overwrite",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "unknown_status",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "metadata",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "timeout",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "service_death",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "clock_failure",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "late_reply",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "send_failure",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "short_reply",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wait_ready",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wait_spurious",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wait_legacy",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wait_timeout",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wait_death",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wait_interrupted",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wait_at_deadline",
+      "status": "pass",
+      "returncode": 0
+    },
+    {
+      "case": "wait_duplicate",
+      "status": "pass",
+      "returncode": 0
+    }
+  ],
+  "sources": {
+    "src/ports/glibc/sysdeps/xos/bits/fcntl.h": "cbea321317a554ace85be39a0b074aabca184208f3403c692a078aabc2a8c503",
+    "src/ports/glibc/sysdeps/xos/bits/stat.h": "d9da497699f111a767e83d2a26844f88022d66bfffaec4b9b2943003ae3dd517",
+    "src/ports/glibc/sysdeps/xos/writev.c": "2de76aabc065aad844083f34ded44c78c6c2f374163268506f435e781796a78d",
+    "src/ports/glibc/sysdeps/xos/xos_file_directory.c": "1d74f55d96e7db47e9a7ec6f304c5f389110818ab26e0b9c36bb9dc7383b00fc",
+    "src/ports/glibc/sysdeps/xos/xos_file_directory.h": "15d13e312d087583b16568dcd8f74f33d2716079dcde0d20250b1f2c9f9b3896",
+    "src/ports/glibc/sysdeps/xos/xos_file_positioned.c": "42c8c754e345d23cf121b980661597f2d9f18ac4ede13ec3a3fcd0a23ceb21df",
+    "src/ports/glibc/sysdeps/xos/xos_file_positioned.h": "8d99e7fa97f1233aa5eb1158899abb9c76cb733f97fc98bb056ad9f4278c89f0",
+    "src/ports/glibc/sysdeps/xos/xos_file_result.h": "5f83d3e084b9e293a3c5180b98bfa084698ffffc270e7eeb491a362fc3f89b34",
+    "src/ports/glibc/sysdeps/xos/xos_file_runtime.c": "702ea555c189881fa0fe2ec38cdcb43a39e34d4029bccc3de7fb57ca69f3097d",
+    "src/ports/glibc/sysdeps/xos/xos_file_runtime.h": "8a4faeb887dc2ecf64832b99d4a31f1458fa4b0031b8477285a2ae1b743ad220",
+    "src/ports/glibc/sysdeps/xos/xos_file_session.c": "f1a94c2c2f202e7342f8ff91569cc2f667659973e57bf9d0a5545247b078b1d5",
+    "src/ports/glibc/sysdeps/xos/xos_file_session.h": "d70d1aa5118285a54d0866fe8394a096d0ce390b2552a828348fb1f4b42d1078",
+    "src/ports/glibc/sysdeps/xos/xos_file_trap.h": "e697d4dfde4db98bba3bfcc50b2031c06c1d2237541a1b09fdbae7f86ed57b03",
+    "src/ports/glibc/sysdeps/xos/xos_file_wire.h": "d67b15a81ef198690f4d9f429a883ee2b824e42a416b663a3c3d9c338b32f3f4",
+    "src/ports/glibc/sysdeps/xos/xos_terminal_runtime.c": "27353b4c1af4a3e1a1ba199e0b8bac13d7efd4733fd838efaafd583d66d53d22",
+    "src/ports/glibc/sysdeps/xos/xos_terminal_runtime.h": "1878cac2d27fdbec9c1780f2a2d7b24456749a3f7dd1c5a4bf31c97bfb4eb786",
+    "src/ports/glibc/terminal_support.cpp": "5b5a71765d9338a33e36533fcf3b2fccd51fb494caa0efd8ba22bf0a37055f1b",
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/audio_abi.hpp": "6b9e27332b5163d2eceb9e364581a80f74be098c8b47711f7b577f7e9b4b901d",
+    "src/shared/include/xos/device_abi.hpp": "cdece558f19833d44f5d372a674d430e869c8a9d8fdfb8d1a81e49581a10fa11",
+    "src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+    "src/shared/include/xos/dynamic_abi.hpp": "de7788e59dbd4b7492d826e21875a987980765282f099a1d5146f4ead2b58f65",
+    "src/shared/include/xos/file_abi.hpp": "9e6e6585dd8dee2e9b2db8d10fac7aeeffb693b41f8f4702d119bbfee3e5c4aa",
+    "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "src/shared/include/xos/net_abi.hpp": "14e0baf22c2de09588c8924b07a05a7b6095fc4db0b9d408405efbaa18cd819e",
+    "src/shared/include/xos/net_service_abi.hpp": "14a7cb20681ef4b48f59c2458acb4d31e482934abc264cb7283e416d32a273f0",
+    "src/shared/include/xos/process_abi.hpp": "86a50a4d5326ab2797bbec9c460cb2226d72de803948fce5312bb9276e49acb9",
+    "src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+    "src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+    "src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+    "src/third_party/fatfs/ff.c": "1cc3c92f46bc51643f1a8e4b5f9cbb23d2997291e94a490133e954335f079c71",
+    "src/third_party/fatfs/ff.h": "b5ea24517af464ffa17f66d23a0ae11cf9838a7e720e25bd955278dd20935afe",
+    "src/user/include/xos/audio_client.hpp": "75b4ef444194a38a9f64889b49c849ad399870129c81b2971ae27f8bfbd38746",
+    "src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+    "src/user/include/xos/device.hpp": "a51d315ee644b727da7db66bb3111c3553a85e6fb8c0e8b6870dc70b07c08e5d",
+    "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "src/user/include/xos/dynamic.hpp": "221bc20cd766845432741f5cf0542ff7b1b7603606197837b9325d1c427ba23f",
+    "src/user/include/xos/elf.hpp": "c93092a90a6bd6295ddb4f3352cc47d597cb0c4d71047870399db3585dfd9f28",
+    "src/user/include/xos/execution.hpp": "bfd902bcc7aa654df5408d8014960036ed387d25d8551b5e682c4e7ec367abb9",
+    "src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+    "src/user/include/xos/file_client.hpp": "e7cda26359bf88b784fd40aa544f3a51c1c4d0677b6db2499c9804bd1cfe978b",
+    "src/user/include/xos/file_ui.hpp": "b078a633cb47dd6537ae4bc945a766750e0467b860bfaa677275d5d92758123c",
+    "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "src/user/include/xos/net_client.hpp": "b4024b191e578f9af9820ed5b09622b4ba137c949026465ebd6134e63a8b7b62",
+    "src/user/include/xos/net_service_client.hpp": "81f59343ac8da95a5e3c9feba86f10269b5d88c46aad64d21ce975097cf0de98",
+    "src/user/include/xos/net_transport.hpp": "f0b51ddb1d1b23a2d73f6f99b60a3eaeb76e47f5f1bafde9899191bd4898b44f",
+    "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "src/user/include/xos/sdk.hpp": "9d1649943e9a62ff83612ec1d7bcbdfacec302696a89554e0cf82526f9c82769",
+    "src/user/include/xos/spawn.hpp": "2e2779af1ab790eca0bd10484921d69d69871828fb5494bdd8e2c7f3f4f30077",
+    "src/user/include/xos/terminal_client.hpp": "3ef1d2d4e763a510f32457dd2eccb37cabe1ea7df5f3ba2cc50814cbf6ea56fb",
+    "src/user/include/xos/terminal_control.hpp": "b2f803aa503e91c6c35ab174b0f7e6638c0edcec32375d33dd98b404fa00f78e",
+    "src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+    "src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+    "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+    "src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e",
+    "src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "src/user/sdk/file_client.cpp": "0be4e547cf074110f3596ce199fdc2062219c1a44788ad998140c6846b1fbf16",
+    "src/user/sdk/terminal_client.cpp": "05d7ef7d1e90f2aee2edcb69efd754ccbde11c1b9158c4d177fe82fc5e953064",
+    "src/user/services/fatfs_unicode.cpp": "9989bd8e66f2c84a6d10e48f7e7a6790e9fcc1f31f9d15a5d57c14da067d2dc9",
+    "src/user/services/files.cpp": "59ec0ef08ad10b6b202ae77ba4273e9578de39384b0ce401caeccb50abcc49a4",
+    "tests/fixtures/file_semantics/file_semantics.cpp": "9d821b81d8bab8d89437805513b0d8171fe3e02a4135d7f8ef9c3db1c67fdea3",
+    "tests/fixtures/file_semantics/libc_service.cpp": "fab1ca88f67b8ff4137182de4cc6f219ca4463d9a5f9fa228254f6d013cd0b1c",
+    "tests/fixtures/glibc_g3/dash_without_create.cpp": "a6bc57a1b809367d5ca0a652e8e178cf1184298048b08a2dbdbd67e32a91d99e",
+    "tests/fixtures/glibc_g3/files_extra_service.cpp": "c7dad520fe3b91737aeb75071f61a2524f4c09776ca90f7ad2f856de70351862",
+    "tests/fixtures/glibc_g3/files_runtime.cpp": "e1a305109b7f9cb4a6a659c9c09d4814461c087cb983560caa0b9032573cd03e",
+    "tests/fixtures/glibc_g3/files_service.cpp": "aca957819a1f6f2d97fd19dcf0d0d86d726a344326778b319ebe97732270d642",
+    "tests/fixtures/glibc_g3/host_aliases.h": "1e0f469d53f9a8a3ecde19b2088993cda051453bd7c8a677a519e0746c6903c0",
+    "tests/fixtures/glibc_g3/terminal_runtime.cpp": "e804b452c8c9309bc018529552f0693d49a34918b098a9f704654778b92d2c64",
+    "tests/fixtures/glibc_g3/unified_cpp_probe.cpp": "ec381f375325a5f1d6faba2c328ae7caa470804e55cda813c446069e22559b18",
+    "tests/glibc_g3_files_host.py": "2e6500f5fc2090d47566419ae3b89b644e6f23bb79e77b9b412ad21831870ac5"
+  },
+  "status": "passed",
+  "real_files_fatfs": {
+    "status": "pass",
+    "groups": 15,
+    "kernel_transport": "simulated"
+  },
+  "inputs_unchanged": true
+}

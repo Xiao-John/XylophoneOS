@@ -6,21 +6,39 @@
 
 extern "C" void xos_file_session_lock() __attribute__((weak));
 extern "C" void xos_file_session_unlock() __attribute__((weak));
+extern "C" xos::i64 xos_file_session_lock_until(xos::u64) __attribute__((weak));
 extern "C" xos::u32 xos_file_request_id() __attribute__((weak));
 extern "C" xos::i64 xos_file_session_exchange(const xos::file::request*,
                                               xos::file::response*) __attribute__((weak));
+extern "C" xos::i64 xos_file_session_exchange_until(const xos::file::request*,
+    xos::file::response*, xos::u64) __attribute__((weak));
 namespace xos::file {
 namespace {
 struct session_guard {
-    session_guard() { if (xos_file_session_lock) { xos_file_session_lock(); } }
-    ~session_guard() { if (xos_file_session_unlock) { xos_file_session_unlock(); } }
+    i64 result = 0;
+    bool acquired = false;
+    explicit session_guard(u64 deadline) {
+        if (!xos_file_session_lock) return;
+        if (deadline) {
+            result = xos_file_session_lock_until ? xos_file_session_lock_until(deadline)
+                : static_cast<i64>(status::not_supported);
+            acquired = result == 0;
+        } else {
+            xos_file_session_lock();
+            acquired = true;
+        }
+    }
+    ~session_guard() { if (acquired && xos_file_session_unlock) xos_file_session_unlock(); }
 };
 u32 fallback_request_id;
+u64 fallback_owner_pid;
+bool fallback_poisoned;
 i64 status_value(status code) { return static_cast<i64>(code); }
 }
 
 bool client::init() {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return false;
     send_handle_ = 0;
     recv_handle_ = 0;
     request_id_ = 0;
@@ -36,9 +54,17 @@ i64 client::call(op operation) {
     // sharing sequence, deadline and failure state with its ordinary I/O.
     if (xos_file_session_exchange) {
         request_.operation = static_cast<u16>(operation);
+        if (deadline_) return xos_file_session_exchange_until
+            ? xos_file_session_exchange_until(&request_, &response_, deadline_)
+            : status_value(status::not_supported);
         return xos_file_session_exchange(&request_, &response_);
     }
     const u64 caller = sdk::pid();
+    if (fallback_owner_pid != caller) {
+        fallback_owner_pid = caller;
+        fallback_poisoned = false;
+    }
+    if (fallback_poisoned) return status_value(status::io);
     if (owner_pid_ != caller) {
         // A fork copies arbitrary client objects, including loader and
         // application instances. Rebind endpoints without clearing the
@@ -52,6 +78,15 @@ i64 client::call(op operation) {
         request_id_ = 0;
         owner_pid_ = caller;
     }
+    u64 deadline = 0;
+    if (deadline_) {
+        const i64 now = sdk::syscall(46);
+        if (now < 0 || static_cast<u64>(now) > 0x7fffffffffffffffULL - 5000000000ULL)
+            return status_value(status::io);
+        if (static_cast<u64>(now) >= deadline_) return transport_timeout;
+        deadline = static_cast<u64>(now) + 5000000000ULL;
+        if (deadline_ < deadline) deadline = deadline_;
+    }
     request_.magic = request_magic;
     request_.version = abi_version;
     request_.operation = static_cast<u16>(operation);
@@ -59,17 +94,49 @@ i64 client::call(op operation) {
         : fallback_request_id == 0xffffffffu ? 0 : ++fallback_request_id;
     if (request_.request_id == 0) { return status_value(status::io); }
     if (sdk::ipc_send(send_handle_, &request_, sizeof(request_)) < 0) {
+        if (deadline) fallback_poisoned = true;
         return status_value(status::io);
     }
-    for (u32 attempt = 0; attempt < 8192; ++attempt) {
+    for (u32 attempt = 0; deadline || attempt < 8192; ++attempt) {
         const i64 received = sdk::ipc_recv(recv_handle_, &response_, sizeof(response_));
+        i64 now = 0;
+        if (deadline) {
+            now = sdk::syscall(46);
+            if (now < 0 || static_cast<u64>(now) >= deadline) {
+                fallback_poisoned = true;
+                return now < 0 ? status_value(status::io) : transport_timeout;
+            }
+        }
         if (received == static_cast<i64>(sizeof(response_)) &&
             response_.magic == response_magic && response_.version == abi_version &&
             response_.request_id == request_.request_id) {
             if (response_.length > sizeof(response_.data)) {
+                if (deadline) fallback_poisoned = true;
+                return status_value(status::io);
+            }
+            if (deadline && (response_.name_length >= sizeof(response_.name)
+                || response_.status_code > 0 || response_.status_code < -16)) {
+                fallback_poisoned = true;
                 return status_value(status::io);
             }
             return response_.status_code;
+        }
+        if (deadline) {
+            if (received != -3) {
+                fallback_poisoned = true;
+                return status_value(status::io);
+            }
+            const i64 waiting = sdk::syscall(sys_ipc_wait, recv_handle_, 4, deadline);
+            if (waiting == 0) continue;
+            if (waiting == -2) {
+                // Older kernels lack authenticated file_reply_until. Sleep
+                // to a real deadline; never turn a loop count into time.
+                u64 next = static_cast<u64>(now) + 1000000ULL;
+                if (next > deadline) next = deadline;
+                if (sdk::syscall(47, next) == 0) continue;
+            }
+            fallback_poisoned = true;
+            return waiting == -13 ? transport_timeout : status_value(status::io);
         }
         sdk::yield();
     }
@@ -94,13 +161,15 @@ i64 client::set_path(const char* path, char* target, u32& length) {
 }
 
 i64 client::ping() {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     return call(op::ping);
 }
 
 i64 client::list(const char* path, entry* entries, u32 capacity, u32& count, u32& cursor) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     count = 0;
     if (entries == nullptr || capacity == 0) {
         return status_value(status::invalid);
@@ -120,7 +189,8 @@ i64 client::list(const char* path, entry* entries, u32 capacity, u32& count, u32
 }
 
 i64 client::list(u32 directory_handle, entry* entries, u32 capacity, u32& count, u32& cursor) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     count = 0;
     if (entries == nullptr || capacity == 0 || directory_handle == 0) { return status_value(status::invalid); }
     request_ = request{};
@@ -169,7 +239,8 @@ i64 client::decode_list(entry* entries, u32 capacity, u32& count, u32& cursor) {
 }
 
 i64 client::set_cwd(const char* path, u64 target_pid, bool initialize_only) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     if (path != nullptr) {
         u32 length = 0;
@@ -183,7 +254,8 @@ i64 client::set_cwd(const char* path, u64 target_pid, bool initialize_only) {
 }
 
 i64 client::set_cwd_handle(u32 directory_handle) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if (directory_handle == 0) { return status_value(status::bad_handle); }
     request_ = request{};
     request_.handle = directory_handle;
@@ -202,14 +274,16 @@ i64 client::copy_response_path(char* path, u32 capacity) {
 }
 
 i64 client::get_cwd(char* path, u32 capacity) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     const i64 result = call(op::cwd_get);
     return result == 0 ? copy_response_path(path, capacity) : result;
 }
 
 i64 client::resolve_path(const char* path, char* absolute, u32 capacity) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     u32 length = 0;
     const i64 prepared = set_path(path, request_.name, length);
@@ -220,7 +294,8 @@ i64 client::resolve_path(const char* path, char* absolute, u32 capacity) {
 }
 
 i64 client::list(entry* entries, u32 capacity, u32& count) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     count = 0;
     if (entries == nullptr || capacity == 0) { return status_value(status::invalid); }
     u32 cursor = 0;
@@ -235,7 +310,8 @@ i64 client::list(entry* entries, u32 capacity, u32& count) {
 }
 
 i64 client::stat(const char* path, u32& size, u32& version) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     u32 attributes = 0;
     const i64 result = stat_info(path, size, attributes);
     version = 0;
@@ -245,7 +321,8 @@ i64 client::stat(const char* path, u32& size, u32& version) {
 }
 
 i64 client::stat_info(const char* path, u32& size, u32& attributes) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     u32 identity = 0;
     return stat_info(path, size, attributes, identity);
 }
@@ -291,7 +368,8 @@ i64 client::decode_metadata(u64& mtime, u32& mode) {
 
 i64 client::stat_info(const char* path, u32& size, u32& attributes, u32& identity,
                       u64& mtime, u32& mode) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     u32 path_length = 0;
     const i64 path_result = set_path(path, request_.name, path_length);
@@ -306,7 +384,8 @@ i64 client::stat_info(const char* path, u32& size, u32& attributes, u32& identit
 }
 
 i64 client::anonymous(u32& handle) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     const i64 result = call(op::anonymous);
     if (result != 0) { return result; }
@@ -316,14 +395,16 @@ i64 client::anonymous(u32& handle) {
 }
 
 i64 client::seal_anonymous(u32 handle) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     request_.handle = handle;
     return call(op::anonymous_seal);
 }
 
 i64 client::open(const char* path, u32 flags, u32& handle, u32& size, u32& version) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     u32 path_length = 0;
     const i64 path_result = set_path(path, request_.name, path_length);
@@ -339,7 +420,8 @@ i64 client::open(const char* path, u32 flags, u32& handle, u32& size, u32& versi
 }
 
 i64 client::fstat(u32 handle, u32& size, u32& attributes) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     u32 identity = 0;
     return fstat(handle, size, attributes, identity);
 }
@@ -356,7 +438,8 @@ i64 client::fstat(u32 handle, u32& size, u32& attributes, u32& identity, u64& mt
 
 i64 client::fstat(u32 handle, u32& size, u32& attributes, u32& identity,
                   u64& mtime, u32& mode) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     request_.handle = handle;
     const i64 result = call(op::fstat);
@@ -369,7 +452,8 @@ i64 client::fstat(u32 handle, u32& size, u32& attributes, u32& identity,
 
 i64 client::set_metadata(u32 handle, const char* path, u16 mask, u16 attr,
                          i64 atime_sec, i64 atime_nsec, i64 mtime_sec, i64 mtime_nsec) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if ((handle == 0 && path == nullptr) || (handle != 0 && path != nullptr)) {
         return status_value(status::invalid);
     }
@@ -397,7 +481,8 @@ i64 client::set_metadata(u32 handle, const char* path, u16 mask, u16 attr,
 }
 
 i64 client::read(u32 handle, void* data, u32 length) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if ((data == nullptr && length != 0) || length > sizeof(request_.data)) {
         return status_value(status::invalid);
     }
@@ -416,7 +501,8 @@ i64 client::read(u32 handle, void* data, u32 length) {
 }
 
 i64 client::write(u32 handle, const void* data, u32 length) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if ((data == nullptr && length != 0) || length > sizeof(request_.data)) {
         return status_value(status::invalid);
     }
@@ -436,7 +522,8 @@ i64 client::seek(u32 handle, u32 offset) {
 }
 
 i64 client::read_at(u32 handle, void* data, u32 length, u64 offset) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if ((data == nullptr && length != 0) || length > sizeof(response_.data) ||
         offset > fat32_max_file_bytes) { return status_value(status::invalid); }
     request_ = request{};
@@ -462,7 +549,8 @@ i64 client::read_at(u32 handle, void* data, u32 length, u64 offset) {
 }
 
 i64 client::write_at(u32 handle, const void* data, u32 length, u64 offset) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if ((data == nullptr && length != 0) || length > sizeof(request_.data) ||
         offset > fat32_max_file_bytes) { return status_value(status::invalid); }
     request_ = request{};
@@ -480,7 +568,8 @@ i64 client::write_at(u32 handle, const void* data, u32 length, u64 offset) {
 }
 
 i64 client::seek(u32 handle, i64 offset, u32 origin) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     request_.handle = handle;
     request_.offset = static_cast<u64>(offset);
@@ -490,7 +579,8 @@ i64 client::seek(u32 handle, i64 offset, u32 origin) {
 }
 
 i64 client::truncate(u32 handle, u32 size) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if (size > fat32_max_file_bytes) { return status_value(status::no_space); }
     request_ = request{};
     request_.handle = handle;
@@ -499,7 +589,8 @@ i64 client::truncate(u32 handle, u32 size) {
 }
 
 i64 client::transfer(u32 handle, u64 target_pid, u32& target_handle) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     request_.handle = handle;
     request_.offset = target_pid;
@@ -509,21 +600,24 @@ i64 client::transfer(u32 handle, u64 target_pid, u32& target_handle) {
 }
 
 i64 client::clone_session(u64 child_pid) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     request_.offset = child_pid;
     return call(op::clone_session);
 }
 
 i64 client::close(u32 handle) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     request_.handle = handle;
     return call(op::close);
 }
 
 i64 client::begin_replace(const char* path, u32 length) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if (length > fat32_max_file_bytes) { return status_value(status::no_space); }
     request_ = request{};
     u32 path_length = 0;
@@ -535,7 +629,8 @@ i64 client::begin_replace(const char* path, u32 length) {
 }
 
 i64 client::chunk_replace(u32 offset, const void* data, u32 length) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if ((data == nullptr && length != 0) || length > sizeof(request_.data) ||
         offset > fat32_max_file_bytes || length > fat32_max_file_bytes - offset) {
         return status_value(status::invalid);
@@ -549,19 +644,22 @@ i64 client::chunk_replace(u32 offset, const void* data, u32 length) {
 }
 
 i64 client::commit_replace() {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     return call(op::replace_commit);
 }
 
 i64 client::abort_replace() {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     return call(op::replace_abort);
 }
 
 i64 client::replace(const char* path, const void* data, u32 length) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if (data == nullptr && length != 0) { return status_value(status::invalid); }
     const i64 started = begin_replace(path, length);
     if (started != 0) { return started; }
@@ -580,7 +678,8 @@ i64 client::replace(const char* path, const void* data, u32 length) {
 }
 
 i64 client::read_all(const char* path, void* data, u32 capacity, u32& length) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     length = 0;
     u32 size = 0;
     u32 version = 0;
@@ -618,7 +717,8 @@ i64 client::read_all(const char* path, void* data, u32 capacity, u32& length) {
 }
 
 i64 client::remove(const char* path) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     u32 path_length = 0;
     const i64 path_result = set_path(path, request_.name, path_length);
@@ -628,7 +728,8 @@ i64 client::remove(const char* path) {
 }
 
 i64 client::remove_directory(const char* path) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     u32 path_length = 0;
     const i64 path_result = set_path(path, request_.name, path_length);
@@ -639,7 +740,8 @@ i64 client::remove_directory(const char* path) {
 }
 
 i64 client::mkdir(const char* path) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     u32 path_length = 0;
     const i64 path_result = set_path(path, request_.name, path_length);
@@ -649,7 +751,8 @@ i64 client::mkdir(const char* path) {
 }
 
 i64 client::rename(const char* old_path, const char* new_path) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     u32 old_length = 0;
     const i64 old_result = set_path(old_path, request_.name, old_length);
@@ -666,7 +769,8 @@ i64 client::rename(const char* old_path, const char* new_path) {
 }
 
 i64 client::block_bench(u32 length) {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     if (length == 0 || length > max_block_bench_bytes) {
         return status_value(status::invalid);
     }
@@ -677,17 +781,20 @@ i64 client::block_bench(u32 length) {
 }
 
 i64 client::sync() {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     return call(op::sync);
 }
 i64 client::maintenance_acquire() {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     return call(op::maintenance_acquire);
 }
 i64 client::maintenance_release() {
-    session_guard guard;
+    session_guard guard(deadline_);
+    if (guard.result) return guard.result;
     request_ = request{};
     return call(op::maintenance_release);
 }

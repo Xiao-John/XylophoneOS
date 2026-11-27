@@ -78,6 +78,28 @@ python3 -B scripts/pumpkin_user_login.py login --system "$SYSTEM" --state "$STAT
   --credential-file "$PRIVATE_CREDENTIAL"
 ```
 
+## 提交已签发的封存凭据
+
+受信 Linux 操作者可在普通 `login` 中用 `--credential-fd N` 提交已有的 64 字节 PUMKEY 记录。
+调用者在进程间明确转交匿名普通文件描述符，并以 Linux 文件封印禁止改写、扩长、
+缩短和改变封印。使用 `memfd_create` 时启用 `MFD_ALLOW_SEALING`。例如调用者以
+Python 的 `subprocess.run(..., pass_fds=(fd,))` 只向这一次启动器传递描述符。
+
+```sh
+python3 -B scripts/pumpkin_user_login.py login --system "$SYSTEM" --state "$STATE" \
+  --deployment-profile "$PROFILE" --deployment-profile-sha256 "$PROFILE_SHA256" \
+  --credential-fd "$INHERITED_FD"
+```
+
+`N` 须为已继承的描述符编号且至少为 3，不能同时提供 `--credential-file`。
+启动器首先禁止描述符继续继承。验证封印及记录安装域后从偏移零读取，关闭描述符，
+再启动 QEMU。账户编号继续由同一次真实登记端和普通持有者核对。代际提供者交换
+原有代际记录，凭据经现有私用客体协议交接。首次发放和后续登记继续独占创建
+原格式私有凭据文件。
+
+普通登录、错域、未封存和截断输入，以及独立提供者 UID 的拒绝已经在真实
+Linux/QEMU 配置上复验。[封存提交回执](../work_log/pumpkin_sealed_credential_input.md)
+
 ## 具名资源部署
 
 构建时在上述部署参数追加 `--pumpkin-user-resource --pumpkin-named-resource-store`，
@@ -150,4 +172,4 @@ python3 -B scripts/pumpkin_user_login.py check-image-update --state "$STATE" \
 受信宿主分别管理启动者和独立提供者，宿主的 root、虚拟化平台及两种角色各自的
 同 UID 进程属于其信任范围。接收者钱包仍由受信启动工具保存和提交。此配置目前
 按独立受控 Linux 环境验收。正式物理启动和控制台证明、硬件代际或宿主完整回滚
-防护、外部服务管理器自动部署、多个启动者、外部钱包保管及物理断电仍需独立验证。
+防护、外部服务管理器自动部署、多个启动者、独立外部保管服务及物理断电仍需独立验证。

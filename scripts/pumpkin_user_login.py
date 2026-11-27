@@ -141,9 +141,43 @@ def read_credential(descriptor, record, installation_realm=realm):
             count = os.readv(descriptor, [data[offset:]])
             require(count != 0, "Incomplete private credential file")
             offset += count
+    validate_credential_record(record, installation_realm)
+
+
+def validate_credential_record(record, installation_realm):
     tag, scope, number = credential_file_header.unpack_from(record)
     require(tag == file_magic and scope == installation_realm and number > 0 and any(memoryview(record)[-secret_size:]),
             "Invalid private credential record")
+
+
+def immutable_memfd_seals():
+    return fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_GROW | fcntl.F_SEAL_WRITE | fcntl.F_SEAL_SEAL
+
+
+def keep_credential_private(descriptor):
+    require(descriptor >= 3 and hasattr(fcntl, "F_GET_SEALS") and hasattr(os, "preadv"),
+            "Select a Linux inherited credential descriptor")
+    try:
+        os.set_inheritable(descriptor, False)
+    except (OSError, OverflowError) as error:
+        raise login_error("Invalid inherited credential descriptor") from error
+
+
+def read_sealed_credential(descriptor, record, installation_realm):
+    """Consume the claimed credential descriptor before guest launch."""
+    try:
+        info = os.fstat(descriptor)
+        require(stat.S_ISREG(info.st_mode) and info.st_nlink == 0 and info.st_size == file_size,
+                "Invalid anonymous credential descriptor")
+        seals = fcntl.fcntl(descriptor, fcntl.F_GET_SEALS)
+        required = immutable_memfd_seals()
+        require(seals & required == required, "The inherited credential is not sealed")
+        require(os.preadv(descriptor, [record], 0) == file_size, "Incomplete inherited credential record")
+        validate_credential_record(record, installation_realm)
+    except OSError as error:
+        raise login_error("Invalid inherited credential descriptor") from error
+    finally:
+        os.close(descriptor)
 
 
 def save_credential(descriptor, parent, identity, key):
@@ -395,8 +429,7 @@ def sealed_login_image(path, expected_sha256):
         with os.fdopen(source, "rb") as stream, os.fdopen(os.dup(descriptor), "wb") as captured:
             require(stat.S_ISREG(os.fstat(source).st_mode), "Login image must be a regular file")
             shutil.copyfileobj(stream, captured)
-        seals = fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_GROW | fcntl.F_SEAL_WRITE | fcntl.F_SEAL_SEAL
-        fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS, seals)
+        fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS, immutable_memfd_seals())
         reference = Path("/proc/self/fd") / str(descriptor)
         require(digest(reference) == expected_sha256, "The sealed login image differs from its deployment profile")
         yield reference, descriptor
@@ -697,7 +730,11 @@ def named_profile(system):
 
 
 def operate(system, state, command, path, selection=None, account=b"alice", *, display=None,
-            revoke_requested=None, deployment=None):
+            revoke_requested=None, deployment=None, credential_fd=None):
+    require(credential_fd is None or (path is None and command == "login"),
+            "An inherited credential is only available for ordinary login")
+    if credential_fd is not None:
+        keep_credential_private(credential_fd)
     first_account = command == first_account_command
     if first_account:
         require(path is not None and isinstance(account, bytes) and
@@ -730,6 +767,8 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
         try:
             if command == "enroll":
                 check_new_destination(path)
+            elif credential_fd is not None:
+                read_sealed_credential(credential_fd, stored, installation_realm)
             elif command in submission_commands:
                 with credential_file(path, False) as wallet:
                     read_credential(wallet[0], stored, installation_realm)
@@ -761,7 +800,9 @@ def main():
                                               *(item for item in scenarios if item != "desktop-admin")))
     parser.add_argument("--system", type=Path)
     parser.add_argument("--state", type=Path, required=True)
-    parser.add_argument("--credential-file", type=Path)
+    credentials = parser.add_mutually_exclusive_group()
+    credentials.add_argument("--credential-file", type=Path)
+    credentials.add_argument("--credential-fd", type=int, help="ordinary login with an inherited sealed Linux descriptor")
     parser.add_argument("--deployment-profile", type=Path)
     parser.add_argument("--deployment-profile-sha256")
     parser.add_argument("--replacement-system", type=Path)
@@ -791,8 +832,11 @@ def main():
             parser.error("the image operation requires both trusted deployment profiles and the affected systems")
     elif any(value is not None for value in replacement_fields):
         parser.error("replacement options require an image operation")
-    if (args.operation in credential_operations or args.operation == first_account_command) != (args.credential_file is not None):
-        parser.error("--credential-file is required for credential submission and enrollment")
+    if args.credential_fd is not None and (args.credential_fd < 3 or args.operation != "login"):
+        parser.error("--credential-fd must be at least 3 and is only available for ordinary login")
+    credential_selected = args.credential_file is not None or args.credential_fd is not None
+    if (args.operation in credential_operations or args.operation == first_account_command) != credential_selected:
+        parser.error("select a credential input for submission or --credential-file for enrollment")
     if args.display is not None and args.operation != "desktop":
         parser.error("--display requires the desktop operation")
     if args.revoke_on_signal and args.operation != "desktop":
@@ -859,7 +903,7 @@ def main():
                 signal.signal(signal.SIGUSR1, old_handler)
         else:
             result = operate(args.system.absolute(), state, args.operation, path, selected, account.encode("ascii"),
-                             display=args.display, deployment=deployment)
+                             display=args.display, deployment=deployment, credential_fd=args.credential_fd)
         if selected is not None:
             result, generation, data = result
             if result == 1:

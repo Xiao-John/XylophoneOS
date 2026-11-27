@@ -1,0 +1,29 @@
+/guest ext4
+/provider ext4
+test_corrupt_pending_record_and_other_pair_fail_closed (__main__.ImageMaintenance.test_corrupt_pending_record_and_other_pair_fail_closed) ... ok
+test_death_after_activation_rename_can_reconfirm_the_active_profile (__main__.ImageMaintenance.test_death_after_activation_rename_can_reconfirm_the_active_profile) ... ok
+test_death_after_cancel_rename_can_reconfirm_the_previous_profile (__main__.ImageMaintenance.test_death_after_cancel_rename_can_reconfirm_the_previous_profile) ... ok
+test_death_after_preparation_rename_fences_both_and_retry_preserves_record (__main__.ImageMaintenance.test_death_after_preparation_rename_fences_both_and_retry_preserves_record) ... ok
+test_death_before_activation_rename_keeps_pending_and_can_finish (__main__.ImageMaintenance.test_death_before_activation_rename_keeps_pending_and_can_finish) ... ok
+test_death_before_preparation_rename_leaves_previous_binding (__main__.ImageMaintenance.test_death_before_preparation_rename_leaves_previous_binding) ... ok
+test_equal_revision_with_different_digest_refuses_activation_and_cancellation (__main__.ImageMaintenance.test_equal_revision_with_different_digest_refuses_activation_and_cancellation) ... ok
+test_ordinary_launch_fails_before_guest_start_when_binding_sync_fails (__main__.ImageMaintenance.test_ordinary_launch_fails_before_guest_start_when_binding_sync_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.055s
+
+OK
+test_compare_full_record_and_validate_progression (__main__.authority_test.test_compare_full_record_and_validate_progression) ... ok
+test_concurrent_writers_serialize_entire_comparison (__main__.authority_test.test_concurrent_writers_serialize_entire_comparison) ... ok
+test_explicit_provisioning_and_private_scope (__main__.authority_test.test_explicit_provisioning_and_private_scope) ... ok
+test_killed_process_boundaries_reopen_exact_record (__main__.authority_test.test_killed_process_boundaries_reopen_exact_record) ... ok
+test_missing_malformed_or_redirected_record_fails_closed (__main__.authority_test.test_missing_malformed_or_redirected_record_fails_closed) ... ok
+test_named_generation_has_its_own_record_and_length_policy (__main__.authority_test.test_named_generation_has_its_own_record_and_length_policy) ... ok
+test_replacing_disposable_snapshot_bytes_keeps_independent_record (__main__.authority_test.test_replacing_disposable_snapshot_bytes_keeps_independent_record) ... ok
+test_saturated_record_cannot_wrap (__main__.authority_test.test_saturated_record_cannot_wrap) ... ok
+test_sync_failure_classifies_known_and_unknown_outcomes (__main__.authority_test.test_sync_failure_classifies_known_and_unknown_outcomes) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.484s
+
+OK

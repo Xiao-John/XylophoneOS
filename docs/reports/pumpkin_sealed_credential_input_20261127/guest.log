@@ -1,0 +1,19 @@
+PASS separate provider provisions the installation
+PASS operator prepares the bound installation
+PASS real guest issues the initial private wallet
+PASS same installation lock fences a sealed wallet
+PASS sealed wallet cannot bypass trusted profile digest
+PASS sealed inherited wallet authenticates after provider restart
+PASS separate provider cannot read the operator wallet
+PASS provider UID cannot invoke the operator login
+PASS enrollment rejects descriptor submission
+PASS credential descriptor is scoped to ordinary login
+PASS ordinary login requires an explicit credential
+PASS file and descriptor submission are mutually exclusive
+PASS mutable inherited wallet rejected
+PASS truncated inherited wallet rejected
+PASS named regular file cannot be substituted for a sealed wallet
+PASS unavailable inherited descriptor rejected before opening state
+PASS wallet for a different installation rejected
+PASS guest rejects a wrong key submitted through a sealed descriptor
+PASS original file input still authenticates and logs out

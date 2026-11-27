@@ -1,0 +1,11 @@
+{
+  "files": {
+    "guest.json": "92797597d97073ad8740c7a9d8b5c7b99f3ab91b3fd7409b118ba6e556b845a2",
+    "guest.log": "6e7298804c9f2cb729be145cac736d485dfb003c6ad58cc055e88275357079d6",
+    "host.log": "705fba2fd95d9b4fbd043a642e50b85dea95427b1d337a3646acc2dc04faba44"
+  },
+  "main_source_base": "b2aa899aa01c0f3f574ff566be75efe6a51c7018",
+  "operator_volume_fs": "ext4",
+  "provider_volume_fs": "ext4",
+  "version": 1
+}

@@ -1,0 +1,98 @@
+{
+  "checks": [
+    "frozen_newlib_profile_rejected",
+    "stock_installer_and_disk_receipts",
+    "ordinary_install_denied",
+    "native_p2_install",
+    "reboot_exec_disk_stdlib_and_real_module_operations",
+    "reboot_exec_zlib_gzip_deflated_zip_and_import",
+    "native_p2_remove_preserves_user_and_python_outputs"
+  ],
+  "cli_build_receipt_sha256": "11ead1c156d7f5452b1b42f101117ffb7c42be5057573e492167f07646ba576c",
+  "final_disk_sha256": "22cbeffc44aa27a989c2e843262ea159df0a10634e105e175e610b8ede977944",
+  "image_sha256": "2aafae3122d8920d706e5ec2bc0f54987dd7bf738b1ef95530136af680e57968",
+  "install_baseline": [
+    129806,
+    2,
+    0
+  ],
+  "installed_disk_sha256": "004df8c9064a41944ac3a9a682133a8af9193cbbae47f9cf738bf1dd770251c0",
+  "installed_files": 15,
+  "interpreter": {
+    "bytes": 9503392,
+    "debug_bytes": 46754232,
+    "debug_sha256": "bde479d98782affbe2eb9013a21a4485893a89deb92385a01ff947df195497ad",
+    "layout": {
+      "format": "static_elf64",
+      "load_and_main_stack_pages": 2265,
+      "load_segments": 3,
+      "machine": "x86_64",
+      "static_tls": true
+    },
+    "objcopy_sha256": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+    "path": "usr/bin/python3",
+    "sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16",
+    "strip_mode": "strip-debug"
+  },
+  "library_sha256": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79",
+  "package_sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b",
+  "preserved_data": {
+    "/work/py3a1/data/note.txt": "0ef5f509cc685bbad3241fb5656beeee111824a8d6e2c1bb76cda01bf93cc33d",
+    "/work/py3a1/data/stored.zip": "5bc5b869717cd68e3db8b6dc3836571fa79dc653b429e58709d239bdce9739d1",
+    "/work/py3a2/payload.gz": "7669dbc7421ceb264e5b497eddd62eb505d2bb49e5b94239d199860b7492ae5b",
+    "/work/py3a2/payload.zip": "af3faeea5ce0ba620ed2656f1d469be0747f288387208df904fa6e93761453ea",
+    "/work/user.txt": "9cda283a799cd426dbcf3be71525240d50d48c3da88c608cb80a7efc962a00c4"
+  },
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "run_baseline": [
+    129806,
+    2,
+    0
+  ],
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "status": "passed_subset",
+  "stdlib_members": 558,
+  "stock": {
+    "bundle_sha256": "b6dbfb53c486f675f47e72374916414cdc7bda1b7b11d8a14e7641056a6d9743",
+    "candidate_manifest_sha256": "fe1e4b65d6578efc703cbf73290fd72fd5426ecea537f2b77d18714bb55a5c15",
+    "daily": {
+      "build_receipt_sha256": "076466354db7e78ee42f54c5bb4dbb94e47863750ae605107783730418713747",
+      "id": "xos.daily_utilities",
+      "xpk_sha256": "e41cc466fd96119f3132cd5a8661f16fec5dbe5947a2ca27f030c7c4a4ffc192"
+    },
+    "dash_sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+    "disk_sha256": "a9bb4421bfd904305ff3cfa904842a9b55ceb5bd2d814213cb7f5df43e7386b5",
+    "installed_files": 26,
+    "installer_iso_sha256": "199dca96204f70be9adc09e02e0959dce7e8c5eeb40b2597b8e7aad5e82a874d",
+    "reboot_iso_sha256": "2aafae3122d8920d706e5ec2bc0f54987dd7bf738b1ef95530136af680e57968",
+    "resources": [
+      125920,
+      2,
+      0
+    ],
+    "source_commit": "8e66789c043ab017074f8494c3701db8ccd3b67c",
+    "xypm_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745"
+  },
+  "system_build_id": "ce681c073de3d6c4",
+  "system_manifest_sha256": "f513c611974910a9b6eea4c46b5fd53d97856dcacdd6e93f3d566b64ee64e865",
+  "test_sha256": "69586fc6d62698838e49a63cfe540be62adf47b0c2b778b3f27b87582e95cb95",
+  "xypm_elf_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745",
+  "xypm_receipt_sha256": "0bd7fe0b3d0d88c9ad0b522c91f0bbaaa66f2d4f89b859e30a4434c7c7c4de89",
+  "zlib": {
+    "artifacts": {
+      "include/zconf.h": "0718a11beb3295b345fb29a63b44b654b282d82c4cd0513f6225587f2b29b8bb",
+      "include/zlib.h": "818667d6ab6a37fe7469cb06a7f0cb2c2cb2f2c948a03e5accf1a4a74bf3020a",
+      "lib/libz.a": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8"
+    },
+    "build_receipt_sha256": "b856c82b3398615673528f21b3330b7673870195407f532a1947e54efcb5e0cb",
+    "builder_sha256": "a168d2c6c95743b103027a803982572d9c81cd47e410702f38aa1b0c3615b29a",
+    "configure_checks": {
+      "strerror": true,
+      "vsnprintf": true
+    },
+    "license_sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+    "source_archive_sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
+    "version": "1.3.2"
+  }
+}

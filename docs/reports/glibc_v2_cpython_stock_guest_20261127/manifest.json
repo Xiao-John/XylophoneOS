@@ -1,0 +1,14 @@
+{
+  "files": {
+    "cold_exec_remove.log.gz": "1ac8a275df348eeaad99d079273f968186dfb431a01cd9012cdb6e5bf7098830",
+    "cpython_stock_install_serial.log.gz": "5a1e91c4e04227695ac2adbcde6cd080660d0656445eac14ac11d4353821028d",
+    "explicit_upgrade.log.gz": "22fe500958dbb132322055a313044ad38eed2be49cc11d3b31df571daead7b40",
+    "install.log.gz": "9a4fce343542c921b13e0d6a000104eae0539ed6b3f6def9b1f85505cebd67df",
+    "install_frozen.log.gz": "f9a6cafc3f4cfd68f59bc1e0f93795f35632b74054a53877804e44700c31c9e9",
+    "qualification.json": "0d840d5e2648ff95369398a1b2c9256534ddf12e8738e65ed8abc5aaf275bce3",
+    "run_remove.log.gz": "b40e3558e7a2d525b4f323a1da9295c9db182e52173f3297673660fc55337df3",
+    "same_revision_guest.json": "be2819dde73a81462897902b725cedde52baba835b127508593bf6fb63620573",
+    "stock_guest.json": "cfca7c1d8da844989d0a0effcf941e370703a92258a22e280348c90614cae9ec"
+  },
+  "version": 1
+}

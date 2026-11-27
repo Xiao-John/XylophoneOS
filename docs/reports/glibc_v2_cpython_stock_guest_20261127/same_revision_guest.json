@@ -1,0 +1,35 @@
+{
+  "checks": [
+    "frozen_same_revision_package_installed_and_read_back",
+    "explicit_same_revision_upgrade_commits_selected_xpk",
+    "cold_boot_exec_zlib_and_remove_preserves_stock_and_user_file"
+  ],
+  "id": "xos.cpython",
+  "initial_stock_disk_sha256": "a9bb4421bfd904305ff3cfa904842a9b55ceb5bd2d814213cb7f5df43e7386b5",
+  "initial_stock_report_sha256": "cfca7c1d8da844989d0a0effcf941e370703a92258a22e280348c90614cae9ec",
+  "new_xpk_sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b",
+  "old_xpk_sha256": "9cdd6e6e4566c72c028906e18a0cf30165de769265f687e7c990c14dcd82e476",
+  "ordinary_iso_sha256": "2aafae3122d8920d706e5ec2bc0f54987dd7bf738b1ef95530136af680e57968",
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "resource_baselines": {
+    "cold_exec_remove": [
+      129806,
+      2,
+      0
+    ],
+    "explicit_upgrade": [
+      129806,
+      2,
+      0
+    ],
+    "install_frozen": [
+      129806,
+      2,
+      0
+    ]
+  },
+  "revision": 1,
+  "status": "passed",
+  "user_file_sha256": "9cda283a799cd426dbcf3be71525240d50d48c3da88c608cb80a7efc962a00c4",
+  "version": "3.14.9"
+}

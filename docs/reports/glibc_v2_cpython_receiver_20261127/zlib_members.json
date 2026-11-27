@@ -1,0 +1,77 @@
+[
+  {
+    "bytes": 3384,
+    "name": "adler32.o",
+    "sha256": "b3872bd095dcd127b3dcf46c3c9bf655981714ace66820d700d49b76dfc1ae60"
+  },
+  {
+    "bytes": 14480,
+    "name": "crc32.o",
+    "sha256": "eab31ea1ced800ed42cdff29c69b05a176248cff1ba6c80a22e196453c3748bc"
+  },
+  {
+    "bytes": 29368,
+    "name": "deflate.o",
+    "sha256": "839ceaad117ef64ed42c966230f67d259c50e40f431beca6beea75ebe1ddae20"
+  },
+  {
+    "bytes": 9272,
+    "name": "infback.o",
+    "sha256": "64baac6f9037ebdd9125e659a6b0cbe3b727b57c78dd6b9fcaab345c215f6ff0"
+  },
+  {
+    "bytes": 3176,
+    "name": "inffast.o",
+    "sha256": "1e982a701b4816930e8fbe26e26d7bdccd799745268a2f570f1654b983a4c435"
+  },
+  {
+    "bytes": 22464,
+    "name": "inflate.o",
+    "sha256": "5617b0692a7ada9d20ff29ca36e0c9fa75023da59680c46e5459c39185eb8447"
+  },
+  {
+    "bytes": 6816,
+    "name": "inftrees.o",
+    "sha256": "dd57aa993766a2f7895d18c1ebdcf4bdeed5a05e9612334be59057da01a00260"
+  },
+  {
+    "bytes": 17432,
+    "name": "trees.o",
+    "sha256": "fff0b6af852e58d5cda752d72f353a3b2ed79b2f96cc260e98cb7d57bf531bc7"
+  },
+  {
+    "bytes": 3384,
+    "name": "zutil.o",
+    "sha256": "3f6c611413ee6d63981e1ff0f8cc9ca6337db8816081d7ed8844e778456c56ff"
+  },
+  {
+    "bytes": 3408,
+    "name": "compress.o",
+    "sha256": "750ffbc9cb7c3a2e0bb6bb20f841a328247696442638e0a119c115b40b9fac59"
+  },
+  {
+    "bytes": 3136,
+    "name": "uncompr.o",
+    "sha256": "9ce255f096f9c461c4a0281f931fc39d748c837bbdb348e7d078b0b8a0554e78"
+  },
+  {
+    "bytes": 1280,
+    "name": "gzclose.o",
+    "sha256": "2e2c728ec546118a285d5704e96fe5da702cf9151b555df74460bfe00f3ee0ad"
+  },
+  {
+    "bytes": 12264,
+    "name": "gzlib.o",
+    "sha256": "4691843b8d4c84dd8ddddff558f06d70c41ec83903394f262a3c6665ea4e7315"
+  },
+  {
+    "bytes": 12328,
+    "name": "gzread.o",
+    "sha256": "d85fe5b3f607706928c1fb88c18f0295c73c7323a7d04a7e5d4a50020516f776"
+  },
+  {
+    "bytes": 12144,
+    "name": "gzwrite.o",
+    "sha256": "82e50aa4354e184ff8ffb77988b662b75a0ff56cbb70b9695d1412b1430c55c8"
+  }
+]

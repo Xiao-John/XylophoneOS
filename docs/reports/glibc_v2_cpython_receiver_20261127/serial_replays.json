@@ -1,0 +1,48 @@
+{
+  "builder_source_commit": "db563402f7f425131780b683c55b2efa9b4396fe",
+  "cli_receipt_byte_equal": true,
+  "environment": {
+    "max_cpus": 2,
+    "network": "none",
+    "source_date_epoch_env": 0,
+    "tmpfs_limit_mib": 880
+  },
+  "guest": "not_run",
+  "package_sha256_equal": true,
+  "raw_make_log_byte_equal": true,
+  "results": [
+    {
+      "build_options": {
+        "make_jobs": 1,
+        "source_date_epoch": 1795759570
+      },
+      "cli_receipt_sha256": "11ead1c156d7f5452b1b42f101117ffb7c42be5057573e492167f07646ba576c",
+      "debug_elf_sha256": "bde479d98782affbe2eb9013a21a4485893a89deb92385a01ff947df195497ad",
+      "glibc_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "host_python_sha256": "c8d13e341393ca85bc56a2daa8d87605106927ec87ef6f5de900d3ea8073a2ea",
+      "raw_make_log_lines": 372,
+      "raw_make_log_sha256": "430b440571ccf4c077411f373d083ed625b9ae3265a47cb2b3950c0715402076",
+      "runtime_elf_sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16",
+      "stdlib_members": 558,
+      "xpk_sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b",
+      "zlib_sha256": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8"
+    },
+    {
+      "build_options": {
+        "make_jobs": 1,
+        "source_date_epoch": 1795759570
+      },
+      "cli_receipt_sha256": "11ead1c156d7f5452b1b42f101117ffb7c42be5057573e492167f07646ba576c",
+      "debug_elf_sha256": "bde479d98782affbe2eb9013a21a4485893a89deb92385a01ff947df195497ad",
+      "glibc_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "host_python_sha256": "c8d13e341393ca85bc56a2daa8d87605106927ec87ef6f5de900d3ea8073a2ea",
+      "raw_make_log_lines": 372,
+      "raw_make_log_sha256": "430b440571ccf4c077411f373d083ed625b9ae3265a47cb2b3950c0715402076",
+      "runtime_elf_sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16",
+      "stdlib_members": 558,
+      "xpk_sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b",
+      "zlib_sha256": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8"
+    }
+  ],
+  "status": "passed_two_serial_receivers"
+}

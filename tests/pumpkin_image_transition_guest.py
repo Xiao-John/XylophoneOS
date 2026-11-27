@@ -12,11 +12,11 @@ import socket
 import struct
 import subprocess
 import sys
-from tempfile import gettempdir, NamedTemporaryFile, TemporaryDirectory
+from tempfile import gettempdir, TemporaryDirectory
 import time
 
 from pumpkin_provider_deployment_guest import GROUP, OPERATOR, PROVIDER, ROOT, actor, private_owned
-from pumpkin_user_login import bind_system, deployment_marker, digest
+from pumpkin_user_login import active_binding_tag, bind_system, deployment_marker, digest
 
 OPERATOR_TOOL = ROOT / "scripts/pumpkin_user_login.py"
 PROVIDER_TOOL = ROOT / "scripts/pumpkin_generation_provider.py"
@@ -35,26 +35,7 @@ def pin_system(system, expected):
     return build_id, realm, artifacts
 
 
-def replace_fixture_marker(state, sha256):
-    # The isolated test supervisor emulates the authorized operator-side switch.
-    with NamedTemporaryFile(dir=state, delete=False) as stream:
-        temporary = Path(stream.name)
-        os.fchown(stream.fileno(), OPERATOR, GROUP)
-        stream.write(sha256.encode("ascii"))
-        stream.flush()
-        os.fsync(stream.fileno())
-    try:
-        temporary.replace(state / deployment_marker)
-        directory = os.open(state, os.O_RDONLY | os.O_DIRECTORY)
-        try:
-            os.fsync(directory)
-        finally:
-            os.close(directory)
-    finally:
-        temporary.unlink(missing_ok=True)
-
-
-def fixture(current, replacement, provider_root, workspace, report):
+def fixture(current, replacement, provider_root, workspace, report, previous_launcher):
     private_owned(workspace / "operator", OPERATOR, 0o700)
     private_owned(workspace / "socket", PROVIDER, 0o2750)
     os.chown(provider_root, PROVIDER, GROUP)
@@ -78,10 +59,11 @@ def fixture(current, replacement, provider_root, workspace, report):
 
     old, old_provider = profile("current", report["current"]["manifest_sha256"])
     new, new_provider = profile("replacement", report["replacement"]["manifest_sha256"])
+    marker = state / deployment_marker
 
-    def execute(label, uid, command, expected=0, stdout=None, stderr=None):
+    def execute(label, uid, command, expected=0, stdout=None, stderr=None, env=None):
         result = subprocess.run(command, user=uid, group=GROUP, extra_groups=[], stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, timeout=160)
+                                stderr=subprocess.PIPE, timeout=160, env=env)
         if (result.returncode != expected or (stdout is not None and result.stdout.strip() != stdout.encode())
                 or (stderr is not None and stderr.encode() not in result.stderr)):
             raise AssertionError(f"{label}: exit {result.returncode}, {result.stdout!r}, {result.stderr!r}")
@@ -92,6 +74,31 @@ def fixture(current, replacement, provider_root, workspace, report):
         command = [sys.executable, "-B", str(OPERATOR_TOOL), action, "--system", str(system),
                    "--state", str(state), *profile_args, *args]
         execute(label, OPERATOR, command, expected, stdout, stderr)
+
+    def maintain(action, label, old_profile=old, new_profile=new, source=current, target=replacement,
+                 status=None, failure=None):
+        command = [sys.executable, "-B", str(OPERATOR_TOOL), action, "--state", str(state), *old_profile,
+                   "--replacement-deployment-profile", new_profile[1],
+                   "--replacement-deployment-profile-sha256", new_profile[3]]
+        if action != "finish-image-update":
+            command += ["--system", str(source)]
+        if action != "cancel-image-update":
+            command += ["--replacement-system", str(target)]
+        value = {"status": status}
+        if status in ("image_update_activated", "image_binding_already_active"):
+            value["profile_sha256"] = new_profile[3]
+        if status == "image_update_cancelled":
+            value["profile_sha256"] = old_profile[3]
+        execute(label, OPERATOR, command, expected=int(failure is not None),
+                stdout=json.dumps(value, sort_keys=True) if status else None, stderr=failure)
+
+    def verify_previous_launcher(system, profile_args, label):
+        if previous_launcher is not None:
+            command = [sys.executable, "-B", str(previous_launcher), "login", "--system", str(system),
+                       "--state", str(state), *profile_args, *credential]
+            execute(label, OPERATOR, command, expected=1,
+                    stderr="installation does not match the deployment profile",
+                    env=os.environ | {"PYTHONPATH": str(ROOT / "scripts")})
 
     @contextmanager
     def running_provider(args):
@@ -137,20 +144,35 @@ def fixture(current, replacement, provider_root, workspace, report):
         original_wallet = digest(wallet)
         disk_inode = disk.stat().st_ino
 
-    with running_provider(new_provider):
-        operate(current, old, "login", "old operator binding rejects the new provider", *credential,
-                expected=1, stderr="Private Pumpkin operation could not be confirmed")
-        operate(replacement, new, "login", "candidate launcher rejects the old marker", *credential,
-                expected=1, stderr="installation does not match the deployment profile")
-        assert generation(3) == original and digest(disk) == original_disk
+        maintain("begin-image-update", "capture first pending maintenance under the old provider",
+                 status="image_update_pending")
+        pending = marker.read_bytes()
+        maintain("begin-image-update", "retry an already durable preparation", status="image_update_pending")
+        assert marker.read_bytes() == pending
+        maintain("finish-image-update", "reject activation while the old provider is active",
+                 failure="Pumpkin image maintenance could not be confirmed")
+        assert marker.read_bytes() == pending and generation(3) == original
+        verify_previous_launcher(current, old, "previous launcher rejects the pending binding")
+        maintain("cancel-image-update", "cancel while the independently verified old provider is active",
+                 status="image_update_cancelled")
+        assert marker.read_bytes().startswith(active_binding_tag) and digest(disk) == original_disk
+        verify_previous_launcher(current, old, "previous launcher rejects the post-cancellation binding")
+        maintain("begin-image-update", "reopen the same maintenance plan", status="image_update_pending")
+        assert marker.read_bytes() == pending
 
-    replace_fixture_marker(state, new[-1])
-    with running_provider(old_provider):
-        operate(replacement, new, "login", "new operator binding rejects the old provider", *credential,
-                expected=1, stderr="Private Pumpkin operation could not be confirmed")
-        assert generation(3) == original and digest(disk) == original_disk
-
     with running_provider(new_provider):
+        operate(current, old, "login", "current image cannot launch during maintenance", *credential,
+                expected=1, stderr="image maintenance is in progress")
+        operate(replacement, new, "login", "replacement image cannot launch during maintenance", *credential,
+                expected=1, stderr="image maintenance is in progress")
+        maintain("cancel-image-update", "reject cancellation while only the replacement provider is active",
+                 failure="Pumpkin image maintenance could not be confirmed")
+        assert generation(3) == original and digest(disk) == original_disk and marker.read_bytes() == pending
+        maintain("finish-image-update", "activate after verifying the replacement independent provider",
+                 status="image_update_activated")
+        verify_previous_launcher(replacement, new, "previous launcher rejects the newly active binding")
+        maintain("finish-image-update", "retry after activation without replacing the work disk",
+                 status="image_binding_already_active")
         operate(replacement, new, "login", "replacement guest authenticates the original wallet",
                 *credential, stdout="Pumpkin login confirmed and session logged out")
         operate(replacement, new, "read-named", "replacement guest reads the original resource",
@@ -161,9 +183,12 @@ def fixture(current, replacement, provider_root, workspace, report):
                 stdout="Pumpkin named resource generation 4 confirmed")
         updated = generation(4)
         assert updated != original
+        maintain("begin-image-update", "prepare an explicit rollback at the later generation",
+                 new, old, replacement, current, status="image_update_pending")
 
-    replace_fixture_marker(state, old[-1])
     with running_provider(old_provider):
+        maintain("finish-image-update", "activate the previous binding without reverting the generation",
+                 new, old, replacement, current, status="image_update_activated")
         operate(current, old, "read-named", "current guest reopens the new generation after rollback",
                 *credential, *name, "--generation", "4", stdout="Pumpkin named resource generation 4 value 719")
         assert generation(4) == updated and disk.stat().st_ino == disk_inode and digest(wallet) == original_wallet
@@ -176,11 +201,13 @@ def main():
         parser.add_argument("--" + name, type=Path, required=True)
     for name in ("current-sha256", "replacement-sha256"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--previous-launcher", type=Path)
     args = parser.parse_args()
     if not __debug__ or not hasattr(socket, "SO_PEERCRED") or os.geteuid() != 0:
         raise RuntimeError("run with assertions as root inside a dedicated Linux test container")
     current, replacement = args.current.resolve(strict=True), args.replacement.resolve(strict=True)
     provider_filesystem = args.provider_filesystem.resolve(strict=True)
+    previous = args.previous_launcher.resolve(strict=True) if args.previous_launcher else None
     current_id, realm, current_artifacts = pin_system(current, args.current_sha256)
     replacement_id, next_realm, replacement_artifacts = pin_system(replacement, args.replacement_sha256)
     if current_id == replacement_id or realm != next_realm:
@@ -196,13 +223,15 @@ def main():
                           for role, folder in (("provider", provider_filesystem), ("operator", gettempdir()))},
               "qemu": subprocess.check_output([os.environ.get("QEMU", "qemu-system-x86_64"), "--version"],
                                                text=True).splitlines()[0]}
+    if previous is not None:
+        report["previous_launcher_sha256"] = digest(previous)
     args.output.mkdir(parents=True, exist_ok=False)
     try:
         with (TemporaryDirectory(prefix="pumpkin_provider_", dir=provider_filesystem) as provider,
               TemporaryDirectory(prefix="pumpkin_operator_") as temporary):
             workspace = Path(temporary)
             workspace.chmod(0o755)
-            fixture(current, replacement, Path(provider), workspace, report)
+            fixture(current, replacement, Path(provider), workspace, report, previous)
         report["status"] = "passed"
     finally:
         (args.output / "report.json").write_text(json.dumps(report, indent=2) + "\n")

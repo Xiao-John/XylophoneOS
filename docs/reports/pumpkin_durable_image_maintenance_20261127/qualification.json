@@ -1,0 +1,161 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "case": "provider provisions independent root",
+      "exit": 0
+    },
+    {
+      "case": "operator prepares the real guest disk",
+      "exit": 0
+    },
+    {
+      "case": "current image enrolls the original wallet",
+      "exit": 0
+    },
+    {
+      "case": "current image publishes an owned resource",
+      "exit": 0
+    },
+    {
+      "case": "capture first pending maintenance under the old provider",
+      "exit": 0
+    },
+    {
+      "case": "retry an already durable preparation",
+      "exit": 0
+    },
+    {
+      "case": "reject activation while the old provider is active",
+      "exit": 1
+    },
+    {
+      "case": "previous launcher rejects the pending binding",
+      "exit": 1
+    },
+    {
+      "case": "cancel while the independently verified old provider is active",
+      "exit": 0
+    },
+    {
+      "case": "previous launcher rejects the post-cancellation binding",
+      "exit": 1
+    },
+    {
+      "case": "reopen the same maintenance plan",
+      "exit": 0
+    },
+    {
+      "case": "current image cannot launch during maintenance",
+      "exit": 1
+    },
+    {
+      "case": "replacement image cannot launch during maintenance",
+      "exit": 1
+    },
+    {
+      "case": "reject cancellation while only the replacement provider is active",
+      "exit": 1
+    },
+    {
+      "case": "activate after verifying the replacement independent provider",
+      "exit": 0
+    },
+    {
+      "case": "previous launcher rejects the newly active binding",
+      "exit": 1
+    },
+    {
+      "case": "retry after activation without replacing the work disk",
+      "exit": 0
+    },
+    {
+      "case": "replacement guest authenticates the original wallet",
+      "exit": 0
+    },
+    {
+      "case": "replacement guest reads the original resource",
+      "exit": 0
+    },
+    {
+      "case": "replacement guest commits a new generation",
+      "exit": 0
+    },
+    {
+      "case": "prepare an explicit rollback at the later generation",
+      "exit": 0
+    },
+    {
+      "case": "activate the previous binding without reverting the generation",
+      "exit": 0
+    },
+    {
+      "case": "current guest reopens the new generation after rollback",
+      "exit": 0
+    }
+  ],
+  "current": {
+    "build_id": "2ba0a3070e1d8753",
+    "manifest_sha256": "f57ec2f3c41304407c9cea96129a4c0accca25819c95665dfb701d8bbd38b1a6",
+    "artifacts": {
+      "xos-install.iso": "cb68a5500a6fef2048ae618f42a60e2a45a77ebde5392d88afdff10e1e9a0f9d",
+      "user_files.image.elf": "f86732d1e4839720bcf5c4a7c17703574ff83d18ecfdaaed5ea089df286ad49a",
+      "user_supervisor.image.elf": "16dc8b7164267436e3ba62d2559358b805a173b63ebbd8547ccd3c59f5ce68fc",
+      "user_pumpkin_durable.image.elf": "75569213134c7d3c5b07259fca03ea102fbdfefa9bb83bd89d354d0bcf911eaf",
+      "user_p2_anchor_proxy.image.elf": "a91200da4477582644401d1e90b2f333d730a696ec8b84655d038df802779b73",
+      "user_pumpkin_holder.image.elf": "e4f1fc7b6d1777109f3bc779d91c54cdf1c5c02cab63df9d22a7bc1d8f5ddf3e",
+      "user_p2_sealed.image.elf": "01365bd56cf5e24636f3cdf98adfbd5b69b30acf50d21970b08a59d57f81dab9"
+    }
+  },
+  "replacement": {
+    "build_id": "fbe70625e73497ca",
+    "manifest_sha256": "226c6e4d2b2520428cec3f159ffc0c96ff35249223c8630af52fa257c2efeecb",
+    "artifacts": {
+      "xos-install.iso": "b67dfd6cf134880fb2557c8446a244df5c8cbc2de43b76b1a54fdecf865c2df0",
+      "user_files.image.elf": "f86732d1e4839720bcf5c4a7c17703574ff83d18ecfdaaed5ea089df286ad49a",
+      "user_supervisor.image.elf": "16dc8b7164267436e3ba62d2559358b805a173b63ebbd8547ccd3c59f5ce68fc",
+      "user_pumpkin_durable.image.elf": "75569213134c7d3c5b07259fca03ea102fbdfefa9bb83bd89d354d0bcf911eaf",
+      "user_p2_anchor_proxy.image.elf": "a91200da4477582644401d1e90b2f333d730a696ec8b84655d038df802779b73",
+      "user_pumpkin_holder.image.elf": "e4f1fc7b6d1777109f3bc779d91c54cdf1c5c02cab63df9d22a7bc1d8f5ddf3e",
+      "user_p2_sealed.image.elf": "01365bd56cf5e24636f3cdf98adfbd5b69b30acf50d21970b08a59d57f81dab9"
+    }
+  },
+  "tools": {
+    "pumpkin_image_transition_guest.py": "3867d54170fb72a00c8886e23dd786019320daf1f19a85fbd8ed436a7ba893c3",
+    "pumpkin_generation_provider.py": "09e500629afe7d5f881b5444f51dfde7cf4d3c83af203a74530281065393d5b6",
+    "pumpkin_user_login.py": "39129bc7433a4954ea60ec8490dfc1146f550e848e6265f24e4e6d8e40c09b1d"
+  },
+  "storage": {
+    "provider": "ext4",
+    "operator": "ext4"
+  },
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "previous_launcher_sha256": "ef0decfad73505018a53c13e39d4257aa48bbf360cdff6414d5b5e2b460cd0c2",
+  "generations": {
+    "before_switch": "78cd0b9a6a36d543ecbe207ba540a1c8a63729e7bfdaa9c6a8c96011d3583f8b",
+    "after_update_and_rollback": "a1cb69eb5e297ce25c5e389036cc46c1d53289c63b184cd8267d2afef237d68a"
+  },
+  "fixture_realm_sha256": "dc0b91bb191ece2d51ef3fcc12d7b02d9806e6c4963c6409ff11a8d90c126ccb",
+  "different_bound_artifacts": [
+    "xos-install.iso"
+  ],
+  "guest_source_commit": "b2c09465fc751b128bc9064d6d8927286279558d",
+  "host_scope": {
+    "process_interruption_and_binding_checks": 8,
+    "existing_readonly_preflight": 15,
+    "existing_generation_authority": 9,
+    "host_test_sha256": "caa00af6764942b72e962a2cfa719c2e7dbaa8d8614a44b9aa5bb36c4285cd62"
+  },
+  "original_sha256": {
+    "report.json": "39e4f0dc0cc1d225c9f9f58120f2d5fdde7e54b54599a8562fb54023aa23c26a",
+    "guest-hardened.log": "086ded60977f39500727eb47b8291cf307ff120d9e41feb27a598a18f1e29b0d",
+    "host-final-ext4.log": "74a3fbfa216eefbb122014c2ebb8104fb317543f1bd6d9905ec6eeff4b062a1c",
+    "preflight-hardened.log": "b8fc6ac9f875c92cb321b8a95cf4d1dd277846d2aa72825e19170106a24b19a7",
+    "authority-hardened.log": "4127e3ea7b5a3bc19cf4ca0f25402e23b638ade319b5721402ba0a0312e0a2a3"
+  },
+  "not_run": [
+    "power_loss_and_physical_storage",
+    "changed_pumpkin_snapshot_format",
+    "automatic_service_manager_restart_and_production_rollout"
+  ]
+}

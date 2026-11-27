@@ -1,0 +1,4 @@
+[resources] free=129696 tasks=3 completions=1
+XOS_OPENSSL_STATIC_OK sha256 rand tls13 verified_exchange hostname_reject
+[wait] pid=10 kind=exited code=0
+[resources] free=129696 tasks=3 completions=1

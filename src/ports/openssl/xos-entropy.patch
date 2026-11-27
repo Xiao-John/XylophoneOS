@@ -1,0 +1,37 @@
+--- a/providers/implementations/rands/seeding/rand_unix.c
++++ b/providers/implementations/rands/seeding/rand_unix.c
+@@ -268,8 +268,12 @@
+ #endif
+
+ #if defined(OPENSSL_RAND_SEED_GETRANDOM)
+
++#if defined(__xos__)
++#include <sys/random.h>
++#endif
++
+ #if defined(__linux) && !defined(__NR_getrandom)
+ #if defined(__arm__)
+ #define __NR_getrandom (__NR_SYSCALL_BASE + 384)
+ #elif defined(__i386__)
+@@ -328,8 +332,11 @@
+  * returns the number of bytes returned in buf, or < 0 on error.
+  */
+ static ssize_t syscall_random(void *buf, size_t buflen)
+ {
++#if defined(__xos__)
++    return getrandom(buf, buflen, 0);
++#else
+     /*
+      * Note: 'buflen' equals the size of the buffer which is used by the
+      * get_entropy() callback of the RAND_DRBG. It is roughly bounded by
+      *
+@@ -401,8 +408,9 @@
+ #else
+     errno = ENOSYS;
+     return -1;
+ #endif
++#endif /* __xos__ */
+ }
+ #endif /* defined(OPENSSL_RAND_SEED_GETRANDOM) */
+
+ #if defined(OPENSSL_RAND_SEED_DEVRANDOM)

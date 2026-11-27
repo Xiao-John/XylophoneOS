@@ -1,0 +1,19 @@
+{
+  "version": "3.5.9",
+  "archive_root": "openssl-3.5.9",
+  "archive_url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz",
+  "archive_bytes": 53279637,
+  "archive_sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+  "signature_url": "https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz.asc",
+  "signature_sha256": "bdccf2057a7c4ae377b40e832cb8c632ae8b532d4fb64cc7b843066eee748f89",
+  "release_keys_url": "https://www.openssl-library.org/source/pubkeys.asc",
+  "release_keys_sha256": "56e106cd1c44bdb117aec24795f6dfbecaa9bfa0a2901b85331f0059aad16d53",
+  "primary_fingerprint": "B146647E45A7B33947AB226B2A2C87D161692D40",
+  "signing_fingerprint": "C46ED3F2CBEFDA1FDAADA44264ED7B1DCCE71CB2",
+  "license": "Apache-2.0",
+  "license_sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+  "port_files": {
+    "99-xos.conf": "c143f76786bc1289f3917b8aa55b1f69f42c0273b3e8732b7c1567012d608495",
+    "xos-entropy.patch": "dfc7651897bd3d10ade0533d5dabedf5c42d3aa2f1018fc68cc62e3824a577f6"
+  }
+}

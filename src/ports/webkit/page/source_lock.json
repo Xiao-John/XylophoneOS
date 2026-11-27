@@ -24,6 +24,10 @@
     {
       "path": "page/network_address_values.patch",
       "sha256": "c472469123e3ecf5f797c44f53a0cef73d076cc11a2fd9f6a6897478c6bb5f93"
+    },
+    {
+      "path": "page/native_dns_queue.patch",
+      "sha256": "f55fd187b3a1db84385d636502c646e55f1da0748b9fbcfc73644aa4e61f993a"
     }
   ]
 }

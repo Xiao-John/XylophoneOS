@@ -1,0 +1,249 @@
+--- a/Source/WebCore/platform/network/DNS.h
++++ b/Source/WebCore/platform/network/DNS.h
+@@ -101,8 +101,12 @@
+
+ using DNSAddressesOrError = Expected<Vector<IPAddress>, DNSError>;
+ using DNSCompletionHandler = CompletionHandler<void(DNSAddressesOrError&&)>;
+
++#if OS(XOS)
++WEBCORE_EXPORT bool configureXOSDNSService(uint64_t servicePID);
++#endif
++
+ WEBCORE_EXPORT void prefetchDNS(const String& hostname);
+ WEBCORE_EXPORT void resolveDNS(const String& hostname, uint64_t identifier, DNSCompletionHandler&&);
+ WEBCORE_EXPORT void stopResolveDNS(uint64_t identifier);
+ WEBCORE_EXPORT bool isIPAddressDisallowed(const URL&);
+--- a/Source/WebCore/platform/network/DNSResolveQueue.cpp
++++ b/Source/WebCore/platform/network/DNSResolveQueue.cpp
+@@ -26,9 +26,11 @@
+
+ #include "config.h"
+ #include "DNSResolveQueue.h"
+
+-#if USE(GLIB)
++#if OS(XOS)
++#include "xos/DNSResolveQueueXOS.h"
++#elif USE(GLIB)
+ #include "DNSResolveQueueGLib.h"
+ #elif USE(CURL)
+ #include "DNSResolveQueueCurl.h"
+ #elif USE(CF)
+@@ -66,8 +68,15 @@
+     static NeverDestroyed<DNSResolveQueuePlatform> queue;
+
+     return queue;
+ }
++
++#if OS(XOS)
++bool configureXOSDNSService(uint64_t servicePID)
++{
++    return static_cast<DNSResolveQueueXOS&>(DNSResolveQueue::singleton()).configureService(servicePID);
++}
++#endif
+
+ DNSResolveQueue::DNSResolveQueue()
+     : m_timer(*this, &DNSResolveQueue::timerFired)
+     , m_requestsInFlight(0)
+--- a/Source/WebCore/PlatformJSCOnly.cmake
++++ b/Source/WebCore/PlatformJSCOnly.cmake
+@@ -35,7 +35,9 @@
+         platform/network/xos/ResourceResponse.h)
+ endif ()
+
+ if (XOS_WEBCORE_SOFTWARE)
+-    list(APPEND WebCore_SOURCES platform/xos/SharedMemoryXOS.cpp)
++    list(APPEND WebCore_SOURCES
++        platform/xos/SharedMemoryXOS.cpp
++        platform/network/xos/DNSResolveQueueXOS.cpp)
+     list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES "${XOS_NATIVE_ABI_INCLUDE}")
+ endif ()
+--- /dev/null
++++ b/Source/WebCore/platform/network/xos/DNSResolveQueueXOS.cpp
+@@ -0,0 +1,136 @@
++// SPDX-License-Identifier: Apache-2.0
++#include "config.h"
++#include "DNSResolveQueueXOS.h"
++
++#include <wtf/MainThread.h>
++#include <wtf/RunLoop.h>
++#include <wtf/text/CString.h>
++#include <wtf/text/WTFString.h>
++#include <xos/net_transport.hpp>
++
++namespace WebCore {
++
++static constexpr uint64_t requestBudget = 3'000'000'000;
++static constexpr unsigned maximumPending = 24;
++static_assert(requestBudget <= xos::net2::max_request_ns);
++
++bool DNSResolveQueueXOS::configureService(uint64_t servicePID)
++{
++    ASSERT(isMainThread());
++    if (!servicePID || (m_servicePID && m_servicePID != servicePID))
++        return false;
++    m_servicePID = servicePID;
++    m_isUsingProxy = false;
++    return true;
++}
++
++void DNSResolveQueueXOS::updateIsUsingProxy()
++{
++    m_isUsingProxy = !m_servicePID;
++}
++
++void DNSResolveQueueXOS::platformResolve(const String& hostname)
++{
++    if (!schedule(hostname, nullptr))
++        decrementRequestCount();
++}
++
++void DNSResolveQueueXOS::resolve(const String& hostname, uint64_t identifier, DNSCompletionHandler&& completion)
++{
++    ASSERT(isMainThread());
++    if (m_requests.contains(identifier)) {
++        RunLoop::mainSingleton().dispatch([completion = WTF::move(completion)]() mutable {
++            completion(makeUnexpected(DNSError::CannotResolve));
++        });
++        return;
++    }
++
++    auto request = std::make_shared<Request>(identifier, WTF::move(completion));
++    if (schedule(hostname, request)) {
++        m_requests.emplace(identifier, WTF::move(request));
++        return;
++    }
++    RunLoop::mainSingleton().dispatch([request = WTF::move(request)] {
++        request->completion(makeUnexpected(DNSError::CannotResolve));
++    });
++}
++
++void DNSResolveQueueXOS::stopResolve(uint64_t identifier)
++{
++    ASSERT(isMainThread());
++    auto found = m_requests.find(identifier);
++    if (found == m_requests.end())
++        return;
++    auto request = WTF::move(found->second);
++    m_requests.erase(found);
++    request->cancelled.store(true, std::memory_order_release);
++    request->completion(makeUnexpected(DNSError::Cancelled));
++}
++
++bool DNSResolveQueueXOS::schedule(const String& hostname, std::shared_ptr<Request> request)
++{
++    ASSERT(isMainThread());
++    if (!m_servicePID || m_pending >= maximumPending)
++        return false;
++
++    const auto utf8 = hostname.utf8();
++    if (utf8.isNull() || !utf8.length() || utf8.length() > xos::net2::dns_name_limit + 1)
++        return false;
++    std::string name(utf8.data(), utf8.length());
++    if (name.find('\0') != std::string::npos)
++        return false;
++
++    const auto admitted = xos::sdk::syscall(xos::sys_clock_monotonic);
++    if (admitted < 0)
++        return false;
++    const auto deadline = static_cast<uint64_t>(admitted) + requestBudget;
++    if (!m_worker)
++        m_worker = WorkQueue::create("WebCore Net2 DNS"_s);
++    ++m_pending;
++    m_worker->dispatch([this, servicePID = m_servicePID, deadline, name = WTF::move(name), request = WTF::move(request)]() mutable {
++        std::optional<uint32_t> address;
++        const auto cancelled = [](const void* state) {
++            auto* request = static_cast<const Request*>(state);
++            return request && request->cancelled.load(std::memory_order_acquire);
++        };
++        const auto now = xos::sdk::syscall(xos::sys_clock_monotonic);
++        if (!cancelled(request.get()) && now >= 0 && static_cast<uint64_t>(now) < deadline) {
++            xos::net2::client client;
++            xos::net2::resolve_reply reply { };
++            if (!client.connect(servicePID) && !client.resolve_ipv4(name.data(), static_cast<xos::u32>(name.size()),
++                    deadline, reply, cancelled, request.get()))
++                address = reply.address;
++        }
++        RunLoop::mainSingleton().dispatch([this, request = WTF::move(request), address]() mutable {
++            didResolve(WTF::move(request), address);
++        });
++    });
++    return true;
++}
++
++void DNSResolveQueueXOS::didResolve(std::shared_ptr<Request> request, std::optional<uint32_t> address)
++{
++    ASSERT(isMainThread());
++    --m_pending;
++    if (!request) {
++        decrementRequestCount();
++        return;
++    }
++
++    const auto found = m_requests.find(request->identifier);
++    if (found == m_requests.end() || found->second != request)
++        return;
++    m_requests.erase(found);
++    if (!address) {
++        request->completion(makeUnexpected(DNSError::CannotResolve));
++        return;
++    }
++    const auto value = *address;
++    const IPAddress::IPv4Address bytes { static_cast<uint8_t>(value >> 24), static_cast<uint8_t>(value >> 16),
++        static_cast<uint8_t>(value >> 8), static_cast<uint8_t>(value) };
++    Vector<IPAddress> addresses;
++    addresses.append(IPAddress { bytes });
++    request->completion(WTF::move(addresses));
++}
++
++} // namespace WebCore
+--- /dev/null
++++ b/Source/WebCore/platform/network/xos/DNSResolveQueueXOS.h
+@@ -0,0 +1,48 @@
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++#include "DNSResolveQueue.h"
++#include <atomic>
++#include <memory>
++#include <optional>
++#include <string>
++#include <unordered_map>
++#include <wtf/CompletionHandler.h>
++#include <wtf/RefPtr.h>
++#include <wtf/WorkQueue.h>
++
++namespace WebCore {
++
++class DNSResolveQueueXOS final : public DNSResolveQueue {
++public:
++    bool configureService(uint64_t);
++    void resolve(const String&, uint64_t, DNSCompletionHandler&&) final;
++    void stopResolve(uint64_t) final;
++
++private:
++    struct Request {
++        Request(uint64_t id, DNSCompletionHandler&& handler)
++            : identifier(id)
++            , completion(WTF::move(handler))
++        {
++        }
++
++        uint64_t identifier;
++        DNSCompletionHandler completion;
++        std::atomic<bool> cancelled { false };
++    };
++
++    void updateIsUsingProxy() final;
++    void platformResolve(const String&) final;
++    bool schedule(const String&, std::shared_ptr<Request>);
++    void didResolve(std::shared_ptr<Request>, std::optional<uint32_t>);
++
++    RefPtr<WorkQueue> m_worker;
++    std::unordered_map<uint64_t, std::shared_ptr<Request>> m_requests;
++    uint64_t m_servicePID { 0 };
++    unsigned m_pending { 0 };
++};
++
++using DNSResolveQueuePlatform = DNSResolveQueueXOS;
++
++} // namespace WebCore

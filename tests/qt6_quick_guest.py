@@ -5,6 +5,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 from types import SimpleNamespace
 import re
@@ -77,7 +78,11 @@ def main():
     parser.add_argument("--system-manifest", type=Path, help="manifest for the boot image and Dash SDK")
     parser.add_argument("--kit", type=Path, help="relocated Quick kit with a target build receipt")
     parser.add_argument("--app-receipt", type=Path, help="lifecycle application receipt from build_app.py")
+    parser.add_argument("--first-frame-timeout", type=float, default=60,
+                        help="first frame deadline in seconds, including process launch")
     args = parser.parse_args()
+    if not math.isfinite(args.first_frame_timeout) or args.first_frame_timeout <= 0:
+        parser.error("--first-frame-timeout must be a finite positive duration")
     if args.dash_manifest and not args.system_manifest:
         parser.error("--dash-manifest requires --system-manifest")
     if bool(args.kit) != bool(args.app_receipt) or (args.kit and not args.system_manifest):
@@ -85,7 +90,8 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True)
     report = {"status": "FAILED", "image_sha256": digest(args.image),
-              "elf_sha256": digest(args.payload), "cycles": [], "launcher": "xsh"}
+              "elf_sha256": digest(args.payload), "cycles": [], "launcher": "xsh",
+              "first_frame_timeout_seconds": args.first_frame_timeout}
     try:
         operations = [("mkdir", "/bin"), ("import", "/bin/quick.elf", args.payload.resolve())]
         launch = "exec-file /bin/quick.elf"
@@ -171,9 +177,13 @@ def main():
                     display, compositor = start_graphics(guest)
                     report["with_graphics"] = resources(guest)
                     begin = len(guest.output)
+                    launched_at = time.monotonic_ns()
                     send_bytes(guest, launch.encode() + b"\r")
                     for cycle in (1, 2):
-                        guest.expect(f"QT_QUICK_FRAME cycle={cycle}".encode(), start=begin, timeout=60)
+                        timeout = args.first_frame_timeout if cycle == 1 else 60
+                        guest.expect(f"QT_QUICK_FRAME cycle={cycle}".encode(), start=begin, timeout=timeout)
+                        if cycle == 1:
+                            report["launch_to_first_frame_ns"] = time.monotonic_ns() - launched_at
                         first = scanout(guest, output / f"cycle_{cycle}_start.ppm", "35c29d")
                         moved = scanout(guest, output / f"cycle_{cycle}_moved.ppm", "35c29d", first["bar_x"])
                         stroke(guest, "a")

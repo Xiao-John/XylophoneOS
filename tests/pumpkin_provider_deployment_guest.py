@@ -210,18 +210,19 @@ def run(system, output, provider_filesystem):
 
             execute("login", "normal login is denied while the provider is unavailable", 1, wallet)
             assert revision(2) == enrolled
-            def reject_old_disk(old_disk, expected_revision, active_record):
+            def reject_old_disk(old_disk, expected_revision, active_record, label):
                 current = launcher / "current.img"
                 old_disk_digest = digest(old_disk)
                 disk.rename(current)
                 old_disk.rename(disk)
                 try:
-                    execute("login", "restoring only the old guest disk cannot restore the realm", 1, wallet)
+                    execute("login", label, 1, wallet)
                     assert revision(expected_revision) == active_record
                 finally:
                     disk.rename(old_disk)
                     current.rename(disk)
                 assert digest(old_disk) == old_disk_digest
+                report["checks"][-1]["revision"] = expected_revision
 
             def resource(action, label, expected_revision, *, generation=None, value=None,
                          expected=0, text=None):
@@ -240,7 +241,7 @@ def run(system, output, provider_filesystem):
             try:
                 execute("login", "fresh VM and provider process confirm ordinary login", credential=wallet)
                 assert revision(2) == enrolled
-                reject_old_disk(original, 2, enrolled)
+                reject_old_disk(original, 2, enrolled, "restoring the unprovisioned guest disk is refused")
                 execute("login", "current disk still establishes a real ordinary session", credential=wallet)
                 assert revision(2) == enrolled
                 if named_resources:
@@ -266,7 +267,7 @@ def run(system, output, provider_filesystem):
 
                     replaced = resource("publish-named", "registrar commits replacement under the same name", 4,
                                         generation=3, value=719, text="Pumpkin named resource generation 4 confirmed")
-                    reject_old_disk(old_resource_disk, 4, replaced)
+                    reject_old_disk(old_resource_disk, 4, replaced, "restoring the superseded resource disk is refused")
                     assert resource("read-named", "fresh VM rejects the old resource key", 4, generation=3,
                                     expected=4, text=denied) == replaced
                     assert resource("read-named", "restored current disk recovers the replacement", 4, generation=4,

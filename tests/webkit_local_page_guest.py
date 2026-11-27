@@ -44,6 +44,7 @@ def main():
         'sdk_manifest_sha256': digest(args.sdk_kit / 'sdk/manifest.json'),
         'sdk_profile_sha256': digest(args.sdk_kit / 'profile.json'),
         'source_lock_sha256': digest(port / 'source_lock.json'),
+        'software_lock_sha256': digest(port / 'page/source_lock.json'),
         'software_context_sha256': digest(port / 'page/software_context.patch'),
         'software_buffers_sha256': digest(port / 'page/software_buffers.patch'),
         'software_graph_sha256': digest(port / 'page/software_graph.patch'),

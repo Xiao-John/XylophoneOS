@@ -81,7 +81,7 @@ CMakeCache 时，将 `ENABLE_WEBGL` 和 `ENABLE_WEBGPU` 两项设为 `OFF`。
 源包的 `Source/WebCore/testing/TestPage.cpp`，补上后者所在目录的头文件搜索路径。
 将两个对象与完整 WebCore、同配置的 JavaScriptCore/WTF、PAL 和软件 Skia 等目标
 归档链接成普通 XOS 应用 `local_page.elf`。链接回执 `local_page_link.json` 保存 ELF、
-C++ 夹具、HTML、SDK manifest、SDK profile、源锁及三个软件补丁的 SHA-256。
+C++ 夹具、HTML、SDK manifest、SDK profile、基础及软件源锁、三个软件补丁的 SHA-256。
 字段名见客体运行器的 `inputs`。
 
 ```sh

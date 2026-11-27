@@ -25,8 +25,12 @@ def stage_disk(directory, probe, dash):
     create_fat32(disk, 512)
     for path in ("/usr", "/usr/bin", "/bin"):
         transfer(disk, "mkdir", path)
-    for index, (name, source) in enumerate((("/usr/bin/dash", dash), ("/bin/wait.elf", probe),
-                                           ("/bin/wait.txt", content))):
+    payloads = [("/usr/bin/dash", dash), ("/bin/wait.elf", probe), ("/bin/wait.txt", content)]
+    for case in ("normal", "concurrent"):
+        script = directory / f"{case}.sh"
+        script.write_text(f"/bin/wait.elf {case}\n")
+        payloads.append((f"/bin/{case}.sh", script))
+    for index, (name, source) in enumerate(payloads):
         transfer(disk, "import", name, source)
         readback = directory / f"readback_{index}"
         transfer(disk, "export", name, readback)
@@ -62,7 +66,7 @@ def run_guest(output, system, probe, dash, case_names):
                 for entry in ("xsh", "dash"):
                     for case in case_names:
                         invocation = ("exec-file /bin/wait.elf " + case if entry == "xsh"
-                                      else "dash -c '/bin/wait.elf " + case + "'")
+                                      else "dash /bin/" + case + ".sh")
                         output_text = command(with_serial, invocation, b"FILE_REPLY_WAIT_PASS " + case.encode())
                         assert b"kind=exited code=0" in output_text
                         after = resources(with_serial)

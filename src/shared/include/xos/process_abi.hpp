@@ -55,6 +55,9 @@ inline constexpr u64 sys_process_fork_files = 59;
 // These endpoint pairs and published names are revoked on successful exec;
 // failed exec preserves them. Explicit sys81 channel inheritance is separate.
 inline constexpr u64 sys_ipc_endpoint = 84, sys_ipc_wait = 85, sys_ipc_name = 86;
+// sys84 create and sys86 connect share the authenticated owner's pair budget.
+// Pending and accepted pairs both count until either peer closes or is revoked.
+inline constexpr u32 ipc_max_owned_channels = 4, ipc_max_owned_names = 2;
 // C3: prepare an unstarted replacement (same signature as create, mask=0),
 // then commit(entry, depth_mode): 0 retains depth; n>0 requests depth n-1,
 // which must be strictly smaller than current authority.

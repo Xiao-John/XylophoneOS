@@ -22,6 +22,28 @@
 会话、显式继承请求和 authority 的所有可失败检查通过以后执行。退出、kill 和
 fault 的进程销毁使用同一个撤销实现，避免不同结束路径遗漏对象。
 
+## 每主体资源额度
+
+sys84 `create` 与 sys86 `connect` 按内核认证的 owner PID 共用最多 **4 个双向
+pair**，每 pair 的两个端点只计一次。未 accept、已 accept、空/满队列、登记了
+waiter 的 pair 同样计入；不能通过 drain accept、交给 peer 或换一个发现名称
+重新取得额度。peer 接收已有 pair 不转移 owner，也不计为 peer 新建的 pair。
+sys86 `publish` 每 PID 最多 **2 个名称**；重复发布自己的现有名称保持幂等成功。
+
+限制在分配或写入输出之前检查，超额返回既有 `process_error_resources`；旧
+pair、名称、消息及调用者输出保持原值。owner revoke 或任一参与者 close、
+exit/fault/cancel、成功 exec 撤销 pair 后归还额度；失败 release、失败 exec
+不归还。名称 unpublish/owner 终止后归还；失败 unpublish 不变。额度从现存
+对象计算，避免独立计数与撤销路径不一致。名称上限与全局冲突分别判断：已有
+他人名称仍返回 busy，不把命名冲突解释成授权。
+
+共享头 `ipc_max_owned_channels` / `ipc_max_owned_names` 和 SDK manifest 的
+`ipc_endpoint` 项公开限制。syscall 数字、请求布局、单调 token 和错误码保持；
+旧二进制仍可使用原请求，超过新 profile 的额度收到原有资源失败。网络服务
+可同时发布两个协议名，现有 Pumpkin/broker 流程保留其最多三个自建 pair。
+全局池上限不扩大，仍可能因其他主体或系统资源压力提前失败。此机制保证单一
+PID 不能占满 pair/name 池，不承诺整个进程树的预算、任意客户端数或防 DoS。
+
 ## 与其它 IPC 的关系
 
 - sys81 通用 channel 的显式、静止继承沿用 [channel 契约](channel.md)；这里

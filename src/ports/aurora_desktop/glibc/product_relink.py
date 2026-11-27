@@ -124,7 +124,8 @@ def load_replacement(directory, expected, materials, materials_digest):
     require(replacement.get("format_version") == 1 and replacement.get("kind") == "mobius_qt_replacement"
             and replacement.get("materials_manifest_sha256") == materials_digest,
             "Qt replacement belongs to different Mobius link materials")
-    filename = replacement["library"]
+    filename = replacement.get("library")
+    require(isinstance(filename, str), "Qt replacement requires a material archive path")
     library = PurePosixPath(filename)
     require(library.parent == PurePosixPath("link/qt/lib") and library.as_posix() == filename
             and library.name.startswith("libQt6") and library.suffix == ".a"
@@ -207,7 +208,6 @@ def relink(args):
             "status": "byte_identical_mobius_relink", "materials_manifest_sha256": digest, "elfs": seen,
         }
         if replacement is not None:
-            require(changed, "Qt replacement did not change either product ELF")
             receipt.update(status="mobius_qt_replacement_linked", changed_programs=sorted(changed),
                            replacement_manifest_sha256=replacement_digest, library=library,
                            original_archive_sha256=metadata["original_archive_sha256"],

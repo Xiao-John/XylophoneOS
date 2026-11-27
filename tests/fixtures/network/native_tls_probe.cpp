@@ -2,6 +2,9 @@
 #include "http.hpp"
 #include "stream.hpp"
 #include "tls_test_root.h"
+#ifdef XOS_TLS_TRUST_STORE_PROBE
+#include "tls_trust_fixtures.hpp"
+#endif
 
 #include <psa/crypto.h>
 #include <stdio.h>
@@ -46,6 +49,68 @@ int record_verified_peer(const native_tls::stream& stream) {
     putchar('\n');
     return 0;
 }
+#ifdef XOS_TLS_TRUST_STORE_PROBE
+int trust_store_selftest() {
+    using native_tls::trust_store_result;
+    if (psa_crypto_init() != PSA_SUCCESS) return error("trust-selftest-crypto", -1);
+    unsigned checks = 0;
+    const auto check = [&](const unsigned char* data, size_t length, trust_store_result expected) {
+        native_tls::trust_store_pin pin{};
+        pin.generation = 1;
+        size_t digest_size = 0;
+        if (psa_hash_compute(PSA_ALG_SHA_256, data, length, pin.sha256, sizeof pin.sha256,
+                             &digest_size) != PSA_SUCCESS || digest_size != sizeof pin.sha256)
+            return false;
+        native_tls::trust_store candidate;
+        const auto result = candidate.load(data, length, pin);
+        if (result != expected || candidate.ready() != (expected == trust_store_result::ok)) return false;
+        ++checks;
+        return true;
+    };
+    unsigned char changed[sizeof tls_store_fixture * 2]{};
+    const size_t length = sizeof tls_store_fixture;
+    if (!check(tls_store_fixture, length, trust_store_result::ok) ||
+        !check(tls_store_fixture, 0, trust_store_result::invalid) ||
+        !check(tls_store_fixture, 31, trust_store_result::invalid) ||
+        !check(tls_store_fixture, 32, trust_store_result::invalid) ||
+        !check(tls_store_fixture, length - 1, trust_store_result::invalid))
+        return error("trust-selftest-length", -1);
+    const unsigned offsets[]{0u, 8u, 12u, 24u};
+    for (unsigned offset : offsets) {
+        memcpy(changed, tls_store_fixture, length);
+        changed[offset] = offset == 12 ? 0 : 255;
+        if (!check(changed, length, trust_store_result::invalid))
+            return error("trust-selftest-header", offset);
+    }
+    memcpy(changed, tls_store_fixture, length);
+    changed[16] = 2;
+    if (!check(changed, length, trust_store_result::pin_mismatch)) return error("trust-selftest-generation", -1);
+    memcpy(changed, tls_store_fixture, length);
+    memset(changed + 32, 255, 4);
+    if (!check(changed, length, trust_store_result::invalid)) return error("trust-selftest-entry-length", -1);
+    memcpy(changed, tls_store_fixture, length);
+    changed[36] = 0;
+    if (!check(changed, length, trust_store_result::malformed_certificate)) return error("trust-selftest-der", -1);
+    memcpy(changed, tls_store_fixture, length);
+    changed[length] = 0;
+    if (!check(changed, length + 1, trust_store_result::invalid)) return error("trust-selftest-trailing", -1);
+    const size_t first_length = size_t(tls_store_fixture[32]) | (size_t(tls_store_fixture[33]) << 8) |
+        (size_t(tls_store_fixture[34]) << 16) | (size_t(tls_store_fixture[35]) << 24);
+    if (first_length + 36 > length) return error("trust-selftest-fixture", -1);
+    memcpy(changed, tls_store_fixture, first_length + 36);
+    memcpy(changed + first_length + 36, tls_store_fixture + 32, first_length + 4);
+    if (!check(changed, 32 + (first_length + 4) * 2, trust_store_result::duplicate))
+        return error("trust-selftest-duplicate", -1);
+    memcpy(changed, tls_store_fixture, 32);
+    changed[12] = 1;
+    for (unsigned i = 0; i < 4; ++i) changed[32 + i] = (sizeof tls_leaf_fixture >> (8 * i)) & 255;
+    memcpy(changed + 36, tls_leaf_fixture, sizeof tls_leaf_fixture);
+    if (!check(changed, 36 + sizeof tls_leaf_fixture, trust_store_result::not_ca))
+        return error("trust-selftest-leaf-is-not-anchor", -1);
+    printf("TRUST_STORE_SELFTEST_PASS checks=%u\n", checks);
+    return 0;
+}
+#endif
 }
 
 int main(int argc, char** argv) {
@@ -59,16 +124,57 @@ int main(int argc, char** argv) {
         return error("arguments", -1);
 
     const char* name = hostname;
+    const char* verification_case = scenario;
+#ifdef XOS_TLS_TRUST_STORE_PROBE
+    if (!strcmp(scenario, "store-selftest")) return trust_store_selftest();
+#ifdef XOS_TLS_PUBLIC_STORE_FIXTURE
+    if (!strcmp(scenario, "store-public")) {
+        native_tls::trust_store public_store;
+        const auto result = public_store.load_file("/tls-public-roots.bin", tls_public_store_pin);
+        if (result != native_tls::trust_store_result::ok || public_store.anchor_count() != tls_public_store_count)
+            return error("public-trust-store", static_cast<int>(result));
+        printf("TRUST_PUBLIC_STORE_PASS generation=%lu count=%zu\n", public_store.generation(), public_store.anchor_count());
+        return 0;
+    }
+#endif
+    native_tls::trust_store store;
+    const bool from_store = !strncmp(scenario, "store-", 6);
+    if (from_store) {
+        verification_case = scenario + 6;
+        const bool updated = !strcmp(verification_case, "removed") || !strcmp(verification_case, "updated");
+        const bool tampered = !strcmp(verification_case, "tampered");
+        const bool stale = !strcmp(verification_case, "stale");
+        const char* path = tampered ? "/tls-roots-bad.bin" : updated ? "/tls-roots-2.bin" : "/tls-roots-1.bin";
+        const auto& pin = updated || stale ? tls_store_pin_2 : tls_store_pin_1;
+        const auto loaded = store.load_file(path, pin);
+        if (tampered || stale) {
+            if (loaded != native_tls::trust_store_result::pin_mismatch || store.ready())
+                return error("trust-rejection", static_cast<int>(loaded));
+            printf("TRUST_STORE_REJECT scenario=%s\n", scenario);
+            return 0;
+        }
+        if (loaded != native_tls::trust_store_result::ok || store.generation() != pin.generation ||
+            store.anchor_count() != (updated ? 1u : 2u))
+            return error("trust-load", static_cast<int>(loaded));
+        if (store.load_file("/tls-roots-bad.bin", pin) != native_tls::trust_store_result::already_loaded ||
+            !store.ready() || store.generation() != pin.generation)
+            return error("trust-immutable", -1);
+        printf("TRUST_STORE_READY generation=%lu count=%zu\n", store.generation(), store.anchor_count());
+        if (!strcmp(verification_case, "removed")) verification_case = "unknown-ca";
+        if (!strcmp(verification_case, "second") || !strcmp(verification_case, "updated") ||
+            !strcmp(verification_case, "rollback")) verification_case = "valid";
+    }
+#endif
     uint32_t expected_flags = 0;
-    const bool truncated = !strcmp(scenario, "truncated");
-    if (!strcmp(scenario, "wrong-name")) {
+    const bool truncated = !strcmp(verification_case, "truncated");
+    if (!strcmp(verification_case, "wrong-name")) {
         expected_flags = MBEDTLS_X509_BADCERT_CN_MISMATCH;
         name = wrong_name;
-    } else if (!strcmp(scenario, "unknown-ca") || !strcmp(scenario, "missing-intermediate")) {
+    } else if (!strcmp(verification_case, "unknown-ca") || !strcmp(verification_case, "missing-intermediate")) {
         expected_flags = MBEDTLS_X509_BADCERT_NOT_TRUSTED;
-    } else if (!strcmp(scenario, "expired")) {
+    } else if (!strcmp(verification_case, "expired")) {
         expected_flags = MBEDTLS_X509_BADCERT_EXPIRED;
-    } else if (!truncated && strcmp(scenario, "valid")) {
+    } else if (!truncated && strcmp(verification_case, "valid")) {
         return error("scenario", -1);
     }
 
@@ -81,7 +187,12 @@ int main(int argc, char** argv) {
     native_tls::stream stream;
     if (!has_no_verified_peer(stream))
         return error("peer-before-handshake", -1);
-    int status = stream.connect(pid, address, static_cast<xos::u16>(port), name,
+    int status =
+#ifdef XOS_TLS_TRUST_STORE_PROBE
+        from_store ? stream.connect(pid, address, static_cast<xos::u16>(port), name, store,
+                                     static_cast<xos::u64>(now) + 20'000'000'000ull) :
+#endif
+        stream.connect(pid, address, static_cast<xos::u16>(port), name,
                                 tls_test_root, sizeof(tls_test_root),
                                 static_cast<xos::u64>(now) + 20'000'000'000ull);
     const uint32_t verification = stream.verification_flags();

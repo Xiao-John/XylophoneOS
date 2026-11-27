@@ -12,6 +12,7 @@ struct https_route {
     const unsigned char* trust_anchor;
     size_t trust_anchor_size;
     native_tls::route_source source;
+    const native_tls::trust_store* store = nullptr;
 };
 
 // Fetch one HTTPS response before the absolute deadline. The result describes

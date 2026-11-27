@@ -1,0 +1,10 @@
+{
+  "changed_members": [
+    "exit.o"
+  ],
+  "ordered_members_equal": 1686,
+  "original_archive_sha256": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+  "original_exit_object_sha256": "c5ba773aa3708ceb98dbb95decddaf947d09edfddcd235655da62fbd3108544d",
+  "replacement_archive_sha256": "7e74946457eb1740e82a5c99ad3d6be0e2b0911f2ed2ee00fb2c96602dd5b3a2",
+  "replacement_exit_object_sha256": "282ce0cf6598da55a7f4e3ee6be5ca5be1a1c055639f052f1d027cb5b0013d72"
+}

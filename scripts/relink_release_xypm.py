@@ -19,7 +19,9 @@ LIBC = 'sysroot/usr/lib/libc.a'
 FORMAT = 'xos_release_xypm_relink_v1'
 DASH_FORMAT = 'xos_release_dash_relink_v1'
 MAKE_FORMAT = 'xos_release_gnu_make_relink_v1'
-DRIVERS = {'xypm': (FORMAT, 'g++'), 'dash': (DASH_FORMAT, 'gcc'), 'make': (MAKE_FORMAT, 'gcc')}
+CPYTHON_FORMAT = 'xos_release_cpython_relink_v1'
+DRIVERS = {'xypm': (FORMAT, 'g++'), 'dash': (DASH_FORMAT, 'gcc'), 'make': (MAKE_FORMAT, 'gcc'),
+           'cpython': (CPYTHON_FORMAT, 'gcc')}
 
 
 def relink(args):

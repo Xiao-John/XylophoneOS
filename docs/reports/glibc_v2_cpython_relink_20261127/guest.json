@@ -1,0 +1,72 @@
+{
+  "build_id": "1f593b6ca9cd7904",
+  "cpython_xpk_sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b",
+  "library_sha256": {
+    "usr/lib/python3.14/os.py": "976bdb3e24925f2fb3ce43a4d788de6dcbb88a7cc8604c60ae690fbdd6507546",
+    "usr/lib/python314.zip": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79"
+  },
+  "ordinary_iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+  "original": {
+    "cases": {
+      "absent_file": {
+        "exit": 2,
+        "exit_markers": 0,
+        "output": "can't open file"
+      },
+      "compression": {
+        "exit": 0,
+        "exit_markers": 0,
+        "output": "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc"
+      },
+      "version": {
+        "exit": 0,
+        "exit_markers": 0,
+        "output": "Python 3.14.9"
+      }
+    },
+    "resources": [
+      129806,
+      2,
+      0
+    ]
+  },
+  "original_sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16",
+  "output_sha256": {
+    "/work/py3a2/payload.gz": "7669dbc7421ceb264e5b497eddd62eb505d2bb49e5b94239d199860b7492ae5b",
+    "/work/py3a2/payload.zip": "af3faeea5ce0ba620ed2656f1d469be0747f288387208df904fa6e93761453ea"
+  },
+  "probe_sha256": "40e01975035b186018427e191827175518357841b7e4e10ddeb63a7cb70933ca",
+  "qemu": "QEMU emulator version 11.1.2",
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "replacement": {
+    "cases": {
+      "absent_file": {
+        "exit": 2,
+        "exit_markers": 1,
+        "output": "can't open file"
+      },
+      "compression": {
+        "exit": 0,
+        "exit_markers": 1,
+        "output": "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc"
+      },
+      "version": {
+        "exit": 0,
+        "exit_markers": 1,
+        "output": "Python 3.14.9"
+      }
+    },
+    "resources": [
+      129806,
+      2,
+      0
+    ]
+  },
+  "replacement_sha256": "9cab8de40ca1c842c1057f89cbec30a992ac338ca56922298649b83d9b208b6c",
+  "runner_sha256": "1f1f6fc12beb221f8ce940b2c748c98bbcf965960945d5ca4af81918c70a2aad",
+  "serial_sha256": {
+    "original": "54cfd6a231a843d54f207c9f57e5c8bf21186993e6d9513df4c8ad356a52dbae",
+    "replacement": "c26b4e538c25dab83d4ed16f17e4967c701b33cc3adb9c0ba0e8e16c02a918f2"
+  },
+  "status": "passed_subset"
+}

@@ -1,0 +1,25 @@
+{
+  "status": "passed_subset",
+  "source_commit": "3d21f4e4a28b7f1ad3aa45d098c857c83e9cb610",
+  "source_tree": "253eef00c8fbb4845df92ed9253c22cbd763a883",
+  "license_checks": 10,
+  "abi": "passed",
+  "native_tls": {
+    "build_id": "da3316b7893d87cd",
+    "cases": 8,
+    "image_sha256": "44907a5a013c482a31fcb3565b2e773bb610550f7de7ded38a8f3c438327fc65",
+    "system_manifest_sha256": "6134b796c241d00b06f66a668a2ac5954421cf1a7dedc8dce289b3e0c23f7168",
+    "glibc_sdk_manifest_sha256": "b490f9efeacaf75495ab3aa36489fc91e14bf9d4fe66f538b145bb21590e5961",
+    "original_report_sha256": "4ac13178ef3b9301942b6cf5743d73958c3fc8cfeb26f905ef5f595623194c86",
+    "qemu": "QEMU emulator version 11.1.2"
+  },
+  "glibc_net2_tcp": {
+    "build_id": "8a1dbc18ca75a006",
+    "cases": 9,
+    "image_sha256": "3b226a8a0e77d1b357a498bd61d2731d939135f3a32218c4c7a62b2972d60a63",
+    "system_manifest_sha256": "03a41898c8351d06cfce3171ef42f8721e63278ec530ab844e659fc3708fda7a",
+    "glibc_sdk_manifest_sha256": "f03aed9b30a5ab4332f5b6d29e9862e53d9c54a976ab139d28f3470a0d0e4854",
+    "original_report_sha256": "9afcf99269a08520a1b346307037a337b0bb4fdc7ec4b78d428ff75a1189588d",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)"
+  }
+}

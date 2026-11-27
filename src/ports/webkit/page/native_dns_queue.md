@@ -12,3 +12,21 @@ PID，服务重启时由启动方重新创建持有网络访问权的进程。�
 允许调用方复用已取消的编号。
 
 [原生 Net2 DNS 契约](../../../../docs/contracts/net_service_v2.md)
+
+## 客体验收
+
+在 XOS 目标上链接夹具 `tests/fixtures/webkit/xos_webcore_resolver.cpp`、
+`DNS.cpp`、`DNSResolveQueue.cpp`、`DNSResolveQueueXOS.cpp`、WTF、bmalloc 和 ICU。
+XOS 预取定时器使用同一 WTF 主循环。链接回执绑定实际 ELF、夹具、软件源锁和用到的
+三个 Net2 头。传入与原生 DNS 探针镜像一致的系统源码目录。
+
+```sh
+python3 tests/webkit_native_dns_guest.py --system "$NET_DNS_SYSTEM" --elf "$RESOLVER_ELF" \
+  --receipt "$LINK_RECEIPT" --webcore-source "$XOS_ROOT" \
+  --system-source "$SYSTEM_SOURCE" --output "$RESOLVER_TEST_OUT"
+```
+
+普通 QEMU 镜像 `c8afe20db9c3005d` 验证了实际 A 查询、NXDOMAIN、一次取消回调、
+编号复用、错误 PID 和正常停机后的拒绝。FAT 回读与已链接 ELF 的摘要一致。捕获
+的三个 DNS 问题对应受控场景，退出后资源恢复到 `129690 / 3 / 1`。
+[链接、客体和数据包回执](../../../../docs/reports/clarke_webcore_net2_resolver_20261127/manifest.json)

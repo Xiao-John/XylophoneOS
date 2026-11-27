@@ -1,0 +1,27 @@
+{
+  "archive_sha256": {
+    "libWTF.a": "3c53b5f0494f4e65da64147a0328af99f39cb6c716a2d9c0e9d4f93d403deddd",
+    "libbmalloc.a": "56e0f9d6477b62a2a12a48208e6b928c878947aa4a601c82e37eefebaa1017e9",
+    "libicudata.a": "0b5168e5c536398e4985e56bb6bf6a8a6ddabcd0886e8b81913debe6a80caf52",
+    "libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
+    "libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83"
+  },
+  "elf_sha256": "43da047883eec63faa112aff46e05bac2110f870729ba98fef4430c702f3dbf9",
+  "fixture_sha256": "4ee6131301b0bf34cfb0f0abd23e2ace6b5e005aeb1f3d7f6c1ead78f7eceefb",
+  "gnu_patch_replay_sha256": "df84db7409f50be5c8c0397a9a34b9f8026205f9c129db1db1da44ccb66872bb",
+  "link_args_sha256": "5de1887d7ff2d1baf0499c09c5aef8cfeea14e46272b95c14972bc7db324331b",
+  "link_map_sha256": "96ea97da429b2032525b85dec472cc026809d848c4cd025142c9ca96281a3159",
+  "net2_headers": {
+    "src/shared/include/xos/net_service_abi.hpp": "14a7cb20681ef4b48f59c2458acb4d31e482934abc264cb7283e416d32a273f0",
+    "src/user/include/xos/net_service_client.hpp": "81f59343ac8da95a5e3c9feba86f10269b5d88c46aad64d21ce975097cf0de98",
+    "src/user/include/xos/net_transport.hpp": "f0b51ddb1d1b23a2d73f6f99b60a3eaeb76e47f5f1bafde9899191bd4898b44f"
+  },
+  "objects": {
+    "DNS.cpp.o": "eb340ab06a2ce83e04780ce976b58288f28d709f3636a969eb49840b9012c3fb",
+    "DNSResolveQueue.cpp.o": "0e11e9c6e46426b865736f498197feacfe1d25a85735ec26dc9ad1a59bd33268",
+    "DNSResolveQueueXOS.cpp.o": "2291f509ff72afacb939c62e84619ec4b4607de975e1508312ce069dc71a9850",
+    "resolver-fixture.o": "cc86567a72304735bc8ac1be4ef73d9eaca6555e6a7bfeda2c11b6fb7ccb180a"
+  },
+  "production_commit": "3227bab9e678ec5a5f59de88d423475a13d1429b",
+  "software_source_lock_sha256": "8e525b5dea709db1754765fc8129fcbba866a5772a60acac2ebc35e747aaee92"
+}

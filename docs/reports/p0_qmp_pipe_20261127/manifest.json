@@ -1,0 +1,8 @@
+{
+  "files": {
+    "real_boot_qemu.log": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+    "real_boot_serial.log": "14d07e4216cb4e7b289d046fd794bb5bb5546cf243e71f0f8f0e7e473acc5325",
+    "summary.json": "9d7ac2b273f35997910376bc025b2b4d9f653b378530e3cc2a2690495d6eae69"
+  },
+  "version": 1
+}

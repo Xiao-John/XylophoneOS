@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MACHINE = "pc-i440fx-10.0"
 
 
-def qemu_command(image, *, vga=False, display=None, qmp=None, debug_port=None,
+def qemu_command(image, *, vga=False, display=None, qmp=None, qmp_transport="unix", debug_port=None,
                  cpu="qemu64,+rdrand", work_disk=None, iso=False, network=False, network_capture=None,
                  network_peer_port=None):
     if network_capture is not None and not network:
@@ -53,7 +53,12 @@ def qemu_command(image, *, vga=False, display=None, qmp=None, debug_port=None,
             capture_path = str(network_capture).replace(",", ",,")
             command += ["-object", f"filter-dump,id=xos_capture,netdev=xosnet,file={capture_path}"]
     if qmp:
-        command += ["-qmp", f"unix:{qmp},server=on,wait=off"]
+        if qmp_transport == "unix":
+            command += ["-qmp", f"unix:{qmp},server=on,wait=off"]
+        elif qmp_transport == "pipe":
+            command += ["-qmp", f"pipe:{qmp}"]
+        else:
+            raise ValueError("QMP transport must be unix or pipe")
     if debug_port is not None:
         command += ["-S", "-gdb", f"tcp:127.0.0.1:{debug_port}"]
     return command

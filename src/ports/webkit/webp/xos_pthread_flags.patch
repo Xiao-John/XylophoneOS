@@ -1,0 +1,13 @@
+--- a/cmake/deps.cmake
++++ b/cmake/deps.cmake
+@@ -40,7 +40,9 @@
+   find_package(Threads)
+   if(Threads_FOUND)
+     # work around cmake bug on QNX (https://cmake.org/Bug/view.php?id=11333)
+-    if(CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
++    # XOS pthread is in libc and the bare target driver has no -pthread switch.
++    if(CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_SYSTEM_NAME STREQUAL "QNX"
++       AND NOT CMAKE_SYSTEM_NAME STREQUAL "XOS")
+       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+     endif()
+     list(APPEND WEBP_DEP_LIBRARIES Threads::Threads)

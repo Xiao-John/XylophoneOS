@@ -1,0 +1,31 @@
+--- a/Source/cmake/OptionsJSCOnly.cmake
++++ b/Source/cmake/OptionsJSCOnly.cmake
+@@ -33,4 +33,6 @@
+     WEBKIT_OPTION_DEFAULT_PORT_VALUE(USE_SKIA PRIVATE ON)
+     WEBKIT_OPTION_DEFAULT_PORT_VALUE(USE_SKIA_ENCODERS PRIVATE OFF)
++    WEBKIT_OPTION_DEFAULT_PORT_VALUE(USE_AVIF PRIVATE OFF)
++    WEBKIT_OPTION_DEFAULT_PORT_VALUE(USE_JPEGXL PRIVATE OFF)
+ endif ()
+
+@@ -161,4 +163,13 @@
+     find_package(PNG REQUIRED)
+     find_package(JPEG REQUIRED)
++    find_package(WebP REQUIRED COMPONENTS demux)
++    find_library(XOS_WEBP_SHARPYUV_LIBRARY NAMES sharpyuv REQUIRED)
++    target_link_libraries(WebP::libwebp INTERFACE "${XOS_WEBP_SHARPYUV_LIBRARY}")
++    if (USE_AVIF)
++        find_package(AVIF 0.9.0 REQUIRED)
++    endif ()
++    if (USE_JPEGXL)
++        find_package(JPEGXL 0.7.0 REQUIRED)
++    endif ()
+     set(OPENSSL_USE_STATIC_LIBS TRUE)
+     find_package(OpenSSL 3.0 REQUIRED COMPONENTS Crypto)
+--- a/Source/WebCore/PlatformJSCOnly.cmake
++++ b/Source/WebCore/PlatformJSCOnly.cmake
+@@ -25,4 +25,5 @@
+     include(platform/Skia.cmake)
+     include(platform/OpenSSL.cmake)
++    include(platform/ImageDecoders.cmake)
+     list(APPEND WebCore_LIBRARIES OpenSSL::Crypto)
+     list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES "${WEBCORE_DIR}/crypto/openssl")

@@ -1,0 +1,206 @@
+{
+  "compiled_variant": {
+    "changed_members": [
+      "qpainterpath.cpp.o"
+    ],
+    "global_defined_symbols_unchanged": true,
+    "local_headers": {
+      "qpainterpath.h": "2cef20b542903d191f325908820e3b29ba145e548e1bbf1db4130783bf198b7a",
+      "qpainterpath_p.h": "c78e4e1921035f9766028019c28664f657f8bc509a7819ff8afd53848e5b5afd"
+    },
+    "member_count": 216,
+    "modified_object_sha256": "8b438446829f3e71dd8313d3b7f13c602bb3fe8a6ed7b83ba4ce3b1b51e82123",
+    "modified_source_sha256": "d27dcc9d26877778e6369e0ce0676ef09f33e72d628ef206ae5d4f287f505cf1",
+    "original_compile_db_sha256": "cb4e678db3bdd71ef60e5410d883e966e18c96840d86275dc7cf3c15f36cde06",
+    "original_object_replayed_byte_identically": true,
+    "original_object_sha256": "750affa9fd7f94195ee56e35763851cb38460618b2c9274894b1ac8ffc7cc9f4",
+    "original_source_sha256": "f44a897b5240d76f16cff4185eb7b364d66a53527f7a74dc4b9d528de6e77045",
+    "patch_sha256": "5206668e73292586de832355d9cef6232fc36e14b8ae49d47dde399f95e76b9c",
+    "replacement_manifest_sha256": "55e863a1d704df5d2e5b30fd16804ef82971565d2fb9e790eb4bacceccab198f",
+    "replay_argv_sha256": "7f495bb4e62c9e204844d3080542765e6627fb66b90dbb271bc212f4c2205511",
+    "replay_mode": "original recorded compiler argv with installed Qt include roots and the repository XOS mkspec; two local headers checked byte-for-byte against installed headers",
+    "selected_original_argv_sha256": "78e4f64055159814a7121398b4dbf0363d609b34a360ea459e12a46e49dcba84",
+    "source_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+    "status": "one_verified_qt_archive_member_changed",
+    "translation_unit": "src/gui/painting/qpainterpath.cpp"
+  },
+  "final_cli_receipts_and_ELFs_match_guest_inputs": true,
+  "guest": {
+    "cases": {
+      "baseline": {
+        "after_services": [
+          129709,
+          3,
+          1
+        ],
+        "baseline": [
+          129709,
+          3,
+          1
+        ],
+        "elf_sha256": "6d34b9856ea65853eb14f3ac6fb499e9f3d7650370b8e242b72e878bd5a88cbe",
+        "launches": [
+          {
+            "after_payload": [
+              121633,
+              5,
+              3
+            ],
+            "daybreak": {
+              "bright_pixels": 432916,
+              "colors": 10247,
+              "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+            },
+            "desktop_sample": [
+              9008,
+              3,
+              1280
+            ],
+            "launcher": "xsh",
+            "midnight": {
+              "bright_pixels": 10293,
+              "colors": 16273,
+              "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+            },
+            "ready_wall_seconds": 18.273
+          }
+        ],
+        "painter_path_trace_count": 0,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "relink_receipt_sha256": "a7675505d7cbd977c8ee154ec061392eed8c1098770918f1ad1571cd6028c741",
+        "serial_sha256": "19423fc8880df688d1de3e9e31173135cb7c831281b64fc81d6036ecf4243aad",
+        "with_graphics": [
+          121633,
+          5,
+          3
+        ]
+      },
+      "replacement": {
+        "after_services": [
+          129709,
+          3,
+          1
+        ],
+        "baseline": [
+          129709,
+          3,
+          1
+        ],
+        "elf_sha256": "97e0df9365e6eef9a3902cb27dcf903811e43f3a4badb573ae12690de6e88428",
+        "launches": [
+          {
+            "after_payload": [
+              121633,
+              5,
+              3
+            ],
+            "daybreak": {
+              "bright_pixels": 432916,
+              "colors": 10247,
+              "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+            },
+            "desktop_sample": [
+              9042,
+              3,
+              1410
+            ],
+            "launcher": "xsh",
+            "midnight": {
+              "bright_pixels": 10293,
+              "colors": 16273,
+              "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+            },
+            "ready_wall_seconds": 14.563
+          }
+        ],
+        "painter_path_trace_count": 10,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "relink_receipt_sha256": "6a587f9267a8595bab94a5567c8232114fa91055696beb81cac0f5002f37359e",
+        "serial_sha256": "60d610c61c2057c19ec8709116f92520ba5b7b7232b074352f18b8ebd4fcd04a",
+        "with_graphics": [
+          121633,
+          5,
+          3
+        ]
+      }
+    },
+    "iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+    "status": "passed",
+    "system_build_id": "1f593b6ca9cd7904",
+    "system_manifest_sha256": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999"
+  },
+  "guest_report_original_sha256": "e5984198f9491bb22fdba91ab9a22333f2f68c6525a2a990429e843a0d7eb0bc",
+  "original_link_materials": {
+    "different_application_archives": [
+      "link/objects/libmobius_aurora.a",
+      "link/objects/libmobius_xos_qpa.a"
+    ],
+    "files": 186,
+    "identical_files": 184,
+    "original_link_plans_and_ELF_receipt_bindings_match": true,
+    "prior_385_manifest_sha256": "f446ea6073927aefa738eb454626b2b4b816c8fbe9ef7825412d36dac09f5969",
+    "recollected_manifest_sha256": "682cebc326177f7181f53386efeee71c0403423361d925e4208081cf713e63dd"
+  },
+  "private_archive": {
+    "bytes": 114071123,
+    "sha256": "654eef498715f385c662e4cfd3c163a27665220ef23566a075cc97cff810509d",
+    "verified_original_items": 202
+  },
+  "receiver_rejections": {
+    "archive": {
+      "diagnostic": "Qt replacement archive digest mismatch",
+      "no_output": true,
+      "original_log_sha256": "f2859c4afe8ed2d5ab193a1981c4a7fbd8ca1593c2a977baa0be9be82d86d339"
+    },
+    "library": {
+      "diagnostic": "Replacement must select one material Qt archive",
+      "no_output": true,
+      "original_log_sha256": "5794c6602310f8867aca9dcf35c4a8b693ea119fdba7a6ce22e7016fe573b8ac"
+    },
+    "manifest": {
+      "diagnostic": "metadata digest mismatch",
+      "no_output": true,
+      "original_log_sha256": "0e4e8dd142c492e06ec4b58db1a3411ff915c3107eeac486ba00e76a0f4a763a"
+    }
+  },
+  "replacement_manifest": {
+    "archive_sha256": "316bf1b630c21b63576813bb09841b98bef4c34c03559d86ef99c724a89375ce",
+    "format_version": 1,
+    "kind": "mobius_qt_replacement",
+    "library": "link/qt/lib/libQt6Gui.a",
+    "materials_manifest_sha256": "682cebc326177f7181f53386efeee71c0403423361d925e4208081cf713e63dd",
+    "original_archive_sha256": "9d3da94d4cd0a99a199310a6e86d53f01a6659bb86df93353bc39bd660312c80"
+  },
+  "same_input_relink": {
+    "elfs": {
+      "mobius.elf": "6d34b9856ea65853eb14f3ac6fb499e9f3d7650370b8e242b72e878bd5a88cbe",
+      "mobius_session.elf": "368abfd212ed11fbffc59980daa83671b57ed5b7f495391841fb0a2fa4bffe22"
+    },
+    "materials_manifest_sha256": "682cebc326177f7181f53386efeee71c0403423361d925e4208081cf713e63dd",
+    "status": "byte_identical_mobius_relink"
+  },
+  "scope": "One auditable QtGui object substitution in private Mobius link materials. An ordinary XOS image observes the rebuilt implementation. Public licensing and distribution remain gated.",
+  "source_inputs": {
+    "src/ports/aurora_desktop/glibc/product_relink.py": "42436bf3b0259947bb8322d25b6655b28e6d73bd87066ad33e0482e96b9424c2",
+    "tests/fixtures/qt6/qpainterpath_replacement.patch": "5206668e73292586de832355d9cef6232fc36e14b8ae49d47dde399f95e76b9c",
+    "tests/mobius_qt_replacement_guest.py": "a4ac0c65e968670a1ef745e3c2c4e25a6129891d5cd7670f7b7b98d0c2c4c2fb"
+  },
+  "status": "qt_v2_archive_replacement_observed_in_guest",
+  "system_source_revision": "960fce4347f193f13f5214caee153a03891ab100",
+  "tested_revision": "8d956d6b88ba6076721e1d9db4f485d882c6de61",
+  "variant_relink": {
+    "changed_programs": [
+      "mobius.elf"
+    ],
+    "elfs": {
+      "mobius.elf": "97e0df9365e6eef9a3902cb27dcf903811e43f3a4badb573ae12690de6e88428",
+      "mobius_session.elf": "368abfd212ed11fbffc59980daa83671b57ed5b7f495391841fb0a2fa4bffe22"
+    },
+    "library": "link/qt/lib/libQt6Gui.a",
+    "materials_manifest_sha256": "682cebc326177f7181f53386efeee71c0403423361d925e4208081cf713e63dd",
+    "original_archive_sha256": "9d3da94d4cd0a99a199310a6e86d53f01a6659bb86df93353bc39bd660312c80",
+    "replacement_archive_sha256": "316bf1b630c21b63576813bb09841b98bef4c34c03559d86ef99c724a89375ce",
+    "replacement_manifest_sha256": "55e863a1d704df5d2e5b30fd16804ef82971565d2fb9e790eb4bacceccab198f",
+    "status": "mobius_qt_replacement_linked"
+  }
+}

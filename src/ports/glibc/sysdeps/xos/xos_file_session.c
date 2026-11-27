@@ -213,8 +213,12 @@ __xos_file_session_call_until (struct xos_file_session *session,
           return __xos_file_service_error (response->status_code);
         }
       if (received != -3) return __xos_file_session_poison (session, EIO);
-      /* Legacy files endpoints have no deadline-capable readiness wait.
-         Sleep on the system monotonic clock; do not invent a retry-count clock. */
+      /* sys85 mode 4 waits for the authenticated files reply. Old kernels
+         return invalid argument for this mode and its nonzero deadline. */
+      const long waiting = file_trap (85, session->receive_handle, 4, deadline);
+      if (waiting == 0) continue;
+      if (waiting == -13) return __xos_file_session_poison (session, ETIMEDOUT);
+      if (waiting != -2) return __xos_file_session_poison (session, EIO);
       xos_u64 next = (xos_u64) now + 1000000;
       if (next > deadline) next = deadline;
       if (file_trap (47, next, 0, 0) != 0) return __xos_file_session_poison (session, EIO);

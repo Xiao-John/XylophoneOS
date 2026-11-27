@@ -1,7 +1,7 @@
 # sys84–86 IPC endpoint lifecycle
 
-2026-11-25。本契约明确既有 endpoint pair、readiness wait 和 service name 的
-进程映像生命周期；不分配 syscall，不更改结构、操作号或错误码。
+本契约明确既有 endpoint pair、readiness wait 和 service name 的进程映像
+生命周期。文件回复的专用等待使用 sys85 的新增模式。
 
 ## 权属和替换边界
 
@@ -29,6 +29,20 @@ fault 的进程销毁使用同一个撤销实现，避免不同结束路径遗�
 - sys88 IPC v1 继续使用 [ipc_v1 契约](ipc_v1.md) 的 exec 撤销规则。
 - 文件服务专用会话继续按现有 exec 规则重新生成不透明端点 token；已打开文件
   描述和 FD 继承由文件/装载契约定义。
+
+## 文件回复等待
+
+sys85 的 `file_reply_until`（mode 4）接收端点 token 和非零绝对单调纳秒期限。
+仅允许调用者经 sys22 取得且本进程持有的文件回复端点。源端必须为当前内核
+认证的 Files 服务。其他端点和其他进程名下的 token 返回 denied。原模式
+0–3 的 generic IPC 端点范围和参数保留。
+
+队列检查和登记等待是一次内核操作。就绪返回 0，接收者另行读取队列。到期
+返回 `thread_error_timeout`，Files 服务终止后尚阻塞的等待者收到
+`pipe_error_broken`。内核使用既有等待队列及统一单调时钟，终止客户端时按
+现有进程生命周期撤销等待。现行 Files 由引导绑定，退出时撤销会话 token。
+glibc 经期限、请求序号、协议内容校验后才向应用交付响应。
+[文件会话](glibc_files_v1.md)
 
 旧实现只在进程销毁时清理 sys84–86，成功 exec 漏掉了这组对象。本次修复落实
 新映像不能继承未声明通信权利和旧消息的边界，也使 N2 同 PID 重连及连接回收

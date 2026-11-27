@@ -1,0 +1,58 @@
+{
+  "checkout": "7bfaee82e7407633463fbd0a2daa5890b7cb5955",
+  "dash_sdk_manifest_sha256": "c43c9e4c0b058769cfbb8a58f0613a562b2b0257d254914334773baaa4c128c8",
+  "image_sha256": "6f4aa65a47f10951c779fcb38161191798ca54a0acc9c07c7751752584a9635e",
+  "mainline": "e1c08c675dcb7eba926c3714653c4b54bd2f2920",
+  "materials_archive_sha256": "f291ef3c485cef6c2aa27c65425a852d2303e4eae13ae288678da9405a7a913d",
+  "materials_manifest_sha256": "f19abe46b993869c4cd86e7b5c73a8b15c02aad80d460d2ef2b95b16e23ed842",
+  "negative_controls": [
+    "wrong_widgets_manifest_digest",
+    "quick_kit_rejected",
+    "mutated_widgets_archive_rejected",
+    "historical_profile_rejected"
+  ],
+  "packages": [
+    {
+      "build_receipt": {
+        "path": "usr/share/xos.mobius/build_receipt.json",
+        "sha256": "a049748575b16f2ed1294061fd9401f9e6f724762a5d03c2b51918094b3bb9a7"
+      },
+      "files": 49,
+      "license_files": 46,
+      "payloads": {
+        "usr/bin/mobius-session.elf": "bd63dfc998ca6bb448ddc3e7c55e6b08d9a5fd6cbc905e22bb5c319caa3e6674",
+        "usr/bin/mobius.elf": "6b17e1ad2085b0efd2e36c6b22ab5125b73c2697fe849eb7da53b11bd3b01538"
+      },
+      "revision": 0,
+      "sha256": "452542587fc5f1f4c0834d76c55357076e6dbcf3ea1aa3ad25a312ac91b27003"
+    },
+    {
+      "build_receipt": {
+        "path": "usr/share/xos.mobius/build_receipt.json",
+        "sha256": "c5d4a3f685d881bd8298e65a5135c10c594223d60cc873cbf55125c97d3744ae"
+      },
+      "files": 49,
+      "license_files": 46,
+      "payloads": {
+        "usr/bin/mobius-session.elf": "bd63dfc998ca6bb448ddc3e7c55e6b08d9a5fd6cbc905e22bb5c319caa3e6674",
+        "usr/bin/mobius.elf": "6b17e1ad2085b0efd2e36c6b22ab5125b73c2697fe849eb7da53b11bd3b01538"
+      },
+      "revision": 1,
+      "sha256": "efd3535f0eb02f2f38d8364f0725eb66d41f0ce962e8e3fa8be4c601e9c74da0"
+    }
+  ],
+  "receiver_interpreters": {
+    "guest": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450",
+    "receiver": "sha256:87c204c1263f7c18981b11752fe340a10e4bf8495e1ba2709456182e76bc1a22"
+  },
+  "scanout_scope": "Published guest reports contain theme scanout digests and color metrics. Raw scanouts are retained in the private test output.",
+  "scope": "private package and byte-exact static relink for the current Mobius Widgets product",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "system_build_id": "5eb564c5a0ef2a4f",
+  "system_manifest_sha256": "e814d5f9047ec6ebc2aea2a593ca22991dfb92f6f69e148677826b74b243a985",
+  "system_source_bindings": 2020,
+  "tree": "4d962f1424c450593504024b2e295354e7cd7070",
+  "widgets_kit_archive_sha256": "8e22d5befb48e19fce06df654fe6e87ed54907e104e92000de55dad6bbf07e9c",
+  "widgets_kit_manifest_sha256": "8471475b122f7aac24f985796320bf88f0252f996015a25f3042bbda85997947"
+}

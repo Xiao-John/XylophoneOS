@@ -1,0 +1,26 @@
+{
+  "adjacent_provenance": [
+    "src/ports/qt6/aurora/shell/README.md",
+    "src/ports/qt6/aurora/shell/upstream.json"
+  ],
+  "git_import_author": "lceng26",
+  "import_commit": "c83900e04f839ba877bbd10a29d4e7532145f7cf",
+  "import_review": {
+    "number": 90,
+    "relevant_source_or_licence_statement": null,
+    "title": "Interactium-achieve"
+  },
+  "introduced_and_current_blobs": {
+    "src/ports/qt6/aurora/assets/curvive_wallpaper.bmp": {
+      "bytes": 1440054,
+      "sha256": "07fbdfbb8d057f894ceaf45344b4204939ec5e1a03e2e89a98ad2c9727444321"
+    },
+    "src/ports/qt6/aurora/shell/artwork/Curvive.png": {
+      "bytes": 3836966,
+      "sha256": "0c399171dadd47637703b9758156d19513f98cef08231b757a0843e16c029bf4"
+    }
+  },
+  "png_text_or_exif_chunks": [],
+  "scope": "Git author of the import and unchanged artwork bytes; copyright authorization not established",
+  "status": "license_basis_unrecorded"
+}

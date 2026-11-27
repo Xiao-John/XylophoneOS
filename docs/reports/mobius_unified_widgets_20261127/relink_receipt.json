@@ -1,0 +1,10 @@
+{
+  "elfs": {
+    "mobius.elf": "6b17e1ad2085b0efd2e36c6b22ab5125b73c2697fe849eb7da53b11bd3b01538",
+    "mobius_session.elf": "bd63dfc998ca6bb448ddc3e7c55e6b08d9a5fd6cbc905e22bb5c319caa3e6674"
+  },
+  "materials_manifest_sha256": "f19abe46b993869c4cd86e7b5c73a8b15c02aad80d460d2ef2b95b16e23ed842",
+  "original_artifact_sha256": "60d8ba1c349ecf7231e8a24d4f7a838bf555bd78421f488234920355b5c17b08",
+  "publication_scope": "Derived JSON snapshot of receipt.json from the isolated static relink receiver. The published copy adds this scope and native bytes digest.",
+  "status": "byte_identical_mobius_relink"
+}

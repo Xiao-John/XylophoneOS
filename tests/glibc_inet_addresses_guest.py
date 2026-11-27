@@ -37,7 +37,9 @@ def compile_fixtures(args, sdk, report):
     binding = verify_profile(profile, 'glibc', args.sdk)
     require(sdk['inputs'] == sdk_inputs(), 'static SDK source snapshot changed')
     stubs = set(sdk['stub_functions'])
-    require({'socket', 'connect', 'poll'} <= stubs, 'SDK socket/readiness boundary changed')
+    transport = {'socket', 'connect', 'send', 'recv'}
+    require((stubs & transport) in (set(), transport), 'SDK has a partially implemented TCP subset')
+    require('poll' in stubs, 'SDK readiness boundary changed')
     require(not {'htonl', 'htons', 'ntohl', 'ntohs'} & stubs, 'byte-order functions must be real')
     report.update(profile=binding, profile_sha256=profile_hash,
                   installed_headers={name: sdk['artifacts'][name] for name in

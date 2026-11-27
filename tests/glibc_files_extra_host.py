@@ -27,7 +27,8 @@ NATIVE_SOURCES = (
 def source_snapshot():
     overlay = ROOT / 'src/ports/glibc/sysdeps/xos'
     sources = [overlay / (name + '.c') for name in
-               ('xos_file_runtime', 'xos_file_session', 'xos_file_directory', 'xos_file_positioned')]
+               ('xos_file_runtime', 'xos_file_session', 'xos_file_directory', 'xos_file_positioned',
+                'xos_net2_socket')]
     sources += [ROOT / name for _, name in NATIVE_SOURCES]
     sources += [ROOT / name for name in
                 ('src/user/services/files.cpp', 'tests/fixtures/glibc_g3/files_extra_service.cpp',
@@ -74,7 +75,8 @@ def main():
         # inputs before the first compiler invocation. Keep these original
         # digests in failed reports as well as successful qualifications.
         report['sources'] = source_snapshot()
-        for name in ['xos_file_runtime', 'xos_file_session', 'xos_file_directory', 'xos_file_positioned']:
+        for name in ['xos_file_runtime', 'xos_file_session', 'xos_file_directory', 'xos_file_positioned',
+                     'xos_net2_socket']:
             source = overlay / (name + '.c')
             obj = output / (name + '.o')
             run([os.getenv('CC', 'gcc'), '-std=c11', '-DXOS_GLIBC_FILE_TEST', *flags, *includes,

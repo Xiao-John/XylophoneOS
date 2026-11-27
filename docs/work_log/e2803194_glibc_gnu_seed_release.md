@@ -39,3 +39,8 @@ Seed 参数成组使用。冻结原件目录来自 v0.0.2-1103 的镜像、发�
 
 组合包门已在该发行盘副本验证首次安装、冷启 Python/zlib/IDNA、异 profile 拒绝与回收。native xypm 移除 daily 和 IDNA 后，CPython 的 15 个受管文件和原用户数据可读回，1,374 个 Seed 文件逐项保持原摘要。安装到回收使用的同一普通客体回到 `129806/2/0`。省略 IDNA 的显式装配分支另通过归档与 41 个受管文件的宿主检查。
 [接收方与包回收证据](../reports/glibc_gnu_seed_release_20261127/manifest.json)
+
+原生门从相同 SHA-256 的另一份发行初盘启动，保留完整安装内容用于组合测试。先在普通客体运行 Python/zlib/IDNA，然后实际用 GCC/G++、Binutils 和两种 Shell 的 GNU Make 生成并执行 C/C++。负例拒绝未定义符号，冷启后再跑两份新程序和 Python 发行脚本。原生门 20 项通过，前后 57 个受管文件保持一致，资源回到 `129806/2/0`。组合回执绑定两组客体报告、发行清单和共同初盘。
+[原生与包组合回执](../reports/glibc_gnu_seed_release_20261127/combined_guest.json) · [完整证据索引](../reports/glibc_gnu_seed_release_20261127/manifest.json)
+
+本组装配、接收方与客体证据绑定 **v1** SDK/profile。新的 v2 统一 SDK（#343，主线 `f66021aa`） 单独绑定文件等待和网络地址能力。后续以 v2 重建安装器、GNU Make、daily、xypm、CPython/zlib 和 IDNA，并为 v2 重新生成发行物料和客体回执。

@@ -1,0 +1,14 @@
+{
+  "gnu_seed_cases": 20,
+  "gnu_seed_sha256": "d15e3e02763f15c59272370f32c85e7abce8ac275f4e19ceeac53856361c23b7",
+  "package_checks": [
+    "installer_idempotent_package_setup_and_python_smoke",
+    "cold_ordinary_python_and_native_ownership",
+    "native_foreign_package_rejected_without_transaction",
+    "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+  ],
+  "packages_sha256": "a3f8c3fd9eb1775ab9a3b0dea71f81113faf43f8e41e633ba321c04333147e1e",
+  "release_manifest_sha256": "f5ace473e14a6ac9383161151889e0523126bc3dc59bc3d088f9fd589caf29d2",
+  "status": "passed_subset",
+  "work_disk_sha256": "4f5885715a722c23f5de86383be385d5ea19897bb87e2a41999ea08f0e162986"
+}

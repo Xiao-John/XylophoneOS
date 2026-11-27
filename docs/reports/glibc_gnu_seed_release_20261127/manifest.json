@@ -1,14 +1,20 @@
 {
   "files": {
-    "binding.json": "4b843e3e23f07b28d512cd8f768797e86422efdd6d6cb693712661bf566b524b",
+    "binding.json": "d120f70d7da2563159f1a5d911838f2896015459354439d30f2daff3f9c6486c",
+    "combined_guest.json": "9023dfc929f11e2fb38412d54842ec30055544e96ff0d476ead2ecd3ba98722b",
     "gnu_sources.json": "c45dd26ccbc24876e5d8ef8069e7dd755566d73a57e0424c181026374dee6a2e",
+    "native_guest.redacted.json": "0c3099b36d0fe2e19d060eb002aa7e48a651fcfd063f137169b31fa456519b52",
+    "native_installer.serial.log.gz": "3b71dea213c95fa7478dbfc01ef8ce52683072d80873c932c7f80f5f22c2bde7",
+    "native_ordinary.serial.log.gz": "1475aa4e611f5bbb26ba259000f535fb0ffef8e38460fe372145a8b350f91b73",
+    "native_reboot.serial.log.gz": "26b8f31b4cc9020ec10c9e72a968b04e9a794d7178c338ba241008fcaba80afb",
     "optional_without_idna.json": "aa92283f9a9ad5418a7388fdce0b9b14afabe3f8efdac275e709be22e8985e54",
     "package_guest.json": "a3f8c3fd9eb1775ab9a3b0dea71f81113faf43f8e41e633ba321c04333147e1e",
     "package_installer.serial.log.gz": "bdf69352c499feb259e947e14d4d5409ef819909b29c46ef460ea2b15ed4eab0",
     "package_ordinary.serial.log.gz": "e82a6d9a9fb66e2325c07af6b3b9ce5d4d03667809bbf3cbfaed4994b9fd17b2",
     "receiver.json": "364d033f7004eba1dc28cdd31eab92aeb84b2b6ac3cbdba9ce6eb14f3dafbfc3",
     "receiver_lifecycle.json": "d183f732f7500e8388d9bb41e27f2dd5f217fb1253b5cc7e6541f1b19df71def",
-    "release.json": "f5ace473e14a6ac9383161151889e0523126bc3dc59bc3d088f9fd589caf29d2"
+    "release.json": "f5ace473e14a6ac9383161151889e0523126bc3dc59bc3d088f9fd589caf29d2",
+    "standalone_replay.json": "cf6e185535e3fe557e5cce9830e91947b9f3763bd0331cb30e335f126043ba3e"
   },
   "version": 1
 }

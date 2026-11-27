@@ -1,8 +1,22 @@
 {
   "files": {
+    "binding.json": "c051ae437a575d16505a4b123c04cbd411e0eb24a7de945b07c826bfa52741ff",
+    "consumer_app.json": "d629e90b5d0d536aa0f3dc605f310104eeab046a487bca220c0faf6e8286e306",
     "core.serial.log.gz": "b78f0cbaf2fb4032dc4efebfe8e430d4629b5fc9ca783f748527be1374ddd0db",
     "core_binding.json": "3d5348e3db611d34d150836a298fa478dabbc5116b6f21b493acc54b894ff5bb",
-    "core_guest.json": "f820303343754ec614aa2f4af9743d2d3863385d2c1d778ca802911252512a47"
+    "core_guest.json": "f820303343754ec614aa2f4af9743d2d3863385d2c1d778ca802911252512a47",
+    "dash.json": "a5ebc1de2af0b8bab7930a61e9d07aaa6d75bf12c774d4ef86c167f6ec22e990",
+    "dash.serial.log.gz": "a2b78c341a42f2239d58283a3053f01f6dde8495e821f7fd4442076c9cf62ffe",
+    "kit_manifest.json": "bd6f719b9d190f2619133e3ef48cee32824959ff3dc04a4e269823179d55fc1e",
+    "qml_engine_link.json": "fba921f7d3b8aca1c9d73e38c5f86dddadd482819a17e81ffac3ef971402b4c3",
+    "qml_probe.json": "8b5cd6c7d9ca568675af5c8b5554b38ede54c2cd922ef25c4ca2e14ce8fae6b3",
+    "qml_probe.serial.log.gz": "e60c243cd1006ae82eb4145004bb370a40a1b0f74a184ca7cd4cafd6217537f1",
+    "qml_quota_probe.json": "0819effd512a895da865dc5f65243e147fffa410ad2f2190ef6d785c48c3df8c",
+    "qml_quota_probe.serial.log.gz": "2683da97a938ce8e469d3181489c6a562fda48afb15b5250649298a8d4e56d83",
+    "reference_app.json": "dfb904f5f227af273b5127c1b0d367b04be3764a79c673034bb71bfd7b29f504",
+    "target_receipt.json": "9ef6e49afaaab227413d1e777bd1ee4cbd929785e4516363e63a97d96db67b72",
+    "xsh.json": "1808ab36d8fdc954f3d876f5e15d8b94d0361f9b14e92f8dc4db865f4e7c99b3",
+    "xsh.serial.log.gz": "44818f14bb3ed0724d41046a739c3f97c69c494fc49ac4e177d686e362830e55"
   },
   "version": 1
 }

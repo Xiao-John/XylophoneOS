@@ -1,0 +1,55 @@
+{
+  "baseline_relative_receipt_rejected_before_guest": "f1c77395e4f42ca106e4006f740ec8c5444dbe704a94abab797690b67ea63c8e",
+  "configured_target_compile_databases": {
+    "qtbase": {
+      "configured_commands_with_v2_sysroot": 601,
+      "database_sha256": "c455f7772befd9b4671a90a4d70bb6986952d2056f2fd9c52f8599f6ba9e6929",
+      "target_command_counts": {
+        "Core": 222,
+        "Gui": 216
+      }
+    },
+    "qtdeclarative": {
+      "configured_commands_with_v2_sysroot": 1459,
+      "database_sha256": "7a708877f76f8dc213c06193579a8c4819750bd195123e7aa40d98e9a312a644",
+      "target_command_counts": {
+        "Qml": 212,
+        "QmlMeta": 8,
+        "QmlModels": 22,
+        "Quick": 216
+      }
+    }
+  },
+  "elf_section_comparison": {
+    "different_allocated_sections": [
+      ".rodata"
+    ],
+    "different_sections": [
+      ".rodata"
+    ],
+    "same_sections": 22
+  },
+  "linux_qemu_image_id": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450",
+  "linux_receiver_image_id": "sha256:87c204c1263f7c18981b11752fe340a10e4bf8495e1ba2709456182e76bc1a22",
+  "mainline_checkout": "1afc6a2c67ae3c43b86f4e7edabbfd75ad5ae978",
+  "mainline_tree": "1be2a3dc8ab8f9d1b26b227086c3aadc20190f2d",
+  "mixed_v2_target_and_v1_sdk": "rejected_before_application_build",
+  "native_generator_original_kit_sha256": "6fc36b13ed96d8c7ec6e1ad8949e3c0216aea89abb9903fcc70816f646db3e51",
+  "ordinary_system_abi_doc_consistency": "passed",
+  "ordinary_system_build_id": "90b485d08e5b6f97",
+  "ordinary_system_image_sha256": "2bce620bcdf8ebcebe2b4d9e2dda7beb2937dc7b9aafe79f50b7503e6def4b8b",
+  "ordinary_system_license_materials_checked": 10,
+  "ordinary_system_manifest_sha256": "e6b4a3a1c11469237ddc1cf35caebaf4c90d94cdd6e9564eee991070731b4cb4",
+  "reference_application_sha256": "fd22a6a39b0a4a8a4cc6f1cdf7aa898755c87096d828caa4da05c2d1b45e2541",
+  "relocated_application_sha256": "ce1a49a4aeeb3f64e65da05d34ffb257744d76851ebea14acbb709798241b6a9",
+  "relocated_kit_archive_bytes": 166889252,
+  "relocated_kit_archive_sha256": "e16ddf9042a7a1d652c74e9a7fc06d0894db6ea0d8d4eb2bdcf33656c0722c8c",
+  "relocated_kit_manifest_sha256": "3fb616d43e5339ece5f605c3288dd5a929e407183b5fbef7fcc64b16dcec0b62",
+  "scope": "Explicit glibc SDK v2, fresh QtBase/Declarative static Qt Quick target, disconnected Linux arm64 receiver, ordinary CPU-rendered QML guest lifecycle",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+  "sdk_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "system_checkout": "7332d2ab484d772f17503bb2f9aacefd56bb2664",
+  "system_input_files_checked": 2029,
+  "system_tree": "5f17527a794338d728d085f5f6708a1096f2c24b"
+}

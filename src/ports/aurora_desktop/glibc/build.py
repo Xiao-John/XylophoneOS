@@ -147,6 +147,12 @@ def main():
                    "guest_qualification": "not_run"}
         if kit_digest is not None:
             receipt["widgets_kit_manifest_sha256"] = kit_digest
+        if binding["profile_id"] == UNIFIED_V2:
+            receipt["relocation_paths"] = {
+                "source": str(ROOT), "build": str(output), "sdk": str(sdk_build),
+                "profile": str(args.sdk_profile.resolve()), "widgets": str(kit),
+                **{name: tools[name]["path"] for name in ("gcc", "g++", "ar", "ranlib")},
+            }
         elf.with_suffix(".receipt.json").write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
         print(elf)
 

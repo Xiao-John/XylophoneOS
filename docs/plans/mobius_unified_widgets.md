@@ -41,6 +41,9 @@ Core、Gui、Widgets 及生成头。接收方使用绑定到该 SDK/profile 的 
 [导入及图像核对记录](../reports/mobius_unified_widgets_20261127/curvive_audit.json)
 
 v2 已完成 Qt Widgets 完整构建、独立接收、两个 XPK 修订和三次普通镜像冷启。
-当前的公开材料覆盖安装、升级、回退、双 Shell、正式会话和资源回收。对应的
-Qt LGPL 替换材料与同修订 XPK 全字节重现继续验收。
+当前的公开材料覆盖安装、升级、回退、双 Shell、正式会话和资源回收。
 [v2 运行及分发范围](../work_log/74efcc27_mobius_widgets_v2.md)
+
+两个断网接收方已验证同修订 XPK 的逐字节重现，并用本次 v2 链接材料复链原始
+桌面与会话。Qt 修改版替换和公开分发材料仍待验收。
+[同修订重现与替换范围](../work_log/af0f64ef_mobius_v2_xpk.md)

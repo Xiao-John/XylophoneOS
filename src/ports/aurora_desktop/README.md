@@ -60,7 +60,13 @@ python3 -B scripts/package_desktop_products.py mobius "$MOBIUS_BUILD/mobius.elf"
 
 The XPK uses the existing `xos.mobius` package and the public Mobius executable
 and session paths. It carries the SDK and Qt notices, the QtBase source lock and
-the generated Aurora wallpaper's provenance. The product materials capture
+the generated Aurora wallpaper's provenance. The v2 package records the
+product revision and a recipe digest with logical paths. The local ELF
+receipts retain the full commands and actual input paths for verification and
+relinking. Keep the source, SDK, kit, cross-tools and build options fixed when
+comparing packages at the same revision.
+
+The product materials capture
 the actual static objects and archives used for both executables. Use the
 original locked QtBase archive and the SDK and kit used by the receiver.
 

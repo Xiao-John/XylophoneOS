@@ -15,6 +15,7 @@ from shell_launch_support import bind_system, sha
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from make_work_disk import create_fat32
+from mobius_build_receipt import packaged_build_binding
 from xos_app import application_sdk_check, sdk_notices
 from xypm_format import canonical, load_json, require, verify_package
 from xypm_image import Disk, query_image, transact
@@ -36,8 +37,8 @@ def check_package(package, target, profile, sdk, kit_digest, revision):
         elf = target / filename
         receipt = elf.with_suffix(".receipt.json")
         linked = load_json(receipt)
-        expected = {"elf_sha256": sha(elf), "build_receipt_sha256": sha(receipt),
-                    "widgets_kit_manifest_sha256": kit_digest}
+        expected = {"elf_sha256": sha(elf), "widgets_kit_manifest_sha256": kit_digest}
+        expected.update(packaged_build_binding(linked, sha(receipt)))
         require(expected["elf_sha256"] == files[name]["sha256"] == linked["elf_sha256"]
                 and linked["widgets_kit_manifest_sha256"] == kit_digest
                 and linked["sdk_manifest_sha256"] == profile["sdk_binding"]["sdk_manifest_sha256"],
@@ -68,6 +69,8 @@ def inspect_disk(work, disk, profile, package, expected, user_data):
         require(receipt["elfs"] == expected
                 and receipt["sdk_manifest_sha256"] == profile["sdk_binding"]["sdk_manifest_sha256"],
                 "installed receipt lost its SDK or application binding")
+        if any("build_recipe_sha256" in item for item in expected.values()):
+            require(receipt["revision"] == manifest["revision"], "installed receipt has the wrong product revision")
         for name, item in expected.items():
             require(sha(mounted.export("/" + name)) == item["elf_sha256"], f"installed ELF mismatch: {name}")
         return read_user_files(mounted, user_data)

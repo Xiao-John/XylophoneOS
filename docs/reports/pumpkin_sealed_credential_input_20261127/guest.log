@@ -1,6 +1,8 @@
 PASS separate provider provisions the installation
 PASS operator prepares the bound installation
 PASS real guest issues the initial private wallet
+PASS sealed credential descriptor requires deployment
+PASS trusted digest without a deployment profile is rejected
 PASS same installation lock fences a sealed wallet
 PASS sealed wallet cannot bypass trusted profile digest
 PASS sealed inherited wallet authenticates after provider restart

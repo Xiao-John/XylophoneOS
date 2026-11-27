@@ -15,16 +15,20 @@
 复用已验的无界面部署镜像 `71e4bd946dd9e2e1` 和两个现有 ext4 夹具卷。
 使用 UID 22101 运行受信操作者，UID 22102 执行代际提供者。两方各用新的私有
 临时目录。原始镜像和既有卷内容只读复用或独立保留，专用 FAT32 测试盘退出后
-回收。实际通过 20 项检查。
+回收。实际通过 22 项检查。
 
 - 提供者独立预配，真实客体发放首个私有钱包。重新启动提供者后，普通会话
   以封存描述符成功认证并注销。盯住同一 Linux inode，确认真实 QEMU
   入口未继承该描述符。源描述符位置保持在记录末尾。
 - 独立提供者 UID 无法读取钱包或调用操作者登录。公开文件与描述符参数同时传入、
   用描述符登记或读取资源、缺少凭据、未封存、截断、普通文件、不可用编号及安装域错误均拒绝。
-  已持有状态锁或提供错误的可信配置摘要时，即使描述符正确也无法登录。
+  缺少成对的部署配置与可信摘要、已有进程持有状态锁，或提供错误的可信配置摘要时，
+  即使描述符正确也无法登录。开发配置继续从原私有钱包文件读取。
 - 通过完整封存描述符提交错误密钥时，真实普通认证仍返回拒绝。原文件登录
   照常成功。独立代际记录、工作盘及已签发钱包在全部提交试验前后逐字节一致。
+
+协议 2 的开发镜像 `b70bb236fbad9c05` 实测准备、文件签发、另一次客体文件登录。
+这组操作使用本地代际路径，登录前后钱包和工作盘摘要一致。
 
 本次验证的是既有钱包的宿主交接和普通登录。硬件代际源、物理断电及独立钱包
 保管服务仍有各自的验收。
@@ -41,4 +45,16 @@ TMPDIR="$GUEST_FILESYSTEM" python3 -B tests/pumpkin_sealed_credential_guest.py \
   --system "$SYSTEM" \\
   --system-manifest-sha256 ccc95320ca4015a8545a01bea54e09d516af9a371f3849d43009a4a1ceac7f99 \\
   --provider-filesystem "$PROVIDER_FILESYSTEM" --output "$OUT"
+```
+
+开发文件登录对照使用旧开发镜像及新的私有安装和钱包路径。`DEVELOPMENT_SYSTEM`
+的系统清单 SHA-256 为
+`7161b0ef89d42a4a362d1b64669760ebe70117f4e374ed45a62738fa2271c2dc`。
+
+```sh
+python3 -B scripts/pumpkin_user_login.py prepare --system "$DEVELOPMENT_SYSTEM" --state "$STATE"
+python3 -B scripts/pumpkin_user_login.py enroll --system "$DEVELOPMENT_SYSTEM" --state "$STATE" \
+  --credential-file "$PRIVATE_WALLET"
+python3 -B scripts/pumpkin_user_login.py login --system "$DEVELOPMENT_SYSTEM" --state "$STATE" \
+  --credential-file "$PRIVATE_WALLET"
 ```

@@ -1,8 +1,9 @@
 {
   "files": {
-    "guest.json": "92797597d97073ad8740c7a9d8b5c7b99f3ab91b3fd7409b118ba6e556b845a2",
-    "guest.log": "6e7298804c9f2cb729be145cac736d485dfb003c6ad58cc055e88275357079d6",
-    "host.log": "705fba2fd95d9b4fbd043a642e50b85dea95427b1d337a3646acc2dc04faba44"
+    "development.log": "f66da611ac855ec1796ce16737cae63195651721e3d3ae8911cda8f285d81804",
+    "guest.json": "a0572babd17fd56047a6566375c55e83c50138a1541978ad4ee8da7b07147c4c",
+    "guest.log": "0db889a5e807c4a2c5730fcaa616faa83b0dad0cd929652e1b4ec668f42952e9",
+    "host.log": "dcced4e41c02ab2027a704d1ad7508505ae1f7fe7b77117cfd7072573303efd0"
   },
   "main_source_base": "b2aa899aa01c0f3f574ff566be75efe6a51c7018",
   "operator_volume_fs": "ext4",

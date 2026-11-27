@@ -59,7 +59,11 @@ def check(args):
                                 capture_output=True, timeout=125)
         assert result.returncode == expected, f"{label}: exit {result.returncode}"
         if error is not None:
-            assert not result.stdout and result.stderr == (error + "\n").encode(), f"{label}: unexpected error"
+            expected_error = (error + "\n").encode()
+            if expected == 2:
+                assert not result.stdout and result.stderr.endswith(b"error: " + expected_error), f"{label}: unexpected usage error"
+            else:
+                assert not result.stdout and result.stderr == expected_error, f"{label}: unexpected error"
         if text is not None:
             assert not result.stderr and result.stdout == (text + "\n").encode(), f"{label}: unexpected result"
         report["checks"].append({"case": label, "exit": expected})
@@ -152,6 +156,15 @@ os.execv(qemu, [qemu, *sys.argv[1:]])
                     assert source.readinto(payload) == len(payload)
                 generic_error = "Private Pumpkin operation could not be confirmed; do not repeat enrollment automatically"
                 with inherited(payload, immutable_memfd_seals()) as descriptor:
+                    local_login = [sys.executable, "-B", str(tool), "login", "--system", str(args.system),
+                                   "--state", str(state), "--credential-fd", str(descriptor)]
+                    checked("sealed credential descriptor requires deployment",
+                            local_login, OPERATOR, 2, fds=(descriptor,),
+                            error="--credential-fd requires the deployment profile and its trusted SHA-256")
+                    checked("trusted digest without a deployment profile is rejected",
+                            [*local_login, "--deployment-profile-sha256", profile_sha],
+                            OPERATOR, 2, fds=(descriptor,),
+                            error="supply the deployment profile and its trusted SHA-256 together")
                     lock = os.open(state, os.O_RDONLY | os.O_DIRECTORY)
                     try:
                         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

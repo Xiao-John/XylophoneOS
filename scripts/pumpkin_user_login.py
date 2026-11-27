@@ -731,8 +731,8 @@ def named_profile(system):
 
 def operate(system, state, command, path, selection=None, account=b"alice", *, display=None,
             revoke_requested=None, deployment=None, credential_fd=None):
-    require(credential_fd is None or (path is None and command == "login"),
-            "An inherited credential is only available for ordinary login")
+    require(credential_fd is None or (path is None and command == "login" and deployment is not None),
+            "An inherited credential is only available for deployed ordinary login")
     if credential_fd is not None:
         keep_credential_private(credential_fd)
     first_account = command == first_account_command
@@ -802,7 +802,7 @@ def main():
     parser.add_argument("--state", type=Path, required=True)
     credentials = parser.add_mutually_exclusive_group()
     credentials.add_argument("--credential-file", type=Path)
-    credentials.add_argument("--credential-fd", type=int, help="ordinary login with an inherited sealed Linux descriptor")
+    credentials.add_argument("--credential-fd", type=int, help="deployed ordinary login with an inherited sealed Linux descriptor")
     parser.add_argument("--deployment-profile", type=Path)
     parser.add_argument("--deployment-profile-sha256")
     parser.add_argument("--replacement-system", type=Path)
@@ -834,6 +834,8 @@ def main():
         parser.error("replacement options require an image operation")
     if args.credential_fd is not None and (args.credential_fd < 3 or args.operation != "login"):
         parser.error("--credential-fd must be at least 3 and is only available for ordinary login")
+    if args.credential_fd is not None and args.deployment_profile is None:
+        parser.error("--credential-fd requires the deployment profile and its trusted SHA-256")
     credential_selected = args.credential_file is not None or args.credential_fd is not None
     if (args.operation in credential_operations or args.operation == first_account_command) != credential_selected:
         parser.error("select a credential input for submission or --credential-file for enrollment")

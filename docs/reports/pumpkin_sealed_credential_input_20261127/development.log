@@ -1,0 +1,4 @@
+PASS development prepare
+PASS development enroll
+PASS development login
+{"build_id": "b70bb236fbad9c05", "iso_sha256": "0977acc3803de797d96223dada906a779199890c986249b7ea690edc04605c95", "manifest_sha256": "7161b0ef89d42a4a362d1b64669760ebe70117f4e374ed45a62738fa2271c2dc", "status": "passed_subset", "wallet_and_disk_unchanged_after_login": true}

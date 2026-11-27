@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "abi.json": "ab1fd529e4c638874dbf2d02e4482e74a4fe3b750b6f127d216471108b6898e0",
+    "binding.json": "a68f388c847a291aeb5a1860d9cef23a6acab267697b3ec95af18386519335ff",
+    "guest.json": "e3948e0a698c7f9dfcac37a39fbd6659bf51b3a1f1d56bf55378511a5b00113c",
+    "serial-excerpt.log": "bd869d7b571a34986487b90c77cd450eeab3b8f7f0a5608b16f945c20adc3066"
+  }
+}

@@ -1,0 +1,95 @@
+[unified C/C++]
+[resources] free=129806 tasks=2 completions=0
+GLIBC_CWD_READONLY_READY
+[wait] pid=10 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+[wait] pid=11 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_UNIFIED_GLOBAL_CTOR
+GLIBC_UNIFIED_CXX_THREADS_TLS_UNWIND_STACK_PASS
+GLIBC_UNIFIED_MAIN_TLS_DTOR
+[wait] pid=12 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_CWD_ACCESS_PASS
+[wait] pid=13 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_UNIFIED_GLOBAL_CTOR
+GLIBC_UNIFIED_CXX_THREADS_TLS_UNWIND_STACK_PASS
+GLIBC_UNIFIED_MAIN_TLS_DTOR
+GLIBC_CWD_ACCESS_PASS
+GLIBC_UNIFIED_DASH_PASS
+[wait] pid=14 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_UNIFIED_GLOBAL_CTOR
+GLIBC_UNIFIED_CXX_THREADS_TLS_UNWIND_STACK_PASS
+GLIBC_UNIFIED_MAIN_TLS_DTOR
+[wait] pid=18 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_CWD_ACCESS_PASS
+[wait] pid=19 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_UNIFIED_GLOBAL_CTOR
+GLIBC_UNIFIED_CXX_THREADS_TLS_UNWIND_STACK_PASS
+GLIBC_UNIFIED_MAIN_TLS_DTOR
+GLIBC_CWD_ACCESS_PASS
+GLIBC_UNIFIED_DASH_PASS
+[wait] pid=20 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_UNIFIED_GLOBAL_CTOR
+GLIBC_UNIFIED_CXX_THREADS_TLS_UNWIND_STACK_PASS
+GLIBC_UNIFIED_MAIN_TLS_DTOR
+[wait] pid=24 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_CWD_ACCESS_PASS
+[wait] pid=25 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_UNIFIED_GLOBAL_CTOR
+GLIBC_UNIFIED_CXX_THREADS_TLS_UNWIND_STACK_PASS
+GLIBC_UNIFIED_MAIN_TLS_DTOR
+GLIBC_CWD_ACCESS_PASS
+GLIBC_UNIFIED_DASH_PASS
+[wait] pid=26 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+
+[address ABI]
+[resources] free=129806 tasks=2 completions=0
+GLIBC_INET_C_PASS layout bytes symbols ipv6
+[wait] pid=10 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+GLIBC_INET_CXX_PASS layout bytes symbols ipv6 net2
+[wait] pid=11 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0
+libc says: malloc+printf 42 beef
+[wait] pid=12 kind=exited code=7
+[resources] free=129806 tasks=2 completions=0
+
+[ordinary file readiness]
+[resources] free=129709 tasks=3 completions=1
+FILE_REPLY_WAIT_PASS normal queued=1 expired=1 blocked=1
+[wait] pid=10 kind=exited code=0
+[resources] free=129709 tasks=3 completions=1
+FILE_REPLY_WAIT_PASS concurrent reads=128 offset=0
+[wait] pid=11 kind=exited code=0
+[resources] free=129709 tasks=3 completions=1
+FILE_REPLY_WAIT_PASS normal queued=1 expired=1 blocked=1
+[wait] pid=12 kind=exited code=0
+[resources] free=129709 tasks=3 completions=1
+FILE_REPLY_WAIT_PASS concurrent reads=128 offset=0
+[wait] pid=14 kind=exited code=0
+[resources] free=129709 tasks=3 completions=1
+FILE_REPLY_WAIT_CANCEL_READY
+[process] event=cancelled_by_escape pid=16
+[wait] pid=16 kind=killed code=-27
+[resources] free=129709 tasks=3 completions=1
+
+[service death]
+[resources] free=129709 tasks=3 completions=1
+FILE_REPLY_WAIT_PASS death blocked=1 old_handle_denied=1
+[wait] pid=10 kind=exited code=0
+[resources] free=129956 tasks=2 completions=1
+
+[public API after death]
+[resources] free=129709 tasks=3 completions=1
+FILE_REPLY_WAIT_PASS death_libc sticky_eio=1
+[wait] pid=10 kind=exited code=0
+[resources] free=129956 tasks=2 completions=1

@@ -1,0 +1,202 @@
+{
+  "detached_apps": {
+    "c": [
+      "init",
+      "build",
+      "check",
+      "pack"
+    ],
+    "cpp": [
+      "init",
+      "build",
+      "check",
+      "pack"
+    ]
+  },
+  "evidence_form": "derived_from_three_source_bound_guest_receipts",
+  "file_wait": {
+    "death": {
+      "cases": [
+        {
+          "case": "death",
+          "launcher": "xsh",
+          "resources_after": [
+            129956,
+            2,
+            1
+          ]
+        }
+      ],
+      "resources_before": [
+        129709,
+        3,
+        1
+      ]
+    },
+    "death_libc": {
+      "cases": [
+        {
+          "case": "death_libc",
+          "launcher": "xsh",
+          "resources_after": [
+            129956,
+            2,
+            1
+          ]
+        }
+      ],
+      "resources_before": [
+        129709,
+        3,
+        1
+      ]
+    },
+    "normal": {
+      "cases": [
+        {
+          "case": "normal",
+          "launcher": "xsh",
+          "resources_after": [
+            129709,
+            3,
+            1
+          ]
+        },
+        {
+          "case": "concurrent",
+          "launcher": "xsh",
+          "resources_after": [
+            129709,
+            3,
+            1
+          ]
+        },
+        {
+          "case": "normal",
+          "launcher": "dash",
+          "resources_after": [
+            129709,
+            3,
+            1
+          ]
+        },
+        {
+          "case": "concurrent",
+          "launcher": "dash",
+          "resources_after": [
+            129709,
+            3,
+            1
+          ]
+        },
+        {
+          "case": "cancel",
+          "launcher": "xsh",
+          "resources_after": [
+            129709,
+            3,
+            1
+          ]
+        }
+      ],
+      "resources_before": [
+        129709,
+        3,
+        1
+      ]
+    }
+  },
+  "network_addresses": {
+    "baseline": [
+      129806,
+      2,
+      0
+    ],
+    "cases": [
+      {
+        "command": "exec-file /bin/c.elf",
+        "exit_code": 0,
+        "marker": "GLIBC_INET_C_PASS layout bytes symbols ipv6",
+        "resources_after": [
+          129806,
+          2,
+          0
+        ]
+      },
+      {
+        "command": "exec-file /bin/cpp.elf",
+        "exit_code": 0,
+        "marker": "GLIBC_INET_CXX_PASS layout bytes symbols ipv6 net2",
+        "resources_after": [
+          129806,
+          2,
+          0
+        ]
+      },
+      {
+        "command": "exec libc_hello",
+        "exit_code": 7,
+        "marker": "libc says: malloc+printf 42 beef",
+        "resources_after": [
+          129806,
+          2,
+          0
+        ]
+      }
+    ],
+    "installed_headers": {
+      "usr/include/bits/in.h": "3fa0952f3bbeceae23f1d1168c31c4fecc04ec1302c75a191e1f59986beb7f9b",
+      "usr/include/netinet/in.h": "add370408413c1d2f49bd98a39e0961cf13567541a443c7c18c13d3112623e51"
+    },
+    "sources": {
+      "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+      "src/shared/include/xos/net_service_abi.hpp": "14a7cb20681ef4b48f59c2458acb4d31e482934abc264cb7283e416d32a273f0",
+      "tests/fixtures/glibc_inet/addresses.c": "e836ac75195659ffb090d83b3767d88a4ae98abf263c341c46d0342a4cb1ba74",
+      "tests/fixtures/glibc_inet/addresses.cpp": "1baebecd02c91462b961a03be20226b76c37e1723b36fba881f419c8121b5380",
+      "tests/fixtures/glibc_inet/addresses.h": "458f065dde1578a0a6fcedfc7deed3db73ad51bcdd8c3499c3366e48aa45e062"
+    }
+  },
+  "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "status": "passed",
+  "systems": {
+    "death": {
+      "build_id": "a33f6cfa96bdd297",
+      "iso_sha256": "efaac95f0bb14e02494ae8a3ebcba8b88deeed570fc9facbca56200a5a319482",
+      "manifest_sha256": "33ec1b59bf0a88eee9b21a5332109c6f7685a42bd9389d288e54407658a2c569"
+    },
+    "normal": {
+      "build_id": "1958db24f4ad591d",
+      "iso_sha256": "a31e6f37b4110cf9acec4112dad4be2267e538af0684cb1b949a5c0534dbc3b9",
+      "manifest_sha256": "0a2bda70f7108476bb9902b93301eebb399f04c045a463e3973aab90bded0a93"
+    }
+  },
+  "unified": {
+    "baseline": [
+      129806,
+      2,
+      0
+    ],
+    "fat_readback": {
+      "dash_glibc": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+      "g3_cwd": "d3878e67895a4eba7c0593a8a2ea15572f17760708ff19b09b4a2bd7b187b4b6",
+      "g3_cwd_setup": "469b356d95eb23962b30523f1828da8e5fa21795a17ca014158da4f79e686f72",
+      "unified_cxx": "1cb2ceeac85ba993caf4c99a7d4f0b1b976346d53292b44ea452a99bbadf8c7d",
+      "xypm": "97408ab1d6360218ffe13822546340fb5d996a3375fea3d399b9b9aeb3c9e053"
+    },
+    "runs": [
+      "fat_setup",
+      "stock_xypm",
+      "xsh_cxx",
+      "xsh_cwd",
+      "dash_combination",
+      "xsh_cxx",
+      "xsh_cwd",
+      "dash_combination",
+      "xsh_cxx",
+      "xsh_cwd",
+      "dash_combination"
+    ]
+  }
+}

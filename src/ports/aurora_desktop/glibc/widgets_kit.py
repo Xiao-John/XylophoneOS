@@ -16,12 +16,14 @@ sys.path[:0] = [str(ROOT / "scripts"), str(QT / "quick")]
 
 from build_app import extract_font, sha
 from glibc_g1_probe import tool_identity
-from quick_kit import relocate_host_tools
+from quick_kit import WIDGETS_GENERATORS, relocate_host_tools
 from xypm_format import canonical, load_json, require
 from xypm_sdk_profile import metadata_snapshot, relative_file, sdk_snapshot, verify_profile
 
 MODULES = ("Core", "Gui", "Widgets", "BundledFreetype", "BundledHarfbuzz", "BundledPcre2", "BundledZLIB")
 TOOLS = ("moc", "rcc")
+UNIFIED_V2 = "xos-x86_64-glibc-unified-cxx-v2"
+TARGET_RECEIPT = "target_receipt.json"
 
 
 def installed_inputs(prefix, host):
@@ -49,16 +51,39 @@ def kit_paths(kit):
     return kit / "target", kit / "host_qt", kit / "DejaVuSans.ttf"
 
 
-def fingerprint(kit):
+def fingerprint(kit, *, target_receipt=False):
     prefix, host, font = kit_paths(kit)
     relative_file(kit, font.name)
+    inputs = installed_inputs(prefix, host)
+    if target_receipt:
+        inputs["uic"] = relative_file(host, "libexec/uic")
     return {"target_tree_sha256": sdk_snapshot(prefix)[0],
             "host_tree_sha256": sdk_snapshot(host)[0], "font_sha256": sha(font),
             "notices_tree_sha256": sdk_snapshot(kit / "notices")[0],
-            "qt_inputs": {name: sha(path) for name, path in installed_inputs(prefix, host).items()}}
+            "qt_inputs": {name: sha(path) for name, path in inputs.items()}}
 
 
-def verify_kit(kit, expected, sdk_manifest_sha256, profile_sha256):
+def verify_target_receipt(path, manifest, expected=None):
+    receipt, digest = metadata_snapshot(path, expected)
+    files = manifest["files"]
+    require(receipt.get("status") == "static_qt_widgets_target_installed"
+            and receipt.get("qtbase_features") == {"widgets": "ON", "filedialog": "OFF"},
+            "Expected a QtBase build receipt for the Widgets configuration")
+    require(receipt.get("qt_version") == manifest["qt_version"]
+            and receipt.get("sources", {}).get("qtbase") == manifest["qtbase_archive_sha256"]
+            and receipt.get("qtbase_prepared_tree_sha256") == manifest["qtbase_prepared_tree_sha256"]
+            and receipt.get("qt_build_cache_sha256") == manifest["qt_build_cache_sha256"]
+            and receipt.get("sdk_manifest_sha256") == manifest["sdk_manifest_sha256"]
+            and receipt.get("sdk_profile_file_sha256") == manifest["sdk_profile_file_sha256"]
+            and receipt.get("cross_tools") == manifest["target_tools"]
+            and receipt.get("target_tree_sha256") == files["target_tree_sha256"]
+            and all(receipt.get("native_generators", {}).get(name) == files["qt_inputs"][name]
+                    for name in WIDGETS_GENERATORS),
+            "Qt Widgets target or SDK inputs differ from the build receipt")
+    return digest
+
+
+def verify_kit(kit, expected, sdk_manifest_sha256, profile_sha256, *, profile_id=None):
     manifest, digest = metadata_snapshot(relative_file(kit, "manifest.json"), expected)
     require(manifest.get("format_version") == 1 and manifest.get("kind") == "mobius_widgets",
             "Expected a Mobius Widgets kit manifest")
@@ -69,7 +94,13 @@ def verify_kit(kit, expected, sdk_manifest_sha256, profile_sha256):
     require(manifest.get("qt_version") == lock["version"]
             and manifest.get("qtbase_archive_sha256") == lock["sha256"],
             "Widgets kit names a different QtBase release")
-    require(manifest["files"] == fingerprint(kit), "Widgets kit files differ from the manifest")
+    target_receipt = manifest.get("target_receipt_sha256")
+    require(target_receipt is not None or profile_id != UNIFIED_V2,
+            "The unified v2 Widgets kit requires the installed target build receipt")
+    require(manifest["files"] == fingerprint(kit, target_receipt=target_receipt is not None),
+            "Widgets kit files differ from the manifest")
+    if target_receipt is not None:
+        verify_target_receipt(relative_file(kit, TARGET_RECEIPT), manifest, target_receipt)
     return digest
 
 
@@ -95,6 +126,8 @@ def stage(args):
             "Use a new Widgets kit directory outside its inputs")
     profile = load_json(args.sdk_profile)
     binding = verify_profile(profile, "glibc", sdk)
+    require(args.target_receipt is not None or binding["profile_id"] != UNIFIED_V2,
+            "Provide --target-receipt for the unified v2 Widgets build")
     sdk_digest = profile["sdk_binding"]["sdk_manifest_sha256"]
     profile_digest = sha(args.sdk_profile)
     sdk_manifest, _ = metadata_snapshot(sdk / "manifest.json", sdk_digest)
@@ -106,6 +139,24 @@ def stage(args):
     cache_digest = sha(cache)
     source_digest = sdk_snapshot(source)[0]
     target_digest, host_digest = sdk_snapshot(prefix)[0], sdk_snapshot(host)[0]
+    lock = load_json(QT / "source_lock.json")
+    manifest = {
+        "format_version": 1,
+        "kind": "mobius_widgets",
+        "qt_version": lock["version"],
+        "qtbase_archive_sha256": lock["sha256"],
+        "qtbase_prepared_tree_sha256": source_digest,
+        "qt_build_cache_sha256": cache_digest,
+        "original_host_tree_sha256": host_digest,
+        "sdk_manifest_sha256": sdk_digest,
+        "sdk_profile_file_sha256": profile_digest,
+        "target_tools": tools,
+    }
+    if args.target_receipt is not None:
+        manifest["files"] = {"target_tree_sha256": target_digest,
+                             "qt_inputs": {name: sha(relative_file(host, f"libexec/{name}"))
+                                           for name in WIDGETS_GENERATORS}}
+        manifest["target_receipt_sha256"] = verify_target_receipt(args.target_receipt, manifest)
     font = relative_file(source, "src/3rdparty/wasm/DejaVuSans.ttf")
     output.parent.mkdir(parents=True, exist_ok=True)
     with TemporaryDirectory(prefix=f".{output.name}-", dir=output.parent) as temporary:
@@ -113,32 +164,24 @@ def stage(args):
         staged.mkdir()
         target_copy, host_copy, font_copy = kit_paths(staged)
         archive_digest = extract_font(args.qtbase, font_copy)
-        require(sha(font_copy) == sha(font), "Widgets build used a different QtBase font")
+        require(archive_digest == lock["sha256"] and sha(font_copy) == sha(font),
+                "Widgets build used a different QtBase source archive or font")
         shutil.copytree(prefix, target_copy)
         shutil.copytree(host, host_copy)
         require(sdk_snapshot(host_copy)[0] == host_digest, "Host Qt tools changed during staging")
         relocate_host_tools(host_copy, ("Qt6WidgetsTools",))
         stage_notices(staged / "notices")
-        files = fingerprint(staged)
+        files = fingerprint(staged, target_receipt=args.target_receipt is not None)
         require(files["target_tree_sha256"] == sdk_snapshot(prefix)[0] == target_digest
                 and sdk_snapshot(host)[0] == host_digest
                 and sdk_snapshot(source)[0] == source_digest and sha(cache) == cache_digest
                 and verify_profile(load_json(args.sdk_profile), "glibc", sdk) == binding
                 and sha(args.sdk_profile) == profile_digest,
                 "Widgets build or SDK inputs changed during staging")
-        manifest = {
-            "format_version": 1,
-            "kind": "mobius_widgets",
-            "qt_version": load_json(QT / "source_lock.json")["version"],
-            "qtbase_archive_sha256": archive_digest,
-            "qtbase_prepared_tree_sha256": source_digest,
-            "qt_build_cache_sha256": cache_digest,
-            "original_host_tree_sha256": host_digest,
-            "sdk_manifest_sha256": sdk_digest,
-            "sdk_profile_file_sha256": profile_digest,
-            "target_tools": tools,
-            "files": files,
-        }
+        manifest["files"] = files
+        if args.target_receipt is not None:
+            shutil.copyfile(args.target_receipt, staged / TARGET_RECEIPT)
+            verify_target_receipt(staged / TARGET_RECEIPT, manifest, manifest["target_receipt_sha256"])
         (staged / "manifest.json").write_bytes(canonical(manifest))
         digest = sha(staged / "manifest.json")
         staged.rename(output)
@@ -149,6 +192,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for option in ("sdk-build", "sdk-profile", "qt-build", "qt-prefix", "qt-source", "host-qt", "qtbase", "output"):
         parser.add_argument(f"--{option}", type=Path, required=True)
+    parser.add_argument("--target-receipt", type=Path)
     stage(parser.parse_args())
 
 

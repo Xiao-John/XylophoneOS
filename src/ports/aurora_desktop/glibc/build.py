@@ -16,7 +16,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_glibc_program import sha, verify_elf
 from glibc_g1_probe import clean_build_environment, tool_identity
-from widgets_kit import MODULES, installed_build, installed_inputs, kit_paths, verify_kit
+from widgets_kit import MODULES, UNIFIED_V2, installed_build, installed_inputs, kit_paths, verify_kit
 from xypm_format import load_json
 from xypm_sdk_profile import metadata_snapshot, verify_profile
 
@@ -38,6 +38,9 @@ def main():
         parser.error("Supply the Widgets kit or all four separate Qt input paths")
     sdk_build = args.sdk_build.resolve(strict=True)
     sdk = sdk_build / "sysroot"
+    profile = load_json(args.sdk_profile)
+    if profile.get("id") == UNIFIED_V2 and args.widgets_kit is None:
+        parser.error("The unified v2 SDK requires a staged Widgets kit with a target build receipt")
     output = args.output.resolve()
     if args.jobs < 1 or args.sdk_build.is_symlink() or args.output.is_symlink() or output.exists():
         parser.error("Use a real SDK directory, a fresh output path and a positive job count")
@@ -53,7 +56,6 @@ def main():
     if any(output.is_relative_to(path) for path in (sdk_build, PORT, *qt_input_paths)):
         parser.error("Put the build output outside the input trees")
 
-    profile = load_json(args.sdk_profile)
     binding = verify_profile(profile, "glibc", sdk_build)
     if (not {"cxx_runtime", "threads"} <= set(profile["features"])
             or "usr/lib/libxos_terminal.a" not in profile["sdk_binding"]["link_artifacts"]):
@@ -68,7 +70,8 @@ def main():
 
     kit_digest = None
     if kit is not None:
-        kit_digest = verify_kit(kit, args.widgets_kit_sha256, sha(sdk_manifest), sha(args.sdk_profile))
+        kit_digest = verify_kit(kit, args.widgets_kit_sha256, sha(sdk_manifest), sha(args.sdk_profile),
+                                profile_id=binding["profile_id"])
         qt_record = kit / "manifest.json"
     else:
         qt_record = installed_build(qt_build, prefix, qt_source, sdk)
@@ -133,7 +136,7 @@ def main():
             or any(sha(Path(tool["path"])) != tool["sha256"] for tool in tools.values())):
         raise RuntimeError("Mobius build inputs changed during compilation")
     if kit is not None:
-        verify_kit(kit, kit_digest, sha(sdk_manifest), sha(args.sdk_profile))
+        verify_kit(kit, kit_digest, sha(sdk_manifest), sha(args.sdk_profile), profile_id=binding["profile_id"])
 
     for name in ("mobius", "mobius_session"):
         elf = output / f"{name}.elf"

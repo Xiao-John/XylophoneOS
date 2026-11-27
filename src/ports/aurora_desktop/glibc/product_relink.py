@@ -9,7 +9,7 @@ import shutil
 import subprocess
 from tempfile import TemporaryDirectory
 
-from widgets_kit import QT, ROOT, verify_kit
+from widgets_kit import QT, ROOT, TARGET_RECEIPT, verify_kit
 from release_materials import copy_file
 from relink import json_read, link_flags, manifest_file, require, sha, verify_static_elf
 from xos_app import sdk_notices
@@ -57,10 +57,11 @@ def stage(args):
             and not any(output.resolve().is_relative_to(path) for path in (build, kit, sdk, ROOT / "src")),
             "Use a fresh materials directory outside the build inputs")
     profile = json_read(args.sdk_profile)
-    verify_profile(profile, "glibc", sdk)
+    binding = verify_profile(profile, "glibc", sdk)
     sdk_digest = profile["sdk_binding"]["sdk_manifest_sha256"]
     profile_digest = sha(args.sdk_profile)
-    kit_digest = verify_kit(kit, args.widgets_kit_sha256, sdk_digest, profile_digest)
+    kit_digest = verify_kit(kit, args.widgets_kit_sha256, sdk_digest, profile_digest,
+                            profile_id=binding["profile_id"])
     kit_manifest = json_read(kit / "manifest.json")
     require(sha(args.qtbase) == kit_manifest["qtbase_archive_sha256"], "QtBase source differs from the Widgets kit")
     sdk_manifest, _ = metadata_snapshot(sdk / "manifest.json", sdk_digest)
@@ -89,6 +90,10 @@ def stage(args):
                     f"Mobius executable or receipt changed after staging: {name}")
         copy_file(args.qtbase, staged, "sources/qtbase.tar.xz")
         copy_file(kit / "manifest.json", staged, "notices/widgets_kit.json")
+        if "target_receipt_sha256" in kit_manifest:
+            copy_file(kit / TARGET_RECEIPT, staged, "notices/widgets_target_receipt.json")
+            require(sha(staged / "notices/widgets_target_receipt.json") == kit_manifest["target_receipt_sha256"],
+                    "Widgets target receipt changed during staging")
         copy_file(args.sdk_profile, staged, "notices/sdk_profile.json")
         for path, name in sdk_notices(sdk, profile, "cpp"):
             copy_file(path, staged, f"notices/sdk/{name}")
@@ -100,7 +105,8 @@ def stage(args):
                      *(p for p in (QT / "patches").rglob("*") if p.is_file())):
             copy_file(path, staged, f"sources/xos/{path.relative_to(ROOT).as_posix()}")
         require(sha(staged / "sources/qtbase.tar.xz") == kit_manifest["qtbase_archive_sha256"]
-                and verify_kit(kit, kit_digest, sdk_digest, profile_digest) == kit_digest,
+                and verify_kit(kit, kit_digest, sdk_digest, profile_digest,
+                               profile_id=binding["profile_id"]) == kit_digest,
                 "Qt source archive or Widgets kit changed during staging")
         files = {item.relative_to(staged).as_posix(): sha(item)
                  for item in sorted(staged.rglob("*")) if item.is_file()}

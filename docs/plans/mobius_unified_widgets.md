@@ -24,3 +24,18 @@
 
 公共 SDK 更新独立推进。若以已有统一 SDK 套件完成首轮，本轮证据记录其
 具体 SDK、Qt 源与系统组合摘要。后续 SDK 的资格由对应构建和客体验收确认。
+
+## v2 的输入与分发边界
+
+Qt Quick v2 的有效配置是 `QT_FEATURE_widgets=OFF`。两条路线共用锁定的
+QtBase 6.8.3 原档、Linux arm64 宿主生成器和同一 glibc SDK v2。Widgets
+通过共享构建入口切换为 `Widgets=ON`、`FileDialog=OFF`，并构建自己的
+Core、Gui、Widgets 及生成头。接收方使用绑定到该 SDK/profile 的 Widgets
+目标回执。两个目标前缀中的归档和配置头各自配套使用。
+[构建及接收命令](../../src/ports/aurora_desktop/README.md#build-from-a-relocated-widgets-kit)
+
+当前 CMake 将 Curvive 的 BMP 转换件嵌入桌面 ELF。复链材料另携 PNG 原图
+与嵌入的 BMP。两份字节与 `c83900e0` 的导入一致，局部来源记为 GUI-Desktop
+快照。仓库记录了导入作者与来源线索，仍缺少可用于公开分发的授权依据。
+保留当前私有验收路径，公开分发使用已确认授权的素材及其完整声明。
+[导入及图像核对记录](../reports/mobius_unified_widgets_20261127/curvive_audit.json)

@@ -1,0 +1,43 @@
+{
+  "cmake_config_header_sha256": "a0c85b99f4902ffcf33f8c69857276c331d376be368e43715c57ae3a2fc22eee",
+  "cmake_generated_commands_sha256": "eb6f8ad7d9d399e47d20150572cdd84af78332310b8bea6fa83b1f5c8362cf6a",
+  "compiler_sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+  "compiler_version": "16.2.0",
+  "host": "macOS arm64",
+  "linux_first_webcore_interruption": "compiler_terminated_by_signal",
+  "objects": [
+    {
+      "command_sha256": "14818d7bc944aa2e451a70e1a0485d7eba940f69dd764f6caf8687566338a567",
+      "input_sha256": "581d30a5235530909c0dc356426953ede7ca3eb9a93bb0eef2ecd470e939c393",
+      "object_sha256": "260b1b4f612fea008807ba18b0f8c24547e0a2c243938d5c573eb4fcb3a03289",
+      "source": "page/Page.cpp",
+      "verified_defined_symbols": [
+        "WebCore::Page::Page("
+      ]
+    },
+    {
+      "command_sha256": "99db05411a267b1c7f83090352982c8115df6e3d6b4d25fd2af176513a1b0d8b",
+      "input_sha256": "9e20ceeaef285808bd318a347ba1c2a1a50fad429d3154b9e51442c828490421",
+      "object_sha256": "77f366b73a01c444dde9b1cba20210559b5e35bc45537d7ea1b92eda2e622a67",
+      "source": "rendering/RenderView.cpp",
+      "verified_defined_symbols": [
+        "WebCore::RenderView::layout()",
+        "WebCore::RenderView::paint("
+      ]
+    },
+    {
+      "command_sha256": "61375ade9ef99f80414c801999c84fc985e190b6a71ddc45adabee19ea80a059",
+      "input_sha256": "8a938e97e36e94672f4bf5131aad0edc10b3e33668f53fa288c747bbf460c726",
+      "object_sha256": "fbe47b9fae3530a2a068435ba269bf54a169e2d4fb100be1dd47ca2365097bfd",
+      "source": "html/parser/HTMLDocumentParser.cpp",
+      "verified_defined_symbols": [
+        "WebCore::HTMLDocumentParser::append"
+      ]
+    }
+  ],
+  "scope": "standalone compilation using remapped generated XOS WebCore commands and the #322 shared-memory candidate",
+  "shared_memory_patch_sha256": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98",
+  "shared_memory_source_commit": "aa7c18cdde8f7115939f8b42fd04e41ef31d2e62",
+  "software_target_commit": "6cce70952822473ab1de4a166ba72daee87fa2fb",
+  "status": "objects_compiled"
+}

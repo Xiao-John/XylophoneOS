@@ -1,0 +1,42 @@
+{
+  "patch_zero_fuzz_files": {
+    "Source/CMakeLists.txt": "14f1275ec7241318c81e830c4d8f00069d740fc46bc6247796dbd74905ad2707",
+    "Source/WebCore/CMakeLists.txt": "80e806b2aae8f1a059a050822a067c44cd9e83a0b0bdf1b05ae0a1c0bd836b70",
+    "Source/WebCore/PlatformJSCOnly.cmake": "a8625088479d66583d88eecf8aee9de532c9627b591452cb9f09e81a339868d8",
+    "Source/WebCore/page/Page.cpp": "581d30a5235530909c0dc356426953ede7ca3eb9a93bb0eef2ecd470e939c393",
+    "Source/WebCore/platform/SourcesXOSSkia.txt": "509922ce951ebdd6d7240f4fcfc4ad15b067c17839ae4e9b3868ceaee1a932ee",
+    "Source/WebCore/platform/graphics/ImageBuffer.cpp": "8361356479d0bf1859dc3e68d9e6d17332daba7e442ef386700b3599b657c26c",
+    "Source/WebCore/platform/graphics/skia/SkiaSerializedImageBuffer.cpp": "68c3f7d2018f29023b0be291c44e2cb7b1269a83ac6bcada00f2de3fe1674a22",
+    "Source/WebCore/platform/graphics/skia/SkiaSerializedImageBuffer.h": "8803426bd1d3034d3e3bd61240c3be61baffed0b53c77ca7177a77ae5e7ca5c6",
+    "Source/WebCore/platform/network/xos/CertificateInfo.h": "e2bdfb3e91084338b6bda0e31fdd0f17295a6b2fc520ac2ab6c3deb98a34f5de",
+    "Source/WebCore/platform/network/xos/ResourceError.h": "52afadaf87b0639fdad3dec2011d7efe1e14201bfb9f0ad578ce50e0d880bd64",
+    "Source/WebCore/platform/network/xos/ResourceRequest.h": "78ed46841a8d2f526d26315cee9d2b08fd6faab2a0305d307e01cb8c4e007141",
+    "Source/WebCore/platform/network/xos/ResourceResponse.h": "41e0b63e7277c118317974b21cc698409010199183657060dc6480175db48033",
+    "Source/cmake/OptionsJSCOnly.cmake": "bc44cb9b5345da1a6df3410c163bf76f2fd80b2635eab946e2c3ff309b3371bc"
+  },
+  "patches": {
+    "software_buffers.patch": "46b6eb27de8e5f1f2f3c8a90030659e2d6820e67a3de8634c8ff09711a45f1b3",
+    "software_context.patch": "56def73ed3a4ffcb2a4e6d6ddc54130582d3e4e33c5cb49b3ade83f93877f2f9",
+    "software_graph.patch": "7ff9a8bf422a124b23396a7b4e5d13213a244d3e1a87ab477ebc5d070f995dd5"
+  },
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "source_commit": "f12a0ce96712aa466c2f81d72d6dbe98cb9167c0",
+  "target_archives": {
+    "libfontconfig.a": "db15cf544af1dbfb1b9be93945aa9b7f6e125ef5d3e1f43b0246e355c8fb2344",
+    "libfreetype.a": "03f6b0e6e4d6d7fae5cd77536aa3b35fba7a8455a9dc9235f42cba7d97d3549c",
+    "libharfbuzz-icu.a": "d4bf1a27649ad7080ece1b0ff42633b2c392254d681e2a2ac4fb85016a3f0a48",
+    "libharfbuzz.a": "4c9648d582e3df610a74603d58a8bd86eac61b7cbd0f3b6480278c8d033c1470",
+    "libicudata.a": "0b5168e5c536398e4985e56bb6bf6a8a6ddabcd0886e8b81913debe6a80caf52",
+    "libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
+    "libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83",
+    "libjpeg.a": "72f199a71e509042d63ecf895de044581842e1008c7880d5d455709a80984143",
+    "libpng.a": "1734d9f171debddb8e01fcf268d7e92d70c9aa2ed2e4ae3b6ac2f5382a0021ed",
+    "libskia_fontconfig.a": "13183b7698039c4a30438e3293e32459dc1d63899b57887ea05a164a178ddfa5",
+    "libskia_raster.a": "0defabc3cd586e3940a9027802d6666d8e43cf7f836e4228e0a88f152ab351c4",
+    "libsqlite3.a": "8f5dcd207793ef17abf22eee1ba109fdd8fce4515daff82ecf7dbc34ae859c46",
+    "libxml2.a": "3eba6ba5b15c29ee949197804bdd5669e799ce943937b3981fedc665ad4b7311",
+    "libz.a": "a0c4831c3aab6525dd84173dc22133c6e67976403e1987d3ecf4dace64a25351"
+  },
+  "webkit_archive_sha256": "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56"
+}

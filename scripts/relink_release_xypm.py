@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Reproduce a released static xypm link from detached release materials."""
+"""Reproduce a released static program link from detached release materials."""
 
 import argparse
 import os
@@ -13,16 +13,19 @@ from glibc_g1_probe import clean_build_environment
 from xypm_format import confined, inspect_elf, load_json, require, sha_file
 
 LINK_FLAGS = {'-static', '-no-pie', '-nostdlib', '-T', '-Wl,--build-id=none', '-Wl,-z,noexecstack',
-              '-Wl,-z,max-page-size=4096', '-Wl,--start-group', '-Wl,--end-group'}
+              '-Wl,-z,max-page-size=4096', '-Wl,--build-id=none,-z,noexecstack,-z,max-page-size=4096', '-Wl,--start-group', '-Wl,--end-group'}
 LIBC = 'sysroot/usr/lib/libc.a'
 FORMAT = 'xos_release_xypm_relink_v1'
+DASH_FORMAT = 'xos_release_dash_relink_v1'
+DRIVERS = {'xypm': (FORMAT, 'g++'), 'dash': (DASH_FORMAT, 'gcc')}
 
 
 def relink(args):
     manifest_path = confined(args.materials, 'manifest.json')
     require(sha_file(manifest_path) == args.sha256, 'materials manifest differs')
     manifest = load_json(manifest_path)
-    require(manifest['format'] == FORMAT and set(manifest['tools']) == {'g++', 'as', 'ld'},
+    format_name, driver = DRIVERS[getattr(args, 'program', 'xypm')]
+    require(manifest['format'] == format_name and set(manifest['tools']) == {driver, 'as', 'ld'},
             'unexpected materials receipt')
     files = {name: confined(args.materials, name) for name in manifest['files']}
     require(all(sha_file(path) == manifest['files'][name] for name, path in files.items()),
@@ -57,7 +60,7 @@ def relink(args):
         for name in ('as', 'ld'):
             (work / name).symlink_to(tools[name])
         elf = work / 'linked.elf'
-        subprocess.run([tools['g++'], '--sysroot=' + str(args.materials.resolve() / 'sysroot'),
+        subprocess.run([tools[driver], '--sysroot=' + str(args.materials.resolve() / 'sysroot'),
                         '-B' + directory + '/', '-o', elf, *flags], check=True, env=env)
         inspect_elf(elf)
         digest = sha_file(elf)
@@ -69,6 +72,7 @@ def relink(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--program', choices=DRIVERS, default='xypm')
     parser.add_argument('--materials', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--sha256', required=True)

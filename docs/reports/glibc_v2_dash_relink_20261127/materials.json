@@ -1,0 +1,215 @@
+{
+  "files": {
+    "dash/README.md": "54397b5bc7f9887ef4431a9bfe3394de6bc9b6de01fb0195576d0c29404df42e",
+    "dash/source_lock.json": "d2988258efeff75f11239cbf57b4dc572c108a8639edf8481fdaedcdccc01c26",
+    "dash/upstream/COPYING": "254a7894923ff62e69184a991dcbccae97edee58a1105e8efbe78caf10595d72",
+    "licenses/usr/share/xos-glibc/COPYING.LIB": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+    "licenses/usr/share/xos-glibc/LICENSES": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+    "licenses/usr/share/xos-glibc/compiler-runtime-licenses/COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+    "licenses/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861",
+    "licenses/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+    "licenses/usr/share/xos/terminal-support/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "licenses/usr/share/xos/terminal-support/licenses/mit_legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+    "objects/alias.o": "e2209e7ae244b2338771b558b25f6a7eb7143befc87edeedec449a762b6f7378",
+    "objects/arith_yacc.o": "a92cf9739314f813138d99930460abf26a30caa57500f60587fde59d584e5c61",
+    "objects/arith_yylex.o": "dfd0a83c2f93664463adab3ae12a9e8e4df50aafa56194a86b7d0039cdbe3865",
+    "objects/bltin/printf.o": "5ad9e9a191d853dec21a2eaedcb9738e51c83771ac6fc038fda14dfbf9daadb3",
+    "objects/bltin/test.o": "6d258ff84d0a91992e905ab5912610a10579c77fb5319a770f109dfd51644376",
+    "objects/bltin/times.o": "9910150219a4147ca8ea5297eddb487b907b6ae3935c9984f58a5bd33d5daf12",
+    "objects/builtins.o": "bada66916aa80357c963118740144efa2f02576b44f16c69167b78ec6b32bd9a",
+    "objects/cd.o": "e043cbdc03921509a43157c1e218e9abfd04fba305c0cc1c5d361b420705c4bd",
+    "objects/console_xos.o": "818782166474bce772bcc55b418b39b3e21070c5a54bd09872672a1410362d72",
+    "objects/error.o": "7a3e0240e6f1b84f85919d07121f3df3e05fc80a1b37d3b62f605bac6983bc0f",
+    "objects/eval.o": "ce8e7a4f9cc9ebdad094140257db2792c802020219bb058e301203eb83db4b55",
+    "objects/exec.o": "d13f2b5cb6495a55c9952d1c7f186144e706ede8fbe2a2641a1e18c591aaae3b",
+    "objects/expand.o": "f39b06bba56442109cba6492043f10ad3022ea44a38d8b30a8dcdc8bdcdf9575",
+    "objects/histedit.o": "497e6a2b940ca9bdb9d831bfcdd24447b9467f6dbc4e385345e8375ccb87283c",
+    "objects/init.o": "3128297fa9cb0b0b33d86b07ea85111490a998e5681c6289628e31881afebf4b",
+    "objects/input.o": "f50a1e64d21eed62f38116d106b9a0dd5716003b15cc6ffe800f1a8148ce64b7",
+    "objects/jobs.o": "81d7b8b6b2dec6a9a25a55d7b2186d963e7d69c3261aedc61469c33cc50a5eb8",
+    "objects/mail.o": "42f66f044926d037b4fa0d13a4622c8f0496e229156073d4032232637694563c",
+    "objects/main.o": "cba72c1dc9f65b31f115ee8dd3b6dba18f2f057bd08a83e0e26fdd564edb533d",
+    "objects/memalloc.o": "0a320b0b3f77bda7278697ca12bc10001831e426f2340f65a6d77d398df13b38",
+    "objects/miscbltin.o": "6d3b64a225b247adb9bbb3744f45326d3736a4f5c528f43289edbb381f3ecb78",
+    "objects/mystring.o": "b7b8c3c40cc64cc4fbe84529db81a1094465b7ad85150b649714505c459907dc",
+    "objects/nodes.o": "f739f76381b531e3bbe81e1c812614f4bbb281517a8a3bc6303ee05678bacdd1",
+    "objects/options.o": "aa69ceaf946149a7b770cf08b981fbf22e1f184e2d228d134fee3737dc7c6a5a",
+    "objects/output.o": "d6b861645506fb43ddd990444c2c00e48adc1ad8ed37d531eece7ec64af54f2a",
+    "objects/parser.o": "3965e7ec2510e8ce42d394ab3b02b2c7f0b4219e281b819f21b699ba7450cb63",
+    "objects/redir.o": "19d24ebd8c58adc84c7c5d8c10c53a87b015556f7a0721ec82ed63c3c3f18972",
+    "objects/show.o": "c5109ea8fec2d882a4373842d41ab494eec027a9e9d438fe6831ff33fc89b604",
+    "objects/syntax.o": "0e2575cbab4c129638ac45e7698da798c5545ac2862ddc504b0adc9ab5efcde7",
+    "objects/syscall.o": "f1516581a6f23cbf1da4d49d1533a2fa674e483007c2da0f2683fe1535ccc648",
+    "objects/system.o": "168f9a98bfef58e1c2b0ee46f7f62d5b88e8fff0384cafc7c58425d73ae76a52",
+    "objects/trap.o": "f8e4e4138354dd2032b91dfe325b84e9eaa60b6fc037317bc9c0b725375506d4",
+    "objects/var.o": "41b1141b694106fef4b44e23126008d8e4068e78c063720cc1082e0473d07e34",
+    "receipt/dash.json": "870eb4afbe0234291eea3f73824ecc7147a8a1cce0b8f9c90be0a392023adf6e",
+    "receipt/install_manifest.json": "abfd1ab90fa5ff8d1d52e3909742cbc86f50e12060918cdd6b44ac78d54a7238",
+    "receipt/profile.json": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "receipt/release_manifest.json": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+    "receipt/sdk_manifest.json": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+    "sysroot/user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+    "sysroot/usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+    "sysroot/usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+    "sysroot/usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+    "sysroot/usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+    "sysroot/usr/lib/libc.a": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+    "sysroot/usr/lib/libgcc.a": "76e46640d9329f32d0b87dc68d7b571e2a4f8d7474c564dc2e669dff81fd8916",
+    "sysroot/usr/lib/libm.a": "7aabb093ac75321799ce6363387c80c4c9d1510ccecb47c7089b3fa2531e6fb1",
+    "sysroot/usr/lib/libxos_terminal.a": "07d18c058afb139af1de6db0cca92a1fa25fb8ab18cf96c9c9821348bc9eb593",
+    "sysroot/usr/lib/xos_start.o": "4a90a2f5efab12fb494ec380fbc9fcbba62b1e3ad6884e9ed11d2fb890b489a6",
+    "sysroot/usr/lib/xos_start_c.o": "2c3b60c6148273622151eed140c8c6ad98ad5c6f8528a574f83fcfcbfe996a21",
+    "tools/glibc_g1_deps.py": "4b02e7b8bea7d69fe85ebe13f8627d261a64b5e7ffbd075221aa797094795f35",
+    "tools/glibc_g1_probe.py": "0e508036b6e4098faa290c4e41c32b651aea54167fbf5d3b4c9283732fabc451",
+    "tools/relink_release_xypm.py": "b2da90f923447fd3405f22788000b350b7a6a1d02436fedbca454db3f88981ab",
+    "tools/xypm_format.py": "661d1919f42e06f5ac942b5dfbcacdc4f1dffac16e0c3ee701e8c9e742bc808c"
+  },
+  "format": "xos_release_dash_relink_v1",
+  "plan": [
+    "-nostdlib",
+    "-static",
+    "-no-pie",
+    "-Wl,--build-id=none,-z,noexecstack,-z,max-page-size=4096",
+    "-T",
+    {
+      "file": "sysroot/user.ld"
+    },
+    {
+      "file": "sysroot/usr/lib/xos_start.o"
+    },
+    {
+      "file": "sysroot/usr/lib/crti.o"
+    },
+    {
+      "file": "sysroot/usr/lib/crtbegin.o"
+    },
+    {
+      "file": "sysroot/usr/lib/xos_start_c.o"
+    },
+    {
+      "file": "objects/alias.o"
+    },
+    {
+      "file": "objects/arith_yacc.o"
+    },
+    {
+      "file": "objects/arith_yylex.o"
+    },
+    {
+      "file": "objects/cd.o"
+    },
+    {
+      "file": "objects/error.o"
+    },
+    {
+      "file": "objects/eval.o"
+    },
+    {
+      "file": "objects/exec.o"
+    },
+    {
+      "file": "objects/expand.o"
+    },
+    {
+      "file": "objects/histedit.o"
+    },
+    {
+      "file": "objects/input.o"
+    },
+    {
+      "file": "objects/jobs.o"
+    },
+    {
+      "file": "objects/mail.o"
+    },
+    {
+      "file": "objects/main.o"
+    },
+    {
+      "file": "objects/memalloc.o"
+    },
+    {
+      "file": "objects/miscbltin.o"
+    },
+    {
+      "file": "objects/mystring.o"
+    },
+    {
+      "file": "objects/options.o"
+    },
+    {
+      "file": "objects/parser.o"
+    },
+    {
+      "file": "objects/redir.o"
+    },
+    {
+      "file": "objects/show.o"
+    },
+    {
+      "file": "objects/trap.o"
+    },
+    {
+      "file": "objects/output.o"
+    },
+    {
+      "file": "objects/bltin/printf.o"
+    },
+    {
+      "file": "objects/system.o"
+    },
+    {
+      "file": "objects/bltin/test.o"
+    },
+    {
+      "file": "objects/bltin/times.o"
+    },
+    {
+      "file": "objects/var.o"
+    },
+    {
+      "file": "objects/builtins.o"
+    },
+    {
+      "file": "objects/init.o"
+    },
+    {
+      "file": "objects/nodes.o"
+    },
+    {
+      "file": "objects/syntax.o"
+    },
+    {
+      "file": "objects/console_xos.o"
+    },
+    {
+      "file": "objects/syscall.o"
+    },
+    "-Wl,--start-group",
+    {
+      "file": "sysroot/usr/lib/libc.a"
+    },
+    {
+      "file": "sysroot/usr/lib/libm.a"
+    },
+    {
+      "file": "sysroot/usr/lib/libxos_terminal.a"
+    },
+    {
+      "file": "sysroot/usr/lib/libgcc.a"
+    },
+    "-Wl,--end-group",
+    {
+      "file": "sysroot/usr/lib/crtend.o"
+    },
+    {
+      "file": "sysroot/usr/lib/crtn.o"
+    }
+  ],
+  "reference": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+  "tools": {
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1"
+  }
+}

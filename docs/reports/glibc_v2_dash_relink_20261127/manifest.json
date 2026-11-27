@@ -1,0 +1,12 @@
+{
+  "candidate": "960fce4347f193f13f5214caee153a03891ab100",
+  "files": {
+    "guest.json": "04fe857c91b7c5be7c5e89f0a8c54c46a8fe6133413ad70aa7a5a7e07c60989d",
+    "host_relink.json": "ed1470bd12e7b115cb66e25a974514de39bb855ee1ac82571c775e34054ce048",
+    "installer.serial.log.gz": "8b82f58dce25ea7cbaf1fd1cb5a175474f7fcc02f915c2fcc37bc4aa54f43e48",
+    "materials.json": "72b8605772deea2bfa83441dfb90d1cfd752f8d0a6bac5ecc099598f0798206d",
+    "original.serial.log.gz": "922ea297e037fceb30718351def5df0154fdb806792bd92892401d03f81e908b",
+    "replacement.serial.log.gz": "03ecc37dcc8d9a532faf49773b16fffb5bf662af25fbf56000f6c5c08408f9c4"
+  },
+  "version": 1
+}

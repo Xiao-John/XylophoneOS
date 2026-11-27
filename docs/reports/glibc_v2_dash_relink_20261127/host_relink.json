@@ -1,0 +1,41 @@
+{
+  "actual_boot_bundle_sha256": "b6dbfb53c486f675f47e72374916414cdc7bda1b7b11d8a14e7641056a6d9743",
+  "archive_comparison": {
+    "changed_members": [
+      "getpid.o"
+    ],
+    "ordered_members_equal": 1686,
+    "original_getpid_o_sha256": "0fd4b1fe48a65953e396c161cbcf9aa3c56ee345d0c12da94d9ee4e1234f4b86",
+    "replacement_getpid_o_sha256": "0e21416722bae54b821d16f51a90f582544d8d1666a7b528cbde092b351bf7ee"
+  },
+  "base_candidate_source_commit": "960fce4347f193f13f5214caee153a03891ab100",
+  "dash_boot_bundle_member": {
+    "bytes": 3315096,
+    "name": "dash",
+    "sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+    "type": 1
+  },
+  "dash_build_receipt_sha256": "870eb4afbe0234291eea3f73824ecc7147a8a1cce0b8f9c90be0a392023adf6e",
+  "materials_archive": {
+    "bytes": 8566471,
+    "sha256": "d33d07b4e25d7cb3e7424ac2c67dcb92a055ad6e225262311ee15d31e35fe5c3"
+  },
+  "materials_manifest_sha256": "72b8605772deea2bfa83441dfb90d1cfd752f8d0a6bac5ecc099598f0798206d",
+  "original_elf_sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+  "original_libc_sha256": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+  "receiver": {
+    "cpu_limit": 1,
+    "network": "none",
+    "sdk_or_repository_mounted": false,
+    "test_sha256": "fc2a6732f8394b5bd64c55dbd1b39300df0221714413a849d5a03d72444a6848",
+    "tool_image_id": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450"
+  },
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "replacement_elf_sha256": "4482a58be6bf37022813b0ba11b92ee7b0f4eeede9ef0c31cb5fba5ffaf20dfe",
+  "replacement_libc_sha256": "b043be8d5722030d40e163f4ae8c4bac07178eed5ce9a375d44ec36b5dea832a",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "status": "passed_subset",
+  "wrong_replacement_sha256_rejected_before_output": true,
+  "xypm_cli_compatibility_original_elf_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745"
+}

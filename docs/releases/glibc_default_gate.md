@@ -71,12 +71,17 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 接收方已核对 11 项资产并再次验证签名。随后暂存的 Dash 重链接归档已核对实际
 安装器 ELF、SDK 与逐文件摘要。13 个日用程序均由接收方复现并通过替换客体。
 GNU Make 原样复现并通过 Xshell 与 Dash 的替换客体，同一安装器和普通 ISO 也
-通过 xypm 复链替换复验。外层暂存覆盖 14 项。候选清单中的静态程序仍欠 CPython
-替换材料，供体和正式产品按单独的验收范围继续推进。
+通过 xypm 复链替换复验。这一轮外层暂存覆盖 14 项。
 [同候选组合与接收方复验](../work_log/960fce43_glibc_v2_current_release.md)
 [glibc 原档暂存](../work_log/960fce43_glibc_release_upstream_source.md) ·
 [Dash 重链接归档暂存](../work_log/960fce43_glibc_v2_dash_material_delivery.md)
 [日用程序归档暂存](../work_log/960fce43_glibc_v2_daily_material_delivery.md)
 [GNU Make 暂存及同版 xypm 客体](../work_log/960fce43_glibc_v2_gnu_make_material_delivery.md)
+
+该候选的 CPython 静态替换随后通过，归档已按实际 XPK、调试 ELF 与剥离 ELF
+绑定。此候选清单的 17 个 glibc 静态程序现均有替换材料与客体回执，外层保留集
+通过 15 项校验。GNU Seed 供体的运行库、宿主路径、对应材料和正式产品仍按各自
+验收门推进。
+[CPython 重链接归档暂存](../work_log/960fce43_glibc_v2_cpython_material_delivery.md)
 
 当前默认发行仍由原配方生产。切换和 newlib 退役以完成上述实际证据和最终组合为准。

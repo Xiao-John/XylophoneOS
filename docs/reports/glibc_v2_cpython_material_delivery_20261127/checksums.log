@@ -1,0 +1,15 @@
+application-sdk.tar.gz: OK
+component-sources.json: OK
+component-sources.tar.gz: OK
+cpython-relink.tar.gz: OK
+daily-relink.tar.gz: OK
+dash-relink.tar.gz: OK
+distribution_manifest.json: OK
+glibc-2.44.tar.xz: OK
+gnu-make-relink.tar.gz: OK
+gnu-seed-sources.tar.gz: OK
+images.tar.gz: OK
+packages.tar.gz: OK
+release_manifest.json: OK
+system_manifest.json: OK
+xypm-relink.tar.gz: OK

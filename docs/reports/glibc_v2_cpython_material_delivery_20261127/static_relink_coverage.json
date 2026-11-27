@@ -1,0 +1,110 @@
+{
+  "original_inventory_sha256": "f8e729e0e06bd464afd0e1c1f0e566b9cea0ebf20a5466c178c2a91e91e17815",
+  "program_count": 17,
+  "programs": {
+    "/usr/bin/basename": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "1e098dcf668b842822f34ecbef832ecf5001ef849274a983ab8d8cb7fdfb6b98"
+    },
+    "/usr/bin/cat": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "eac887247f7d19ea7dcb147b16d3efeb7a4e48b58e1b4b05ea3fa9b9f52a942a"
+    },
+    "/usr/bin/cp": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "f522fb9df42d881d53184ac4d5e1f1e7f590c2e6d61eb1f2d7d1ffafde70b0d2"
+    },
+    "/usr/bin/dash": {
+      "archive": "dash-relink.tar.gz",
+      "archive_sha256": "d33d07b4e25d7cb3e7424ac2c67dcb92a055ad6e225262311ee15d31e35fe5c3",
+      "guest_receipt_sha256": "04fe857c91b7c5be7c5e89f0a8c54c46a8fe6133413ad70aa7a5a7e07c60989d",
+      "original_elf_sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a"
+    },
+    "/usr/bin/dirname": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "fa6169d9dc360cd2ea829d0cb6f67379e8c2b158fca1d1db080c62ca90d35698"
+    },
+    "/usr/bin/gmake": {
+      "archive": "gnu-make-relink.tar.gz",
+      "archive_sha256": "edff196fbed3bdc9be7add78855c8a2d97adf98c8b5c8e1144f9e73c2d9723cb",
+      "guest_receipt_sha256": "ea900e3ab0d898997fc58dd33044360e93682bd38054a3fc4862c982368c2b07",
+      "original_elf_sha256": "793e6b79d866e42b2633f462c59afc72cd7c716e6e5e7609bcf7e998e58a0ebe"
+    },
+    "/usr/bin/head": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "861be09a945b713c121e05b6cc9318cf593f77993ac905a00b7a2894c7e25b9d"
+    },
+    "/usr/bin/ls": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "e31ddcb0167f91294cafb7e1e6a22fe457a2fac86c28a10ad951ac5c8b585298"
+    },
+    "/usr/bin/mkdir": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "d2b031608f452311bf8450d14a49cc647ce4c104c3f5a328ffb1cf6cc8c60402"
+    },
+    "/usr/bin/mv": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "13d624d84be898968028f328dc9693929cf010b578f578cc2b2dfd2d862368d3"
+    },
+    "/usr/bin/python3": {
+      "archive": "cpython-relink.tar.gz",
+      "archive_sha256": "9e3b36125d26f46e93e06e3f07a4f79dc351e0503fffed3f126170e7f9d93c20",
+      "guest_receipt_sha256": "8b79a03f32edf14452e22caa2b52831b24b0122c915a23151f68f3454af54c38",
+      "original_elf_sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16"
+    },
+    "/usr/bin/rm": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "6f27359c92b4fc2558a429e5db2d675187f8e6c8d9516045b6c107e638711f26"
+    },
+    "/usr/bin/rmdir": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "6a5a979a837c3e9add987a13bb085b0aa1d802f444c979201c25b9e262642b2f"
+    },
+    "/usr/bin/tail": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "92bf16d08bcabb1833272a4d7c55c20aa8e8fb5d82599320fb256235c1ee4476"
+    },
+    "/usr/bin/tee": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "647bed5a2845889864391e16ec979caad2c8d5c12977c0fc7eb430eb0e2d59d5"
+    },
+    "/usr/bin/wc": {
+      "archive": "daily-relink.tar.gz",
+      "archive_sha256": "144dda7ee48f140c631a9788d9540c5227ef01be50c74873ff105f5f13405710",
+      "guest_receipt_sha256": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+      "original_elf_sha256": "51a8a691d6fd6ba1dcb0171e4b41be9dada3d904e33c8c71bda3d7f722112df3"
+    },
+    "/usr/bin/xypm": {
+      "archive": "xypm-relink.tar.gz",
+      "archive_sha256": "38d8883e0ff1b575ae746ba8d09e34b3aac1cf00e27f0509e289665fcb614988",
+      "guest_receipt_sha256": "b2abae64d719e2088cd58a81468962122488c679d10c38a5a65daa79e8caeda2",
+      "original_elf_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745"
+    }
+  },
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "status": "passed_subset"
+}

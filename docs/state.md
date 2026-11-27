@@ -37,10 +37,12 @@ Dash 已由离线接收方逐字节重链。同一安装盘的替换版返回预
 [归档暂存](work_log/960fce43_glibc_v2_dash_material_delivery.md)
 日用 XPK 的 13 个程序已逐字节复链，同一盘上通过替换对照。日用程序归档随
 同版候选完成暂存。GNU Make 已从两种 Shell 通过客体替换，xypm 也在同版
-安装器和普通介质复跑。外层校验覆盖 14 项，候选程序的静态替换余下 CPython。
+安装器和普通介质复跑。CPython 也已逐字节复链并通过替换版客体。该候选的 17 个
+glibc 静态程序均已完成对应替换验收，外层留存档案校验覆盖 15 项。
 [日用程序重链接](work_log/960fce43_glibc_v2_daily_relink.md) ·
 [日用程序暂存](work_log/960fce43_glibc_v2_daily_material_delivery.md) ·
-[GNU Make 暂存与 xypm](work_log/960fce43_glibc_v2_gnu_make_material_delivery.md)
+[GNU Make 暂存与 xypm](work_log/960fce43_glibc_v2_gnu_make_material_delivery.md) ·
+[CPython 暂存](work_log/960fce43_glibc_v2_cpython_material_delivery.md)
 [当前普通组合复验](work_log/0227427a_next_stage_mainline.md)
 [网络组合复验](work_log/3d21f4e4_next_stage_network_replay.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)

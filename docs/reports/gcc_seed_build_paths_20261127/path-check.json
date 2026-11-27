@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "compiler_version": "16.2.0",
+  "gcc_configure_sha256": "7de74ae7280b61d1fb7e870766340f73898f828d9883981d5b1116aecf83e409",
+  "build_roots": 2,
+  "unmapped_objects_rejected": 4,
+  "configure": "../src/configure --enable-languages=c,c++ --prefix=/usr",
+  "objects": {
+    "c": "9938ab50edd67fa25d0c9ae472f436a27fa3b188b0e3986d65ce58b15bbc9dac",
+    "cpp": "f0ea7469d5c9cf1a9c927805a8779198a2addec4c215739cf04f2dc61b889ec2"
+  }
+}

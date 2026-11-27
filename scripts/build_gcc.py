@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Build the XOS-hosted GCC C Seed from the locked GCC 16.2.0 release."""
+"""Build the XOS-hosted GCC Seed from the locked GCC 16.2.0 release."""
 from __future__ import annotations
 import argparse, hashlib, json, os, platform, shutil, subprocess, sys, tarfile, urllib.request
 from pathlib import Path
@@ -14,7 +14,7 @@ CONFIGURE_OPTIONS = (
     "--prefix=/usr", "--disable-nls", "--disable-werror",
     "--disable-bootstrap", "--disable-multilib", "--disable-shared",
     "--disable-host-shared", "--disable-threads", "--enable-static",
-    "--enable-languages=c", "--with-newlib", "--without-isl",
+    "--with-newlib", "--without-isl",
     "--disable-libssp", "--disable-libquadmath", "--disable-libgomp",
     "--disable-libatomic", "--disable-libsanitizer", "--disable-libvtv",
     "--disable-libstdcxx", "--disable-lto",
@@ -115,8 +115,20 @@ def dependency_tree(source: Path, name: str, spec: dict) -> Path:
     shutil.rmtree(tmp, ignore_errors=True)
     return target
 
+def file_prefix_options(source, work, sdk, stdcxx):
+    return tuple(f"-ffile-prefix-map={directory}=/usr/src/{label}" for directory, label in (
+        (ROOT, "xos"), (sdk, "xos-sdk"), (stdcxx, "gcc-host-stdcxx"),
+        (source, f"gcc-{LOCK['version']}"), (work, "gcc-build"),
+    ))
+
+
+def configure_command(source, build_dir, options):
+    # GCC writes the invocation path into the native driver's -v metadata.
+    return [os.path.relpath(source / "configure", build_dir), *options]
+
+
 def wrapper(path: Path, compiler: str, sdk: Path, libgcc: Path, cxx_runtime: Path | None = None,
-            stdcxx: Path | None = None):
+            stdcxx: Path | None = None, *, file_prefix_maps=()):
     cxx_literal = repr(str(cxx_runtime)) if cxx_runtime is not None else "None"
     stdcxx_literal = repr(str(stdcxx)) if stdcxx is not None else "None"
     payload = f'''#!/usr/bin/env python3
@@ -129,7 +141,7 @@ stdcxx = {stdcxx_literal}
 base = ["-DXOS_NO_SYMLINKS", "-DXOS_NO_UNIX_SOCKETS", "-DXOS_NO_POSIX_FILE_MODES", "-DXOS_NO_UTIME", "-DXOS_NO_DLOPEN", "-mno-red-zone", "-fno-stack-protector", "-fno-pic", "-fno-pie", "-mcmodel=small"]
 args = sys.argv[1:]
 compile_only = any(x in args for x in ("-c", "-S", "-E", "-M", "-MM", "-fsyntax-only"))
-cmd = [compiler, *base]
+cmd = [compiler, *base, *{list(file_prefix_maps)!r}]
 if cxx_runtime is not None:
     cmd += ["-I", {str(PORT / "include")!r}, "-include", "xos_dirent_compat.h"]
 if stdcxx is not None:
@@ -151,25 +163,41 @@ os.execv(compiler, cmd)
 '''
     path.write_text(payload); path.chmod(0o755)
 
-def inspect_gcc(install: Path, readelf: str):
+def path_leak_check(path, host_roots):
+    data = path.read_bytes()
+    prefixes = (b"/Users/", b"/home/", b"/private/var/folders/",
+                *(os.fsencode(root) + b"/" for root in host_roots))
+    if any(prefix in data for prefix in prefixes):
+        raise RuntimeError(f"installed Seed contains a machine-specific build path: {path.name}")
+
+
+def inspect_gcc(install: Path, readelf: str, languages, host_roots):
     result = {}
-    for name in ("gcc", "cc1", "collect2"):
+    names = ("gcc", "cpp", "cc1", "collect2")
+    required = {"gcc", "cpp", "cc1"}
+    if languages == "c,c++":
+        names += ("g++", "cc1plus")
+        required.update(("g++", "cc1plus"))
+    for name in names:
         path = install / "usr/bin" / name
-        if name != "gcc": path = install / "usr/libexec/gcc/x86_64-elf" / LOCK["version"] / name
+        if name in ("cc1", "cc1plus", "collect2"):
+            path = install / "usr/libexec/gcc/x86_64-elf" / LOCK["version"] / name
         if not path.is_file():
-            result[name] = {"present": False}; continue
+            if name in required:
+                raise RuntimeError(f"required GCC Seed tool was not installed: {name}")
+            result[name] = {"present": False}
+            continue
         header = run([readelf, "-h", str(path)])
         dynamic = run([readelf, "-d", str(path)])
         if "ELF64" not in header or "Advanced Micro Devices X86-64" not in header or "EXEC" not in header:
             raise RuntimeError(f"not a static x86_64 ELF: {path}")
         if "INTERP" in run([readelf, "-l", str(path)]) or "Dynamic section" in dynamic:
             raise RuntimeError(f"dynamic GCC Seed artifact: {path}")
+        path_leak_check(path, host_roots)
         result[name] = {"path": str(path.relative_to(install)), "sha256": sha256(path), "bytes": path.stat().st_size}
-    if not result.get("gcc", {}).get("sha256"):
-        raise RuntimeError("gcc driver was not installed")
     return result
 
-def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Path):
+def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Path, *, languages="c"):
     if platform.system() != "Darwin" or platform.machine() not in ("arm64", "aarch64"):
         raise RuntimeError("this lock targets arm64 macOS")
     manifest = sdk / "manifest.json"
@@ -203,6 +231,7 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
         raise RuntimeError(f"host libstdc++ prefix is incomplete: {stdcxx}")
     patch_files = sorted((PORT / "patches").glob("*.patch"))
     record = {"source_sha256": sha256(CACHE / LOCK["source_archive"]), "sdk_manifest_sha256": actual,
+              "builder_sha256": sha256(Path(__file__)),
               "provenance_generator_sha256": sha256(ROOT / 'scripts/archive_provenance.py'),
               "patches": {p.name: sha256(p) for p in patch_files},
               "config_site_sha256": sha256(PORT / "config/xos_cache_seed.sh"),
@@ -210,7 +239,8 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
               "cxx_new_header_sha256": sha256(PORT / "include/new"),
               "stdcxx_manifest": str(stdcxx),
               "sdk_inputs": sdk_inputs, "build": build_triple, "host": host, "target": target,
-              "configure_options": [f"--build={build_triple}", f"--host={host}", f"--target={target}", *CONFIGURE_OPTIONS],
+              "configure_options": [f"--build={build_triple}", f"--host={host}", f"--target={target}",
+                                    f"--enable-languages={languages}", *CONFIGURE_OPTIONS],
               "compiler": str(gcc), "compiler_sha256": sha256(Path(gcc)), "libgcc": str(libgcc), "libgcc_sha256": sha256(libgcc)}
     fingerprint = hashlib.sha256(json.dumps(record, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     work = CACHE / "build" / fingerprint
@@ -247,13 +277,14 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
              "-c", str(PORT / "cxx_runtime.cpp"), "-o", str(cxx_obj)], env=env)
         cxx_runtime = work / "libxos_cxx_runtime.a"
         run([obj["ar"], "rcs", str(cxx_runtime), str(cxx_obj)])
-    wrapper(work / "xos-cc", gcc, sdk, libgcc)
-    wrapper(work / "xos-cxx", gxx, sdk, libgcc, None, stdcxx)
+    file_prefix_maps = file_prefix_options(source, work, sdk, stdcxx)
+    wrapper(work / "xos-cc", gcc, sdk, libgcc, file_prefix_maps=file_prefix_maps)
+    wrapper(work / "xos-cxx", gxx, sdk, libgcc, None, stdcxx, file_prefix_maps=file_prefix_maps)
     for variable in ('CC', 'CXX', 'CC_FOR_TARGET', 'CXX_FOR_TARGET'):
         env[variable] = shlex.join([*capture.launcher(), env[variable]])
 
     log = work / "build.log"
-    configure = [str(source / "configure"), *record["configure_options"]]
+    configure = configure_command(source, build_dir, record["configure_options"])
     if not (build_dir / "Makefile").exists():
         run(configure, cwd=build_dir, env=env, log=log)
     if configure_only:
@@ -262,7 +293,7 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
     run([native["make"], f"-j{jobs}", "all-target-libgcc"], cwd=build_dir, env=env, log=log)
     install.mkdir(parents=True, exist_ok=True)
     run([native["make"], "install-gcc", "install-target-libgcc", f"DESTDIR={install}"], cwd=build_dir, env=env, log=log)
-    tools = inspect_gcc(install, obj["readelf"])
+    tools = inspect_gcc(install, obj["readelf"], languages, (ROOT, sdk, stdcxx))
     archive_manifests = capture.archives(install)
     manifest_out = {**record, "canonical": {"build": build_triple, "host": host, "target": target},
                     "sdk_manifest": str(manifest.relative_to(ROOT)), "tools": tools,
@@ -277,9 +308,11 @@ def main():
     p.add_argument("--expected-sdk-manifest-sha256", required=True)
     p.add_argument("--jobs", type=int, default=6)
     p.add_argument("--configure-only", action="store_true")
+    p.add_argument("--enable-cxx", action="store_true", help="also build and validate g++ and cc1plus")
     p.add_argument("--stdcxx-prefix", type=Path, default=ROOT / ".cache/xos_seed/gcc/stdcxx/prefix")
     a = p.parse_args()
-    try: build(a.sdk.resolve(), a.expected_sdk_manifest_sha256, a.jobs, a.configure_only, a.stdcxx_prefix)
+    try: build(a.sdk.resolve(), a.expected_sdk_manifest_sha256, a.jobs, a.configure_only, a.stdcxx_prefix,
+               languages="c,c++" if a.enable_cxx else "c")
     except Exception as e:
         print(f"gcc build failed: {e}", file=sys.stderr); return 1
     return 0

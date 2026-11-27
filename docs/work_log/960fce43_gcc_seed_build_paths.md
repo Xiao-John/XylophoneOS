@@ -70,8 +70,14 @@ QEMU 客体运行 C/C++、xsh 与 Dash 的 GNU Make、未定义符号拒绝和�
 
 对照使用 `960fce43` 冻结发行盘实际读取的五个原 ELF，经同一入口重新写入盘副本。
 18 项客体检查通过，已登记的软件包和原始发行盘摘要保持一致。错误回执摘要和错误
-工具摘要均被拒绝。新编译器仍须使用自己的构建回执运行同一门。
-[客体对照回执](../reports/gcc_seed_build_paths_20261127/receiver-control.json)
+工具摘要均被拒绝。[客体对照回执](../reports/gcc_seed_build_paths_20261127/receiver-control.json)
+
+本次将 Linux arm64 新建的五个 GCC ELF 写入同一发行盘的独立副本，按真实工具及
+构建回执摘要运行验收。18 项客体用例通过，含直接编译和执行、xsh 与 Dash 的
+GNU Make、未解析符号拒绝、冷启复验，以及 glibc sysroot 链接映射核对。
+原发行盘和冻结的软件包通过终态校验。
+[构建回执](../reports/gcc_seed_build_paths_20261127/linux-arm64-rebuilt.json)
+[新建工具客体回执](../reports/gcc_seed_build_paths_20261127/receiver-rebuilt.json)
 
 ```sh
 python3 -B tests/glibc_gnu_seed_guest.py --release-dir "$RELEASE" --output-dir "$OUTPUT" \

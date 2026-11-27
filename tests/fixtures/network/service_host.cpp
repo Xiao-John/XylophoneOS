@@ -195,9 +195,9 @@ struct environment {
     service_core core;
     u64 sequences[session_limit]{};
     static constexpr u64 controller = 77;
-    environment() {
+    explicit environment(const egress_policy& policy = default_egress_policy) {
         expect(stack.initialize(peer.callbacks(), local_mac.data()) == 0, "initialize production lwIP");
-        core.initialize(controller, stack.api()); peer.output.clear();
+        core.initialize(controller, stack.api(), {}, 0, policy); peer.output.clear();
     }
     ~environment() { core.shutdown(); stack.shutdown(); }
     u32 attach(u64 pid = 101) {
@@ -301,6 +301,53 @@ void address_policy() {
         expect(env.dispatch(slot, input).result == invalid, "invalid open rejected");
     }
     expect(env.core.connection_count() == 0 && env.peer.output.empty(), "denied requests cannot emit frames");
+}
+void trusted_egress_policy() {
+    egress_policy policy{{{0x0a000200, 24, protocol::udp, 9000, 9000},
+                          {0x0a000202, 32, protocol::udp, 67, 68}}, 2};
+    environment env(policy); const u32 slot = env.attach();
+    // The service snapshots installation authority; mutable caller storage is
+    // not a way for subsequent network configuration to expand that grant.
+    policy.rules[0].last_port = 65535;
+    for (const auto rule : {egress_rule{0x0a000202, 32, protocol::udp, 9001, 9001},
+                            egress_rule{0x0a000202, 32, protocol::tcp, 9000, 9000},
+                            egress_rule{0x0a000301, 32, protocol::udp, 9000, 9000},
+                            egress_rule{0x0a000202, 32, protocol::udp, 67, 67},
+                            egress_rule{0x0a000202, 32, protocol::udp, 68, 68}}) {
+        auto input = env.input(slot, operation::open); input.address = rule.network;
+        input.transport = rule.transport; input.port = rule.first_port;
+        expect(env.dispatch(slot, input).result == denied, "tuple denied by immutable installation policy");
+    }
+    expect(env.core.connection_count() == 0 && env.peer.output.empty(), "policy denial precedes PCB and frames");
+    const auto handle = env.open(slot, protocol::udp, 9000);
+    const auto data = pattern(43);
+    expect(env.send(slot, handle, data).result == 43, "admitted tuple sends via real lwIP");
+    env.poll(); const auto echoed = env.receive(slot, handle);
+    expect(echoed.result == 0 && bytes(echoed.data, echoed.data + echoed.length) == data,
+           "admitted policy tuple receives the real packet echo");
+}
+void invalid_egress_fails_closed() {
+    environment env; const u32 slot = env.attach();
+    for (u32 change = 0; change < 6; ++change) {
+        auto policy = default_egress_policy;
+        if (change == 0) policy.count = egress_rule_limit + 1;
+        if (change == 1) policy.rules[0].prefix = 33;
+        if (change == 2) policy.rules[0].prefix = 24;
+        if (change == 3) policy.rules[0].transport = protocol::none;
+        if (change == 4) policy.rules[0].first_port = 0;
+        if (change == 5) { policy.rules[0].first_port = 90; policy.rules[0].last_port = 80; }
+        expect(!valid_egress_policy(policy), "invalid trusted input detected");
+        env.core.initialize(environment::controller, env.stack.api(), {}, 0, policy);
+        auto input = env.input(slot, operation::open); input.address = permitted_address;
+        input.transport = protocol::udp; input.port = 9000;
+        expect(env.dispatch(slot, input).result == denied && !env.core.connection_count() && env.peer.output.empty(),
+               "malformed policy does not retain a permissive default");
+    }
+    constexpr egress_policy all{{{0, 0, protocol::tcp, 1, 65535}}, 1};
+    static_assert(valid_egress_policy(all));
+    for (const u32 address : {0u, 0x7f000001u, 0xe0000001u, 0xffffffffu})
+        expect(!egress_permitted(all, address, protocol::tcp, 80), "non-unicast addresses remain denied");
+    expect(egress_permitted(all, 0xc0000201u, protocol::tcp, 80), "an explicit /0 is an explicit broad grant");
 }
 void object_isolation() {
     environment env; const u32 owner = env.attach(), other = env.attach(102); const u64 handle = env.open(owner);
@@ -741,6 +788,7 @@ struct test_case { const char* name; void (*run)(); };
 const test_case cases[] = {
     {"admission_and_stop", admission_and_stop}, {"framing_and_replay", framing_and_replay},
     {"address_policy", address_policy}, {"object_isolation", object_isolation},
+    {"trusted_egress_policy", trusted_egress_policy}, {"invalid_egress_fails_closed", invalid_egress_fails_closed},
     {"connection_quotas", connection_quotas}, {"revoke_policy", revoke_policy},
     {"deadlines_and_idle", deadlines_and_idle}, {"tcp_echo_and_eof", tcp_echo_and_eof},
     {"socket_capabilities_and_isolation", socket_capabilities_and_isolation},

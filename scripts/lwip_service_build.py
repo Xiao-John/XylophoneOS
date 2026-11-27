@@ -17,9 +17,9 @@ ipv4_sources = ["etharp.c", "icmp.c", "ip4.c", "ip4_addr.c", "ip4_frag.c"]
 
 def load_static_profile(path):
     with path.open("rb") as stream:
-        data = stream.read(513)
-    if len(data) > 512:
-        raise ValueError("Static network profile exceeds 512 bytes")
+        data = stream.read(4097)
+    if len(data) > 4096:
+        raise ValueError("Static network profile exceeds 4096 bytes")
 
     def unique_fields(pairs):
         result = dict(pairs)
@@ -28,10 +28,16 @@ def load_static_profile(path):
         return result
 
     profile = json.loads(data, object_pairs_hook=unique_fields)
-    if not isinstance(profile, dict) or set(profile) != {"revision", "pci_instance", "resolver"}:
-        raise ValueError("Expected revision, pci_instance and resolver")
-    if type(profile["revision"]) is not int or profile["revision"] != 1:
-        raise ValueError("Expected static network profile revision 1")
+    if not isinstance(profile, dict) or type(profile.get("revision")) is not int:
+        raise ValueError("Expected an integer static network profile revision")
+    revision = profile["revision"]
+    fields = {"revision", "pci_instance", "resolver"}
+    if revision == 2:
+        fields.add("egress")
+    elif revision != 1 or len(data) > 512:
+        raise ValueError("Expected revision 1 (at most 512 bytes) or revision 2")
+    if set(profile) != fields:
+        raise ValueError("Unexpected or missing static network profile fields")
     instance, address = profile["pci_instance"], profile["resolver"]
     if type(instance) is not int or not 1 <= instance <= 65536:
         raise ValueError("pci_instance must be 1 + PCI BDF")
@@ -41,7 +47,52 @@ def load_static_profile(path):
     if (str(peer) != address or peer not in ipaddress.IPv4Network("10.0.2.0/24") or
             address in {"10.0.2.0", "10.0.2.15", "10.0.2.255"}):
         raise ValueError("resolver must be a peer on the admitted static IPv4 subnet")
+    if revision == 2:
+        validate_egress(profile["egress"])
     return dict(profile, source_sha256=hashlib.sha256(data).hexdigest())
+
+
+def validate_egress(rules):
+    """Trusted installation grants; DNS and DHCP never feed this parser."""
+    if not isinstance(rules, list) or len(rules) > 8:
+        raise ValueError("egress must be an array of at most 8 rules")
+    seen = set()
+    for rule in rules:
+        if not isinstance(rule, dict) or set(rule) != {"cidr", "protocol", "ports"}:
+            raise ValueError("Each egress rule needs cidr, protocol and ports")
+        if not isinstance(rule["cidr"], str):
+            raise ValueError("egress cidr must be canonical IPv4 network notation")
+        network = ipaddress.IPv4Network(rule["cidr"], strict=True)
+        if str(network) != rule["cidr"]:
+            raise ValueError("egress cidr must include its canonical prefix")
+        if rule["protocol"] not in ("tcp", "udp"):
+            raise ValueError("egress protocol must be tcp or udp")
+        ports = rule["ports"]
+        if (not isinstance(ports, list) or len(ports) != 2 or
+                any(type(port) is not int for port in ports) or
+                not 1 <= ports[0] <= ports[1] <= 65535):
+            raise ValueError("egress ports must be an inclusive interval in 1..65535")
+        key = rule["cidr"], rule["protocol"], *ports
+        if key in seen:
+            raise ValueError("duplicate egress rule")
+        seen.add(key)
+
+
+def write_egress_header(rules, directory):
+    validate_egress(rules)
+    directory.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for rule in rules:
+        network = ipaddress.IPv4Network(rule["cidr"])
+        rows.append("    {" + f"{int(network.network_address)}u, {network.prefixlen}u, " +
+                    f"net2::protocol::{rule['protocol']}, {rule['ports'][0]}, {rule['ports'][1]}" + "}")
+    body = ",\n".join(rows)
+    (directory / "xos_net_egress_profile.hpp").write_text(
+        "// Generated from the trusted installation profile.\n#pragma once\n"
+        "namespace xos::user::network {\n"
+        "inline constexpr egress_policy installed_egress_policy{{\n" + body +
+        "\n}, " + str(len(rows)) + "};\n"
+        "static_assert(valid_egress_policy(installed_egress_policy));\n}\n")
 
 
 def configuration(root, dns_probe=False, static_profile=None):
@@ -133,8 +184,13 @@ def build(root, output, sdk, run, tool, isa_flags, dns_probe=False, static_profi
         return [], (), config
     work = output / "net_lwip"
     source = prepare_source(root, os.environ["XOS_LWIP_SOURCE_ARCHIVE"], work / "source")
+    policy_flags = ()
+    if static_profile and "egress" in static_profile:
+        write_egress_header(static_profile["egress"], work / "include")
+        policy_flags = ("-DXOS_NET_EGRESS_PROFILE=1", "-I", str(work / "include"))
     include_flags = ("-I", str(root / "src/user/network/include"),
                      "-I", str(root / "src/ports/lwip/include"), "-I", str(source / "src/include"),
+                     *policy_flags,
                      *(("-DXOS_NET_DNS_PROBE=1",) if dns_probe else ()),
                      *((f"-DXOS_NET_STATIC_RESOLVER={int(ipaddress.IPv4Address(static_profile['resolver']))}u",)
                        if static_profile else ()))

@@ -41,6 +41,7 @@ def build_and_test(options, output):
                       (root / "src/user/programs/net_service.cpp", "entry_native", ["-DXOS_NET_STACK=1"])]
     own_inputs = [Path(__file__).resolve(), fixture, loop_fixture, *production_sources, *(item for item, _, _ in compile_inputs),
                   root / "src/user/network/service_core.hpp", root / "src/user/network/lwip_stack.hpp",
+                  root / "src/user/network/egress_policy.hpp",
                   root / "src/user/network/service_loop.hpp", root / "src/shared/include/xos/net_service_abi.hpp",
                   root / "src/user/network/include/lwipopts.h", root / "src/ports/lwip/include/lwipopts.h",
                   root / "src/user/network/include/arch/cc.h", root / "src/ports/lwip/include/arch/cc.h",

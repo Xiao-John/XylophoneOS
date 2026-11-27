@@ -5,6 +5,9 @@
 #include <xos/net_abi.hpp>
 #include <xos/sdk.hpp>
 #include <xos/thread_abi.hpp>
+#ifdef XOS_NET_EGRESS_PROFILE
+#include "xos_net_egress_profile.hpp"
+#endif
 
 namespace xos::user::network {
 namespace {
@@ -48,10 +51,15 @@ frame_io network_frame_io(virtio_net::driver& nic) {
 i64 serve(u64 controller, virtio_net::driver& nic) {
     i64 result = stack.initialize(network_frame_io(nic), nic.mac());
     if (result) { stack.shutdown(); return result; }
-#ifdef XOS_NET_STATIC_RESOLVER
-    core.initialize(controller, stack.api(), stack.dns_api(), XOS_NET_STATIC_RESOLVER);
+#ifdef XOS_NET_EGRESS_PROFILE
+    const auto& application_policy = installed_egress_policy;
 #else
-    core.initialize(controller, stack.api(), stack.dns_api());
+    const auto& application_policy = default_egress_policy;
+#endif
+#ifdef XOS_NET_STATIC_RESOLVER
+    core.initialize(controller, stack.api(), stack.dns_api(), XOS_NET_STATIC_RESOLVER, application_policy);
+#else
+    core.initialize(controller, stack.api(), stack.dns_api(), 0, application_policy);
 #endif
     result = sdk::ipc_name_publish(net2::service_name);
     if (result) { stack.shutdown(); return result; }

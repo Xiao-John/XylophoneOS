@@ -253,6 +253,10 @@ TC当前也是丢弃并保留pending；把截断、NODATA/NXDOMAIN等转换为�
 
 ## 6. DHCP 租约
 
+2026-11-27 接入补充：应用出站授权由
+[可信安装策略](network_egress_policy.md) 独立保存。安装方可明确封存有界
+CIDR/协议/端口规则；DNS 和 DHCP 数据不能改写该规则，默认授权范围不扩大。
+
 复用 lwIP 2.2.1 DHCP + ACD，配置属于服务，不授予普通应用UDP67/68访问权。
 初次启用需检查并编入 `dhcp.c` 与 `acd.c`；只编译UDP不足以提供租约能力。
 状态至少区分 disabled/static、selecting/requesting/checking、bound、renewing、

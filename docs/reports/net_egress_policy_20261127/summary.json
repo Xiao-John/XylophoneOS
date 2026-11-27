@@ -1,0 +1,58 @@
+{
+  "status": "passed_subset",
+  "baseline": "a2a33b86bd2d350ac75cbd4a6d4fd9f1848b5358",
+  "build_id": "d190e3847fa425fd",
+  "host_lwip_groups": 32,
+  "host_service_loop_groups": 2,
+  "host_sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "profile_admission_cases": 27,
+  "guest": {
+    "fresh_dns_transactions": 3,
+    "independent_udp_challenges": 2,
+    "epochs": [
+      1,
+      2,
+      3
+    ],
+    "denied_address": "198.51.100.1",
+    "application_frames": [
+      {
+        "address": "192.0.2.165",
+        "port": 41001,
+        "nonce_sha256": "9803d312df960553613147366af932fed80002d914e77b60736b63e909569c0b"
+      },
+      {
+        "address": "192.0.2.27",
+        "port": 41001,
+        "nonce_sha256": "9803d312df960553613147366af932fed80002d914e77b60736b63e909569c0b"
+      }
+    ],
+    "resources_restored": true,
+    "denied_packets_observed": 0
+  },
+  "limits": [
+    "controlled private Ethernet peer, no public Internet compatibility claim",
+    "static IPv4 profile only in this module",
+    "uniform installation policy, no per-application grants",
+    "DNS without DNSSEC",
+    "DHCP integration separate",
+    "Dash not_run"
+  ],
+  "development_findings": [
+    {
+      "issue": "QMP Unix socket unavailable in the execution environment",
+      "resolution": "disable unused QMP; all guest interaction uses serial"
+    },
+    {
+      "issue": "installed Xsh lacked controller DNS on/off entry",
+      "resolution": "reuse controller authorization and sealed resolver for installed profiles; diagnostic raw probe remains separate"
+    },
+    {
+      "issue": "host fixture repeated lwIP initialization within one process",
+      "resolution": "reuse one stack instance for malformed-policy checks; all final packet cases pass"
+    }
+  ]
+}

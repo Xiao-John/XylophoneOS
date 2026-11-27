@@ -1,4 +1,5 @@
 {
+  "version": 1,
   "files": {
     "elf-install-comparison.json": "3204168828a16ad9df1b536398f9bcab485bce791cfe6fdf1d5b321ad4430187",
     "linux-arm64-rebuilt.json": "63217fb62471fc77a625c61f21c68059c63b3dfbd764d64b43b9f6386c7b8f10",

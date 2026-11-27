@@ -65,6 +65,13 @@ glibc 原生共享固定闭包已在公开 `dlopen`、`dlmopen` 和 `dlclose` �
 [固定闭包实测](work_log/glibc_d2_fixed_runtime_loading_policy.md) ·
 [普通组合](work_log/515a2e65_next_stage_combined.md)
 
+主线 `d3da83dd` 已合入 ClarkE 的组件栈、完整 WebCore 软件归档、glibc 固定闭包
+工作线程和可移植 GCC Seed。独立普通候选 `91b139f2cb7b0408` 通过 79 项客体检查、
+10 项许可材料检查、ABI 登记核对及 4 项 Dash 安装器检查。共享工作线程通过 6 次
+冷启，运行期公开装卸仍会拒绝。Linux arm64 新建的 GCC Seed 在冻结 glibc 盘的
+独立副本通过 18 项客体验收。ClarkE 全页仍需补齐平台入口并通过静态链接、DOM、
+CSS 与绘制验收。[收口记录](work_log/d3da83dd_branch_closeout.md)
+
 Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首户签发、重启认证和
 只回退客体盘时拒绝。硬件代际与物理启动仍待验收。
 [独立提供者部署](work_log/f1d2a697_pumpkin_provider_deployment.md)
@@ -144,7 +151,7 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 | --- | --- |
 | 总协调 | 阶段计划、产品标识、公共 ABI、SDK 默认和组合验收 |
 | 运行库 | GNU rtld 独立堆、首线程 TLS 与文件状态交接，范围为 glibc sysdeps 和 D1 私有 loader。另行推进 glibc dash 命令替换与 stock 安装，覆盖 shell、候选构建和应用组合。 |
-| Qt 与浏览器 | Qt Quick v2 已验断网接收与双 Shell，推进 Mobius v2 Widgets 和 Curvive 分发材料。ClarkE 当前构建 WebCore，后续验收页面、CSS 布局与 Qt 视口。 |
+| Qt 与浏览器 | Qt Quick v2 已验断网接收与双 Shell，推进 Mobius v2 Widgets 和 Curvive 分发材料。ClarkE 已构建 WebCore 软件归档，先补平台静态链接，再验收页面、CSS 布局与 Qt 视口。 |
 | 身份 | Pumpkin 私有客户端、监督器与操作者工具负责在线撤销及 Mobius 会话回收。生产凭据、独立代际来源和长期资源归属继续验收。 |
 
 [阶段计划](plans/next_stage.md)

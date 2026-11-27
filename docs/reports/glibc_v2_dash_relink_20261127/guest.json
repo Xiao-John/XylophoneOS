@@ -1,0 +1,37 @@
+{
+  "build_id": "1f593b6ca9cd7904",
+  "checks": {
+    "original": {
+      "pid": 10,
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    "replacement": {
+      "pid": 773355,
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    }
+  },
+  "external_sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf",
+  "guest_dash_path": "/usr/bin/dash",
+  "installer_iso_sha256": "ace82cc2c0c68b11f58d15dbb6b28d6751d26ef5ad7fa3f09b26ed0befe74b67",
+  "ordinary_iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+  "ordinary_system_manifest_sha256": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999",
+  "original_sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+  "qemu": "QEMU emulator version 11.1.2",
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "replacement_sha256": "4482a58be6bf37022813b0ba11b92ee7b0f4eeede9ef0c31cb5fba5ffaf20dfe",
+  "serial_sha256": {
+    "installer": "c1e88748d1effb1b03d4575ee3c8e19b6fecdad4891a175513e579a11b783a0b",
+    "original": "62e2c0d4db730436997566f5209375734af4c18e5b223c3a259fc3393379d9ad",
+    "replacement": "d3dfb1d02f208cfb68b8cfa75614dc5739253c30b46a1c239ef0c7d46ac13e1e"
+  },
+  "status": "passed_subset",
+  "test_sha256": "b4951880a6820a23232006f45b220cd9ba0ad0b5cc0150f5fd33612a80394429"
+}

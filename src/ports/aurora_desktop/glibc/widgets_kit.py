@@ -25,8 +25,8 @@ TOOLS = ("moc", "rcc")
 
 
 def installed_inputs(prefix, host):
-    inputs = {module: relative_file(prefix, f"lib/libQt6{module}.a") for module in MODULES}
-    return inputs | {name: relative_file(host, f"libexec/{name}") for name in TOOLS}
+    inputs = {module: prefix / "lib" / f"libQt6{module}.a" for module in MODULES}
+    return inputs | {name: host / "libexec" / name for name in TOOLS}
 
 
 def installed_build(build, prefix, source, sdk):
@@ -39,8 +39,8 @@ def installed_build(build, prefix, source, sdk):
             and cache.get("CMAKE_INSTALL_PREFIX:PATH") == str(prefix),
             "Qt Widgets configuration must match the source, installed prefix and glibc sysroot")
     for name in MODULES:
-        installed = relative_file(prefix, f"lib/libQt6{name}.a")
-        require(sha(installed) == sha(relative_file(build, f"lib/{installed.name}")),
+        installed = prefix / "lib" / f"libQt6{name}.a"
+        require(sha(installed) == sha(build / "lib" / installed.name),
                 f"Installed archive differs from the matching Qt Widgets build: {name}")
     return cache_path
 
@@ -60,8 +60,9 @@ def fingerprint(kit):
 
 def verify_kit(kit, expected, sdk_manifest_sha256, profile_sha256):
     manifest, digest = metadata_snapshot(relative_file(kit, "manifest.json"), expected)
-    require(manifest.get("format_version") == 1
-            and manifest.get("sdk_manifest_sha256") == sdk_manifest_sha256
+    require(manifest.get("format_version") == 1 and manifest.get("kind") == "mobius_widgets",
+            "Expected a Mobius Widgets kit manifest")
+    require(manifest.get("sdk_manifest_sha256") == sdk_manifest_sha256
             and manifest.get("sdk_profile_file_sha256") == profile_sha256,
             "Widgets kit belongs to a different glibc SDK or profile")
     lock = load_json(QT / "source_lock.json")
@@ -127,6 +128,7 @@ def stage(args):
                 "Widgets build or SDK inputs changed during staging")
         manifest = {
             "format_version": 1,
+            "kind": "mobius_widgets",
             "qt_version": load_json(QT / "source_lock.json")["version"],
             "qtbase_archive_sha256": archive_digest,
             "qtbase_prepared_tree_sha256": source_digest,

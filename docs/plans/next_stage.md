@@ -157,3 +157,9 @@ ABI 表通过。普通配置验证与各专项配置的独立回执共同构成�
 和 ClarkE 原生 HTTPS 后，重新构建普通镜像 `8863999ce1a57285`。79 项普通客体检查、
 10 项许可材料和 ABI 表核对通过。上述三项能力以各自的专项回执为准。
 [普通组合](../work_log/abf0fc0a_next_stage_combined.md)
+
+主线 `515a2e65` 已纳入 GNU 固定闭包公开装卸限制、Mobius v2 的 QtGui 替换验收和
+Pumpkin 双角色部署的封存钱包登录。新普通镜像 `7d3b9663dc070599` 通过 79 项客体、
+10 项许可材料和 ABI 核对。发行默认切换、Qt 对应材料、Pumpkin 物理部署和完整
+WebCore 页面继续按各自验收门推进。
+[本轮普通组合](../work_log/515a2e65_next_stage_combined.md)

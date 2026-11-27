@@ -1,6 +1,6 @@
 # XOS 当前状态（全局快照）
 
-2026-11-26 · 下一阶段里程碑。主线已合入可显式选择的 glibc C/C++ 应用 SDK、
+2026-11-27 · 下一阶段里程碑。主线已合入可显式选择的 glibc C/C++ 应用 SDK、
 原生 xypm 客体维护、Qt Quick 软件渲染及外部应用工具包、Mobius glibc 会话和
 工作盘迁移。Pumpkin 开发配置已验跨重启登录、持久多账户和独立资源 broker。
 Pumpkin 的持久身份已在显式镜像中启动并收回真实 Mobius 桌面。ClarkE 已验受控
@@ -43,7 +43,7 @@ glibc 静态程序均已完成对应替换验收，外层留存档案校验覆�
 [日用程序暂存](work_log/960fce43_glibc_v2_daily_material_delivery.md) ·
 [GNU Make 暂存与 xypm](work_log/960fce43_glibc_v2_gnu_make_material_delivery.md) ·
 [CPython 暂存](work_log/960fce43_glibc_v2_cpython_material_delivery.md)
-[当前普通组合复验](work_log/0227427a_next_stage_mainline.md)
+[当前普通组合复验](work_log/515a2e65_next_stage_combined.md)
 [网络组合复验](work_log/3d21f4e4_next_stage_network_replay.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)
 [本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
@@ -53,8 +53,17 @@ Qt Quick 外部示例已用普通 xypm 离线工作盘完成原包安装、重�
 [接收者安装验证](work_log/4d6f124f_qt_quick_receiver_install.md)
 同版 Mobius Widgets v2 套件已完整构建并由独立接收方打包。真实客体通过安装、
 升级、卸载后重装的三次冷启，覆盖两种 Shell、会话、渲染、用户数据与资源回收。
-Qt 替换材料、Curvive 分发确认和同修订 XPK 复现继续单独验收。
-[Mobius Widgets v2](work_log/74efcc27_mobius_widgets_v2.md)
+同修订 XPK 已在两个路径逐字节复现。接收方还用实际修改的 QtGui 归档重链桌面，
+普通客体两次冷启证实桌面执行了替换代码。对应源码材料与 Curvive 分发授权仍待关闭。
+[Mobius Widgets v2](work_log/74efcc27_mobius_widgets_v2.md) ·
+[单修订 XPK](work_log/af0f64ef_mobius_v2_xpk.md) ·
+[QtGui 替换](work_log/05dfb2b9_mobius_qt_v2.md)
+
+glibc 原生共享固定闭包已在公开 `dlopen`、`dlmopen` 和 `dlclose` 入口拒绝运行期装卸。
+四组客体分别覆盖原样、修复、普通 C 启动和启动依赖缺 pin，资源均已回收。
+`515a2e65` 的普通配置另通过 79 项客体、10 项许可材料和 ABI 核对。
+[固定闭包实测](work_log/glibc_d2_fixed_runtime_loading_policy.md) ·
+[普通组合](work_log/515a2e65_next_stage_combined.md)
 
 Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首户签发、重启认证和
 只回退客体盘时拒绝。硬件代际与物理启动仍待验收。
@@ -62,6 +71,9 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 同域安装已具备由两个独立角色执行的持久镜像维护工具。ext4 和真实 QEMU 已验
 错配拒绝、换版、提交新代际和回切。宿主已验进程中断恢复；物理断电及自动部署
 待验。[持久镜像维护](work_log/c4c7bf97_pumpkin_durable_image_maintenance.md)
+普通部署登录也可通过已封存的继承描述符提交现有钱包。双 UID 客体通过 22 项检查，
+包括可信部署配置、错误密钥和跨 UID 拒绝，以及 QEMU 的描述符隔离。开发配置的
+原文件登录亦通过回归。[封存凭据](work_log/pumpkin_sealed_credential_input.md)
 
 按 [Discipline](Discipline.md) 在合并、发行或里程碑更新。过程与证据见
 [work_log](work_log/) 和 [history](history/)，设计原则见

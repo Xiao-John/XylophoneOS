@@ -1,0 +1,72 @@
+{
+  "abi": "passed",
+  "build_id": "7d3b9663dc070599",
+  "iso_sha256": "c9bcd1190c88654ffe0742af0795df23e0188386a86da57be3470834c5e7490a",
+  "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "network_inputs_sha256": "626c6b9a4b56b65916977bcc238bd3e65752a21802e150f5e1d2ef536cbb262b",
+  "profile": "ordinary",
+  "qemu_sha256": "a8ee5cdeaa1b04fa6fcfbaf210c03209ab7c91357ce2b6eb4dff10c2b7bc7816",
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "raw_smoke_log_sha256": "2c9caad52064e527ae65346e3eb12c1e50e127899004bd3117576070996afc3a",
+  "sdk_manifest_sha256": "84145ff00bafccb3bcd21736433bf064ab80da0ee5ae12968438f9ad1d0ed928",
+  "source_commit": "515a2e6581cd513f591ee4f4d8fc2bc319b43c37",
+  "source_files_verified": 2071,
+  "source_tree": "a417f72e09b9e0619cecfece4c4a8a7dae8d1dd4",
+  "status": "passed_subset",
+  "suites": [
+    {
+      "checks": 6,
+      "suite": "tests/boot_smoke.py"
+    },
+    {
+      "checks": 18,
+      "suite": "tests/kernel_smoke.py"
+    },
+    {
+      "checks": 12,
+      "suite": "tests/task_smoke.py"
+    },
+    {
+      "checks": 13,
+      "suite": "tests/process_smoke.py"
+    },
+    {
+      "checks": 8,
+      "suite": "tests/file_smoke.py"
+    },
+    {
+      "checks": 4,
+      "suite": "tests/persist_smoke.py"
+    },
+    {
+      "checks": 1,
+      "suite": "tests/full_disk_smoke.py"
+    },
+    {
+      "checks": 3,
+      "suite": "tests/libc_smoke.py"
+    },
+    {
+      "checks": 9,
+      "suite": "tests/e08_storage_smoke.py"
+    },
+    {
+      "checks": 5,
+      "suite": "tests/runtime_smoke.py"
+    },
+    {
+      "checks": 10,
+      "suite": "scripts/license_audit.py"
+    }
+  ],
+  "system_manifest_sha256": "45e528bbe7cee3c1a9bd6daa6b67ec8150b9f0ba821f0856294592f50021e9a8",
+  "toolchain": {
+    "binutils": "2.47.20260726",
+    "binutils_release": "2.47",
+    "cpp_standard": "c++20",
+    "gcc": "16.2.0",
+    "nasm": "3.02",
+    "qemu": "11.1.2",
+    "target": "x86_64-elf"
+  }
+}

@@ -28,6 +28,10 @@
     {
       "path": "page/native_dns_queue.patch",
       "sha256": "2c88a3a9ccf1a0582d4389d31bf4b83e8691dcb730d5bf51a87ce116c9717f6f"
+    },
+    {
+      "path": "page/font_and_bitstream_formats.patch",
+      "sha256": "9e2cecd7698b3db3aba1bb4422d1e2b964f0117546b73df48b31ef93c2cfadae"
     }
   ]
 }

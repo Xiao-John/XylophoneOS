@@ -103,6 +103,8 @@ def source_tree(languages, patches, patch_digests) -> Path:
             (staged_source / stamp_name).write_text(json.dumps(identity, sort_keys=True) + "\n")
             staged_source.rename(source)
     stamp = source / stamp_name
+    if "\nall-gcc: maybe-all-build-fixincludes\n" not in (source / "Makefile.in").read_text():
+        raise RuntimeError("GCC source cache omits native fixincludes; use a freshly unpacked source tree")
     if not stamp.is_file():
         # Recognize earlier C-only caches only if every requested patch is present.
         for patch in reversed(patches):

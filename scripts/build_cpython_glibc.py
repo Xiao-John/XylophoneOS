@@ -131,6 +131,7 @@ def build(args, env, removed):
               'sdk_manifest_sha256': sdk_digest, 'sdk_binding': binding, 'profile_file_sha256': profile_digest,
               'source_archive_sha256': lock['sha256'], 'port_inputs': port_hashes,
               'builder_inputs': script_hashes, 'tools': tools, 'make': make,
+              'build_options': {'source_date_epoch': args.source_date_epoch, 'make_jobs': args.make_jobs},
               'sanitized_environment': removed, 'static_extensions': [], 'unqualified': list(UNQUALIFIED),
               'steps': [], 'guest_tested': False, 'status': 'preparing'}
     receipt = work / 'py0a_report.json'
@@ -177,7 +178,7 @@ def build(args, env, removed):
         apply_patches(source)
         setup = write_setup_local(source, None, {})
         version = tuple(int(part) for part in lock['version'].split('.'))
-        build_python = ensure_build_python(source, work, version, args.build_python)
+        build_python = ensure_build_python(source, work, version, args.build_python, make_jobs=args.make_jobs)
         build_python_digest = sha_file(build_python)
         host_triplet = subprocess.check_output(['sh', str(source / 'config.guess')],
                                                env=env, text=True).strip()
@@ -267,7 +268,7 @@ def build(args, env, removed):
         report['pyconfig_sha256'] = sha_file(target / 'pyconfig.h')
         report['status'] = 'configured_not_built'
         if args.compile_probe:
-            run('target_make', [make['path'], '-j2', 'python'])
+            run('target_make', [make['path'], f'-j{args.make_jobs}', 'python'])
             python = target / 'python.exe'
             if not python.is_file():
                 shutil.copy2(target / 'python', python)
@@ -313,9 +314,17 @@ def main():
     parser.add_argument('--zlib-prefix', type=Path, help='bound zlib prefix from build_cpython_zlib.py --glibc-profile')
     parser.add_argument('--openssl-build', type=Path, help='bound OpenSSL build for static _hashlib')
     parser.add_argument('--compile-probe', action='store_true', help='also compile and link the static interpreter')
+    parser.add_argument('--source-date-epoch', type=int, default=os.environ.get('SOURCE_DATE_EPOCH'),
+                        help='pin the compiler build timestamp (default: SOURCE_DATE_EPOCH when set)')
+    parser.add_argument('--make-jobs', type=int, choices=(1, 2), default=2,
+                        help='use one job to preserve the order of the recorded make output')
     args = parser.parse_args()
+    if args.source_date_epoch is not None and not 0 <= args.source_date_epoch <= 253402300799:
+        parser.error('--source-date-epoch must be a nonnegative Unix timestamp through year 9999')
     inherited = os.environ.copy()
     env, removed = build_environment()
+    if args.source_date_epoch is not None:
+        env['SOURCE_DATE_EPOCH'] = str(args.source_date_epoch)
     try:
         # Tool discovery and the reused host builder inherit the CLI process environment.
         os.environ.clear()

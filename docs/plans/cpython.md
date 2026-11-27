@@ -38,6 +38,12 @@ python3 tests/cpython_glibc_guest.py --system-build build/system \
 输出 `py0a_report.json` 绑定源码、官方签名核验过的 glibc SDK、profile、
 编译工具和实际解释器 ELF。现有普通系统镜像用 `scripts/build.py` 构建。
 
+需要逐字节复验 glibc 发行包时，提供发行配方中固定的
+`--source-date-epoch "$BUILD_EPOCH" --make-jobs 1`。构建回执记录两项设置。
+省略时间选项时读取标准 `SOURCE_DATE_EPOCH` 环境变量。串行构建直接保留原始
+make 输出及摘要。接收方复跑需沿用配方、已核工具和回执中的绝对路径布局。
+冻结发行使用其对应归档保存的构建和打包脚本。
+
 静态解释器可显式接入同 SDK 构建的 zlib。从 `zlib_lock.json` 所固定的
 1.3.2 归档重建后，将该构建的 `prefix` 作为上面 CPython 命令的
 `--zlib-prefix`。构建器核对目标工具、SDK、profile、两个头文件和静态归档。

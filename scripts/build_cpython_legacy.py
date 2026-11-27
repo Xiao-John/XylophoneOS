@@ -89,7 +89,7 @@ def python_version(executable):
     return tuple(json.loads(output))
 
 
-def ensure_build_python(source, work, expected, supplied):
+def ensure_build_python(source, work, expected, supplied, *, make_jobs=2):
     if supplied is not None:
         executable = supplied.resolve(strict=True)
     else:
@@ -111,7 +111,7 @@ def ensure_build_python(source, work, expected, supplied):
             )
             target = "python.exe" if sys.platform == "darwin" else "python"
             run(
-                ["make", "-j2", target],
+                ["make", f"-j{make_jobs}", target],
                 cwd=build,
                 log=work / "host_make.log",
             )

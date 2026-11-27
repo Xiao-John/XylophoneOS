@@ -1,0 +1,121 @@
+{
+  "source": "cd9e6300",
+  "candidate_source": "8e66789c043ab017074f8494c3701db8ccd3b67c",
+  "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "host_checks": {
+    "sdk_profile": 45,
+    "repository": 50
+  },
+  "p2_to_p3": {
+    "status": "passed",
+    "checkpoint": 146,
+    "historical_inputs_sha256": "d1da7cdac14a3f8acb4dc65b369d3393a6d3ce84fcc6a1e8334ff515b666e465",
+    "system": {
+      "build_id": "ce681c073de3d6c4",
+      "image_sha256": "2aafae3122d8920d706e5ec2bc0f54987dd7bf738b1ef95530136af680e57968",
+      "manifest_sha256": "f513c611974910a9b6eea4c46b5fd53d97856dcacdd6e93f3d566b64ee64e865"
+    },
+    "builds": [
+      {
+        "sha256": "8edb2f322fbd595c416ff53d2742cdfe7d4050ae754c1a9ac175ac496fee5af1",
+        "elf_sha256": "3d5444fc70d7711f67f25bf3906443cdff2e301bb0ba354f688533836a321469",
+        "upstream_version": "0.1.0",
+        "revision": 0,
+        "target_profile": "xos-x86_64-glibc-unified-cxx-v2"
+      },
+      {
+        "sha256": "ed09b28be4a69e645bcb9ffbff0b6682c50d00fa4184db78e0e394889368573a",
+        "elf_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745",
+        "upstream_version": "0.4.0",
+        "revision": 0,
+        "target_profile": "xos-x86_64-glibc-unified-cxx-v2"
+      },
+      {
+        "sha256": "227ec497bfc938311fb43fa0c612aa3c1b6e090cad66a0d6847ad1068ea67d11",
+        "elf_sha256": "a173842fc5d5808d403a82d3d2a7b462e9dbce666044fac3c426963c9fe5be0b",
+        "upstream_version": "0.4.0",
+        "revision": 0,
+        "target_profile": "xos-x86_64-glibc-unified-cxx-v2"
+      }
+    ],
+    "recovered_package_metadata_sha256": {
+      "/out/user.txt": "d23bb6f19522072d41b6ddd3bc099eafc0fba8f7eebd43076496ecfc66712bcb",
+      "/var/lib/xypm/db.json": "97cccccdd58526157acb17ebdb39c5ecff28fbbca87cec18adbf2e856081c2e0",
+      "/var/lib/xypm/index.tsv": "121159fc0a25fe7d9882287e3ff1130f33eedf76db047030f617cd91c922a43f"
+    },
+    "cold_retry_package_metadata_sha256": {
+      "/out/user.txt": "d23bb6f19522072d41b6ddd3bc099eafc0fba8f7eebd43076496ecfc66712bcb",
+      "/var/lib/xypm/db.json": "ba372fd940ceab4dd6a2f55d4bd79d7f0db1c3d7f863b520077ac2bf20506ca3",
+      "/var/lib/xypm/index.tsv": "2f3ccac7941fd2ecd554998d7eea572235f852e1c92fadb3734c0db6d14173e1"
+    },
+    "normal_and_retry_records_equal": true,
+    "original_report_sha256": "0c9e4a6369377fb921408e4be796dd1c72640478c56fbcfaf4a469e4ddd1e876"
+  },
+  "composed_release": {
+    "after_cold_boot": {
+      "db_sha256": "95f97381cb4b6b7c5082375a5da72003d1a2985e4cf7e277dd9206724059c1c8",
+      "index_sha256": "1741c11d87f2e71a7727833108a992a95d3a5bf9f784c43216ed28a4026da748",
+      "packages": {
+        "files": 58,
+        "status": "verified"
+      },
+      "user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e"
+    },
+    "fault_elf_sha256": "a173842fc5d5808d403a82d3d2a7b462e9dbce666044fac3c426963c9fe5be0b",
+    "installed": {
+      "db_sha256": "45bed3304c3a1f841a84bbcd5f37b4446a986981f21ec7ffed6dc1db57a784a5",
+      "index_sha256": "0e3789dedd7129029fea00bde0a84c2a2c5c8cdc3a765cbeab3c0bceaac4097b",
+      "packages": {
+        "files": 57,
+        "status": "verified"
+      },
+      "user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e"
+    },
+    "installer_iso_sha256": "199dca96204f70be9adc09e02e0959dce7e8c5eeb40b2597b8e7aad5e82a874d",
+    "interrupted": {
+      "checkpoint": 123,
+      "disk_sha256": "6c36bd5149e573dad47140288d81ac72fd26cee3fdab3b9291496f002d05e785"
+    },
+    "not_run": [
+      "physical_power_loss",
+      "sector_tearing"
+    ],
+    "ordinary_iso_sha256": "2aafae3122d8920d706e5ec2bc0f54987dd7bf738b1ef95530136af680e57968",
+    "original_disk_sha256": "a2f3d22c9c746a6464c13a8b88dc05c6c601810ad88821204ddd6f213757d3cc",
+    "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "recovered": {
+      "db_sha256": "45bed3304c3a1f841a84bbcd5f37b4446a986981f21ec7ffed6dc1db57a784a5",
+      "index_sha256": "0e3789dedd7129029fea00bde0a84c2a2c5c8cdc3a765cbeab3c0bceaac4097b",
+      "packages": {
+        "files": 57,
+        "status": "verified"
+      },
+      "user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e"
+    },
+    "release_manifest_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+    "runner_sha256": "185ca137ddf36f66795fc7fcad92de342dcb5f33d85d8bd878da4b4bb387513a",
+    "status": "passed_subset",
+    "upgrade_package": {
+      "files": 17,
+      "id": "python_idna",
+      "sha256": "8eecddc0a22cd660d2ce35d96a915134370b710a4a16c1a0a565ff81db7ebf14"
+    },
+    "original_report_sha256": "c06d22efaba762eb88dc1d2347827aa20daf0f76adbf3be5946b2d3c0788ad74"
+  },
+  "legacy_newlib": {
+    "status": "passed",
+    "old_system": {
+      "build_id": "7cc38437aa823d84",
+      "image_sha256": "0128c84dde73889eff8e724da589cdcc287bed497169457abe96e427d0027419",
+      "manifest_sha256": "f0f60ee97bb5dbad374c3c88275f0d6ba0c7c4c4cbab2ac44b079b3837decdf2"
+    },
+    "profile_sha256": "a75fbb11cc76f36bc745d2715f659ae2fe935b8817187ebec4359c5c42583996",
+    "refused_disk_sha256": "27b5780453e5e02c7063d38a2e68f1d6bb84f294410c8cdba3da5d1721bcc64c",
+    "boot_control_disk_sha256": "27b5780453e5e02c7063d38a2e68f1d6bb84f294410c8cdba3da5d1721bcc64c",
+    "old_guest_cold_readback": "passed",
+    "original_report_sha256": "b1df942ebf7e5b9de2651b56b226cf814c3087eb37c198ef9fdeff9912a9b5f0"
+  }
+}

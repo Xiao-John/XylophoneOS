@@ -34,5 +34,11 @@ python3 -B tests/gcc_seed_build_paths.py --gcc-configure "$EXTRACTED_GCC/configu
 并把实际补丁摘要记入构建身份。用同一锁定源档重新配置后，生成了
 `all-libcody: configure-libcody` 规则，重新进入交叉编译。
 
+下一次构建完成部分依赖后在 `all-build-libcpp` 停止。GNU 顶层 make 把宿主
+`CXXFLAGS` 也传给原生生成器，Linux arm64 的 G++ 拒绝其中的 `-mno-red-zone`。
+将 XOS ABI 参数留在交叉编译包装器后，新配置完成原生和交叉的两套 `libcpp.a`
+以及 `libcody.a`。抽查输入对象的 ELF `e_machine` 分别为 AArch64、x86-64、
+x86-64。构建继续生成最终 GCC 工具。
+
 完整 `all-gcc`、最终 ELF 检查、重新组装发行盘与两种 Shell 客体验收仍待完成。
 原发布 GNU Seed 和当前候选的二进制继续保留各自原件。

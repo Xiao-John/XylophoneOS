@@ -1,0 +1,114 @@
+{
+  "comparison": "entry and program headers unchanged; PT_LOAD bytes compared with four ELF section-table header fields masked",
+  "status": "passed",
+  "verified_native_elfs": {
+    "usr/bin/x86_64-elf-c++": {
+      "after_sha256": "42cdbb9883dd3bf3b59ea5bafe2efa346ed7b26cc87c470c565e910ae34f2eca",
+      "before_sha256": "82102ade64112646c8c4be67f23ec24d3345ddc72bbb01125f687a4c948ea768",
+      "pt_load_payload_sha256": [
+        "d0ccd736836bc1cd263f8746c0597ee481510bcbd8eebdcc7601e00c19757657",
+        "de6d4e979efa2351728165a6887c5dbbd2779fbc9d7439731ace1e74101f47a8",
+        "1dafbfbc09b55d2ae6ae30a2d7736eb87b9f3d6de3e9aa2462c983dba6b442d2"
+      ]
+    },
+    "usr/bin/x86_64-elf-cpp": {
+      "after_sha256": "3dd878c27a063183da33b34ddc9cb80f945d31740d8bb009c67e58d24f0e732d",
+      "before_sha256": "1481d9a42a8d8ce60d994310f297c2b11651b965c11bc194ed6b760e8d36695b",
+      "pt_load_payload_sha256": [
+        "7b115d7bf1979f7c94897472e2dd57b81c916bb18541c9da6494677abd57bfc9",
+        "86752be7dfc8597d75c202e2d427056eafee06ec783a413e51d266e7d64a0bb2",
+        "0295b3fd69df5ce47d785d1b4ea0737228ac98e18ac143aa06d5bebd7adafd61"
+      ]
+    },
+    "usr/bin/x86_64-elf-g++": {
+      "after_sha256": "42cdbb9883dd3bf3b59ea5bafe2efa346ed7b26cc87c470c565e910ae34f2eca",
+      "before_sha256": "82102ade64112646c8c4be67f23ec24d3345ddc72bbb01125f687a4c948ea768",
+      "pt_load_payload_sha256": [
+        "d0ccd736836bc1cd263f8746c0597ee481510bcbd8eebdcc7601e00c19757657",
+        "de6d4e979efa2351728165a6887c5dbbd2779fbc9d7439731ace1e74101f47a8",
+        "1dafbfbc09b55d2ae6ae30a2d7736eb87b9f3d6de3e9aa2462c983dba6b442d2"
+      ]
+    },
+    "usr/bin/x86_64-elf-gcc": {
+      "after_sha256": "3bba41a13e55081ea875154798e8605f80ac30217548ad3f49a693bb66df99ab",
+      "before_sha256": "6d226fd1815356374f96b7749a33565d9369677ed7c85524b100439587b96fed",
+      "pt_load_payload_sha256": [
+        "1c7f6918383fafe549ec4a6859c7d089f49cb7cfaabf5cdc49ca5fb6cc2fe08d",
+        "ec3a0b0c1db588c157425c5906a1b700da971195544982af2827a7b06de1ddce",
+        "25836ae27be852f311bd40edc3955348d219277e5c60bbd869ba498da2367245"
+      ]
+    },
+    "usr/bin/x86_64-elf-gcc-16.2.0": {
+      "after_sha256": "3bba41a13e55081ea875154798e8605f80ac30217548ad3f49a693bb66df99ab",
+      "before_sha256": "6d226fd1815356374f96b7749a33565d9369677ed7c85524b100439587b96fed",
+      "pt_load_payload_sha256": [
+        "1c7f6918383fafe549ec4a6859c7d089f49cb7cfaabf5cdc49ca5fb6cc2fe08d",
+        "ec3a0b0c1db588c157425c5906a1b700da971195544982af2827a7b06de1ddce",
+        "25836ae27be852f311bd40edc3955348d219277e5c60bbd869ba498da2367245"
+      ]
+    },
+    "usr/bin/x86_64-elf-gcc-ar": {
+      "after_sha256": "6c5a8e9cfc64068ff8523bcccfc62418bdd89697c30e5dfd90a240da8fdecbf8",
+      "before_sha256": "3d5c8a5868d47ea6aee4249b68cdc21b82e580fe484107fe7210985afd9d16ba",
+      "pt_load_payload_sha256": [
+        "1b6258ecf1b99523823ea04a4e89b66f64749901fc371a685656bcfe5a15a9bb",
+        "326edd8101f112c367a1afef292b97765577f5341fd7a1373d0bafa0aa61b0f5",
+        "dde15aaf42ae1726d5fb3aafae9fc43ad6250ee6192a1f5b49e0d4e3bf8bc1e9"
+      ]
+    },
+    "usr/bin/x86_64-elf-gcc-nm": {
+      "after_sha256": "53c063121617dce365595e4fc8445813b5ce6dcddb05f2a92046602ae762d57d",
+      "before_sha256": "5e93690b9aad946f8f7e356ca46c177906e6cb23e7c899578d7e413fca1f36ee",
+      "pt_load_payload_sha256": [
+        "a905d6f2fe526ad40b0748e1f1019e168a34054faa0e69e322f9a0b2e51e1239",
+        "1545aa326b475fb6f327a55a07a6891e9f65026b7acd0b223217d4b7e3e2306e",
+        "dde15aaf42ae1726d5fb3aafae9fc43ad6250ee6192a1f5b49e0d4e3bf8bc1e9"
+      ]
+    },
+    "usr/bin/x86_64-elf-gcc-ranlib": {
+      "after_sha256": "c0a0017c5933abc2b49ee66580e80f96e2d90aca6532c6d94ee5697043184727",
+      "before_sha256": "7405ba656f79a4855abdbb264a75269e04f6f1580dd87e406edbf654f5718b42",
+      "pt_load_payload_sha256": [
+        "86e8a23a25997faf3dbc0784b35e61dc538139c21177726c137e916a3e38a106",
+        "db0502008f7c8aafa79072d703a75025de8d11cb277d7dd9cbd533115c186387",
+        "53ffbaf599e8f868778b072f00e70c33f2dfba82e23c3bbd5348911fbbf0c50e"
+      ]
+    },
+    "usr/libexec/gcc/x86_64-elf/16.2.0/cc1": {
+      "after_sha256": "ca39763713af2fcdd6e00f7c66a090f7f919c08d34e418905e522ed59ce7e7a5",
+      "before_sha256": "2971629fb342f2505a480174abcc1cc51cbe9a4d6ac9f6bddb1440959b42c7c4",
+      "pt_load_payload_sha256": [
+        "3a45a44db060cef7b219b8b869815e8c9ec5ca9c5dd564b8973aed28918871f9",
+        "497363beb57aba49199b95db5222809a89b88989af8d6559f773d894ebbcd96d",
+        "3a849cea119fee9a1d761a6d8184b1f91134538f10fae9d9012e2cd8b1e1664a"
+      ]
+    },
+    "usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus": {
+      "after_sha256": "601877faf077b430539b2c489cb66639bf4860e619d86780ae1800be18c7a1fd",
+      "before_sha256": "3aebe84dd9555b42f4c90bd4ef9529bbecd4a744686a3a7b775ac7f4419323f4",
+      "pt_load_payload_sha256": [
+        "ba6019540157c48ddd233d07b597f9ab546a0a9fd09265dcebeff5a498f830d1",
+        "fbe5907697cc5949017933bdab15d7bbd80dbc299358705812fdad951eb98259",
+        "81b7db2c66959e3e90e42d1357d4531c2d2ff8c12d321c7766b498aa123b4aa1"
+      ]
+    },
+    "usr/libexec/gcc/x86_64-elf/16.2.0/collect2": {
+      "after_sha256": "2d0f2b4785b56c37bbc4ae0336f86b3b6bf1b86c0af731bbd21b34399bb17b34",
+      "before_sha256": "203ec3b5de8afd5b9ff7568cdb12433473cf7860d0f2d0ef44028a643eff7bac",
+      "pt_load_payload_sha256": [
+        "d43157934961ecddceb35cc95d98f13b85480f9da02764771ed415cb23ce37c4",
+        "fce931679501f0b18132afe52401290a1fb3d1ecb992db5973b7fc89d4e38218",
+        "93c96af9fc3e548b8d21113a444be5b71a6ebbac470c7b95192051af75791f40"
+      ]
+    },
+    "usr/libexec/gcc/x86_64-elf/16.2.0/lto-wrapper": {
+      "after_sha256": "f9ef671a55112c5742a1d9adb90f450507a8c3ac5842e847598a0507612e7e1f",
+      "before_sha256": "abf69a2c48b6af5640d38cb084f162b311f4de82c39abfa212d77aeadf2ee68f",
+      "pt_load_payload_sha256": [
+        "75f04383ba217d21ba10923a852656a86ac61299ad72e821d8b3def717d7f612",
+        "c4763f06e315a9d55430b46d50a90bf387f80af53b029af3542ad796a43a5347",
+        "150f6744d7715ae087429df6997b8d29c655eaa18d839eb530bd7292b830b3c5"
+      ]
+    }
+  }
+}

@@ -195,6 +195,22 @@ def path_leak_check(path, host_roots):
         raise RuntimeError(f"installed Seed contains a machine-specific build path: {path.name}")
 
 
+def normalize_gcc_tools(install, strip, host_roots):
+    # Frozen SDK start objects can carry an assembler STT_FILE path even
+    # when GCC itself was compiled without debug information.
+    tool_dirs = (install / 'usr/bin',
+                 install / 'usr/libexec/gcc/x86_64-elf' / LOCK['version'])
+    for directory in tool_dirs:
+        for path in sorted(directory.iterdir()):
+            if path.is_symlink() or not path.is_file():
+                continue
+            with path.open('rb') as tool:
+                if tool.read(4) != b'\x7fELF':
+                    continue
+            run([strip, '--strip-debug', str(path)])
+            path_leak_check(path, host_roots)
+
+
 def inspect_gcc(install: Path, readelf: str, languages, host_roots):
     result = {}
     names = ("gcc", "cpp", "cc1", "collect2")
@@ -328,6 +344,7 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
     run([native["make"], f"-j{jobs}", "all-target-libgcc"], cwd=build_dir, env=env, log=log)
     install.mkdir(parents=True, exist_ok=True)
     run([native["make"], "install-gcc", "install-target-libgcc", f"DESTDIR={install}"], cwd=build_dir, env=env, log=log)
+    normalize_gcc_tools(install, obj["strip"], (ROOT, sdk, stdcxx))
     tools = inspect_gcc(install, obj["readelf"], languages, (ROOT, sdk, stdcxx))
     archive_manifests = capture.archives(install)
     manifest_out = {**record, "canonical": {"build": build_triple, "host": host, "target": target},

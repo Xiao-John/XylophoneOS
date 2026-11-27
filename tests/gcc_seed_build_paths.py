@@ -2,6 +2,7 @@
 """Exercise GCC Seed build paths with the pinned configure recorder and real cross tools."""
 
 import argparse
+from contextlib import redirect_stdout
 import hashlib
 import json
 from pathlib import Path
@@ -12,7 +13,7 @@ from tempfile import TemporaryDirectory
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from build_gcc import configure_command, file_prefix_options, path_leak_check, wrapper
+from build_gcc import configure_command, file_prefix_options, normalize_gcc_tools, path_leak_check, wrapper
 
 
 def output(*command, cwd=None):
@@ -62,6 +63,25 @@ def check_build(root, recorder, compilers, libgcc, readelf):
     return {'configure': recorded, 'objects': compiled}
 
 
+def check_install_normalization(root, gcc, strip, objcopy):
+    tools = root / 'usr/bin'
+    tools.mkdir(parents=True)
+    (root / 'usr/libexec/gcc/x86_64-elf/16.2.0').mkdir(parents=True)
+    assembly = root / 'start.S'
+    assembly.write_text(f'.file "{assembly}"\n.text\n.globl _start\n_start: ret\n')
+    binary = tools / 'x86_64-elf-gcc'
+    subprocess.run([gcc, '-nostdlib', '-static', '-no-pie', assembly, '-o', binary], check=True)
+    assert str(assembly).encode() in binary.read_bytes()
+    code = root / 'text.bin'
+    subprocess.run([objcopy, '-O', 'binary', '-j', '.text', binary, code], check=True)
+    before = code.read_bytes()
+    with redirect_stdout(sys.stderr):
+        normalize_gcc_tools(root, strip, (root,))
+    subprocess.run([objcopy, '-O', 'binary', '-j', '.text', binary, code], check=True)
+    assert before and code.read_bytes() == before
+    path_leak_check(binary, (root,))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--gcc-configure', type=Path, required=True,
@@ -74,19 +94,21 @@ def main():
     compilers = {suffix: shutil.which('x86_64-elf-' + name)
                  for suffix, name in (('c', 'gcc'), ('cpp', 'g++'))}
     readelf = shutil.which('x86_64-elf-readelf')
-    if not all((*compilers.values(), readelf)):
+    strip, objcopy = (shutil.which(f'x86_64-elf-{name}') for name in ('strip', 'objcopy'))
+    if not all((*compilers.values(), readelf, strip, objcopy)):
         raise RuntimeError('the XOS x86_64-elf cross tools are required')
     libgcc = Path(output(compilers['c'], '-print-libgcc-file-name'))
     with TemporaryDirectory(prefix='xos_seed_build_paths_') as temp:
         root = Path(temp).resolve()
         first, second = (check_build(root / label, recorder, compilers, libgcc, readelf)
                          for label in ('first build', 'second build'))
+        check_install_normalization(root, compilers['c'], strip, objcopy)
     if first != second:
         raise RuntimeError('configure metadata or mapped objects differed between build roots')
     print(json.dumps({
         'status': 'passed', 'compiler_version': output(compilers['c'], '-dumpfullversion'),
         'gcc_configure_sha256': hashlib.sha256(configure).hexdigest(), 'build_roots': 2,
-        'unmapped_objects_rejected': 4, **first,
+        'unmapped_objects_rejected': 4, 'install_file_symbol_removed': True, **first,
     }, indent=2))
 
 

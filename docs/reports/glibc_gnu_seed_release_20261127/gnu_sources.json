@@ -1,0 +1,201 @@
+{
+  "files": {
+    "frozen/build_records/cpp_bundle_seed_manifest.json": {
+      "bytes": 68887,
+      "sha256": "04c5384438adcce1a7762b968b0cfc87973e625a6210690a37aff52b6534dae0"
+    },
+    "frozen/unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-source-supplement-gxx-lrealpath.tar.gz": {
+      "bytes": 179934,
+      "sha256": "8e8bd6f48ea89845389e803b99249e0275050b1bdc43ff927388ba807e257780"
+    },
+    "frozen/unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-sources.tar.gz": {
+      "bytes": 176472043,
+      "sha256": "e2d91871e39ca50385401776fe2f028965b0f7f8bf129ba2ab70f95325d36911"
+    },
+    "make/gnu-keyring.gpg": {
+      "bytes": 3884405,
+      "sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812"
+    },
+    "make/make-4.4.1.tar.gz": {
+      "bytes": 2348200,
+      "sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3"
+    },
+    "make/make-4.4.1.tar.gz.sig": {
+      "bytes": 833,
+      "sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929"
+    },
+    "make/port/scripts/build_gnu_make.py": {
+      "bytes": 8608,
+      "sha256": "48be835c17f86da8dde199c373310a479483585dfdaab6efef70e55f789f3181"
+    },
+    "make/port/src/ports/gnu_make/README.md": {
+      "bytes": 1217,
+      "sha256": "4684dc7cc20f7889619161d0b0b80050738759959c1b7e92b4b27ff5ed4d00aa"
+    },
+    "make/port/src/ports/gnu_make/patches/0001_xos_job_launch.patch": {
+      "bytes": 2859,
+      "sha256": "0c95860661451f11fed079e8df2c38f3398254c8812d0a312c768701bdb36f36"
+    },
+    "make/port/src/ports/gnu_make/source_lock.json": {
+      "bytes": 534,
+      "sha256": "e833bda8fc796b6a9af0328120f007997717243bbbf2c54ee2e13d41248468b9"
+    },
+    "make/port/src/ports/gnu_make/upstream/COPYING": {
+      "bytes": 35151,
+      "sha256": "e79e9c8a0c85d735ff98185918ec94ed7d175efc377012787aebcf3b80f0d90b"
+    },
+    "make/port/src/ports/gnu_make/xos_spawn.h": {
+      "bytes": 2522,
+      "sha256": "13909bcb5842df682719d9e6f921ca958fc8d408452be9bcfda683ac76fbc405"
+    },
+    "notices/src/ports/binutils/upstream/COPYING": {
+      "bytes": 18002,
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    "notices/src/ports/binutils/upstream/COPYING.LIB": {
+      "bytes": 25291,
+      "sha256": "56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d"
+    },
+    "notices/src/ports/binutils/upstream/COPYING3": {
+      "bytes": 35147,
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    "notices/src/ports/binutils/upstream/COPYING3.LIB": {
+      "bytes": 7639,
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    "notices/src/ports/binutils/upstream/zlib-LICENSE": {
+      "bytes": 1002,
+      "sha256": "845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243"
+    },
+    "notices/src/ports/gcc/upstream/GCC-COPYING": {
+      "bytes": 18002,
+      "sha256": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c"
+    },
+    "notices/src/ports/gcc/upstream/GCC-COPYING.RUNTIME": {
+      "bytes": 3324,
+      "sha256": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74"
+    },
+    "notices/src/ports/gcc/upstream/GCC-COPYING3": {
+      "bytes": 35147,
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    "notices/src/ports/gcc/upstream/GCC-COPYING3.LIB": {
+      "bytes": 7639,
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    "notices/src/ports/gcc/upstream/GMP-COPYING": {
+      "bytes": 35147,
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    "notices/src/ports/gcc/upstream/GMP-COPYING.LESSERv3": {
+      "bytes": 7639,
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c"
+    },
+    "notices/src/ports/gcc/upstream/GMP-COPYINGv2": {
+      "bytes": 18092,
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+    },
+    "notices/src/ports/gcc/upstream/GMP-COPYINGv3": {
+      "bytes": 35150,
+      "sha256": "e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195"
+    },
+    "notices/src/ports/gcc/upstream/MPC-COPYING.LESSER": {
+      "bytes": 7651,
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768"
+    },
+    "notices/src/ports/gcc/upstream/MPFR-COPYING": {
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    "notices/src/ports/gcc/upstream/MPFR-COPYING.LESSER": {
+      "bytes": 7652,
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+    },
+    "notices/src/ports/gnu_make/upstream/COPYING": {
+      "bytes": 35151,
+      "sha256": "e79e9c8a0c85d735ff98185918ec94ed7d175efc377012787aebcf3b80f0d90b"
+    },
+    "notices/src/third_party/newlib/COPYING.NEWLIB": {
+      "bytes": 78388,
+      "sha256": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6"
+    }
+  },
+  "frozen": {
+    "artifacts": {
+      "unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-source-supplement-gxx-lrealpath.tar.gz": {
+        "bytes": 179934,
+        "path": "unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-source-supplement-gxx-lrealpath.tar.gz",
+        "role": "verbatim corresponding source for unchanged GNU Seed",
+        "sha256": "8e8bd6f48ea89845389e803b99249e0275050b1bdc43ff927388ba807e257780"
+      },
+      "unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-sources.tar.gz": {
+        "bytes": 176472043,
+        "path": "unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-sources.tar.gz",
+        "role": "verbatim corresponding source for unchanged GNU Seed",
+        "sha256": "e2d91871e39ca50385401776fe2f028965b0f7f8bf129ba2ab70f95325d36911"
+      }
+    },
+    "build_manifest_sha256": "04c5384438adcce1a7762b968b0cfc87973e625a6210690a37aff52b6534dae0",
+    "release_manifest_sha256": "8288138e416394f69111ca48c939f4d19f8cf6289c24e46973073648159e2bfe",
+    "source_asset_sha256": "ccde1b85e391cc7f1cadaca8a661ae89213658184044ae94cbf465e50f23129e",
+    "source_commit": "59ac60db7f68fa0f9b13b56025df8549f1a72c5e",
+    "status": "verified_frozen_correspondence",
+    "tools": {
+      "/usr/bin/as": "14c0df6c85d5e563fb72fd4de251e31209b9cdf78faac8bb55b220d88034cece",
+      "/usr/bin/x86_64-elf-ar": "3ba108e6afc08536c2cf0a377669ef83b96336994054a09a6b4bb5e8dcbf1e6a",
+      "/usr/bin/x86_64-elf-as": "14c0df6c85d5e563fb72fd4de251e31209b9cdf78faac8bb55b220d88034cece",
+      "/usr/bin/x86_64-elf-cpp": "9dd9ee8dbea3e0a7edf307a4d11cbb98d8d87a98723deeed8b209f81ebc8c2ca",
+      "/usr/bin/x86_64-elf-g++": "a1574b29d8891d00f25edae17aefaa91290dc980cd9d7d221e7d302850a8dfcd",
+      "/usr/bin/x86_64-elf-gcc": "29a54a2a69de813ce153e55322a2a09d0fbd8d0a550120bb01c1db0f61b3e35c",
+      "/usr/bin/x86_64-elf-ld": "ca27d758ca2e1c750beaf80455f359370547a1359bf4e30af77c9c70a5822892",
+      "/usr/bin/x86_64-elf-nm": "653530e6fab489261c67189c497c6ae0b875a671378a6226a8038af1f15c6337",
+      "/usr/bin/x86_64-elf-ranlib": "719297ba172a83ef8b1f154d7cbdf1b0129fff43640719cce78e9a584ce5f277",
+      "/usr/bin/x86_64-elf-strip": "76795c63b831e534b305eccdd9dd52e55007653b79724976147540f5510638d9",
+      "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1": "85321572cf4aba927d7c95f0b7ef8008c04bd2798b04531a8f6396764825b12f",
+      "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus": "00beda326c502e55ec83309b782e96572113cc0a308430249520e8781c4cb139"
+    }
+  },
+  "make": {
+    "archive_sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+    "config_sha256": "ff5f564d6178c9d6a2d729c61367386f46479021e47f9e5a995f6809d6f4db5d",
+    "elf_sha256": "efded0f02d6af3d82305165727d87b9dc2d38c8dd6de623b75937ee13b3d6750",
+    "inputs": {
+      "scripts/build_gnu_make.py": "48be835c17f86da8dde199c373310a479483585dfdaab6efef70e55f789f3181",
+      "src/ports/gnu_make/README.md": "4684dc7cc20f7889619161d0b0b80050738759959c1b7e92b4b27ff5ed4d00aa",
+      "src/ports/gnu_make/patches/0001_xos_job_launch.patch": "0c95860661451f11fed079e8df2c38f3398254c8812d0a312c768701bdb36f36",
+      "src/ports/gnu_make/source_lock.json": "e833bda8fc796b6a9af0328120f007997717243bbbf2c54ee2e13d41248468b9",
+      "src/ports/gnu_make/upstream/COPYING": "e79e9c8a0c85d735ff98185918ec94ed7d175efc377012787aebcf3b80f0d90b",
+      "src/ports/gnu_make/xos_spawn.h": "13909bcb5842df682719d9e6f921ca958fc8d408452be9bcfda683ac76fbc405"
+    },
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c",
+    "signature_sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929",
+    "source_verified_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2",
+    "target": "x86_64-unknown-xos",
+    "upstream_keyring_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+    "version": "4.4.1"
+  },
+  "notices": {
+    "src/ports/binutils/upstream/COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+    "src/ports/binutils/upstream/COPYING.LIB": "56bdea73b6145ef6ac5259b3da390b981d840c24cb03b8e1cbc678de7ecfa18d",
+    "src/ports/binutils/upstream/COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "src/ports/binutils/upstream/COPYING3.LIB": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+    "src/ports/binutils/upstream/zlib-LICENSE": "845efc77857d485d91fb3e0b884aaa929368c717ae8186b66fe1ed2495753243",
+    "src/ports/gcc/upstream/GCC-COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+    "src/ports/gcc/upstream/GCC-COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+    "src/ports/gcc/upstream/GCC-COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "src/ports/gcc/upstream/GCC-COPYING3.LIB": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+    "src/ports/gcc/upstream/GMP-COPYING": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "src/ports/gcc/upstream/GMP-COPYING.LESSERv3": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+    "src/ports/gcc/upstream/GMP-COPYINGv2": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+    "src/ports/gcc/upstream/GMP-COPYINGv3": "e6037104443f9a7829b2aa7c5370d0789a7bda3ca65a0b904cdc0c2e285d9195",
+    "src/ports/gcc/upstream/MPC-COPYING.LESSER": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+    "src/ports/gcc/upstream/MPFR-COPYING": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "src/ports/gcc/upstream/MPFR-COPYING.LESSER": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+    "src/ports/gnu_make/upstream/COPYING": "e79e9c8a0c85d735ff98185918ec94ed7d175efc377012787aebcf3b80f0d90b",
+    "src/third_party/newlib/COPYING.NEWLIB": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6"
+  },
+  "schema": 1
+}

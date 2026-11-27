@@ -1,0 +1,9 @@
+{
+  "assembly_and_guest_recipe_commit": "e28031947575bf145d8f59d90df39ea5e35eea60",
+  "composition_base": "8b763ed2da3f0c0c109e705b7120b49b220db715",
+  "gnu_seed_receipt_sha256": "c62f08b7b73faefc79ad7af575101b2f0188fb53571946f3975f8bff0874854f",
+  "installed_gnu_seed_files": 1374,
+  "recipient_host_checks_commit": "105c590a2b1edc1142d9d60c4554dcb2e2910328",
+  "status": "host_archive_and_source_replay_passed",
+  "work_disk_sha256": "4f5885715a722c23f5de86383be385d5ea19897bb87e2a41999ea08f0e162986"
+}

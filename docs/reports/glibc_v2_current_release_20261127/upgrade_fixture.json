@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "original_package_receipt_sha256": "28e358d8b4a8075461f6b3a2f0ca5ebf26c1b55ff492a9625ff12e7c10379da2",
+  "stock_build_receipt_sha256": "0bd7fe0b3d0d88c9ad0b522c91f0bbaaa66f2d4f89b859e30a4434c7c7c4de89",
+  "fault_build_receipt_sha256": "bda47c78f20f726b6b4044a45ac9da33e44f88311c4980b529f42f1073473518",
+  "identical_build_inputs": 21,
+  "fixture_source_difference": "src/main.cpp prepends #define XYP_TEST_FAULTS 1",
+  "fault_elf_sha256": "a173842fc5d5808d403a82d3d2a7b462e9dbce666044fac3c426963c9fe5be0b",
+  "stock_elf_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745",
+  "fault_package_sha256": "227ec497bfc938311fb43fa0c612aa3c1b6e090cad66a0d6847ad1068ea67d11"
+}

@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "builds": {
+    "c": {
+      "elf_sha256": "87a0fabc756b797db26e1ae27d9648084ab772aeb0b45b19e5eff750b58d756e",
+      "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+      "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "package_sha256": "54e0c702f96c944efc9147cf29e73138dae285e98e611ce045254632af803001",
+      "build_status": "cross_built_guest_not_run",
+      "check_status": "checked_guest_not_run",
+      "package_status": "packed_guest_not_run",
+      "profile": "xos-x86_64-glibc-unified-cxx-v2"
+    },
+    "cpp": {
+      "elf_sha256": "21e8077a2f240a301fd56bdd7eacbda3b0ae2554a1b897c504f1f46b6e01e5f2",
+      "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+      "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "package_sha256": "04ce59f23af3d6d1c6e2dffd8a31ac3681358de4b361a867edc65b4a2a17a405",
+      "build_status": "cross_built_guest_not_run",
+      "check_status": "checked_guest_not_run",
+      "package_status": "packed_guest_not_run",
+      "profile": "xos-x86_64-glibc-unified-cxx-v2"
+    }
+  },
+  "override_rejected": true
+}

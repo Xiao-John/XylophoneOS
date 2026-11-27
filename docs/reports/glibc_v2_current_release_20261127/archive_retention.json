@@ -1,0 +1,16 @@
+{
+  "status": "combined_gates_passed",
+  "reserve_bytes": 912261120,
+  "assets": {
+    "release_manifest.json": "retained_verified",
+    "system_manifest.json": "retained_verified",
+    "distribution_manifest.json": "retained_verified",
+    "images.tar.gz": "retained_verified",
+    "packages.tar.gz": "retained_verified",
+    "application-sdk.tar.gz": "retained_verified",
+    "gnu-seed-sources.tar.gz": "retained_verified",
+    "component-sources.json": "retained_verified",
+    "component-sources.tar.gz": "retained_verified",
+    "xypm-relink.tar.gz": "retained_verified"
+  }
+}

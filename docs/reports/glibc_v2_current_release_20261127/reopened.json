@@ -1,0 +1,24 @@
+{
+  "base_archives": {
+    "application-sdk.tar.gz": {
+      "bytes": 22797767,
+      "sha256": "9ba2618d7ac6ca0fbcb19d1258a521795436cfe713dc2c83bba6ee74b9573bef"
+    },
+    "gnu-seed-sources.tar.gz": {
+      "bytes": 182547602,
+      "sha256": "a4b181b31a8775d51f35df5dd01a8bfb9539d07cbca224a75d74b56e33e1138b"
+    },
+    "images.tar.gz": {
+      "bytes": 92531681,
+      "sha256": "9617aad75f21d98dc8c5d1eccc7686ac1a363f3ea31c616a063ef846bab21ca6"
+    },
+    "packages.tar.gz": {
+      "bytes": 11500546,
+      "sha256": "83a6ca64e236f1513c79900d7f6298c51fbdb4a1928f3e3537518f3a0c3cf55d"
+    }
+  },
+  "disk_bytes_allocated": 223608832,
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "source_disk_sha256": "d3c51769258094448a30b57d6028456405888b0501ceebad4ad178234c26df45",
+  "status": "reopened_bound_assets"
+}

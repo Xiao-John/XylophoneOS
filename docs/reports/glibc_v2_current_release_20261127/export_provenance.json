@@ -1,0 +1,16 @@
+{
+  "derived": {
+    "native_guest.json": {
+      "raw_sha256": "ebc70848b06731872201ca1b3b901e2ff896bf41584d9b603f54ac1d0055d5c1",
+      "decoded_sha256": "4b9097f1e320911ca5ac44099d61e0c39d44958fec1b97b7744d520b86b8c069",
+      "exported_sha256": "4b9097f1e320911ca5ac44099d61e0c39d44958fec1b97b7744d520b86b8c069",
+      "transformation": "redacted_build_prefixes_and_labeled_xos_guest_commands"
+    },
+    "native_ordinary_serial.log.gz": {
+      "raw_sha256": "d46f5dc7bb388d665abdf78a243a30d7b0ff0ded7da0ae4c9bd3ed73e6c8385b",
+      "decoded_sha256": "d045e4f54c9f986dffed0fa4ea94cbc2c8b4d5a9a1278be34101d061deb24b00",
+      "exported_sha256": "0d4fa55f04c72d973bfeb54c0d3a1602c76eef36ac5035e7b92601400a2972d8",
+      "transformation": "redacted_build_prefixes"
+    }
+  }
+}

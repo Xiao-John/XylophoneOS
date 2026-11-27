@@ -1,0 +1,38 @@
+{
+  "files": {
+    "font_sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+    "host_tree_sha256": "0c7fa556e802df7d9eecc2d0fce4199476d44229a04202a3624f30a5dbd76fd3",
+    "notices_tree_sha256": "ea1c4ba7b6452b8915b2da3abdcbfea1df1109d2bc7b8ceb375ec9b7a43604ec",
+    "qt_inputs": {
+      "BundledFreetype": "24df77b151cc23f5f20e16e0768625c9abf8eb422b4136f92c278aa2832e4025",
+      "BundledHarfbuzz": "ef2664b2873f79a1dcf44e4cf5a6d7f5195dbeba814ba163b0dbd734c9c33b39",
+      "BundledPcre2": "21e5f4e403c6f05589986c6647ebf4ee2631712bcf599a9a202c99cb18a8beaf",
+      "BundledZLIB": "6c4819cbfe9289d1e2de1e317b7f5b6f9b8016d69f0fdef0c6a99226f0ba7c1f",
+      "Core": "f6a8151fd7b7ca02c5477af687c90b5754770fb72a52af18b5eeb7345f06f920",
+      "Gui": "9d3da94d4cd0a99a199310a6e86d53f01a6659bb86df93353bc39bd660312c80",
+      "Widgets": "588f6793b1b6beae3138cc43d155898cf5a26800cd7c3ff8219c8328ab96c32f",
+      "moc": "a1337c30d3e0c85b14aa64b9b5e12e958003d77206b2daa2986f7f1bf868bdfc",
+      "rcc": "9ca52ca0ba6139fcf92802ed2d8cd267c67e403e2744e6a7922f50fcc3d7f9ca",
+      "uic": "26b2dc9754a495ca77257fd822072b43e3780285bac501a305e3670cd62713d1"
+    },
+    "target_tree_sha256": "2738cf69a32abbc8c649ed5d56a242721aeb995cb594937029ee64aa73948437"
+  },
+  "format_version": 1,
+  "kind": "mobius_widgets",
+  "original_host_tree_sha256": "b6cb3f411cef58166eeea546dc7dc4201d1cde81d2955b81f96754a59b194178",
+  "qt_build_cache_sha256": "1c8028fb97b54f29555e29d5640a07d43b894a1bdff36c833d1c9e4a65728372",
+  "qt_version": "6.8.3",
+  "qtbase_archive_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+  "qtbase_prepared_tree_sha256": "86042db4922ecc23654ac9761c35fa907cec5e395754de35fe99b5075c6dddc0",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "target_receipt_sha256": "90292b9a28c0c997b341e9db28cc6701dcf80b7bb20882b9af3260c53f8d732f",
+  "target_tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d"
+  }
+}

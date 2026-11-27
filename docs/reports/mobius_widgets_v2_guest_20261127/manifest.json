@@ -1,0 +1,37 @@
+{
+  "files": {
+    "guest.json": {
+      "bytes": 12182,
+      "sha256": "53605b03587c3684b34a4bcad827d37f882939d0dcc3531c0160022ea39ddca3"
+    },
+    "installed.serial.log.gz": {
+      "bytes": 3002,
+      "sha256": "b030e7fbcc00e52ce12f143327ad9f2ed0508ff20bf56c1bfbcd590f9354db29"
+    },
+    "kit-manifest.json": {
+      "bytes": 2518,
+      "sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+    },
+    "qt-target-receipt.json": {
+      "bytes": 5324,
+      "sha256": "90292b9a28c0c997b341e9db28cc6701dcf80b7bb20882b9af3260c53f8d732f"
+    },
+    "qt-target.json": {
+      "bytes": 4763,
+      "sha256": "89abd6c208f34e2b15177bbb0184ddd19f67e8013ab104c2dd34e6223454f094"
+    },
+    "receiver.json": {
+      "bytes": 2737,
+      "sha256": "e63b7fc60a15d853e4ded7b534b18d892402092830747c0c53318ec1d38c9bd6"
+    },
+    "restored.serial.log.gz": {
+      "bytes": 3008,
+      "sha256": "77200adbe3a970892d5072c62ad19d012e713b720b822c0202b6055b46ca6459"
+    },
+    "upgraded.serial.log.gz": {
+      "bytes": 3189,
+      "sha256": "81ad193a28ba7cc21426ec01d05ecac6fa10257ec6640449a5fb421681776e0c"
+    }
+  },
+  "version": 1
+}

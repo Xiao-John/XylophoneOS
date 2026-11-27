@@ -1,0 +1,125 @@
+{
+  "archive": {
+    "original_bytes": 63870775,
+    "original_sha256": "e683f0b6ec4a310df91261ddb53e950f0bbe8aed8aec90285d503360a98c92ed"
+  },
+  "archive_durable_copy_matched_sha256": true,
+  "configure_inputs_match_separate_witness": true,
+  "container_cpu_usage_seconds": 2567.783933,
+  "container_memory_peak_bytes": 1734832128,
+  "environment_limits": {
+    "cpu": 1,
+    "memory_bytes": 2684354560,
+    "tmpfs_bytes": 2147483648
+  },
+  "features": {
+    "filedialog": "OFF",
+    "widgets": "ON"
+  },
+  "independent_configure": {
+    "configure_seconds": 18.373,
+    "effective_features": {
+      "filedialog": "OFF",
+      "gui": "ON",
+      "widgets": "ON"
+    },
+    "verified_archived_raw_files": 6,
+    "verified_compile_database_commands": 788,
+    "verified_recipe_files": 28,
+    "widgets_source_commands": 176
+  },
+  "installed_qt_archives": {
+    "Core": "f6a8151fd7b7ca02c5477af687c90b5754770fb72a52af18b5eeb7345f06f920",
+    "Gui": "9d3da94d4cd0a99a199310a6e86d53f01a6659bb86df93353bc39bd660312c80",
+    "Widgets": "588f6793b1b6beae3138cc43d155898cf5a26800cd7c3ff8219c8328ab96c32f"
+  },
+  "kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f",
+  "ninja_steps": 866,
+  "original_records": {
+    "after-archive.txt": {
+      "original_bytes": 479,
+      "original_sha256": "eea4f341e44ca6cd471d390f2aad4a1b21f1807e31f9c8ac91c4c25c5f02dc8e"
+    },
+    "after-build.txt": {
+      "original_bytes": 479,
+      "original_sha256": "ef29f6d0385a82813282eba631b142dd7ec2fb009d3d99cf06522bbb36969230"
+    },
+    "after-stage.txt": {
+      "original_bytes": 479,
+      "original_sha256": "99dccd2736f466ecf1d526aed2365fd631cfa75779369df70279651c43791b6e"
+    },
+    "archive.bytes": {
+      "original_bytes": 9,
+      "original_sha256": "43fc0cd2be2a0d671978190d4e718b17d7f90e58467ea538801724c187a66e02"
+    },
+    "archive.exit": {
+      "original_bytes": 2,
+      "original_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "archive.log": {
+      "original_bytes": 0,
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "archive.sha256": {
+      "original_bytes": 97,
+      "original_sha256": "b611a5e9adc16eb750d8cf505c38093f84b45985b4323bc53218c97b0a10d97b"
+    },
+    "before.txt": {
+      "original_bytes": 443,
+      "original_sha256": "0a2d5001c10843e1322f0f3ab0bc54ffd7bb6400e9c5fb543b5acc55e2da1caa"
+    },
+    "build.exit": {
+      "original_bytes": 2,
+      "original_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "build.log": {
+      "original_bytes": 2011271,
+      "original_sha256": "aee5231c2c9754e69a83b91c2f91a133739eaa9811eaeb8290edeba3449b8222"
+    },
+    "compile_commands.json": {
+      "original_bytes": 2035821,
+      "original_sha256": "cb4e678db3bdd71ef60e5410d883e966e18c96840d86275dc7cf3c15f36cde06"
+    },
+    "input_receipt.json": {
+      "original_bytes": 4986,
+      "original_sha256": "d1c25f1595e953499337b60077ca7ebacf32dcd9d3548bbca80ac32df42c6b96"
+    },
+    "install_cache.txt": {
+      "original_bytes": 145941,
+      "original_sha256": "1c8028fb97b54f29555e29d5640a07d43b894a1bdff36c833d1c9e4a65728372"
+    },
+    "qtbase_installed.json": {
+      "original_bytes": 239,
+      "original_sha256": "a80b58f4fd155d93448fb86fce82ccd0583779732ed4dc9fe72bd0d5ec6c3c37"
+    },
+    "stage.exit": {
+      "original_bytes": 2,
+      "original_sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "stage.log": {
+      "original_bytes": 191,
+      "original_sha256": "2aa4ad4894ad238c79002d7a1d283c1ff44ff6320ed2bdf8ea71cc38331628bd"
+    },
+    "target_receipt.json": {
+      "original_bytes": 5324,
+      "original_sha256": "90292b9a28c0c997b341e9db28cc6701dcf80b7bb20882b9af3260c53f8d732f"
+    },
+    "widgets-kit-manifest.json": {
+      "original_bytes": 2518,
+      "original_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+    }
+  },
+  "qtbase_source_sha256": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+  "scope": "QtBase target production, installation, kit staging and compressed archive validation.",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "stages": {
+    "archive": 0,
+    "build": 0,
+    "stage": 0
+  },
+  "status": "widgets_target_built_installed_and_staged",
+  "target_receipt_sha256": "90292b9a28c0c997b341e9db28cc6701dcf80b7bb20882b9af3260c53f8d732f",
+  "target_tree_sha256": "2738cf69a32abbc8c649ed5d56a242721aeb995cb594937029ee64aa73948437",
+  "tested_revision": "1ed63cb2a7b191b9a1fc0ed8d804c95197dabebb"
+}

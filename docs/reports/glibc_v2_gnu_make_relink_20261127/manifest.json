@@ -1,0 +1,10 @@
+{
+  "files": {
+    "guest.json": "ea900e3ab0d898997fc58dd33044360e93682bd38054a3fc4862c982368c2b07",
+    "host.json": "fa269e0a27d457788cb1d838a3cbffd37134e935ff52b5f4124934621a5443e1",
+    "materials.json": "e4f7b7fdb778e042ac012f0ef5b7fa60d27f799aeaf59d8b7c710626589f2e1e",
+    "original.serial.log.gz": "3a5d4be0a30d95cb39a4eb2f85e3bb668d2aea15c752d4b077e05475a38c009c",
+    "replacement.serial.log.gz": "6352910708497cbf4cfe3a245750c2e965967b2fcfeebd457ea6b9b1f2fe91d3"
+  },
+  "version": 1
+}

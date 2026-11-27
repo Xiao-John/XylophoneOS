@@ -13,11 +13,13 @@ from glibc_g1_probe import clean_build_environment
 from xypm_format import confined, inspect_elf, load_json, require, sha_file
 
 LINK_FLAGS = {'-static', '-no-pie', '-nostdlib', '-T', '-Wl,--build-id=none', '-Wl,-z,noexecstack',
+              '-Wl,--gc-sections,--build-id=none,-z,noexecstack,-z,max-page-size=4096',
               '-Wl,-z,max-page-size=4096', '-Wl,--build-id=none,-z,noexecstack,-z,max-page-size=4096', '-Wl,--start-group', '-Wl,--end-group'}
 LIBC = 'sysroot/usr/lib/libc.a'
 FORMAT = 'xos_release_xypm_relink_v1'
 DASH_FORMAT = 'xos_release_dash_relink_v1'
-DRIVERS = {'xypm': (FORMAT, 'g++'), 'dash': (DASH_FORMAT, 'gcc')}
+MAKE_FORMAT = 'xos_release_gnu_make_relink_v1'
+DRIVERS = {'xypm': (FORMAT, 'g++'), 'dash': (DASH_FORMAT, 'gcc'), 'make': (MAKE_FORMAT, 'gcc')}
 
 
 def relink(args):

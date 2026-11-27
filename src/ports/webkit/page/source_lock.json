@@ -40,6 +40,10 @@
     {
       "path": "page/image_decoders.patch",
       "sha256": "f94ae404e6b539ecc08e00a0ee51e519bd9871b8f1c34677bba6d709791402bb"
+    },
+    {
+      "path": "page/response_metadata.patch",
+      "sha256": "e43f3308640351984e0d9fb2dfbe2e9d84df55663ff4aa52988641dd78d9c214"
     }
   ]
 }

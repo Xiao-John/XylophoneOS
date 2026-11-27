@@ -1,0 +1,186 @@
+--- a/Source/WebCore/platform/network/xos/CertificateInfo.h
++++ b/Source/WebCore/platform/network/xos/CertificateInfo.h
+@@ -2,5 +2,7 @@
+ #pragma once
+
++#include <WebCore/CertificateSummary.h>
+ #include <cstdint>
++#include <optional>
+ #include <wtf/Vector.h>
+
+@@ -23,4 +25,5 @@
+     const certificate_chain& certificateChain() const { return m_chain; }
+     unsigned validationErrors() const { return m_validation_errors; }
++    std::optional<CertificateSummary> summary() const;
+
+ private:
+--- a/Source/WebCore/PlatformJSCOnly.cmake
++++ b/Source/WebCore/PlatformJSCOnly.cmake
+@@ -36,4 +36,5 @@
+     list(APPEND WebCore_PRIVATE_FRAMEWORK_HEADERS
+         platform/network/XOSIPAddress.h
++        platform/network/xos/AuthenticationChallenge.h
+         platform/network/xos/CertificateInfo.h
+         platform/network/xos/ResourceError.h
+@@ -44,4 +45,5 @@
+ if (XOS_WEBCORE_SOFTWARE)
+     list(APPEND WebCore_SOURCES
++        platform/network/xos/CertificateInfoXOS.cpp
+         platform/xos/SharedMemoryXOS.cpp
+         platform/network/xos/DNSResolveQueueXOS.cpp)
+--- a/Source/WebCore/loader/ResourceLoader.cpp
++++ b/Source/WebCore/loader/ResourceLoader.cpp
+@@ -862,5 +862,6 @@
+         didBlockAuthenticationChallenge();
+     }
+-    protect(challenge.authenticationClient())->receivedRequestToContinueWithoutCredential(challenge);
++    if (RefPtr authenticationClient = challenge.authenticationClient())
++        authenticationClient->receivedRequestToContinueWithoutCredential(challenge);
+     ASSERT(!m_handle || !m_handle->hasAuthenticationChallenge());
+ }
+--- a/Source/WebCore/platform/VideoFrame.cpp
++++ b/Source/WebCore/platform/VideoFrame.cpp
+@@ -35,4 +35,5 @@
+ #if !PLATFORM(COCOA) && !USE(GSTREAMER)
+ #include "ImageOrientation.h"
++#include "NativeImage.h"
+ #endif
+
+--- /dev/null
++++ b/Source/WebCore/platform/network/xos/AuthenticationChallenge.h
+@@ -0,0 +1,34 @@
++// SPDX-License-Identifier: Apache-2.0
++#pragma once
++
++#include <WebCore/AuthenticationChallengeBase.h>
++#include <WebCore/AuthenticationClient.h>
++#include <wtf/WeakPtr.h>
++
++namespace WebCore {
++
++class AuthenticationChallenge final : public AuthenticationChallengeBase {
++public:
++    AuthenticationChallenge() = default;
++
++    AuthenticationChallenge(const ProtectionSpace& space, const Credential& credential, unsigned previousFailures,
++        const ResourceResponse& response, const ResourceError& error, AuthenticationClient* client = nullptr)
++        : AuthenticationChallengeBase(space, credential, previousFailures, response, error)
++        , m_client(client)
++    {
++    }
++
++    AuthenticationClient* authenticationClient() const { return m_client.get(); }
++
++private:
++    friend class AuthenticationChallengeBase;
++
++    static bool platformCompare(const AuthenticationChallenge& a, const AuthenticationChallenge& b)
++    {
++        return a.authenticationClient() == b.authenticationClient();
++    }
++
++    WeakPtr<AuthenticationClient> m_client;
++};
++
++} // namespace WebCore
+--- /dev/null
++++ b/Source/WebCore/platform/network/xos/CertificateInfoXOS.cpp
+@@ -0,0 +1,98 @@
++// SPDX-License-Identifier: Apache-2.0
++#include "config.h"
++#include "CertificateInfo.h"
++
++#include <algorithm>
++#include <climits>
++#include <memory>
++#include <openssl/x509.h>
++#include <openssl/x509v3.h>
++#include <wtf/StdLibExtras.h>
++
++namespace WebCore {
++
++static std::optional<Seconds> secondsSinceEpoch(const ASN1_TIME* epoch, const ASN1_TIME* time)
++{
++    int days;
++    int seconds;
++    if (!time || !ASN1_TIME_diff(&days, &seconds, epoch, time))
++        return std::nullopt;
++    return Seconds(static_cast<double>(days) * 86400 + seconds);
++}
++
++static String displaySubject(const X509* certificate)
++{
++    std::unique_ptr<BIO, decltype(&BIO_free)> output(BIO_new(BIO_s_mem()), BIO_free);
++    if (!output || X509_NAME_print_ex(output.get(), X509_get_subject_name(certificate), 0, XN_FLAG_RFC2253) < 0)
++        return { };
++    char* data = nullptr;
++    long length = BIO_get_mem_data(output.get(), &data);
++    if (length <= 0)
++        return { };
++    return String::fromUTF8(unsafeMakeSpan(data, static_cast<size_t>(length)));
++}
++
++static void appendAlternativeNames(X509* certificate, CertificateSummary& summary)
++{
++    int critical;
++    std::unique_ptr<GENERAL_NAMES, decltype(&GENERAL_NAMES_free)> names(
++        static_cast<GENERAL_NAMES*>(X509_get_ext_d2i(certificate, NID_subject_alt_name, &critical, nullptr)), GENERAL_NAMES_free);
++    if (!names)
++        return;
++
++    for (int i = 0; i < sk_GENERAL_NAME_num(names.get()); ++i) {
++        GENERAL_NAME* name = sk_GENERAL_NAME_value(names.get(), i);
++        int type;
++        auto* value = static_cast<const ASN1_STRING*>(GENERAL_NAME_get0_value(name, &type));
++        if (!value || (type != GEN_DNS && type != GEN_IPADD))
++            continue;
++
++        auto length = ASN1_STRING_length(value);
++        if (type == GEN_DNS && length > 0) {
++            const auto bytes = unsafeMakeSpan(ASN1_STRING_get0_data(value), static_cast<size_t>(length));
++            if (std::ranges::all_of(bytes, [](uint8_t byte) { return byte >= 0x21 && byte <= 0x7e; }))
++                summary.dnsNames.append(String(byteCast<Latin1Character>(bytes)));
++            continue;
++        }
++        if (type != GEN_IPADD || (length != 4 && length != 16))
++            continue;
++
++        auto freeDisplay = [](STACK_OF(CONF_VALUE)* items) { sk_CONF_VALUE_pop_free(items, X509V3_conf_free); };
++        std::unique_ptr<STACK_OF(CONF_VALUE), decltype(freeDisplay)> display(i2v_GENERAL_NAME(nullptr, name, nullptr), freeDisplay);
++        if (display && sk_CONF_VALUE_num(display.get()) == 1) {
++            if (const char* address = sk_CONF_VALUE_value(display.get(), 0)->value)
++                summary.ipAddresses.append(String::fromUTF8(address));
++        }
++    }
++}
++
++std::optional<CertificateSummary> CertificateInfo::summary() const
++{
++    if (m_chain.isEmpty())
++        return std::nullopt;
++    auto leaf = m_chain.first().span();
++    if (leaf.empty() || leaf.size() > LONG_MAX)
++        return std::nullopt;
++
++    auto* der = leaf.data();
++    std::unique_ptr<X509, decltype(&X509_free)> certificate(d2i_X509(nullptr, &der, static_cast<long>(leaf.size())), X509_free);
++    if (!certificate || der != leaf.data() + leaf.size())
++        return std::nullopt;
++
++    std::unique_ptr<ASN1_TIME, decltype(&ASN1_TIME_free)> epoch(ASN1_TIME_set(nullptr, 0), ASN1_TIME_free);
++    if (!epoch)
++        return std::nullopt;
++    auto validFrom = secondsSinceEpoch(epoch.get(), X509_get0_notBefore(certificate.get()));
++    auto validUntil = secondsSinceEpoch(epoch.get(), X509_get0_notAfter(certificate.get()));
++    if (!validFrom || !validUntil || *validUntil < *validFrom)
++        return std::nullopt;
++
++    CertificateSummary result;
++    result.subject = displaySubject(certificate.get());
++    result.validFrom = *validFrom;
++    result.validUntil = *validUntil;
++    appendAlternativeNames(certificate.get(), result);
++    return result;
++}
++
++} // namespace WebCore

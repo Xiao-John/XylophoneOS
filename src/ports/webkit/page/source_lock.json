@@ -48,6 +48,10 @@
     {
       "path": "page/jsc_repatch_includes.patch",
       "sha256": "9bb2b6ee3f0008bd930ae06fdd6d25fbb511dbb6a64cf52decf35ea2337a68e9"
+    },
+    {
+      "path": "page/raster_image_encoding.patch",
+      "sha256": "b88e7a4659c28a34c1a6ebb9fd40cefa9a77dbab9b59dc9cdfd3baa92d647333"
     }
   ]
 }

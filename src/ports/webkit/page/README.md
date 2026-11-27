@@ -57,6 +57,7 @@ HarfBuzz ICU、Fontconfig、FreeType、PNG、JPEG、[WebP 与 SharpYUV](../webp/
 前缀使用同一 glibc SDK 构建。WebCore 采用上游 OpenSSL 算法及 PAL 摘要实现，
 由 `OpenSSL::Crypto` 提供链接依赖。静态软件配置使用上游可缩放解码器，
 AVIF 和 JPEG XL 可在提供对应 XOS 目标库后分别由 `USE_AVIF` 和 `USE_JPEGXL` 启用。
+图像编码只接受栅格像素，编码能力以实际 Skia 构建提供的编码器为准。
 
 ```sh
 cmake -S "$WEBKIT_SOURCE" -B "$WEBKIT_OUTPUT" -G Ninja \

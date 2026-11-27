@@ -78,6 +78,19 @@ python3 -B scripts/pumpkin_user_login.py login --system "$SYSTEM" --state "$STAT
   --credential-file "$PRIVATE_CREDENTIAL"
 ```
 
+## 具名资源部署
+
+构建时在上述部署参数追加 `--pumpkin-user-resource --pumpkin-named-resource-store`，
+将匹配镜像的部署清单中的 `named_resources` 设为 `true`。受信操作者用
+`publish-named` 创建或替换对象，用 `erase-named` 删除确切代际。普通持有者用
+`read-named` 和私有凭据恢复其所有的对象。动作参数和返回值沿用
+[原生登录入口](pumpkin_user_login.md) 与 [具名存储契约](pumpkin_named_resource_store.md)。
+
+Linux ext4 上，新盘首次发放后的资源在提供者进程强制退出后保持。管理员确认旧实例
+退出并清理残留套接字后，独立提供者与新客体可读回当前对象。仅还原客体工作盘时，
+保留的盘外记录会拒绝旧状态。经原生删除后再次重启，持有者仍可建立普通会话。
+[ext4 部署与回归回执](../reports/pumpkin_production_resource_recovery_20261127/manifest.json)
+
 受信宿主分别管理启动者和独立提供者，宿主的 root、虚拟化平台及两种角色各自的
 同 UID 进程属于其信任范围。接收者钱包仍由受信启动工具保存和提交。此配置目前
 按独立受控 Linux 环境验收。正式物理启动和控制台证明、硬件代际或宿主完整回滚

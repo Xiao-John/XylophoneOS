@@ -1,0 +1,34 @@
+provider_fs=ext4
+guest_fs=ext4
+PASS verified launch medium is sealed
+PASS deployment cannot fall back to a local provider
+PASS deployment rejects a missing provider
+PASS provider cannot start before independent provisioning
+PASS operator cannot provision the generation provider
+PASS separate Linux UID provisions an empty generation
+PASS operator cannot open the provider store directly
+PASS provider refuses a different peer UID on the same socket group
+PASS launcher refuses a peer outside the pinned provider UID
+PASS operator installs against the independently prepared provider
+PASS non-operator cannot request first issuance
+PASS different sealed image binding is rejected
+PASS profile digest mismatch is rejected
+PASS real guest issues the first credential
+PASS first issuance cannot be repeated
+PASS normal login is denied while the provider is unavailable
+PASS fresh VM and provider process confirm ordinary login
+PASS restoring the unprovisioned guest disk is refused
+PASS current disk still establishes a real ordinary session
+PASS owner starts without a named resource
+PASS registrar commits the first named resource
+PASS committed resource survives provider process kill
+PASS stale socket has no provider after process exit
+PASS restarted provider and fresh VM recover owner and data
+PASS registrar commits replacement under the same name
+PASS restoring the superseded resource disk is refused
+PASS fresh VM rejects the old resource key
+PASS restored current disk recovers the replacement
+PASS stale erase preserves the replacement
+PASS registrar commits deletion of the current key
+PASS fresh provider and VM recover the committed deletion
+PASS ordinary credential survives named resource deletion

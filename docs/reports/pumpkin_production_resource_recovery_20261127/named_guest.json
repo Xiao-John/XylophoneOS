@@ -1,0 +1,171 @@
+{
+  "status": "passed_subset",
+  "build_id": "89a7a3c46a4d912f",
+  "system_manifest_sha256": "04ed6904c3502fc1ae06c64810eed54b2f0b9aa0206631ee6456c83dc495a5d3",
+  "artifacts": {
+    "xos-install.iso": "7cd673ed5c67fda78534e06925058c9de6fe4fdcec85849f16a331fb91ed75e3",
+    "user_files.image.elf": "f86732d1e4839720bcf5c4a7c17703574ff83d18ecfdaaed5ea089df286ad49a",
+    "user_supervisor.image.elf": "cee58d52e615b133a61dab3236c30fc57dce07d7d280ad0972b5b153ef4ea347",
+    "user_pumpkin_durable.image.elf": "17edc8b18eb1b1abb93a97541050b8d81ec0980c6f78fd2d50707b806c0ad836",
+    "user_p2_anchor_proxy.image.elf": "39495649a1e821b3390ed2c8cdc63bc0c85b5ba8762a9b663e80e1ffc4eb2f29",
+    "user_pumpkin_holder.image.elf": "9bd6992ecf94212e7de94fab3a47acac98f321233542f5240a51de6bec6a64ba",
+    "user_p2_sealed.image.elf": "01365bd56cf5e24636f3cdf98adfbd5b69b30acf50d21970b08a59d57f81dab9"
+  },
+  "provider_entry_sha256": "09e500629afe7d5f881b5444f51dfde7cf4d3c83af203a74530281065393d5b6",
+  "operator_entry_sha256": "5f18a6f2c1abfe177b8e22ed987e037e3e167160f0fcfaae4a2c01aa3eee9ec5",
+  "runner_sha256": "cc5d15de84541254ded969985f5c38e598a9cec86b7c31f0dac44c7b16d4de0e",
+  "installation_realm": "0e82aadb0f375988459b7007a1f754e0",
+  "named_resources": true,
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "provider_filesystem": "ext2/ext3",
+  "checks": [
+    {
+      "case": "verified launch medium is sealed"
+    },
+    {
+      "case": "deployment cannot fall back to a local provider",
+      "exit": 1
+    },
+    {
+      "case": "deployment rejects a missing provider",
+      "exit": 1
+    },
+    {
+      "case": "provider cannot start before independent provisioning",
+      "exit": 1
+    },
+    {
+      "case": "operator cannot provision the generation provider",
+      "exit": 1
+    },
+    {
+      "case": "separate Linux UID provisions an empty generation",
+      "exit": 0
+    },
+    {
+      "case": "operator cannot open the provider store directly",
+      "exit": 1
+    },
+    {
+      "case": "provider refuses a different peer UID on the same socket group",
+      "exit": 0
+    },
+    {
+      "case": "launcher refuses a peer outside the pinned provider UID",
+      "exit": 1
+    },
+    {
+      "case": "operator installs against the independently prepared provider",
+      "exit": 0
+    },
+    {
+      "case": "non-operator cannot request first issuance",
+      "exit": 1
+    },
+    {
+      "case": "different sealed image binding is rejected",
+      "exit": 1
+    },
+    {
+      "case": "profile digest mismatch is rejected",
+      "exit": 1
+    },
+    {
+      "case": "real guest issues the first credential",
+      "exit": 0
+    },
+    {
+      "case": "first issuance cannot be repeated",
+      "exit": 1
+    },
+    {
+      "case": "normal login is denied while the provider is unavailable",
+      "exit": 1
+    },
+    {
+      "case": "fresh VM and provider process confirm ordinary login",
+      "exit": 0
+    },
+    {
+      "case": "restoring the unprovisioned guest disk is refused",
+      "exit": 1,
+      "revision": 2
+    },
+    {
+      "case": "current disk still establishes a real ordinary session",
+      "exit": 0
+    },
+    {
+      "case": "owner starts without a named resource",
+      "exit": 4,
+      "result": "Pumpkin named resource read denied",
+      "revision": 2
+    },
+    {
+      "case": "registrar commits the first named resource",
+      "exit": 0,
+      "result": "Pumpkin named resource generation 3 confirmed",
+      "revision": 3
+    },
+    {
+      "case": "committed resource survives provider process kill",
+      "revision": 3
+    },
+    {
+      "case": "stale socket has no provider after process exit",
+      "exit": 1
+    },
+    {
+      "case": "restarted provider and fresh VM recover owner and data",
+      "exit": 0,
+      "result": "Pumpkin named resource generation 3 value 293",
+      "revision": 3
+    },
+    {
+      "case": "registrar commits replacement under the same name",
+      "exit": 0,
+      "result": "Pumpkin named resource generation 4 confirmed",
+      "revision": 4
+    },
+    {
+      "case": "restoring the superseded resource disk is refused",
+      "exit": 1,
+      "revision": 4
+    },
+    {
+      "case": "fresh VM rejects the old resource key",
+      "exit": 4,
+      "result": "Pumpkin named resource read denied",
+      "revision": 4
+    },
+    {
+      "case": "restored current disk recovers the replacement",
+      "exit": 0,
+      "result": "Pumpkin named resource generation 4 value 719",
+      "revision": 4
+    },
+    {
+      "case": "stale erase preserves the replacement",
+      "exit": 5,
+      "result": "Pumpkin named resource generation conflict",
+      "revision": 4
+    },
+    {
+      "case": "registrar commits deletion of the current key",
+      "exit": 0,
+      "result": "Pumpkin named resource generation 4 confirmed",
+      "revision": 5
+    },
+    {
+      "case": "fresh provider and VM recover the committed deletion",
+      "exit": 4,
+      "result": "Pumpkin named resource read denied",
+      "revision": 5
+    },
+    {
+      "case": "ordinary credential survives named resource deletion",
+      "exit": 0
+    }
+  ],
+  "deployment_profile_sha256": "e0c20626de6c32ad050bfde068e0de352c0fd595e901cf8249d99093fe5c87c1"
+}

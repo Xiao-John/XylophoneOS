@@ -1,0 +1,58 @@
+{
+  "base_main": "ebb8a40993d67569ea4b293879f9af67104cddf3",
+  "candidates": {
+    "headless": {
+      "checks": 19,
+      "filesystems": {
+        "guest": "ext4",
+        "provider": "ext4"
+      },
+      "guest_report_sha256": "78cb60fc2d97f38a1be1afab69c3041147079046cbb30b0c22116dad14603a13",
+      "image_toolchain": {
+        "binutils": "2.47.20260726",
+        "binutils_release": "2.47",
+        "cpp_standard": "c++20",
+        "gcc": "16.2.0",
+        "nasm": "3.02",
+        "qemu": "11.1.2",
+        "target": "x86_64-elf"
+      },
+      "iso_sha256": "bd6e6d01ae7b7db5dd1bb6531f9ae065242475bae1f7b8c54deebc8bb28333cc",
+      "sdk_manifest_sha256": "166f4ece77fea76f8bd1b70a82696d69312d168132212605fc692c2d335c4de6",
+      "system_build_id": "ff4077d72bee4820",
+      "system_manifest_sha256": "c59c7896b88102dc3e5a6e4d59da0b2da55a827ba03ac26a20ebc968b89bfbde",
+      "system_source_sha256": "ff4077d72bee482055dea363dc7924aa8beb5330f2d83162faebe55c941d3015"
+    },
+    "named": {
+      "checks": 32,
+      "filesystems": {
+        "guest": "ext4",
+        "provider": "ext4"
+      },
+      "guest_report_sha256": "37476b6a53fdf001d71ef05fea30cf505ebed06ed7c42648151af0dfc8eb2787",
+      "image_toolchain": {
+        "binutils": "2.47.20260726",
+        "binutils_release": "2.47",
+        "cpp_standard": "c++20",
+        "gcc": "16.2.0",
+        "nasm": "3.02",
+        "qemu": "11.1.2",
+        "target": "x86_64-elf"
+      },
+      "iso_sha256": "7cd673ed5c67fda78534e06925058c9de6fe4fdcec85849f16a331fb91ed75e3",
+      "sdk_manifest_sha256": "3e75716c35be5bb5d17f691b1dafba8f39e2b53e54223c9b589228602a16d01b",
+      "system_build_id": "89a7a3c46a4d912f",
+      "system_manifest_sha256": "04ed6904c3502fc1ae06c64810eed54b2f0b9aa0206631ee6456c83dc495a5d3",
+      "system_source_sha256": "89a7a3c46a4d912f751bdc0b6d0c84324e763de208b97e2695c66ea4645ece10"
+    }
+  },
+  "linux_guest_runner_image": {
+    "architecture": "arm64",
+    "sha256": "f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450"
+  },
+  "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "runner_sha256": "cc5d15de84541254ded969985f5c38e598a9cec86b7c31f0dac44c7b16d4de0e",
+  "source_commit": "739bbfbfed4fe59fa5cf7582a2699644e62fecb0",
+  "source_tree": "ced641b24f506c5cd297725292cb49ef4969b6f3",
+  "status": "passed_subset"
+}

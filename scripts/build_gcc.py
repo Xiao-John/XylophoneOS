@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse, hashlib, json, os, platform, shutil, subprocess, sys, tarfile, urllib.request
 from pathlib import Path
 import shlex
+from tempfile import TemporaryDirectory
 from archive_provenance import capture_build
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -69,32 +70,50 @@ def download(url: str, path: Path, expected: str, digest="sha256"):
         raise RuntimeError(f"checksum mismatch for {url}: {actual}")
     os.replace(part, path)
 
-def apply_patches(source: Path):
-    """Apply the locked C-only port patches once to the private source tree."""
-    marker = source / "configure"
-    if "libcody" not in marker.read_text(errors="replace"):
-        return
+def port_patches(languages):
     patches = sorted((PORT / "patches").glob("*.patch"))
     if not patches:
-        raise RuntimeError("C-only host-lib patch is missing")
-    for patch in patches:
-        run(["patch", "-p1", "-N", "-d", str(source), "-i", str(patch)])
+        raise RuntimeError("GCC Seed port patches are missing")
+    if languages == "c,c++":
+        # cc1plus links libCody for the C++ module mapper.
+        patches = [patch for patch in patches if not patch.name.startswith("0001_")]
+    return patches
 
-def source_tree() -> Path:
+def source_tree(languages, patches, patch_digests) -> Path:
     if not LOCK: raise RuntimeError("src/ports/gcc/source_lock.json is missing")
     tar = CACHE / LOCK["source_archive"]
     download(LOCK["source_url"], tar, LOCK["sha256"])
-    root = CACHE / "source"
+    root = CACHE / ("source" if languages == "c" else "source-cxx")
     source = root / f"gcc-{LOCK['version']}"
+    stamp_name = ".xos_seed_source.json"
+    identity = {"archive_sha256": LOCK["sha256"], "patches": patch_digests}
     if not source.is_dir():
         root.mkdir(parents=True, exist_ok=True)
-        with tarfile.open(tar, "r:xz") as bundle:
-            names = bundle.getmembers()
-            top = source.name
-            if any(not (m.name == top or m.name.startswith(top + "/")) for m in names):
-                raise RuntimeError("GCC source archive has an unexpected top-level path")
-            bundle.extractall(root, filter="data")
-    apply_patches(source)
+        with TemporaryDirectory(dir=root) as temporary:
+            stage = Path(temporary)
+            with tarfile.open(tar, "r:xz") as bundle:
+                names = bundle.getmembers()
+                top = source.name
+                if any(not (m.name == top or m.name.startswith(top + "/")) for m in names):
+                    raise RuntimeError("GCC source archive has an unexpected top-level path")
+                bundle.extractall(stage, filter="data")
+            staged_source = stage / source.name
+            for patch in patches:
+                run(["patch", "-p1", "-f", "-F", "0", "-d", str(staged_source), "-i", str(patch)])
+            (staged_source / stamp_name).write_text(json.dumps(identity, sort_keys=True) + "\n")
+            staged_source.rename(source)
+    stamp = source / stamp_name
+    if not stamp.is_file():
+        # Recognize earlier C-only caches only if every requested patch is present.
+        for patch in reversed(patches):
+            run(["git", "apply", "--reverse", "--check", str(patch)], cwd=source)
+        stamp.write_text(json.dumps(identity, sort_keys=True) + "\n")
+    if json.loads(stamp.read_text()) != identity:
+        raise RuntimeError("GCC source cache contains another archive or patch set")
+    host_libraries = next(line for line in (source / "configure").read_text().splitlines()
+                          if line.startswith("host_libs="))
+    if (" libcody " in host_libraries) != (languages == "c,c++"):
+        raise RuntimeError("GCC source cache selects the wrong libCody policy")
     return source
 
 def dependency_tree(source: Path, name: str, spec: dict) -> Path:
@@ -228,18 +247,19 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
         cxx_config = stdcxx / "include/c++/16.2.0/x86_64-unknown-elf/bits/c++config.h"
     if not cxx_config.is_file() or not (stdcxx / "lib/libstdc++.a").is_file():
         raise RuntimeError(f"host libstdc++ prefix is incomplete: {stdcxx}")
-    source = source_tree()
+    patches = port_patches(languages)
+    patch_digests = {patch.name: sha256(patch) for patch in patches}
+    source = source_tree(languages, patches, patch_digests)
     deps = LOCK.get("dependencies", {})
     for name, spec in deps.items(): dependency_tree(source, name, spec)
     build_triple = run([str(source / "config.guess")]).strip()
     host = "x86_64-unknown-elf"; target = "x86_64-elf"
-    patch_files = sorted((PORT / "patches").glob("*.patch"))
     record = {"source_sha256": sha256(CACHE / LOCK["source_archive"]), "sdk_manifest_sha256": actual,
               "builder_sha256": sha256(Path(__file__)),
               "provenance_generator_sha256": sha256(ROOT / 'scripts/archive_provenance.py'),
               "build_tools": {name: {"path": path, "sha256": sha256(Path(path))}
                               for name, path in native.items()},
-              "patches": {p.name: sha256(p) for p in patch_files},
+              "patches": patch_digests,
               "config_site_sha256": sha256(PORT / "config/xos_cache_seed.sh"),
               "cxx_runtime_sha256": sha256(PORT / "cxx_runtime.cpp"),
               "cxx_new_header_sha256": sha256(PORT / "include/new"),

@@ -1,0 +1,28 @@
+{
+  "build_id": "8b81f5304cc1da34",
+  "elf_sha256": "25f797944c743e0850d602b6565f5092ed5ee4b9dad0db5b6728a58043ff7759",
+  "fat_readback_sha256": "25f797944c743e0850d602b6565f5092ed5ee4b9dad0db5b6728a58043ff7759",
+  "fixture_sha256": "a6b1dfe26a7e1aafe448fb31b46d50921461f7495361d504fb746a9b934ebd6c",
+  "iso_sha256": "e81d9bb3737d6156ec19dd123d7829a7f06c715781b6d0ed349a57d03727c764",
+  "link_receipt_sha256": "42942c942558715acd0bf0ace4a74aad1a24875676298aecc9c73964c52422d0",
+  "observed_output": "exec-file /woff.elf\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/woff.elf\n[process] event=wait_blocked parent=7 child=10\r\nXOS_WEBCORE_WOFF_OK uncompressed deflate truncated\n[task] event=reclaimed pid=10 pages=300\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+  "patch_sha256": "9e2cecd7698b3db3aba1bb4422d1e2b964f0117546b73df48b31ef93c2cfadae",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "runner_sha256": "86b7d329e1ae00c5f9b4d59b6c7ae8e1849900f5ca64739ee72726e85e1bfcf1",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "serial_sha256": "6b82d3aba2679ca96653de83857dec4dca53c27246dfed40806299f8ddf3872d",
+  "source_lock_sha256": "5b710ace664113b5e95853e872271b9f34753ce960effe4186b7ae9e784ea07b",
+  "status": "passed_subset",
+  "system_manifest_sha256": "84c879b7de3ae51a0e7356f687058d3b2e804a80a22aa3e73fe6bd6b891b9fbf"
+}

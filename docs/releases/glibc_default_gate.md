@@ -35,7 +35,7 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 | 关口 | 要求的实际证据 |
 | --- | --- |
 | 同一套候选合并验收 | 绑定发行 ISO、安装 bundle、初始盘、宿主与客体 SDK、全部随包资产及各自 profile 的 manifest。从干净盘和复制的旧数据运行发行 smoke。记录通过、失败、未运行的条目及对应摘要。 |
-| 可替换的静态运行库 | glibc 已完成隔离的 C SDK 源码重建与实际替换重链接样例。发行材料按最终 C/C++ SDK 和所发静态程序逐项验证源码、对象、编译/链接配方及接收方复跑。许可、例外及告知按最终资产的条目收录。 [glibc 重建与重链接](../work_log/d25c5def_glibc_detached_source_rebuild.md) |
+| 可替换的静态运行库 | 已用 v2 发行 xypm 的实际 C++ 产物验证独立逐字节复链和 libc 成员替换，两个 ELF 均通过普通客体。最终发行仍须核对所有随包静态程序的对应源码、对象、配方与许可材料。 [实际发行 xypm](../work_log/7209d6e4_glibc_v2_release_xypm_relink.md) · [glibc 独立源码重建](../work_log/d25c5def_glibc_detached_source_rebuild.md) |
 | 升级与回退 | 用最终 profile 重跑原生包升级和可恢复中断；已有同 profile 的 P2→P3 历史证据。保存新旧工作盘和用户数据读回。冻结 v0.0.1-1024 newlib 保持原 SDK、原介质和原盘。工作区默认选择的三次冷启和原 XPK 重打包已通过。 [跨版本升级](../work_log/3ce98ac7_glibc_g4_xypm_p2_p3.md) · [工作区回退](../work_log/50e9a5a4_glibc_sdk_default.md) |
 | 发布记录 | 对实际发行资产重跑许可材料检查、接收方复验与 `CHECKSUMS.sha256`。记录源包获取方式、最终 SHA-256、未关闭条目和各条适用范围。动态装载的资格按 D0–D4 单列，随静态发行时将支持范围写入发行回执。 |
 

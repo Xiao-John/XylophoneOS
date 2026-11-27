@@ -1,0 +1,50 @@
+{
+  "guest": {
+    "build_id": "ce681c073de3d6c4",
+    "installed_disk_sha256": "6a1714e581d7042445d798fe2e1dd3d01e5219199148c60461386535c38af9e8",
+    "iso_sha256": "2aafae3122d8920d706e5ec2bc0f54987dd7bf738b1ef95530136af680e57968",
+    "original_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "release_manifest_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+    "replacement_sha256": "37d2a4b5540ea06672aafe4ce55f79266662f52fb142ba2f40e06ff50b78c622",
+    "resources": [
+      129806,
+      2,
+      0
+    ],
+    "serial_sha256": "24800361dde97a3d8ebc79ea861a4daf27e5f339d0217eb82bd009cfdee338ce",
+    "status": "passed_subset"
+  },
+  "libc": {
+    "changed_members": [
+      "ioputs.o"
+    ],
+    "members": 1686,
+    "original_ioputs_sha256": "eeffa157f26e60b9b3b823b05440b66ce3b388f30febdb31b2908eeea223e1ad",
+    "original_sha256": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+    "replacement_ioputs_sha256": "31b06f4d526ee6ff6cc7247cff47dea0632b417ff7c39a2dd4654ba411abd995",
+    "replacement_sha256": "887a920adbd16da06b1a2201223e936d9127e5a95dca740d98b4bb464572940c"
+  },
+  "materials": {
+    "application_objects": {
+      "objects/program_0.o": "8218f054aa6d48ea8c0ae4ef808a516f5c23f7ae3f8006d0190421e2e931cc14",
+      "objects/program_1.o": "f19d4da2457ad5e6c1d6073f25ed652f5e300a90f028e5f5b1694b26f0871f45",
+      "objects/program_2.o": "83a19d556ce4c89b4f8f9e9a854e71ac1d672d352e44214ecdd1c1af6521ec72",
+      "objects/program_3.o": "4ccaef81fb8c484521d72c1c26818826e6ff1b3c3ddc7020821aca58776e1a1e",
+      "objects/program_4.o": "1def32c1af36f08b35c53ec2a6bb88802265afe037a6688f4aa19213813b588f"
+    },
+    "application_receipt_sha256": "0bd7fe0b3d0d88c9ad0b522c91f0bbaaa66f2d4f89b859e30a4434c7c7c4de89",
+    "bytes": 40734322,
+    "files": 58,
+    "manifest_sha256": "1df929c4e0eb1925f3a17e8ea71504a12329336d0b7fce29eb035dc16f8831da",
+    "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "receiver_script_sha256": "ac0ac3645a411ab564ccfa5a79ec850a57cade66b7f263d8fbee8316801311e3",
+    "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce"
+  },
+  "negative": [
+    "materials_manifest_digest_mismatch",
+    "replacement_archive_digest_mismatch"
+  ],
+  "source_commit": "7209d6e4",
+  "status": "passed_subset"
+}

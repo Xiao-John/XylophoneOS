@@ -1,0 +1,19 @@
+{
+  "files": {
+    "binding.json": "5076e955944c2bb1fa5edce83617351189d8fbca5c70a321ec877d317840f4c2",
+    "current_combination.json": "1cfb395ce3a4ced1309f05d5b1077c31ee0e069ee8a3645f259f646180877a0d",
+    "current_combination.serial.log.gz": "1447ac0910b3f69e82c7ecee071cda464d52d23365745b0974103048cfaededa",
+    "curvive_audit.json": "8d67ed40f79a6bfc13684714747a6acbbb27a4d8db0670e80ac349e49a28bbd2",
+    "gnu_seed_mainline_combination.json": "ae62fd1c5eb90fe193cb2cc6f2ab397b217febc394e00c6c44983ced4357a6d4",
+    "gnu_seed_mainline_combination.serial.log.gz": "ff7aea59eca6b9389b01169d70e6e51b17e0fce4ae05fd91c82f515dbc9f7f38",
+    "guest.json": "4d475266c4323c73c6752411708c2b63a00fed8d1463178a1f54630a60f3532f",
+    "installed.serial.log.gz": "bf436fcd3a583d5163d7025b891019e0f4046b1e99adafc4cc1d826584441ec5",
+    "materials_manifest.json": "0eb68317961671846fc813e1f5570fbb330a611b0b2c725792bc72bcd4e4b11c",
+    "qt_license_audit.json": "0e8cd6e1db4e81b6fff5d3b1400a03724f42ae2137595a5c4d31b82324dfef4d",
+    "relink_receipt.json": "9ba2cd520923e5a6a97ea11c62ed58059ad13c57057ed92c7f55d71f2c34231e",
+    "restored.serial.log.gz": "a77525f938667a4d8d4b0fce2221c928aac549d130d1861e19aaf3141c729971",
+    "upgraded.serial.log.gz": "f8a24c49592ec4b488cd31623cb0eab87380ef543a15c6786d975f2fe7b57ba6",
+    "widgets_kit_manifest.json": "2b0d50bdf3e94f174157953587527a0f5d1ff232d73e924c61bb97a206157e77"
+  },
+  "version": 1
+}

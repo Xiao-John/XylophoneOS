@@ -1,0 +1,111 @@
+{
+  "checkout": "aa39befa730fb4298b99b9daf637dec082cd79ad",
+  "dash_elf_sha256": "60d0a0a3f750205d1972c673674aec61203534a628c0b13d320417f7c6f92037",
+  "dash_sdk_manifest_sha256": "c43c9e4c0b058769cfbb8a58f0613a562b2b0257d254914334773baaa4c128c8",
+  "guest": {
+    "after_services": [
+      129696,
+      3,
+      1
+    ],
+    "baseline": [
+      129696,
+      3,
+      1
+    ],
+    "launches": [
+      {
+        "after_payload": [
+          121620,
+          5,
+          3
+        ],
+        "daybreak": {
+          "bright_pixels": 432916,
+          "colors": 10247,
+          "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+        },
+        "desktop_sample": [
+          9008,
+          3,
+          1580
+        ],
+        "launcher": "xsh",
+        "midnight": {
+          "bright_pixels": 10293,
+          "colors": 16273,
+          "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+        },
+        "ready_wall_seconds": 17.235
+      },
+      {
+        "after_payload": [
+          121620,
+          5,
+          3
+        ],
+        "daybreak": {
+          "bright_pixels": 432916,
+          "colors": 10247,
+          "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+        },
+        "desktop_sample": [
+          9042,
+          3,
+          1580
+        ],
+        "launcher": "dash",
+        "midnight": {
+          "bright_pixels": 10293,
+          "colors": 16273,
+          "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+        },
+        "ready_wall_seconds": 16.677
+      }
+    ],
+    "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "serial_sha256": "37a0ffb19b6815085f68c6e244afe3220ad612be59edd3d5bb352f8aa68153f3",
+    "with_graphics": [
+      121620,
+      5,
+      3
+    ]
+  },
+  "install": {
+    "backend_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f",
+    "id": "xos.mobius",
+    "mutations": 78,
+    "operation": "install",
+    "output_sha256": "a573d195cdea8f3390bdf5a6b86821fd0e4debba695cc8aec6ea7a913d1e642b",
+    "source_sha256": "61ffc81448c65d69b2eafe7b9be3e8d0770bf6862ca7d374505b784682b93322",
+    "status": "exported_candidate",
+    "verified_files": 49
+  },
+  "iso_sha256": "7173f9791fad5beee09080f7a5d79f3f476cee37013968e44090ffd01648b572",
+  "mainline": "f66021aa031945cf0ecc72f7d70c5f32cdec80f2",
+  "manifest_sha256": "166a4a420afcdc9e9391eec9f5b92f969e9a83f24966fef0232e1c11104e9742",
+  "mobius_source": "7bfaee82e7407633463fbd0a2daa5890b7cb5955",
+  "package_sha256": "efd3535f0eb02f2f38d8364f0725eb66d41f0ce962e8e3fa8be4c601e9c74da0",
+  "payloads": {
+    "usr/bin/mobius-session.elf": {
+      "build_receipt_sha256": "8a63ac30bde37c57f364aba277768a35d74bd4decb237ef03390281530d3a831",
+      "elf_sha256": "bd63dfc998ca6bb448ddc3e7c55e6b08d9a5fd6cbc905e22bb5c319caa3e6674",
+      "widgets_kit_manifest_sha256": "8471475b122f7aac24f985796320bf88f0252f996015a25f3042bbda85997947"
+    },
+    "usr/bin/mobius.elf": {
+      "build_receipt_sha256": "37546a47605a33e36456b04e0896122c9d7b9576346eb1b59b638427e484bae6",
+      "elf_sha256": "6b17e1ad2085b0efd2e36c6b22ab5125b73c2697fe849eb7da53b11bd3b01538",
+      "widgets_kit_manifest_sha256": "8471475b122f7aac24f985796320bf88f0252f996015a25f3042bbda85997947"
+    }
+  },
+  "preserved_user_files": {
+    "/usr/share/xos.mobius/appearance.txt": "f51d64d7531ae28eb5ef3edde58bd46122069187d40fa9021ac54ede7ebb694e"
+  },
+  "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "status": "passed",
+  "system_build_id": "3b72216a00fc7f3c",
+  "system_source_bindings": 2027,
+  "tree": "9245a0a9c3fea8bb4dfc273c94f9feb343fd2123",
+  "widgets_kit_manifest_sha256": "8471475b122f7aac24f985796320bf88f0252f996015a25f3042bbda85997947"
+}

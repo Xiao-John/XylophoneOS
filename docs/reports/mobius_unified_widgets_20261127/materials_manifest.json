@@ -1,0 +1,384 @@
+{
+  "files": {
+    "link/objects/CMakeFiles/mobius.dir/.qt/rcc/qrc_mobius_wallpaper.cpp.o": "58b079fb696d2a5ee048cd3f9dde1be4d1ae89117a027984453b4f2daeb910f4",
+    "link/objects/CMakeFiles/mobius.dir/.qt/rcc/qrc_xos_aurora.cpp.o": "c00da82759cec9ab69526ab0f658929f807a53401081eeb7b955a2e576bdf292",
+    "link/objects/CMakeFiles/mobius.dir/.qt/rcc/qrc_xos_fonts.cpp.o": "02cd069507ca88baf63835a0b1a3f7860ead2f8c36ea9dd1c6689293156ca187",
+    "link/objects/CMakeFiles/mobius.dir/xos/src/ports/aurora_desktop/main.cpp.o": "dfe0c3fe5f014522893f99dafeee6aa2a26042dd52f9b86f4ce0e1c553e1aca0",
+    "link/objects/CMakeFiles/mobius_session.dir/xos/src/ports/aurora_desktop/session.cpp.o": "fe38ad434f6295fabb0aa375255f8f35db2bcd1a31488ccb6e8e7eca438ef640",
+    "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/arch/x86_64/tls.cpp.o": "a77f9a2f0ee50af70d4e81511eb3c7cf62e43676ebbe38e3e7a4af54aded31e7",
+    "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/loader/elf.cpp.o": "53fff9eb97634c91873ef9f670c57dee35099fad76daaa02713659c4d54886a7",
+    "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/loader/load.cpp.o": "e56a21f1e3d975fe34d71ecc3d883d5bfa7e874ec0ee65d7f1e7d5b1ff28b299",
+    "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/sdk/file_client.cpp.o": "dc1bed1b6a58bf8153a093641e7d22e71ec4536b133a05c03ba7d0b0a2394109",
+    "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/sdk/text.cpp.o": "705747d75337030a96331e2d7ceac80249c1a3224e8fd9dae02c3f2904b76f52",
+    "link/objects/libmobius_aurora.a": "f1a2ca40bf90b6d1699848c8d724b11c75fd7dfac6d7139f5fc1f7cd769b7370",
+    "link/objects/libmobius_xos_qpa.a": "1b4724d2ba914b7ff52f7c39d18578f906ee8dcebbac1d913bc02f9e144699d8",
+    "link/qt/lib/libQt6BundledFreetype.a": "d78a5e36353f327416ebe2b08d37f551a7f064f378dbccf1608c7c9df685a337",
+    "link/qt/lib/libQt6BundledHarfbuzz.a": "40d4e3f770fa6581324b464f385338403dc3d68e44c43748904ef7fa52f16f63",
+    "link/qt/lib/libQt6BundledPcre2.a": "094c9d5c744110c35e039139348504340201a06978ea7657a8b0a7cb6f6d506a",
+    "link/qt/lib/libQt6BundledZLIB.a": "6d7371e58ff2e1188b8f8473d3d5710989f13f4c550140b6a999c543b3b0e4b1",
+    "link/qt/lib/libQt6Core.a": "e9b100215dd007839fed032a33cee9d7b4438de0d29a59426fe3e23ef46bb576",
+    "link/qt/lib/libQt6Gui.a": "b73578d363e3753533078b6f50480533d6d67ac8d0131bafb6fe404e30c6c00e",
+    "link/qt/lib/libQt6Widgets.a": "01bfd4b1a48f3c8d1a87d823d008f396ace15efc7f0313d3080d8f3dd1dad05f",
+    "link/qt/lib/objects-Release/Gui_resources_1/.qt/rcc/qrc_gui_shaders_init.cpp.o": "a0f6e7b5fe10d13385f0c5997b51804acdab8687059446b79e57fa5c7cd88a5d",
+    "link/qt/lib/objects-Release/Widgets_resources_1/.qt/rcc/qrc_qstyle_init.cpp.o": "006b4e8e31220a6babae99bed3f17ebf9479eac16a4c91d1fd8a4cce287d8897",
+    "link/qt/lib/objects-Release/Widgets_resources_2/.qt/rcc/qrc_qstyle1_init.cpp.o": "88f0d208b63085e46358f3d162a241d6605446a82a150d63c991298bd6d9314e",
+    "link/qt/lib/objects-Release/Widgets_resources_3/.qt/rcc/qrc_qstyle_fusion_init.cpp.o": "2bea8f6034e010240671cae70a57b9cd5c27f172301def898949bee6c8dbb0d2",
+    "link/qt/lib/objects-Release/Widgets_resources_4/.qt/rcc/qrc_qmessagebox_init.cpp.o": "4cfe273c2176be9bbf1c137fb87e486a2383d507ded05eee757ea9996a6a7b69",
+    "link/sdk/user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+    "link/sdk/usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+    "link/sdk/usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+    "link/sdk/usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+    "link/sdk/usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+    "link/sdk/usr/lib/libc.a": "5c22e215d68aea22a61cede19ee92e27716eb63b817b1fc4f82ac9a5472acb8c",
+    "link/sdk/usr/lib/libgcc.a": "76e46640d9329f32d0b87dc68d7b571e2a4f8d7474c564dc2e669dff81fd8916",
+    "link/sdk/usr/lib/libm.a": "da7a7e8026e5cfead978de1574ed70b555105171d500091894a7b62d2ab8e35e",
+    "link/sdk/usr/lib/libstdc++.a": "9794f0f76a5c0f0ecff749f2013407b9ac3f97361671b65da0c19d93dd2913d3",
+    "link/sdk/usr/lib/libsupc++.a": "d048424c3b40156b1dc55cd09864f48f3c31273271bf72a4a48fa6380e90d526",
+    "link/sdk/usr/lib/libxos_terminal.a": "52df6bf395e70853e24244011d4ab7cfc0d1e43cfaf62840d33db3e13c6d8e94",
+    "link/sdk/usr/lib/xos_start.o": "a01e55e672c11bcef47e4739c8b526d760446517d8c3b525ff44c5e62c619332",
+    "link/sdk/usr/lib/xos_start_c.o": "48719e60452baf153d7e3e7e2c1a30c09415b0ebb9c886e04879a17b7fd8d3cf",
+    "notices/qt/DOUBLE-CONVERSION-LICENSE": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca",
+    "notices/qt/GPL-2.0-only.txt": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+    "notices/qt/GPL-3.0-only.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "notices/qt/LGPL-3.0-only.txt": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+    "notices/qt/LicenseRef-BSD-3-Clause-with-PCRE2-Binary-Like-Packages-Exception.txt": "0526625fcc746a42d3f19a0ab357d3dc8479fdbe3bfd168825498f50215c7a63",
+    "notices/qt/LicenseRef-Qt-Commercial.txt": "9b1f50aae6267f9d5e0ceb6775ee86450262c25ec7c0573e151fe5d3f18a4700",
+    "notices/qt/MODIFICATIONS.md": "7a499b11c231a67ad35d9b99a613ab6067d1e0d99c0e36305ac13c4922f1a42f",
+    "notices/qt/PCRE2-LICENCE-SLJIT": "5f216505c0f6ea3273caec89e766eef93cdeb7bbb0c429f9360116d7c938feeb",
+    "notices/qt/PCRE2-LICENCE.md": "9cf7ac6976099a1d856826d3ef1b093bd6b84489dc6100628ac79e740cf9885a",
+    "notices/qt/Qt-GPL-exception-1.0.txt": "40678d338ce53cd93f8b22b281a2ecbcaa3ee65ce60b25ffb0c462b0530846b2",
+    "notices/qt/SHA3-BRG-ENDIAN-LICENSE": "2fed6f252ca4a7e813811de3cd3cd08183edd4138bdee909410ef6eee394e82c",
+    "notices/qt/SHA3-CC0-LICENSE": "1f2786e2c5befeb4dcba6638db6528bf96ef5d2cf24bc85ab5a81ef00abef59d",
+    "notices/qt/ZLIB-LICENSE": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+    "notices/qt/Zlib.txt": "d7e3139972874dc8abdbbfce27ec1e6f942b28279dd7d27453630a8b4610e080",
+    "notices/qt/gui/src/3rdparty/freetype/BDF-LICENSE.txt": "e4e792f29e66750f2e410fd7b50a567652c180f6ee15e1a4dfa0bb5cde524537",
+    "notices/qt/gui/src/3rdparty/freetype/LICENSE.txt": "bf543cdda11864477b8d2ca2aa9afc2aaa8f9133461b4d962ed6ec73646256a1",
+    "notices/qt/gui/src/3rdparty/freetype/PCF-LICENSE.txt": "6938597bfdeca0db191a8f9ede52eaf2482c2c71a0094c084747a1235f9958fe",
+    "notices/qt/gui/src/3rdparty/freetype/ZLIB-LICENSE.txt": "2b1f5d615382a151af3eb71462ad17d89e2efee8fa7664058d35d3d9237ebb19",
+    "notices/qt/gui/src/3rdparty/freetype/docs/FTL.TXT": "08c135755dd589039470f1fdbb400daaabaaa50d0b366d19cebff4d22986baa1",
+    "notices/qt/gui/src/3rdparty/freetype/docs/GPLv2.TXT": "c4120c6752c910c299e3bd9cb3a46ff262c268303ca2069b61f92f10a5656c18",
+    "notices/qt/gui/src/3rdparty/freetype/qt_attribution.json": "3bb2eabc9379310a420ec2461e85a3224396cf8ba15fd53591d770ca16715553",
+    "notices/qt/gui/src/3rdparty/harfbuzz-ng/COPYING": "ba8f810f2455c2f08e2d56bb49b72f37fcf68f1f4fade38977cfd7372050ad64",
+    "notices/qt/gui/src/3rdparty/harfbuzz-ng/qt_attribution.json": "c998c9784a4a0021c2f68632a9e8cd5589dbc7f7336feeb156a4240b6b32d718",
+    "notices/qt/gui/src/3rdparty/md4c/LICENSE.md": "d30937367d5413e7eaa218b1640b8946ff76fd34d97152f6979fd96169d5d0fc",
+    "notices/qt/gui/src/3rdparty/md4c/qt_attribution.json": "59098b9262ac268e73495cb1b1603b5c899d5c532db6ca96e69ffac7062445f5",
+    "notices/qt/gui/src/3rdparty/wasm/DEJAVU-LICENSE": "7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93",
+    "notices/qt/gui/src/3rdparty/wasm/qt_attribution.json": "2019d37665bfb2ce7d4931d0bdf7427ea178919399cf37c0fef14a229144936b",
+    "notices/qt/gui/src/gui/painting/QIMAGETRANSFORM_LICENSE.txt": "46b3cbfa2f2946b93291506351e9be1dd0a28d2a53260f5aa488abd36fbeca9d",
+    "notices/qt/gui/src/gui/painting/XCONSORTIUM_LICENSE.txt": "a216b01291eb38fc1af93cfccf1fc67b48d9923612e517c2a695e95b3f03c22c",
+    "notices/qt/gui/src/gui/painting/qt_attribution.json": "6827f1fec09e4a3c89381f0724c998243e412a56a47735ab5b899d470fb47ddf",
+    "notices/qt/gui/src/gui/text/AGLFN_LICENSE.txt": "40818155548ff41c67d3a40edf355e9658992b292c227f4c1147425cedc746c6",
+    "notices/qt/gui/src/gui/text/qt_attribution.json": "cc5c2eedae7d50df84088f1f73a7e3b4720eb3de07019e0ddcc97af74e631671",
+    "notices/qt/redistribution_manifest.json": "4bce4942e3e42d11205b5f53e523e9ba8651ee1cc396bcb8c8dcfc36067f3198",
+    "notices/qt/source_lock.json": "f37d1f82234b71066d59dd704febf86ba59762bce53021ef0ef0774709c6ed04",
+    "notices/sdk/usr/share/xos-glibc/COPYING.LIB": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+    "notices/sdk/usr/share/xos-glibc/LICENSES": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+    "notices/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+    "notices/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB": "a9bdde5616ecdd1e980b44f360600ee8783b1f99b8cc83a2beb163a0a390e861",
+    "notices/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+    "notices/sdk/usr/share/xos-glibc/cxx/licenses/COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+    "notices/sdk/usr/share/xos-glibc/cxx/licenses/COPYING3": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "notices/sdk/usr/share/xos/terminal-support/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "notices/sdk/usr/share/xos/terminal-support/licenses/mit_legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+    "notices/sdk_profile.json": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "notices/widgets_kit.json": "8471475b122f7aac24f985796320bf88f0252f996015a25f3042bbda85997947",
+    "sources/qtbase.tar.xz": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80",
+    "sources/xos/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "sources/xos/NOTICE": "dd2d47bae96472ce65252423f76ec3b868e83b4a03b34753f77f74f7a3c3f62e",
+    "sources/xos/src/ports/aurora_desktop/glibc/CMakeLists.txt": "5a1bd7de310cc77cacf037c752af45c2cadad2acbbe806bc9fbb96a6f7620748",
+    "sources/xos/src/ports/aurora_desktop/glibc/build.py": "e3340074f03a6bb7b007548a09a95cf5115d9d1401a01f7066b3d1946e568005",
+    "sources/xos/src/ports/aurora_desktop/glibc/widgets_kit.py": "e1a3d6350d591a394237a45c0191de774132741c129327bf96a81cc2b95259aa",
+    "sources/xos/src/ports/aurora_desktop/main.cpp": "f25aa9210b045c4eadcfbc4337161eb07568d1b9698c0cae37c5f8fdb980235e",
+    "sources/xos/src/ports/aurora_desktop/session.cpp": "f766989aaf1ed6e8c74e1380a6862fc51751524945e9b949fda193aacb82a517",
+    "sources/xos/src/ports/qt6/aurora/assets/aurora.bmp": "bf7f20155b329125e1fcf135f9de51ccf6c2e5cc700464d8f022908868d5cfe4",
+    "sources/xos/src/ports/qt6/aurora/assets/curvive_wallpaper.bmp": "07fbdfbb8d057f894ceaf45344b4204939ec5e1a03e2e89a98ad2c9727444321",
+    "sources/xos/src/ports/qt6/aurora/assets/provenance.json": "739cda9a5d26a905650a877da6b7f2de955807b4c40273d96f6b2b735b9f9b1a",
+    "sources/xos/src/ports/qt6/aurora/aurora.hpp": "1d02e604a659c907e9bd19fbcc586ea42c068f0b8f01368fd0527392dfd60e75",
+    "sources/xos/src/ports/qt6/aurora/blur.cpp": "e9ba31d3202f56f2128d7d2f5558118a6472658877e6399551d2b694517eaca0",
+    "sources/xos/src/ports/qt6/aurora/blur.hpp": "d72095989c3c7e4179b70b45a0faa789e6ce90861e83289552281ece2ca9edba",
+    "sources/xos/src/ports/qt6/aurora/desktop.hpp": "e444398a1d5d43760409fe53082767713ca1dd8e8f6979370353639bf8b89425",
+    "sources/xos/src/ports/qt6/aurora/desktop_shell.cpp": "72117fb74ebc54f8c3367bae3f622bf244838caabb20a1081d496ba743e7760d",
+    "sources/xos/src/ports/qt6/aurora/interactium_showcase.cpp": "cea9161a03b6e975f3f8d6d8c6bd7c66dc160621bdff9525314947724e255912",
+    "sources/xos/src/ports/qt6/aurora/semantics.cpp": "80e5ef709e00f78524c0b20ad2a3ecf9d998bdb52f58fed95492b4da0571dd61",
+    "sources/xos/src/ports/qt6/aurora/semantics.hpp": "7b14f4cf5a21c93f044484060eaf49f6364ef5b7e594ee3c293339095f018e2b",
+    "sources/xos/src/ports/qt6/aurora/shell/artwork/Curvive.png": "0c399171dadd47637703b9758156d19513f98cef08231b757a0843e16c029bf4",
+    "sources/xos/src/ports/qt6/aurora/ssg.cpp": "f5619ddb820f2a60ebf65d1d57acdc5d6e09361ddbfac553a42759e46a9c43bc",
+    "sources/xos/src/ports/qt6/aurora/ssg.hpp": "1639d0b60eec4662b6f92b37de65a176f102f559ab96fa21f4837d1fef3a462d",
+    "sources/xos/src/ports/qt6/aurora/ssg_pipe_provider.hpp": "38b80aab6b94a428ceebbf8b102377bd2c150678d3277d419b2d3fc6a59d67ae",
+    "sources/xos/src/ports/qt6/aurora/style.cpp": "7b0bb62edccec1ac6c5c4851204b5445c70aaef9b5ea1536a3b2b0bd569e02a9",
+    "sources/xos/src/ports/qt6/aurora/style.hpp": "8007ad7a09ad5d72c037a1794da629b93a503ec289e6d48c62a3a515fe979c9f",
+    "sources/xos/src/ports/qt6/aurora/theme.cpp": "2074179d64b2fae3a8eebde73fa6927e61ff47212b60af78dd607a9a9c23a7bc",
+    "sources/xos/src/ports/qt6/aurora/theme.hpp": "01929283123fe2177519f9ff822adb888c1040c62aed7b0ee5bb94691a857192",
+    "sources/xos/src/ports/qt6/aurora/window_edge.hpp": "7179f75197c67df74b9f75c6160a2f9ef3cac0ca8ca87f3e60ea42f3f2723d16",
+    "sources/xos/src/ports/qt6/cmake/Platform/XOS.cmake": "e6aae49930d8da4ccecfa8dc9e888e4bac246944638c9ea2a2dc15b055affe2a",
+    "sources/xos/src/ports/qt6/glibc/glibc_qtcore.patch": "8798d8aaa9e56e5b49ad181dd6eb4c4239c07fcb3c7a48243f0dc53116936c39",
+    "sources/xos/src/ports/qt6/glibc/glibc_toolchain.cmake": "5a318cb8aa557c0d065b8f890392dbabf5bb7277fd7d3f8c0c2ef46394e11d1b",
+    "sources/xos/src/ports/qt6/glibc/xos_qpa.cmake": "4316e3e377f2f86668d3d9e9ddbf42d4bc9a63e415e7cf2ddbe888ea7927504d",
+    "sources/xos/src/ports/qt6/patches/0001-xos-platform-detection.patch": "fbce5274742c204e1aae33f2784dd2af4173171783d4b8ca253fc7e81263f9aa",
+    "sources/xos/src/ports/qt6/patches/0002-xos-event-dispatcher-selection.patch": "cdec41ec6eeefe15dfb71593c3025ea536e15aff1d0838885d506afbc380b2f7",
+    "sources/xos/src/ports/qt6/patches/0003-xos-system-info.patch": "0f21850057360b30c959dc2dce2346e4fa5f28fb3e3b86fb0ab6f70cba8d1435",
+    "sources/xos/src/ports/qt6/patches/0004-xos-environment.patch": "738455a0da869c08209a3a9d533121ad123340d5adce8265acaa568c46b9ab81",
+    "sources/xos/src/ports/qt6/patches/0005-xos-no-mmap.patch": "5263f0c2be9eac37fd83f851661e25c5fd31c67bfa2a34936b4ce51dd3cf4ece",
+    "sources/xos/src/ports/qt6/patches/0006-xos-sha3-endian.patch": "38c46c7e3d310104c0d81686df877dda94770f2ad5259bbf025595a5bc328580",
+    "sources/xos/src/ports/qt6/patches/0007-xos-filesystem.patch": "4e4bc852cb32fac245603c3338019fe53793855c139b47e1fc8267b5712fb63c",
+    "sources/xos/src/ports/qt6/patches/0008-xos-gui-platform.patch": "04f5d45d8d97e334bed40d6f042099b6387f014e9356faee0c996b1ba6339d11",
+    "sources/xos/src/ports/qt6/patches/0009-xos-freetype-no-mmap.patch": "2551ba2f64fbd5c3b875ec1232a9861b300b63109e4b08bfdfb596ba7ec67967",
+    "sources/xos/src/ports/qt6/patches/0010-xos-host-arm64-acle.patch": "3d667d1ae8d77008a147c691db9837022f2ef0b6d4d5cff865826d613987a442",
+    "sources/xos/src/ports/qt6/patches/0011-xos-qmalloc-qtglobal.patch": "7e57a67954734f7000dc979e68c699f9dd675e32af84b1bb6832060ed0a150d5",
+    "sources/xos/src/ports/qt6/patches/MODIFICATIONS.md": "7a499b11c231a67ad35d9b99a613ab6067d1e0d99c0e36305ac13c4922f1a42f",
+    "sources/xos/src/ports/qt6/prepare_gui_source.py": "23e94af7643e05b6b2ccae72777fcdbeb4e3bcb970cf2f1f3b62c1c486c4e8da",
+    "sources/xos/src/ports/qt6/prepare_source.py": "78ad5f4a9831533145ba252800ce605abe36aab3c4ba9ab70ff04d905028f9e6",
+    "sources/xos/src/ports/qt6/prepare_widgets_source.py": "6b466e8f6021520ff46dd74d01bbef52aff44f4ad231da1891ebd9e14f53d331",
+    "sources/xos/src/ports/qt6/qpa/qxos.cpp": "a5b17b0916aa9484430cdb59f528e6fb8b44b6511210a5df8319d06b485ff555",
+    "sources/xos/src/ports/qt6/qpa/xos.json": "c396f38dac4072ff76a4802b68ae198c62a8d3f01a000b735cd0eaa79b86eda0",
+    "sources/xos/src/ports/qt6/quick/glibc_qtbase_platform.patch": "cc3f8344f1dc93178812108c6945d57451771865e14fdc165784417708478b7d",
+    "sources/xos/src/ports/qt6/runtime/qeventdispatcher_xos.cpp": "1931d168f974a419d6c846e531daf957e39539274fc8ff6c032f1faacaf83fee",
+    "sources/xos/src/ports/qt6/runtime/qeventdispatcher_xos_p.h": "8b5fafe1af64fb375987f9a1649e5b056bd326d33cac78b4f2228f2d9e93c9e3",
+    "sources/xos/src/ports/qt6/runtime/qmutex_xos.cpp": "80fe2cca2604e4f0d7221e8356386299190aca474b39c53f634bba7749d16d88",
+    "sources/xos/src/ports/qt6/runtime/unsupported_posix.cpp": "cc4e0f62231f0764ee0c6732824a85f01f1621e8c176884aea554aedea6c3eb6",
+    "sources/xos/src/ports/qt6/runtime/wake_gate.hpp": "dfcee67c979807ae4fa4cf2c764ba597701622dc2df5b6d66e38fbbe35d168ff",
+    "sources/xos/src/ports/qt6/source_lock.json": "f37d1f82234b71066d59dd704febf86ba59762bce53021ef0ef0774709c6ed04",
+    "sources/xos/src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "sources/xos/src/shared/include/xos/audio_abi.hpp": "6b9e27332b5163d2eceb9e364581a80f74be098c8b47711f7b577f7e9b4b901d",
+    "sources/xos/src/shared/include/xos/device_abi.hpp": "cdece558f19833d44f5d372a674d430e869c8a9d8fdfb8d1a81e49581a10fa11",
+    "sources/xos/src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+    "sources/xos/src/shared/include/xos/file_abi.hpp": "9e6e6585dd8dee2e9b2db8d10fac7aeeffb693b41f8f4702d119bbfee3e5c4aa",
+    "sources/xos/src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+    "sources/xos/src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "sources/xos/src/shared/include/xos/net_abi.hpp": "14e0baf22c2de09588c8924b07a05a7b6095fc4db0b9d408405efbaa18cd819e",
+    "sources/xos/src/shared/include/xos/net_service_abi.hpp": "14a7cb20681ef4b48f59c2458acb4d31e482934abc264cb7283e416d32a273f0",
+    "sources/xos/src/shared/include/xos/process_abi.hpp": "86a50a4d5326ab2797bbec9c460cb2226d72de803948fce5312bb9276e49acb9",
+    "sources/xos/src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+    "sources/xos/src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+    "sources/xos/src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+    "sources/xos/src/user/arch/x86_64/tls.cpp": "07bfc7630f5d9aa3a88af20fead65bb6e3a25cf877cc3a4a369750fb96e1a143",
+    "sources/xos/src/user/include/dirent.h": "3ae51667ba8b0274e282b9aa32fa6def6043416a7f9771fb22527d68e6ecfbad",
+    "sources/xos/src/user/include/semaphore.h": "b4f2107885484f362644f4da96d36fb0eebfa4874c6442882461b1f96f0e239c",
+    "sources/xos/src/user/include/sys/mman.h": "9231925510624df68bb89fae10babc1013686f3e297bc6e637a6b265c01e728c",
+    "sources/xos/src/user/include/termios.h": "d35d50f3ea11ea8bf29933ce6ced0a944f7625c6ccf85276e1b6aec9eb42eb3c",
+    "sources/xos/src/user/include/utime.h": "0ae28ba028c0e0d744b5bd8eb9a7dd6b7a5b4476e89949d4a66a0afef1b1fe3c",
+    "sources/xos/src/user/include/xos/audio_client.hpp": "75b4ef444194a38a9f64889b49c849ad399870129c81b2971ae27f8bfbd38746",
+    "sources/xos/src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+    "sources/xos/src/user/include/xos/device.hpp": "a51d315ee644b727da7db66bb3111c3553a85e6fb8c0e8b6870dc70b07c08e5d",
+    "sources/xos/src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "sources/xos/src/user/include/xos/elf.hpp": "c93092a90a6bd6295ddb4f3352cc47d597cb0c4d71047870399db3585dfd9f28",
+    "sources/xos/src/user/include/xos/execution.hpp": "bfd902bcc7aa654df5408d8014960036ed387d25d8551b5e682c4e7ec367abb9",
+    "sources/xos/src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+    "sources/xos/src/user/include/xos/file_client.hpp": "fa6df84ef7f249f681408daf11cd2f2137f3aff8b218667f0b324c13ce644f65",
+    "sources/xos/src/user/include/xos/file_ui.hpp": "b078a633cb47dd6537ae4bc945a766750e0467b860bfaa677275d5d92758123c",
+    "sources/xos/src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "sources/xos/src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "sources/xos/src/user/include/xos/net_client.hpp": "b4024b191e578f9af9820ed5b09622b4ba137c949026465ebd6134e63a8b7b62",
+    "sources/xos/src/user/include/xos/net_service_client.hpp": "81f59343ac8da95a5e3c9feba86f10269b5d88c46aad64d21ce975097cf0de98",
+    "sources/xos/src/user/include/xos/net_transport.hpp": "1476c895b0cf5b4082989d4d8f60c0229e91151bab715e8e4f546861d8f4851f",
+    "sources/xos/src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "sources/xos/src/user/include/xos/sdk.hpp": "9d1649943e9a62ff83612ec1d7bcbdfacec302696a89554e0cf82526f9c82769",
+    "sources/xos/src/user/include/xos/spawn.hpp": "2e2779af1ab790eca0bd10484921d69d69871828fb5494bdd8e2c7f3f4f30077",
+    "sources/xos/src/user/include/xos/terminal_client.hpp": "3ef1d2d4e763a510f32457dd2eccb37cabe1ea7df5f3ba2cc50814cbf6ea56fb",
+    "sources/xos/src/user/include/xos/terminal_control.hpp": "b2f803aa503e91c6c35ab174b0f7e6638c0edcec32375d33dd98b404fa00f78e",
+    "sources/xos/src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+    "sources/xos/src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+    "sources/xos/src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "sources/xos/src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+    "sources/xos/src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e",
+    "sources/xos/src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "sources/xos/src/user/loader/load.cpp": "d70074d7ec1b4438d236845e2d16bf0a865eacd4494a7f4d1d4cdbc0859e251e",
+    "sources/xos/src/user/sdk/file_client.cpp": "a34ca83928f45f67f8341dbc61d89ba574a0ad93c6a446d9112520dc74f902af",
+    "sources/xos/src/user/sdk/text.cpp": "6f9a8389c89d02f94d9003381fe438ab39705494095ad50593862eaad0cf9d21"
+  },
+  "format_version": 1,
+  "kind": "mobius_static_relink",
+  "original_artifact_sha256": "f19abe46b993869c4cd86e7b5c73a8b15c02aad80d460d2ef2b95b16e23ed842",
+  "programs": {
+    "mobius.elf": {
+      "build_receipt_sha256": "37546a47605a33e36456b04e0896122c9d7b9576346eb1b59b638427e484bae6",
+      "elf_sha256": "6b17e1ad2085b0efd2e36c6b22ab5125b73c2697fe849eb7da53b11bd3b01538",
+      "plan": [
+        "-static",
+        "-no-pie",
+        "-nostdlib",
+        "-Wl,--build-id=none,-z,noexecstack,-z,max-page-size=4096",
+        "-T",
+        {
+          "file": "link/sdk/user.ld"
+        },
+        {
+          "file": "link/sdk/usr/lib/xos_start.o"
+        },
+        {
+          "file": "link/sdk/usr/lib/crti.o"
+        },
+        {
+          "file": "link/sdk/usr/lib/crtbegin.o"
+        },
+        {
+          "file": "link/sdk/usr/lib/xos_start_c.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius.dir/xos/src/ports/aurora_desktop/main.cpp.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius.dir/.qt/rcc/qrc_xos_aurora.cpp.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius.dir/.qt/rcc/qrc_mobius_wallpaper.cpp.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius.dir/.qt/rcc/qrc_xos_fonts.cpp.o"
+        },
+        {
+          "file": "link/qt/lib/objects-Release/Widgets_resources_1/.qt/rcc/qrc_qstyle_init.cpp.o"
+        },
+        {
+          "file": "link/qt/lib/objects-Release/Widgets_resources_2/.qt/rcc/qrc_qstyle1_init.cpp.o"
+        },
+        {
+          "file": "link/qt/lib/objects-Release/Widgets_resources_3/.qt/rcc/qrc_qstyle_fusion_init.cpp.o"
+        },
+        {
+          "file": "link/qt/lib/objects-Release/Widgets_resources_4/.qt/rcc/qrc_qmessagebox_init.cpp.o"
+        },
+        {
+          "file": "link/qt/lib/objects-Release/Gui_resources_1/.qt/rcc/qrc_gui_shaders_init.cpp.o"
+        },
+        {
+          "file": "link/qt/lib/libQt6Core.a"
+        },
+        {
+          "file": "link/objects/libmobius_aurora.a"
+        },
+        {
+          "file": "link/objects/libmobius_xos_qpa.a"
+        },
+        {
+          "file": "link/qt/lib/libQt6Widgets.a"
+        },
+        {
+          "file": "link/qt/lib/libQt6Gui.a"
+        },
+        {
+          "file": "link/qt/lib/libQt6BundledHarfbuzz.a"
+        },
+        {
+          "file": "link/qt/lib/libQt6BundledFreetype.a"
+        },
+        {
+          "file": "link/qt/lib/libQt6Core.a"
+        },
+        {
+          "file": "link/qt/lib/libQt6BundledZLIB.a"
+        },
+        "-lm",
+        {
+          "file": "link/qt/lib/libQt6BundledPcre2.a"
+        },
+        "-Wl,--start-group",
+        {
+          "file": "link/sdk/usr/lib/libstdc++.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libsupc++.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libc.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libm.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libxos_terminal.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libgcc.a"
+        },
+        "-Wl,--end-group",
+        {
+          "file": "link/sdk/usr/lib/crtend.o"
+        },
+        {
+          "file": "link/sdk/usr/lib/crtn.o"
+        }
+      ]
+    },
+    "mobius_session.elf": {
+      "build_receipt_sha256": "8a63ac30bde37c57f364aba277768a35d74bd4decb237ef03390281530d3a831",
+      "elf_sha256": "bd63dfc998ca6bb448ddc3e7c55e6b08d9a5fd6cbc905e22bb5c319caa3e6674",
+      "plan": [
+        "-static",
+        "-no-pie",
+        "-nostdlib",
+        "-Wl,--build-id=none,-z,noexecstack,-z,max-page-size=4096",
+        "-T",
+        {
+          "file": "link/sdk/user.ld"
+        },
+        {
+          "file": "link/sdk/usr/lib/xos_start.o"
+        },
+        {
+          "file": "link/sdk/usr/lib/crti.o"
+        },
+        {
+          "file": "link/sdk/usr/lib/crtbegin.o"
+        },
+        {
+          "file": "link/sdk/usr/lib/xos_start_c.o"
+        },
+        "-Wl,--require-defined=xos_file_session_exchange",
+        {
+          "file": "link/objects/CMakeFiles/mobius_session.dir/xos/src/ports/aurora_desktop/session.cpp.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/loader/elf.cpp.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/loader/load.cpp.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/sdk/file_client.cpp.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/sdk/text.cpp.o"
+        },
+        {
+          "file": "link/objects/CMakeFiles/mobius_session.dir/xos/src/user/arch/x86_64/tls.cpp.o"
+        },
+        "-Wl,--start-group",
+        {
+          "file": "link/sdk/usr/lib/libstdc++.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libsupc++.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libc.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libm.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libxos_terminal.a"
+        },
+        {
+          "file": "link/sdk/usr/lib/libgcc.a"
+        },
+        "-Wl,--end-group",
+        {
+          "file": "link/sdk/usr/lib/crtend.o"
+        },
+        {
+          "file": "link/sdk/usr/lib/crtn.o"
+        }
+      ]
+    }
+  },
+  "publication_scope": "Derived JSON snapshot of manifest.json in the private static relink materials. The published copy adds this scope and native bytes digest.",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "target_tools": {
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1"
+  },
+  "widgets_kit_manifest_sha256": "8471475b122f7aac24f985796320bf88f0252f996015a25f3042bbda85997947"
+}

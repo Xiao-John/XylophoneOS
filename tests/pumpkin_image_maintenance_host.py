@@ -35,7 +35,7 @@ class ImageMaintenance(unittest.TestCase):
             context.start()
             self.addCleanup(context.stop)
         context = patch.object(login, "provider_client", side_effect=self.provider)
-        context.start()
+        self.provider_client = context.start()
         self.addCleanup(context.stop)
 
     def provider(self, profile):
@@ -99,13 +99,23 @@ class ImageMaintenance(unittest.TestCase):
         self.assertEqual(self.marker.read_bytes(), self.new)
         self.assertEqual(self.update(login.finish_image_command), "image_binding_already_active")
 
+    def test_death_after_cancel_rename_can_reconfirm_the_previous_profile(self):
+        self.update(login.begin_image_command)
+        self.interrupt(login.cancel_image_command, after_rename=True)
+        self.assertEqual(self.marker.read_bytes(), login.active_binding(self.previous))
+        self.assertEqual(self.update(login.cancel_image_command), "image_binding_already_active")
+
     def test_ordinary_launch_fails_before_guest_start_when_binding_sync_fails(self):
-        binding = ("unused-build", "aa" * 32, {})
+        self.update(login.begin_image_command)
+        self.interrupt(login.finish_image_command, after_rename=True)
+        self.provider_client.reset_mock()
+        binding = ("unused-build", "bb" * 32, {})
         with (patch.object(login, "bind_system", return_value=binding),
               patch.object(login, "select_deployment", return_value=False),
               patch.object(login.os, "fsync", side_effect=OSError("directory sync failed")),
               patch.object(login, "boot") as boot, self.assertRaisesRegex(OSError, "directory sync failed")):
-            login.operate(None, self.state, "login", None, deployment=self.previous)
+            login.operate(None, self.state, "login", None, deployment=self.replacement)
+        self.provider_client.assert_not_called()
         boot.assert_not_called()
 
     def test_equal_revision_with_different_digest_refuses_activation_and_cancellation(self):

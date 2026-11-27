@@ -16,7 +16,7 @@ from package_glibc_gnu_seed import SOURCE_ARCHIVE
 from package_glibc_release import KIT, MANIFEST, release_checksums, verify_archive_members
 from package_glibc_release_sources import verify as verify_component_sources
 from relink_release_daily import FORMAT as DAILY_FORMAT
-from relink_release_xypm import DASH_FORMAT, FORMAT as RELINK_FORMAT, MAKE_FORMAT
+from relink_release_xypm import CPYTHON_FORMAT, DASH_FORMAT, FORMAT as RELINK_FORMAT, MAKE_FORMAT
 from verify_glibc_source import PORT as GLIBC_PORT, verify_source
 from xypm_format import canonical, confined, load_json, require, sha_file
 from xypm_sdk_profile import source_binding
@@ -28,6 +28,7 @@ RELINK = 'xypm-relink.tar.gz'
 DASH_RELINK = 'dash-relink.tar.gz'
 DAILY_RELINK = 'daily-relink.tar.gz'
 GNU_MAKE_RELINK = 'gnu-make-relink.tar.gz'
+CPYTHON_RELINK = 'cpython-relink.tar.gz'
 SEED_RECEIPT = 'receipt/gnu_seed_receipt.json'
 DISTRIBUTION = 'distribution_manifest.json'
 SYSTEM = 'system_manifest.json'
@@ -129,6 +130,48 @@ def stage_gnu_make_relink(source, output, expected, release, bindings):
     return make_receipt
 
 
+def read_json_member(archive, name):
+    member = archive.getmember(name)
+    require(member.isfile() and member.size <= 1024 * 1024, 'invalid package metadata: ' + name)
+    with archive.extractfile(member) as stream:
+        data = stream.read()
+    return json.loads(data), hashlib.sha256(data).hexdigest()
+
+
+def stage_cpython_relink(source, output, expected, release, binding, package_archive):
+    package_sha = release['packages']['cpython']['sha256']
+    manifest = stage_relink_archive(
+        source, output, expected, {'format': CPYTHON_FORMAT, 'cpython_xpk_sha256': package_sha}, binding,
+    )
+    with TemporaryDirectory(dir=output.parent) as directory:
+        package = Path(directory) / 'cpython.xpk'
+        with tarfile.open(package_archive, 'r:gz') as packages:
+            member = packages.getmember('packages/cpython.xpk')
+            require(member.isfile(), 'expected a regular release CPython package')
+            with packages.extractfile(member) as stream, package.open('xb') as target:
+                shutil.copyfileobj(stream, target)
+        require(sha_file(package) == package_sha, 'release CPython package differs')
+        with tarfile.open(package, 'r:') as xpk:
+            xpk_manifest, _ = read_json_member(xpk, 'manifest.json')
+            package_receipt = xpk_manifest['build_receipt']
+            receipt, receipt_sha = read_json_member(xpk, 'payload/' + package_receipt['path'])
+            require(xpk_manifest['id'] == 'xos.cpython'
+                    and receipt_sha == package_receipt['sha256'] == manifest['files']['receipt/package.json'],
+                    'CPython relink build receipt differs from the released XPK')
+            interpreter = receipt['interpreter']
+            require(interpreter['path'] == 'usr/bin/python3'
+                    and interpreter == manifest['interpreter']
+                    and interpreter['debug_sha256'] == manifest['reference']
+                    and receipt['cli_build_receipt_sha256'] == manifest['files']['receipt/cpython-cli.json'],
+                    'CPython relink interpreter differs from the released XPK')
+            member = xpk.getmember('payload/usr/bin/python3')
+            require(member.isfile() and member.size == interpreter['bytes'], 'release CPython ELF size differs')
+            with xpk.extractfile(member) as stream:
+                require(hashlib.file_digest(stream, 'sha256').hexdigest() == interpreter['sha256'],
+                        'release CPython ELF differs')
+    return receipt_sha
+
+
 def stage_glibc_source(sdk_archive, source, staging, sdk_manifest_sha256):
     lock = load_json(GLIBC_PORT / 'source_lock.json')
     trust = lock['signer_trust']
@@ -227,6 +270,14 @@ def stage(args):
             receipt.update(format='xos_glibc_release_supplements_v5',
                            gnu_make_relink_manifest_sha256=args.gnu_make_manifest_sha256,
                            gnu_make_build_receipt_sha256=make)
+        if args.cpython_relink is not None:
+            cpython = stage_cpython_relink(args.cpython_relink, staging / CPYTHON_RELINK,
+                                           args.cpython_manifest_sha256, release, relink_bindings,
+                                           confined(args.release, 'packages.tar.gz'))
+            supplements[CPYTHON_RELINK] = artifact(staging / CPYTHON_RELINK)
+            receipt.update(format='xos_glibc_release_supplements_v6',
+                           cpython_relink_manifest_sha256=args.cpython_manifest_sha256,
+                           cpython_build_receipt_sha256=cpython)
         (staging / DISTRIBUTION).write_bytes(canonical(receipt))
         assets = {**base_assets, **supplements, DISTRIBUTION: artifact(staging / DISTRIBUTION)}
         checksums = ''.join(f'{item["sha256"]}  {name}\n' for name, item in sorted(assets.items()))
@@ -239,7 +290,7 @@ def main():
     for flag in ('release', 'components', 'xypm-relink', 'output'):
         parser.add_argument('--' + flag, type=Path, required=True)
     parser.add_argument('--glibc-source', type=Path, help='stage and authenticate the pinned upstream glibc source')
-    relink_components = ('dash', 'daily', 'gnu-make')
+    relink_components = ('dash', 'daily', 'gnu-make', 'cpython')
     for name in relink_components:
         parser.add_argument('--' + name + '-relink', type=Path)
         parser.add_argument('--' + name + '-manifest-sha256')

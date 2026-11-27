@@ -1,0 +1,18 @@
+{
+  "status": "passed_subset",
+  "source_commit": "0227427aa8ece0d829f93fab61f5900d38e7480a",
+  "source_tree": "35a2b7a6d04852a5bacec1170f4bc5c6a4d51b44",
+  "system_build_id": "6c02db296afc1ff6",
+  "ordinary_guest_checks": 79,
+  "license_checks": 10,
+  "abi": "passed",
+  "native_tls_guest_checks": 8,
+  "system_manifest_sha256": "52e7dd4caee7c178c22eb2e41031ded4a323a1a7efc31c07988b4d410e2bc1f4",
+  "system_sdk_manifest_sha256": "b3da166910efa83e81fbcc0f12dd2a3a2dd1a17d2ac2479f0200aa31f8a5909d",
+  "iso_sha256": "12378c44826646942e1915aee32da002e02d1b7cbcb2156cd2dc2939eb69b0c8",
+  "native_tls_report_sha256": "4b51c46de67a139b83cd044eb3ae08fe6ddb0374dd8716a398f5439e10a84836",
+  "qemu": "QEMU emulator version 11.1.2",
+  "original_smoke_log_sha256": "20679e0d3e30802e649326e6b5006d390dfc8fd52307d8c2e84819f29b58e9e5",
+  "original_abi_log_sha256": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+  "publication_scope": "smoke.log replaces the build host ISO path with the repository-relative output; ABI output is byte-identical to the local original."
+}

@@ -20,5 +20,19 @@ cc1plus。
 python3 -B tests/gcc_seed_build_paths.py --gcc-configure "$EXTRACTED_GCC/configure"
 ```
 
-完整 C/C++ GCC Seed 重建、最终 ELF 检查、重新组装发行盘与两种 Shell 客体验收
-仍待完成。原发布 GNU Seed 和当前候选的二进制继续保留各自原件。
+## Linux arm64 重建
+
+使用冻结 GNU Seed 源档中的 GCC 16.2.0、GMP 6.3.0、MPFR 4.2.2 与 MPC 1.3.1，
+逐档核对 `src/ports/gcc/source_lock.json`。交叉编译时使用冻结 newlib SDK 的
+`manifest.json`（SHA-256 `dd95ed9b64cf6b200b6d4ccd6e7539696d0aabc1dabc5a7d8d5b16b39565f59e`）
+以及同一 SDK 的 C++ 头文件和 `libstdc++.a`。配置实际识别了 Linux 构建机
+`aarch64-unknown-linux-gnu`、XOS 运行宿主 `x86_64-unknown-elf` 和编译目标
+`x86_64-elf`。在断网容器中运行了实际的顶层 `configure` 和 `make all-gcc`。
+
+初次 C++ 配置沿用了旧的 C 专用补丁，生成的 make 图缺少 `all-libcody` 规则，
+而上游 `cc1plus` 需要链接该库。构建器现在按语言选择补丁集，隔离两种源码缓存，
+并把实际补丁摘要记入构建身份。用同一锁定源档重新配置后，生成了
+`all-libcody: configure-libcody` 规则，重新进入交叉编译。
+
+完整 `all-gcc`、最终 ELF 检查、重新组装发行盘与两种 Shell 客体验收仍待完成。
+原发布 GNU Seed 和当前候选的二进制继续保留各自原件。

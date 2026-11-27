@@ -13,6 +13,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
 from boot_smoke import Guest
+from build_cpython_glibc import glibc_openssl_binding
 from glibc_static_guest import system_sources
 from make_work_disk import create_fat32
 from process_smoke import command, resources
@@ -22,11 +23,16 @@ from xypm_image import Disk
 from xypm_sdk_profile import metadata_snapshot, verify_profile
 
 FIXTURE = ROOT / 'tests/fixtures/cpython_glibc/startup_probe.py'
+HASHLIB_FIXTURE = FIXTURE.with_name('openssl_hashlib.py')
 MARKERS = ('CPYTHON_G4_START 3.14.9 xos', 'CPYTHON_G4_CLOCK_PASS', 'CPYTHON_G4_THREADS_PASS')
+HASHLIB_MARKER = b'CPYTHON_G4_OPENSSL_HASHLIB_PASS sha256 hmac pbkdf2 scrypt reject'
 
 
-def stage_lib(archive, version, temporary, fat):
+def stage_lib(archive, version, temporary, fat, *, with_hashlib=False):
     prefix = 'Python-' + version + '/Lib/'
+    required = {'os.py', 'encodings/__init__.py', 'encodings/utf_8.py'}
+    selected = {'os.py', 'hashlib.py'} if with_hashlib else {'os.py'}
+    required.update(selected)
     result = {}
     with tarfile.open(archive) as bundle:
         for member in bundle:
@@ -34,7 +40,7 @@ def stage_lib(archive, version, temporary, fat):
             if not member.isfile() or path == member.name:
                 continue
             name = Path(path)
-            if path != 'os.py' and (name.parent != Path('encodings') or name.suffix != '.py'):
+            if path not in selected and (name.parent != Path('encodings') or name.suffix != '.py'):
                 continue
             require(path not in result, 'duplicate standard library input: ' + path)
             local = temporary / 'stdlib' / path
@@ -45,8 +51,7 @@ def stage_lib(archive, version, temporary, fat):
                 local.write_bytes(data.read())
             fat.command('import', '/usr/lib/python3.14/' + path, local)
             result[path] = sha_file(local)
-    require({'os.py', 'encodings/__init__.py', 'encodings/utf_8.py'} <= result.keys(),
-            'incomplete interpreter startup modules')
+    require(required <= result.keys(), 'incomplete interpreter probe modules')
     return result
 
 
@@ -59,10 +64,12 @@ def stage_input(source, target, expected):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--system-build', type=Path, required=True)
+    parser.add_argument('--system-source', type=Path, default=ROOT)
     parser.add_argument('--cpython-build', type=Path, required=True)
     parser.add_argument('--archive', type=Path, required=True)
     parser.add_argument('--sdk', type=Path, required=True)
     parser.add_argument('--glibc-profile', type=Path, required=True)
+    parser.add_argument('--openssl-build', type=Path, help='bound OpenSSL build for the optional static _hashlib probe')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     output = args.output.resolve()
@@ -75,9 +82,11 @@ def main():
     elf = args.cpython_build / 'target_build/python.exe'
     lock = load_json(ROOT / 'src/ports/cpython/source_lock.json')
     profile, profile_digest = metadata_snapshot(args.glibc_profile)
+    with_hashlib = '_hashlib' in build['static_extensions']
+    require(with_hashlib == bool(args.openssl_build), 'OpenSSL build required only for the _hashlib candidate')
 
     def verify():
-        require(system_sources() == sysmeta['sources']
+        require(system_sources(args.system_source.resolve(strict=True)) == sysmeta['sources']
                 and sha_file(image) == sysmeta['artifacts']['xos-install.iso']['sha256'],
                 'ordinary system or source snapshot differs')
         require(build['status'] == 'built_not_run' and build['runtime_family'] == 'glibc'
@@ -89,6 +98,9 @@ def main():
                 and sha_file(args.glibc_profile) == profile_digest
                 and verify_profile(profile, 'glibc', args.sdk) == build['sdk_binding'],
                 'CPython SDK or glibc profile differs')
+        if with_hashlib:
+            require(glibc_openssl_binding(args.openssl_build, build['sdk_binding'], build['sdk_manifest_sha256'],
+                                          profile_digest) == build['openssl'], 'CPython OpenSSL binding changed')
 
     verify()
     report = {'status': 'failed', 'build_receipt_sha256': build_digest,
@@ -98,6 +110,8 @@ def main():
               'sdk_manifest_sha256': build['sdk_manifest_sha256'],
               'profile_sha256': build['profile_file_sha256'], 'probe_sha256': sha_file(FIXTURE),
               'checks': [], 'not_run': build['unqualified']}
+    if with_hashlib:
+        report['hashlib_probe_sha256'] = sha_file(HASHLIB_FIXTURE)
     guest = None
     try:
         with tempfile.TemporaryDirectory(prefix='cpython_glibc_guest_') as folder:
@@ -114,7 +128,10 @@ def main():
                     fat.command('mkdir', path)
                 fat.command('import', '/usr/bin/python3', guest_elf)
                 fat.command('import', '/tests/g4.py', guest_probe)
-                report['stdlib'] = stage_lib(guest_archive, build['version'], temporary, fat)
+                if with_hashlib:
+                    probe = stage_input(HASHLIB_FIXTURE, temporary / 'hashlib_probe.py', report['hashlib_probe_sha256'])
+                    fat.command('import', '/tests/hashlib_probe.py', probe)
+                report['stdlib'] = stage_lib(guest_archive, build['version'], temporary, fat, with_hashlib=with_hashlib)
 
             guest = Guest(guest_image, 'cpython_glibc_cli', work_disk=disk, iso=True)
             report['qemu'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
@@ -134,6 +151,13 @@ def main():
                 report['checks'].append(marker)
             require(re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', captured) == [b'0'],
                     'unexpected CPython process status')
+            if with_hashlib:
+                captured = command(guest, 'exec-file /usr/bin/python3 -B -S /tests/hashlib_probe.py', b'kind=', timeout=180)
+                require(captured.replace(b'\r', b'').splitlines().count(HASHLIB_MARKER) == 1
+                        and re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', captured) == [b'0'],
+                        'OpenSSL hashlib probe failed')
+                report['checks'].append(HASHLIB_MARKER.decode())
+                require(sha_file(HASHLIB_FIXTURE) == report['hashlib_probe_sha256'], 'hashlib probe changed')
             report['after'] = resources(guest)
             require(report['after'] == report['baseline'], 'CPython guest resource drift')
         verify()

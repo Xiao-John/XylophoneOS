@@ -31,14 +31,14 @@ def sha(path):
         return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
-def system_sources():
-    paths = [ROOT / name for name in ('Makefile', 'VERSION', 'LICENSE', 'NOTICE')]
-    paths.extend(path for path in sorted((ROOT / 'licenses').glob('*')) if path.is_file())
+def system_sources(root=ROOT):
+    paths = [root / name for name in ('Makefile', 'VERSION', 'LICENSE', 'NOTICE')]
+    paths.extend(path for path in sorted((root / 'licenses').glob('*')) if path.is_file())
     suffixes = ('.asm', '.s', '.sh', '.inc', '.py', '.cpp', '.hpp', '.c', '.h',
                 '.ld', '.json', '.lldb', '.patch')
     for folder in ('src', 'scripts', 'tests', 'config'):
-        paths.extend(path for path in sorted((ROOT / folder).rglob('*')) if path.suffix in suffixes)
-    return {str(path.relative_to(ROOT)): sha(path) for path in paths}
+        paths.extend(path for path in sorted((root / folder).rglob('*')) if path.suffix in suffixes)
+    return {str(path.relative_to(root)): sha(path) for path in paths}
 
 
 def suite_cases(suite):

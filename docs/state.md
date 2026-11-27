@@ -13,7 +13,7 @@ stock 安装及应用组合。签名 C/C++ 候选 `3bbbf73984b95c20` 通过冷�
 13 项无桌面检查。Pumpkin 首次账户发放、完整 WebCore 页面和 SDK 默认切换继续按各自门验收。
 `bbf38ffb` 记录冻结 newlib 的三次冷启动回退。原发行盘在 glibc 运行期间完整摘要保持一致，
 回退后原 ELF 和用户数据可读回。[冻结回退](work_log/4ffa226d_glibc_stock_fork_frozen_rollback.md)
-[当前普通组合复验](work_log/bbf38ffb_next_stage_combined.md)
+[当前普通组合复验](work_log/0227427a_next_stage_mainline.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)
 [本阶段计划](plans/next_stage.md) · [上阶段整合记录](work_log/efc3a5ff_xos_integration_campaign.md)
 
@@ -54,7 +54,7 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 | VirtIO-Net / N2–N3 | sys112 授权的用户态驱动和 lwIP v2 已合入。传输、多应用隔离、生命周期和撤销有绑定客体结果。raw 诊断保持隔离。 | [原始帧纵切](contracts/net_user_driver.md)、[v2 契约](contracts/net_service_v2.md)、[多应用复验](work_log/69b0e274_network_guest_readiness_and_window.md) |
 | N4 DNS/DHCP | 配置、名称契约和私有 DNS 诊断已合入。普通配置的旧网络操作已复验。生产 DNS/DHCP 保持关闭。 | [N4 契约](contracts/network_n4_v1_proposal.md)、[DNS 诊断 PR #269](https://github.com/Xiao-John/XylophoneOS/pull/269) |
 | ClarkE 浏览器 | glibc Widgets 安装包已验证受控 TLS 1.3、HTML/CSS/图像及不受信任 CA 拒绝。原生 TLS 客体读取的已验证叶证书与实际对端一致。真实 JavaScriptCore 静态 shell 已合入，锁定的 Test262 同步子集通过 16 次执行。WebCore、完整测试套件和生产网络继续验收。 | [安装包 HTTPS](work_log/7e05f732_clarke_installed_https.md)、[TLS 叶证书](work_log/514a40f2_clarke_verified_peer_leaf.md)、[JSC 客体](work_log/3eba7c25_clarke_jsc_guest.md)、[Test262 子集](work_log/aca430b2_clarke_test262_guest.md) |
-| Mobius 系统 UI | 正式入口和 glibc Qt Widgets 会话已合入。实际 XPK 安装后双入口启动，卸载后原 newlib 桌面可从旧入口启动，用户配置保留。 | [桌面客体](work_log/8f0020c4_mobius_glibc_widgets_guest.md)、[工作盘与回退](work_log/f38242fd_mobius_glibc_xpk_lifecycle.md) |
+| Mobius 系统 UI | 正式入口和 glibc Qt Widgets 会话已合入。统一 glibc SDK v1 套件通过独立接收、静态复链、双入口和 XPK 升级回退。原 newlib 桌面的旧入口仍可恢复。v2 构建和 Curvive 分发许可继续验收。 | [v1 Widgets 套件](work_log/2d4bde25_mobius_unified_widgets.md)、[旧版工作盘与回退](work_log/f38242fd_mobius_glibc_xpk_lifecycle.md) |
 | Pumpkin | 身份核心、原生 IPC、私有存储区和受信客户端已合入。开发配置通过跨重启多账户登录、具名资源 FAT 导入、独立 broker 授权、注销、单账户吊销和旧盘拒绝。生产代际及凭据交付继续验收。 | [持久登录和 broker](work_log/7ce64487_pumpkin_durable_account_resource_login.md)、[FAT 导入](work_log/a64d215d_pumpkin_fat_import_integrated.md)、[多账户 PR #272](https://github.com/Xiao-John/XylophoneOS/pull/272) |
 | Aurora UI v2 SDK | #29 已合（含 C30 改名与评审修复） | [0102](work_log/0102_aurora_ui_v2_sdk.md)、[0112](work_log/0112_aurora_c30_rename_and_fixes.md) |
 | Semantic Broker / 时间语义 / G3 复核 | #30/#31/#32 已合（勘查与限定模型） | [0108](work_log/0108_semantic_pipe_probe.md)、[0109](work_log/0109_temporal_semantics.md)、[0110](work_log/0110_aurora_g3_review.md) |

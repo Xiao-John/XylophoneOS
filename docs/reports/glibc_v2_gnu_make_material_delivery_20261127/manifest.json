@@ -1,0 +1,13 @@
+{
+  "files": {
+    "distribution_manifest.json": "f980a6ca641cfc276912e61d37b2b58ad9172b12c8a3e6da7816dc0d1dd5715e",
+    "distribution_checksums.txt": "d8fc2d94d60fed40f625fc64b7a947b1855d4f62cfe731ddc63d439687e6be2a",
+    "checksums.log": "bac8091f7e37167b5484e2c44400d40234dfb939e04c1475793e200c475bca06",
+    "stage.log": "7ea45b52954260affb52dc5788bd2359a7b6fe3f79b0e2f4327af9429b1cd392",
+    "xypm_guest.json": "b2abae64d719e2088cd58a81468962122488c679d10c38a5a65daa79e8caeda2",
+    "xypm_ordinary_serial.log.gz": "8a42d229cf3e0ef54f11da800c6aca98872ded4a875b7eab2c90d9eb930da3ae",
+    "xypm_installer_serial.log.gz": "8cc3ca78cf8872d86247573d1a7285539b25adde7051e53e30debbde006107ed",
+    "xypm_same_candidate.py": "fdafe009956c7321eb3796294d50a9d3dd7c3752d9b7f1b403870b9cd9838380",
+    "xypm_replay.json": "658c4d8cf7c3d3982d6174b35f51dab29acf731eb4d0a7cda762cf5dcb603068"
+  }
+}

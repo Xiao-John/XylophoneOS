@@ -1,0 +1,16 @@
+{
+  "build_id": "1f593b6ca9cd7904",
+  "installed_disk_sha256": "77e2c3476aca834102c7dd5de4819f0635504caf951b41b019810b20c937eac5",
+  "iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+  "original_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745",
+  "qemu": "QEMU emulator version 11.1.2",
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "replacement_sha256": "37d2a4b5540ea06672aafe4ce55f79266662f52fb142ba2f40e06ff50b78c622",
+  "resources": [
+    129806,
+    2,
+    0
+  ],
+  "serial_sha256": "d61be84920c436971f1b8beff4c13512ec87d94bf92c321b01d13e9135be360e",
+  "status": "passed_subset"
+}

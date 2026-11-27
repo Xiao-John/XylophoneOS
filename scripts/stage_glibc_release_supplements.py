@@ -16,7 +16,7 @@ from package_glibc_gnu_seed import SOURCE_ARCHIVE
 from package_glibc_release import KIT, MANIFEST, release_checksums, verify_archive_members
 from package_glibc_release_sources import verify as verify_component_sources
 from relink_release_daily import FORMAT as DAILY_FORMAT
-from relink_release_xypm import DASH_FORMAT, FORMAT as RELINK_FORMAT
+from relink_release_xypm import DASH_FORMAT, FORMAT as RELINK_FORMAT, MAKE_FORMAT
 from verify_glibc_source import PORT as GLIBC_PORT, verify_source
 from xypm_format import canonical, confined, load_json, require, sha_file
 from xypm_sdk_profile import source_binding
@@ -27,6 +27,8 @@ SOURCES_MANIFEST = 'component-sources.json'
 RELINK = 'xypm-relink.tar.gz'
 DASH_RELINK = 'dash-relink.tar.gz'
 DAILY_RELINK = 'daily-relink.tar.gz'
+GNU_MAKE_RELINK = 'gnu-make-relink.tar.gz'
+SEED_RECEIPT = 'receipt/gnu_seed_receipt.json'
 DISTRIBUTION = 'distribution_manifest.json'
 SYSTEM = 'system_manifest.json'
 SDK_ARCHIVE = 'application-sdk.tar.gz'
@@ -105,7 +107,26 @@ def stage_relink_archive(source, output, expected, identity, bindings):
                    for name, digest in files.items()}
         records['manifest.json'] = {'bytes': entry.size, 'sha256': expected}
     verify_archive_members(output, records)
-    return files
+    return manifest
+
+
+def stage_gnu_make_relink(source, output, expected, release, bindings):
+    seed_receipt = release['gnu_seed']['receipt']
+    manifest = stage_relink_archive(
+        source, output, expected, {'format': MAKE_FORMAT, 'work_disk_sha256': release['work_disk']['sha256']},
+        {**bindings, SEED_RECEIPT: seed_receipt['sha256']},
+    )
+    with tarfile.open(output, 'r:gz') as archive:
+        info = archive.getmember(SEED_RECEIPT)
+        require(info.size == seed_receipt['bytes'] and info.size <= 1024 * 1024,
+                'GNU Make Seed receipt size differs')
+        with archive.extractfile(info) as stream:
+            seed = json.load(stream)
+    make_receipt = manifest['files']['receipt/gnu_make.json']
+    require(manifest['reference'] == seed['installed_files']['/usr/bin/gmake']
+            and make_receipt == seed['make_receipt_sha256'],
+            'GNU Make relink inputs differ from the released Seed')
+    return make_receipt
 
 
 def stage_glibc_source(sdk_archive, source, staging, sdk_manifest_sha256):
@@ -189,7 +210,7 @@ def stage(args):
             supplements[DASH_RELINK] = artifact(staging / DASH_RELINK)
             receipt.update(format='xos_glibc_release_supplements_v3',
                            dash_relink_manifest_sha256=args.dash_manifest_sha256,
-                           dash_build_receipt_sha256=dash['receipt/dash.json'])
+                           dash_build_receipt_sha256=dash['files']['receipt/dash.json'])
         if args.daily_relink is not None:
             daily = stage_relink_archive(
                 args.daily_relink, staging / DAILY_RELINK, args.daily_manifest_sha256,
@@ -198,7 +219,14 @@ def stage(args):
             supplements[DAILY_RELINK] = artifact(staging / DAILY_RELINK)
             receipt.update(format='xos_glibc_release_supplements_v4',
                            daily_relink_manifest_sha256=args.daily_manifest_sha256,
-                           daily_build_receipt_sha256=daily['receipt/daily.json'])
+                           daily_build_receipt_sha256=daily['files']['receipt/daily.json'])
+        if args.gnu_make_relink is not None:
+            make = stage_gnu_make_relink(args.gnu_make_relink, staging / GNU_MAKE_RELINK,
+                                         args.gnu_make_manifest_sha256, release, relink_bindings)
+            supplements[GNU_MAKE_RELINK] = artifact(staging / GNU_MAKE_RELINK)
+            receipt.update(format='xos_glibc_release_supplements_v5',
+                           gnu_make_relink_manifest_sha256=args.gnu_make_manifest_sha256,
+                           gnu_make_build_receipt_sha256=make)
         (staging / DISTRIBUTION).write_bytes(canonical(receipt))
         assets = {**base_assets, **supplements, DISTRIBUTION: artifact(staging / DISTRIBUTION)}
         checksums = ''.join(f'{item["sha256"]}  {name}\n' for name, item in sorted(assets.items()))
@@ -211,14 +239,16 @@ def main():
     for flag in ('release', 'components', 'xypm-relink', 'output'):
         parser.add_argument('--' + flag, type=Path, required=True)
     parser.add_argument('--glibc-source', type=Path, help='stage and authenticate the pinned upstream glibc source')
-    for name in ('dash', 'daily'):
+    relink_components = ('dash', 'daily', 'gnu-make')
+    for name in relink_components:
         parser.add_argument('--' + name + '-relink', type=Path)
         parser.add_argument('--' + name + '-manifest-sha256')
     for flag in ('component-manifest-sha256', 'xypm-manifest-sha256'):
         parser.add_argument('--' + flag, required=True)
     args = parser.parse_args()
-    for name in ('dash', 'daily'):
-        if (getattr(args, name + '_relink') is None) != (getattr(args, name + '_manifest_sha256') is None):
+    for name in relink_components:
+        option = name.replace('-', '_')
+        if (getattr(args, option + '_relink') is None) != (getattr(args, option + '_manifest_sha256') is None):
             parser.error(f'--{name}-relink and --{name}-manifest-sha256 are required together')
     try:
         stage(args)

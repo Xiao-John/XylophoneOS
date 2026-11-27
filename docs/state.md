@@ -36,9 +36,11 @@ Dash 已由离线接收方逐字节重链。同一安装盘的替换版返回预
 [Dash 重链接](work_log/960fce43_glibc_v2_dash_relink.md) ·
 [归档暂存](work_log/960fce43_glibc_v2_dash_material_delivery.md)
 日用 XPK 的 13 个程序已逐字节复链，同一盘上通过替换对照。日用程序归档随
-同版候选完成暂存，外层校验覆盖 13 项。静态替换余下 CPython 和 GNU Make。
+同版候选完成暂存。GNU Make 已从两种 Shell 通过客体替换，xypm 也在同版
+安装器和普通介质复跑。外层校验覆盖 14 项，候选程序的静态替换余下 CPython。
 [日用程序重链接](work_log/960fce43_glibc_v2_daily_relink.md) ·
-[日用程序暂存](work_log/960fce43_glibc_v2_daily_material_delivery.md)
+[日用程序暂存](work_log/960fce43_glibc_v2_daily_material_delivery.md) ·
+[GNU Make 暂存与 xypm](work_log/960fce43_glibc_v2_gnu_make_material_delivery.md)
 [当前普通组合复验](work_log/0227427a_next_stage_mainline.md)
 [网络组合复验](work_log/3d21f4e4_next_stage_network_replay.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)
@@ -47,6 +49,10 @@ Dash 已由离线接收方逐字节重链。同一安装盘的替换版返回预
 Qt Quick 外部示例已用普通 xypm 离线工作盘完成原包安装、重编库替换和原包回退。
 三次冷启渲染相同画面，回退保留替换后新增的用户文件。
 [接收者安装验证](work_log/4d6f124f_qt_quick_receiver_install.md)
+同版 Mobius Widgets v2 套件已完整构建并由独立接收方打包。真实客体通过安装、
+升级、卸载后重装的三次冷启，覆盖两种 Shell、会话、渲染、用户数据与资源回收。
+Qt 替换材料、Curvive 分发确认和同修订 XPK 复现继续单独验收。
+[Mobius Widgets v2](work_log/74efcc27_mobius_widgets_v2.md)
 
 Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首户签发、重启认证和
 只回退客体盘时拒绝。硬件代际与物理启动仍待验收。

@@ -1,0 +1,102 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "case": "provider provisions independent root",
+      "exit": 0
+    },
+    {
+      "case": "operator prepares the real guest disk",
+      "exit": 0
+    },
+    {
+      "case": "current image enrolls the original wallet",
+      "exit": 0
+    },
+    {
+      "case": "current image publishes an owned resource",
+      "exit": 0
+    },
+    {
+      "case": "old operator binding rejects the new provider",
+      "exit": 1
+    },
+    {
+      "case": "candidate launcher rejects the old marker",
+      "exit": 1
+    },
+    {
+      "case": "new operator binding rejects the old provider",
+      "exit": 1
+    },
+    {
+      "case": "replacement guest authenticates the original wallet",
+      "exit": 0
+    },
+    {
+      "case": "replacement guest reads the original resource",
+      "exit": 0
+    },
+    {
+      "case": "replacement guest commits a new generation",
+      "exit": 0
+    },
+    {
+      "case": "current guest reopens the new generation after rollback",
+      "exit": 0
+    }
+  ],
+  "current": {
+    "build_id": "2ba0a3070e1d8753",
+    "manifest_sha256": "f57ec2f3c41304407c9cea96129a4c0accca25819c95665dfb701d8bbd38b1a6",
+    "artifacts": {
+      "xos-install.iso": "cb68a5500a6fef2048ae618f42a60e2a45a77ebde5392d88afdff10e1e9a0f9d",
+      "user_files.image.elf": "f86732d1e4839720bcf5c4a7c17703574ff83d18ecfdaaed5ea089df286ad49a",
+      "user_supervisor.image.elf": "16dc8b7164267436e3ba62d2559358b805a173b63ebbd8547ccd3c59f5ce68fc",
+      "user_pumpkin_durable.image.elf": "75569213134c7d3c5b07259fca03ea102fbdfefa9bb83bd89d354d0bcf911eaf",
+      "user_p2_anchor_proxy.image.elf": "a91200da4477582644401d1e90b2f333d730a696ec8b84655d038df802779b73",
+      "user_pumpkin_holder.image.elf": "e4f1fc7b6d1777109f3bc779d91c54cdf1c5c02cab63df9d22a7bc1d8f5ddf3e",
+      "user_p2_sealed.image.elf": "01365bd56cf5e24636f3cdf98adfbd5b69b30acf50d21970b08a59d57f81dab9"
+    }
+  },
+  "replacement": {
+    "build_id": "fbe70625e73497ca",
+    "manifest_sha256": "226c6e4d2b2520428cec3f159ffc0c96ff35249223c8630af52fa257c2efeecb",
+    "artifacts": {
+      "xos-install.iso": "b67dfd6cf134880fb2557c8446a244df5c8cbc2de43b76b1a54fdecf865c2df0",
+      "user_files.image.elf": "f86732d1e4839720bcf5c4a7c17703574ff83d18ecfdaaed5ea089df286ad49a",
+      "user_supervisor.image.elf": "16dc8b7164267436e3ba62d2559358b805a173b63ebbd8547ccd3c59f5ce68fc",
+      "user_pumpkin_durable.image.elf": "75569213134c7d3c5b07259fca03ea102fbdfefa9bb83bd89d354d0bcf911eaf",
+      "user_p2_anchor_proxy.image.elf": "a91200da4477582644401d1e90b2f333d730a696ec8b84655d038df802779b73",
+      "user_pumpkin_holder.image.elf": "e4f1fc7b6d1777109f3bc779d91c54cdf1c5c02cab63df9d22a7bc1d8f5ddf3e",
+      "user_p2_sealed.image.elf": "01365bd56cf5e24636f3cdf98adfbd5b69b30acf50d21970b08a59d57f81dab9"
+    }
+  },
+  "tools": {
+    "pumpkin_image_transition_guest.py": "1bc7cc162957eff2c82aa37528311e879032b4e346a0899a1d75baa48fe320c5",
+    "pumpkin_generation_provider.py": "09e500629afe7d5f881b5444f51dfde7cf4d3c83af203a74530281065393d5b6",
+    "pumpkin_user_login.py": "ef0decfad73505018a53c13e39d4257aa48bbf360cdff6414d5b5e2b460cd0c2"
+  },
+  "storage": {
+    "provider": "ext4",
+    "operator": "ext4"
+  },
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "generations": {
+    "before_switch": "30bbc3dbe6739802e122a4da45c2662f7ecca801ecf054ac1d3a7b2e3ac74809",
+    "after_update_and_rollback": "2caba239082785cd6246a321b492490b85dd7855ec85ed283efc8efac9f116c8"
+  },
+  "fixture_realm_sha256": "dc0b91bb191ece2d51ef3fcc12d7b02d9806e6c4963c6409ff11a8d90c126ccb",
+  "different_bound_artifacts": [
+    "xos-install.iso"
+  ],
+  "runner_source_commit": "85447bed2a5f021e49ce2cf7a96cef3984928d25",
+  "original_report_sha256": "6cb61e828461c1a95fdbb6d2d8d7c9cec87f15a8db5c1f19b1d8229ded97d746",
+  "original_log_sha256": "514dc57bf5a946c0cff16ab4572926d903d23ca654d0ff6fc905df82d0c142aa",
+  "not_run": [
+    "production_transition_coordinator",
+    "coordinator_interruption_recovery",
+    "changed_pumpkin_storage_format",
+    "physical_power_loss"
+  ]
+}

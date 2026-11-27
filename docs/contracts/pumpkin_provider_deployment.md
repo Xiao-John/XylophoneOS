@@ -123,6 +123,12 @@ python3 -B scripts/pumpkin_user_login.py check-image-update --state "$STATE" \
 确认盘状态。
 [真实构建预检回执](../work_log/73776af5_pumpkin_image_update_check.md)
 
+同域两张真实 ISO 已在受控 Linux/QEMU 环境使用同一工作盘和独立代际根完成换版与
+回切演练。两端绑定错配拒绝，候选读取旧代际并提交新代际，原镜像读回新代际。
+受测账户和资源程序使用相同字节。演练夹具负责替换专用测试标记，生产切换控制器及
+其中断恢复另验。
+[真实客体演练](../work_log/a569d3a6_pumpkin_image_transition_guest.md)
+
 受信宿主分别管理启动者和独立提供者，宿主的 root、虚拟化平台及两种角色各自的
 同 UID 进程属于其信任范围。接收者钱包仍由受信启动工具保存和提交。此配置目前
 按独立受控 Linux 环境验收。正式物理启动和控制台证明、硬件代际或宿主完整回滚

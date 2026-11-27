@@ -1,0 +1,107 @@
+{
+  "bindings": {
+    "glibc": {
+      "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+      "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+      "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+    },
+    "newlib": {
+      "profile_id": "xos-x86_64-static-single-v1",
+      "profile_sha256": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+      "sdk_manifest_sha256": "dd95ed9b64cf6b200b6d4ccd6e7539696d0aabc1dabc5a7d8d5b16b39565f59e",
+      "sdk_tree_sha256": "e78726755d11d19feabcb7c36faebf6ed9a4e663f85f6beb081ffabae105a874"
+    }
+  },
+  "data_sha256": {
+    "frozen": "34f81404171d18e1a44613887f1844ff74923abed78319a4f93bc15f352520bb",
+    "glibc": "8f4e0b044610ab2482009818f36bbc302ef04ee6f673f33a69a31af625839cee"
+  },
+  "frozen_boot_sha256": "1c2cfa90d65b9a9585ac3d5cef32c8376b1806e65f7502321912b2e15b54454c",
+  "frozen_work_disk_sha256": "ab654b6fbe88296c630b39d77b7cf19e718a867bdfdfa393f92f8da11faaae05",
+  "glibc_disk_before_switch_sha256": "9bf2873729f3797f54974426877ce0b85a9eac5473c67305f3b6bfd29785fc12",
+  "glibc_disk_sha256": "fd770a5b76beab2fe98123b59d5a65336180c30fc3d45fa5cf68d9672f20ceb9",
+  "glibc_iso_sha256": "0d167af5785ffed634deaba68beb8d4f06f540bcc88393938eb0227fc765ab7d",
+  "glibc_packages": {
+    "c": {
+      "build_receipt_sha256": "fd12500990ca96ab084f41847fcce2c1a41a44816d5e18c8c1820591cca5103c",
+      "compiler_sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "elf_sha256": "e5ef259d000192d8a8120891f690ae594fc0d1a9ef7970736817e74a4aa0b586",
+      "id": "selection.kit_c",
+      "package_sha256": "71aa6812bca89bf401755c3e676a9c4061ffba642ab11470f182ec6222ad5dbd",
+      "project_inputs": {
+        "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "src/main.c": "6e0e4fbd72e70f411bc6eb0ecbbc31059be7bb9d4199240d71d9588f507cc28b",
+        "xos_app.json": "3f273a91be3e2cb1e5bac9209c7d6a01bb3a33747b8818313428360b60bf5c40"
+      },
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+    },
+    "cpp": {
+      "build_receipt_sha256": "01bd13d33772a0b38b066986f47a7683bf58b82e890945085f7242e0c014eaae",
+      "compiler_sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "elf_sha256": "516ecb55518ee820464c6a584445bf352211e727144a36c3ea98e508d4134654",
+      "id": "selection.kit_cpp",
+      "package_sha256": "439b6e801d09906e39728d530eeaccd44a5bf3d8d7ce74147b7bc5e8aabbcac7",
+      "project_inputs": {
+        "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "src/main.cpp": "2c4a070ab5509e9b10257510b258ffcc7670e49e72cb03d25a5aef47f6158a7c",
+        "xos_app.json": "57f191c0a1a2989b6ab9dcace4bfc8cec186969b41cfcd787367e099684d09cb"
+      },
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+    }
+  },
+  "glibc_system_manifest_sha256": "6e5b8790b9e5e402257666af7ef9375d7b2a2226aaa009058e74a006c80c9551",
+  "guests": {
+    "frozen_newlib": {
+      "app_markers": [
+        "FROZEN_RUNTIME_OK selection"
+      ],
+      "build_id": "2c3876e640840ff5",
+      "resources_before_and_after": [
+        130342,
+        2,
+        0
+      ]
+    },
+    "glibc_after": {
+      "app_markers": [
+        "GLIBC_KIT_C_OK 2.44",
+        "GLIBC_KIT_CPP_OK vector thread exception"
+      ],
+      "build_id": "99e0cafb79a74825",
+      "resources_before_and_after": [
+        129709,
+        3,
+        1
+      ]
+    },
+    "glibc_before": {
+      "app_markers": [
+        "GLIBC_KIT_C_OK 2.44",
+        "GLIBC_KIT_CPP_OK vector thread exception"
+      ],
+      "build_id": "99e0cafb79a74825",
+      "resources_before_and_after": [
+        129709,
+        3,
+        1
+      ]
+    }
+  },
+  "original_frozen_disk_sha256": "f556f6cf14017e559fae201bac2f2bb95c9fb63e43c52f4bef132d46078a6681",
+  "previous_frozen_report_sha256": "ee7249f9b81ca8b9251c298569258f080dc9e682a36eda113c640a88c2d6e88b",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "reproduced_frozen_xpk_sha256": "e0b0c134d4beec862a2e6647363755df6cc5263f250e6374064c38fa44195819",
+  "source_commit": "4c8a56a1b4fc1daa2359a9a3ce2c5b7f6c3e899c",
+  "status": "passed",
+  "test_sha256": "d4f13fd8f8b17abd99893535027eea3e23e437dc07567853decb0999a06cacac",
+  "tool_sha256": "3fa5e2a562f8050457f4432c8883bdfa842006565b41251b84ab6d68696d9234",
+  "unmarked_disk_rejections": [
+    "list",
+    "install",
+    "repo-install"
+  ],
+  "unmarked_release_disk_sha256": "79b38a3abd0b44f38a34cccde17b2330882627f54dd80b597ca5dfee78be45a4"
+}

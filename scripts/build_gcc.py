@@ -200,7 +200,7 @@ def inspect_gcc(install: Path, readelf: str, languages, host_roots):
         names += ("g++", "cc1plus")
         required.update(("g++", "cc1plus"))
     for name in names:
-        path = install / "usr/bin" / name
+        path = install / "usr/bin" / f"x86_64-elf-{name}"
         if name in ("cc1", "cc1plus", "collect2"):
             path = install / "usr/libexec/gcc/x86_64-elf" / LOCK["version"] / name
         if not path.is_file():

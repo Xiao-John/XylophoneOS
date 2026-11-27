@@ -45,8 +45,24 @@ python3 -B scripts/package_desktop_products.py mobius "$MOBIUS_BUILD/mobius.elf"
 
 The XPK uses the existing `xos.mobius` package and the public Mobius executable
 and session paths. It carries the SDK and Qt notices, the QtBase source lock and
-Aurora artwork provenance. Keep the exact corresponding sources and static
-relink inputs with any public binary distribution.
+the generated Aurora wallpaper's provenance. The product materials capture
+the actual static objects and archives used for both executables. Use the
+original locked QtBase archive and the SDK and kit used by the receiver.
+
+```sh
+python3 -B src/ports/aurora_desktop/glibc/product_relink.py stage \
+  --build "$MOBIUS_BUILD" --sdk-build "$SDK" --sdk-profile "$PROFILE" \
+  --widgets-kit "$MOVED_KIT" --widgets-kit-sha256 "$KIT_MANIFEST_SHA256" \
+  --qtbase "$LOCKED_QTBASE_ARCHIVE" --output "$MOBIUS_MATERIALS"
+python3 -B src/ports/aurora_desktop/glibc/product_relink.py relink \
+  --materials "$MOVED_MOBIUS_MATERIALS" --sha256 "$MATERIALS_MANIFEST_SHA256" \
+  --output "$RELINK_RESULT"
+```
+
+The second command uses the matching target compiler, assembler and linker.
+It verifies that both static ELFs reproduce the original receiver link byte
+for byte. The existing Curvive wallpaper's license qualification and the
+complete public distribution record are separate from the private XPK.
 [Acceptance plan](../../../docs/plans/mobius_unified_widgets.md)
 
 ### Earlier SDK build

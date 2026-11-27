@@ -67,8 +67,9 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 
 主线 `960fce43` 的 v2 候选已从实际保留归档完成包生命周期、原生 GNU 工具和
 接收方 SDK 复验。GNU Make 通过 Xshell、Dash 和冷启读回。IDNA 测试修订在实际
-发行盘通过同步中断、内置恢复和冷启重试。当前暂存清单仍需覆盖 glibc 上游源码及
-其余静态程序的替换材料。
+发行盘通过同步中断、内置恢复和冷启重试。glibc 上游源码已纳入此候选的外层暂存，
+接收方已核对 11 项资产并再次验证签名。其余静态程序的替换材料仍须补齐。
 [同候选组合与接收方复验](../work_log/960fce43_glibc_v2_current_release.md)
+[glibc 原档暂存](../work_log/960fce43_glibc_release_upstream_source.md)
 
 当前默认发行仍由原配方生产。切换和 newlib 退役以完成上述实际证据和最终组合为准。

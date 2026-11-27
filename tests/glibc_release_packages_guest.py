@@ -149,3 +149,4 @@ def run(release_root, output, foreign, python_source):
         if guest is not None:
             guest.close()
         (output / 'report.json').write_bytes(canonical(report))
+    return report

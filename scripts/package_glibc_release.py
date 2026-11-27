@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Assemble a qualified glibc installer and its same-profile release work disk."""
-from pathlib import Path
+import hashlib
+from pathlib import Path, PurePosixPath
 import shutil
+import tarfile
 import tempfile
 
 from build_candidate import inspect_app_kit
@@ -141,7 +143,7 @@ def copy_bound(source, destination, digest):
     require(sha_file(destination) == digest, 'release input changed: ' + source.name)
 
 
-def assemble(output, candidate, kit, daily, cpython, wheel, archive):
+def assemble(output, candidate, kit, daily, cpython, wheel, archive, *, seed=None):
     paths, proof = inspect_candidate(candidate, kit)
     profile, _ = metadata_snapshot(relative_file(kit, 'profile.json'), proof['application_sdk']['profile_file_sha256'])
     packages = inspect_packages(profile, proof, daily, cpython, wheel)
@@ -181,15 +183,54 @@ def assemble(output, candidate, kit, daily, cpython, wheel, archive):
         release = {'schema_version': 1, 'status': 'assembled_glibc_candidate', **proof,
                    'work_disk': artifact(disk), 'packages': records,
                    'launcher_sha256': sha_file(images / 'launch.py')}
+        archives = ['images.tar.gz', 'application-sdk.tar.gz']
+        if seed is not None:
+            from package_glibc_gnu_seed import SOURCE_ARCHIVE, assemble as assemble_seed
+            release['gnu_seed'] = assemble_seed(output, disk, output / KIT, profile, release, seed, archive)
+            release['work_disk'] = artifact(disk)
+            verify_disk(disk, profile, records)
+            archive(output / 'packages', output / 'packages.tar.gz')
+            archives.extend((SOURCE_ARCHIVE, 'packages.tar.gz'))
         (images / 'release.json').write_bytes(canonical(release))
         archive(images, output / 'images.tar.gz')
         archive(output / KIT, output / 'application-sdk.tar.gz')
-        release['archives'] = {name: artifact(output / name) for name in ('images.tar.gz', 'application-sdk.tar.gz')}
+        release['archives'] = {name: artifact(output / name) for name in archives}
         (output / MANIFEST).write_bytes(canonical(release))
+        if seed is not None:
+            (output / 'CHECKSUMS.sha256').write_bytes(release_checksums(output, release))
         return release
     except BaseException:
         shutil.rmtree(output)
         raise
+
+
+def release_checksums(root, release):
+    assets = {name: item['sha256'] for name, item in release['archives'].items()}
+    assets[MANIFEST] = sha_file(root / MANIFEST)
+    assets['system_manifest.json'] = release['system']['manifest_sha256']
+    return ''.join(f'{digest}  {name}\n' for name, digest in sorted(assets.items())).encode()
+
+
+def verify_archive_members(archive_path, expected):
+    paths = {PurePosixPath(name) for name in expected}
+    require(all(not path.is_absolute() and '..' not in path.parts for path in paths),
+            'release archive member path is invalid')
+    parents = {parent.as_posix() for path in paths for parent in path.parents if parent.parts}
+    pending = dict(expected)
+    seen = set()
+    with tarfile.open(archive_path, 'r|gz') as archive:
+        for entry in archive:
+            require(entry.name not in seen, 'duplicate release archive member: ' + entry.name)
+            seen.add(entry.name)
+            if entry.isdir() and entry.name in parents:
+                continue
+            require(entry.isfile() and entry.name in pending, 'unexpected release archive member: ' + entry.name)
+            record = pending.pop(entry.name)
+            require(entry.size == record['bytes'], 'release archive entry size differs: ' + entry.name)
+            with archive.extractfile(entry) as stream:
+                require(hashlib.file_digest(stream, 'sha256').hexdigest() == record['sha256'],
+                        'release archive entry differs: ' + entry.name)
+    require(not pending, 'release archive inventory is incomplete')
 
 
 def verify_disk(disk, profile, packages):
@@ -227,5 +268,18 @@ def verify_assembled(root):
     inside = load_json(relative_file(root, IMAGES + '/release.json'))
     require(inside == {name: value for name, value in release.items() if name != 'archives'},
             'embedded image release receipt differs')
-    verify_disk(relative_file(root, IMAGES + '/work_disk.img'), profile, release['packages'])
+    disk = relative_file(root, IMAGES + '/work_disk.img')
+    verify_disk(disk, profile, release['packages'])
+    if 'gnu_seed' in release:
+        from package_glibc_gnu_seed import SOURCE_ARCHIVE, verify as verify_seed
+        required_archives = {name + '.tar.gz' for name in (IMAGES, KIT, 'packages')}
+        require(set(release['archives']) == {SOURCE_ARCHIVE, *required_archives},
+                'GNU Seed release archive inventory differs')
+        require(relative_file(root, 'CHECKSUMS.sha256').read_bytes() == release_checksums(root, release),
+                'GNU Seed release checksums differ')
+        verify_seed(release, profile, root, disk)
+        for name in (IMAGES, KIT, 'packages'):
+            files = {path.relative_to(root).as_posix(): artifact(path)
+                     for path in (root / name).rglob('*') if path.is_file()}
+            verify_archive_members(relative_file(root, name + '.tar.gz'), files)
     return release, profile

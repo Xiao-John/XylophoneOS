@@ -8,7 +8,6 @@ import shutil
 import tarfile
 import tempfile
 
-from package_glibc_release import INSTALLER, KIT, ORDINARY, copy_bound, verify_assembled, verify_disk
 from xypm_format import canonical, load_json, require, sha_file
 from xypm_image import Disk
 from xypm_sdk_profile import COMPILER_VERSION, GLIBC_CRT, relative_file, require_stdio_marker
@@ -143,54 +142,74 @@ def install(disk, files):
         disk.command('import', name, source)
 
 
-def prepare(release_dir, donor_dir, make_receipt, output):
-    release, profile = verify_assembled(release_dir)
+def verify_installed(disk_path, hashes, work):
+    with Disk(disk_path, work, read_only=True) as disk:
+        for name, expected in hashes.items():
+            extracted = disk.export(name)
+            require(sha_file(extracted) == expected, 'installed Seed differs: ' + name)
+            extracted.unlink()
+
+
+def sysroot_files(kit, profile):
+    sdk = kit / 'sdk' / 'sysroot'
+    files = {SYSROOT + '/xos-profile.json': kit / 'profile.json',
+             SYSROOT + '/xos-sdk-manifest.json': sdk.parent / 'manifest.json'}
+    for path in sorted(sdk.rglob('*')):
+        relative = path.relative_to(sdk).as_posix()
+        if path.is_file() and (relative.startswith(('usr/include/', 'usr/lib/compiler-include/'))
+                               or relative in profile['sdk_binding']['link_artifacts']):
+            files[SYSROOT + '/' + relative] = path
+    return files
+
+
+def stage_disk(disk_path, kit, profile, kit_binding, donor_dir, make_receipt, work):
     require('cxx_runtime' in profile['features'], 'GNU Seed requires a unified C/C++ SDK')
-    kit_binding = release['application_sdk']
     make, make_digest = bind_make(make_receipt, kit_binding['profile_file_sha256'], kit_binding)
-    sdk = release_dir / KIT / 'sdk' / 'sysroot'
+    files = donor_artifacts(donor_dir, work, load_json(FROZEN))
+    specs = work / 'specs'
+    specs.write_text(driver_specs(profile))
+    files.update({DRIVER_DIR + '/specs': specs, MAKE_PATH: make,
+                  '/usr/share/licenses/gnu_make/COPYING': relative_file(make_receipt.parent, 'COPYING')})
+    files.update(sysroot_files(kit, profile))
+    hashes = {name: sha_file(path) for name, path in files.items()}
+    require(hashes[MAKE_PATH] == make_digest, 'GNU Make changed before staging')
+    require(hashes[SYSROOT + '/xos-profile.json'] == kit_binding['profile_file_sha256']
+            and hashes[SYSROOT + '/xos-sdk-manifest.json'] == kit_binding['sdk_manifest_sha256'],
+            'glibc SDK metadata changed before staging')
+    with Disk(disk_path, work) as disk:
+        install(disk, files)
+    verify_installed(disk_path, hashes, work)
+    return hashes
+
+
+def common_receipt(release, make_receipt):
+    return {'system': release['system'], 'sdk': release['application_sdk'],
+            'candidate_source_commit': release['candidate_source_commit'],
+            'installer_iso': release['installer_iso'], 'dash_sha256': release['dash_sha256'],
+            'xypm_sha256': release['xypm_sha256'], 'packages': release['packages'],
+            'donor': load_json(FROZEN), 'make_receipt_sha256': sha_file(make_receipt),
+            'preparation_sha256': sha_file(Path(__file__))}
+
+
+def prepare(release_dir, donor_dir, make_receipt, output):
+    from package_glibc_release import INSTALLER, KIT, ORDINARY, copy_bound, verify_assembled, verify_disk
+
+    release, profile = verify_assembled(release_dir)
     source_disk = release_dir / 'images' / 'work_disk.img'
     image = release_dir / 'images' / ORDINARY
-    donor_receipt = load_json(FROZEN)
     release_manifest = release_dir / 'release_manifest.json'
     report = {'status': 'assembled_unqualified', 'release_sha256': sha_file(release_manifest),
-              'system': release['system'], 'sdk': kit_binding, 'candidate_source_commit': release['candidate_source_commit'],
-              'installer_iso': release['installer_iso'], 'dash_sha256': release['dash_sha256'],
-              'xypm_sha256': release['xypm_sha256'], 'packages': release['packages'],
-              'donor': donor_receipt, 'make_receipt_sha256': sha_file(make_receipt),
-              'preparation_sha256': sha_file(Path(__file__))}
+              **common_receipt(release, make_receipt)}
     output.mkdir(parents=True, exist_ok=False)
     try:
         with tempfile.TemporaryDirectory(dir=output) as temporary:
             work = Path(temporary)
-            files = donor_artifacts(donor_dir, work, donor_receipt)
-            specs = work / 'specs'
-            specs.write_text(driver_specs(profile))
-            files.update({DRIVER_DIR + '/specs': specs, MAKE_PATH: make,
-                          SYSROOT + '/xos-profile.json': release_dir / KIT / 'profile.json',
-                          SYSROOT + '/xos-sdk-manifest.json': sdk.parent / 'manifest.json',
-                          '/usr/share/licenses/gnu_make/COPYING': relative_file(make_receipt.parent, 'COPYING')})
-            for path in sorted(sdk.rglob('*')):
-                relative = path.relative_to(sdk).as_posix()
-                if path.is_file() and (relative.startswith(('usr/include/', 'usr/lib/compiler-include/'))
-                                       or relative in profile['sdk_binding']['link_artifacts']):
-                    files[SYSROOT + '/' + relative] = path
             disk_path = output / 'work_disk.img'
             with source_disk.open('rb') as source:
                 copy_sparse(source, disk_path, release['work_disk']['bytes'])
             require(sha_file(disk_path) == release['work_disk']['sha256'], 'release work disk changed before staging')
-            with Disk(disk_path, work) as disk:
-                install(disk, files)
-            hashes = {name: sha_file(path) for name, path in files.items()}
-            require(hashes[MAKE_PATH] == make_digest, 'GNU Make changed before staging')
-            require(hashes[SYSROOT + '/xos-profile.json'] == kit_binding['profile_file_sha256']
-                    and hashes[SYSROOT + '/xos-sdk-manifest.json'] == kit_binding['sdk_manifest_sha256'],
-                    'glibc SDK metadata changed before staging')
-            with Disk(disk_path, work, read_only=True) as disk:
-                for name, expected in hashes.items():
-                    extracted = disk.export(name)
-                    require(sha_file(extracted) == expected, 'installed Seed differs: ' + name)
-                    extracted.unlink()
+            hashes = stage_disk(disk_path, release_dir / KIT, profile, release['application_sdk'],
+                                donor_dir, make_receipt, work)
             verify_disk(disk_path, profile, release['packages'])
             copy_bound(image, output / ORDINARY, release['system']['iso']['sha256'])
             copy_bound(release_dir / 'images' / INSTALLER, output / INSTALLER, release['installer_iso']['sha256'])

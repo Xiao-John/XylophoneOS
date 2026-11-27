@@ -14,7 +14,7 @@ from boot_smoke import Guest
 from task_smoke import send_bytes,pump
 from process_smoke import command,resources
 from xypm_image import Disk
-from xypm_format import require,sha_file
+from xypm_format import canonical,require,sha_file
 from release_launcher import build_command
 from sdk_receipt import verify_sdk, verify_packaged_sdk, verify_copied_inputs
 
@@ -135,7 +135,22 @@ def main():
         if arguments.output is None:
             parser.error('--glibc-release requires --output')
         from glibc_release_packages_guest import run
-        run(arguments.glibc_release, arguments.output, arguments.foreign_package, PYTHON_RELEASE_SMOKE)
+        release = arguments.glibc_release
+        output = arguments.output
+        packages = run(release, output, arguments.foreign_package, PYTHON_RELEASE_SMOKE)
+        if 'gnu_seed' in json.loads((release / 'release_manifest.json').read_text()):
+            from glibc_gnu_seed_guest import run_packaged
+            native = run_packaged(release, output / 'gnu_seed', PYTHON_RELEASE_SMOKE)
+            require((native['release_manifest_sha256'], native['initial_disk_sha256']) ==
+                    (packages['release_manifest_sha256'], packages['assembled_disk_sha256']),
+                    'native GNU Seed and package gates used different release inputs')
+            (output / 'combined_report.json').write_bytes(canonical({
+                'status': 'passed_subset', 'release_manifest_sha256': native['release_manifest_sha256'],
+                'work_disk_sha256': native['initial_disk_sha256'],
+                'packages_sha256': sha_file(output / 'report.json'),
+                'gnu_seed_sha256': sha_file(output / 'gnu_seed/report.json'),
+                'package_checks': packages['checks'], 'gnu_seed_cases': len(native['cases']),
+            }))
         return
     if arguments.output or arguments.foreign_package:
         parser.error('--output and --foreign-package require --glibc-release')

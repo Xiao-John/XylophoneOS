@@ -1,0 +1,16 @@
+{
+  "files": {
+    "c.json": "93f96fcfb59e210e1a88711782a58a3222014732609e70e717dd92d60b33a6ba",
+    "c.serial.log.gz": "5f23e9876c57985216df64405a60480375417ee1f6030d5478a18b20eb00e88c",
+    "dlclose-disassembly.txt": "7f74886bd6cc11d9fbec626f5d54ed87775715a2d6e50363ab657dfe2abb2caf",
+    "fixed.json": "0fa38a77adf669df97127ba3c1566caf073e4dc1c7fd679fc84c37d331c31811",
+    "fixed.serial.log.gz": "ddad96d02507ffb271eafaf7f01879aecf6cbe3c81067dfa72e8118e8b20cd04",
+    "link.json": "a72d19ed58b1ef6d6f88c25ce69058ae76eb0a369ffe71a5c9a4812ee0092725",
+    "original.json": "5486eef42a74a807148a5103e6aaac4aa265e90c8e0cf69a4db34f379a11e886",
+    "original.serial.log.gz": "31571f3a9a92e8df16ee87103bca5306c3651334b54a37296f741e50ad70fa29",
+    "unlisted.json": "98da8c1d00bcbb1c51417425f59ca6a09e2f351383819d36e80d64d1059dac63",
+    "unlisted.serial.log.gz": "15df31f2aeb9fd7a318c64a4e0688dc9fee92bdd308130801cc7d4b9f4effc43"
+  },
+  "main_source_base": "89de1a04245d910951e95ace4125f11c6c90486e",
+  "version": 1
+}

@@ -1,0 +1,10 @@
+dlclose@@GLIBC_2.44
+   87d60:	55                   	push   %rbp
+   87d61:	31 f6                	xor    %esi,%esi
+   87d63:	48 8d 3d d6 ff ff ff 	lea    -0x2a(%rip),%rdi        # 87d40 <__xos_dlfcn_unsupported>
+   87d6a:	48 89 e5             	mov    %rsp,%rbp
+   87d6d:	e8 ee 01 00 00       	call   87f60 <_dlerror_run>
+   87d72:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+   87d77:	5d                   	pop    %rbp
+   87d78:	c3                   	ret
+   87d79:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)

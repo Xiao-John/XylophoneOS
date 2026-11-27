@@ -46,13 +46,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('system', 'sdk-build', 'gnu-build', 'dash', 'dash-receipt', 'output'):
         parser.add_argument('--' + name, type=lambda value: Path(value).resolve(), required=True)
-    parser.add_argument('--case', choices=('c', 'cpp', 'unlisted', 'shared-cxx', 'shared-cxx-unlisted'), required=True)
+    parser.add_argument('--case', choices=('c', 'cpp', 'unlisted', 'shared-cxx', 'shared-cxx-unlisted',
+                                           'runtime-load-observe', 'runtime-load-policy'), required=True)
+    parser.add_argument('--libc-image', type=lambda value: Path(value).resolve(),
+                        help='relink the same GNU interpreter with a separately rebuilt libc')
     parser.add_argument('--pic-crt', type=lambda value: Path(value).resolve())
     parser.add_argument('--gcc-shared-build', type=lambda value: Path(value).resolve())
     parser.add_argument('--system-source', type=lambda value: Path(value).resolve(),
                         help='source tree recorded by the system manifest when using a prior exact image')
     args = parser.parse_args()
     shared_cxx = args.case.startswith('shared-cxx')
+    runtime_load = args.case.startswith('runtime-load-')
     if (args.case == 'cpp' or shared_cxx) and args.pic_crt is None:
         parser.error('the C++ case requires the GNU PIC CRT build output')
     if shared_cxx and args.gcc_shared_build is None:
@@ -104,13 +108,15 @@ def main():
     try:
         main, rtld, dependency, app, bootstrap, elf = (out / name for name in
             ('main.pie', 'interpreter.so', 'dependency.so', 'application.o', 'entry.o', 'entry.elf'))
-        libc_image = artifacts / 'libc.so'
+        libc_image = args.libc_image or artifacts / 'libc.so'
         rtld_image = artifacts / 'elf/ld.so'
         startup = artifacts / 'csu'
         native_files = artifacts / 'elf/xos_file_session.os'
         report['linked_originals'] = {str(path): sha(path) for path in (
             libc_image, rtld_image, native_files, *(startup / name for name in ('Scrt1.o', 'crti.o', 'crtn.o')))}
         app_source = sources / ('shared_cxx_application.cpp' if shared_cxx else f'interpreter_application.{language}')
+        if runtime_load:
+            app_source = sources / 'runtime_load_policy.c'
         report['sources'] = {str(path): sha(path) for path in (app_source, sources / 'sysdep_start_bootstrap.cpp')}
         run('strip_debug_libc', [objcopy, '--strip-debug', libc_image, dependency])
         run('strip_debug_interpreter', [objcopy, '--strip-debug', rtld_image, rtld])
@@ -251,6 +257,9 @@ def main():
                 markers = (b'D1_DYNAMIC_C_OK',) if language == 'c' else (b'D1_DYNAMIC_CPP_OK', b'D1_DYNAMIC_CPP_FINI')
                 if shared_cxx:
                     markers = SHARED_CXX_MARKERS
+                if runtime_load:
+                    count = b' 4\n' if args.case == 'runtime-load-policy' else b''
+                    markers = (b'D2_LOAD_POLICY_OBSERVED' + count,)
                 same_resources = report['resources_after'] == report['resources_before']
                 exits = re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', result)
                 if unlisted:

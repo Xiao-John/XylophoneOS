@@ -1,0 +1,35 @@
+{
+  "bootstrap_sha256": "57b1b1e4badfdd66e562b34bfd2c299c6e38abc18d61f53bdde0a3296b206bc9",
+  "case": "c",
+  "dash_receipt_sha256": "2096f94e3931fdfc91005aed98b9096dc008dbb41a20493f858d3653431fa19f",
+  "dash_sha256": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+  "early_heap_pages": 32,
+  "exit_status": 0,
+  "guest_command_seconds": 2.01,
+  "iso_sha256": "73eb3fc7972f010a2ab6524a7a7c63788935a961776149a77ba0e16ddceb1d15",
+  "libc_sha256": "878317020ceb02b0cf55901093e20d0b571bbeb236f49939859de6cef1fb106a",
+  "observations": [
+    "D1_DYNAMIC_C_OK ctor=1 env=1 auxv=1 file=1 errno=1",
+    "D1_DYNAMIC_STATUS=0"
+  ],
+  "original_report_sha256": "d157d2d41bb2395db52a4cc2c80ae2cc2b91a07792b0d8330c6908f766b89867",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "rtld_sha256": "5a9621e1e274c68d5a8b6781fc6ecd4d92bdb160962d5b859faa9ffd82fddd6c",
+  "runner_sha256": "47b2ae3dfee3d7a31f5017eb61ea3d29acae146956ce0572871b27d5812ce4ca",
+  "sdk_manifest_sha256": "f03aed9b30a5ab4332f5b6d29e9862e53d9c54a976ab139d28f3470a0d0e4854",
+  "serial_sha256": "f54627141ca3b0fc356a6c75037c8c33f5ce794772a9182d3944b7bf66edcc3a",
+  "startup_budget_seconds": 30,
+  "status": "passed_subset",
+  "system_build_id": "6ee274714e525f50",
+  "system_manifest_sha256": "d2abb7faab4546d4b26bd3875da02726208922626e593eed2897fe7c3edc5777"
+}

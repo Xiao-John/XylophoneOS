@@ -1,0 +1,69 @@
+--- a/dlfcn/dlopen.c
++++ b/dlfcn/dlopen.c
+@@ -22,6 +22,10 @@
+ #include <unistd.h>
+ #include <ldsodefs.h>
+ #include <shlib-compat.h>
++
++#ifdef XOS_DLFUNC_FIXED_CLOSURE
++# include <xos_dlfcn_policy.h>
++#endif
+
+ struct dlopen_args
+ {
+@@ -75,6 +79,10 @@
+ void *
+ ___dlopen (const char *file, int mode)
+ {
++#ifdef XOS_DLFUNC_FIXED_CLOSURE
++  _dlerror_run (__xos_dlfcn_unsupported, NULL);
++  return NULL;
++#endif
+   if (GLRO (dl_dlfcn_hook) != NULL)
+     return GLRO (dl_dlfcn_hook)->dlopen (file, mode, RETURN_ADDRESS (0));
+   else
+--- a/dlfcn/dlmopen.c
++++ b/dlfcn/dlmopen.c
+@@ -23,6 +23,10 @@
+ #include <unistd.h>
+ #include <ldsodefs.h>
+ #include <shlib-compat.h>
++
++#ifdef XOS_DLFUNC_FIXED_CLOSURE
++# include <xos_dlfcn_policy.h>
++#endif
+
+ struct dlmopen_args
+ {
+@@ -80,6 +84,10 @@
+ void *
+ ___dlmopen (Lmid_t nsid, const char *file, int mode)
+ {
++#ifdef XOS_DLFUNC_FIXED_CLOSURE
++  _dlerror_run (__xos_dlfcn_unsupported, NULL);
++  return NULL;
++#endif
+   if (GLRO (dl_dlfcn_hook) != NULL)
+     return GLRO (dl_dlfcn_hook)->dlmopen (nsid, file, mode, RETURN_ADDRESS (0));
+   else
+--- a/dlfcn/dlclose.c
++++ b/dlfcn/dlclose.c
+@@ -20,10 +20,18 @@
+ #include <ldsodefs.h>
+ #include <shlib-compat.h>
+
++#ifdef XOS_DLFUNC_FIXED_CLOSURE
++# include <xos_dlfcn_policy.h>
++#endif
++
+ int
+ __dlclose (void *handle)
+ {
+ #ifdef SHARED
++# ifdef XOS_DLFUNC_FIXED_CLOSURE
++  _dlerror_run (__xos_dlfcn_unsupported, NULL);
++  return -1;
++# endif
+   if (GLRO (dl_dlfcn_hook) != NULL)
+     return GLRO (dl_dlfcn_hook)->dlclose (handle);
+ #endif

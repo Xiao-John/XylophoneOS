@@ -10,6 +10,10 @@ MOC、RCC、QML 导入扫描、类型注册、缓存生成和 shader 处理。x8
 libstdc++ 以及 unwinder 的实际字节变化。统一 profile 使用其自身重编的 QtBase、
 Qt Declarative 和静态插件。原宿主生成器可从已核验的可搬移套件复用。
 
+`xos-x86_64-glibc-unified-cxx-v2` 已通过重新构建目标前缀、断网接收和
+普通 XOS 软件渲染客体验收。使用 v2 的 SDK 和 profile 一同重建，选择 v2
+套件内的相同输入链接应用。[v2 构建及客体记录](../../../../docs/work_log/659b4dc2_qt_quick_unified_v2.md)
+
 ## 重建目标前缀
 
 准备已通过校验的 Linux arm64 宿主工具套件、锁定 Qt Declarative 原档和统一 SDK 的

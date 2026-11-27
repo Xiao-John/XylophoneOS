@@ -1,0 +1,17 @@
+{
+  "elf_sha256": "1853c369b8667ae7f2bdd925b040594ce1ef94c264727237211c74f754afa124",
+  "image_sha256": "2bce620bcdf8ebcebe2b4d9e2dda7beb2937dc7b9aafe79f50b7503e6def4b8b",
+  "original_report_sha256": "e7f05eaea1dbf4f24bee4b49eb991eb4488aefa8c7067fbba76a6d687bb19390",
+  "publication_scope": "Derived snapshot omitting the transient host QEMU command.",
+  "resources_after": [
+    129709,
+    3,
+    1
+  ],
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "status": "PASSED"
+}

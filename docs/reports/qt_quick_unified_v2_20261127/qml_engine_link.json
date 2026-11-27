@@ -1,0 +1,88 @@
+{
+  "fixture_tree_sha256": "abb7962c4f55765d12a884ad44d026981ed7179dc0b5421f1fd2895e750e8113",
+  "kit_manifest_sha256": "3fb616d43e5339ece5f605c3288dd5a929e407183b5fbef7fcc64b16dcec0b62",
+  "original_artifact_sha256": "d942017428543444fa4aeb9d0e2cc8a631913d794a25e525b43823b94a0c6ef7",
+  "programs": {
+    "qml_probe": {
+      "elf_sha256": "1853c369b8667ae7f2bdd925b040594ce1ef94c264727237211c74f754afa124",
+      "link_command_sha256": "6241ed13bce5f0a4e1345ef5ec74c0af807f3c9079b396b555d0d620757dfa81",
+      "program_headers": [
+        {
+          "alignment": 4096,
+          "file_size": 9509238,
+          "flags": 5,
+          "memory_size": 9509238,
+          "type": 1,
+          "virtual_address": 1073741824
+        },
+        {
+          "alignment": 4096,
+          "file_size": 3065955,
+          "flags": 4,
+          "memory_size": 3065955,
+          "type": 1,
+          "virtual_address": 1083252736
+        },
+        {
+          "alignment": 4096,
+          "file_size": 245376,
+          "flags": 6,
+          "memory_size": 293272,
+          "type": 1,
+          "virtual_address": 1086320640
+        },
+        {
+          "alignment": 16,
+          "file_size": 176,
+          "flags": 4,
+          "memory_size": 400,
+          "type": 7,
+          "virtual_address": 1086565840
+        }
+      ]
+    },
+    "qml_quota_probe": {
+      "elf_sha256": "7d28da861cf5044b7c0f7d248f6ed53ac6d941d91dfad185d9a6a4d839c26cf3",
+      "link_command_sha256": "a9d23869ba2d14aec50d65fca5ec34c48de77cf6e9dc49409a967995fdfc1dcc",
+      "program_headers": [
+        {
+          "alignment": 4096,
+          "file_size": 8832118,
+          "flags": 5,
+          "memory_size": 8832118,
+          "type": 1,
+          "virtual_address": 1073741824
+        },
+        {
+          "alignment": 4096,
+          "file_size": 2915579,
+          "flags": 4,
+          "memory_size": 2915579,
+          "type": 1,
+          "virtual_address": 1082576896
+        },
+        {
+          "alignment": 4096,
+          "file_size": 208528,
+          "flags": 6,
+          "memory_size": 255544,
+          "type": 1,
+          "virtual_address": 1085493248
+        },
+        {
+          "alignment": 16,
+          "file_size": 176,
+          "flags": 4,
+          "memory_size": 360,
+          "type": 7,
+          "virtual_address": 1085701600
+        }
+      ]
+    }
+  },
+  "publication_scope": "Derived snapshot with original artifact digest and this scope added.",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "status": "linked_qml_engine_probes_from_relocated_kit",
+  "target_receipt_sha256": "1e33ee5919a2490bb4d906c0aaf7174eca42edc1680d99adcba14e45546dbe5c"
+}

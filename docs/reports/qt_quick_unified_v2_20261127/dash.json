@@ -1,0 +1,109 @@
+{
+  "status": "PASSED",
+  "image_sha256": "2bce620bcdf8ebcebe2b4d9e2dda7beb2937dc7b9aafe79f50b7503e6def4b8b",
+  "elf_sha256": "ce1a49a4aeeb3f64e65da05d34ffb257744d76851ebea14acbb709798241b6a9",
+  "cycles": [
+    {
+      "cycle": 1,
+      "start": {
+        "bar_x": 50,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "58029aac1f66db6205553b7550f90518782ef5f181939f898127a58e69667b37"
+      },
+      "moved": {
+        "bar_x": 82,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "14eae77d7590d5c3505d0d46cd42e0058feda6ce711f595bbe28318a09056e64"
+      },
+      "key": {
+        "bar_x": 114,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "9c7013817a6b6069ca4919bfa340fbc36fdd479ae9d53f16a5fe8026352e86ab"
+      }
+    },
+    {
+      "cycle": 2,
+      "start": {
+        "bar_x": 66,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "02a8856f497b7303625c5df891e7db69f8a33928ea1c29446ba9d0983744bfb5"
+      },
+      "moved": {
+        "bar_x": 82,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "14eae77d7590d5c3505d0d46cd42e0058feda6ce711f595bbe28318a09056e64"
+      },
+      "key": {
+        "bar_x": 114,
+        "text_ink_pixels": 940,
+        "screenshot_sha256": "9c7013817a6b6069ca4919bfa340fbc36fdd479ae9d53f16a5fe8026352e86ab"
+      }
+    }
+  ],
+  "launcher": "dash",
+  "first_frame_timeout_seconds": 240.0,
+  "system_manifest_sha256": "e6b4a3a1c11469237ddc1cf35caebaf4c90d94cdd6e9564eee991070731b4cb4",
+  "system_build_id": "90b485d08e5b6f97",
+  "app_receipt_sha256": "5e5e361b289fadbb42eb27b9df6a7e284a26cac70be9621a54ca24b01b95f0d4",
+  "kit_manifest_sha256": "3fb616d43e5339ece5f605c3288dd5a929e407183b5fbef7fcc64b16dcec0b62",
+  "target_receipt_sha256": "1e33ee5919a2490bb4d906c0aaf7174eca42edc1680d99adcba14e45546dbe5c",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "dash_elf_sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+  "dash_manifest_sha256": "870eb4afbe0234291eea3f73824ecc7147a8a1cce0b8f9c90be0a392023adf6e",
+  "dash_sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "fat_payload_sha256": "ce1a49a4aeeb3f64e65da05d34ffb257744d76851ebea14acbb709798241b6a9",
+  "fat_dash_sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline": [
+    129709,
+    3,
+    1
+  ],
+  "with_graphics": [
+    121633,
+    5,
+    3
+  ],
+  "launch_to_first_frame_ns": 15371335560,
+  "frame_flush_ns": [
+    60000000,
+    20000000,
+    0,
+    10000000,
+    0,
+    0,
+    60000000,
+    0,
+    0,
+    0,
+    0,
+    0,
+    10000000
+  ],
+  "scene_samples": [
+    [
+      1,
+      6,
+      10559,
+      160000000
+    ],
+    [
+      2,
+      7,
+      10559,
+      110000000
+    ]
+  ],
+  "after_payload": [
+    121633,
+    5,
+    3
+  ],
+  "after_services": [
+    129709,
+    3,
+    1
+  ],
+  "serial_sha256": "bcde2f354d7c922aece46cbc5e5e6d62710bef28b8a64ec0ffaa4bd4d6adfa86"
+}

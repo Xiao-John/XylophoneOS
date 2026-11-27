@@ -111,7 +111,7 @@ NULL/非零为错误。readdir_r 通过返回值报告错误。rewinddir 丢弃�
 
 ## 协议校验与服务死亡
 
-IPC endpoint 来自当前进程的 `sys_file_endpoints`。每次操作使用单调时钟的
+IPC endpoint 来自当前进程的 `sys_ipc_handles`（sys22）。每次操作使用单调时钟的
 5 秒绝对截止时间。遇到空队列，用 sys85 的 `file_reply_until` 模式在当前进程
 的认证文件回复端点等待。唤醒后用原截止时间重新接收并校验回复。
 旧内核以 invalid argument 拒绝此模式，运行库仅在该结果下保留原先的 1 毫秒

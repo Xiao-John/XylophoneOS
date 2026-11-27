@@ -137,8 +137,11 @@ sys20 第三参数 bit0 为非阻塞，bit1 与第一参数为零共同选择显
 | 89 | `sys_process_cpu_time` | `src/shared/include/xos/process_abi.hpp` |
 | 112 | `sys_device` | `src/shared/include/xos/device_abi.hpp` |
 | 84 | `sys_ipc_endpoint` | `src/shared/include/xos/process_abi.hpp` |
-| 85 | `sys_ipc_wait`，mode 4 为当前 Files 回复的绝对期限等待 | `src/shared/include/xos/process_abi.hpp` |
+| 85 | `sys_ipc_wait` | `src/shared/include/xos/process_abi.hpp` |
 | 86 | `sys_ipc_name` | `src/shared/include/xos/process_abi.hpp` |
+
+sys85 mode 4 为调用者当前 Files 回复端点的绝对期限等待。
+[端点生命周期契约](ipc_endpoint_lifecycle.md#文件回复等待)
 
 ## 待实施的具体预分配
 

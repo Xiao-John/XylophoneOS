@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "scope": "New glibc C fixture and Dash on actual previous kernel using legacy sleep fallback",
+  "build_id": "81c419d562a3731e",
+  "image_sha256": "7df85605c130f83f447f851c379703a97414f181a8813d93a9be7330329815b7",
+  "system_manifest_sha256": "8fe7e0ff2d5a876c34b5e608fc3beaf311ff8238ad1e78af525bd6c5326107b2",
+  "resources_before_after": [
+    129696,
+    3,
+    1
+  ],
+  "probe_sha256": "99e96df18fba38cb1bf125c72b8a472344aecfc5e46e500e569ab4a37906f9c6",
+  "dash_sha256": "60d0a0a3f750205d1972c673674aec61203534a628c0b13d320417f7c6f92037",
+  "serial_sha256": "3270d3d202a8e8cf8ca48c18b708cf8438f18c1fbf5439fa67f19e6d3bef26ad",
+  "checks": [
+    "xsh_two_concurrent_readers",
+    "dash_two_concurrent_readers"
+  ]
+}

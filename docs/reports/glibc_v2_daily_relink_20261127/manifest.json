@@ -1,0 +1,13 @@
+{
+  "files": {
+    "guest.json": "3dee2d7ce2303e558505d0b016bbf55fa5c385ac9f21c2afb71e10b3d460a82a",
+    "host.json": "2a43c28330874da0968530f336260c15da34b86dc4286cd6b29bdcd1752a3435",
+    "installer.serial.log.gz": "675f896a199cee8717e7ed6907af54cfc10a1ac9a4542522b1e859459c969885",
+    "original.serial.log.gz": "6f597ba3336a45268109ae33689ccc932f84afa18c344dc3a59f1599749c7344",
+    "receiver_archive_comparison.json": "74c6bd56a2c0b0a7d91a3900c864cf25d39f8f8769c5a3097949877a9ace4d50",
+    "receiver_original.json": "316a5e305a16f9b4409a9d89f495abe49d09a4bf826c2d3852fa5bed4b9efe98",
+    "receiver_replacement.json": "431e0118151212f0b0283b93a572c58d1dfcabb1643933d3719ba2de5535c28d",
+    "replacement.serial.log.gz": "fceee46409dbbd55d4ebffb8106d049622d9bd5ee6a241972e701aabc6a979f1"
+  },
+  "version": 1
+}

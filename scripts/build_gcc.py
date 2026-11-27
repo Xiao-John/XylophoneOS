@@ -198,8 +198,9 @@ def inspect_gcc(install: Path, readelf: str, languages, host_roots):
     return result
 
 def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Path, *, languages="c"):
-    if platform.system() != "Darwin" or platform.machine() not in ("arm64", "aarch64"):
-        raise RuntimeError("this lock targets arm64 macOS")
+    system = platform.system()
+    if system not in ("Darwin", "Linux") or platform.machine() not in ("arm64", "aarch64"):
+        raise RuntimeError("this lock requires an arm64 Linux or macOS build host")
     manifest = sdk / "manifest.json"
     if not manifest.is_file(): raise RuntimeError(f"SDK manifest missing: {manifest}")
     actual = sha256(manifest)
@@ -213,26 +214,31 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
     if run([gcc, "-dumpmachine"]).strip() != "x86_64-elf": raise RuntimeError("wrong cross target")
     libgcc = Path(run([gcc, "-print-libgcc-file-name"]).strip())
     if not libgcc.is_file(): raise RuntimeError(f"libgcc missing: {libgcc}")
-    native = {n: shutil.which(n) for n in ("make", "clang", "clang++")}
-    if any(v is None for v in native.values()): raise RuntimeError(f"missing build tools: {native}")
+    build_cc, build_cxx = ("clang", "clang++") if system == "Darwin" else ("gcc", "g++")
+    native = {role: shutil.which(program) for role, program in
+              (("make", "make"), ("cc", build_cc), ("cxx", build_cxx))}
+    if any(v is None for v in native.values()):
+        raise RuntimeError(f"make, {build_cc} and {build_cxx} are required on {system}")
     obj = {n: shutil.which("x86_64-elf-" + n) for n in ("ar", "as", "ld", "nm", "objcopy", "objdump", "ranlib", "readelf", "strip")}
     if any(v is None for v in obj.values()): raise RuntimeError(f"missing target binutils: {obj}")
-    source = source_tree()
-    deps = LOCK.get("dependencies", {})
-    for name, spec in deps.items(): dependency_tree(source, name, spec)
     sdk_inputs = {item: sha256(sdk / item) for item in ("crt0_posix.o", "user.ld", "lib/libxos.a", "lib/libxos_loader.a", "lib/libc.a", "lib/libm.a")}
-    build_triple = run([str(source / "config.guess")]).strip()
-    host = "x86_64-unknown-elf"; target = "x86_64-elf"
     stdcxx = stdcxx.resolve()
     cxx_config = stdcxx / "include/c++/16.2.0/bits/c++config.h"
     if not cxx_config.is_file():
         cxx_config = stdcxx / "include/c++/16.2.0/x86_64-unknown-elf/bits/c++config.h"
     if not cxx_config.is_file() or not (stdcxx / "lib/libstdc++.a").is_file():
         raise RuntimeError(f"host libstdc++ prefix is incomplete: {stdcxx}")
+    source = source_tree()
+    deps = LOCK.get("dependencies", {})
+    for name, spec in deps.items(): dependency_tree(source, name, spec)
+    build_triple = run([str(source / "config.guess")]).strip()
+    host = "x86_64-unknown-elf"; target = "x86_64-elf"
     patch_files = sorted((PORT / "patches").glob("*.patch"))
     record = {"source_sha256": sha256(CACHE / LOCK["source_archive"]), "sdk_manifest_sha256": actual,
               "builder_sha256": sha256(Path(__file__)),
               "provenance_generator_sha256": sha256(ROOT / 'scripts/archive_provenance.py'),
+              "build_tools": {name: {"path": path, "sha256": sha256(Path(path))}
+                              for name, path in native.items()},
               "patches": {p.name: sha256(p) for p in patch_files},
               "config_site_sha256": sha256(PORT / "config/xos_cache_seed.sh"),
               "cxx_runtime_sha256": sha256(PORT / "cxx_runtime.cpp"),
@@ -256,7 +262,7 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
     env.update({
         "CONFIG_SITE": str(config_site),
         "CC": str(work / "xos-cc"), "CXX": str(work / "xos-cxx"),
-        "CC_FOR_BUILD": native["clang"], "CXX_FOR_BUILD": native["clang++"],
+        "CC_FOR_BUILD": native["cc"], "CXX_FOR_BUILD": native["cxx"],
         "CC_FOR_TARGET": gcc, "CXX_FOR_TARGET": gxx,
         "AR": obj["ar"], "AR_FOR_TARGET": obj["ar"], "AS_FOR_TARGET": obj["as"],
         "LD_FOR_TARGET": obj["ld"], "NM": obj["nm"], "RANLIB": obj["ranlib"],

@@ -1,0 +1,36 @@
+{
+  "build_id": "8356e45af316fc93",
+  "cases": [
+    {
+      "compile": "exec-driver /usr/bin/x86_64-elf-gcc -static --sysroot=/sysroot /src/hello.c -o /out/frozen_c.elf",
+      "execute": "exec-file /out/frozen_c.elf",
+      "marker": "Hello from XOS C!",
+      "name": "frozen_native_c",
+      "resources": [
+        130207,
+        2,
+        0
+      ]
+    },
+    {
+      "compile": "exec-driver /usr/bin/x86_64-elf-g++ -static --sysroot=/sysroot /src/hello.cpp -o /out/frozen_cpp.elf",
+      "execute": "exec-file /out/frozen_cpp.elf",
+      "marker": "Hello from XOS C++!",
+      "name": "frozen_native_cpp",
+      "resources": [
+        130207,
+        2,
+        0
+      ]
+    }
+  ],
+  "mirror_images_sha256": "b9ecfd3ee35db53fce681210df2cad6836f6855c9a4ffe8cff3764d7454d1e19",
+  "outputs": {
+    "frozen_c.elf": "0d7fb9dbc807de7e35ef8ac4cfe765760940b406f1646899a175357d876c35bd",
+    "frozen_cpp.elf": "c42183f0cfb8ce26527827062071dc9b637ff6ac2de76bece21a1cdc0c8973ad"
+  },
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "rollback_iso_sha256": "d7917c5374d82ec2098e95b8649fb80013052d9c53fc3f381b97ffabfc3c766c",
+  "status": "passed_subset",
+  "work_disk_input_sha256": "93bda810cecbf9e29583208a290043f40e40dbdba2050f0856feee34ecec4fdf"
+}

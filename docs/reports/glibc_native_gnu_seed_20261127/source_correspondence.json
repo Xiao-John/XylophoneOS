@@ -1,0 +1,35 @@
+{
+  "artifacts": {
+    "unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-source-supplement-gxx-lrealpath.tar.gz": {
+      "bytes": 179934,
+      "path": "unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-source-supplement-gxx-lrealpath.tar.gz",
+      "role": "verbatim corresponding source for unchanged GNU Seed",
+      "sha256": "8e8bd6f48ea89845389e803b99249e0275050b1bdc43ff927388ba807e257780"
+    },
+    "unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-sources.tar.gz": {
+      "bytes": 176472043,
+      "path": "unchanged_gnu_correspondence/xos-0.0.1-1024-gnu-sources.tar.gz",
+      "role": "verbatim corresponding source for unchanged GNU Seed",
+      "sha256": "e2d91871e39ca50385401776fe2f028965b0f7f8bf129ba2ab70f95325d36911"
+    }
+  },
+  "build_manifest_sha256": "04c5384438adcce1a7762b968b0cfc87973e625a6210690a37aff52b6534dae0",
+  "release_manifest_sha256": "8288138e416394f69111ca48c939f4d19f8cf6289c24e46973073648159e2bfe",
+  "source_asset_sha256": "ccde1b85e391cc7f1cadaca8a661ae89213658184044ae94cbf465e50f23129e",
+  "source_commit": "59ac60db7f68fa0f9b13b56025df8549f1a72c5e",
+  "status": "verified_frozen_correspondence",
+  "tools": {
+    "/usr/bin/as": "14c0df6c85d5e563fb72fd4de251e31209b9cdf78faac8bb55b220d88034cece",
+    "/usr/bin/x86_64-elf-ar": "3ba108e6afc08536c2cf0a377669ef83b96336994054a09a6b4bb5e8dcbf1e6a",
+    "/usr/bin/x86_64-elf-as": "14c0df6c85d5e563fb72fd4de251e31209b9cdf78faac8bb55b220d88034cece",
+    "/usr/bin/x86_64-elf-cpp": "9dd9ee8dbea3e0a7edf307a4d11cbb98d8d87a98723deeed8b209f81ebc8c2ca",
+    "/usr/bin/x86_64-elf-g++": "a1574b29d8891d00f25edae17aefaa91290dc980cd9d7d221e7d302850a8dfcd",
+    "/usr/bin/x86_64-elf-gcc": "29a54a2a69de813ce153e55322a2a09d0fbd8d0a550120bb01c1db0f61b3e35c",
+    "/usr/bin/x86_64-elf-ld": "ca27d758ca2e1c750beaf80455f359370547a1359bf4e30af77c9c70a5822892",
+    "/usr/bin/x86_64-elf-nm": "653530e6fab489261c67189c497c6ae0b875a671378a6226a8038af1f15c6337",
+    "/usr/bin/x86_64-elf-ranlib": "719297ba172a83ef8b1f154d7cbdf1b0129fff43640719cce78e9a584ce5f277",
+    "/usr/bin/x86_64-elf-strip": "76795c63b831e534b305eccdd9dd52e55007653b79724976147540f5510638d9",
+    "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1": "85321572cf4aba927d7c95f0b7ef8008c04bd2798b04531a8f6396764825b12f",
+    "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus": "00beda326c502e55ec83309b782e96572113cc0a308430249520e8781c4cb139"
+  }
+}

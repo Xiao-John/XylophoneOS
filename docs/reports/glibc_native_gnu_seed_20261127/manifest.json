@@ -1,0 +1,18 @@
+{
+  "files": {
+    "binding.json": "349e20169d34cd09972e6a7af79c91a416ffc4e8c617497a696a6dff1998b536",
+    "c.map.gz": "1cd4b10aa75700c7a0a3df8ee328f13d34a1a47bed5cacc5b01175b8e8b06a4d",
+    "cpp.map.gz": "ad7c8972e078f8168b04f8f286f16f99a00ccb92e7cea93573c30df81e7d63cb",
+    "diagnostic_ordinary.serial.log.gz": "dbb343d567ea873c06ce8bf3588b5aa7ae1c7994b4d476ff3368e59a5dfe93e6",
+    "gnu_make_build.summary.json": "8d3b422743254a482c28b1fc9ef6e51e29cc27dd56161c80250941c6bce5f86a",
+    "gnu_seed_staging.json": "8045de62e75620b9c88c289d44b8a32ef29736b4d05efb600ca0c072b5d66cff",
+    "guest_report.redacted.json": "05437043a5c261d3aeb15dcdcc000b3bb3d3f5dea938fce65c772ec3ae4652a3",
+    "installer.serial.log.gz": "7dd4a3a0618f3302e8ff3846594535969ba22a9ffb3328eb5a42c4fa2031e7a8",
+    "ordinary.serial.log.gz": "744d5c078e164065a09cff0a15a3b798476c4dd1d0db31575ec0dd2bbcb3207c",
+    "reboot.serial.log.gz": "19dbb9996512dd7fc287edd11f78e3ae3aa1231f66df0d43337772b58f985ae9",
+    "rollback.serial.log.gz": "cf8779486ae0aaf96d7603ce499293f45f489d1aa5d0d8fb7dc4cd13f57cf55b",
+    "rollback_guest.json": "e4f30f899b1217cb311acc5ab5aa472bf39ab74978bca9e09a546695b61783e4",
+    "source_correspondence.json": "459035bcc96e52c3cfb785b10cbccd8b0aec62dab264cbb7e4b88f6f5b71f520"
+  },
+  "version": 1
+}

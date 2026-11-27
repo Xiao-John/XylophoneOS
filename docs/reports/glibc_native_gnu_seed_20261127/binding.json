@@ -1,0 +1,25 @@
+{
+  "base_commit": "c633b88533e74556eb05dcb4b2d0981fac9cdf88",
+  "correspondence_checker_commit": "36bcc3887704218e0474ae5082a42b8af9c248f1",
+  "latest_main_compared": "502cc673dc60c3d8ec42cd3929d26c38a35becd0",
+  "original_sha256_by_public_file": {
+    "c.map.gz": "7d18f86314b339472a8013020fc58743ae555697253d4af5c067426dd65c4b81",
+    "cpp.map.gz": "23d1e8863110a348334635e619adcd709c192631e93c992eb38f51076e5516af",
+    "diagnostic_ordinary.serial.log.gz": "73109f9972c1c7d2a6986655d232a647186752281a3f50fb8c538b9423b85323",
+    "gnu_make_build.summary.json": "a20938d4ea38aefe6b308fbac16ec0bf72b0f61e4b0776f7f80ba696ac588de9",
+    "gnu_seed_staging.json": "8045de62e75620b9c88c289d44b8a32ef29736b4d05efb600ca0c072b5d66cff",
+    "guest_report.redacted.json": "aa4444a89aa612e606a1fa0bd9e39373e380dc83d2713bc33230edc5e85cfc77",
+    "installer.serial.log.gz": "5e68f8109a8daafa9a9e488cd8857f5bd410f0f8ea3babdabfb742942a3179ce",
+    "ordinary.serial.log.gz": "cc5549761441893d0f451cd2b23220598b5522542eba1582e4eb0696746f929a",
+    "reboot.serial.log.gz": "6440ed701245acc51c9dc214f52d23d447cfde276b5a77c9a864d7c0ed506616",
+    "rollback.serial.log.gz": "7bc926f859ab62c213dd543db07cce323e48f6ca45f152fe69b23758e8054d0a",
+    "rollback_guest.json": "e4f30f899b1217cb311acc5ab5aa472bf39ab74978bca9e09a546695b61783e4",
+    "source_correspondence.json": "459035bcc96e52c3cfb785b10cbccd8b0aec62dab264cbb7e4b88f6f5b71f520"
+  },
+  "public_derivation": {
+    "link_maps": "Original maps compressed; historical compiler source path redaction applied if present.",
+    "make_summary": "Selected version, signature, SDK, ELF and configuration fields from the build receipt.",
+    "serial_and_guest_report": "Historical compiler source path redaction. Guest command lines are preserved in the serial log. Original bytes retained separately."
+  },
+  "tested_stage_and_guest_commit": "59b9081ea7397159554d76629b6e601f5da89394"
+}

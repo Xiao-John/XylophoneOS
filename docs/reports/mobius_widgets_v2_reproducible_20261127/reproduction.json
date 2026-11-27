@@ -1,0 +1,114 @@
+{
+  "common_embedded_receipt_sha256": "1656e7d53866f1ebe07113b77f05027b0c2ac9800e649fc1a9812bd79183eca2",
+  "common_executable_identity": {
+    "usr/bin/mobius-session.elf": {
+      "build_recipe_sha256": "7e9a61435365a4812ae560060d6e70b69989b0cc2034e032e7c010bd8f1f1d33",
+      "elf_sha256": "368abfd212ed11fbffc59980daa83671b57ed5b7f495391841fb0a2fa4bffe22",
+      "widgets_kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+    },
+    "usr/bin/mobius.elf": {
+      "build_recipe_sha256": "418b242020aa378c0397df4a9a0400ec2c176c452020f0c8861ca76d24957c50",
+      "elf_sha256": "6d34b9856ea65853eb14f3ac6fb499e9f3d7650370b8e242b72e878bd5a88cbe",
+      "widgets_kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+    }
+  },
+  "distribution": {
+    "Curvive": {
+      "embedded_bmp_sha256": "07fbdfbb8d057f894ceaf45344b4204939ec5e1a03e2e89a98ad2c9727444321",
+      "source_sha256": "0c399171dadd47637703b9758156d19513f98cef08231b757a0843e16c029bf4",
+      "status": "license_basis_unrecorded"
+    },
+    "published_package": false,
+    "qt_lgpl_replacement": "pending modified Qt build and recipient-assisted replacement verification"
+  },
+  "environment": {
+    "each_cpu_limit": 1,
+    "each_memory_limit_bytes": 1610612736,
+    "each_tmpfs_bytes": 805306368,
+    "receivers": "two separate disconnected Linux arm64 containers"
+  },
+  "input_qt_kit_archive_sha256": "e683f0b6ec4a310df91261ddb53e950f0bbe8aed8aec90285d503360a98c92ed",
+  "input_qt_kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f",
+  "input_sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "receiver_witnesses": {
+    "alpha": {
+      "local_build_receipt_sha256": {
+        "mobius": "8e3880d81432aee40c9e4dcbcfe257b96dc68c333db0a9dd4b14b818dec75594",
+        "mobius_session": "421bf459c41dad76379271a7156fcce27777bbbc22fe45c36ecfae9a6370019a"
+      },
+      "original_combined_build_log_sha256": "fed62a373adff8aca7bb60696cd9e2e1a7d42776a84725d9307d04dfea7c3658",
+      "original_summary_sha256": "a5a88dee08bf61e7800fb165e72d4f5088e45d784f314a4e57585bc9406a172c"
+    },
+    "beta": {
+      "local_build_receipt_sha256": {
+        "mobius": "f80a4c983bfd3c302d4cd4d6d0bfd5a92f3ae3b13bb7eb8f4fadc419103a4cd6",
+        "mobius_session": "a6d94a5761ebb626867a87580d7801f305f9773576d179990442f463b8bb5717"
+      },
+      "original_combined_build_log_sha256": "d8d89e733ceeecad12b66ae4acf0e3b177b4078684388a7c0a9b132ee9ca8c7e",
+      "original_summary_sha256": "ec74ea1dbbacc994f4b2e521f2a6d908f35b5714860d9c6adcdd397d4c12890a"
+    }
+  },
+  "relink": {
+    "elfs": {
+      "mobius.elf": "6d34b9856ea65853eb14f3ac6fb499e9f3d7650370b8e242b72e878bd5a88cbe",
+      "mobius_session.elf": "368abfd212ed11fbffc59980daa83671b57ed5b7f495391841fb0a2fa4bffe22"
+    },
+    "log_sha256": "2264e635c9080f694b3aab07457cc1e9b1f0664e7a9afba4e88ac8c415a1f7d6",
+    "material_file_count": 186,
+    "material_file_groups": {
+      "link/objects": 12,
+      "link/qt": 12,
+      "link/sdk": 13,
+      "notices/qt": 34,
+      "notices/sdk": 9,
+      "notices/sdk_profile.json": 1,
+      "notices/widgets_kit.json": 1,
+      "notices/widgets_target_receipt.json": 1,
+      "sources/qtbase.tar.xz": 1,
+      "sources/xos": 102
+    },
+    "materials_manifest_sha256": "f446ea6073927aefa738eb454626b2b4b816c8fbe9ef7825412d36dac09f5969",
+    "scope": "Same-input relink from staged files in the second receiver. An alternate Qt build was not used.",
+    "status": "byte_identical_mobius_relink"
+  },
+  "revision_change": {
+    "changed_payloads": [
+      "usr/share/xos.mobius/build_receipt.json"
+    ],
+    "revision_one_sha256": "e5b8a85b4be637f505b11f0672e0e1f760b4bb70cc35746b397b69d7bad1232b",
+    "revision_zero_sha256": "f3434d4a06303c9780a16959ab64a54abd81c3d2ef2866967dca791d8bb1f9a7",
+    "status": "revision_binding_overwrites_managed_receipt"
+  },
+  "same_revision_comparison": {
+    "ELFs_match_prior_QEMU": true,
+    "archive_sha256": "f3434d4a06303c9780a16959ab64a54abd81c3d2ef2866967dca791d8bb1f9a7",
+    "byte_comparison": "cmp_exit_0",
+    "bytes": 35840000,
+    "revision": 0,
+    "root_roles_changed": {
+      "mobius": [
+        "build",
+        "profile",
+        "sdk",
+        "source",
+        "widgets"
+      ],
+      "mobius_session": [
+        "build",
+        "profile",
+        "sdk",
+        "source",
+        "widgets"
+      ]
+    },
+    "verified_members": 49
+  },
+  "source_inputs": {
+    "scripts/mobius_build_receipt.py": "b30a24bbc17e0ee1c22076a7f192043cd613e5c68761ca36f40a019a04d022c5",
+    "scripts/package_desktop_products.py": "758f52a6d9130dec318005dd24139e59d62d2e941bbb81267c51cf050da5a862",
+    "src/ports/aurora_desktop/glibc/build.py": "7600c68ab55dc0ed2ee2a1ef86b2fb996bad6c204e473500c827d45a92c79318",
+    "tests/mobius_unified_widgets_guest.py": "5ac479f4113b0586b581a72e66f03c8feea9074d3b671d61dcc240f40c12f30c"
+  },
+  "status": "same_revision_byte_identical",
+  "tested_revision": "7d47817dde8789a971647755f7e7f8f1496cfa4d"
+}

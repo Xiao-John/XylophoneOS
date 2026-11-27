@@ -26,9 +26,11 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 [候选验收回执](../reports/glibc_release_package_composition_20261127/manifest.json)
 
 显式 v2 静态候选已在 `8e66789c` 重建，并用同一发行初盘的副本完成包和原生
-编译组合客体。接收方已重开四份归档并核对 GNU Make 签名。后续产品、升级与恢复
-及完整静态重链接材料继续使用最终选定候选验收。
+编译组合客体。接收方已重开四份归档并核对 GNU Make 签名。该候选的 P2 到 P3
+自升级和发行盘原生包升级均通过同步中断、内置恢复和冷启重试。后续产品及完整
+静态重链接材料继续使用最终选定候选验收。
 [v2 复验记录](../work_log/9f6b0349_glibc_v2_release_inputs.md)
+[升级与恢复复验](../work_log/cd9e6300_glibc_v2_upgrade.md)
 
 ## 整套资产的发布门
 
@@ -36,7 +38,7 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 | --- | --- |
 | 同一套候选合并验收 | 绑定发行 ISO、安装 bundle、初始盘、宿主与客体 SDK、全部随包资产及各自 profile 的 manifest。从干净盘和复制的旧数据运行发行 smoke。记录通过、失败、未运行的条目及对应摘要。 |
 | 可替换的静态运行库 | glibc 已完成隔离的 C SDK 源码重建与实际替换重链接样例。发行材料按最终 C/C++ SDK 和所发静态程序逐项验证源码、对象、编译/链接配方及接收方复跑。许可、例外及告知按最终资产的条目收录。 [glibc 重建与重链接](../work_log/d25c5def_glibc_detached_source_rebuild.md) |
-| 升级与回退 | 用最终 profile 重跑原生包升级和可恢复中断；已有同 profile 的 P2→P3 历史证据。保存新旧工作盘和用户数据读回。冻结 v0.0.1-1024 newlib 保持原 SDK、原介质和原盘。工作区默认选择的三次冷启和原 XPK 重打包已通过。 [跨版本升级](../work_log/3ce98ac7_glibc_g4_xypm_p2_p3.md) · [工作区回退](../work_log/50e9a5a4_glibc_sdk_default.md) |
+| 升级与回退 | v2 候选已通过 P2→P3 自升级和发行盘 IDNA 包升级的同步中断及恢复。历史 newlib 工作盘拒绝 v2 跨 profile 写入，原客体冷启可读。冻结 v0.0.1-1024 newlib 保持独立 SDK、介质和盘；工作区默认选择的三次冷启和原 XPK 重打包已通过。最终发行候选换版时重跑，保存新旧工作盘和用户数据回执。 [v2 升级](../work_log/cd9e6300_glibc_v2_upgrade.md) · [工作区回退](../work_log/50e9a5a4_glibc_sdk_default.md) |
 | 发布记录 | 对实际发行资产重跑许可材料检查、接收方复验与 `CHECKSUMS.sha256`。记录源包获取方式、最终 SHA-256、未关闭条目和各条适用范围。动态装载的资格按 D0–D4 单列，随静态发行时将支持范围写入发行回执。 |
 
 当前默认发行仍由原配方生产。切换和 newlib 退役以完成上述实际证据和最终组合为准。

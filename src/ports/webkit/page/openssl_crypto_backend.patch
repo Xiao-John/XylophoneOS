@@ -29,3 +29,33 @@
 +    list(APPEND PAL_SOURCES crypto/openssl/CryptoDigestOpenSSL.cpp)
 +    list(APPEND PAL_LIBRARIES OpenSSL::Crypto)
 +endif ()
+--- a/Source/WebCore/crypto/openssl/CryptoKeyRSAOpenSSL.cpp
++++ b/Source/WebCore/crypto/openssl/CryptoKeyRSAOpenSSL.cpp
+@@ -38,5 +38,5 @@
+ namespace WebCore {
+
+-static size_t getRSAModulusLength(RSA* rsa)
++static size_t getRSAModulusLength(const RSA* rsa)
+ {
+     if (!rsa)
+@@ -165,5 +165,5 @@
+ size_t CryptoKeyRSA::keySizeInBits() const
+ {
+-    RSA* rsa = EVP_PKEY_get0_RSA(m_platformKey.get());
++    const RSA* rsa = EVP_PKEY_get0_RSA(m_platformKey.get());
+     if (!rsa)
+         return 0;
+@@ -298,5 +298,5 @@
+ auto CryptoKeyRSA::algorithm() const -> KeyAlgorithm
+ {
+-    RSA* rsa = EVP_PKEY_get0_RSA(platformKey());
++    const RSA* rsa = EVP_PKEY_get0_RSA(platformKey());
+
+     // FIXME: `CryptoRsaKeyAlgorithm` stores `modulusLength` as an `unsigned` requiring us to cast below. We should find a way to remove the need for a cast / ensure the cast is safe and doesn't overflow.
+@@ -331,5 +331,5 @@
+ std::unique_ptr<CryptoKeyRSAComponents> CryptoKeyRSA::exportData() const
+ {
+-    RSA* rsa = EVP_PKEY_get0_RSA(platformKey());
++    const RSA* rsa = EVP_PKEY_get0_RSA(platformKey());
+     if (!rsa)
+         return nullptr;

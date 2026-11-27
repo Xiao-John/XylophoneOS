@@ -35,7 +35,7 @@
     },
     {
       "path": "page/openssl_crypto_backend.patch",
-      "sha256": "16f541bfecbd7080d545dcce11a6ce23d0a374ca776720ba9631f4f3cff3c0be"
+      "sha256": "cbbbc0e9389cc849e1dc78096a2d405dd374fc4266b91c152e6864f6a4719168"
     }
   ]
 }

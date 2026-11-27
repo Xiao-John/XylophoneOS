@@ -48,3 +48,22 @@ x86-64。构建继续生成最终 GCC 工具。
 
 完整 `all-gcc`、最终 ELF 检查、重新组装发行盘与两种 Shell 客体验收仍待完成。
 原发布 GNU Seed 和当前候选的二进制继续保留各自原件。
+
+## GCC 重建产物的客体验收入口
+
+用完整 GCC 构建回执和预期摘要核对两个驱动、CPP 与两个前端。验收在已绑定的
+glibc 发行初盘副本替换这五个文件，逐项读回并绑定实际启动盘。原安装器、
+普通 ISO、Binutils、GNU Make、目标 SDK 和发布工作盘均来自给定的发行候选。
+QEMU 客体运行 C/C++、xsh 与 Dash 的 GNU Make、未定义符号拒绝和冷启读回，并从
+链接映射核对实际使用的 glibc sysroot。
+
+对照使用 `960fce43` 冻结发行盘实际读取的五个原 ELF，经同一入口重新写入盘副本。
+18 项客体检查通过，已登记的软件包和原始发行盘摘要保持一致。错误回执摘要和错误
+工具摘要均被拒绝。新编译器仍须使用自己的构建回执运行同一门。
+[客体对照回执](../reports/gcc_seed_build_paths_20261127/receiver-control.json)
+
+```sh
+python3 -B tests/glibc_gnu_seed_guest.py --release-dir "$RELEASE" --output-dir "$OUTPUT" \
+  --rebuilt-gcc-receipt "$GCC_BUILD/manifest.json" \
+  --rebuilt-gcc-receipt-sha256 "$GCC_RECEIPT_SHA256"
+```

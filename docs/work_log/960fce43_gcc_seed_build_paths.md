@@ -40,5 +40,11 @@ python3 -B tests/gcc_seed_build_paths.py --gcc-configure "$EXTRACTED_GCC/configu
 以及 `libcody.a`。抽查输入对象的 ELF `e_machine` 分别为 AArch64、x86-64、
 x86-64。构建继续生成最终 GCC 工具。
 
+`all-gcc` 随后因缺少构建机的 `fixinc.sh` 停止。上游 GCC 的 `stmp-fixinc`
+仍直接使用该脚本。端口补丁保留原生 `all-build-fixincludes` 依赖，只跳过 XOS
+宿主侧构件。按修订后的构建图真实生成了 arm64 构建目录中的 `fixinc.sh`。
+产物检查按冻结回执和上游安装规则寻找 `x86_64-elf-` 开头的三个驱动；实际 x86-64
+静态 ELF 的安装布局检查通过，缺少目标前缀的目录拒绝签发回执。
+
 完整 `all-gcc`、最终 ELF 检查、重新组装发行盘与两种 Shell 客体验收仍待完成。
 原发布 GNU Seed 和当前候选的二进制继续保留各自原件。

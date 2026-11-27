@@ -1,0 +1,12 @@
+{
+  "files": {
+    "binding.json": "f4677183e2d1fdc97eb664e8164d625dabc98ab4186f8a1e9e48b8861426b1c8",
+    "diagnostic_ordinary.serial.log.gz": "acd80dcb2d3b91f5c9872018648cef1afa79b882df5052665f47b27eff397272",
+    "gnu_seed_staging.json": "8045de62e75620b9c88c289d44b8a32ef29736b4d05efb600ca0c072b5d66cff",
+    "installer.serial.log.gz": "7dd4a3a0618f3302e8ff3846594535969ba22a9ffb3328eb5a42c4fa2031e7a8",
+    "rollback.serial.log.gz": "cf8779486ae0aaf96d7603ce499293f45f489d1aa5d0d8fb7dc4cd13f57cf55b",
+    "rollback_guest.json": "e4f30f899b1217cb311acc5ab5aa472bf39ab74978bca9e09a546695b61783e4",
+    "source_correspondence.json": "459035bcc96e52c3cfb785b10cbccd8b0aec62dab264cbb7e4b88f6f5b71f520"
+  },
+  "version": 1
+}

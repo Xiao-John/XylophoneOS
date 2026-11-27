@@ -1,0 +1,13 @@
+{
+  "base_commit": "c633b88533e74556eb05dcb4b2d0981fac9cdf88",
+  "original_sha256_by_file": {
+    "diagnostic_ordinary.serial.log.gz": "6f4b5fa3a8e49d55d401015c507275dc24573a766c8d0e463f5c6b6458491726",
+    "gnu_seed_staging.json": "8045de62e75620b9c88c289d44b8a32ef29736b4d05efb600ca0c072b5d66cff",
+    "installer.serial.log.gz": "5e68f8109a8daafa9a9e488cd8857f5bd410f0f8ea3babdabfb742942a3179ce",
+    "rollback.serial.log.gz": "7bc926f859ab62c213dd543db07cce323e48f6ca45f152fe69b23758e8054d0a",
+    "rollback_guest.json": "e4f30f899b1217cb311acc5ab5aa472bf39ab74978bca9e09a546695b61783e4",
+    "source_correspondence.json": "459035bcc96e52c3cfb785b10cbccd8b0aec62dab264cbb7e4b88f6f5b71f520"
+  },
+  "public_derivation": "Compressed serial excerpts redact the historical compiler configuration path.",
+  "status": "staging_frozen_rollback_and_ordinary_diagnostic_recorded"
+}

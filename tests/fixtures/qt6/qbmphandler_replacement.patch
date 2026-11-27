@@ -2,13 +2,12 @@
 +++ b/src/gui/image/qbmphandler.cpp
 @@ -8,3 +8,4 @@
  #include <qimage.h>
++#include <cstdio>
  #include <qlist.h>
  #include <qvariant.h>
-+#include <cstdio>
-@@ -782,3 +783,6 @@
+@@ -782,3 +783,5 @@
+     state = Ready;
 +    std::fputs("QT_V2_REPLACEMENT_BMP_DECODE\n", stdout);
 +    std::fflush(stdout);
-+
-     state = Ready;
      return true;
  }

@@ -4,6 +4,8 @@
 
 import argparse
 from gzip import GzipFile
+import hashlib
+import json
 from pathlib import Path
 import shutil
 import tarfile
@@ -13,7 +15,7 @@ from package_application_preview import artifact
 from package_glibc_gnu_seed import SOURCE_ARCHIVE
 from package_glibc_release import KIT, MANIFEST, release_checksums, verify_archive_members
 from package_glibc_release_sources import verify as verify_component_sources
-from relink_release_xypm import FORMAT as RELINK_FORMAT
+from relink_release_xypm import DASH_FORMAT, FORMAT as RELINK_FORMAT
 from verify_glibc_source import PORT as GLIBC_PORT, verify_source
 from xypm_format import canonical, confined, load_json, require, sha_file
 from xypm_sdk_profile import source_binding
@@ -22,6 +24,7 @@ CHECKSUMS = 'CHECKSUMS.sha256'
 SOURCES = 'component-sources.tar.gz'
 SOURCES_MANIFEST = 'component-sources.json'
 RELINK = 'xypm-relink.tar.gz'
+DASH_RELINK = 'dash-relink.tar.gz'
 DISTRIBUTION = 'distribution_manifest.json'
 SYSTEM = 'system_manifest.json'
 SDK_ARCHIVE = 'application-sdk.tar.gz'
@@ -80,6 +83,34 @@ def stage_xypm_relink(root, output, expected, release, release_digest):
             with source.open('rb') as stream:
                 archive.addfile(entry, stream)
     verify_archive_members(output, records)
+
+
+def stage_dash_relink(source, output, expected, release, release_digest):
+    shutil.copyfile(source, output)
+    with tarfile.open(output, 'r:gz') as archive:
+        entry = archive.getmember('manifest.json')
+        require(entry.isfile() and entry.size <= 1024 * 1024, 'invalid Dash relink manifest')
+        with archive.extractfile(entry) as stream:
+            data = stream.read()
+        require(hashlib.sha256(data).hexdigest() == expected, 'Dash relink manifest differs')
+        manifest = json.loads(data)
+        files = manifest['files']
+        sdk = release['application_sdk']
+        bindings = {
+            'receipt/release_manifest.json': release_digest,
+            'receipt/install_manifest.json': release['installer_manifest_sha256'],
+            'receipt/sdk_manifest.json': sdk['sdk_manifest_sha256'],
+            'receipt/profile.json': sdk['profile_file_sha256'],
+        }
+        require(manifest['format'] == DASH_FORMAT and 'manifest.json' not in files
+                and manifest['reference'] == release['dash_sha256']
+                and all(files.get(name) == digest for name, digest in bindings.items()),
+                'Dash relink materials belong to a different release')
+        records = {name: {'bytes': archive.getmember(name).size, 'sha256': digest}
+                   for name, digest in files.items()}
+        records['manifest.json'] = {'bytes': entry.size, 'sha256': expected}
+    verify_archive_members(output, records)
+    return files['receipt/dash.json']
 
 
 def stage_glibc_source(sdk_archive, source, staging, sdk_manifest_sha256):
@@ -150,6 +181,13 @@ def stage(args):
                                         staging, release['application_sdk']['sdk_manifest_sha256'])
             supplements[source['archive']] = artifact(staging / source['archive'])
             receipt.update(format='xos_glibc_release_supplements_v2', glibc_source=source)
+        if args.dash_relink is not None:
+            dash = stage_dash_relink(args.dash_relink, staging / DASH_RELINK,
+                                     args.dash_manifest_sha256, release, base_digest)
+            supplements[DASH_RELINK] = artifact(staging / DASH_RELINK)
+            receipt.update(format='xos_glibc_release_supplements_v3',
+                           dash_relink_manifest_sha256=args.dash_manifest_sha256,
+                           dash_build_receipt_sha256=dash)
         (staging / DISTRIBUTION).write_bytes(canonical(receipt))
         assets = {**base_assets, **supplements, DISTRIBUTION: artifact(staging / DISTRIBUTION)}
         checksums = ''.join(f'{item["sha256"]}  {name}\n' for name, item in sorted(assets.items()))
@@ -162,9 +200,13 @@ def main():
     for flag in ('release', 'components', 'xypm-relink', 'output'):
         parser.add_argument('--' + flag, type=Path, required=True)
     parser.add_argument('--glibc-source', type=Path, help='stage and authenticate the pinned upstream glibc source')
+    parser.add_argument('--dash-relink', type=Path)
+    parser.add_argument('--dash-manifest-sha256')
     for flag in ('component-manifest-sha256', 'xypm-manifest-sha256'):
         parser.add_argument('--' + flag, required=True)
     args = parser.parse_args()
+    if (args.dash_relink is None) != (args.dash_manifest_sha256 is None):
+        parser.error('--dash-relink and --dash-manifest-sha256 are required together')
     try:
         stage(args)
     except (OSError, ValueError, TypeError, KeyError, tarfile.TarError) as error:

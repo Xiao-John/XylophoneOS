@@ -1,0 +1,68 @@
+{
+  "cross_tools": {
+    "ar": "39ade51a05fba3546be68906d1b2c1788ce87d25d60bb30a030eaefbb96621b4",
+    "as": "616a1b8b8a202fbce829217332a197892571d4e48d119ed88d93b935b2615163",
+    "g++": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+    "gcc": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+    "ld": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+    "ranlib": "d9034b71a71fbab28306582bfc37480e81dfc85d976d1f1b0593698507671a1d"
+  },
+  "host_kit_manifest_sha256": "6fc36b13ed96d8c7ec6e1ad8949e3c0216aea89abb9903fcc70816f646db3e51",
+  "native_generators": {
+    "moc": "a1337c30d3e0c85b14aa64b9b5e12e958003d77206b2daa2986f7f1bf868bdfc",
+    "rcc": "9ca52ca0ba6139fcf92802ed2d8cd267c67e403e2744e6a7922f50fcc3d7f9ca",
+    "uic": "26b2dc9754a495ca77257fd822072b43e3780285bac501a305e3670cd62713d1"
+  },
+  "qt_build_cache_sha256": "1c8028fb97b54f29555e29d5640a07d43b894a1bdff36c833d1c9e4a65728372",
+  "qt_version": "6.8.3",
+  "qtbase_features": {
+    "filedialog": "OFF",
+    "widgets": "ON"
+  },
+  "qtbase_prepared_tree_sha256": "86042db4922ecc23654ac9761c35fa907cec5e395754de35fe99b5075c6dddc0",
+  "recipes": {
+    "src/ports/qt6/cmake/Platform/XOS.cmake": "e6aae49930d8da4ccecfa8dc9e888e4bac246944638c9ea2a2dc15b055affe2a",
+    "src/ports/qt6/glibc/glibc_qtcore.patch": "8798d8aaa9e56e5b49ad181dd6eb4c4239c07fcb3c7a48243f0dc53116936c39",
+    "src/ports/qt6/glibc/glibc_toolchain.cmake": "5a318cb8aa557c0d065b8f890392dbabf5bb7277fd7d3f8c0c2ef46394e11d1b",
+    "src/ports/qt6/mkspecs/xos-g++/qmake.conf": "184edcc991089b601cf0d6a741ed5681dc1f874e0697b9024b09ab17c37aec4d",
+    "src/ports/qt6/mkspecs/xos-g++/qplatformdefs.h": "e4fbbe3fdc62fd588f07a31d0e343bd9effa42a6d82af11f77ca229345e1a7c3",
+    "src/ports/qt6/patches/0001-xos-platform-detection.patch": "fbce5274742c204e1aae33f2784dd2af4173171783d4b8ca253fc7e81263f9aa",
+    "src/ports/qt6/patches/0002-xos-event-dispatcher-selection.patch": "cdec41ec6eeefe15dfb71593c3025ea536e15aff1d0838885d506afbc380b2f7",
+    "src/ports/qt6/patches/0003-xos-system-info.patch": "0f21850057360b30c959dc2dce2346e4fa5f28fb3e3b86fb0ab6f70cba8d1435",
+    "src/ports/qt6/patches/0004-xos-environment.patch": "738455a0da869c08209a3a9d533121ad123340d5adce8265acaa568c46b9ab81",
+    "src/ports/qt6/patches/0005-xos-no-mmap.patch": "5263f0c2be9eac37fd83f851661e25c5fd31c67bfa2a34936b4ce51dd3cf4ece",
+    "src/ports/qt6/patches/0006-xos-sha3-endian.patch": "38c46c7e3d310104c0d81686df877dda94770f2ad5259bbf025595a5bc328580",
+    "src/ports/qt6/patches/0007-xos-filesystem.patch": "4e4bc852cb32fac245603c3338019fe53793855c139b47e1fc8267b5712fb63c",
+    "src/ports/qt6/patches/0008-xos-gui-platform.patch": "04f5d45d8d97e334bed40d6f042099b6387f014e9356faee0c996b1ba6339d11",
+    "src/ports/qt6/patches/0009-xos-freetype-no-mmap.patch": "2551ba2f64fbd5c3b875ec1232a9861b300b63109e4b08bfdfb596ba7ec67967",
+    "src/ports/qt6/patches/0010-xos-host-arm64-acle.patch": "3d667d1ae8d77008a147c691db9837022f2ef0b6d4d5cff865826d613987a442",
+    "src/ports/qt6/patches/0011-xos-qmalloc-qtglobal.patch": "7e57a67954734f7000dc979e68c699f9dd675e32af84b1bb6832060ed0a150d5",
+    "src/ports/qt6/patches/MODIFICATIONS.md": "7a499b11c231a67ad35d9b99a613ab6067d1e0d99c0e36305ac13c4922f1a42f",
+    "src/ports/qt6/prepare_gui_source.py": "23e94af7643e05b6b2ccae72777fcdbeb4e3bcb970cf2f1f3b62c1c486c4e8da",
+    "src/ports/qt6/prepare_source.py": "78ad5f4a9831533145ba252800ce605abe36aab3c4ba9ab70ff04d905028f9e6",
+    "src/ports/qt6/quick/build_target.py": "84f761bed72d0558c4ab341ac3271481a04d51da422f0d928858fc6b5b56909a",
+    "src/ports/qt6/quick/glibc_qtbase_platform.patch": "cc3f8344f1dc93178812108c6945d57451771865e14fdc165784417708478b7d",
+    "src/ports/qt6/quick/quick_kit.py": "dc8b864a7c17c05f6429ef938ba0e38eaef13ba14bebf2e11fb4b8772bbd4bba",
+    "src/ports/qt6/runtime/qeventdispatcher_xos.cpp": "1931d168f974a419d6c846e531daf957e39539274fc8ff6c032f1faacaf83fee",
+    "src/ports/qt6/runtime/qeventdispatcher_xos_p.h": "8b5fafe1af64fb375987f9a1649e5b056bd326d33cac78b4f2228f2d9e93c9e3",
+    "src/ports/qt6/runtime/qmutex_xos.cpp": "80fe2cca2604e4f0d7221e8356386299190aca474b39c53f634bba7749d16d88",
+    "src/ports/qt6/runtime/unsupported_posix.cpp": "cc4e0f62231f0764ee0c6732824a85f01f1621e8c176884aea554aedea6c3eb6",
+    "src/ports/qt6/runtime/wake_gate.hpp": "dfcee67c979807ae4fa4cf2c764ba597701622dc2df5b6d66e38fbbe35d168ff",
+    "src/ports/qt6/source_lock.json": "f37d1f82234b71066d59dd704febf86ba59762bce53021ef0ef0774709c6ed04"
+  },
+  "sdk_binding": {
+    "guest_qualification": "not_run",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+    "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "runtime_family": "glibc",
+    "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642",
+    "status": "candidate_binding_verified"
+  },
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "sources": {
+    "qtbase": "56001b905601bb9023d399f3ba780d7fa940f3e4861e496a7c490331f49e0b80"
+  },
+  "status": "static_qt_widgets_target_installed",
+  "target_tree_sha256": "2738cf69a32abbc8c649ed5d56a242721aeb995cb594937029ee64aa73948437"
+}

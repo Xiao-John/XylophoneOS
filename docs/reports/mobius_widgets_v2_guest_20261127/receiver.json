@@ -1,0 +1,68 @@
+{
+  "archives": [
+    {
+      "bytes": 35840000,
+      "receipt_sha256": "565d62cf46f2a9779cbd51955dcd7fc2d472b30230ecca8153999301f78f6220",
+      "revision": 0,
+      "sha256": "382377d22d3f6d0afee66debe0a53a4c2bf7352688535d3c84b9f8bb1bffff93"
+    },
+    {
+      "bytes": 35840000,
+      "receipt_sha256": "77251e7643e5c6fb62e4588fc733d45d0a2a3f5bba429dbf3c232956edce985d",
+      "revision": 1,
+      "sha256": "9110189117a13ff773f4a0792354340b24854249ac255d409e5c0d2e7c4c934e"
+    }
+  ],
+  "changed_elf_build_receipts": {
+    "mobius": {
+      "changed_individual_elf_receipt_fields": [
+        "commands"
+      ],
+      "changed_packaged_elf_receipt_fields": [
+        "build_receipt_sha256"
+      ],
+      "commands_match_after_build_dir_substitution": true,
+      "elf_sha256": "6d34b9856ea65853eb14f3ac6fb499e9f3d7650370b8e242b72e878bd5a88cbe"
+    },
+    "mobius_session": {
+      "changed_individual_elf_receipt_fields": [
+        "commands"
+      ],
+      "changed_packaged_elf_receipt_fields": [
+        "build_receipt_sha256"
+      ],
+      "commands_match_after_build_dir_substitution": true,
+      "elf_sha256": "368abfd212ed11fbffc59980daa83671b57ed5b7f495391841fb0a2fa4bffe22"
+    }
+  },
+  "changed_manifest_fields": [
+    "build_receipt",
+    "files",
+    "revision"
+  ],
+  "environment": {
+    "architecture": "linux-arm64",
+    "cpu_limit": 1,
+    "network": "none",
+    "production_qt_build_and_prepared_tree_mounted": false,
+    "tmpfs_limit_bytes": 2147483648
+  },
+  "first_different_archive_member": "manifest.json",
+  "first_different_managed_file": "usr/share/xos.mobius/build_receipt.json",
+  "first_different_managed_file_data_start_offset": 35832832,
+  "first_different_xpk_byte_offset_zero_based": 605,
+  "kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f",
+  "managed_file_differences": [
+    "usr/share/xos.mobius/build_receipt.json"
+  ],
+  "negative_manifest_digest_rejected_before_output": true,
+  "producer_revision": "1ed63cb2a7b191b9a1fc0ed8d804c95197dabebb",
+  "qualification_scope": "Two clean build directories in an independent receiver, archived products at revisions 0 and 1.",
+  "scope": "Both XPK archives passed full verification against the same v2 profile. Only the managed build receipt differs. Both embedded static ELFs and other managed files, including notices, agree.",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "status": "verified",
+  "target_receipt_sha256": "90292b9a28c0c997b341e9db28cc6701dcf80b7bb20882b9af3260c53f8d732f",
+  "unchanged_license_notices": 46,
+  "unchanged_managed_files": 48
+}

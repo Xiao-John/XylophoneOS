@@ -39,3 +39,8 @@ Core、Gui、Widgets 及生成头。接收方使用绑定到该 SDK/profile 的 
 快照。仓库记录了导入作者与来源线索，仍缺少可用于公开分发的授权依据。
 保留当前私有验收路径，公开分发使用已确认授权的素材及其完整声明。
 [导入及图像核对记录](../reports/mobius_unified_widgets_20261127/curvive_audit.json)
+
+v2 已完成 Qt Widgets 完整构建、独立接收、两个 XPK 修订和三次普通镜像冷启。
+当前的公开材料覆盖安装、升级、回退、双 Shell、正式会话和资源回收。对应的
+Qt LGPL 替换材料与同修订 XPK 全字节重现继续验收。
+[v2 运行及分发范围](../work_log/74efcc27_mobius_widgets_v2.md)

@@ -1,0 +1,350 @@
+{
+  "dash_elf_sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+  "dash_receipt_sha256": "870eb4afbe0234291eea3f73824ecc7147a8a1cce0b8f9c90be0a392023adf6e",
+  "dash_sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+  "original_disk_sha256": "ef4afad2bc34bccb591d076a3720b96f969e9e9a3a9d5e474ec6f41e1d3a7dfc",
+  "original_report_bytes": 11622,
+  "original_report_sha256": "8ed59cc9a54f3ae850c663e6c0fda852ec87bbdca09c3cc975656cf5866a62e9",
+  "phases": {
+    "installed": {
+      "after_services": [
+        129709,
+        3,
+        1
+      ],
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "launches": [
+        {
+          "after_payload": [
+            121633,
+            5,
+            3
+          ],
+          "daybreak": {
+            "bright_pixels": 432916,
+            "colors": 10247,
+            "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+          },
+          "desktop_sample": [
+            9008,
+            3,
+            1410
+          ],
+          "launcher": "xsh",
+          "midnight": {
+            "bright_pixels": 10293,
+            "colors": 16273,
+            "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+          },
+          "ready_wall_seconds": 14.39
+        },
+        {
+          "after_payload": [
+            121633,
+            5,
+            3
+          ],
+          "daybreak": {
+            "bright_pixels": 432916,
+            "colors": 10247,
+            "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+          },
+          "desktop_sample": [
+            9008,
+            3,
+            1270
+          ],
+          "launcher": "dash",
+          "midnight": {
+            "bright_pixels": 10293,
+            "colors": 16273,
+            "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+          },
+          "ready_wall_seconds": 15.338
+        }
+      ],
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "serial_sha256": "ee2ee49e139e56a7a1613c439a8e4d7ab246fc11650c847808a5931c2657f76a",
+      "user_data": {
+        "/usr/share/xos.mobius/appearance.txt": "f51d64d7531ae28eb5ef3edde58bd46122069187d40fa9021ac54ede7ebb694e"
+      },
+      "with_graphics": [
+        121633,
+        5,
+        3
+      ]
+    },
+    "restored": {
+      "after_services": [
+        129709,
+        3,
+        1
+      ],
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "launches": [
+        {
+          "after_payload": [
+            121633,
+            5,
+            3
+          ],
+          "daybreak": {
+            "bright_pixels": 432916,
+            "colors": 10247,
+            "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+          },
+          "desktop_sample": [
+            9042,
+            3,
+            1310
+          ],
+          "launcher": "xsh",
+          "midnight": {
+            "bright_pixels": 10293,
+            "colors": 16273,
+            "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+          },
+          "ready_wall_seconds": 14.034
+        },
+        {
+          "after_payload": [
+            121633,
+            5,
+            3
+          ],
+          "daybreak": {
+            "bright_pixels": 432916,
+            "colors": 10247,
+            "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+          },
+          "desktop_sample": [
+            9008,
+            3,
+            1510
+          ],
+          "launcher": "dash",
+          "midnight": {
+            "bright_pixels": 10293,
+            "colors": 16273,
+            "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+          },
+          "ready_wall_seconds": 15.1
+        }
+      ],
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "serial_sha256": "937722bfaa6dcd9c2438c68b0e305307232dfcdcdcd7289770e41a7e0173e768",
+      "user_data": {
+        "/usr/share/xos.mobius/appearance.txt": "f51d64d7531ae28eb5ef3edde58bd46122069187d40fa9021ac54ede7ebb694e",
+        "/usr/share/xos.mobius/user_draft.txt": "49028d9fea074329a52f96f7e0cf9bf9e9fd499e153ba10145baca34b4f2bdfb"
+      },
+      "with_graphics": [
+        121633,
+        5,
+        3
+      ]
+    },
+    "upgraded": {
+      "after_services": [
+        129709,
+        3,
+        1
+      ],
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "launches": [
+        {
+          "after_payload": [
+            121633,
+            5,
+            3
+          ],
+          "daybreak": {
+            "bright_pixels": 432916,
+            "colors": 10247,
+            "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+          },
+          "desktop_sample": [
+            9008,
+            3,
+            1640
+          ],
+          "launcher": "xsh",
+          "midnight": {
+            "bright_pixels": 10293,
+            "colors": 16273,
+            "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+          },
+          "ready_wall_seconds": 14.542
+        },
+        {
+          "after_payload": [
+            121633,
+            5,
+            3
+          ],
+          "daybreak": {
+            "bright_pixels": 432916,
+            "colors": 10247,
+            "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+          },
+          "desktop_sample": [
+            9008,
+            3,
+            1280
+          ],
+          "launcher": "dash",
+          "midnight": {
+            "bright_pixels": 10293,
+            "colors": 16273,
+            "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+          },
+          "ready_wall_seconds": 16.566
+        },
+        {
+          "after_payload": [
+            121633,
+            5,
+            3
+          ],
+          "daybreak": {
+            "bright_pixels": 432916,
+            "colors": 10247,
+            "sha256": "909414608f0bc155a9ab9f78cb5ee6eb41ecde40135081036d7e834c90c3e052"
+          },
+          "desktop_sample": [
+            9008,
+            3,
+            1270
+          ],
+          "launcher": "session",
+          "midnight": {
+            "bright_pixels": 10293,
+            "colors": 16273,
+            "sha256": "ae9d9abd47d64a26e27429256222eb86b0d3f923b5cd07226fdc63bb0b8308c6"
+          },
+          "ready_wall_seconds": 14.149
+        }
+      ],
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "serial_sha256": "f9abb1cb0374d4e2b2d4786a6483ca7e51f3bbd519713d7535cee6ecdb1144bb",
+      "user_data": {
+        "/usr/share/xos.mobius/appearance.txt": "f51d64d7531ae28eb5ef3edde58bd46122069187d40fa9021ac54ede7ebb694e",
+        "/usr/share/xos.mobius/user_draft.txt": "49028d9fea074329a52f96f7e0cf9bf9e9fd499e153ba10145baca34b4f2bdfb"
+      },
+      "with_graphics": [
+        121633,
+        5,
+        3
+      ]
+    }
+  },
+  "previous_profile_package": {
+    "profile_id": "xos-x86_64-glibc-thread-locks-cxx-v1",
+    "sha256": "cb8522a405f9902e26d82b453f0b1f25592710245cad48cb651c3fdb40bd8a45",
+    "unified_profile_rejected": true
+  },
+  "private_witness_archive": {
+    "bytes": 14793024,
+    "sha256": "58050e5b30526ece40cbc8193f944e15c5d09468989a7aafd91a03376a91c2a1"
+  },
+  "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "reference_payloads": {
+    "usr/bin/mobius-session.elf": {
+      "build_receipt_sha256": "bb077f297a43b3e4483f706fb11ed4d15738938df3175a54b0c41c21be5b0f31",
+      "elf_sha256": "368abfd212ed11fbffc59980daa83671b57ed5b7f495391841fb0a2fa4bffe22",
+      "widgets_kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+    },
+    "usr/bin/mobius.elf": {
+      "build_receipt_sha256": "0f20cdba8041172e81183ce96c77babfc201bfe3958b9a8a6c9477f1261c7a4a",
+      "elf_sha256": "6d34b9856ea65853eb14f3ac6fb499e9f3d7650370b8e242b72e878bd5a88cbe",
+      "widgets_kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+    }
+  },
+  "reference_sha256": "382377d22d3f6d0afee66debe0a53a4c2bf7352688535d3c84b9f8bb1bffff93",
+  "removed_user_data": {
+    "/usr/share/xos.mobius/appearance.txt": "f51d64d7531ae28eb5ef3edde58bd46122069187d40fa9021ac54ede7ebb694e",
+    "/usr/share/xos.mobius/user_draft.txt": "49028d9fea074329a52f96f7e0cf9bf9e9fd499e153ba10145baca34b4f2bdfb"
+  },
+  "replacement_payloads": {
+    "usr/bin/mobius-session.elf": {
+      "build_receipt_sha256": "50bdddb6544564c5a4fa133d749cac54f04e1fa1aa68848dfe39c7bc6d0838d3",
+      "elf_sha256": "368abfd212ed11fbffc59980daa83671b57ed5b7f495391841fb0a2fa4bffe22",
+      "widgets_kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+    },
+    "usr/bin/mobius.elf": {
+      "build_receipt_sha256": "f80988d0224030ab2b1f2fac8fad0c3a6ab18bb7d5b79b01099914ba3af50a79",
+      "elf_sha256": "6d34b9856ea65853eb14f3ac6fb499e9f3d7650370b8e242b72e878bd5a88cbe",
+      "widgets_kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+    }
+  },
+  "replacement_sha256": "9110189117a13ff773f4a0792354340b24854249ac255d409e5c0d2e7c4c934e",
+  "report_derivation": "Removed four transient parent work directories from transaction outputs and retained logical filenames. Serial logs are byte-identical before gzip. Scanout and XPK originals are bound by hashes and retained privately.",
+  "sdk_binding": {
+    "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+    "tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+  },
+  "status": "PASSED",
+  "system_build_id": "1f593b6ca9cd7904",
+  "system_manifest_sha256": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999",
+  "system_source_revision": "960fce4347f193f13f5214caee153a03891ab100",
+  "test_and_application_recipe_revision": "1ed63cb2a7b191b9a1fc0ed8d804c95197dabebb",
+  "transactions": [
+    {
+      "backend_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f",
+      "id": "xos.mobius",
+      "mutations": 78,
+      "operation": "install",
+      "output_name": "installed.img",
+      "output_sha256": "fadbd32fe0844f2c6c88447bed3ad4cc50483196f13a33ccc010699090bd1d23",
+      "source_sha256": "ef4afad2bc34bccb591d076a3720b96f969e9e9a3a9d5e474ec6f41e1d3a7dfc",
+      "status": "exported_candidate",
+      "verified_files": 49
+    },
+    {
+      "backend_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f",
+      "id": "xos.mobius",
+      "mutations": 102,
+      "operation": "upgrade",
+      "output_name": "upgraded.img",
+      "output_sha256": "77ff75bd82181803d8b2cfaec03cfd7d57ad348f344e186d3acc83e3eda2de18",
+      "source_sha256": "800a47315c3cad813c410ed9e191fe57085181cfa4c16c9d877caeb44971ac44",
+      "status": "exported_candidate",
+      "verified_files": 49
+    },
+    {
+      "backend_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f",
+      "id": "xos.mobius",
+      "mutations": 77,
+      "operation": "remove",
+      "output_name": "removed.img",
+      "output_sha256": "7e9da3dafa10bc5c2c59e20f80ddea02671db736f7fbe09b5865f9370cf68094",
+      "source_sha256": "34e59ecc466ff40590093d45e61a8f498c3365a52c6b4dee0b0d434ec0beea32",
+      "status": "exported_candidate",
+      "verified_files": 0
+    },
+    {
+      "backend_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f",
+      "id": "xos.mobius",
+      "mutations": 77,
+      "operation": "install",
+      "output_name": "restored.img",
+      "output_sha256": "1f32c769e96ff22a384bb8401346920736c133350f7b4efbfc3233342dc7f993",
+      "source_sha256": "7e9da3dafa10bc5c2c59e20f80ddea02671db736f7fbe09b5865f9370cf68094",
+      "status": "exported_candidate",
+      "verified_files": 49
+    }
+  ],
+  "widgets_kit_manifest_sha256": "b70ae8468d1159c750071ca641b3137ede6174c58a7d7a62fb1ae9f85327505f"
+}

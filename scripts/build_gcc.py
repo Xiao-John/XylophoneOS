@@ -19,6 +19,9 @@ CONFIGURE_OPTIONS = (
     "--disable-libssp", "--disable-libquadmath", "--disable-libgomp",
     "--disable-libatomic", "--disable-libsanitizer", "--disable-libvtv",
     "--disable-libstdcxx", "--disable-lto",
+    # The Seed ships the compiler and frontends. Its frozen newlib host does
+    # not implement the directory traversal needed by the coverage tools.
+    "--disable-gcov",
 )
 
 def sha256(path: Path) -> str:

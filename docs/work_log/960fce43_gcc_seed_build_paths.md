@@ -53,6 +53,10 @@ x86-64。构建继续生成最终 GCC 工具。
 `all-gcc` 在 `gcov-tool` 链接遇到冻结 newlib SDK 未提供的 `nftw` 和 `ftw`。
 本次尚未运行 `all-target-libgcc`、安装或新编译器的客体验收。
 
+冻结发行的工具清单包含 GCC、G++、CPP、两个前端以及 GNU Binutils 和 Make。
+构建按上游 `--disable-gcov` 保留这套发布工具边界。覆盖率工具依赖真实的树遍历，
+需要在支持该接口的运行库上单独验收。
+
 ## GCC 重建产物的客体验收入口
 
 用完整 GCC 构建回执和预期摘要核对两个驱动、CPP 与两个前端。验收在已绑定的

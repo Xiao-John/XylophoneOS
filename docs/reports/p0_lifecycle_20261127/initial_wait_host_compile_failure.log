@@ -1,0 +1,13 @@
+In file included from ${XOS_SOURCE_ROOT}/tests/kernel_process_wait_race_test.cpp:71:
+${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_host/kernel_wait_implementation.inc: In function ‘void xos::arch::{anonymous}::finish_task(process_record*, xos::process_outcome, xos::i64, xos::u64, xos::u64, xos::u64)’:
+${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_host/kernel_wait_implementation.inc:115:22: error: ‘files_pid’ was not declared in this scope
+  115 |     if (task->pid == files_pid) {
+      |                      ^~~~~~~~~
+${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_host/kernel_wait_implementation.inc:116:37: error: ‘endpoints’ was not declared in this scope; did you mean ‘endpoint’?
+  116 |         for (const auto& endpoint : endpoints) {
+      |                                     ^~~~~~~~~
+      |                                     endpoint
+${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_host/kernel_wait_implementation.inc:118:17: error: ‘wake_ipc_waiters’ was not declared in this scope; did you mean ‘wake_process_waiters’?
+  118 |                 wake_ipc_waiters(endpoint.handle, pipe_error_broken, thread_wait_kind::ipc_receive);
+      |                 ^~~~~~~~~~~~~~~~
+      |                 wake_process_waiters

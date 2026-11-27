@@ -50,8 +50,21 @@ glibc 经期限、请求序号、协议内容校验后才向应用交付响应�
 
 ## 验收
 
-`tests/ipc_exec_guest.py` 构建独立 native fixture，真实执行失败 commit、成功
-exec、新同 PID 认证连接、旧端点失效、旧名称移除、待 accept 消息丢弃以及精确
-资源回收。fixture 只允许空 startup-v3 FD snapshot，并验证镜像、SDK、源码和
-程序哈希。网络客户端的 exit/exec/fault 回收由 `tests/net_service_guest.py`
-后续网络验收覆盖；完整终端/显示/Interactium 重跑和 sys81 继承压力单独记录。
+`scripts/build_ipc_exec_probe.py` 用所选 SDK 构建独立 native fixture；
+`tests/ipc_exec_guest.py` 将它装入同源系统，真实执行失败 commit、成功 exec、
+新同 PID 认证连接、旧端点失效、旧名称移除、待 accept 消息丢弃以及精确资源回收。
+fixture 只允许空 startup-v3 FD snapshot，并验证镜像、SDK、源码和程序哈希。
+
+阻塞唤醒必须与调用前已失效分开验收。fixture 通过 native worker 发起等待，
+同进程的主线程使用既有 sys50 观察真实 `waiting` 计数，确认只有目标 worker
+已经阻塞后才触发撤销。结果严格要求 `ipc_error_broken`，不接受
+`process_error_denied` 代替阻塞唤醒。线程机制单独编译，不启用 single-thread libc。
+
+组合检查还包括 owner revoke、peer close、正常退出、fault 与 parent cancel。
+每条路径同时登记满队列 send 和空队列 receive 两个等待，要求分别唤醒；再由
+用户态显式启动同名服务，重新验证真实 PID、新端点、旧 token 不复活及业务往返。
+创建权默认不继承、sys88 句柄按主体绑定、委派只能缩权、reply token 单次消费、
+配额失败与回收通过同一客体探针交叉检查，不能将名称或消息中的数字视为授权。
+
+网络业务的恢复由 `tests/net_service_guest.py` 的专项验收覆盖；完整终端/显示/
+Interactium 重跑、sys81 继承压力、SMP 与物理硬件资格单独记录。

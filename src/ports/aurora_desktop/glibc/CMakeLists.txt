@@ -48,7 +48,10 @@ qt6_add_resources(mobius mobius_wallpaper PREFIX /xos FILES "${wallpaper}")
 target_link_libraries(mobius PRIVATE mobius_aurora)
 
 include("${qt_port}/glibc/xos_qpa.cmake")
-xos_link_qpa(mobius "${XOS_QTBASE_SOURCE}/src/3rdparty/wasm/DejaVuSans.ttf")
+if(NOT XOS_MOBIUS_FONT)
+    set(XOS_MOBIUS_FONT "${XOS_QTBASE_SOURCE}/src/3rdparty/wasm/DejaVuSans.ttf")
+endif()
+xos_link_qpa(mobius "${XOS_MOBIUS_FONT}")
 
 set(user_source "${XOS_SOURCE_ROOT}/src/user")
 set(loader_sources

@@ -36,6 +36,11 @@ def verify_elf(path, sdk_manifest, binding):
         require(sha_file(Path(name)) == expected, f'ELF build input changed: {name}')
     inspect_elf(path)
     payload = {'elf_sha256': elf_digest, 'build_receipt_sha256': receipt_digest}
+    if 'widgets_kit_manifest_sha256' in receipt:
+        kit_digest = receipt['widgets_kit_manifest_sha256']
+        require('sdk_manifest_sha256' in binding and kit_digest in inputs.values(),
+                f'Widgets kit is not bound to the product build inputs: {path}')
+        payload['widgets_kit_manifest_sha256'] = kit_digest
     tls = receipt.get('network_profile', {}).get('controlled_tls')
     if tls is not None:
         require(receipt.get('runtime_family') == 'glibc', 'Controlled TLS requires the glibc browser build')
@@ -65,6 +70,12 @@ def package(root, product, elfs, resources, notices, profile, sdk, revision, des
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, target)
         register(name, 'data')
+    widget_kits = {payload.get('widgets_kit_manifest_sha256') for payload in payloads.values()}
+    if widget_kits != {None}:
+        require(product == 'xos.mobius' and len(widget_kits) == 1 and None not in widget_kits,
+                'Both Mobius executables must bind the same Widgets kit')
+        notices = notices | {'QtBase-source-lock.json': QT / 'source_lock.json',
+                             'Aurora-artwork-provenance.json': QT / 'aurora/assets/provenance.json'}
     if any('controlled_tls' in payload for payload in payloads.values()):
         require(product == 'xos.clarke', 'Controlled browser TLS is only available for ClarkE')
         tls_root = CLARKE.parent / 'native_tls'

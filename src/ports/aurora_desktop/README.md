@@ -13,6 +13,44 @@ SDK runtimes. These builders validate SDK hashes and record full commands/inputs
 The glibc C/C++ candidate has a separate Qt Widgets build and Mobius entry.
 See the [glibc desktop and session reproduction](../../../docs/work_log/8f0020c4_mobius_glibc_widgets_guest.md).
 
+### Build from a relocated Widgets kit
+
+The unified glibc SDK supplies the C and C++ runtime. Build the standalone
+QtBase target prefix with Widgets enabled and the matching Linux arm64 host
+tools. The producer can start from the same QtBase configuration used by the
+[unified Quick build](../qt6/quick/unified_sdk.md) in a separate directory, with
+`FEATURE_widgets=ON` and `FEATURE_filedialog=OFF`. Build and install QtBase
+before staging its target prefix.
+
+```sh
+python3 -B src/ports/aurora_desktop/glibc/widgets_kit.py \
+  --sdk-build "$SDK" --sdk-profile "$PROFILE" --qt-build "$QT_BUILD" \
+  --qt-prefix "$QT_PREFIX" --qt-source "$QT_SOURCE" --host-qt "$HOST_QT" \
+  --qtbase "$LOCKED_QTBASE_ARCHIVE" --output "$WIDGETS_KIT"
+```
+
+Move the kit to a new Linux arm64 prefix. The reported manifest digest is
+supplied separately to the receiver. The receiver needs the same glibc SDK
+profile, matching cross-tools, CMake, Ninja and the Mobius sources. Its build
+binds both full widgets-kit trees and the exact application link inputs.
+
+```sh
+python3 -B src/ports/aurora_desktop/glibc/build.py \
+  --sdk-build "$SDK" --sdk-profile "$PROFILE" --widgets-kit "$MOVED_KIT" \
+  --widgets-kit-sha256 "$KIT_MANIFEST_SHA256" --output "$MOBIUS_BUILD"
+python3 -B scripts/package_desktop_products.py mobius "$MOBIUS_BUILD/mobius.elf" \
+  --session "$MOBIUS_BUILD/mobius_session.elf" --sdk "$SDK" --profile "$PROFILE" \
+  --revision "$REVISION" --output "$MOBIUS_XPK"
+```
+
+The XPK uses the existing `xos.mobius` package and the public Mobius executable
+and session paths. It carries the SDK and Qt notices, the QtBase source lock and
+Aurora artwork provenance. Keep the exact corresponding sources and static
+relink inputs with any public binary distribution.
+[Acceptance plan](../../../docs/plans/mobius_unified_widgets.md)
+
+### Earlier SDK build
+
 ```sh
 python3 src/ports/aurora_desktop/build.py \
   --sdk "$SDK" --qt-build "$QT_BUILD" --qt-source "$QT_SOURCE" \

@@ -1,0 +1,16 @@
+--- a/src/gui/painting/qpainterpath.cpp
++++ b/src/gui/painting/qpainterpath.cpp
+@@ -4,2 +4,3 @@
+ #include "qpainterpath.h"
++#include <cstdio>
+ #include "qpainterpath_p.h"
+@@ -668,5 +669,9 @@
+ void QPainterPath::moveTo(const QPointF &p)
+ {
++    if (p.x() == -40) {
++        std::fputs("QT_V2_REPLACEMENT_PAINTER_PATH\n", stdout);
++        std::fflush(stdout);
++    }
+ #ifdef QPP_DEBUG
+     printf("QPainterPath::moveTo() (%.2f,%.2f)\n", p.x(), p.y());
+ #endif

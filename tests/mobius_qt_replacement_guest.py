@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Observe the rebuilt Qt BMP handler in a Mobius replacement on an ordinary XOS ISO."""
+"""Observe the rebuilt Qt path painter in a Mobius replacement on an ordinary XOS ISO."""
 
 import argparse
 from pathlib import Path
@@ -16,7 +16,7 @@ from make_work_disk import create_fat32
 from xypm_format import canonical, load_json, require
 from xypm_image import Disk
 
-TRACE = b"QT_V2_REPLACEMENT_BMP_DECODE"
+TRACE = b"QT_V2_REPLACEMENT_PAINTER_PATH"
 DESKTOP = "mobius.elf"
 
 
@@ -64,8 +64,8 @@ def main():
                 run_mobius(image, disk, case, data, launchers=(("xsh", "exec-file /usr/bin/mobius.elf"),))
                 serial = case / "mobius_serial.log"
                 data["serial_sha256"] = sha(serial)
-                data["decode_trace_count"] = serial.read_bytes().count(TRACE)
-                require(bool(data["decode_trace_count"]) == want_trace, "Qt decode marker did not match the relink mode")
+                data["painter_path_trace_count"] = serial.read_bytes().count(TRACE)
+                require(bool(data["painter_path_trace_count"]) == want_trace, "Qt painter path marker did not match the relink mode")
         report["status"] = "passed"
     finally:
         (output / "report.json").write_bytes(canonical(report))

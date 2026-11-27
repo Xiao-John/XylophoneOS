@@ -48,11 +48,14 @@ CPPFLAGS-wordexp.os += -DXOS_TILDE_WITHOUT_NSS
 endif
 endif
 ifeq ($(subdir),socket)
+sysdep_routines += xos_net2_socket
 ifeq ($(filter inet,$(subdirs)),)
 # Install the public header directly from glibc's inet directory.
-sysdep_headers += bits/in.h netinet/in.h
+sysdep_headers += bits/in.h netinet/in.h netinet/tcp.h
 sysdep_routines += htonl htons in6_addr
 $(inst_includedir)/netinet/in.h: $(..)inet/netinet/in.h $(+force)
+	$(do-install)
+$(inst_includedir)/netinet/tcp.h: $(..)sysdeps/gnu/netinet/tcp.h $(+force)
 	$(do-install)
 endif
 ifeq ($(filter resolv,$(subdirs)),)

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "xos_file_runtime.h"
+#include "xos_net2_socket.h"
 #include "xos_terminal_runtime.h"
 
 #include "xos_file_trap.h"
@@ -22,7 +23,8 @@ extern const void *__xos_startup __attribute__ ((weak, visibility ("hidden")));
 const unsigned int __xos_file_startup_capabilities
   __attribute__ ((visibility ("hidden"))) = 3;
 enum { fd_limit = 32, object_limit = 32 };
-enum { kind_none, kind_kernel, kind_file, kind_pipe_read, kind_pipe_write, kind_terminal };
+enum { kind_none, kind_kernel, kind_file, kind_pipe_read, kind_pipe_write, kind_terminal, kind_socket };
+_Static_assert (kind_socket == (int) xos_file_kind_socket, "FD socket route identity");
 struct fd_slot { int object; unsigned int close_on_exec; };
 struct open_object { unsigned int kind, handle, flags, references; };
 static struct fd_slot descriptors[fd_limit];
@@ -415,10 +417,11 @@ __xos_file_fork (void)
   if (result != 0) return result;
   int terminal_inherited = 0;
   for (unsigned int i = 0; i < object_limit; ++i)
-    if (objects[i].kind == kind_terminal && objects[i].references != 0)
+    if (objects[i].references != 0)
       {
-        terminal_inherited = 1;
-        break;
+        if (objects[i].kind == kind_socket)
+          { unlock_session (); return -ENOTSUP; }
+        if (objects[i].kind == kind_terminal) terminal_inherited = 1;
       }
 
   const long now = file_trap (46, 0, 0, 0);
@@ -434,6 +437,7 @@ __xos_file_fork (void)
       /* The copied session endpoints are owned by the parent. The first
          child request obtains its new authenticated endpoints and sequence. */
       memset (&session, 0, sizeof (session));
+      __xos_net2_after_fork ();
       if (terminal_inherited) __xos_terminal_fork_child ();
     }
   else if (child < 0)
@@ -490,6 +494,28 @@ free_object (int minimum)
   for (int i = minimum; i < object_limit; ++i)
     if (objects[i].references == 0) return i;
   return -1;
+}
+
+long
+__xos_file_socket (int close_on_exec)
+{
+  __xos_net2_reap ();
+  int error = begin ();
+  if (error) return error;
+  int fd = free_descriptor (0), index = free_object (0);
+  long result = -EMFILE;
+  if (fd >= 0 && index >= 0)
+    {
+      result = __xos_net2_alloc ();
+      if (result >= 0)
+        {
+          objects[index] = (struct open_object) { kind_socket, (unsigned int) result, O_RDWR, 1 };
+          descriptors[fd] = (struct fd_slot) { index, close_on_exec != 0 };
+          result = fd;
+        }
+    }
+  unlock_session ();
+  return result;
 }
 
 static long
@@ -634,6 +660,8 @@ close_object_until (int index, xos_u64 deadline)
       if (result == 0 && response.length != 0) result = session_fault (EIO);
     }
   else if (object->kind == kind_terminal) result = __xos_terminal_close ();
+  else if (object->kind == kind_socket)
+    { __xos_net2_retire (object->handle); result = 0; }
   else result = kernel_error (file_trap (object->kind == kind_kernel ? 13 : pipe_close,
                                         object->handle, 0, 0));
   /* The FD has already been removed. A close error must never make retry
@@ -726,6 +754,7 @@ __xos_file_close (int fd)
   if (error != 0) return error;
   long result = close_descriptor (fd);
   unlock_session ();
+  __xos_net2_reap ();
   return result;
 }
 
@@ -741,12 +770,15 @@ __xos_file_close_range (unsigned int first, unsigned int last)
   for (unsigned int fd = first; fd < fd_limit && fd <= last; ++fd)
     (void) close_descriptor ((int) fd);
   unlock_session ();
+  __xos_net2_reap ();
   return 0;
 }
 
 static long
 stream_io (struct open_object object, void *buffer, size_t length, int writing)
 {
+  if (object.kind == kind_socket)
+    return __xos_net2_stream (object.handle, buffer, length, writing);
   if (object.kind == kind_terminal)
     return writing ? __xos_terminal_write (buffer, length, object.flags)
                    : __xos_terminal_read (buffer, length, object.flags);
@@ -817,6 +849,12 @@ file_io (int fd, void *buffer, size_t length, int writing)
       error = lock_session ();
       if (error != 0) return error;
       (void) close_object (index);
+      if (copy.kind == kind_socket)
+        {
+          unlock_session ();
+          __xos_net2_reap ();
+          return result;
+        }
       goto done;
     }
   if (object->flags & O_DIRECTORY) { result = -EISDIR; goto done; }
@@ -939,7 +977,7 @@ __xos_file_stat (int fd, const char *path, struct stat *output)
           long console = object->kind == kind_terminal ? 1
             : object->kind == kind_kernel ? file_trap (34, 0, object->handle, 0) : 0;
           if (console < 0) { result = kernel_error (console); goto done; }
-          output->st_mode = (console ? S_IFCHR : S_IFIFO) | 0600;
+          output->st_mode = (object->kind == kind_socket ? S_IFSOCK : console ? S_IFCHR : S_IFIFO) | 0600;
           output->st_nlink = 1;
 #ifdef _STATBUF_ST_BLKSIZE
           output->st_blksize = 512;
@@ -1026,6 +1064,7 @@ __xos_file_dup (int fd, int target, int exact, int close_on_exec)
   result = target;
 done:
   unlock_session ();
+  __xos_net2_reap ();
   return result;
 }
 
@@ -1052,7 +1091,8 @@ __xos_file_fcntl (int fd, int command, int argument)
       const unsigned int old = objects[index].flags;
       if ((argument & ~(O_ACCMODE | O_APPEND | O_NONBLOCK | O_DIRECTORY)) != 0
           || (((unsigned int) argument ^ old) & O_APPEND) != 0
-          || (objects[index].kind == kind_terminal && (argument & O_NONBLOCK) != 0))
+          || ((objects[index].kind == kind_terminal || objects[index].kind == kind_socket)
+              && (argument & O_NONBLOCK) != 0))
         result = -ENOTSUP;
       else { objects[index].flags = (old & ~(unsigned int) O_NONBLOCK)
           | ((unsigned int) argument & O_NONBLOCK); result = 0; }
@@ -1198,6 +1238,7 @@ __xos_file_lease_release (struct xos_file_lease *lease)
       *lease = (struct xos_file_lease) { .object = -1 };
     }
   unlock_session ();
+  __xos_net2_reap ();
   return result;
 }
 

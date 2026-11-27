@@ -1,0 +1,54 @@
+{
+  "status": "passed_subset",
+  "case": "c",
+  "language": "c",
+  "system_build_id": "6ee274714e525f50",
+  "sdk_manifest_sha256": "f03aed9b30a5ab4332f5b6d29e9862e53d9c54a976ab139d28f3470a0d0e4854",
+  "sdk_tree_sha256": "2c03e39719312882da8be55fb5e6645998b83a26349cba14c08d12bed453f930",
+  "system_manifest_sha256": "d2abb7faab4546d4b26bd3875da02726208922626e593eed2897fe7c3edc5777",
+  "iso_sha256": "73eb3fc7972f010a2ab6524a7a7c63788935a961776149a77ba0e16ddceb1d15",
+  "dash_sha256": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+  "dash_receipt_sha256": "2096f94e3931fdfc91005aed98b9096dc008dbb41a20493f858d3653431fa19f",
+  "runner_sha256": "c83c0ddb7c2185b40d8adb102907d6969119243631505df3f1beef307eebe35f",
+  "bootstrap_sha256": "9a89e34d3996ecaff885752542781b92b656e896206407f49253b584b3916bc1",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "d46d96a7834ed833cd68ee357dc91431a2d82b5876a87d729ee383499eef35de",
+  "implementation": "61202e5fe77df57aa7b3ace59a4c93bfdcc71b77",
+  "prepared_manifest_sha256": "7069f1dfa34db38dcf8b142ce43413b3774a2ec1e02108c992f876b8e63eb8f8",
+  "archives": {
+    "libc.so": "50452962afeeadcd6b3bcecd3571cc6b07f29c80e30426715d8134a86fc9d8d0",
+    "elf/ld.so": "5a9621e1e274c68d5a8b6781fc6ecd4d92bdb160962d5b859faa9ffd82fddd6c",
+    "libc_pic.a": "b7d4ff9699e538c46e9642c2c80d0e9113057bad0b6b19b270c503b26e5e5e3c",
+    "socket/xos_net2_socket.os": "e76c00e624937935a051f847b40846b0e4ec8266ff6db7c45989dbbb209f862c"
+  },
+  "exports": {
+    "socket": "GLIBC_2.44",
+    "connect": "GLIBC_2.44",
+    "send": "GLIBC_2.44",
+    "recv": "GLIBC_2.44"
+  },
+  "private_bridge_symbols": [
+    "__xos_net2_after_fork",
+    "__xos_net2_alloc",
+    "__xos_net2_connect_fd",
+    "__xos_net2_reap",
+    "__xos_net2_retire",
+    "__xos_net2_stream",
+    "__xos_net2_stream_fd"
+  ],
+  "guest_markers": [
+    "D1_DYNAMIC_C_OK ctor=1 env=1 auxv=1 file=1 errno=1",
+    "D1_DYNAMIC_STATUS=0"
+  ],
+  "guest_case": "versioned D1 C via native GNU dynamic interpreter and shared libc"
+}

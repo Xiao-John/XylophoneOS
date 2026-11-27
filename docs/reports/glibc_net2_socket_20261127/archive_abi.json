@@ -1,0 +1,44 @@
+{
+  "status": "passed",
+  "scope": "global defined symbol names and types in static libc.a",
+  "baseline_manifest_sha256": "b490f9efeacaf75495ab3aa36489fc91e14bf9d4fe66f538b145bb21590e5961",
+  "baseline_libc_sha256": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+  "candidate_libc_sha256": "e1c05e730f40c589bc00df5379633202900ebcdcdc3ceece04e4c7c4f3df6026",
+  "baseline_symbols": 3713,
+  "candidate_symbols": 3721,
+  "removed": [],
+  "added": [
+    [
+      "__xos_file_socket",
+      "T"
+    ],
+    [
+      "__xos_net2_after_fork",
+      "T"
+    ],
+    [
+      "__xos_net2_alloc",
+      "T"
+    ],
+    [
+      "__xos_net2_connect_fd",
+      "T"
+    ],
+    [
+      "__xos_net2_reap",
+      "T"
+    ],
+    [
+      "__xos_net2_retire",
+      "T"
+    ],
+    [
+      "__xos_net2_stream",
+      "T"
+    ],
+    [
+      "__xos_net2_stream_fd",
+      "T"
+    ]
+  ]
+}

@@ -15,6 +15,7 @@ long __xos_file_seal_anonymous (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_close (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_close_range (unsigned int, unsigned int) __attribute__ ((visibility ("hidden")));
 long __xos_file_pipe (int [2], int) __attribute__ ((visibility ("hidden")));
+long __xos_file_socket (int) __attribute__ ((visibility ("hidden")));
 long __xos_file_read (int, void *, size_t) __attribute__ ((visibility ("hidden")));
 long __xos_file_write (int, const void *, size_t) __attribute__ ((visibility ("hidden")));
 long __xos_file_seek (int, long, int) __attribute__ ((visibility ("hidden")));
@@ -46,7 +47,7 @@ enum xos_file_kind
 {
   xos_file_kind_kernel = 1, xos_file_kind_file = 2,
   xos_file_kind_pipe_read = 3, xos_file_kind_pipe_write = 4,
-  xos_file_kind_terminal = 5
+  xos_file_kind_terminal = 5, xos_file_kind_socket = 6
 };
 struct xos_file_lease { int object; unsigned int kind, handle, flags; };
 long __xos_file_lease_acquire (int, int, struct xos_file_lease *)

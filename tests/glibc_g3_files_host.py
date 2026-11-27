@@ -64,7 +64,7 @@ def main():
     cc, cxx = os.environ.get("CC", "gcc"), os.environ.get("CXX", "g++")
     exe = output / "runtime_test"
     runtime_objects = []
-    for name in ("xos_file_runtime", "xos_file_session"):
+    for name in ("xos_file_runtime", "xos_file_session", "xos_net2_socket"):
         obj = output / (name + ".o")
         subprocess.run([cc, "-std=c11", "-DXOS_GLIBC_FILE_TEST", *flags, "-c",
                         str(overlay / (name + ".c")), "-o", str(obj)], check=True)

@@ -1,0 +1,15 @@
+{
+  "implementation": "61202e5fe77df57aa7b3ace59a4c93bfdcc71b77",
+  "base": "8e66789c043ab017074f8494c3701db8ccd3b67c",
+  "toolchain_image": "sha256:caf035ff5fe4f313416ca252a169c3fb1cc7a945bebedd345d0a134996b62e3e",
+  "glibc_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "glibc_source_verification_report_sha256": "52dd73bdb8a8bc5ff7445ee58c42771af2e2bc42aac8adca7d7883861e927219",
+  "glibc_static_manifest_sha256": "f03aed9b30a5ab4332f5b6d29e9862e53d9c54a976ab139d28f3470a0d0e4854",
+  "trusted_system_manifest_sha256": "6f3654c80f44dc3a2a09600738a620bd3daadcdfe4288eef1856835816246682",
+  "ordinary_system_manifest_sha256": "d2abb7faab4546d4b26bd3875da02726208922626e593eed2897fe7c3edc5777",
+  "ordinary_system_source_sha256": "6ee274714e525f50b96df58d519bce4fb1f08cc91eb12999da7b69b69d80d4ae",
+  "trusted_system_source_sha256": "93258aa20d07a27d7bcc84bcd77aaf450ad5cada1fa8508a9394f42d70fbcbfd",
+  "profile_file_sha256": "28269440b9307e6fc1c8e521df79d75cbdc24d7b4a8f6dd5858a3716c88b311c",
+  "native_report_sha256": "f8c79b637beb32fd739a31fb3992c3ca83f6ff3e14ce3623f8b21cc1e8eb0bd3",
+  "host_qemu": "QEMU emulator version 11.1.2"
+}

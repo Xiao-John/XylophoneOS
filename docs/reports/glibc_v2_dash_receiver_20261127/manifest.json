@@ -1,0 +1,21 @@
+{
+  "component_materials": {
+    "archive_sha256": "8fa939425e2d7ae9716ab71e29889a3de7c6cd88975e75cf56ea1221c8320e93",
+    "manifest_sha256": "80048e009ea761149f8e416f35502891d20fdec737dedffcb24adcfd8df47f01",
+    "verified_files": 135
+  },
+  "files": {
+    "byte_compare.json": "98fcc5efe66c29514ea6bf8f8508090aaa2b0cac499846693034d53d3b3075cd",
+    "installer.serial.log.gz": "54253ff957d516c06a4d1aec2804683b8d0dd5ea67217681416f536799ff0323",
+    "installer_guest.json": "3767af6b89577ad670a9b541fafeecb86c97e8f2fe13a1105efa718885a3e507"
+  },
+  "receiver": {
+    "container_image_id": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450",
+    "container_network": "none",
+    "host_cc": "GCC 16.2.0 (Debian 16.2.0-5)",
+    "qemu": "11.1.3",
+    "scratch_guest_disk": "512 MiB sparse FAT32",
+    "tool_checkout": "c1f642c327b9914f703e9bdefe15142fd5200c6c"
+  },
+  "version": 1
+}

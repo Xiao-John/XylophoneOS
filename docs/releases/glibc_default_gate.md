@@ -35,7 +35,16 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 
 独立补充归档绑定该候选的 Dash、sbase、CPython/zlib 和 IDNA 对应材料。
 断网接收方核对 135 项输入，并从补充材料重建 13 个每日工具 ELF 和 IDNA XPK。
+安装器 Dash 也从该归档重建，产物与冻结 ISO 内的实际 Dash 成员逐字节一致。
+同一 ISO 在普通 QEMU 的空白盘上完成安装并运行外部 ELF。
+接收方完整重编 CPython/zlib 仍待验收。
 [v2 组件对应材料](../work_log/9c747f60_glibc_v2_component_sources.md)
+[安装器 Dash 接收复验](../work_log/b0a92aab_glibc_v2_dash_receiver.md)
+
+冻结 v2 清单包含 `images.tar.gz`、`application-sdk.tar.gz`、`packages.tar.gz` 和
+`gnu-seed-sources.tar.gz`。这次验证的组件源码补充与 xypm 重链接材料单独留存。
+最终分发时还要将接收方可获得的材料纳入发布清单和 `CHECKSUMS.sha256`，逐项
+绑定实际随包静态产物。Qt Quick 等独立资产在一并分发时按各自实际归档验收。
 
 ## 整套资产的发布门
 

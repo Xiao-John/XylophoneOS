@@ -45,5 +45,9 @@ v2 已完成 Qt Widgets 完整构建、独立接收、两个 XPK 修订和三次
 [v2 运行及分发范围](../work_log/74efcc27_mobius_widgets_v2.md)
 
 两个断网接收方已验证同修订 XPK 的逐字节重现，并用本次 v2 链接材料复链原始
-桌面与会话。Qt 修改版替换和公开分发材料仍待验收。
+桌面与会话。
 [同修订重现与替换范围](../work_log/af0f64ef_mobius_v2_xpk.md)
+
+一个实际修改的 QtGui 归档已通过断网替换复链，普通客体观察到新实现的串口
+标记。正式分发仍需核对完整 LGPL 对应材料及 Curvive 的授权依据。
+[单库替换及客体](../work_log/05dfb2b9_mobius_qt_v2.md)

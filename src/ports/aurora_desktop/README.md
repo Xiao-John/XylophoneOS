@@ -82,8 +82,21 @@ python3 -B src/ports/aurora_desktop/glibc/product_relink.py relink \
 
 The second command uses the matching target compiler, assembler and linker.
 It verifies that both static ELFs reproduce the original receiver link byte
-for byte. The existing Curvive wallpaper's license qualification and the
-complete public distribution record are separate from the private XPK.
+for byte.
+
+To use a reviewed Qt archive, supply its directory and the externally checked
+manifest digest to the `relink` command with `--replacement` and
+`--replacement-sha256`. The directory holds `manifest.json` and a regular
+static archive with the selected library's basename. Set the manifest's
+`format_version` to `1`, `kind` to `mobius_qt_replacement`, and
+`materials_manifest_sha256` to the original materials manifest digest. Set
+`library` to its link-plan path such as `link/qt/lib/libQt6Gui.a`,
+`original_archive_sha256` to its digest in the original materials, and
+`archive_sha256` to the supplied archive's digest. The receipt records the
+replacement identity and which ELF digests changed. Programs outside the
+selected library's link plan are checked against their original digests.
+
+The Curvive attribution and the public distribution record remain open.
 [Acceptance plan](../../../docs/plans/mobius_unified_widgets.md)
 
 ### Earlier SDK build

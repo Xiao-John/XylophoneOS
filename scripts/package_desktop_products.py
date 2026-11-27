@@ -7,6 +7,7 @@ from pathlib import Path
 import shutil
 import tempfile
 
+from mobius_build_receipt import packaged_build_binding
 from xos_app import application_sdk_check, sdk_notices
 from xypm_format import canonical, check_profile, inspect_elf, load_json, pack_package, require, sha_file
 from xypm_sdk_profile import metadata_snapshot
@@ -35,7 +36,7 @@ def verify_elf(path, sdk_manifest, binding):
     for name, expected in inputs.items():
         require(sha_file(Path(name)) == expected, f'ELF build input changed: {name}')
     inspect_elf(path)
-    payload = {'elf_sha256': elf_digest, 'build_receipt_sha256': receipt_digest}
+    payload = {'elf_sha256': elf_digest} | packaged_build_binding(receipt, receipt_digest)
     if 'widgets_kit_manifest_sha256' in receipt:
         kit_digest = receipt['widgets_kit_manifest_sha256']
         require('sdk_manifest_sha256' in binding and kit_digest in inputs.values(),
@@ -100,8 +101,13 @@ def package(root, product, elfs, resources, notices, profile, sdk, revision, des
     receipt_path = f'usr/share/{product}/build_receipt.json'
     target = root / receipt_path
     target.parent.mkdir(parents=True, exist_ok=True)
+    portable_recipes = {'build_recipe_sha256' in payload for payload in payloads.values()}
     receipt = {'status': 'private_candidate', 'elfs': payloads,
                'sdk_tree_sha256': binding['tree_sha256']}
+    if True in portable_recipes:
+        require(product == 'xos.mobius' and portable_recipes == {True},
+                'Mobius executables must use the same build receipt format')
+        receipt['revision'] = revision
     if profile.get('runtime_family') == 'glibc':
         receipt.update(runtime_family='glibc', sdk_manifest_sha256=binding['sdk_manifest_sha256'],
                        profile_sha256=hashlib.sha256(canonical(profile)).hexdigest())

@@ -31,10 +31,46 @@ v2 SDK、C/C++ 包和工作盘沿用[已验工作区选择](4c8a56a1_glibc_v2_wo
 与开始前一致。工作盘用途和 SDK profile 始终对应各自系统。
 [回执、启动条件与三份原始串口](../reports/glibc_v2_current_frozen_roundtrip_20261127/manifest.json)
 
-复跑时以 [原回退入口](4c8a56a1_glibc_v2_workspace_default.md#重跑) 的命令和
-`glibc_newlib_frozen_rollback_guest.py` 的 `guest_run` 为准。使用其已验
-C/C++ 包和工作盘以复用既有构建，依次运行
-`exec-file /usr/bin/kit_c`、`exec-file /usr/bin/kit_cpp`，
-切到原启动软盘运行 `exec-file /usr/bin/frozen selection`，恢复 v2 后
-重复前两条。两套 SDK 由 `xos_sdk.py setup` 在独立注册文件绑定，
-再通过 `use newlib` 和 `use glibc` 切换。
+## 复跑
+
+本次使用的 `replay.py` 与验收回执中的 `runner_sha256` 一致。
+`entry.sh` 安装已验宿主 FAT 工具到临时缓存并拒绝隐式编译，之后启动运行器。
+[精确运行器](../reports/glibc_v2_current_frozen_roundtrip_20261127/replay.py) ·
+[容器入口](../reports/glibc_v2_current_frozen_roundtrip_20261127/entry.sh)
+
+在宿主设置以下路径，使用 [输入回执](../reports/glibc_v2_current_frozen_roundtrip_20261127/inputs.json)
+核对现有实物。
+
+| 变量 | 绑定输入 |
+| --- | --- |
+| `SOURCE_CHECKOUT`、`CANDIDATE` | 精确 `960fce43` 源码树，以及该次构建的 `candidate_manifest.json` 和 `system/` 所在目录。 |
+| `V2_FIXTURE` | 前次验收目录中的 `c.xpk`、`cpp.xpk`、`glibc-work.img`，另含 `repository/` 和 `lock.json`。三份现成素材的宿主路径分别是 `$V2_FIXTURE/c.xpk`、`$V2_FIXTURE/cpp.xpk`、`$V2_FIXTURE/glibc-work.img`。若分开存放，分别将它们只读挂到相同容器目标，并在 `/v2-fixture` 提供仓库与锁。 |
+| `V2_KIT` | 上述包和盘对应的 v2 安装 kit，含 `profile.json` 和 `sdk/`。 |
+| `FROZEN`、`HISTORICAL`、`FROZEN_SDK_ARCHIVE` | 含 `release-images.tar.gz`、`frozen.xpk`、已解出的 `xylophoneos_revival_0.0.1-1024_images/` 的目录。历史验收目录提供 `guest-05/report.json`、`guest-05/old-work.img` 和原版已解出的 SDK。单独指定原版 SDK tarball。 |
+| `FAT_HOST_CACHE`、`XYPM_HOST_CACHE` | Linux arm64 上已有且源码摘要相同的两个 FAT 缓存，分别为 `build/host_tools/linux-aarch64` 和 `xos_xypm_host_0`。 |
+| `RECEIVER_IMAGE`、`OUTPUT` | 已有 Linux arm64 容器镜像和本次独立输出目录。本次镜像摘要与 QEMU 版本见资格回执。 |
+
+将本条报告所在仓库的 `docs/reports/glibc_v2_current_frozen_roundtrip_20261127`
+设为 `REPLAY_FILES`。确认其他组合客体已结束，以及 Linux 可用内存达到 3.5 GiB。
+以下命令沿用本次实际挂载角色与内存盘容量。
+
+```sh
+mkdir -p "$OUTPUT" "$SOURCE_CHECKOUT/build"
+cp "$REPLAY_FILES/replay.py" "$REPLAY_FILES/entry.sh" "$OUTPUT/"
+docker run --rm --network none --cpus=2 --memory=2200m --memory-swap=2200m \
+  --tmpfs /scratch:rw,exec,size=480m --tmpfs /workspace/build:rw,exec,size=16m \
+  --mount "type=bind,source=$SOURCE_CHECKOUT,target=/workspace,readonly" \
+  --mount "type=bind,source=$OUTPUT,target=/out" \
+  --mount "type=bind,source=$CANDIDATE,target=/candidate,readonly" \
+  --mount "type=bind,source=$V2_FIXTURE,target=/v2-fixture,readonly" \
+  --mount "type=bind,source=$V2_KIT,target=/kit,readonly" \
+  --mount "type=bind,source=$FAT_HOST_CACHE,target=/fat-cached,readonly" \
+  --mount "type=bind,source=$XYPM_HOST_CACHE,target=/cached,readonly" \
+  --mount "type=bind,source=$FROZEN,target=/frozen,readonly" \
+  --mount "type=bind,source=$HISTORICAL,target=/historical,readonly" \
+  --mount "type=bind,source=$FROZEN_SDK_ARCHIVE,target=/frozen-sdk.tar.gz,readonly" \
+  "$RECEIVER_IMAGE" sh /out/entry.sh
+```
+
+在 `entry.sh` 后追加 `--inputs-only` 可只做输入与宿主检查，回执写入
+`inputs.json`。完整复跑写入 `report.json` 和三份压缩串口。

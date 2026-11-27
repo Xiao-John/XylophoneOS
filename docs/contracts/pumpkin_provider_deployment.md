@@ -97,6 +97,32 @@ Linux ext4 上，新盘首次发放后的资源在提供者进程强制退出后
 对象代际。以下部署回执覆盖两个账户、提供者重启、单账户持久吊销和另一账户持续读取。
 [多账户 ext4 部署回执](../reports/pumpkin_deployed_accounts_20261127/manifest.json)
 
+## 检查候选镜像的宿主绑定
+
+操作者可在私有安装上运行只读预检。管理员分别交付当前和候选清单的可信 SHA-256。
+
+```sh
+python3 -B scripts/pumpkin_user_login.py check-image-update --state "$STATE" \
+  --system "$SYSTEM" --deployment-profile "$PROFILE" --deployment-profile-sha256 "$PROFILE_SHA256" \
+  --replacement-system "$NEXT_SYSTEM" --replacement-deployment-profile "$NEXT_PROFILE" \
+  --replacement-deployment-profile-sha256 "$NEXT_PROFILE_SHA256"
+```
+
+诊断复用普通启动的镜像摘要检查和状态目录非阻塞独占锁。锁作用于已经存在的
+状态目录，预检读取当前安装绑定并核对工作盘的文件类型与归属。两份镜像需分别
+符合各自的部署清单，同时沿用相同安装域、操作者 UID、提供者 UID、套接字路径及
+账户和资源存储配置。成功返回 `bindings_compatible` 和两份系统 manifest 摘要。
+此状态只记录宿主绑定。检查期间无需连接提供者，也无需启动客体。客体协议、
+工作盘内容、代际连续性和实际切换需要各自的验收。
+
+当前 `deployment.sha256` 和运行中的提供者各自要求匹配一个完整的部署清单
+摘要。提供者的 ext4 同步提交覆盖代际记录。镜像切换要在管理员授权的独占维护
+窗口协调这两个端点，并让提供者继续使用同一安装域的现有独立代际根。后续实现
+须持久记录旧、新摘要及切换阶段，在任一步骤中断后先核对两端和完整代际记录。
+只在状态得到确认后恢复启动。状态不明时保留两端和工作盘供恢复，依据独立代际
+确认盘状态。
+[真实构建预检回执](../work_log/73776af5_pumpkin_image_update_check.md)
+
 受信宿主分别管理启动者和独立提供者，宿主的 root、虚拟化平台及两种角色各自的
 同 UID 进程属于其信任范围。接收者钱包仍由受信启动工具保存和提交。此配置目前
 按独立受控 Linux 环境验收。正式物理启动和控制台证明、硬件代际或宿主完整回滚

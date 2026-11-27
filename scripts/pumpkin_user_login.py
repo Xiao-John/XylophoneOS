@@ -22,7 +22,7 @@ import time
 
 from make_work_disk import create_fat32
 from pumpkin_generation_authority import generation_authority, generation_error, generation_mark, publish_result
-from pumpkin_generation_provider import developer_realm, load_profile, provider_client
+from pumpkin_generation_provider import developer_realm, load_profile, provider_client, require_uid
 from run_qemu import qemu_command
 
 
@@ -32,6 +32,7 @@ account_selection = struct.Struct("<I32s92x")
 empty_account = bytes(account_selection.size)
 account_name_pattern = r"[A-Za-z0-9][A-Za-z0-9._-]{0,31}"
 first_account_command = "provision-first"
+check_image_command = "check-image-update"
 duplicate_enrollment = 6
 desktop_revoked = 7
 mark_layout = struct.Struct("<16sQQ32s")
@@ -239,6 +240,41 @@ def check_installation(descriptor, deployment):
                 and stat.S_IMODE(info.st_mode) == 0o600 and info.st_nlink == 1
                 and stream.read(65) == deployment.sha256.encode("ascii"),
                 "The installation does not match the deployment profile")
+
+
+@contextmanager
+def locked_installation(state, deployment):
+    with private_directory(state) as descriptor:
+        fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        disk = os.stat("work.img", dir_fd=descriptor, follow_symlinks=False)
+        require(stat.S_ISREG(disk.st_mode) and disk.st_uid == os.geteuid() and disk.st_nlink == 1,
+                "Invalid private work disk")
+        check_installation(descriptor, deployment)
+        yield
+
+
+def check_image_update(system, state, current, replacement_system, replacement):
+    require_uid(current.operator_uid)
+    current_binding = bind_system(system)
+    replacement_binding = bind_system(replacement_system)
+    select_deployment(system, current_binding, current)
+    select_deployment(replacement_system, replacement_binding, replacement)
+    require(current.realm == replacement.realm, "The replacement changes the installation realm")
+    require((current.operator_uid, current.provider_uid, current.socket_path) ==
+            (replacement.operator_uid, replacement.provider_uid, replacement.socket_path),
+            "The replacement changes the deployment roles or provider socket")
+    require(current.named_resources == replacement.named_resources and
+            (broker_artifact in current_binding[2]) == (broker_artifact in replacement_binding[2]),
+            "The replacement changes the account or resource storage configuration")
+    try:
+        with locked_installation(state, current):
+            return {
+                "status": "bindings_compatible",
+                "current_manifest_sha256": current_binding[1],
+                "replacement_manifest_sha256": replacement_binding[1],
+            }
+    except BlockingIOError as error:
+        raise login_error("The private Pumpkin installation is busy") from error
 
 
 @contextmanager
@@ -568,12 +604,7 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
             "Select the private Pumpkin sealed resource image")
     require((selection is not None) == (command in named_operations) and
             (selection is None or named and broker_artifact in binding[2]), "Select the private named resource image")
-    with private_directory(state) as descriptor:
-        fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        disk = os.stat("work.img", dir_fd=descriptor, follow_symlinks=False)
-        require(stat.S_ISREG(disk.st_mode) and disk.st_uid == os.geteuid() and disk.st_nlink == 1,
-                "Invalid private work disk")
-        check_installation(descriptor, deployment)
+    with locked_installation(state, deployment):
         installation_realm = realm if deployment is None else deployment.realm
         authority = (generation_authority(state / "authority", realm, named_resources=named)
                      if deployment is None else provider_client(deployment))
@@ -612,13 +643,16 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("prepare", first_account_command,
+    parser.add_argument("operation", choices=("prepare", first_account_command, check_image_command,
                                               *(item for item in scenarios if item != "desktop-admin")))
     parser.add_argument("--system", type=Path)
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--credential-file", type=Path)
     parser.add_argument("--deployment-profile", type=Path)
     parser.add_argument("--deployment-profile-sha256")
+    parser.add_argument("--replacement-system", type=Path)
+    parser.add_argument("--replacement-deployment-profile", type=Path)
+    parser.add_argument("--replacement-deployment-profile-sha256")
     parser.add_argument("--account", default=None, help="select an account name, default alice")
     parser.add_argument("--resource-name")
     parser.add_argument("--generation", type=int)
@@ -631,6 +665,13 @@ def main():
         parser.error("supply the deployment profile and its trusted SHA-256 together")
     if (args.operation != "prepare" or args.deployment_profile is not None) and args.system is None:
         parser.error("a matching --system is required")
+    replacement_fields = (args.replacement_system, args.replacement_deployment_profile,
+                          args.replacement_deployment_profile_sha256)
+    if args.operation == check_image_command:
+        if args.deployment_profile is None or any(value is None for value in replacement_fields):
+            parser.error("the image check requires both systems, deployment profiles and trusted digests")
+    elif any(value is not None for value in replacement_fields):
+        parser.error("replacement options require " + check_image_command)
     if (args.operation in credential_operations or args.operation == first_account_command) != (args.credential_file is not None):
         parser.error("--credential-file is required for credential submission and enrollment")
     if args.display is not None and args.operation != "desktop":
@@ -638,7 +679,8 @@ def main():
     if args.revoke_on_signal and args.operation != "desktop":
         parser.error("--revoke-on-signal requires the desktop operation")
     account = "alice" if args.account is None else args.account
-    if (args.operation == "prepare" and args.account is not None) or re.fullmatch(account_name_pattern, account) is None:
+    if ((args.operation in ("prepare", check_image_command) and args.account is not None) or
+            re.fullmatch(account_name_pattern, account) is None):
         parser.error("select an account name of 1 to 32 characters for an account operation")
     selected = None
     if args.operation in named_operations:
@@ -666,6 +708,11 @@ def main():
         state = args.state.absolute()
         deployment = (load_profile(args.deployment_profile, args.deployment_profile_sha256)
                       if args.deployment_profile is not None else None)
+        if args.operation == check_image_command:
+            replacement = load_profile(args.replacement_deployment_profile, args.replacement_deployment_profile_sha256)
+            print(json.dumps(check_image_update(args.system, state, deployment, args.replacement_system, replacement),
+                             sort_keys=True))
+            return 0
         if args.operation == "prepare":
             named = False
             if args.system is not None and deployment is None:
@@ -721,6 +768,8 @@ def main():
     except login_error as error:
         parser.exit(1, str(error) + "\n")
     except (OSError, ValueError, KeyError, TypeError, struct.error, subprocess.SubprocessError, generation_error):
+        if args.operation == check_image_command:
+            parser.exit(1, "Pumpkin image update bindings could not be confirmed\n")
         parser.exit(1, "Private Pumpkin operation could not be confirmed; do not repeat enrollment automatically\n")
 
 

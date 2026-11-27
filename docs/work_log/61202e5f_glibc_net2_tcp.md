@@ -24,9 +24,21 @@ IPC 和 lwIP 收发。受信静态安装配置由 Xsh 交付服务 PID，客户�
 
 验收绑定到 `61202e5f`，基线为 `8e66789c`。对后续主线 `0227427a` 复核了
 Mobius #345 和原生 TLS #346 的变更，路径无重叠且 Git 合并树生成成功。客体回执仍绑定
-原测试树。共享运行库、同进程多连接的并发调度与中途服务失联注入留待后续验收。
+原测试树。同进程多连接的并发调度与中途服务失联注入留待后续验收。
 DNS、套接字选项、半关闭、poll、IPv6 联网和入站服务另有实现门槛。
 [回执与摘要索引](../reports/glibc_net2_socket_20261127/manifest.json)
+
+## GNU 共享重链回归
+
+在同一源码树重新验签展开 glibc，按已有 D1 流程构建 GNU PIC 归档、解释器和含
+XOS PIC 支持对象的 `libc.so`。GNU 构建纳入 `socket` 子目录并重编
+`xos_net2_socket.os`。ELF 符号表核对四个公开 API 均定义在 `GLIBC_2.44`，
+Net2 私有桥接符号全数解析为本地定义。
+
+使用新链出的解释器和 libc 在普通镜像复跑现有 D1 C 入口。构造、环境、auxv、文件读取、
+关闭和 TLS errno 检查通过，退出状态为 0，运行前后同为 129696 空闲页、3 个任务、
+1 个完成记录。本回归覆盖私有 D1 C 动态入口，动态 TCP 数据收发和共享 C++ 另行验收。
+[共享构建和客体回执](../reports/glibc_net2_socket_20261127/shared_d1_c_guest.json)
 
 ## 复验
 
@@ -49,3 +61,7 @@ python3 scripts/build_net_transport_probe.py --sdk "$ORDINARY_SYSTEM/sdk" --outp
 python3 tests/net_transport_guest.py --system "$ORDINARY_SYSTEM" \
   --payload "$NATIVE_PROBE/net_transport_probe.elf" --output "$NATIVE_EVIDENCE" --serial-only
 ```
+
+D1 回归依照[已链接解释器路径](glibc_d1_linked_interpreter.md)重建 GNU PIC 和共享
+组件。使用带匹配构建回执的 dash，选择 `tests/glibc_d1_linked_interpreter_guest.py`
+的 `--case c`，传入上述普通镜像、静态 SDK 及新生成的 GNU 构建目录。

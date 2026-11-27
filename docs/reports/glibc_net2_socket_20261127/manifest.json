@@ -8,6 +8,7 @@
     "host-regression.txt": "0672dffc66421f45a9aeb3896579ee1e791acfd7664bcc83efeef0c35401e0b4",
     "license-audit.txt": "edd07a9cba63d3c9c5ab544fcba7c255f61737954e737c640361130f5dfbd006",
     "native_net2_regression.json": "b14c023d64114ee5c67c9f0a2c22b6238901b7eff70650a3b5ce636cc4be0705",
-    "serial-excerpt.log": "e034fde0997ac36746602a579209d203aad2b8eb9429e76026e01abdeea495ab"
+    "serial-excerpt.log": "e034fde0997ac36746602a579209d203aad2b8eb9429e76026e01abdeea495ab",
+    "shared_d1_c_guest.json": "6d4f89393d1bb952067b1f1a76129dc7030aae8d16709c24b92d8d4e026e5e1b"
   }
 }

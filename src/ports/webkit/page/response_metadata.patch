@@ -184,3 +184,12 @@
 +}
 +
 +} // namespace WebCore
+--- a/Source/WebCore/platform/network/ResourceResponseBase.h
++++ b/Source/WebCore/platform/network/ResourceResponseBase.h
+@@ -248,5 +248,5 @@
+     void platformLazyInit(InitLevel) { }
+     CertificateInfo platformCertificateInfo(std::span<const std::byte>) const { return CertificateInfo(); };
+-    String platformSuggestedFileName() const { return String(); }
++    String platformSuggestedFilename() const { return String(); }
+
+     static bool platformCompare(const ResourceResponse&, const ResourceResponse&) { return true; }

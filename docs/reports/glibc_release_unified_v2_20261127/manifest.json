@@ -1,0 +1,23 @@
+{
+  "files": {
+    "binding.json": "b7d8274fc9114d6a0237e3632b942f5917bf543cc67aa4e0d2203d700d8c4d97",
+    "combined_guest.json": "6b28403e7b63fa9d9c44b46bb9d9676abae23afb34921f6123218bbc140d9755",
+    "cpython_configure_elf.json": "db122c9b40dcc3d22ecf5c4946e31507e5aec4c904ba1dda3abc32858e0c2534",
+    "gnu_seed_installer.serial.log.gz": "ecf6a75cb507c320319d3fad26d1f1f9ff0c0bc57e13a27e0a9639fcaec2e5d8",
+    "gnu_seed_ordinary.serial.log.gz": "f5c769347343f4b11c30a31d3518ebd8a05ade56db932e1a26ba01bb16e9e96f",
+    "gnu_seed_reboot.serial.log.gz": "4b0b2c8f749681e5d9e447347da964302ab7486e96c47c689cce29f571cee78f",
+    "package_guest.json": "aac37f315a0483671a8f6c848dc159670307696567b9011664acd2e0aa7eac64",
+    "package_installer.serial.log.gz": "fdbbc93b29b9f76bd321a6f2bf23b3148a4f42547c01184c0dfa039c6cfbd61b",
+    "package_ordinary.serial.log.gz": "e9de683ba1853094ae9d0f6694de446da17c109d78977c2f6cc95224ed34b1a3",
+    "receiver.json": "d82c67c2b3b720329e8e75044fda17f8b342a578f83f7ef4d7204a96be242061",
+    "release.json": "33398c862fb1ab7053733f554ef4403b8de7c43a29add8a6feed9e808a1caa8e",
+    "seed_after_package_removal.json": "5748ce9616a8b53163b98db212fd086530e12e2965e4d7b555de205245ddd01d",
+    "serial_derivation.json": "70d80db09ce416bd617d6ba214120f63e0103d1db4bd5a3afde797d20e514e78",
+    "socket_profile_comparison.json": "f86f7f8be9222d094f2651e829b4cea78951e46d91ac095f44a019aa1ba0538c",
+    "stock_guest.json": "3e8b63d5e6309327ab11c2f2bbe5e9b82b0a7bf50ff374b891a9028355f16253",
+    "stock_installer.serial.log.gz": "20fc3237a5883de636ff7360d3313a3046a899d8bbd0b92b9efda242170ed282",
+    "stock_ordinary.serial.log.gz": "304313dcf03bc688abf2859d8c6a8cf24555e103b3af91bfb4fe401ee32f7481",
+    "v1_openssl_configure.json": "274113c106902b1207030f0b333ed3ad0781d4f72354b515522f4b469fb70e13"
+  },
+  "version": 1
+}

@@ -1,0 +1,47 @@
+{
+  "derived_from_exact_raw_reports": true,
+  "gnu_seed_cases": 20,
+  "installer_resources": [
+    125920,
+    2,
+    0
+  ],
+  "native_cases": [
+    "release_python_before_native_builds",
+    "gcc_version",
+    "gxx_version",
+    "gnu_make_version",
+    "as_version",
+    "ld_version",
+    "ar_version",
+    "ranlib_version",
+    "direct_c_compile_link",
+    "direct_c_execute",
+    "direct_cpp_compile_link",
+    "direct_cpp_execute",
+    "gnu_make_from_xsh",
+    "make_c_execute",
+    "make_cpp_execute",
+    "gnu_make_from_dash",
+    "undefined_symbol_rejected",
+    "cold_boot_c",
+    "cold_boot_cpp",
+    "release_python_after_native_builds_and_reboot"
+  ],
+  "ordinary_resources": [
+    129806,
+    2,
+    0
+  ],
+  "package_checks": [
+    "installer_idempotent_package_setup_and_python_smoke",
+    "cold_ordinary_python_and_native_ownership",
+    "native_foreign_package_rejected_without_transaction",
+    "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+  ],
+  "release_manifest_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+  "retained_python_files": 15,
+  "status": "passed_subset",
+  "user_data_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e",
+  "work_disk_sha256": "a2f3d22c9c746a6464c13a8b88dc05c6c601810ad88821204ddd6f213757d3cc"
+}

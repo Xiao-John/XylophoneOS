@@ -1,0 +1,45 @@
+{
+  "archives": {
+    "application-sdk.tar.gz": {
+      "bytes": 22797767,
+      "sha256": "5932aa088513e5a0f1369a02bd8ab1e3181585b067e33399c454c65b00374493"
+    },
+    "gnu-seed-sources.tar.gz": {
+      "bytes": 182547934,
+      "sha256": "2315ae91dd36082ad38654250bcfd794bf73ec971316dd024ede48a553e50ac1"
+    },
+    "images.tar.gz": {
+      "bytes": 92532083,
+      "sha256": "6320c0d1f9ef803e93e7aad847fcc97614dc8695f19d038b64835333cf8ab4ab"
+    },
+    "packages.tar.gz": {
+      "bytes": 11500545,
+      "sha256": "f43b84276495277608aa8f75511066da11e46745225cf37f49bc5a8838328505"
+    }
+  },
+  "derived_from_exact_raw_manifest": true,
+  "gnu_seed_files": 1376,
+  "packages": {
+    "cpython": {
+      "files": 15,
+      "id": "xos.cpython",
+      "sha256": "9cdd6e6e4566c72c028906e18a0cf30165de769265f687e7c990c14dcd82e476"
+    },
+    "daily": {
+      "files": 26,
+      "id": "xos.daily_utilities",
+      "sha256": "e41cc466fd96119f3132cd5a8661f16fec5dbe5947a2ca27f030c7c4a4ffc192"
+    },
+    "wheel": {
+      "files": 16,
+      "id": "python_idna",
+      "sha256": "0b1f99369213b2ceb68be9493b8b7a5f85bf99bb2d64587a72bcffb81f532bee"
+    }
+  },
+  "release_manifest_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+  "status": "assembled_glibc_candidate",
+  "work_disk": {
+    "bytes": 536870912,
+    "sha256": "a2f3d22c9c746a6464c13a8b88dc05c6c601810ad88821204ddd6f213757d3cc"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "derived_from_exact_raw_report": true,
+  "installer": {
+    "boot_to_supervisor_ms": 50930,
+    "checks": [
+      {
+        "name": "dash-runs-first-external-elf",
+        "passed": true
+      },
+      {
+        "name": "dash-installed-from-iso",
+        "passed": true
+      },
+      {
+        "name": "path-visible",
+        "passed": true
+      },
+      {
+        "name": "dash-runs",
+        "passed": true
+      },
+      {
+        "name": "iso-manifest",
+        "passed": true
+      }
+    ],
+    "external_elf_sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf",
+    "gate": "A3/A4 ISO dash install",
+    "status": "passed"
+  },
+  "stock": {
+    "checked_output_files": 33,
+    "checks": [
+      "installer_autoinstalls_daily_xpk",
+      "reboot_and_installed_tools",
+      "guest_p2_remove_preserves_user_data_and_exact_du12_outputs"
+    ],
+    "install_baseline": [
+      125920,
+      2,
+      0
+    ],
+    "installed_files": 26,
+    "not_run": [
+      "fault_injection",
+      "abrupt_power_loss",
+      "upgrade"
+    ],
+    "run_remove_baseline": [
+      129806,
+      2,
+      0
+    ],
+    "status": "passed",
+    "tools": 13
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "candidate_manifest_sha256": "fe1e4b65d6578efc703cbf73290fd72fd5426ecea537f2b77d18714bb55a5c15",
+  "cpython_xpk_sha256": "9cdd6e6e4566c72c028906e18a0cf30165de769265f687e7c990c14dcd82e476",
+  "daily_xpk_sha256": "e41cc466fd96119f3132cd5a8661f16fec5dbe5947a2ca27f030c7c4a4ffc192",
+  "dash_elf_sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+  "gnu_make_elf_sha256": "793e6b79d866e42b2633f462c59afc72cd7c716e6e5e7609bcf7e998e58a0ebe",
+  "gnu_make_source": {
+    "archive_sha256": "dd16fb1d67bfab79a72f5e8390735c49e3e8e70b4945a15ab1f81ddb78658fb3",
+    "signature_sha256": "b0085e6c3f9a7461e739786a8d28dec9aeb090335bb8818e42b497fdeb73b929",
+    "source_verified_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2",
+    "version": "4.4.1"
+  },
+  "idna_xpk_sha256": "0b1f99369213b2ceb68be9493b8b7a5f85bf99bb2d64587a72bcffb81f532bee",
+  "installer_iso_sha256": "199dca96204f70be9adc09e02e0959dce7e8c5eeb40b2597b8e7aad5e82a874d",
+  "ordinary_iso_sha256": "2aafae3122d8920d706e5ec2bc0f54987dd7bf738b1ef95530136af680e57968",
+  "sdk": {
+    "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+    "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+    "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+    "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+  },
+  "source_commit": "8e66789c043ab017074f8494c3701db8ccd3b67c",
+  "system_build_id": "ce681c073de3d6c4",
+  "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "xypm_elf_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745"
+}

@@ -1,0 +1,48 @@
+{
+  "xos-x86_64-glibc-unified-cxx-v1": {
+    "configure_site_socket": "n/a",
+    "missing_socket_headers": [
+      "arpa/inet.h",
+      "netdb.h",
+      "netinet/tcp.h"
+    ],
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "socket_available": false,
+    "socket_stub_functions": [
+      "accept",
+      "bind",
+      "connect",
+      "listen",
+      "socket"
+    ],
+    "upstream_socket_header_presence": {
+      "netinet/in.h": false,
+      "sys/socket.h": true,
+      "sys/types.h": true
+    }
+  },
+  "xos-x86_64-glibc-unified-cxx-v2": {
+    "configure_site_socket": "n/a",
+    "missing_socket_headers": [
+      "arpa/inet.h",
+      "netdb.h",
+      "netinet/tcp.h"
+    ],
+    "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+    "socket_available": false,
+    "socket_stub_functions": [
+      "accept",
+      "bind",
+      "connect",
+      "listen",
+      "socket"
+    ],
+    "upstream_socket_header_presence": {
+      "netinet/in.h": true,
+      "sys/socket.h": true,
+      "sys/types.h": true
+    }
+  }
+}

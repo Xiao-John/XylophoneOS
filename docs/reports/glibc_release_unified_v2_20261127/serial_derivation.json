@@ -1,0 +1,7 @@
+{
+  "output": "gnu_seed_ordinary.serial.log.gz",
+  "raw_guest_report_sha256": "f98bcd50fc4ecce2923bbbecf53d76cf2e8276f81565db0df9034262a219abf3",
+  "redacted_occurrences": 2,
+  "rule": "Replace host build paths embedded in legacy GCC/G++ Configured with lines. Guest compiler scratch paths remain guest local.",
+  "source_raw_sha256": "d3a340b5e2c7fd8cb96ee0677564a6349535bb3fa3df688341c09221debeed37"
+}

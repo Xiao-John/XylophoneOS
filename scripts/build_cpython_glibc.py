@@ -26,6 +26,8 @@ LEGACY_ONLY_PROBES = {
     'ac_cv_header_sys_resource_h', 'ac_cv_header_sched_h',
     'ac_cv_func_clock', 'ac_cv_func_times',
 }
+SOCKET_HEADERS = ('arpa/inet.h', 'netdb.h', 'netinet/tcp.h')
+SOCKET_FUNCTIONS = {'accept', 'bind', 'connect', 'listen', 'socket'}
 UNQUALIFIED = [
     'dynamic extension loading', 'Pillow', 'zlib', 'SQLite', 'bzip2/xz/zstd',
     'full standard library', 'interactive REPL',
@@ -46,7 +48,7 @@ def build_environment():
     return env, sorted(removed)
 
 
-def target_site(path, stub_functions):
+def target_site(path, stub_functions, socket_available):
     values = {}
     for line in (PORT / 'config/xos_config.site').read_text().splitlines():
         if not line or line.startswith('#'):
@@ -58,6 +60,10 @@ def target_site(path, stub_functions):
         require(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', name), 'invalid SDK stub name')
         values['ac_cv_func_' + name] = 'no'
     values.update(ac_cv_func_dlopen='no', ac_cv_lib_dl_dlopen='no')
+    if not socket_available:
+        # CPython's module probe omits required headers and accepts stub symbols.
+        # Its n/a override skips that probe without hiding SDK headers from other modules.
+        values['py_cv_module__socket'] = 'n/a'
     path.write_text(''.join(name + '=' + value + '\n' for name, value in sorted(values.items())))
 
 
@@ -100,6 +106,8 @@ def build(args, env, removed):
     stub_functions = set(metadata['stub_functions'])
     required = {'clock_gettime', 'clock_getres', 'pthread_create', 'pthread_join'}
     require(not required & stub_functions, 'SDK lacks native clock or pthread support')
+    socket_available = not (SOCKET_FUNCTIONS & stub_functions) and all(
+        (sysroot / 'usr/include' / name).is_file() for name in SOCKET_HEADERS)
 
     tools = {name: tool_identity('x86_64-elf-' + name) for name in TOOL_NAMES}
     for name, tool in tools.items():
@@ -153,6 +161,8 @@ def build(args, env, removed):
             report['zlib'] = zlib
             report['static_extensions'] = ['zlib']
             report['unqualified'] = [item for item in UNQUALIFIED if item != 'zlib']
+        if not socket_available:
+            report['unqualified'].append('socket')
         if openssl:
             staged_openssl = work / 'openssl'
             for relative, digest in openssl['artifacts'].items():
@@ -202,7 +212,7 @@ def build(args, env, removed):
             # Put the static archive with its SDK dependencies in the group.
             link_archives.insert(0, str(staged_openssl / 'usr/lib/libcrypto.a'))
         site = work / 'config.site'
-        target_site(site, stub_functions)
+        target_site(site, stub_functions, socket_available)
         if openssl:
             # CPython's configure probe is also satisfied without SSL_set_fd,
             # which _ssl requires even when a caller only uses MemoryBIO.
@@ -242,6 +252,9 @@ def build(args, env, removed):
                         for line in makefile), 'CPython configure did not select native threads and static loading')
         require(('MODULE_ZLIB_STATE=yes' in makefile) == bool(zlib),
                 'CPython configure selected an unexpected zlib module state')
+        if not socket_available:
+            require('MODULE__SOCKET_STATE=n/a' in makefile,
+                    'CPython configure enabled socket without the required SDK support')
         if openssl:
             require('MODULE__HASHLIB_STATE=yes' in makefile and 'MODULE__SSL_STATE=missing' in makefile,
                     'CPython configure did not select OpenSSL hashlib alone')

@@ -1,0 +1,15 @@
+{
+  "build_receipt_sha256": "9e7e71511ac30153b1dfb4d4b8c793d4747cc3f97be305c9c29dfbff32a44540",
+  "builder_sha256": "b60f089b17faf3caf496333ba4b5ae402e1de2c004b94c7ab21943e3487ec284",
+  "executable_sha256": "bde479d98782affbe2eb9013a21a4485893a89deb92385a01ff947df195497ad",
+  "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "socket_configure_state": "n/a",
+  "socket_initializer": false,
+  "source_archive_sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53",
+  "status": "passed_host_cross_link",
+  "zlib_archive_sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
+  "zlib_configure_state": "yes",
+  "zlib_initializer": true
+}

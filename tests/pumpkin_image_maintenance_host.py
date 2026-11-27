@@ -24,7 +24,7 @@ class ImageMaintenance(unittest.TestCase):
         self.previous = SimpleNamespace(sha256="19" * 32, system_manifest_sha256="aa" * 32)
         self.replacement = SimpleNamespace(sha256="37" * 32, system_manifest_sha256="bb" * 32)
         self.old = self.previous.sha256.encode()
-        self.new = self.replacement.sha256.encode()
+        self.new = login.active_binding(self.replacement)
         self.generation = login.generation_mark(b"x" * 16, 3, 80, b"k" * 32)
         self.disk = self.state / "work.img"
         self.disk.write_bytes(b"unchanged private guest disk fixture")
@@ -98,6 +98,15 @@ class ImageMaintenance(unittest.TestCase):
         self.interrupt(login.finish_image_command, after_rename=True)
         self.assertEqual(self.marker.read_bytes(), self.new)
         self.assertEqual(self.update(login.finish_image_command), "image_binding_already_active")
+
+    def test_ordinary_launch_fails_before_guest_start_when_binding_sync_fails(self):
+        binding = ("unused-build", "aa" * 32, {})
+        with (patch.object(login, "bind_system", return_value=binding),
+              patch.object(login, "select_deployment", return_value=False),
+              patch.object(login.os, "fsync", side_effect=OSError("directory sync failed")),
+              patch.object(login, "boot") as boot, self.assertRaisesRegex(OSError, "directory sync failed")):
+            login.operate(None, self.state, "login", None, deployment=self.previous)
+        boot.assert_not_called()
 
     def test_equal_revision_with_different_digest_refuses_activation_and_cancellation(self):
         self.update(login.begin_image_command)

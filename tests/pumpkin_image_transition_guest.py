@@ -16,7 +16,7 @@ from tempfile import gettempdir, TemporaryDirectory
 import time
 
 from pumpkin_provider_deployment_guest import GROUP, OPERATOR, PROVIDER, ROOT, actor, private_owned
-from pumpkin_user_login import bind_system, deployment_marker, digest
+from pumpkin_user_login import active_binding_tag, bind_system, deployment_marker, digest
 
 OPERATOR_TOOL = ROOT / "scripts/pumpkin_user_login.py"
 PROVIDER_TOOL = ROOT / "scripts/pumpkin_generation_provider.py"
@@ -92,6 +92,14 @@ def fixture(current, replacement, provider_root, workspace, report, previous_lau
         execute(label, OPERATOR, command, expected=int(failure is not None),
                 stdout=json.dumps(value, sort_keys=True) if status else None, stderr=failure)
 
+    def verify_previous_launcher(system, profile_args, label):
+        if previous_launcher is not None:
+            command = [sys.executable, "-B", str(previous_launcher), "login", "--system", str(system),
+                       "--state", str(state), *profile_args, *credential]
+            execute(label, OPERATOR, command, expected=1,
+                    stderr="installation does not match the deployment profile",
+                    env=os.environ | {"PYTHONPATH": str(ROOT / "scripts")})
+
     @contextmanager
     def running_provider(args):
         process = actor(PROVIDER, sys.executable, "-B", str(PROVIDER_TOOL), "serve", *args)
@@ -144,28 +152,25 @@ def fixture(current, replacement, provider_root, workspace, report, previous_lau
         maintain("finish-image-update", "reject activation while the old provider is active",
                  failure="Pumpkin image maintenance could not be confirmed")
         assert marker.read_bytes() == pending and generation(3) == original
-        if previous_launcher is not None:
-            command = [sys.executable, "-B", str(previous_launcher), "login", "--system", str(current),
-                       "--state", str(state), *old, *credential]
-            execute("previous launcher rejects the pending binding", OPERATOR, command, expected=1,
-                    stderr="installation does not match the deployment profile",
-                    env=os.environ | {"PYTHONPATH": str(ROOT / "scripts")})
+        verify_previous_launcher(current, old, "previous launcher rejects the pending binding")
         maintain("cancel-image-update", "cancel while the independently verified old provider is active",
                  status="image_update_cancelled")
-        assert marker.read_bytes() == old[3].encode() and digest(disk) == original_disk
+        assert marker.read_bytes().startswith(active_binding_tag) and digest(disk) == original_disk
+        verify_previous_launcher(current, old, "previous launcher rejects the post-cancellation binding")
         maintain("begin-image-update", "reopen the same maintenance plan", status="image_update_pending")
         assert marker.read_bytes() == pending
 
     with running_provider(new_provider):
-        operate(current, old, "login", "old launcher refuses a pending installation", *credential,
+        operate(current, old, "login", "current image cannot launch during maintenance", *credential,
                 expected=1, stderr="image maintenance is in progress")
-        operate(replacement, new, "login", "replacement launcher also refuses the pending installation", *credential,
+        operate(replacement, new, "login", "replacement image cannot launch during maintenance", *credential,
                 expected=1, stderr="image maintenance is in progress")
         maintain("cancel-image-update", "reject cancellation while only the replacement provider is active",
                  failure="Pumpkin image maintenance could not be confirmed")
         assert generation(3) == original and digest(disk) == original_disk and marker.read_bytes() == pending
         maintain("finish-image-update", "activate after verifying the replacement independent provider",
                  status="image_update_activated")
+        verify_previous_launcher(replacement, new, "previous launcher rejects the newly active binding")
         maintain("finish-image-update", "retry after activation without replacing the work disk",
                  status="image_binding_already_active")
         operate(replacement, new, "login", "replacement guest authenticates the original wallet",

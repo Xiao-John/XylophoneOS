@@ -73,6 +73,7 @@ resource_errors = {
 directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
 deployment_marker = "deployment.sha256"
 image_update_tag = b"PUMIMG\0\1"
+active_binding_tag = b"PUMACT\0\1"
 image_update_record = struct.Struct("<8s32s32s64s")
 image_update_size = image_update_record.size + hashlib.sha256().digest_size
 
@@ -248,13 +249,22 @@ def read_deployment_marker(descriptor):
         return stream.read(image_update_size + 1)
 
 
+def active_binding(deployment):
+    fields = active_binding_tag + bytes.fromhex(deployment.sha256)
+    return fields + hashlib.sha256(fields).digest()
+
+
+def matches_active_binding(marker, deployment):
+    return deployment is not None and marker in (deployment.sha256.encode("ascii"), active_binding(deployment))
+
+
 def check_installation(descriptor, deployment):
     marker = read_deployment_marker(descriptor)
     if marker is None:
         require(deployment is None, "The installation is missing its deployment binding")
         return
     require(not marker.startswith(image_update_tag), "Pumpkin image maintenance is in progress")
-    require(deployment is not None and marker == deployment.sha256.encode("ascii"),
+    require(matches_active_binding(marker, deployment),
             "The installation does not match the deployment profile")
 
 
@@ -272,7 +282,7 @@ def locked_state(state):
 def locked_installation(state, deployment):
     with locked_state(state) as descriptor:
         check_installation(descriptor, deployment)
-        yield
+        yield descriptor
 
 
 def verify_update_roles(current, replacement):
@@ -355,7 +365,7 @@ def maintain_image(command, state, system, current, replacement_system, replacem
     with locked_state(state) as directory:
         marker = read_deployment_marker(directory)
         if command == begin_image_command:
-            if marker == current.sha256.encode("ascii"):
+            if matches_active_binding(marker, current):
                 mark = encode_mark(provider_client(current).read())
                 fields = image_update_record.pack(image_update_tag, bytes.fromhex(current.sha256),
                                                   bytes.fromhex(replacement.sha256), mark)
@@ -365,15 +375,14 @@ def maintain_image(command, state, system, current, replacement_system, replacem
                 os.fsync(directory)
             return {"status": "image_update_pending"}
         target = replacement if command == finish_image_command else current
-        stable = target.sha256.encode("ascii")
-        if marker == stable:
+        if matches_active_binding(marker, target):
             provider_client(target).read()
             os.fsync(directory)
             return {"status": "image_binding_already_active", "profile_sha256": target.sha256}
         mark = pending_update_mark(marker, current, replacement)
         require(encode_mark(provider_client(target).read()) == mark,
                 "The independent generation changed during image maintenance")
-        replace_deployment_marker(directory, stable)
+        replace_deployment_marker(directory, active_binding(target))
         status = "image_update_activated" if command == finish_image_command else "image_update_cancelled"
         return {"status": status, "profile_sha256": target.sha256}
 
@@ -705,7 +714,11 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
             "Select the private Pumpkin sealed resource image")
     require((selection is not None) == (command in named_operations) and
             (selection is None or named and broker_artifact in binding[2]), "Select the private named resource image")
-    with locked_installation(state, deployment):
+    with locked_installation(state, deployment) as directory:
+        if deployment is not None:
+            # A prior marker rename can be visible before its directory sync.
+            # Do not let a guest advance the independent generation until it is durable.
+            os.fsync(directory)
         installation_realm = realm if deployment is None else deployment.realm
         authority = (generation_authority(state / "authority", realm, named_resources=named)
                      if deployment is None else provider_client(deployment))

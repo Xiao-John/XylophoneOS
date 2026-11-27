@@ -13,8 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 
 from build_gnu_make import PORT, verify_source
-from package_glibc_gnu_seed import MATERIALS_DIR, SOURCE_ARCHIVE
-from package_glibc_release import MANIFEST, verify_archive_members, verify_assembled
+from package_glibc_gnu_seed import MATERIALS_DIR, SEED_RECEIPT, SOURCE_ARCHIVE
+from package_glibc_release import IMAGES, MANIFEST, verify_archive_members, verify_assembled
+from prepare_glibc_gnu_seed import verify_installed
 from xypm_format import canonical, load_json, require, sha_file
 
 
@@ -75,10 +76,28 @@ def reopen(release_dir, release, work):
     return {'assets': initial, 'source_signer': lock['signer_primary_fingerprint']}
 
 
+def check_package_lifecycle(release_dir, release, guest_dir, work):
+    path = guest_dir / 'report.json'
+    report = load_json(path)
+    disk = guest_dir / 'work.img'
+    require(report['status'] == 'passed_subset'
+            and report['release_manifest_sha256'] == sha_file(release_dir / MANIFEST)
+            and report['assembled_disk_sha256'] == release['work_disk']['sha256']
+            and report['final_disk_sha256'] == sha_file(disk)
+            and 'native_daily_and_wheel_reclaimed_python_and_user_data_retained' in report['checks'],
+            'package lifecycle report does not bind the supplied disk and this release')
+    seed = load_json(release_dir / IMAGES / SEED_RECEIPT)
+    verify_installed(disk, seed['installed_files'], work)
+    require(report['final_disk_sha256'] == sha_file(disk), 'package lifecycle disk changed during Seed readback')
+    return {'guest_report_sha256': sha_file(path), 'final_disk_sha256': report['final_disk_sha256'],
+            'unchanged_seed_files': len(seed['installed_files'])}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--release', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--guest-dir', type=Path, help='also check GNU Seed readback after package reclamation')
     args = parser.parse_args()
     release, _ = verify_assembled(args.release)
     require('gnu_seed' in release, 'test requires a release carrying GNU Seed')
@@ -93,9 +112,12 @@ def main():
         require(result.returncode == 2 and 'requires --glibc-candidate and all of' in result.stderr
                 and not output.exists(), 'unselected GNU release arguments were applied')
         recipient = reopen(args.release, release, work)
+        lifecycle = check_package_lifecycle(args.release, release, args.guest_dir, work) if args.guest_dir else None
     report = {'status': 'passed', 'release_sha256': sha_file(args.release / MANIFEST),
               'recipient': recipient, 'initial_disk_sha256': release['work_disk']['sha256'],
               'archive_negative_cases': failures, 'incomplete_seed_arguments_rejected': True}
+    if lifecycle:
+        report['package_lifecycle'] = lifecycle
     with args.output.open('xb') as stream:
         stream.write(canonical(report))
 

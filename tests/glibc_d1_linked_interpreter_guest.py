@@ -25,6 +25,9 @@ from xypm_sdk_profile import inspect_sdk
 
 GCC_SHARED_SONAMES = ('libgcc_s.so.1', 'libm.so.0.1', 'libstdc++.so.6')
 SHARED_CXX_MARKERS = (b'D2_SHARED_CXX_OK', b'D2_SHARED_CXX_TLS_DTOR', b'D2_SHARED_CXX_ATEXIT')
+WORKER_MARKER = b'D2_SHARED_WORKERS_OK'
+STD_THREAD_MARKERS = (b'D2_SHARED_CXX_TLS_DTOR', b'D2_STD_THREAD_APP_TLS_DTOR', b'D2_STD_THREAD_OK')
+LAST_WORKER_MARKERS = (b'D2_SHARED_WORKER_INITIAL_JOIN', b'D2_SHARED_CXX_TLS_DTOR', b'D2_SHARED_WORKER_LAST_ATEXIT')
 
 
 def bind_runtime_headers(build, runtime):
@@ -47,7 +50,8 @@ def main():
     for name in ('system', 'sdk-build', 'gnu-build', 'dash', 'dash-receipt', 'output'):
         parser.add_argument('--' + name, type=lambda value: Path(value).resolve(), required=True)
     parser.add_argument('--case', choices=('c', 'cpp', 'unlisted', 'shared-cxx', 'shared-cxx-unlisted',
-                                           'runtime-load-observe', 'runtime-load-policy'), required=True)
+                                          'shared-worker', 'shared-worker-last', 'shared-std-thread',
+                                          'runtime-load-observe', 'runtime-load-policy'), required=True)
     parser.add_argument('--libc-image', type=lambda value: Path(value).resolve(),
                         help='relink the same GNU interpreter with a separately rebuilt libc')
     parser.add_argument('--pic-crt', type=lambda value: Path(value).resolve())
@@ -55,7 +59,10 @@ def main():
     parser.add_argument('--system-source', type=lambda value: Path(value).resolve(),
                         help='source tree recorded by the system manifest when using a prior exact image')
     args = parser.parse_args()
-    shared_cxx = args.case.startswith('shared-cxx')
+    native_worker = args.case.startswith('shared-worker')
+    last_worker = args.case == 'shared-worker-last'
+    std_thread = args.case == 'shared-std-thread'
+    shared_cxx = native_worker or std_thread or args.case.startswith('shared-cxx')
     runtime_load = args.case.startswith('runtime-load-')
     if (args.case == 'cpp' or shared_cxx) and args.pic_crt is None:
         parser.error('the C++ case requires the GNU PIC CRT build output')
@@ -115,7 +122,11 @@ def main():
         report['linked_originals'] = {str(path): sha(path) for path in (
             libc_image, rtld_image, native_files, *(startup / name for name in ('Scrt1.o', 'crti.o', 'crtn.o')))}
         app_source = sources / ('shared_cxx_application.cpp' if shared_cxx else f'interpreter_application.{language}')
-        if runtime_load:
+        if native_worker:
+            app_source = sources / 'shared_worker_application.cpp'
+        elif std_thread:
+            app_source = sources / 'shared_std_thread_application.cpp'
+        elif runtime_load:
             app_source = sources / 'runtime_load_policy.c'
         report['sources'] = {str(path): sha(path) for path in (app_source, sources / 'sysdep_start_bootstrap.cpp')}
         run('strip_debug_libc', [objcopy, '--strip-debug', libc_image, dependency])
@@ -178,6 +189,14 @@ def main():
         run('elf_metadata', [readelf, '-hW', '-lW', '-dW', '-VW', main, rtld, *(item[1] for item in dependencies)])
         version = subprocess.check_output([readelf, '-dW', '-VW', main], env=env, text=True)
         needed = re.findall(r'Shared library: \[([^\]]+)\]', version)
+        if std_thread:
+            symbols = subprocess.check_output([readelf, '--dyn-syms', '-W', main], env=env, text=True)
+            imports = re.findall(r'\bUND\s+(_ZNSt6thread(?:15_M_start_thread[^@ ]+|4joinEv)@GLIBCXX_[0-9.]+)', symbols)
+            if (len(imports) != 2 or not any('_M_start_thread' in symbol and symbol.endswith('@GLIBCXX_3.4.22')
+                                            for symbol in imports)
+                    or '_ZNSt6thread4joinEv@GLIBCXX_3.4.11' not in imports):
+                raise RuntimeError('std::thread did not link the versioned GNU start and join entries')
+            report['std_thread_imports'] = imports
         if not shared_cxx and (needed != ['libc.so.0.1'] or 'Name: GLIBC_2.44' not in version):
             raise RuntimeError('application did not link the versioned GNU libc')
         if shared_cxx:
@@ -227,7 +246,8 @@ def main():
         data.write_bytes(b'ABCDEFGH\n')
         launch = out / 'app.sh'
         mode = 'unlisted' if unlisted else 'ordinary'
-        launch.write_text(f'D1_ENTRY_ENV=verified /usr/bin/d1_entry {mode}\nrc=$?\n'
+        env_prefix = 'D1_ENTRY_ENV=verified D2_WORKER_LAST=1' if last_worker else 'D1_ENTRY_ENV=verified'
+        launch.write_text(f'{env_prefix} /usr/bin/d1_entry {mode}\nrc=$?\n'
                           'printf "D1_DYNAMIC_STATUS=%s\\n" "$rc"\nexit "$rc"\n')
         with tempfile.TemporaryDirectory(prefix='xos_d1_native_application_') as folder:
             disk = Path(folder) / 'work.img'
@@ -257,7 +277,11 @@ def main():
                 markers = (b'D1_DYNAMIC_C_OK',) if language == 'c' else (b'D1_DYNAMIC_CPP_OK', b'D1_DYNAMIC_CPP_FINI')
                 if shared_cxx:
                     markers = SHARED_CXX_MARKERS
-                if runtime_load:
+                if native_worker:
+                    markers = LAST_WORKER_MARKERS if last_worker else (WORKER_MARKER,)
+                elif std_thread:
+                    markers = STD_THREAD_MARKERS
+                elif runtime_load:
                     count = b' 4\n' if args.case == 'runtime-load-policy' else b''
                     markers = (b'D2_LOAD_POLICY_OBSERVED' + count,)
                 same_resources = report['resources_after'] == report['resources_before']
@@ -275,6 +299,10 @@ def main():
                                      or sorted(result.index(marker) for marker in markers) !=
                                      [result.index(marker) for marker in markers]):
                     raise AssertionError('the shared C++ exception and TLS teardown markers were out of order')
+                if native_worker and not last_worker:
+                    dtors = re.findall(rb'D2_SHARED_CXX_TLS_DTOR', result[:result.index(WORKER_MARKER)])
+                    if len(dtors) != 4 or result.count(b'D2_SHARED_CXX_TLS_DTOR') != 4:
+                        raise AssertionError('four joined workers must finish TLS teardown before main returns')
             finally:
                 guest.close()
                 report['serial_sha256'] = sha(out / 'real_interpreter_serial.log')

@@ -32,6 +32,10 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 [v2 复验记录](../work_log/9f6b0349_glibc_v2_release_inputs.md)
 [升级与恢复复验](../work_log/cd9e6300_glibc_v2_upgrade.md)
 
+独立补充归档绑定该候选的 Dash、sbase、CPython/zlib 和 IDNA 对应材料。
+断网接收方核对 135 项输入，并从补充材料重建 13 个每日工具 ELF 和 IDNA XPK。
+[v2 组件对应材料](../work_log/9c747f60_glibc_v2_component_sources.md)
+
 ## 整套资产的发布门
 
 | 关口 | 要求的实际证据 |

@@ -1,0 +1,96 @@
+{
+  "absolute_source_path_receipts": "kept_in_local_correspondence_archive",
+  "archive": {
+    "bytes": 26577204,
+    "sha256": "8fa939425e2d7ae9716ab71e29889a3de7c6cd88975e75cf56ea1221c8320e93"
+  },
+  "candidate_source_commit": "8e66789c043ab017074f8494c3701db8ccd3b67c",
+  "cpython_source_commit": "417923a44848e4a2b9385c80e48d78af77c362d0",
+  "files": 135,
+  "idna_xpk_sha256": "0b1f99369213b2ceb68be9493b8b7a5f85bf99bb2d64587a72bcffb81f532bee",
+  "manifest_sha256": "80048e009ea761149f8e416f35502891d20fdec737dedffcb24adcfd8df47f01",
+  "negative": [
+    "manifest_digest_mismatch"
+  ],
+  "not_run": [
+    "dash_detached_rebuild",
+    "cpython_and_zlib_detached_rebuild",
+    "cpython_sigstore"
+  ],
+  "rebuilt_daily": {
+    "basename": {
+      "elf_sha256": "1e098dcf668b842822f34ecbef832ecf5001ef849274a983ab8d8cb7fdfb6b98",
+      "size": 667752
+    },
+    "cat": {
+      "elf_sha256": "eac887247f7d19ea7dcb147b16d3efeb7a4e48b58e1b4b05ea3fa9b9f52a942a",
+      "size": 702560
+    },
+    "cp": {
+      "elf_sha256": "f522fb9df42d881d53184ac4d5e1f1e7f590c2e6d61eb1f2d7d1ffafde70b0d2",
+      "size": 667952
+    },
+    "dirname": {
+      "elf_sha256": "fa6169d9dc360cd2ea829d0cb6f67379e8c2b158fca1d1db080c62ca90d35698",
+      "size": 667752
+    },
+    "head": {
+      "elf_sha256": "861be09a945b713c121e05b6cc9318cf593f77993ac905a00b7a2894c7e25b9d",
+      "size": 668336
+    },
+    "ls": {
+      "elf_sha256": "e31ddcb0167f91294cafb7e1e6a22fe457a2fac86c28a10ad951ac5c8b585298",
+      "size": 672552
+    },
+    "mkdir": {
+      "elf_sha256": "d2b031608f452311bf8450d14a49cc647ce4c104c3f5a328ffb1cf6cc8c60402",
+      "size": 668048
+    },
+    "mv": {
+      "elf_sha256": "13d624d84be898968028f328dc9693929cf010b578f578cc2b2dfd2d862368d3",
+      "size": 667984
+    },
+    "rm": {
+      "elf_sha256": "6f27359c92b4fc2558a429e5db2d675187f8e6c8d9516045b6c107e638711f26",
+      "size": 668008
+    },
+    "rmdir": {
+      "elf_sha256": "6a5a979a837c3e9add987a13bb085b0aa1d802f444c979201c25b9e262642b2f",
+      "size": 667896
+    },
+    "tail": {
+      "elf_sha256": "92bf16d08bcabb1833272a4d7c55c20aa8e8fb5d82599320fb256235c1ee4476",
+      "size": 672432
+    },
+    "tee": {
+      "elf_sha256": "647bed5a2845889864391e16ec979caad2c8d5c12977c0fc7eb430eb0e2d59d5",
+      "size": 706584
+    },
+    "wc": {
+      "elf_sha256": "51a8a691d6fd6ba1dcb0171e4b41be9dada3d904e33c8c71bda3d7f722112df3",
+      "size": 672472
+    }
+  },
+  "release_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+  "sbase_tree": "a58d176568a1b33d435a7628740b68289ea5c07a",
+  "source_commit": "9c747f6051972386a64865be21a46f45e0509e6c",
+  "status": "passed_subset",
+  "verified_archives": {
+    "archives/Python-3.14.9.tar.xz": {
+      "bytes": 24176992,
+      "sha256": "e02d9ac21cebda6e46435369744a92c65cc7cd8669697694122cf97ffacd1e53"
+    },
+    "archives/idna-3.20-py3-none-any.whl": {
+      "bytes": 69583,
+      "sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c"
+    },
+    "archives/sbase.tar.gz": {
+      "bytes": 218340,
+      "sha256": "edcef100e1358643188efb11ce20ffdd36a86e4b149702bd6796e84667683c7b"
+    },
+    "archives/zlib-1.3.2.tar.xz": {
+      "bytes": 1320064,
+      "sha256": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3"
+    }
+  }
+}

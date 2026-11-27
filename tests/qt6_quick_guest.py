@@ -148,8 +148,9 @@ def main():
                 report["fat_payload_sha256"] = digest(copied)
                 assert report["fat_payload_sha256"] == report["elf_sha256"]
                 if args.dash_manifest:
-                    transfer(disk, "export", "/usr/bin/dash", copied)
-                    report["fat_dash_sha256"] = digest(copied)
+                    copied_dash = Path(temp) / "dash-readback.elf"
+                    transfer(disk, "export", "/usr/bin/dash", copied_dash)
+                    report["fat_dash_sha256"] = digest(copied_dash)
                     assert report["fat_dash_sha256"] == report["dash_elf_sha256"]
             # Route the existing guest helper's logs alongside this receipt.
             (output / "build").mkdir()

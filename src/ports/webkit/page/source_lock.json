@@ -52,6 +52,10 @@
     {
       "path": "page/raster_image_encoding.patch",
       "sha256": "b88e7a4659c28a34c1a6ebb9fd40cefa9a77dbab9b59dc9cdfd3baa92d647333"
+    },
+    {
+      "path": "page/custom_function_registry_include.patch",
+      "sha256": "91a7c085e13f259d459fb4adfcee364ad566740f5ff9a2b9effd8d0d5da50724"
     }
   ]
 }

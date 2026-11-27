@@ -107,3 +107,14 @@ Ninja 日志。余下 618 条边以两路并行接续。
 显示对象或加速编码入口。当前软件 Skia 归档提供三个编码器的上游
 `*_none` 实现，实际编码能力尚未验收。原源码保持冻结，锁定补丁待正式
 Ninja 回合结束后纳入归档重建。
+
+## CSS 自定义函数登记编译边界
+
+Style 阶段的 `UnifiedSource-style-6.cpp` 单独包含
+`CustomFunctionRegistry.cpp`。该文件使用 `WTF_MAKE_TZONE_ALLOCATED_IMPL`，
+此前依赖其它统一单元间接包含宏定义。补丁显式引用
+`<wtf/TZoneMallocInlines.h>`。用 GNU patch 零 fuzz 应用到隔离副本后，
+原 CMake 交叉命令生成 319,256 字节的 x86-64 可重定位对象，SHA-256 为
+`67df50ff54d6f12ad09fc1eb6a81261a5cf0f6be165c922b3dbc6232edce6ab3`。
+对象保留 `registerFunction` 和 `functionForName` 定义。CSS 运行行为随整页
+客体验收，本次实际执行范围为单元编译和符号检查。

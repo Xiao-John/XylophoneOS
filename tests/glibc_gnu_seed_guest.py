@@ -13,18 +13,53 @@ from build_glibc_program import verify_elf
 from glibc_release_packages_guest import PYTHON_OK, boot, command
 from package_glibc_release import IMAGES, INSTALLER, KIT, ORDINARY, verify_assembled, verify_disk
 from package_glibc_gnu_seed import SEED_RECEIPT
-from prepare_glibc_gnu_seed import install
+from prepare_glibc_gnu_seed import FRONTEND_DIR, TARGET, install, verify_installed
 from shell_launch_support import check_result
 from task_smoke import pump
 from xypm_format import canonical, load_json, require, sha_file
 from xypm_image import Disk
-from xypm_sdk_profile import require_stdio_marker
+from xypm_sdk_profile import metadata_snapshot, relative_file, require_stdio_marker
 from package_p2_faults import resources, sparse_copy
 
 FIXTURES = ROOT / 'tests/fixtures'
 MAKE = 'gmake -B -r -f /src/native/project.mk all'
 GCC = 'x86_64-elf-gcc --sysroot=/sysroot'
 GXX = 'x86_64-elf-g++ --sysroot=/sysroot'
+GCC_SEED_TOOLS = {
+    **{name: f'/usr/bin/{TARGET}-{name}' for name in ('gcc', 'g++', 'cpp')},
+    **{name: f'{FRONTEND_DIR}/{name}' for name in ('cc1', 'cc1plus')},
+}
+
+
+def bind_rebuilt_gcc(receipt, expected):
+    build, digest = metadata_snapshot(receipt, expected)
+    identity = build['canonical']
+    lock = load_json(ROOT / 'src/ports/gcc/source_lock.json')
+    require(build['manifest_schema'] == 1 and identity['host'] == 'x86_64-unknown-elf'
+            and identity['target'] == TARGET and build['source_sha256'] == lock['sha256'],
+            'GCC build receipt differs from the locked Seed target or source')
+    install_dir = receipt.parent / 'install'
+    require(not install_dir.is_symlink(), 'GCC Seed install directory is a symlink')
+    files, hashes = {}, {}
+    for name, destination in GCC_SEED_TOOLS.items():
+        item = build['tools'][name]
+        require(item['path'] == destination[1:], 'GCC Seed tool uses a different install path: ' + name)
+        source = relative_file(install_dir, item['path'])
+        require(source.stat().st_size == item['bytes'] and sha_file(source) == item['sha256'],
+                'GCC Seed tool differs from its build receipt: ' + name)
+        verify_elf(source)
+        files[destination] = source
+        hashes[destination] = item['sha256']
+    return files, {'build_id': build['build_id'], 'manifest_sha256': digest, 'tools': hashes}
+
+
+def replace_gcc(disk, files, original):
+    for destination, source in files.items():
+        installed = disk.export(destination)
+        require(sha_file(installed) == original[destination], 'GCC donor differs on release disk: ' + destination)
+        installed.unlink()
+        disk.command('remove', destination)
+        disk.command('import', destination, source)
 
 
 def fixture_files():
@@ -46,16 +81,18 @@ def run(args):
     return run_seed(args.seed_dir, args.output_dir, receipts, receipt, load_json(profile_path), release_digest)
 
 
-def run_packaged(release_dir, output, python_source):
+def run_packaged(release_dir, output, python_source, *, rebuilt_gcc=None):
     release, profile = verify_assembled(release_dir)
     require('gnu_seed' in release, 'release has no packaged GNU Seed')
     images = release_dir / IMAGES
     path = images / SEED_RECEIPT
     return run_seed(images, output, path, load_json(path), profile,
-                    sha_file(release_dir / 'release_manifest.json'), python_source=python_source)
+                    sha_file(release_dir / 'release_manifest.json'), python_source=python_source,
+                    rebuilt_gcc=rebuilt_gcc)
 
 
-def run_seed(seed, output, receipt_path, receipt, profile, release_digest, *, python_source=None):
+def run_seed(seed, output, receipt_path, receipt, profile, release_digest, *, python_source=None,
+             rebuilt_gcc=None):
     firmware = {INSTALLER: receipt['installer_iso'], ORDINARY: receipt['system']['iso']}
     for name, expected in firmware.items():
         require(sha_file(seed / name) == expected['sha256'], 'staged image differs: ' + name)
@@ -97,8 +134,16 @@ def run_seed(seed, output, receipt_path, receipt, profile, release_digest, *, py
             python_fixture.write_text(python_source)
             files['/src/native/release.py'] = python_fixture
         with Disk(work, output) as disk:
+            if rebuilt_gcc is not None:
+                gcc_files, binding = rebuilt_gcc
+                original = {path: receipt['installed_files'][path] for path in gcc_files}
+                replace_gcc(disk, gcc_files, original)
             install(disk, files)
             disk.command('mkdir', '/out/native')
+        if rebuilt_gcc is not None:
+            verify_installed(work, binding['tools'], output)
+            report['rebuilt_gcc'] = {**binding, 'original_tools': original,
+                                     'guest_input_disk_sha256': sha_file(work)}
         report['fixtures'] = {name: sha_file(path) for name, path in files.items()}
         guest = boot(seed / INSTALLER, work, output, 'installer', receipt['system']['build_id'])
         report['qemu'] = subprocess.check_output([guest.command[0], '--version'], text=True).splitlines()[0]
@@ -165,6 +210,8 @@ def run_seed(seed, output, receipt_path, receipt, profile, release_digest, *, py
                 if name == 'libvalue.a':
                     require(saved.read_bytes().startswith(b'!<arch>\n/ '), 'archive lacks a native symbol index')
         report['final_packages'] = verify_disk(work, profile, receipt['packages'])
+        if rebuilt_gcc is not None:
+            verify_installed(work, binding['tools'], output)
         require(sha_file(source) == receipt['work_disk_sha256'], 'staged source disk was written')
         report.update(status='passed_subset', final_disk_sha256=sha_file(work))
     except Exception as error:
@@ -179,9 +226,20 @@ def run_seed(seed, output, receipt_path, receipt, profile, release_digest, *, py
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ('seed-dir', 'release-dir', 'output-dir'):
+    for name in ('release-dir', 'output-dir'):
         parser.add_argument('--' + name, required=True, type=Path)
-    run(parser.parse_args())
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--seed-dir', type=Path)
+    mode.add_argument('--rebuilt-gcc-receipt', type=Path)
+    parser.add_argument('--rebuilt-gcc-receipt-sha256')
+    args = parser.parse_args()
+    if (args.rebuilt_gcc_receipt is None) != (args.rebuilt_gcc_receipt_sha256 is None):
+        parser.error('provide the rebuilt GCC receipt and its trusted SHA-256 together')
+    if args.rebuilt_gcc_receipt is None:
+        run(args)
+    else:
+        rebuilt_gcc = bind_rebuilt_gcc(args.rebuilt_gcc_receipt, args.rebuilt_gcc_receipt_sha256)
+        run_packaged(args.release_dir, args.output_dir, None, rebuilt_gcc=rebuilt_gcc)
 
 
 if __name__ == '__main__':

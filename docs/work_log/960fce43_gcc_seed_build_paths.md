@@ -49,6 +49,10 @@ x86-64。构建继续生成最终 GCC 工具。
 完整 `all-gcc`、最终 ELF 检查、重新组装发行盘与两种 Shell 客体验收仍待完成。
 原发布 GNU Seed 和当前候选的二进制继续保留各自原件。
 
+收口时本次 Linux arm64 容器已退出 1，保留 782 个 GCC 目标目录对象。
+`all-gcc` 在 `gcov-tool` 链接遇到冻结 newlib SDK 未提供的 `nftw` 和 `ftw`。
+本次尚未运行 `all-target-libgcc`、安装或新编译器的客体验收。
+
 ## GCC 重建产物的客体验收入口
 
 用完整 GCC 构建回执和预期摘要核对两个驱动、CPP 与两个前端。验收在已绑定的

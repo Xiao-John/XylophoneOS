@@ -1,0 +1,17 @@
+{
+  "application_sdk": {
+    "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+    "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+  },
+  "candidate_manifest_sha256": "94cf5e324bc06285b65f060440ec4984e71cca98dd27e67e370a42c5a8925cbb",
+  "installer_guest_sha256": "7e01de066635d3c2221a3980f018b8aaa6cece81ba6a5b91489ebf4a86306a42",
+  "legacy_route_result": "daily profile does not admit release system",
+  "profile_verified_system_builds": [],
+  "qualified_candidate_route_result": "accepted by exact bound ISO and stock receipts",
+  "stock_guest_sha256": "3db30d92fc91f4d746de893412132047a2d604a4329de4c0993420610ae886d7",
+  "system_build_id": "b210965441f899cc"
+}

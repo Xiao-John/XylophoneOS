@@ -1,0 +1,15 @@
+{
+  "archives": {
+    "application-sdk.tar.gz": {
+      "bytes": 22763245,
+      "files": 1781,
+      "sha256": "4057efa55ca6f06ef2945dce976898cefb9449128bf733dbc7ca74ca22bbb539"
+    },
+    "images.tar.gz": {
+      "bytes": 21982029,
+      "files": 6,
+      "sha256": "8b970e74f0ed2b48707ab0cb1911964b256742f337cd378bc5fa7e6e571bd1ac"
+    }
+  },
+  "status": "passed"
+}

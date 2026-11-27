@@ -1,0 +1,70 @@
+{
+  "assembled_disk_sha256": "e32e1a63398127060e7aea6b302c737a13f89433f1e94b7c0e86a083fef3862f",
+  "build_id": "73601d7ff1c68866",
+  "checks": [
+    "installer_idempotent_package_setup_and_python_smoke",
+    "cold_ordinary_python_and_native_ownership",
+    "native_foreign_package_rejected_without_transaction",
+    "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+  ],
+  "final_disk_sha256": "6aaed2128446022a585705aad69aeac0ca15d295db504e21526632a68b12a21b",
+  "foreign_package_sha256": "eb8e719a849886794b1a8a3ce7d857355630d68feb94010b2148f1907e5f85f2",
+  "initial_disk": {
+    "files": 57,
+    "status": "verified"
+  },
+  "installed_disk": {
+    "files": 57,
+    "status": "verified"
+  },
+  "installer_iso_sha256": "e4c4008130a0ec5021d43d28065451668e8b22b360157516539750a09ed62bee",
+  "installer_resources": [
+    125923,
+    2,
+    0
+  ],
+  "installer_snapshot_sha256": "682bfebfcac43a448bee6a70f967b8c56dbe00b8c452b146caed2f736114d608",
+  "ordinary_iso_sha256": "cb2e25e00e15c36ae67ff133b6d78aa88b41765f698fc8aa34a1b5dee002f3a5",
+  "ordinary_resources": [
+    129806,
+    2,
+    0
+  ],
+  "packages": {
+    "cpython": {
+      "files": 15,
+      "id": "xos.cpython",
+      "sha256": "2c23731b1f1728953bf604d7f0548f163b6ffcc3179b427548615e9c07ad739b"
+    },
+    "daily": {
+      "files": 26,
+      "id": "xos.daily_utilities",
+      "sha256": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f"
+    },
+    "wheel": {
+      "files": 16,
+      "id": "python_idna",
+      "sha256": "9696201a8025f12e6f2fc8a3948dcb78711074513197798f57cb8e2e0eaa1e02"
+    }
+  },
+  "preserved_user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e",
+  "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "python_fixture_sha256": "76350439c12032ab155d1c59a4f69681901b65c32403c4510ebb2c238e09e9d4",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "release_manifest_sha256": "c54f4dd2213bd1dc96ee10d637581fd05b0cb8112fc7f328a741105553c5633f",
+  "remaining_disk": {
+    "files": 15,
+    "status": "verified"
+  },
+  "serial": {
+    "installer": {
+      "compressed_sha256": "8ba916904059677586dcbb80a123ee9ec7fb1ec790dc0b9bfdd6160f76a20bdd",
+      "sha256": "c6dc33b1320459f79396b9abbbab0d3e15b96e1b316f16b02fc9e496188318e0"
+    },
+    "ordinary": {
+      "compressed_sha256": "20c2319c99b319d6faa1b90d7859908338f26d601db63f36ab08bf7eceeabcde",
+      "sha256": "b49970fe4c53252ae9bb12d6bbec3adfe6f98f387c5341a04cc1a1c31c427487"
+    }
+  },
+  "status": "passed_subset"
+}

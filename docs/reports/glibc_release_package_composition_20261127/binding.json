@@ -1,0 +1,50 @@
+{
+  "assembly_program_source": "9dd3de6580f827f68d0b6518b73cc63f625936a8",
+  "assembly_program_source_tree": "31790461ff0538e8163efa06cc4adc760d27349d",
+  "candidates": {
+    "current": {
+      "application_sdk": {
+        "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+        "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+        "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+        "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+        "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+        "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+      },
+      "build_id": "73601d7ff1c68866",
+      "candidate_source_commit": "9dd3de6580f827f68d0b6518b73cc63f625936a8",
+      "candidate_source_tree": "31790461ff0538e8163efa06cc4adc760d27349d",
+      "guest_receipt_sha256": "07f6102c1b6937d278386a6ec12a323e5a975bd075fd6ab88b1e74c9ab3f5dd4",
+      "release_receipt_sha256": "c54f4dd2213bd1dc96ee10d637581fd05b0cb8112fc7f328a741105553c5633f",
+      "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "frozen": {
+      "application_sdk": {
+        "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+        "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+        "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+        "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+        "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+        "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+      },
+      "build_id": "b210965441f899cc",
+      "candidate_source_commit": "aece996570fa23ae37d2171c8ca1a56b90926f59",
+      "candidate_source_tree": "f84457f679b2e8a11eee6765cb51d62b223914a8",
+      "guest_receipt_sha256": "d37b1035f2caa5a78b3a937896b00b09ed6967b08b775b5c1d746193e7094c3c",
+      "release_receipt_sha256": "ff537718e86941271f0a697d9646fa0060acaf51435b4226601c7d0be84b60f3",
+      "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "compatibility_main": "85e29a61d34ff23691d1ebb9a46c0dc2c4dbcf06",
+  "compatibility_main_tree": "39a1809731a03d557c4ed167d237b96f7bae85ce",
+  "prospective_merge_tree": "31790461ff0538e8163efa06cc4adc760d27349d",
+  "scripts": {
+    "scripts/package_glibc_release.py": "9aa9990a16004d35a3ab7ce4de737764da25664d08caec1642cb4c0fdafd89a5",
+    "scripts/package_release.py": "edbb09c0bcc16844c34bd40716b9ea93be3d1d64e42e5b7bdeefdb1b92fbffbc",
+    "scripts/release_pipeline.sh": "6c78d552bee513e517d0505d7b3c3fe2a1b128e75f563ba5020f4f84e383f716",
+    "scripts/release_smoke.py": "e036436c66b6f0557a5357552e18cac777ea584d3378910c0189bb1f97a739cf",
+    "tests/glibc_release_packages_guest.py": "af81b2ba2fed89c7277347c9ecf650839cd9c310afcf31b8ee3dd3032fb28a4f",
+    "tests/glibc_release_preflight.py": "b9b97ab3a3a0614f85a3a58e03124ee40165a114b4e7f629338d4a4af0ad38cc"
+  },
+  "status": "passed_subset"
+}

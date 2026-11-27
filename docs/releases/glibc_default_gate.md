@@ -12,17 +12,18 @@
 | 普通 ISO、安装 ISO、dash、日用命令和 xypm | 统一 SDK 的普通与安装 ISO、dash 命令替换、13 个工具、XPK 读回、卸载以及双代 profile 拒绝已验。 [代表应用矩阵](../work_log/d6ead81f_glibc_profile.md) | 用最终发行镜像复跑自动安装、空盘与有数据盘冷启、命令替换和基线回收。确认各 XPK、工具和 profile 与镜像 manifest 字节绑定。 |
 | GNU Make、GNU Seed、宿主 SDK | 当前 Make 已从锁定签名源重建并运行真实 dash 配方。统一 SDK 已完成静态 C/C++ 交叉构建及隔离搬移。历史发行另有客体 `gcc`/`g++`、Binutils 和 `/sysroot`。 [统一 SDK 和代表应用](../work_log/d6ead81f_glibc_profile.md) | 在最终发行的工作盘从客体运行 C/C++ 编译器和 Make，检查产出确用选定 sysroot；将接收方 SDK 搬出源树，复跑 C/C++ 和 SDK 自带 XPK 工具。归档实际 GNU/工具链版本、补丁、例外和成员材料。旧 Seed 仅在有独立盘、 profile 与发行身份时保留。 |
 | CPython 核心和标准库 | 统一 SDK 已重建 3.14.9 静态 CLI、XPK 和 558 成员标准库。两套安装候选通过实际 stock 安装、重启、脚本、包互拒和卸载保留数据。 [统一 SDK 实测](../work_log/4d321863_glibc_cpython_unified_stock.md) | 在最终随包介质重跑当前核心入口，并与同 profile 的 Python 依赖组成以下发行脚本门。 |
-| 已发版 Python 依赖 | 0.0.2-1103 的 smoke 运行 zlib、gzip、压缩 ZIP 和 IDNA。统一 SDK 的 3.14.9-1 已在普通 QEMU 跑通前三项和 zipimport，卸载后压缩文件可读回。同 profile 的 daily 与 IDNA XPK 可由宿主合装，核对 42 个文件。 [zlib 与组装实测](../work_log/9739fdaa_glibc_cpython_zlib.md) | 将实际 zlib/IDNA、daily 和 Python 纳入同一候选清单，冷启前后运行历史发行脚本并核对许可、工作盘、卸载和用户数据。 |
+| 已发版 Python 依赖 | 0.0.2-1103 的 smoke 运行 zlib、gzip、压缩 ZIP 和 IDNA。统一 SDK 的 3.14.9-1 已在普通 QEMU 跑通前三项和 zipimport，卸载后压缩文件可读回。显式候选入口已合装同 profile 的 daily、CPython 和 IDNA，两套安装及冷启分别核对 57 个文件。 [zlib 实测](../work_log/9739fdaa_glibc_cpython_zlib.md) · [发行合装实测](../work_log/9dd3de65_glibc_release_package_composition.md) | 将实际 zlib/IDNA、daily 和 Python 纳入同一候选清单，冷启前后运行历史发行脚本并核对许可、工作盘、卸载和用户数据。 |
 | Qt 静态资产 | 上一版发布单独 Qt 资产。当前 Qt Quick 已在既有 profile 上验证源包、重链接样例和接收方安装、替换与回退。 [Qt 上一版审查](../licensing.md#qt-静态分发审查2026-11-03) · [Qt Quick 接收验证](../work_log/4d6f124f_qt_quick_receiver_install.md) | 随默认 ABI 同发时，从统一 SDK 重建并跑实际 GUI 用例；继续独立交付时，单独绑定其兼容 profile、启动入口和数据盘。用最终归档验证实际源码、补丁、成员许可、接收方重链接和安装说明。 |
 
 CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim、Mobius、ClarkE
 等继续按其各自计划验收。纳入发行清单时，同样绑定实际包、profile、系统、客体与
 材料回执。[端口账本](../ports_ledger.md)
 
-现行 `package_release.py` 在同时指定 daily XPK 和 wheel 时拒绝装配。恢复发行用的
-Python wheel 组合需要让打包入口验证两份包使用同一 profile，并以已装配的实际盘
-复跑归属、离线安装和发行 smoke。当前 `license_audit` 的范围为已登记材料与 SDK
-中的副本，最终候选应补齐统一 C/C++ SDK 的 GNU 上游、构建输入和随包静态程序清单。
+`package_release.py --glibc-candidate` 使用带真实安装验收的候选，验证三个包和
+同一 profile，生成发行工作盘。两套候选以实际装配盘复跑了归属、离线安装、
+冷启和发行 smoke。当前 `license_audit` 的范围为已登记材料与 SDK 中的副本，
+最终候选应补齐统一 C/C++ SDK 的 GNU 上游、构建输入和随包静态程序清单。
+[候选验收回执](../reports/glibc_release_package_composition_20261127/manifest.json)
 
 ## 整套资产的发布门
 

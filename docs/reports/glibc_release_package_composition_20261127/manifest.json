@@ -1,0 +1,20 @@
+{
+  "files": {
+    "binding.json": "a514cc765f708836fbd2019d8d2092c811b0d8d5919a4fbb927b2a6124040900",
+    "current_archive_replay.json": "a4fe46d6e383469c5dee651ed0858ee0225ff98da08efff31a0dacb8552230cd",
+    "current_guest.json": "07f6102c1b6937d278386a6ec12a323e5a975bd075fd6ab88b1e74c9ab3f5dd4",
+    "current_installer.serial.log.gz": "8ba916904059677586dcbb80a123ee9ec7fb1ec790dc0b9bfdd6160f76a20bdd",
+    "current_ordinary.serial.log.gz": "20c2319c99b319d6faa1b90d7859908338f26d601db63f36ab08bf7eceeabcde",
+    "current_release.json": "c54f4dd2213bd1dc96ee10d637581fd05b0cb8112fc7f328a741105553c5633f",
+    "frozen_archive_replay.json": "e669e5966a7e05945c6028b5d796c05515e4e6e5b6c8850de8c84cbc70977201",
+    "frozen_guest.json": "d37b1035f2caa5a78b3a937896b00b09ed6967b08b775b5c1d746193e7094c3c",
+    "frozen_installer.serial.log.gz": "259943727035a67671adb8dab43001edda86e0affe47084b3930a593d8187fd5",
+    "frozen_ordinary.serial.log.gz": "fb883ff8f9edf8e1c0a631a796ec3acb07bbb2066e98d2fb67fe868101ae94a2",
+    "frozen_release.json": "ff537718e86941271f0a697d9646fa0060acaf51435b4226601c7d0be84b60f3",
+    "initial_reopen_failure.json": "cb972e1abfc57bac34a55f969b5e5525c7b9f2baf06d8fde61d69eab25615d62",
+    "legacy_selector.json": "28345bfe438b7aa519ad7bce5e1983ba9c15218feac4bdb0e628fa73f335ca59",
+    "no_wheel_release.json": "5d30772a6f27a17bb35b30f30b590277b33f23039a100d0e1fb96e040c4b2f4a",
+    "preflight.json": "4fbcbb559ba2749fee866091375babceb1201cbff7c0512e81fb320f2df22668"
+  },
+  "version": 1
+}

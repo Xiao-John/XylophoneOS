@@ -38,7 +38,24 @@ QEMU 11.1.2 在上述系统镜像的 xsh 中运行锁定的普通脚本，输出
 | 同配置 JSC shell ELF | `db7cdb617e58de07334351c7904a38ac4aaf3cc8599279c8410cb0c7ed288524` |
 | JSC shell 客体报告 | `5ed7881e0090fc129e907612e385957b9158ababf51f967a3653ac48f8451aec` |
 
-完整 WebCore 和 PAL 静态归档正在构建。归档完成后按
+## 同配置 Test262 和 PAL 归档
+
+用同一 JSC ELF、系统 ISO 和锁定的八份同步 Test262 用例复跑既有客体
+运行器。22 个写入 FAT 的工件全部读回核对。严格和非严格模式合计
+16 次均退出 0，完成标记各出现一次，资源恢复到 `129709 / 3 / 1`。
+首轮进程中断时只留下空 QEMU 日志，本记录使用后续完整复跑。
+
+用同一 CMake 链接图的 12 个实际目标对象生成单独的 PAL thin archive，
+并用目标 OpenSSL、ICU、WTF、bmalloc 和静态 glibc SDK 链接
+`pal_digest.elf`。初次尝试在另一挂载目录生成 thin archive，成员路径
+无法解析。改用与构建图相同的目录后归档成功，并补上 WTF 所需的 ICU
+归档。客体对 `abc` 分段计算四种摘要，退出 0，资源前后一致。链接器
+仍报告 `madvise` 和 `raise` 为未实现项，该场景不覆盖这些路径。
+[归档、链接与客体回执](../reports/clarke_webcore_archive_preflight_20261127/manifest.json)
+
+完整 WebCore 归档正在构建，四路并行编译时有一个 JSBindings 编译进程
+被宿主虚拟机的内存不足处理终止，其他编译对象继续生成。完整归档
+仍需按同一配置补齐失败的编译对象。归档完成后按
 [软件 WebCore 门禁](../../src/ports/webkit/page/README.md)链接实际
 `local_page.elf` 并运行两个 HTML 用例。整页链接、DOM、CSS、绘制与退出回收
 尚待这次客体核验。

@@ -1,0 +1,19 @@
+{
+  "cold_boot_order": [
+    "v2_before",
+    "newlib",
+    "v2_after"
+  ],
+  "linux_container_image_id": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450",
+  "preflight_guards": 11,
+  "qemu_version": "QEMU 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "runner_sha256": "44c3939ddd71a1cf5413d3011f79a280b2a7d5f9dcede530a3c16587d96329e4",
+  "serial_sha256_uncompressed": {
+    "newlib": "5fc7103ae79eafd188edcd56eabc0af960f4c1ea6a9205434c2e1b16f22688bd",
+    "v2_after": "b387cf94a702cefbfee48541e0303f8ec68493c81f5fb21ed72c26318d5896a3",
+    "v2_before": "830afe1b875710b1c6a2255057a1af1cc96a2761280a66222e1723b17e69843b"
+  },
+  "source_disks_preserved": true,
+  "status": "passed",
+  "tmpfs_limit_mib": 496
+}

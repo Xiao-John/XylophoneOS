@@ -1,0 +1,132 @@
+{
+  "boot_parameters": {
+    "frozen": {
+      "commands": [
+        "exec-file /usr/bin/frozen selection"
+      ],
+      "cpu": "qemu64",
+      "media": "release_boot_floppy"
+    },
+    "v2": {
+      "commands": [
+        "exec-file /usr/bin/kit_c",
+        "exec-file /usr/bin/kit_cpp"
+      ],
+      "cpu": "qemu64,+rdrand",
+      "media": "ordinary_iso"
+    }
+  },
+  "current": {
+    "build_id": "1f593b6ca9cd7904",
+    "candidate_manifest_sha256": "d08ca5ce6f20fc6ad6a36ac5081d2caac464841729383f15d02a1719eb9a2cd1",
+    "kit": {
+      "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+      "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+      "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+    },
+    "manifest_sha256": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999",
+    "ordinary_iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+    "source_files": 2049
+  },
+  "data_sha256": {
+    "old_after": "222592d159c0fea276128c828e61d96a819626d5705d318a2ab8e4a2ff461aa1",
+    "old_before": "222592d159c0fea276128c828e61d96a819626d5705d318a2ab8e4a2ff461aa1",
+    "v2": "8f4e0b044610ab2482009818f36bbc302ef04ee6f673f33a69a31af625839cee"
+  },
+  "frozen": {
+    "boot_sha256": "1c2cfa90d65b9a9585ac3d5cef32c8376b1806e65f7502321912b2e15b54454c",
+    "build_id": "2c3876e640840ff5",
+    "images_archive_sha256": "a800969aaed03c601b8eb5029da8df1f4faecc5fa7f66ede28482aa65c7be25a",
+    "package": {
+      "build_receipt_sha256": "415bdf4305a0d1cd91a3ad0f48c9c814ff56295cc99e9578ede7f2b5848a4443",
+      "compiler_sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "elf_sha256": "cb1464f058efd48707327c3476914f2548895d0399562b5db92838668f667cff",
+      "id": "selection.frozen",
+      "package_sha256": "e0b0c134d4beec862a2e6647363755df6cc5263f250e6374064c38fa44195819",
+      "project_inputs": {
+        "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "src/main.c": "7cdc711b13d4f1ba267f1b268560b7a2f5dd75768b5f6ec0005e455521351b37",
+        "xos_app.json": "3167530a843ccc51541845aa9a7101cc481523a72480911ec1534973781f6f47"
+      },
+      "sdk_tree_sha256": "e78726755d11d19feabcb7c36faebf6ed9a4e663f85f6beb081ffabae105a874"
+    },
+    "prior_report_sha256": "ee7249f9b81ca8b9251c298569258f080dc9e682a36eda113c640a88c2d6e88b",
+    "profile_sha256": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+    "release": "0.0.1-1024",
+    "sdk_archive_sha256": "86583de2a13b3eea095e94e3768243fdb40216bdfb7e01bc8909d969331e5f66"
+  },
+  "guards": [
+    "v2_rejects_frozen_package",
+    "v2_rejects_profile_override",
+    "v2_rejects_frozen_database",
+    "v2_reads_qualified_database",
+    "unmarked_list_rejected",
+    "unmarked_install_rejected",
+    "unmarked_repo_install_rejected",
+    "missing_kit_fails_closed",
+    "newlib_rejects_v2_package",
+    "newlib_rejects_v2_database",
+    "newlib_reads_frozen_database"
+  ],
+  "guests": {},
+  "host_tools": {
+    "work_disk_host_sha256": "bd090a21e399410278c4b7f926098f3ada73dd1f9a99ca962264a377e8c762bb",
+    "xypm_disk_host_sha256": "ce3c39c9a9219e127fb1374a4921f8a241efd46a29586d0f4962f15df69a5e3f"
+  },
+  "original_disks": {
+    "previous_user_disk": "f556f6cf14017e559fae201bac2f2bb95c9fb63e43c52f4bef132d46078a6681",
+    "release_unmarked": "79b38a3abd0b44f38a34cccde17b2330882627f54dd80b597ca5dfee78be45a4",
+    "v2": "fd770a5b76beab2fe98123b59d5a65336180c30fc3d45fa5cf68d9672f20ceb9"
+  },
+  "prior_v2_selection_sha256": "b3621c899b7a5fdefdacb534e1c23733427a8d28dd8e411009a7516c70dbab2a",
+  "sdk_bindings": {
+    "glibc": {
+      "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+      "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+      "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+      "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+    },
+    "newlib": {
+      "profile_id": "xos-x86_64-static-single-v1",
+      "profile_sha256": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+      "sdk_manifest_sha256": "dd95ed9b64cf6b200b6d4ccd6e7539696d0aabc1dabc5a7d8d5b16b39565f59e",
+      "sdk_tree_sha256": "e78726755d11d19feabcb7c36faebf6ed9a4e663f85f6beb081ffabae105a874"
+    }
+  },
+  "source_commit": "960fce4347f193f13f5214caee153a03891ab100",
+  "source_disks_preserved": true,
+  "status": "inputs_verified",
+  "v2_packages": {
+    "c": {
+      "build_receipt_sha256": "fd12500990ca96ab084f41847fcce2c1a41a44816d5e18c8c1820591cca5103c",
+      "compiler_sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "elf_sha256": "e5ef259d000192d8a8120891f690ae594fc0d1a9ef7970736817e74a4aa0b586",
+      "id": "selection.kit_c",
+      "package_sha256": "71aa6812bca89bf401755c3e676a9c4061ffba642ab11470f182ec6222ad5dbd",
+      "project_inputs": {
+        "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "src/main.c": "6e0e4fbd72e70f411bc6eb0ecbbc31059be7bb9d4199240d71d9588f507cc28b",
+        "xos_app.json": "3f273a91be3e2cb1e5bac9209c7d6a01bb3a33747b8818313428360b60bf5c40"
+      },
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+    },
+    "cpp": {
+      "build_receipt_sha256": "01bd13d33772a0b38b066986f47a7683bf58b82e890945085f7242e0c014eaae",
+      "compiler_sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "elf_sha256": "516ecb55518ee820464c6a584445bf352211e727144a36c3ea98e508d4134654",
+      "id": "selection.kit_cpp",
+      "package_sha256": "439b6e801d09906e39728d530eeaccd44a5bf3d8d7ce74147b7bc5e8aabbcac7",
+      "project_inputs": {
+        "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "src/main.cpp": "2c4a070ab5509e9b10257510b258ffcc7670e49e72cb03d25a5aef47f6158a7c",
+        "xos_app.json": "57f191c0a1a2989b6ab9dcace4bfc8cec186969b41cfcd787367e099684d09cb"
+      },
+      "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+    }
+  }
+}

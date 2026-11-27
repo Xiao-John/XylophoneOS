@@ -38,3 +38,37 @@ Net2 当前的有序 close 会退休整个 handle。`SHUT_WR` 需要在 lwIP 成
 编号关联当次连接，保留旧消息布局。把读取后的再次确认纳入等待协议，处理查询和订阅之间
 发生的就绪变化。分开验证 EOF/失败唤醒、消息丢失重查、在途操作取消、最后引用回收、老服务
 拒绝，以及半关闭后继续接收的真实客体行为。该段须使用实际 Net2 和 lwIP 路径验收。
+
+## 2026-11-27 P0：有限等待和写半关闭
+
+原生 Net2 operations 15–17 已实现 TCP level readiness 与 SHUT_WR，见
+[独立模块记录](../work_log/ba8e71d3_net_socket_extensions.md)。静态 glibc 在同一
+FD/open-description 上接入 `shutdown(fd, SHUT_WR)` 和有限范围的 `poll`。
+
+`poll` 最多 32 项，仅 TCP socket 与普通文件，支持 POLLIN/POLLOUT/POLLERR/
+POLLHUP/POLLNVAL。负 FD 忽略；无效 FD 报 POLLNVAL；普通文件的读写就绪可立即
+给出。pipe、terminal、POLLPRI 等事件返回 EOPNOTSUPP。connected TCP 的
+`poll(..., timeout=0)` 返回 EOPNOTSUPP：没有可信即时通知缓存时不将未知状态
+伪装成未就绪。未连接 socket 的 HUP 与已失效会话的 ERR/HUP 可由本地状态确定。
+这不是完整 POSIX poll 资格，也不包括 ppoll/select/epoll 或非阻塞 connect。
+
+正超时从调用开始只计算一次绝对单调 deadline，覆盖 FD 锁准入、Net2 锁、能力
+询问、readiness 请求与等待。负超时不设置调用者结束时刻，仍受既有 transport
+存活上限约束。新内核通过 sys85 receive_until/send_until 等待；旧内核对新模式
+返回 invalid(-2) 时，在提交新服务操作前返回 EOPNOTSUPP。保留旧阻塞 TCP，
+不以无期限等待或静默扩大 deadline 代替新时限契约。
+
+poll 到期时保留已经发送的只读 capability/readiness 请求，包括其序号、认证
+会话代际、连接 handle 和独立的 transport 上限；不重发、不销毁仍活跃的 TCP。
+下次 poll 或普通 RPC 先精确消费该迟到响应，再继续下一 sequence。损坏响应、
+对端关闭或 transport deadline 失败仍使会话失效。send/shutdown 等有副作用的
+RPC 不进入这条可保留路径：交付后结果未知沿原会话失败语义处理。
+
+poll 的 FD lease 通过非阻塞 FD 锁取得；清理只排队释放引用，不等待远端 Files
+close 或 Net2 retire。对象保留计数阻止并发 close/reuse 改指向；普通运行库操作
+随后回收最后引用。有限等待的清理不能再次引入 5 秒/30 秒的隐含等待。
+
+SHUT_WR 在 dup 别名间共享，后续 send/write 返回 EPIPE；读取仍接收剩余字节和
+EOF。SHUT_RD/SHUT_RDWR 暂未实现且返回 EOPNOTSUPP。与现有运行库一致，未新增
+SIGPIPE 投递语义。事件订阅、零等待 TCP poll、非阻塞 connect、完整 fd 类型
+混合等待和同进程多连接的更广泛并发验收为下一轮。

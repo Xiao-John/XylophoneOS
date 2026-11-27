@@ -1,0 +1,90 @@
+{
+  "status": "failed",
+  "runner_sha256": "02d0625ebc8b1746194c8bbe429b10c25998090384945c780860a237daf4b0e3",
+  "services": [],
+  "cases": [
+    {
+      "name": "no_service",
+      "baseline_after": [
+        129787,
+        2,
+        0
+      ]
+    }
+  ],
+  "profile": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-net2-poll-half-close-candidate",
+    "profile_sha256": "df9b85029e634930f33a062544391c150f04408794fe7362830a488b162d7e06",
+    "sdk_tree_sha256": "8f091c581d7de3ecd358d4c791c4936e6b416c5aedc5a016078536fe37fc272c",
+    "guest_qualification": "not_run"
+  },
+  "profile_sha256": "df9b85029e634930f33a062544391c150f04408794fe7362830a488b162d7e06",
+  "sdk_manifest_sha256": "96b1c9ebea7801401ff9cb7bac79b8c5548910309844af837211b0611f466f4f",
+  "system_manifest_sha256": "ed077861ea23ffbb65ae5cf16e4bafd538654b55d26dd9402a900d090508a5ab",
+  "wire_layout_inputs": {
+    "tests/fixtures/glibc_net2/wire_layout.cpp": "86f93a62a7380b4b8483211d105f8b2a3eecb8f7a2f785d6490c9ab244eca937",
+    "src/ports/glibc/sysdeps/xos/xos_net2_wire.h": "dc2511da5e0e1aec1e3a5117d44f1903f51367b1b3a3581da9684dd14b5d6d6b",
+    "src/shared/include/xos/net_service_abi.hpp": "58e8fa7a1e9750112745f3691abf8ee217cfd842470f3d7474db6dda08786e47"
+  },
+  "elf_sha256": "e1d86cc7d143acc14433a590bc50a7ab616b924f2e1c6c62d0497bd448f099ff",
+  "net_lwip_inputs_sha256": "792418062d540b231ce45e3382e2897e18f05465346e8be51eaa024d5c5fc5aa",
+  "network_profile": {
+    "pci_instance": 41,
+    "resolver": "10.0.2.3",
+    "revision": 1,
+    "source_sha256": "5614e6876118ed26233ede73ddd77170b08ba11c1538810703f6b368c6b53de8"
+  },
+  "elf_manifest_sha256": "bee629635734d65680db33a7b993082e219944b8c88c14eccce0a5605cce6b8d",
+  "image_sha256": "c98b9c7815eabc08dc555922a64223ea955d475ce790074a5634ee4c86dd18cb",
+  "stalled_peer": {
+    "elf_sha256": "b220cd9b59a9521a7731752a597856225d52247935a356905818fecaba7effcf",
+    "source_sha256": "80bee8d5b222938150d4b4275866cf4900229e53e64867bf573b47496d2af5b0",
+    "purpose": "test-only authenticated IPC peer; no actual network service qualification"
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/net_poll/system_final/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN_TMP}/xos_glibc_net2_gmjdjw7k/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline_without_service": [
+    129787,
+    2,
+    0
+  ],
+  "serial_sha256": "2a4286bc11b8d4b64e698cb9e9ae1d8c094110b58100058a8f3b2d66b2d43c03",
+  "error": "exec-file /bin/glibc_net2.elf capacity 9 failed: b'exec-file /bin/glibc_net2.elf capacity 9\\n[process] event=started pid=13 parent=7\\r\\n[process] pid=13 address_space=0x0000000000364000\\r\\n[loader] started pid=13 file=/bin/glibc_net2.elf\\n[process] event=wait_blocked parent=7 child=13\\r\\nGLIBC_NET2_FAIL line=160 errno=95\\n[task] event=reclaimed pid=13 pages=235\\r\\n[wait] pid=13 kind=exited code=1\\nxsh> '"
+}

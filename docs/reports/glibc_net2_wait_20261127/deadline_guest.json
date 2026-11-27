@@ -1,0 +1,227 @@
+{
+  "status": "passed_subset",
+  "runner_sha256": "6b3d08b015036ce9525740e6a18d1e336a5fa644c5489d58a538b3bafe983ba7",
+  "services": [
+    {
+      "pid": 16,
+      "baseline": [
+        129615,
+        3,
+        1
+      ]
+    },
+    {
+      "pid": 23,
+      "baseline": [
+        129615,
+        3,
+        1
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "no_service",
+      "baseline_after": [
+        129787,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "capacity",
+      "baseline_after": [
+        129787,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "live_peer_stalled_reply",
+      "poll_timeout_ms": 40,
+      "actual_elapsed_ns": 40000000,
+      "peer_delay_ms": 1000,
+      "capability_requests": 1,
+      "readiness_requests": 1,
+      "late_reply_recovered": true,
+      "baseline_after": [
+        129787,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "wrong_pid",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "denied",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "refused",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ],
+      "nonce": "5c75ebcc68eff2562c704587d44d9b6f",
+      "reply_hex": "588ae2344fa3b2ab5fca82001cc03d283ef6910af0690c1b4dd74be2c94d1057",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ],
+      "nonce": "19a4ac69e09b1cfed91f575f6738abed",
+      "reply_hex": "b92e3a6e7049bfd2bb6b8efecf65fb903a3b2fa59c17400af71681d3eda251dd",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "half_close",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ],
+      "nonce": "ffa979132d271a9273e063a7b32cc1da",
+      "reply_hex": "1ed2c10966480de97cbbf381d5f0053156ee62f9c1dac857b450650c51f8a19e",
+      "peer_eof_before_response": true,
+      "readiness_timeout_ms": 30
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ],
+      "nonce": "967a373ca91ccc9d8a980d22c71a4ae8",
+      "reply_hex": "5ac905337f5f564c21477232994c5843b7191479f710f0656c1fd3abaad17971",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ],
+      "nonce": "f78895e1a8a692c6b96fe82c82a754bd",
+      "reply_hex": "595d9abfcbb3333c78e8b146c4d01ec9af5b4f0c997b4a46eb9f6276d2eab025",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "half_close",
+      "baseline_after": [
+        129615,
+        3,
+        1
+      ],
+      "nonce": "0f805b04e41deb6e0b46e7c87c45143e",
+      "reply_hex": "361bb4a19c1752c639dfd44058be7542b1ead47558b831e74333fe21ad4139e5",
+      "peer_eof_before_response": true,
+      "readiness_timeout_ms": 30
+    }
+  ],
+  "deadline_profile": "absolute_ipc_wait",
+  "zero_timeout_connected_socket": "unsupported",
+  "posix_complete_poll": false,
+  "profile": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-net2-deadline",
+    "profile_sha256": "8b80716dd8c334cceab09ff3a597140bc7b7c9e64812fa1058c14db3c822b5df",
+    "sdk_tree_sha256": "1735f7471d467ea47fe57f691801d451441b15f97e3d64532475fedbdd6706cb",
+    "guest_qualification": "not_run"
+  },
+  "profile_sha256": "8b80716dd8c334cceab09ff3a597140bc7b7c9e64812fa1058c14db3c822b5df",
+  "sdk_manifest_sha256": "77143b515a2420df9b4d4f24cb87e78c941ad188519280b307aeea0dbda9443a",
+  "system_manifest_sha256": "15646d367aaf875d8c94a3e5966f9362ac5ba683c81c8451313efa79b1c624d7",
+  "wire_layout_inputs": {
+    "tests/fixtures/glibc_net2/wire_layout.cpp": "86f93a62a7380b4b8483211d105f8b2a3eecb8f7a2f785d6490c9ab244eca937",
+    "src/ports/glibc/sysdeps/xos/xos_net2_wire.h": "dc2511da5e0e1aec1e3a5117d44f1903f51367b1b3a3581da9684dd14b5d6d6b",
+    "src/shared/include/xos/net_service_abi.hpp": "58e8fa7a1e9750112745f3691abf8ee217cfd842470f3d7474db6dda08786e47"
+  },
+  "elf_sha256": "2e961905435a97d661acd0005c22cadc2cc14ec959ee6ffceff8c0df455e93ba",
+  "net_lwip_inputs_sha256": "792418062d540b231ce45e3382e2897e18f05465346e8be51eaa024d5c5fc5aa",
+  "network_profile": {
+    "pci_instance": 41,
+    "resolver": "10.0.2.3",
+    "revision": 1,
+    "source_sha256": "5614e6876118ed26233ede73ddd77170b08ba11c1538810703f6b368c6b53de8"
+  },
+  "elf_manifest_sha256": "d8cf6ca3eb353481a9c75e7a4439018a176f9c54ac131da1b42a6cb6dbc03687",
+  "image_sha256": "aef2b01ad54063546d7ba97d5bf4cfc3d8002fdefba71f3898326f1645b88b70",
+  "stalled_peer": {
+    "elf_sha256": "e8e81f047494693465d846544797dee5bf19bcda2486ef493b1b82dcb4d532ef",
+    "source_sha256": "c5932dbb958f6a62f9e3ecd2e79c2a173e9299e2dbea5a39efdadf1e6f059beb",
+    "purpose": "test-only authenticated IPC peer; no actual network service qualification"
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/net_poll/system_verified/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN_TMP}/xos_glibc_net2_9_rydme9/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline_without_service": [
+    129787,
+    2,
+    0
+  ],
+  "serial_sha256": "cc9ba16c91d3d3bc9c1c8997d2e3afa645b212e9d9605d8e025763f671d315d5"
+}

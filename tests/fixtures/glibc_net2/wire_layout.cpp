@@ -42,3 +42,13 @@ static_assert(xos_net2_resources == xos::net2::resources && xos_net2_again == xo
 static_assert(xos_net2_timeout == xos::net2::timeout && xos_net2_closed == xos::net2::closed);
 static_assert(xos_net2_io == xos::net2::io && xos_net2_unsupported == xos::net2::unsupported);
 static_assert(xos_net2_buffer == xos::net2::buffer_too_small && xos_net2_reset == xos::net2::reset);
+
+static_assert(xos_net2_capabilities == static_cast<unsigned>(operation::capabilities));
+static_assert(xos_net2_readiness == static_cast<unsigned>(operation::readiness));
+static_assert(xos_net2_shutdown_write == static_cast<unsigned>(operation::shutdown_write));
+static_assert(sizeof(xos_net2_capability_snapshot) == sizeof(xos::net2::capability_snapshot));
+static_assert(sizeof(xos_net2_readiness_snapshot) == sizeof(xos::net2::readiness_snapshot));
+static_assert(__builtin_offsetof(xos_net2_readiness_snapshot, error) == __builtin_offsetof(xos::net2::readiness_snapshot, error));
+static_assert(xos_net2_ready_read == xos::net2::ready_read && xos_net2_ready_write == xos::net2::ready_write);
+static_assert(xos_net2_ready_eof == xos::net2::ready_eof && xos_net2_ready_error == xos::net2::ready_error);
+static_assert(xos_net2_ready_write_closed == xos::net2::ready_write_closed);

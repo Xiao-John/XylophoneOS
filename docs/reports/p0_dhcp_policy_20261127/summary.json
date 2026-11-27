@@ -1,0 +1,171 @@
+{
+  "base_commit": "daf2bd24ce92525ce61054ebe585ab0e88ed06e4",
+  "date": "2026-11-27",
+  "deferred_qualification": [
+    "production lwIP DHCP/ACD integration",
+    "real short-lease guest fixture",
+    "core connection and DNS epoch invalidation",
+    "physical hardware",
+    "multi-interface DHCP"
+  ],
+  "evidence_normalization": {
+    "/home/<user>": "${XOS_TOOLCHAIN_HOME}",
+    "/opt/xos": "${XOS_SDK_ROOT}",
+    "/work/": "${XOS_SOURCE_ROOT}/"
+  },
+  "exports": {
+    "first_host_result.json": {
+      "original_sha256": "85b827d99167f2d29e45562ce3cddd3424fb5f7b302b9203905ac65267904715",
+      "public_sha256": "782f00016b12064e35053347b9a0afea24b81c98de2bbf39ee0f5794df9230f0",
+      "source": "build/p0_dhcp_policy_host/result.json"
+    },
+    "host_result.json": {
+      "original_sha256": "f5b60d34a037218dfa6584cc7fd2c4c4e575b40eef4655e7fe5a503b34968fe9",
+      "public_sha256": "c0cc9641176dc9afa07c6ee91ce824f9fc8b4096ff9f65794b0d4755d064913b",
+      "source": "build/p0_dhcp_policy_host_final/result.json"
+    },
+    "host_scenarios.log": {
+      "joined_original_sha256": "dcad08746547ab45a0e9559d991ccbfc52dadda6a8c270e195bca27c57e8b1b1",
+      "public_sha256": "dcad08746547ab45a0e9559d991ccbfc52dadda6a8c270e195bca27c57e8b1b1",
+      "sources": [
+        {
+          "path": "build/p0_dhcp_policy_host_final/policy_bounds.log",
+          "sha256": "0eade15aa6daa2a5163ba7cb49eff37fd4c82fb1026d011ed860490ce02f7815"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/valid_messages.log",
+          "sha256": "a25888313769e08395d9f308e5019700fefc6330b5e371a2ab5e0133de181528"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/header_identity.log",
+          "sha256": "6a170e7a24d1451c334fc765414513e120aa53badfce1298e824d3e21d369d5f"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/server_authority.log",
+          "sha256": "a655f9d8442fbee70900aa3cc77c845ac8f534187ce4b4fb2e0207afb27b433e"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/option_framing.log",
+          "sha256": "d4cef1d8443601231a598877cc88a555bf1a99d96fcd20805786c2f98f5c99c5"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/configuration_and_timers.log",
+          "sha256": "225fd177afe432b76c7e1eed3dd475abdd32ce4dac75a21830be7d5c05393e48"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/actual_request_and_acd.log",
+          "sha256": "b523caa912431acc2739b08652fed912eeb4218805fac56a1c59bc075d5c686e"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/exact_deadlines_and_loss.log",
+          "sha256": "598865798fe313a74f0fbb6611bc7bdd9015a3176f97fbc1db2da90f86243ab8"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/renewal_and_configuration.log",
+          "sha256": "7882f712256d4802a3b253c796c76174451a2f3c2d41f773473c2fe453383c1b"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/invalidation_and_generation.log",
+          "sha256": "c96cc5db754253a5bac9a64b0f9d2f67f279a49fbd545535ddeb00a3e9f47931"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/nak_and_late_ack.log",
+          "sha256": "1f6b31e7237539d46a3d0b39768ff3a88b0ca07504a4aa5ab88fd22d5be7f551"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/short_lease_and_acquisition.log",
+          "sha256": "55a3e25012043a8f60511dc5ff9fa3f2f885167dbfe904ca9f6812682ddfb21c"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/time_width_and_regression.log",
+          "sha256": "bc7bafa99227ac3eee790604257fb7f933354cdea25e3cee9ed57acbe74c110b"
+        },
+        {
+          "path": "build/p0_dhcp_policy_host_final/bounded_mutations.log",
+          "sha256": "c4ca89c6705d7a2c447654854f55e297e41e2fc892415f57fb5f0d8d43f91219"
+        }
+      ]
+    },
+    "sanitized_result.json": {
+      "original_sha256": "ce22379a713ff53e2e8176b5ca8007dd3308fe0b7f8200d7c82f85bd5742600a",
+      "public_sha256": "6f00e87e559d225203b630a94e9ef6e3fb6b64b7694a1394f6ed530439733764",
+      "source": "build/p0_dhcp_policy_sanitized_final/result.json"
+    },
+    "sanitized_scenarios.log": {
+      "joined_original_sha256": "dcad08746547ab45a0e9559d991ccbfc52dadda6a8c270e195bca27c57e8b1b1",
+      "public_sha256": "dcad08746547ab45a0e9559d991ccbfc52dadda6a8c270e195bca27c57e8b1b1",
+      "sources": [
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/policy_bounds.log",
+          "sha256": "0eade15aa6daa2a5163ba7cb49eff37fd4c82fb1026d011ed860490ce02f7815"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/valid_messages.log",
+          "sha256": "a25888313769e08395d9f308e5019700fefc6330b5e371a2ab5e0133de181528"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/header_identity.log",
+          "sha256": "6a170e7a24d1451c334fc765414513e120aa53badfce1298e824d3e21d369d5f"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/server_authority.log",
+          "sha256": "a655f9d8442fbee70900aa3cc77c845ac8f534187ce4b4fb2e0207afb27b433e"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/option_framing.log",
+          "sha256": "d4cef1d8443601231a598877cc88a555bf1a99d96fcd20805786c2f98f5c99c5"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/configuration_and_timers.log",
+          "sha256": "225fd177afe432b76c7e1eed3dd475abdd32ce4dac75a21830be7d5c05393e48"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/actual_request_and_acd.log",
+          "sha256": "b523caa912431acc2739b08652fed912eeb4218805fac56a1c59bc075d5c686e"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/exact_deadlines_and_loss.log",
+          "sha256": "598865798fe313a74f0fbb6611bc7bdd9015a3176f97fbc1db2da90f86243ab8"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/renewal_and_configuration.log",
+          "sha256": "7882f712256d4802a3b253c796c76174451a2f3c2d41f773473c2fe453383c1b"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/invalidation_and_generation.log",
+          "sha256": "c96cc5db754253a5bac9a64b0f9d2f67f279a49fbd545535ddeb00a3e9f47931"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/nak_and_late_ack.log",
+          "sha256": "1f6b31e7237539d46a3d0b39768ff3a88b0ca07504a4aa5ab88fd22d5be7f551"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/short_lease_and_acquisition.log",
+          "sha256": "55a3e25012043a8f60511dc5ff9fa3f2f885167dbfe904ca9f6812682ddfb21c"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/time_width_and_regression.log",
+          "sha256": "bc7bafa99227ac3eee790604257fb7f933354cdea25e3cee9ed57acbe74c110b"
+        },
+        {
+          "path": "build/p0_dhcp_policy_sanitized_final/bounded_mutations.log",
+          "sha256": "c4ca89c6705d7a2c447654854f55e297e41e2fc892415f57fb5f0d8d43f91219"
+        }
+      ]
+    }
+  },
+  "failure_record": "first_sanitizer_failure.json",
+  "guest_qualification": "not_run",
+  "host_scenarios": 14,
+  "lwip_integration": "not_run",
+  "module": "bounded DHCP reply policy and absolute lease authorization",
+  "mutations_per_run": 20000,
+  "sanitized_scenarios": 14,
+  "sdk": {
+    "bundled_build_id": "152cd96f4d4e95ab",
+    "bundled_source_commit": "498a40ce85667a72b0c79f0ce1f5c11e7690122f",
+    "launcher": "ordinary Bubblewrap; offline isolation not claimed",
+    "name": "xos-sdk-preview-2-linux-x86_64"
+  },
+  "target_freestanding_object": "passed"
+}

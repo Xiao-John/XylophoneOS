@@ -1,0 +1,106 @@
+{
+  "status": "EXCHANGE_TIMING_MEASURED",
+  "iso_sha256": "7df85605c130f83f447f851c379703a97414f181a8813d93a9be7330329815b7",
+  "system_build_id": "81c419d562a3731e",
+  "system_manifest_sha256": "8fe7e0ff2d5a876c34b5e608fc3beaf311ff8238ad1e78af525bd6c5326107b2",
+  "instrumented_elf_sha256": "3d6cb253d76d834700d68f15c76149ced0b8130cbb957094499238abab66c51d",
+  "native_file_session_source_sha256": "3d8368c88106654317b8e61db540072d82b473a4f5e0cbe124a7b5408e718411",
+  "instrument_source_sha256": "c10accb4043dffeba99044efe15023e6aa92f6cd8d8e5a4192ba38607c041048",
+  "instrumented_elf_manifest_sha256": "7a5ee557e97c1ea8ef8e76d0d6eb091346818fc963d8b9545a14a85ce17aa4f2",
+  "kernel_tick_ns": 10000000,
+  "serial_sha256": "04b50e7b67172ff9f73d301440e2271c7829cf5f47baf4e184da4d4b584da3e7",
+  "benchmark_phase_summary": [
+    {
+      "phase": 0,
+      "wait": "sleep_until",
+      "bytes": 196608,
+      "start_ns": 2480000000,
+      "end_ns": 3440000000,
+      "duration_ns": 960000000,
+      "mib_per_second": 0.1953125,
+      "empty_receives": 96,
+      "waits": 96,
+      "request_latency_histogram_ns": {
+        "10000000": 96
+      },
+      "checksum": "b725db62"
+    },
+    {
+      "phase": 1,
+      "wait": "yield",
+      "bytes": 196608,
+      "start_ns": 3440000000,
+      "end_ns": 3470000000,
+      "duration_ns": 30000000,
+      "mib_per_second": 6.25,
+      "empty_receives": 99,
+      "waits": 99,
+      "request_latency_histogram_ns": {
+        "0": 93,
+        "10000000": 3
+      },
+      "checksum": "b725db62"
+    },
+    {
+      "phase": 2,
+      "wait": "sleep_until",
+      "bytes": 196608,
+      "start_ns": 3470000000,
+      "end_ns": 4430000000,
+      "duration_ns": 960000000,
+      "mib_per_second": 0.1953125,
+      "empty_receives": 96,
+      "waits": 96,
+      "request_latency_histogram_ns": {
+        "10000000": 96
+      },
+      "checksum": "b725db62"
+    }
+  ],
+  "segment_exchange_projection": {
+    "quick": {
+      "sha256": "276ef5bd5fb163b0c500ffdcd527e681d85c82829a19bdb282a80aa65a5d41c9",
+      "segments": [
+        {
+          "segment_flags": 5,
+          "file_bytes": 20970102,
+          "read_at_count": 10239
+        },
+        {
+          "segment_flags": 4,
+          "file_bytes": 6261469,
+          "read_at_count": 3057
+        },
+        {
+          "segment_flags": 6,
+          "file_bytes": 659872,
+          "read_at_count": 323
+        }
+      ],
+      "read_at_count": 13619,
+      "one_tick_per_response_ns": 136190000000
+    },
+    "core": {
+      "sha256": "7d5cf0e44e7636a9414f1838cf9a8ff8b7d6b19b001016240beb8fce34218c03",
+      "segments": [
+        {
+          "segment_flags": 5,
+          "file_bytes": 4546358,
+          "read_at_count": 2220
+        },
+        {
+          "segment_flags": 4,
+          "file_bytes": 2048347,
+          "read_at_count": 1001
+        },
+        {
+          "segment_flags": 6,
+          "file_bytes": 74624,
+          "read_at_count": 37
+        }
+      ],
+      "read_at_count": 3258,
+      "one_tick_per_response_ns": 32580000000
+    }
+  }
+}

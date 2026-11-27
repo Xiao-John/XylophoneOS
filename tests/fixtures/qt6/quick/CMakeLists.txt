@@ -7,6 +7,17 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "XOS")
 endif()
 
 find_package(Qt6 6.8.3 EXACT REQUIRED COMPONENTS Core Gui Qml Quick)
+
+if(DEFINED XOS_QUICK_SUPPORT)
+    qt_standard_project_setup(REQUIRES 6.8)
+    qt_add_executable(quick_probe main.cpp)
+    qt_add_qml_module(quick_probe URI Xos.QuickLifecycle VERSION 1.0
+                      RESOURCE_PREFIX /quick NO_RESOURCE_TARGET_PATH QML_FILES scene.qml)
+    include("${XOS_QUICK_SUPPORT}")
+    xos_link_quick_app(quick_probe)
+    return()
+endif()
+
 qt_standard_project_setup()
 set(qt_archives "")
 foreach(module IN ITEMS Core Gui Qml Quick)

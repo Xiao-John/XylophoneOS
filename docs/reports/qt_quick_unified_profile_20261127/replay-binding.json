@@ -1,0 +1,22 @@
+{
+  "combined_commit": "2be8ba8f0daadd72c8794ff4ebb2d0c0deeb91d4",
+  "combined_tree": "d765fcd5462f9e4fe1f80cb1d33dac6253e6230c",
+  "consumer_checkout_commit": "a1e5b392e130ff292b46acecad1b4b70fee98b29",
+  "first_dash_readback_refusal": "Reused host destination was already present; guest did not launch",
+  "first_xsh_source_refusal": "Non-source archive metadata changed the fixture tree digest before launch",
+  "iso_sha256": "7df85605c130f83f447f851c379703a97414f181a8813d93a9be7330329815b7",
+  "mainline_base": "ebb8a40993d67569ea4b293879f9af67104cddf3",
+  "qt_build_recipe_commit": "f7f79528d135e1ed402ae5866f69a69d9c1b1c3e",
+  "recipient_application_sha256": "276ef5bd5fb163b0c500ffdcd527e681d85c82829a19bdb282a80aa65a5d41c9",
+  "recipient_native_tool_image_id": "sha256:87c204c1263f7c18981b11752fe340a10e4bf8495e1ba2709456182e76bc1a22",
+  "reference_application_sha256": "d35ce75501c908a5d0cb38841d27cc6c83909404e7903744bcb830447d19b5ea",
+  "relocated_kit_archive_bytes": 172568029,
+  "relocated_kit_archive_sha256": "e764fa7034b63203cf2acca413f7b074b819a849a32657d77e438ebda2f1e4ff",
+  "relocated_kit_manifest_sha256": "6fc36b13ed96d8c7ec6e1ad8949e3c0216aea89abb9903fcc70816f646db3e51",
+  "runner_commit": "b434774a1442a5d120bc44ed7ae8e6f946340d94",
+  "runner_sha256": "2270dd5ee49692100c88e7e1dd66c288ce7516b87c0912c3eb50f2e215c125b6",
+  "scope": "Restored target Qt static prefix, offline arm64 receiving build, ordinary XOS software Quick lifecycle",
+  "system_build_id": "81c419d562a3731e",
+  "system_input_files_checked": 2003,
+  "system_manifest_sha256": "8fe7e0ff2d5a876c34b5e608fc3beaf311ff8238ad1e78af525bd6c5326107b2"
+}

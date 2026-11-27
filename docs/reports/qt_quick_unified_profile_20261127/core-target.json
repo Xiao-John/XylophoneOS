@@ -1,0 +1,41 @@
+{
+  "elf_sha256": "7d5cf0e44e7636a9414f1838cf9a8ff8b7d6b19b001016240beb8fce34218c03",
+  "program_headers": [
+    {
+      "alignment": 4096,
+      "file_size": 4546358,
+      "flags": 5,
+      "memory_size": 4546358,
+      "type": 1,
+      "virtual_address": 1073741824
+    },
+    {
+      "alignment": 4096,
+      "file_size": 2048347,
+      "flags": 4,
+      "memory_size": 2048347,
+      "type": 1,
+      "virtual_address": 1078288384
+    },
+    {
+      "alignment": 4096,
+      "file_size": 74624,
+      "flags": 6,
+      "memory_size": 115384,
+      "type": 1,
+      "virtual_address": 1080340480
+    },
+    {
+      "alignment": 16,
+      "file_size": 176,
+      "flags": 4,
+      "memory_size": 360,
+      "type": 7,
+      "virtual_address": 1080414928
+    }
+  ],
+  "qtcore_sha256": "ab5cb5f5fe2886fecdb6c15a90774a14b4577678d7a9c43811ca71f4ddd17fb7",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "status": "core_fixture_linked"
+}

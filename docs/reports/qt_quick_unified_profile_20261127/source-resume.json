@@ -1,0 +1,24 @@
+{
+  "matches_original_source_trees": {
+    "qtbase_source": {
+      "directories": 3736,
+      "files": 21976,
+      "tree_sha256": "8702c66839b8c369bea00fa2cab07f220bbd38fb3fd7b08f1c4ebad7e322d5a7"
+    },
+    "qtdeclarative_source": {
+      "directories": 3584,
+      "files": 53154,
+      "tree_sha256": "e8af58488e2d19d756b4804c926e591b1674327e1b533cd44516a49b2f8fd76a"
+    }
+  },
+  "negative_control": "Original builder published the partial QtBase tree before the first injected interruption",
+  "negative_control_log_sha256": "c0bee7abd305f0f70a63433b686f0c0319b5edbe3ca32c9ebf9f6a473538e5cb",
+  "original_builder_sha256": "d4c4905ca0982a69cdfe0fe910be33ed6a32b94e5d9666a982d36ac67fe867c9",
+  "qtbase_interruption": "SIGKILL after first QtBase glibc patch",
+  "qtdeclarative_interruption": "SIGKILL after first real archive file extraction",
+  "replay_builder_sha256": "250648f1341f4f84c4232d871784ff657c832c2a19bf1d53263d752937804fec",
+  "scope": "real locked sources and patches through pre-configuration; CMake stubbed",
+  "status": "SOURCE_RESUME_VERIFIED",
+  "test_driver_sha256": "bdfd1c7d88306b44737abd3071f2f381c7182a2c0111d6b12d1758824b660d2b",
+  "verified_run_log_sha256": "0b26652aa8e818455d5703a880a2a0de89ebdc74281c44214fae9c2d9899f61e"
+}

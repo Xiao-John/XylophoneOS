@@ -1,0 +1,21 @@
+{
+  "controls_passed": [
+    {
+      "command": "dash -c true",
+      "elapsed_seconds": 0.2128666669998438
+    },
+    {
+      "command": "dash -c /bin/core.elf",
+      "elapsed_seconds": 33.000874875000136
+    }
+  ],
+  "dash_elf_sha256": "9a57e9eff7ee80311c4f5104f4740555a2a731c7a31134ce3b6cc2f48fb6c714",
+  "iso_sha256": "e81d9bb3737d6156ec19dd123d7829a7f06c715781b6d0ed349a57d03727c764",
+  "quick_deadline_seconds": 90,
+  "quick_elf_sha256": "276ef5bd5fb163b0c500ffdcd527e681d85c82829a19bdb282a80aa65a5d41c9",
+  "quick_scene_marker": "not_observed",
+  "quick_script": "dash /bin/launch.sh",
+  "serial_sha256": "5cec29f1570f1c2bb30393b26f6e54cddc0c662536ce011ea2d8167749aa4985",
+  "system_build_id": "8b81f5304cc1da34",
+  "system_manifest_sha256": "84c879b7de3ae51a0e7356f687058d3b2e804a80a22aa3e73fe6bd6b891b9fbf"
+}

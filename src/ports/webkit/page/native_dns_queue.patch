@@ -1,3 +1,16 @@
+--- a/Source/WebCore/PlatformJSCOnly.cmake
++++ b/Source/WebCore/PlatformJSCOnly.cmake
+@@ -35,7 +35,9 @@
+         platform/network/xos/ResourceResponse.h)
+ endif ()
+
+ if (XOS_WEBCORE_SOFTWARE)
+-    list(APPEND WebCore_SOURCES platform/xos/SharedMemoryXOS.cpp)
++    list(APPEND WebCore_SOURCES
++        platform/xos/SharedMemoryXOS.cpp
++        platform/network/xos/DNSResolveQueueXOS.cpp)
+     list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES "${XOS_NATIVE_ABI_INCLUDE}")
+ endif ()
 --- a/Source/WebCore/platform/network/DNS.h
 +++ b/Source/WebCore/platform/network/DNS.h
 @@ -101,8 +101,12 @@
@@ -28,35 +41,59 @@
  #elif USE(CURL)
  #include "DNSResolveQueueCurl.h"
  #elif USE(CF)
-@@ -66,8 +68,15 @@
-     static NeverDestroyed<DNSResolveQueuePlatform> queue;
+@@ -67,10 +69,21 @@
 
      return queue;
  }
-+
+
 +#if OS(XOS)
 +bool configureXOSDNSService(uint64_t servicePID)
 +{
 +    return static_cast<DNSResolveQueueXOS&>(DNSResolveQueue::singleton()).configureService(servicePID);
 +}
 +#endif
-
++
  DNSResolveQueue::DNSResolveQueue()
++#if OS(XOS)
++    : m_timer(Ref { RunLoop::mainSingleton() }, "WebCore DNS prefetch"_s, [this] { timerFired(); })
++#else
      : m_timer(*this, &DNSResolveQueue::timerFired)
++#endif
      , m_requestsInFlight(0)
---- a/Source/WebCore/PlatformJSCOnly.cmake
-+++ b/Source/WebCore/PlatformJSCOnly.cmake
-@@ -35,7 +35,9 @@
-         platform/network/xos/ResourceResponse.h)
- endif ()
+ {
+     // isUsingProxy will return the initial value of m_isUsingProxy at first on
+     // platforms that have an asynchronous implementation of updateIsUsingProxy,
+--- a/Source/WebCore/platform/network/DNSResolveQueue.h
++++ b/Source/WebCore/platform/network/DNSResolveQueue.h
+@@ -26,9 +26,14 @@
 
- if (XOS_WEBCORE_SOFTWARE)
--    list(APPEND WebCore_SOURCES platform/xos/SharedMemoryXOS.cpp)
-+    list(APPEND WebCore_SOURCES
-+        platform/xos/SharedMemoryXOS.cpp
-+        platform/network/xos/DNSResolveQueueXOS.cpp)
-     list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES "${XOS_NATIVE_ABI_INCLUDE}")
- endif ()
+ #pragma once
+
+ #include "DNS.h"
++#if OS(XOS)
++#include <wtf/RunLoop.h>
++#else
+ #include "Timer.h"
++#endif
++#include <wtf/CheckedPtr.h>
+ #include <atomic>
+ #include <wtf/Forward.h>
+ #include <wtf/HashSet.h>
+ #include <wtf/TZoneMalloc.h>
+@@ -68,9 +73,13 @@
+     virtual void updateIsUsingProxy() = 0;
+     virtual void platformResolve(const String&) = 0;
+     void timerFired();
+
++#if OS(XOS)
++    RunLoop::Timer m_timer;
++#else
+     Timer m_timer;
++#endif
+
+     HashSet<String> m_names;
+     std::atomic<int> m_requestsInFlight;
+     MonotonicTime m_lastProxyEnabledStatusCheckTime;
 --- /dev/null
 +++ b/Source/WebCore/platform/network/xos/DNSResolveQueueXOS.cpp
 @@ -0,0 +1,136 @@

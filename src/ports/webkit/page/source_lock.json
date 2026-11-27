@@ -27,7 +27,7 @@
     },
     {
       "path": "page/native_dns_queue.patch",
-      "sha256": "f55fd187b3a1db84385d636502c646e55f1da0748b9fbcfc73644aa4e61f993a"
+      "sha256": "2c88a3a9ccf1a0582d4389d31bf4b83e8691dcb730d5bf51a87ce116c9717f6f"
     }
   ]
 }

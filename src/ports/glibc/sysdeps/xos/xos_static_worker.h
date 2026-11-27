@@ -5,7 +5,7 @@
 #include "xos_thread_create.h"
 
 struct pthread;
-struct xos_static_worker
+struct xos_thread_worker
 {
   void *(*run) (void *);
   void *argument;
@@ -15,16 +15,21 @@ struct xos_static_worker
                       void **argument);
 };
 
-/* Requires an initialized static runtime and an enabled thread profile.
+/* Requires an initialized XOS runtime and an enabled thread profile.
    RUN may return a native-width result. CLEANUP runs before the exit
    handshake. LAST_PROCESS_EXIT is required and must not return.
    PREPARE can replace the entry argument while the reservation is private.
    The caller handles lifecycle state outside the reservation and must
    apply the rollback rules of __xos_thread_launch on failure. */
-#ifndef SHARED
+#ifdef SHARED
+__attribute__ ((visibility ("hidden")))
+xos_i64 __xos_shared_worker_launch (xos_u64 stack_bytes, xos_u64 flags,
+                                    const struct xos_thread_worker *,
+                                    struct xos_thread_launch_result *);
+#else
 __attribute__ ((visibility ("hidden")))
 xos_i64 __xos_static_worker_launch (xos_u64 stack_bytes, xos_u64 flags,
-                                    const struct xos_static_worker *,
+                                    const struct xos_thread_worker *,
                                     struct xos_thread_launch_result *);
 #endif
 #endif

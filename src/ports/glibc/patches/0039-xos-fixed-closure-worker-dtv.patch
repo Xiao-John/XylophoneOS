@@ -1,0 +1,105 @@
+--- a/elf/dl-tls.c
++++ b/elf/dl-tls.c
+@@ -611,4 +611,36 @@
+ 
+ 
++#if defined XOS_GLIBC_TLS && defined SHARED
++/* The XOS pin phase finishes before libc accepts a worker. Its startup
++   TLS graph must fit entirely in the native reservation. No module may
++   defer allocation or add a later generation to this reserved DTV. */
++static bool
++xos_fixed_worker_tls (const dtv_t *dtv)
++{
++  const size_t count = GL(dl_tls_max_dtv_idx);
++  const struct dtv_slotinfo_list *slots = GL(dl_tls_dtv_slotinfo_list);
++  if (count == 0 || count > dtv[-1].counter || slots == NULL
++      || slots->next != NULL || count >= slots->len
++      || GLRO (dl_tls_static_size) < TLS_TCB_SIZE)
++    return false;
++
++  const size_t tls_size = GLRO (dl_tls_static_size) - TLS_TCB_SIZE;
++  size_t newest = 0;
++  for (size_t i = 1; i <= count; ++i)
++    {
++      const struct link_map *map = slots->slotinfo[i].map;
++      if (map == NULL || map->l_ns != LM_ID_BASE || map->l_tls_modid != i
++          || map->l_tls_offset == NO_TLS_OFFSET
++          || map->l_tls_offset == FORCED_DYNAMIC_TLS_OFFSET
++          || (size_t) map->l_tls_offset > tls_size
++          || map->l_tls_blocksize > (size_t) map->l_tls_offset
++          || map->l_tls_initimage_size > map->l_tls_blocksize)
++        return false;
++      newest = MAX (newest, slots->slotinfo[i].gen);
++    }
++  return newest == GL(dl_tls_generation);
++}
++#endif
++
+ /* Allocate initial TLS.  RESULT should be a non-NULL pointer to storage
+    for the TLS space.  The DTV may be resized, and so this function may
+@@ -648,4 +680,10 @@
+                    || GL(dl_tls_dtv_slotinfo_list)->slotinfo[1].map->l_tls_offset
+                         == FORCED_DYNAMIC_TLS_OFFSET))
++    {
++      __rtld_lock_unlock_recursive (GL(dl_load_tls_lock));
++      return NULL;
++    }
++#elif defined XOS_GLIBC_TLS
++  if (fixed_dtv && !xos_fixed_worker_tls (dtv))
+     {
+       __rtld_lock_unlock_recursive (GL(dl_load_tls_lock));
+@@ -761,4 +799,17 @@
+   memset (dtv, 0, 3 * sizeof (*dtv));
+   dtv[0].counter = 1;
++  INSTALL_DTV (result, dtv);
++  return allocate_tls_init (result, false, true);
++}
++#elif defined XOS_GLIBC_TLS
++void *__xos_dl_init_reserved_worker_tls (void *, dtv_t *, size_t);
++
++void *
++__xos_dl_init_reserved_worker_tls (void *result, dtv_t *dtv, size_t slots)
++{
++  if (result == NULL || dtv == NULL || slots < 3)
++    return NULL;
++  /* The native libc has already cleared the bounded reservation tail. */
++  dtv[0].counter = slots - 2;
+   INSTALL_DTV (result, dtv);
+   return allocate_tls_init (result, false, true);
+--- a/elf/rtld.c
++++ b/elf/rtld.c
+@@ -1882,7 +1882,9 @@
+ 
+   /* Keep track of the currently loaded modules to count how many
+      non-audit modules which use TLS are loaded.  */
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+   size_t count_modids = _dl_count_modids ();
++#endif
+ 
+   /* Set up debugging before the debugger is notified for the first time.  */
+   elf_setup_debug_entry (main_map, r);
+@@ -2099,7 +2101,9 @@
+      an old kernel that can't perform TLS_INIT_TP, even if no TLS is ever
+      used.  Trying to do it lazily is too hairy to try when there could be
+      multiple threads (from a non-TLS-using libpthread).  */
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+   bool was_tls_init_tp_called = __rtld_tls_init_tp_called;
++#endif
+   if (tcbp == NULL)
+     tcbp = init_tls (0);
+ 
+@@ -2393,9 +2397,14 @@
+     /* We must prepare the profiling.  */
+     _dl_start_profile ();
+ 
++#ifndef XOS_RTLD_CLOSED_DEPENDENCIES
+   if ((!was_tls_init_tp_called && GL(dl_tls_max_dtv_idx) > 0)
+       || count_modids != _dl_count_modids ())
+     ++GL(dl_tls_generation);
++#else
++  /* The fixed startup closure published its one generation while installing
++     TLS templates. No further module can join it during relocation. */
++#endif
+ 
+   /* TLS .tdata copy moved before the relocation loop above.  */
+ 

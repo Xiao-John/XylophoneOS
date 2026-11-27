@@ -3,10 +3,21 @@
 给自己和朋友玩的独立操作系统：x86-64、BIOS 启动、NASM + 受限 C++ 微内核，
 目标是能在系统内编辑、保存、编译和运行程序。
 
-开发前读 [开发纪律](docs/Discipline.md)、[当前状态](docs/state.md)、
-[项目宪法与当前登记](docs/xos_plan.md)。
+## SDK 预发布
 
-## 当前发行：0.0.2-1103
+[xos-sdk-preview-2](https://github.com/Xiao-John/XylophoneOS/releases/tag/xos-sdk-preview-2) 面向 x86-64 Linux 原生开发。
+解压即可使用 GCC/G++、Binutils、NASM、QEMU 和隔离的 GNU 工具。宿主需要 Bubblewrap 和 zstd。
+包内 XOS sysroot 沿用原预览版的 newlib。
+
+```sh
+sha256sum -c CHECKSUMS.sha256
+tar --zstd -xf xos-sdk-preview-2-linux-x86_64.tar.zst
+./xos-sdk-preview-2-linux-x86_64/xos-sdk --offline xos-sdk-smoke
+```
+
+想体验已发布的 XOS 镜像，从下方稳定发行开始。要参与开发，可直接跳到[从源码构建](#从源码构建)。
+
+## 稳定发行 0.0.2-1103
 
 [XylophoneOS Revival version 0.0.2-1103](https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.2-1103)
 
@@ -38,6 +49,9 @@ dash。
 
 ## 从源码构建
 
+开发前读 [开发纪律](docs/Discipline.md)、[当前状态](docs/state.md)和
+[项目宪法与当前登记](docs/xos_plan.md)。
+
 ```sh
 make build        # kernel、file-backed ISO（xos-install.iso）、SDK 与 manifest
 make dash         # 构建 dash
@@ -53,7 +67,7 @@ make clean        # 只删除 build/（含验证产物）
 工具链默认使用已准备的 `x86_64-elf` GCC/G++ 16.2.0 和 NASM；可用
 `make smoke NASM=... QEMU=...` 覆盖路径。镜像只读、网络关闭，不安装到宿主磁盘。
 
-## 系统能力
+## 稳定版系统能力
 
 BIOS 启动后进入 x86-64 C++ 内核：E820 物理页管理、异常处理、串口控制台、
 ring3 用户任务、每任务地址空间、PIT 抢占、IPC、用户故障隔离、资源回收，
@@ -72,7 +86,7 @@ ring3 用户任务、每任务地址空间、PIT 抢占、IPC、用户故障隔�
 命令逐条说明见 [命令使用手册](docs/usage/index.md)，用户程序开发见
 [给朋友的快速开始](docs/friend_user_program_quickstart.md)。
 
-## 已知边界
+## 稳定版已知边界
 
 - 仅 BIOS/QEMU x86-64；UEFI、SMP、完整 POSIX 尚未完成；QML/Quick 未实现。
 - dash 不是完整 POSIX shell：后台/信号/终端语义仍有限。

@@ -1,8 +1,13 @@
 {
   "files": {
-    "binding.json": "a645d2bdc7016d07fed715435c399ef1776c4fae65b6f2f1df22a83d0e763465",
+    "binding.json": "4b843e3e23f07b28d512cd8f768797e86422efdd6d6cb693712661bf566b524b",
     "gnu_sources.json": "c45dd26ccbc24876e5d8ef8069e7dd755566d73a57e0424c181026374dee6a2e",
+    "optional_without_idna.json": "aa92283f9a9ad5418a7388fdce0b9b14afabe3f8efdac275e709be22e8985e54",
+    "package_guest.json": "a3f8c3fd9eb1775ab9a3b0dea71f81113faf43f8e41e633ba321c04333147e1e",
+    "package_installer.serial.log.gz": "bdf69352c499feb259e947e14d4d5409ef819909b29c46ef460ea2b15ed4eab0",
+    "package_ordinary.serial.log.gz": "e82a6d9a9fb66e2325c07af6b3b9ce5d4d03667809bbf3cbfaed4994b9fd17b2",
     "receiver.json": "364d033f7004eba1dc28cdd31eab92aeb84b2b6ac3cbdba9ce6eb14f3dafbfc3",
+    "receiver_lifecycle.json": "d183f732f7500e8388d9bb41e27f2dd5f217fb1253b5cc7e6541f1b19df71def",
     "release.json": "f5ace473e14a6ac9383161151889e0523126bc3dc59bc3d088f9fd589caf29d2"
   },
   "version": 1

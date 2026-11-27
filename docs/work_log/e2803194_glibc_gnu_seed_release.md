@@ -36,3 +36,6 @@ Seed 参数成组使用。冻结原件目录来自 v0.0.2-1103 的镜像、发�
 
 升级与旧版回退分别保留其已验证工件和报告。P2→P3 同 glibc profile 的升级、回收、故障恢复见专项证据。历史 newlib 镜像、SDK 和盘保留同一冻结标识，GNU Seed 的 1103 原安装 ISO 回退已另盘验证。最终候选切换默认之前仍需用选定的完整发行输入复跑升级与中断恢复。
 [跨版本升级](3ce98ac7_glibc_g4_xypm_p2_p3.md) · [1103 回退实测](59b9081e_glibc_native_gnu_seed.md#客体证据)
+
+组合包门已在该发行盘副本验证首次安装、冷启 Python/zlib/IDNA、异 profile 拒绝与回收。native xypm 移除 daily 和 IDNA 后，CPython 的 15 个受管文件和原用户数据可读回，1,374 个 Seed 文件逐项保持原摘要。安装到回收使用的同一普通客体回到 `129806/2/0`。省略 IDNA 的显式装配分支另通过归档与 41 个受管文件的宿主检查。
+[接收方与包回收证据](../reports/glibc_gnu_seed_release_20261127/manifest.json)

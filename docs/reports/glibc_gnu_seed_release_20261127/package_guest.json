@@ -1,0 +1,59 @@
+{
+  "assembled_disk_sha256": "4f5885715a722c23f5de86383be385d5ea19897bb87e2a41999ea08f0e162986",
+  "build_id": "73601d7ff1c68866",
+  "checks": [
+    "installer_idempotent_package_setup_and_python_smoke",
+    "cold_ordinary_python_and_native_ownership",
+    "native_foreign_package_rejected_without_transaction",
+    "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+  ],
+  "final_disk_sha256": "3dbab41d2ecd8645e5ae7bc2281bc367fb07f31aa1a08b34b1483d200f75694b",
+  "foreign_package_sha256": "eb8e719a849886794b1a8a3ce7d857355630d68feb94010b2148f1907e5f85f2",
+  "initial_disk": {
+    "files": 57,
+    "status": "verified"
+  },
+  "installed_disk": {
+    "files": 57,
+    "status": "verified"
+  },
+  "installer_iso_sha256": "e4c4008130a0ec5021d43d28065451668e8b22b360157516539750a09ed62bee",
+  "installer_resources": [
+    125923,
+    2,
+    0
+  ],
+  "ordinary_iso_sha256": "cb2e25e00e15c36ae67ff133b6d78aa88b41765f698fc8aa34a1b5dee002f3a5",
+  "ordinary_resources": [
+    129806,
+    2,
+    0
+  ],
+  "packages": {
+    "cpython": {
+      "files": 15,
+      "id": "xos.cpython",
+      "sha256": "2c23731b1f1728953bf604d7f0548f163b6ffcc3179b427548615e9c07ad739b"
+    },
+    "daily": {
+      "files": 26,
+      "id": "xos.daily_utilities",
+      "sha256": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f"
+    },
+    "wheel": {
+      "files": 16,
+      "id": "python_idna",
+      "sha256": "9696201a8025f12e6f2fc8a3948dcb78711074513197798f57cb8e2e0eaa1e02"
+    }
+  },
+  "preserved_user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e",
+  "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "python_fixture_sha256": "76350439c12032ab155d1c59a4f69681901b65c32403c4510ebb2c238e09e9d4",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "release_manifest_sha256": "f5ace473e14a6ac9383161151889e0523126bc3dc59bc3d088f9fd589caf29d2",
+  "remaining_disk": {
+    "files": 15,
+    "status": "verified"
+  },
+  "status": "passed_subset"
+}

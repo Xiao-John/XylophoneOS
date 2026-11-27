@@ -110,7 +110,8 @@ def main():
             app = json.loads(args.app_receipt.read_bytes())
             installed_target = json.loads(target_receipt.read_bytes())
             assert app["status"] == "static_quick_application_linked"
-            assert relative_file(args.app_receipt.parent, app["elf"]) == args.payload.resolve(strict=True)
+            receipt_root = args.app_receipt.parent.resolve(strict=True)
+            assert relative_file(receipt_root, app["elf"]) == args.payload.resolve(strict=True)
             assert app["elf_sha256"] == report["elf_sha256"]
             assert app["kit_manifest_sha256"] == digest(kit_manifest)
             assert app["target_receipt_sha256"] == kit["target_receipt_sha256"] == digest(target_receipt)

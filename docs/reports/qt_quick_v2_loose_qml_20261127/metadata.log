@@ -1,0 +1,29 @@
+original guest metadata, full serial SHA-256 8c43e4fb7911fe3810b5883e4d44b2b85725e8533d39661bcde3e66b156b20d4
+LOCAL_FILE_DIAG url=file:///usr/share/quick-file/Scene.qml local=/usr/share/quick-file/Scene.qml absolute=/usr/share/quick-file/Scene.qml canonical= exists=0 file=0 posix_info_size=0
+LOCAL_FILE_DIAG stat=0:0:1073 mode=100644 stat64=0:0:1073 mode64=100644
+LOCAL_FILE_DIAG fd=3 fstat=0:0:1073 fstat64=0:0:1073 read=1073:0 end=1073 prefix=2f2f
+LOCAL_FILE_DIAG stat_mode=100644:1 stat64_mode=100644:1 fstat_mode=100644:1 fstat64_mode=100644:1
+LOCAL_FILE_DIAG statx_path_plain flags=0x0 rc=0 errno=0 mode=100644 regular=1 size=1073 mask=0x7ff
+LOCAL_FILE_DIAG statx_path_qt flags=0x800 rc=-1 errno=22 mode=0 regular=0 size=0 mask=0x0
+LOCAL_FILE_DIAG statx_lstat_qt flags=0x900 rc=-1 errno=22 mode=0 regular=0 size=0 mask=0x0
+LOCAL_FILE_DIAG statx_fd_plain flags=0x1000 rc=0 errno=0 mode=100644 regular=1 size=1073 mask=0x7ff
+LOCAL_FILE_DIAG statx_fd_qt flags=0x1800 rc=-1 errno=22 mode=0 regular=0 size=0 mask=0x0
+LOCAL_FILE_DIAG fstatat64_no_automount=-1:22:0
+LOCAL_FILE_DIAG fresh_QFileInfo_exists=1 size=0 file=0
+LOCAL_FILE_DIAG QFile_open=1 before=0 after=0 sequential=1 read=1073 seek=0 readAll=1073 error=Unknown error
+LOCAL_FILE_DIAG_FINISHED
+
+fixed guest metadata, full serial SHA-256 2cfed0cdd375929c0597ab186c1f10c6399ccb4fe1dc6c33f6d44b632d0d35f1
+LOCAL_FILE_DIAG url=file:///usr/share/quick-file/Scene.qml local=/usr/share/quick-file/Scene.qml absolute=/usr/share/quick-file/Scene.qml canonical= exists=1 file=1 posix_info_size=1073
+LOCAL_FILE_DIAG stat=0:0:1073 mode=100644 stat64=0:0:1073 mode64=100644
+LOCAL_FILE_DIAG fd=3 fstat=0:0:1073 fstat64=0:0:1073 read=1073:0 end=1073 prefix=2f2f
+LOCAL_FILE_DIAG stat_mode=100644:1 stat64_mode=100644:1 fstat_mode=100644:1 fstat64_mode=100644:1
+LOCAL_FILE_DIAG statx_path_plain flags=0x0 rc=0 errno=0 mode=100644 regular=1 size=1073 mask=0x7ff
+LOCAL_FILE_DIAG statx_path_qt flags=0x800 rc=0 errno=0 mode=100644 regular=1 size=1073 mask=0x7ff
+LOCAL_FILE_DIAG statx_lstat_qt flags=0x900 rc=0 errno=0 mode=100644 regular=1 size=1073 mask=0x7ff
+LOCAL_FILE_DIAG statx_fd_plain flags=0x1000 rc=0 errno=0 mode=100644 regular=1 size=1073 mask=0x7ff
+LOCAL_FILE_DIAG statx_fd_qt flags=0x1800 rc=0 errno=0 mode=100644 regular=1 size=1073 mask=0x7ff
+LOCAL_FILE_DIAG fstatat64_no_automount=0:0:1073
+LOCAL_FILE_DIAG fresh_QFileInfo_exists=1 size=1073 file=1
+LOCAL_FILE_DIAG QFile_open=1 before=1073 after=1073 sequential=0 read=1073 seek=1 readAll=1073 error=Unknown error
+LOCAL_FILE_DIAG_FINISHED

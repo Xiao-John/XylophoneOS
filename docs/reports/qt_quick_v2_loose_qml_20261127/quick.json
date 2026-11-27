@@ -1,0 +1,122 @@
+{
+  "archive_member_count": 1686,
+  "baseline_member_recompilation": {
+    "fstatat.o": {
+      "original_sha256": "ad0d62c020c7cfe065f9a227d8c0bdc2342570d86ddb9e677b30a0404aa1d41b",
+      "recompiled_sha256": "ad0d62c020c7cfe065f9a227d8c0bdc2342570d86ddb9e677b30a0404aa1d41b"
+    },
+    "fstatat64.o": {
+      "original_sha256": "c7b1faf2c4f1c7838d944d7174cf2c6c3ed7d216bfa9329de3bcfd430c53475f",
+      "recompiled_sha256": "c7b1faf2c4f1c7838d944d7174cf2c6c3ed7d216bfa9329de3bcfd430c53475f"
+    }
+  },
+  "cases": {
+    "mint": {
+      "active": {
+        "bar_x": 50,
+        "screenshot_sha256": "4979608ab9310e90ab2981941bf2f7c1cb40c7935d093438647aed65dd18dd14",
+        "text_ink_pixels": 940
+      },
+      "after_payload": [
+        121633,
+        5,
+        3
+      ],
+      "after_services": [
+        129709,
+        3,
+        1
+      ],
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "colors": [
+        "35c29d",
+        "f0a945"
+      ],
+      "fat_files": {
+        "/bin/quick-file.elf": "fcc5f3bb437030f2579a01954d469e4ec4e141f72677f4fc9baa0bf6709264a8",
+        "/usr/share/quick-file/Scene.qml": "23670ef131c7c86bc49f351afefb609b693c4c44fd6e010bb66f446beea1d897",
+        "/usr/share/quick-file/ScenePalette.qml": "4e032534f20a4956c98cb94b9829a84d98e46d7af7f02af9ebce5aebb966d4b2"
+      },
+      "initial": {
+        "bar_x": 50,
+        "screenshot_sha256": "58029aac1f66db6205553b7550f90518782ef5f181939f898127a58e69667b37",
+        "text_ink_pixels": 940
+      },
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "serial_sha256": "163323a213a737158f9a466d9e09a4c1b4262288100a47ba0f53568728b26b09",
+      "with_graphics": [
+        121633,
+        5,
+        3
+      ]
+    },
+    "violet": {
+      "active": {
+        "bar_x": 50,
+        "screenshot_sha256": "34b1a6339064cf668ae8796e526e6254692498cbeccfe479ade06ec91b256b11",
+        "text_ink_pixels": 940
+      },
+      "after_payload": [
+        121633,
+        5,
+        3
+      ],
+      "after_services": [
+        129709,
+        3,
+        1
+      ],
+      "baseline": [
+        129709,
+        3,
+        1
+      ],
+      "colors": [
+        "a070f0",
+        "5dd6f5"
+      ],
+      "fat_files": {
+        "/bin/quick-file.elf": "fcc5f3bb437030f2579a01954d469e4ec4e141f72677f4fc9baa0bf6709264a8",
+        "/usr/share/quick-file/Scene.qml": "23670ef131c7c86bc49f351afefb609b693c4c44fd6e010bb66f446beea1d897",
+        "/usr/share/quick-file/ScenePalette.qml": "48504d8cfbdaa4f2bc102b6c05bbe2aef73860ee949e42efc82a27d7c4f3be07"
+      },
+      "initial": {
+        "bar_x": 50,
+        "screenshot_sha256": "5284dd3a6808bf9b01ad21ba9c0264a4de2bd461f910123614b822e9a7958b24",
+        "text_ink_pixels": 940
+      },
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "serial_sha256": "724ea7580444d8b2bafa28a4cb1e8829efb65d7d4285d942752f84356633ffd7",
+      "with_graphics": [
+        121633,
+        5,
+        3
+      ]
+    }
+  },
+  "fixed_libc_sha256": "4fa8e4f124ecd86fec7adf6afb05186bc38fdcf2f16a75bbd938dc8c68738def",
+  "frozen_libc_sha256": "38da547340e9392b16bfd1a91ba258db9a91dc74e9924fe6a965264d0c53ee21",
+  "iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+  "linkage": "replace-two-members-in-private-static-archive",
+  "original_application": {
+    "elf_sha256": "86289dcfeb8dc0996160b0f5bf61ca6c7626f77d115b15f4a65de1de95e15c23",
+    "link_argv_sha256": "0abe528f559254e92080fadc8af40367002b01a02240383954f32382e55fe063"
+  },
+  "relinked_application": {
+    "elf_sha256": "fcc5f3bb437030f2579a01954d469e4ec4e141f72677f4fc9baa0bf6709264a8",
+    "link_argv_sha256": "a3cad6d4e83d3520f58948a397300884b45e75661f289a14a15b46ed0f45a323"
+  },
+  "relinked_metadata": {
+    "elf_sha256": "b5bb4e75878574f61cfbab4d34dab341a1a8e2fa7203055e9e222bf8a93349a5",
+    "link_argv_sha256": "ee1b54bc7d16a96b47c305b27333b33097f422e2ca7dbf4270149c3e41936fb0"
+  },
+  "replacement_members": {
+    "fstatat.o": "6cb6dbdf492f893ca8ce69cd32466b3c809ac71efeaf80ede17214f32668fb28",
+    "fstatat64.o": "c41c434e4e98dd111e247bdc9cbcb3cc2b070005b421bbeee3e67d5db7b1431e"
+  },
+  "status": "passed"
+}

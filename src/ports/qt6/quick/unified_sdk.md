@@ -83,3 +83,23 @@ python3 -B tests/qt6_quick_guest.py --image "$SYSTEM/xos-install.iso" \
 客体验证 QML 动画、文字、来自 QEMU PS/2 的键盘输入、同进程窗口关闭和重新打开，
 以及应用、输入线程和图形服务回收。发行载体还须按实际随包的归档、源和对象材料验收
 接收者重链接、安装替换和回退。
+
+## 从文件系统加载 QML
+
+使用纳入 `AT_NO_AUTOMOUNT` 兼容修复的 v2 SDK 及其绑定的 Qt Quick 套件。
+`quick_file_probe` 用 `QQuickView` 从 FAT 上读取 `Scene.qml`，通过同目录
+导入加载 `ScenePalette.qml`。构建阶段只把字体和静态 Qt 模块链接进 ELF。
+
+```sh
+mkdir -p "$APP_SOURCE"
+git archive HEAD:tests/fixtures/qt6/quick_external | tar -C "$APP_SOURCE" -xf -
+python3 -B src/ports/qt6/quick/build_app.py --kit "$MOVED_KIT" --source "$APP_SOURCE" \
+  --target quick_file_probe --output "$FILE_APP"
+python3 -B tests/qt6_quick_external_guest.py --system "$SYSTEM" \
+  --kit "$MOVED_KIT" --app-receipt "$FILE_APP/receipt.json" --output "$FILE_GUEST"
+```
+
+两个客体启动使用同一 ELF 和同一 `Scene.qml`，分别部署薄荷和紫色调色板。
+验收比较 QMP 像素，对两种调色板各发送 PS/2 按键改变 QML 状态，再关闭窗口，
+检查应用、输入线程和图形服务回收及文件读回。
+[外部 QML 客体验收](../../../../docs/work_log/0160a0d4_qt_quick_v2_loose_qml.md)

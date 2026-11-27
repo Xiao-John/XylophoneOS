@@ -1,0 +1,69 @@
+{
+  "cpython_xpk_sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b",
+  "distinct_link_files": 250,
+  "identical_donor_and_serial_final_link_argv": true,
+  "libz_sha256": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8",
+  "materials_archive": {
+    "bytes": 34036201,
+    "sha256": "9e3b36125d26f46e93e06e3f07a4f79dc351e0503fffed3f126170e7f9d93c20"
+  },
+  "materials_format": "xos_release_cpython_relink_v1",
+  "materials_manifest_sha256": "9efca394a6775b17560b3db0b62dd45fe0244af5ee447877ff10f3715e389ac8",
+  "ordered_link_file_arguments_after_sdk_lookup": 258,
+  "original": {
+    "debug_sha256": "bde479d98782affbe2eb9013a21a4485893a89deb92385a01ff947df195497ad",
+    "runtime_sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16"
+  },
+  "original_explicit_link_path_arguments": 249,
+  "original_final_link_argv_count": 281,
+  "receiver": {
+    "cpu_limit": 1,
+    "image": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450",
+    "network": "none",
+    "sdk_or_repository_mounted": false,
+    "test_sha256": "9dc26575ea754c4c2c546abfc9175e586090e6c82fd806e7dc2dcf95216b378f"
+  },
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "release_source_commit": "960fce4347f193f13f5214caee153a03891ab100",
+  "relink_cli_compatibility": {
+    "dash": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+    "make": "793e6b79d866e42b2633f462c59afc72cd7c716e6e5e7609bcf7e998e58a0ebe",
+    "xypm": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745"
+  },
+  "replacement": {
+    "debug_sha256": "08f79e7c0fe3b2062ff325a320783627b87a36b511391ba6d747be526a29405c",
+    "runtime_sha256": "9cab8de40ca1c842c1057f89cbec30a992ac338ca56922298649b83d9b208b6c"
+  },
+  "retained_object_donor_receipt_sha256": "9e7e71511ac30153b1dfb4d4b8c793d4747cc3f97be305c9c29dfbff32a44540",
+  "retained_object_donor_target_make": {
+    "argv": [
+      "/usr/bin/make",
+      "-j2",
+      "python"
+    ],
+    "exit_code": 0,
+    "log_sha256": "f0e2fa1908e8e26ec6e278578d26ec987a98ee959b55bc47e263d9e40a7eb15e"
+  },
+  "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+  "sdk_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "serial_build_options": {
+    "make_jobs": 1,
+    "source_date_epoch": 1795759570
+  },
+  "serial_cli_receipt_sha256": "11ead1c156d7f5452b1b42f101117ffb7c42be5057573e492167f07646ba576c",
+  "serial_release_target_make": {
+    "argv": [
+      "/usr/bin/make",
+      "-j1",
+      "python"
+    ],
+    "exit_code": 0,
+    "log_sha256": "430b440571ccf4c077411f373d083ed625b9ae3265a47cb2b3950c0715402076"
+  },
+  "status": "passed_subset",
+  "target_object_files": 227,
+  "target_static_archives": 8,
+  "wrong_replacement_digest_rejected_before_output": true,
+  "xos_time_object_sha256": "efe242185cd6d4e9c372a92dbdc170598e80cab2590a94ffa1e8fda1333f4aca",
+  "xpk_build_receipt_sha256": "7351204184d201a9caf9ea7242821112f2283f7ef35f38a861de8be729274d39"
+}

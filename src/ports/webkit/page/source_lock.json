@@ -39,7 +39,7 @@
     },
     {
       "path": "page/image_decoders.patch",
-      "sha256": "5c26f95d81522769aa92ca25892cc5390a77e2663aae6476c562cb78157b0a72"
+      "sha256": "f94ae404e6b539ecc08e00a0ee51e519bd9871b8f1c34677bba6d709791402bb"
     }
   ]
 }

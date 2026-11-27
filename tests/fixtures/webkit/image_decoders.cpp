@@ -27,20 +27,31 @@ static RefPtr<ImageDecoder> decode(std::span<const uint8_t> bytes, const String&
 static bool matchesTransparentImage(std::span<const uint8_t> bytes, const String& mimeType)
 {
     auto decoder = decode(bytes, mimeType);
-    if (!decoder || decoder->size() != IntSize { 2, 2 })
+    if (!decoder || decoder->size() != IntSize { 2, 2 }) {
+        if (decoder)
+            std::printf("Image metadata %dx%d status=%d\n", decoder->size().width(), decoder->size().height(),
+                static_cast<int>(decoder->encodedDataStatus()));
+        else
+            std::puts("Image format did not select a decoder");
         return false;
+    }
     auto image = decoder->createFrameImageAtIndex(0);
     SkPixmap pixels;
-    if (!image || !decoder->frameIsCompleteAtIndex(0) || !image->peekPixels(&pixels))
+    if (!image || !decoder->frameIsCompleteAtIndex(0) || !image->peekPixels(&pixels)) {
+        std::printf("Image frame has bitmap=%d complete=%d\n", !!image, decoder->frameIsCompleteAtIndex(0));
         return false;
+    }
     static constexpr std::array<SkColor, 4> expected {
         SkColorSetARGB(255, 255, 0, 0), SkColorSetARGB(128, 0, 255, 0),
         SkColorSetARGB(255, 0, 0, 255), SkColorSetARGB(64, 255, 255, 0),
     };
     for (int y = 0; y < 2; ++y) {
         for (int x = 0; x < 2; ++x) {
-            if (pixels.getColor(x, y) != expected[y * 2 + x])
+            auto color = pixels.getColor(x, y);
+            if (color != expected[y * 2 + x]) {
+                std::printf("Image pixel %d,%d expected=%08x decoded=%08x\n", x, y, expected[y * 2 + x], color);
                 return false;
+            }
         }
     }
     return true;

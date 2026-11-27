@@ -29,3 +29,18 @@
 +    include(platform/ImageDecoders.cmake)
      list(APPEND WebCore_LIBRARIES OpenSSL::Crypto)
      list(APPEND WebCore_PRIVATE_INCLUDE_DIRECTORIES "${WEBCORE_DIR}/crypto/openssl")
+--- a/Source/WebCore/platform/image-decoders/skia/ImageBackingStoreSkia.cpp
++++ b/Source/WebCore/platform/image-decoders/skia/ImageBackingStoreSkia.cpp
+@@ -37,5 +37,11 @@
+ {
+     m_pixels->ref();
+-    auto info = SkImageInfo::MakeN32(size().width(), size().height(), m_premultiplyAlpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType, SkColorSpace::MakeSRGB());
++    const auto alphaType = m_premultiplyAlpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType;
++#if OS(XOS)
++    // ImageBackingStore writes packed ARGB, whose bytes on XOS are B, G, R, A.
++    auto info = SkImageInfo::Make(size().width(), size().height(), kBGRA_8888_SkColorType, alphaType, SkColorSpace::MakeSRGB());
++#else
++    auto info = SkImageInfo::MakeN32(size().width(), size().height(), alphaType, SkColorSpace::MakeSRGB());
++#endif
+     SkPixmap pixmap(info, m_pixelsSpan.data(), info.minRowBytes64());
+     return SkImages::RasterFromPixmap(pixmap, [](const void*, void* context) {

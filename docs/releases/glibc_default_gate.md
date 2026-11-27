@@ -69,10 +69,12 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 接收方 SDK 复验。GNU Make 通过 Xshell、Dash 和冷启读回。IDNA 测试修订在实际
 发行盘通过同步中断、内置恢复和冷启重试。glibc 上游源码已纳入此候选的外层暂存，
 接收方已核对 11 项资产并再次验证签名。随后暂存的 Dash 重链接归档已核对实际
-安装器 ELF、SDK 与逐文件摘要，外层校验覆盖 12 项。其余 15 个静态程序的替换
-材料仍须补齐。
+安装器 ELF、SDK 与逐文件摘要。13 个日用程序均由接收方复现并通过替换客体。
+外层暂存含相同的日用重链接归档，13 项资产已核对。CPython 和 GNU Make 的静态
+替换材料仍须补齐。
 [同候选组合与接收方复验](../work_log/960fce43_glibc_v2_current_release.md)
 [glibc 原档暂存](../work_log/960fce43_glibc_release_upstream_source.md) ·
 [Dash 重链接归档暂存](../work_log/960fce43_glibc_v2_dash_material_delivery.md)
+[日用程序归档暂存](../work_log/960fce43_glibc_v2_daily_material_delivery.md)
 
 当前默认发行仍由原配方生产。切换和 newlib 退役以完成上述实际证据和最终组合为准。

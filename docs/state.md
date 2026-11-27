@@ -35,6 +35,10 @@ Dash 已由离线接收方逐字节重链。同一安装盘的替换版返回预
 运行外部 ELF 并回收资源。Dash 对应对象和配方已加入同候选暂存，12 项资产核对通过。
 [Dash 重链接](work_log/960fce43_glibc_v2_dash_relink.md) ·
 [归档暂存](work_log/960fce43_glibc_v2_dash_material_delivery.md)
+日用 XPK 的 13 个程序已逐字节复链，同一盘上通过替换对照。日用程序归档随
+同版候选完成暂存，外层校验覆盖 13 项。静态替换余下 CPython 和 GNU Make。
+[日用程序重链接](work_log/960fce43_glibc_v2_daily_relink.md) ·
+[日用程序暂存](work_log/960fce43_glibc_v2_daily_material_delivery.md)
 [当前普通组合复验](work_log/0227427a_next_stage_mainline.md)
 [网络组合复验](work_log/3d21f4e4_next_stage_network_replay.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)

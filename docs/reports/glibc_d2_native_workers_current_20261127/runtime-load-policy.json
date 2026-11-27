@@ -1,0 +1,54 @@
+{
+  "bootstrap_sha256": "cc8bd847acb42af0569264454fe92ed35f72ab47b33d4c129d284e3028d67093",
+  "case": "runtime-load-policy",
+  "guest_command_seconds": 7.106,
+  "guest_markers": [
+    "D2_LOAD main refused XOS fixed closure does not support runtime loading: Not supported",
+    "D2_LOAD loaded refused XOS fixed closure does not support runtime loading: Not supported",
+    "D2_LOAD namespace refused XOS fixed closure does not support runtime loading: Not supported",
+    "D2_LOAD missing refused XOS fixed closure does not support runtime loading: Not supported",
+    "D2_LOAD_POLICY_OBSERVED 4",
+    "D1_DYNAMIC_STATUS=0",
+    "[wait] pid=10 kind=exited code=0"
+  ],
+  "images": {
+    "dependency.so": {
+      "entry": 21990769572000,
+      "phnum": 13,
+      "sha256": "caafe95704fc0f8bbc7fdbb612751cd26e6666ea7abcfdd7102d5c9215fce9db",
+      "span": 1617920
+    },
+    "interpreter.so": {
+      "entry": 26389352914464,
+      "phnum": 7,
+      "sha256": "9f2ab1809df02bcba22cfe7d83ed432c6e75134556280a1e4ce0b373caa6a316",
+      "span": 237568
+    },
+    "main.pie": {
+      "entry": 17592188150112,
+      "phnum": 11,
+      "sha256": "200a9a68b290cae3cae47deffd380f3d0bd90a9bcd968ae0795d8a743f388317",
+      "span": 36864
+    }
+  },
+  "pic_crt": {},
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "raw_report_sha256": "0ce781e5f456f6671df8f01f76c8c171b6ab3f4c5ca38e22f3d9d1ff8df71e5e",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "scope": "private native GNU interpreter and a versioned application",
+  "serial_sha256": "736afed45aeaa700843055f7634101ef7b1ea921956c482784311ba262014811",
+  "sources": {
+    "tests/fixtures/glibc_d1/runtime_load_policy.c": "292b07450b7a26a47749e1111b45746cb5ee87bf66882ae6c8442ce88ca1cd0b",
+    "tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp": "7582d097fbeb5bae4930a0263ff0a5aed25de547199977e14131ac91ff0192f2"
+  },
+  "status": "passed_subset"
+}

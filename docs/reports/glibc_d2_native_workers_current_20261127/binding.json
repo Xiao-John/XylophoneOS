@@ -1,0 +1,100 @@
+{
+  "base": "25705208698e6134161579506cdb790b6924e370",
+  "built_source": {
+    "commit": "a38a86752c35bb6ba917eafd493834cb9bb3a822",
+    "tree": "6abfc118835532f54a1d62d8825c8d78052b1721"
+  },
+  "diagnostic_trace_sha256": "0e7a8c2148b9d3d9b0077073238af660cec9bdf1887d6e6af0c8def32ceb561a",
+  "file_session_object_sha256": "7341d5ee38c41bb5c4b47dc6abe9586416655881e7866c98743cc2864ec8319c",
+  "gcc_runtime": {
+    "atexit.oS": "1d2ff0756996230b9582844f99c1f813aa61a4fa54284dfe2cab610323bbf2da",
+    "libgcc_s.so.1": "f0c37dbe69e804917b898de71e5bee70c7c35e42915f02e5beb8a490170ddd4b",
+    "libm.so.0.1": "9a64910cab475510394d7635f905a2a394b6d53d3a9171bd075f133e8964d834",
+    "libstdc++.so.6": "b8fd34572426a421b5917e817045578094406abaf298fa1a48f31f8492be9e1f"
+  },
+  "guard_compilation_expected_failure": true,
+  "guard_log_sha256": "52f0cb73aa31fb7a0807d46b55e08baf6df354bfc137b32c193dd25c9e422d90",
+  "guest_runtime": {
+    "libc": "caafe95704fc0f8bbc7fdbb612751cd26e6666ea7abcfdd7102d5c9215fce9db",
+    "rtld": "9f2ab1809df02bcba22cfe7d83ed432c6e75134556280a1e4ce0b373caa6a316"
+  },
+  "host": {
+    "container_image": "sha256:f2b2390ee0efa349d4d6c37eeb41694d7f002f0301ed09b9998da3d8bbc3b450",
+    "cpu_cap": 1,
+    "network": "none",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)"
+  },
+  "input_sha256": {
+    "crtbeginS.o": "d1f9b26b212fe61acae370cae0a61f82632b1bb6d074e4bc8ce1edce3bbd6ca4",
+    "crtendS.o": "2299f1c03b9966209362535ea7ee4a15bc22c11e922820ceccbeb7ae6d28e3d8",
+    "dash.elf": "7dfabd45670c8164f62075b6f36633d7b91e9590748056c7cfdbc3e775fe57b9",
+    "dash.json": "2096f94e3931fdfc91005aed98b9096dc008dbb41a20493f858d3653431fa19f",
+    "gcc-16.2.0.tar.xz": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+    "gcc-16.2.0.tar.xz.sig": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+    "glibc-2.44.tar.xz": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+    "gnu-keyring.gpg": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+    "lwip-2.2.1.tar.xz": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1"
+  },
+  "iso_sha256": "7a5cee803116ce472aed284eeb6340a98adbcf585eafdf27f6834e1f726f707a",
+  "libc_sha256": "0ba5b523c7be4111f302ca6cc872cceeb3e8180f089bd0c622ffb04ff5229399",
+  "old_worker_file_session_object_sha256": "579aef1a5041b8805351e3b797cb4cf14797f26d28680bb07e3b27bceef94421",
+  "production_delta": "eb57dc9034f49b5980895e6548077f54c31f7d81",
+  "rebuild_launch_sha256": "460e214e03510eccd385d2716ebed100346e1fbb4a36067e0fdf5a7943c81e2b",
+  "rebuild_replay_launch_sha256": "79a687c4c229d270d39657f91338b5865035647d5aa1d94c63672bb22441aac3",
+  "replayable_runtime_archive_sha256": "9ad375ccf95d84da8e899e1ad78094d2b94fffb3106cc6da3a196640329fa689",
+  "retained": {
+    "gcc-manifest.json": "45a760f9d1abc80084efb36773acb1ee702b83161435d0b718b1e218dcb8f902",
+    "runtime/Scrt1.o": "61859a532684408188e4cca9b961d789ebbd1d6a5ce939016c8bbe4ca0961ed9",
+    "runtime/crti.o": "cf923e8746c929a3200b2eeb07fe8ad8c85727222aa78d1999272882a5a98eef",
+    "runtime/crtn.o": "b018ccd5c25036594e7fa3846d7dd4c4ea66210b341d33f39875fd1a7a54f7ae",
+    "runtime/ld.so": "00950d82464a7768bf861e3b3064091b4d986ec7d9c9178b106c3e264812344b",
+    "runtime/libc.so": "0ba5b523c7be4111f302ca6cc872cceeb3e8180f089bd0c622ffb04ff5229399",
+    "runtime/xos_file_session.os": "7341d5ee38c41bb5c4b47dc6abe9586416655881e7866c98743cc2864ec8319c",
+    "sdk-manifest.json": "d29eee8da7dcf23b0ee5a783b06e9f468d6b9016c33e1fae8b9514e12aa9acc1",
+    "system-manifest.json": "e14383caf7af43646121a394bc8dc809ecbb7ff53806dc5649ece4a298128aa0"
+  },
+  "retained_archives": {
+    "shared-runtime.tar.zst": {
+      "bytes": 8351205,
+      "sha256": "3366225e20e6745575d1986bf097382830996fc37307b73a9170bf98de532855"
+    },
+    "static-sdk-logs.tar.zst": {
+      "bytes": 97492,
+      "sha256": "b8d1939f4cbe1f12eaea3cd771b76da2697f607b539707b7dcae8277007c5a13"
+    },
+    "system-sdk.tar.zst": {
+      "bytes": 19769977,
+      "sha256": "cda80bef0eb9da20d0ce6df90d52979a274cbada00422bcbccdf1ae2c5e87e56"
+    }
+  },
+  "rtld_sha256": "00950d82464a7768bf861e3b3064091b4d986ec7d9c9178b106c3e264812344b",
+  "scope": "current native XOS private GNU fixed closure",
+  "sdk_manifest_sha256": "d29eee8da7dcf23b0ee5a783b06e9f468d6b9016c33e1fae8b9514e12aa9acc1",
+  "sdk_tree_sha256": "5ccdc20f52f125dcb2cc86970e4e25c1dc9535ba5cdbc8d1fe02c281f9a371cb",
+  "system_artifact_count": 292,
+  "system_build_id": "80be748333203897",
+  "system_input_count": 2077,
+  "system_manifest_sha256": "e14383caf7af43646121a394bc8dc809ecbb7ff53806dc5649ece4a298128aa0",
+  "toolchain": {
+    "g++": {
+      "sha256": "48ac1007ab3f04aab22971336eb526a31546b9d5d7f93214583900a70cc81be1",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "gcc": {
+      "sha256": "2604685b6a58d79d3abfd33beb2f4ea682fa7b85d80ca64dedcbd4ed721353b1",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "ld": {
+      "sha256": "cf39e00248d14272c034f30e755113e4286859a7e898819d67b9ee3151b486e1",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "objcopy": {
+      "sha256": "92fba3a2b4292261e6e17de08596fb0080fc605ff6807c462bf78c5ce6d2a80a",
+      "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+    },
+    "readelf": {
+      "sha256": "1bf54462b91fb25735cd40b479c1a8f425af7eac240d79bdcbea68666005ec42",
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+    }
+  }
+}

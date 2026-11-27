@@ -34,3 +34,17 @@ SOURCE_DATE_EPOCH=1795759570 python3 -B scripts/build_cpython.py --archive "$PYT
 python3 -B scripts/package_cpython_glibc.py --cpython-build "$PYTHON_BUILD" \
   --archive "$PYTHON_ARCHIVE" --sdk "$KIT/sdk" --profile "$KIT/profile.json" --output "$CPYTHON"
 ```
+
+## 新配方独立复验
+
+以 `db563402` 的脚本分别在两个全新断网容器运行上面的构建和打包命令。构建
+命令使用 `--source-date-epoch 1795759570 --make-jobs 1`，两次均使用同一只读
+工具、源码和 SDK，分别提取源文件并从空构建目录开始。显式时间覆盖容器环境给的
+`SOURCE_DATE_EPOCH=0`。两份新 XPK 的 SHA-256 都是
+`24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b`。
+两份 CLI 回执和两份 372 行原始 make 日志也分别逐字节相同。运行时 ELF 仍与
+冻结发行一致，新的 XPK 摘要对应这一配方。该 XPK 的客体验收沿用发行专项流程。
+
+首次回执收集误将 patch 输出并入 JSON 解析。实际构建和打包已完成，核对正式打包器
+的完整性回读结果和原始日志后恢复首份回执。第二次同时独立重算了实际 XPK 的摘要。
+[两个独立接收回执](../reports/glibc_v2_cpython_receiver_20261127/serial_replays.json)

@@ -39,6 +39,7 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 同一 ISO 在普通 QEMU 的空白盘上完成安装并运行外部 ELF。
 接收方逐字节重建 zlib 静态库、CPython 解释器和标准库。新建 CPython XPK 的回执
 仍受并行构建日志次序影响，冻结 XPK 的整包摘要未复现。
+固定时间与串行构建的后续配方已在两个全新接收环境生成摘要相同的新 XPK。
 [v2 组件对应材料](../work_log/9c747f60_glibc_v2_component_sources.md)
 [安装器 Dash 接收复验](../work_log/b0a92aab_glibc_v2_dash_receiver.md)
 [CPython/zlib 接收复验](../work_log/cf828683_glibc_v2_cpython_receiver.md)

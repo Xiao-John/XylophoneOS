@@ -22,7 +22,7 @@ import time
 
 from make_work_disk import create_fat32
 from pumpkin_generation_authority import generation_authority, generation_error, generation_mark, publish_result
-from pumpkin_generation_provider import developer_realm, load_profile, provider_client, require_uid
+from pumpkin_generation_provider import developer_realm, encode_mark, load_profile, provider_client, require_uid
 from run_qemu import qemu_command
 
 
@@ -33,6 +33,10 @@ empty_account = bytes(account_selection.size)
 account_name_pattern = r"[A-Za-z0-9][A-Za-z0-9._-]{0,31}"
 first_account_command = "provision-first"
 check_image_command = "check-image-update"
+begin_image_command = "begin-image-update"
+finish_image_command = "finish-image-update"
+cancel_image_command = "cancel-image-update"
+image_update_commands = (begin_image_command, finish_image_command, cancel_image_command)
 duplicate_enrollment = 6
 desktop_revoked = 7
 mark_layout = struct.Struct("<16sQQ32s")
@@ -68,6 +72,9 @@ resource_errors = {
 }
 directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
 deployment_marker = "deployment.sha256"
+image_update_tag = b"PUMIMG\0\1"
+image_update_record = struct.Struct("<8s32s32s64s")
+image_update_size = image_update_record.size + hashlib.sha256().digest_size
 
 
 class login_error(RuntimeError):
@@ -228,44 +235,73 @@ def select_deployment(system, binding, deployment):
     return named
 
 
-def check_installation(descriptor, deployment):
+def read_deployment_marker(descriptor):
     try:
         marker = os.open(deployment_marker, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=descriptor)
     except FileNotFoundError:
-        require(deployment is None, "The installation is missing its deployment binding")
-        return
+        return None
     with os.fdopen(marker, "rb") as stream:
         info = os.fstat(stream.fileno())
-        require(deployment is not None and stat.S_ISREG(info.st_mode) and info.st_uid == os.geteuid()
-                and stat.S_IMODE(info.st_mode) == 0o600 and info.st_nlink == 1
-                and stream.read(65) == deployment.sha256.encode("ascii"),
-                "The installation does not match the deployment profile")
+        require(stat.S_ISREG(info.st_mode) and stat.S_IMODE(info.st_mode) == 0o600
+                and info.st_uid == os.geteuid() and info.st_nlink == 1,
+                "Invalid private installation binding")
+        return stream.read(image_update_size + 1)
+
+
+def check_installation(descriptor, deployment):
+    marker = read_deployment_marker(descriptor)
+    if marker is None:
+        require(deployment is None, "The installation is missing its deployment binding")
+        return
+    require(not marker.startswith(image_update_tag), "Pumpkin image maintenance is in progress")
+    require(deployment is not None and marker == deployment.sha256.encode("ascii"),
+            "The installation does not match the deployment profile")
 
 
 @contextmanager
-def locked_installation(state, deployment):
+def locked_state(state):
     with private_directory(state) as descriptor:
         fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
         disk = os.stat("work.img", dir_fd=descriptor, follow_symlinks=False)
         require(stat.S_ISREG(disk.st_mode) and disk.st_uid == os.geteuid() and disk.st_nlink == 1,
                 "Invalid private work disk")
+        yield descriptor
+
+
+@contextmanager
+def locked_installation(state, deployment):
+    with locked_state(state) as descriptor:
         check_installation(descriptor, deployment)
         yield
 
 
-def check_image_update(system, state, current, replacement_system, replacement):
+def verify_update_roles(current, replacement):
     require_uid(current.operator_uid)
-    current_binding = bind_system(system)
-    replacement_binding = bind_system(replacement_system)
-    select_deployment(system, current_binding, current)
-    select_deployment(replacement_system, replacement_binding, replacement)
     require(current.realm == replacement.realm, "The replacement changes the installation realm")
     require((current.operator_uid, current.provider_uid, current.socket_path) ==
             (replacement.operator_uid, replacement.provider_uid, replacement.socket_path),
             "The replacement changes the deployment roles or provider socket")
-    require(current.named_resources == replacement.named_resources and
-            (broker_artifact in current_binding[2]) == (broker_artifact in replacement_binding[2]),
+    require(current.named_resources == replacement.named_resources,
             "The replacement changes the account or resource storage configuration")
+
+
+def verify_update_image(system, profile):
+    binding = bind_system(system)
+    select_deployment(system, binding, profile)
+    return binding
+
+
+def verify_update_pair(system, current, replacement_system, replacement):
+    current_binding = verify_update_image(system, current)
+    replacement_binding = verify_update_image(replacement_system, replacement)
+    require((broker_artifact in current_binding[2]) == (broker_artifact in replacement_binding[2]),
+            "The replacement changes the account or resource storage configuration")
+    return current_binding, replacement_binding
+
+
+def check_image_update(system, state, current, replacement_system, replacement):
+    verify_update_roles(current, replacement)
+    current_binding, replacement_binding = verify_update_pair(system, current, replacement_system, replacement)
     try:
         with locked_installation(state, current):
             return {
@@ -275,6 +311,71 @@ def check_image_update(system, state, current, replacement_system, replacement):
             }
     except BlockingIOError as error:
         raise login_error("The private Pumpkin installation is busy") from error
+
+
+def replace_deployment_marker(directory, content):
+    temporary = ".deployment-" + os.urandom(12).hex()
+    descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=directory)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            os.fchmod(stream.fileno(), 0o600)
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, deployment_marker, src_dir_fd=directory, dst_dir_fd=directory)
+        os.fsync(directory)
+    finally:
+        try:
+            os.unlink(temporary, dir_fd=directory)
+        except FileNotFoundError:
+            pass
+
+
+def pending_update_mark(value, current, replacement):
+    require(value is not None and len(value) == image_update_size
+            and hashlib.sha256(value[:image_update_record.size]).digest() == value[image_update_record.size:],
+            "The installation has no valid pending image update")
+    tag, old, new, mark = image_update_record.unpack_from(value)
+    require((tag, old, new) == (image_update_tag, bytes.fromhex(current.sha256), bytes.fromhex(replacement.sha256)),
+            "The pending image update belongs to a different deployment pair")
+    return mark
+
+
+def maintain_image(command, state, system, current, replacement_system, replacement):
+    verify_update_roles(current, replacement)
+    require(current.system_manifest_sha256 != replacement.system_manifest_sha256,
+            "Select two distinct deployment images")
+    if command == begin_image_command:
+        verify_update_pair(system, current, replacement_system, replacement)
+    elif command == finish_image_command:
+        verify_update_image(replacement_system, replacement)
+    else:
+        verify_update_image(system, current)
+
+    with locked_state(state) as directory:
+        marker = read_deployment_marker(directory)
+        if command == begin_image_command:
+            if marker == current.sha256.encode("ascii"):
+                mark = encode_mark(provider_client(current).read())
+                fields = image_update_record.pack(image_update_tag, bytes.fromhex(current.sha256),
+                                                  bytes.fromhex(replacement.sha256), mark)
+                replace_deployment_marker(directory, fields + hashlib.sha256(fields).digest())
+            else:
+                pending_update_mark(marker, current, replacement)
+                os.fsync(directory)
+            return {"status": "image_update_pending"}
+        target = replacement if command == finish_image_command else current
+        stable = target.sha256.encode("ascii")
+        if marker == stable:
+            provider_client(target).read()
+            os.fsync(directory)
+            return {"status": "image_binding_already_active", "profile_sha256": target.sha256}
+        mark = pending_update_mark(marker, current, replacement)
+        require(encode_mark(provider_client(target).read()) == mark,
+                "The independent generation changed during image maintenance")
+        replace_deployment_marker(directory, stable)
+        status = "image_update_activated" if command == finish_image_command else "image_update_cancelled"
+        return {"status": status, "profile_sha256": target.sha256}
 
 
 @contextmanager
@@ -643,7 +744,7 @@ def operate(system, state, command, path, selection=None, account=b"alice", *, d
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("prepare", first_account_command, check_image_command,
+    parser.add_argument("operation", choices=("prepare", first_account_command, check_image_command, *image_update_commands,
                                               *(item for item in scenarios if item != "desktop-admin")))
     parser.add_argument("--system", type=Path)
     parser.add_argument("--state", type=Path, required=True)
@@ -663,15 +764,20 @@ def main():
     args = parser.parse_args()
     if (args.deployment_profile is None) != (args.deployment_profile_sha256 is None):
         parser.error("supply the deployment profile and its trusted SHA-256 together")
-    if (args.operation != "prepare" or args.deployment_profile is not None) and args.system is None:
+    image_operation = args.operation in (check_image_command, *image_update_commands)
+    needs_current_image = args.operation not in ("prepare", finish_image_command) or (
+        args.operation == "prepare" and args.deployment_profile is not None)
+    if needs_current_image and args.system is None:
         parser.error("a matching --system is required")
     replacement_fields = (args.replacement_system, args.replacement_deployment_profile,
                           args.replacement_deployment_profile_sha256)
-    if args.operation == check_image_command:
-        if args.deployment_profile is None or any(value is None for value in replacement_fields):
-            parser.error("the image check requires both systems, deployment profiles and trusted digests")
+    if image_operation:
+        if (args.deployment_profile is None or args.replacement_deployment_profile is None
+                or args.replacement_deployment_profile_sha256 is None
+                or (args.operation != cancel_image_command and args.replacement_system is None)):
+            parser.error("the image operation requires both trusted deployment profiles and the affected systems")
     elif any(value is not None for value in replacement_fields):
-        parser.error("replacement options require " + check_image_command)
+        parser.error("replacement options require an image operation")
     if (args.operation in credential_operations or args.operation == first_account_command) != (args.credential_file is not None):
         parser.error("--credential-file is required for credential submission and enrollment")
     if args.display is not None and args.operation != "desktop":
@@ -679,7 +785,7 @@ def main():
     if args.revoke_on_signal and args.operation != "desktop":
         parser.error("--revoke-on-signal requires the desktop operation")
     account = "alice" if args.account is None else args.account
-    if ((args.operation in ("prepare", check_image_command) and args.account is not None) or
+    if (((args.operation == "prepare" or image_operation) and args.account is not None) or
             re.fullmatch(account_name_pattern, account) is None):
         parser.error("select an account name of 1 to 32 characters for an account operation")
     selected = None
@@ -708,10 +814,14 @@ def main():
         state = args.state.absolute()
         deployment = (load_profile(args.deployment_profile, args.deployment_profile_sha256)
                       if args.deployment_profile is not None else None)
-        if args.operation == check_image_command:
+        if image_operation:
             replacement = load_profile(args.replacement_deployment_profile, args.replacement_deployment_profile_sha256)
-            print(json.dumps(check_image_update(args.system, state, deployment, args.replacement_system, replacement),
-                             sort_keys=True))
+            if args.operation == check_image_command:
+                result = check_image_update(args.system, state, deployment, args.replacement_system, replacement)
+            else:
+                result = maintain_image(args.operation, state, args.system, deployment,
+                                        args.replacement_system, replacement)
+            print(json.dumps(result, sort_keys=True))
             return 0
         if args.operation == "prepare":
             named = False

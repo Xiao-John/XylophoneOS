@@ -1,0 +1,16 @@
+{
+  "cpython_commit": "db563402f7f425131780b683c55b2efa9b4396fe",
+  "files": 135,
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "status": "passed"
+}
+{
+  "cpython_commit": "db563402f7f425131780b683c55b2efa9b4396fe",
+  "files": 135,
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "status": "passed"
+}
+incorrect_manifest: rejected
+unrelated_reference: rejected
+changed_object: rejected
+PASS detached Dash archive retained exactly and prior v2 manifests unchanged

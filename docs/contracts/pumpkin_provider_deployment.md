@@ -91,6 +91,12 @@ Linux ext4 上，新盘首次发放后的资源在提供者进程强制退出后
 保留的盘外记录会拒绝旧状态。经原生删除后再次重启，持有者仍可建立普通会话。
 [ext4 部署与回归回执](../reports/pumpkin_production_resource_recovery_20261127/manifest.json)
 
+受信操作者可用 `enroll --account NAME --credential-file WALLET` 登记后续账户，用
+`revoke --account NAME` 吊销指定账户。显式账户选择和钱包适用于登录与具名资源读取。
+每个钱包绑定安装域和单个账户序号。具名资源读取同时需要有效会话、所有者身份和当前
+对象代际。以下部署回执覆盖两个账户、提供者重启、单账户持久吊销和另一账户持续读取。
+[多账户 ext4 部署回执](../reports/pumpkin_deployed_accounts_20261127/manifest.json)
+
 受信宿主分别管理启动者和独立提供者，宿主的 root、虚拟化平台及两种角色各自的
 同 UID 进程属于其信任范围。接收者钱包仍由受信启动工具保存和提交。此配置目前
 按独立受控 Linux 环境验收。正式物理启动和控制台证明、硬件代际或宿主完整回滚

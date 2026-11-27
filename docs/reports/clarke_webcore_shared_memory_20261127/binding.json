@@ -1,0 +1,28 @@
+{
+  "scope": "local WebCore CPU allocation and aliased mapping with the XOS grant implementation",
+  "main": "643d9de28ba7252bb5437f8fbc90a16a4b3c90ea",
+  "graph_pr_head": "6cce70952822473ab1de4a166ba72daee87fa2fb",
+  "source_commit": "aa7c18cdde8f7115939f8b42fd04e41ef31d2e62",
+  "source_git_tree": "48057e6630bfaaf549e326e7024eea2e276dc1d4",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "patches": {
+    "software_context.patch": "56def73ed3a4ffcb2a4e6d6ddc54130582d3e4e33c5cb49b3ade83f93877f2f9",
+    "software_buffers.patch": "46b6eb27de8e5f1f2f3c8a90030659e2d6820e67a3de8634c8ff09711a45f1b3",
+    "software_graph.patch": "c42d2ca6e71a928910b6d0e83a7c48450b46fc4bfdaf90fe6695f8536ccb52b6",
+    "shared_memory_xos.patch": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98"
+  },
+  "patched_files_sha256": {
+    "Source/WebCore/platform/SharedMemory.h": "5926df6b5d8a8ce15c8012f30f1f53b9fa829955d376f7bc58117528b36c6c4a",
+    "Source/WebCore/platform/graphics/skia/ShareableBitmapSkia.cpp": "7472b9233293ab484dc5ae36eaf7892b192de89cc192c012ad0323ed17b91c28",
+    "Source/WebCore/PlatformJSCOnly.cmake": "8467ee60bdb066f036a92b2f1ba30b91ff893a172cb84f96f8ac90292bbda077"
+  },
+  "cmake": "4.4.5",
+  "target_compiler": "GCC 16.2.0",
+  "sdk_link_scope": "static x86-64 with CPU Skia from the locked archive",
+  "untested": [
+    "WebKit2 transport and peer lifecycle",
+    "large multi-grant allocations",
+    "full page or graphics context rendering"
+  ]
+}

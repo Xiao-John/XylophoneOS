@@ -12,6 +12,10 @@
     {
       "path": "page/software_graph.patch",
       "sha256": "1b23f5f237f79d78f47deac90fd499801d31bde7bd4ed3194875deab6107fb88"
+    },
+    {
+      "path": "page/shared_memory_xos.patch",
+      "sha256": "6fae5bd20412258dcaed4306dc779a5e506ee4a0351326f725795627ba429a98"
     }
   ]
 }

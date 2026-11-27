@@ -31,7 +31,7 @@ WebCore 目标前，还需要在 `SourcesSkia.txt` 中处理 `SkiaPaintingEngine
 
 ## WebCore 软件构建目标
 
-[软件源锁](source_lock.json) 引用 WebKit 基础源锁，并固定三个软件补丁的顺序和
+[软件源锁](source_lock.json) 引用 WebKit 基础源锁，并固定软件补丁、原生共享页补丁的顺序和
 SHA-256。准备工具在新目录中验证并展开原档，按顺序零 fuzz 应用补丁，然后安放
 基础源锁中的 WTF 平台文件。使用 GNU patch，必要时以 `--patch` 指定其位置。
 在大小写敏感的构建卷运行下列命令。
@@ -88,3 +88,8 @@ python3 tests/webkit_local_page_guest.py --target "$PAGE_OUT" --sdk-kit "$XOS_SD
 `LocalFrameView::paintContents` 绘制到 CPU 位图。客体分别读回原 HTML 和只改
 叠层颜色的 HTML。第二次应到达像素检查、退出码为 11，两个进程退出后资源均须
 回到基线。完整目标归档、此门的客体结果以及 Qt 视口仍待验证。
+
+## 原生共享页
+
+软件源准备入口按源锁同时应用原生共享页补丁。
+[原生 ABI 和共享页生命周期](shared_memory_xos.md)

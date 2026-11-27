@@ -1,0 +1,605 @@
+{
+  "asset_count": 10,
+  "candidate_commit": "960fce4347f193f13f5214caee153a03891ab100",
+  "component_source_files": 135,
+  "components_manifest_sha256": "4aeb9cd9dda62c961a25cc8b9551781b2cc1776969b064ea230916a904a2e404",
+  "distribution_manifest_sha256": "1a086c10226b56e239143ddeda30569537c758582eb8d9a3598ced5232b09fdc",
+  "gcc_source_matches_sdk_lock": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+  "glibc_local_source_verified_against_lock": true,
+  "glibc_sdk_license_files": [
+    "application-sdk/sdk/sysroot/usr/share/xos-glibc/COPYING.LIB",
+    "application-sdk/sdk/sysroot/usr/share/xos-glibc/LICENSES",
+    "application-sdk/sdk/sysroot/usr/share/xos-glibc/compiler-runtime-licenses/COPYING",
+    "application-sdk/sdk/sysroot/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB",
+    "application-sdk/sdk/sysroot/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME",
+    "application-sdk/sdk/sysroot/usr/share/xos-glibc/cxx/licenses/COPYING.RUNTIME",
+    "application-sdk/sdk/sysroot/usr/share/xos-glibc/cxx/licenses/COPYING3"
+  ],
+  "glibc_sdk_raw_source_member_present": false,
+  "glibc_sdk_verification_status": "upstream_signature_verified",
+  "glibc_source_lock": {
+    "archive": "glibc-2.44.tar.xz",
+    "archive_bytes": 20620544,
+    "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+    "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+    "upstream_url": "https://ftp.gnu.org/gnu/glibc/glibc-2.44.tar.xz"
+  },
+  "gnu_make_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2",
+  "gnu_seed_frozen_source_build_sha256": "04c5384438adcce1a7762b968b0cfc87973e625a6210690a37aff52b6534dae0",
+  "gnu_seed_nested_source_archives": {
+    "binutils-2.47.tar.xz": 29034716,
+    "gcc-16.2.0.tar.xz": 107200820,
+    "gmp-6.3.0.tar.bz2": 2643888,
+    "mpc-1.3.1.tar.gz": 773573,
+    "mpfr-4.2.2.tar.bz2": 1753999,
+    "newlib-original.tar.gz": 9208322
+  },
+  "gnu_seed_notice_files": 18,
+  "gnu_seed_receipt_sha256": "dbcd711bd1121dd34e49be5c1a45b7176fb7399573267f233b27bc4ed2bcc015",
+  "gnu_seed_source_files": 30,
+  "gnu_seed_sources_sha256": "a4b181b31a8775d51f35df5dd01a8bfb9539d07cbca224a75d74b56e33e1138b",
+  "installer_bundle_sha256": "b6dbfb53c486f675f47e72374916414cdc7bda1b7b11d8a14e7641056a6d9743",
+  "ordinary_system_symbols": {
+    "user_audio_service.image.elf": {
+      "sha256": "5af6f3de6f08cb5fcc4ffdbd90826211026b456120e1eac042e5ca5be1060d11",
+      "symbol_table_read": true
+    },
+    "user_audio_tone.image.elf": {
+      "sha256": "51668bba2e2c7afb152594166585828ae192ef9eb1441d18a79a3a1ba8815a87",
+      "symbol_table_read": true
+    },
+    "user_bad_interp.image.elf": {
+      "sha256": "d4a5d58848af33a161fe761b89299cceb3887c0a13a8e41270408e3bd5b610c0",
+      "symbol_table_read": true
+    },
+    "user_bad_magic.image.elf": {
+      "sha256": "bdba7b3bdc6f9a9dbfcf298a921ab63a81659735564452ea3c124f4d0888d197",
+      "symbol_table_read": false
+    },
+    "user_bad_overflow.image.elf": {
+      "sha256": "b0b23f3f3396e536d930da4d1f1c88814ec4f6cc227cefb0aca890062ab9ef1f",
+      "symbol_table_read": true
+    },
+    "user_cpp_runtime_probe.image.elf": {
+      "sha256": "6e08668699dcc7bb9414eddbf14c00085f12668a0040fe05aaf2eae8b1454072",
+      "symbol_table_read": true
+    },
+    "user_demo.image.elf": {
+      "sha256": "be20f68768ded8d0ddb8bc8712e6ad08fd26c6063472cda078c40fe090809234",
+      "symbol_table_read": true
+    },
+    "user_display.image.elf": {
+      "sha256": "54112103d93679f2c6dd1548d16179b05140185563055f71ca8820f85bc5c45d",
+      "symbol_table_read": true
+    },
+    "user_e08_probe.image.elf": {
+      "sha256": "17b8481a101c7d4229f88a1945f28676e58611f7ce8ccee526a65630e22b82eb",
+      "symbol_table_read": true
+    },
+    "user_echo.image.elf": {
+      "sha256": "a4015006977980ab1496b7c9d76cad1baa06c21e5e23996e9182ce8ac2c45e25",
+      "symbol_table_read": true
+    },
+    "user_fault.image.elf": {
+      "sha256": "0bbe4df898055cb36199709dacdecf0cbf67bfc05ec2def9b45a4744e752ab4a",
+      "symbol_table_read": true
+    },
+    "user_files.image.elf": {
+      "sha256": "27149df137e2cbc932168e3b4c8d6f5d1f12954e62e06de8baf90334dd2c1686",
+      "symbol_table_read": true
+    },
+    "user_gfxdemo.image.elf": {
+      "sha256": "dbb4211ef316ed27ce4c7f083ad6a94cfc2518dd8c02804bf7d9eb1cea77c176",
+      "symbol_table_read": true
+    },
+    "user_hello.image.elf": {
+      "sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf",
+      "symbol_table_read": true
+    },
+    "user_ic_client.image.elf": {
+      "sha256": "97f3138abf226e8ee6dc46264a47a5b81c924af12b1d95598094efcf4fcfff5a",
+      "symbol_table_read": true
+    },
+    "user_interactium.image.elf": {
+      "sha256": "6178c1cd0790bcac000c3044dedea14c35c476cf17cbd7d9a5451f77169be595",
+      "symbol_table_read": true
+    },
+    "user_interactiumd.image.elf": {
+      "sha256": "2e5ce80bf6f06353248328ce0c27e4dac04849a435692bbe983904dff79a84e1",
+      "symbol_table_read": true
+    },
+    "user_ipc_probe.image.elf": {
+      "sha256": "d6728c6025f176a186544b5ffec1d9eb1c6c656bce18dac0ebf01b3542e03452",
+      "symbol_table_read": true
+    },
+    "user_libc_hello.image.elf": {
+      "sha256": "eac1dddac4e08f17882ef35f261a7a8c2c9591daa1671f5dd9245ff050b98417",
+      "symbol_table_read": true
+    },
+    "user_net_service.image.elf": {
+      "sha256": "05660e1b7d8fecb70fe0e9aaeb2378def890a8184ff2dc4cc23eaad80f5089db",
+      "symbol_table_read": true
+    },
+    "user_runtime_probe.image.elf": {
+      "sha256": "c1b18ab15e0f06914c20ad7a0bd1f913d5ae7d2a90bfad32da6da03ab28fb1c4",
+      "symbol_table_read": true
+    },
+    "user_slow.image.elf": {
+      "sha256": "823325cd34df1cb530c3c6c27c27f466fc418debf6f8d8db9795a5dd8df2e6c0",
+      "symbol_table_read": true
+    },
+    "user_spin.image.elf": {
+      "sha256": "f8ae69df91a4f6b8e54a631a5507f64b1dc3bead04d51b81e137fd1b2ad0a1bc",
+      "symbol_table_read": true
+    },
+    "user_supervisor.image.elf": {
+      "sha256": "0ed132912e1e3239bcf11cce3274c1c8888a2695cb0999aa5ea104c6e55d2f54",
+      "symbol_table_read": true
+    },
+    "user_terminal.image.elf": {
+      "sha256": "ad1a9bea3338222d35705492ba899d9f950e61536652648f174ffc7c73e18fe1",
+      "symbol_table_read": true
+    },
+    "user_terminal_app_probe.image.elf": {
+      "sha256": "3e9f9d3b7b6e453c313ae32a7ab728641f5b919a689b3f74b6607c3d407d6066",
+      "symbol_table_read": true
+    },
+    "user_threading_core_probe.image.elf": {
+      "sha256": "0a58df878772c1f601c9e427cd6f390f7a080b8199b3f6124cd6ee928a5a5fd8",
+      "symbol_table_read": true
+    },
+    "user_tls_exit_probe.image.elf": {
+      "sha256": "e97d05ac6441682d746ea61baab93c694257a9f3a0522eb08825f31e491f3f2b",
+      "symbol_table_read": true
+    },
+    "user_xos_diag.image.elf": {
+      "sha256": "126ed16866c8e356e2f928e182547aee96e245d1d2a0fe964756c6899eff453d",
+      "symbol_table_read": true
+    },
+    "user_xypm_recover.image.elf": {
+      "sha256": "ba88420b32b7aadfcdbe88b7a3c5d2446ac2c1019fa19856ff44ef9238ec5e9a",
+      "symbol_table_read": true
+    }
+  },
+  "package_profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "packages": {
+    "cpython": {
+      "executables": [
+        {
+          "path": "/usr/bin/python3",
+          "sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16"
+        }
+      ],
+      "id": "xos.cpython",
+      "libz_sha256": "8434b9b4844af278dfa475ffb232b86ed642a8a5706d2763eb245416b9768bc8",
+      "license_files": [
+        "usr/share/licenses/xos.cpython/cpython/LICENSE",
+        "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/COPYING.LIB",
+        "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/LICENSES",
+        "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING",
+        "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB",
+        "usr/share/licenses/xos.cpython/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME",
+        "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/LICENSE",
+        "usr/share/licenses/xos.cpython/sdk/usr/share/xos/terminal-support/licenses/mit_legacy.txt",
+        "usr/share/licenses/xos.cpython/xos/LICENSE",
+        "usr/share/licenses/xos.cpython/xos/NOTICE",
+        "usr/share/licenses/xos.cpython/zlib/LICENSE"
+      ],
+      "receipt_sha256": "7351204184d201a9caf9ea7242821112f2283f7ef35f38a861de8be729274d39",
+      "revision": 1,
+      "static_extensions": [
+        "zlib"
+      ],
+      "stdlib_members": 558,
+      "version": "3.14.9",
+      "xpk_sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b"
+    },
+    "daily": {
+      "executables": [
+        {
+          "path": "/usr/bin/basename",
+          "sha256": "1e098dcf668b842822f34ecbef832ecf5001ef849274a983ab8d8cb7fdfb6b98"
+        },
+        {
+          "path": "/usr/bin/cat",
+          "sha256": "eac887247f7d19ea7dcb147b16d3efeb7a4e48b58e1b4b05ea3fa9b9f52a942a"
+        },
+        {
+          "path": "/usr/bin/cp",
+          "sha256": "f522fb9df42d881d53184ac4d5e1f1e7f590c2e6d61eb1f2d7d1ffafde70b0d2"
+        },
+        {
+          "path": "/usr/bin/dirname",
+          "sha256": "fa6169d9dc360cd2ea829d0cb6f67379e8c2b158fca1d1db080c62ca90d35698"
+        },
+        {
+          "path": "/usr/bin/head",
+          "sha256": "861be09a945b713c121e05b6cc9318cf593f77993ac905a00b7a2894c7e25b9d"
+        },
+        {
+          "path": "/usr/bin/ls",
+          "sha256": "e31ddcb0167f91294cafb7e1e6a22fe457a2fac86c28a10ad951ac5c8b585298"
+        },
+        {
+          "path": "/usr/bin/mkdir",
+          "sha256": "d2b031608f452311bf8450d14a49cc647ce4c104c3f5a328ffb1cf6cc8c60402"
+        },
+        {
+          "path": "/usr/bin/mv",
+          "sha256": "13d624d84be898968028f328dc9693929cf010b578f578cc2b2dfd2d862368d3"
+        },
+        {
+          "path": "/usr/bin/rm",
+          "sha256": "6f27359c92b4fc2558a429e5db2d675187f8e6c8d9516045b6c107e638711f26"
+        },
+        {
+          "path": "/usr/bin/rmdir",
+          "sha256": "6a5a979a837c3e9add987a13bb085b0aa1d802f444c979201c25b9e262642b2f"
+        },
+        {
+          "path": "/usr/bin/tail",
+          "sha256": "92bf16d08bcabb1833272a4d7c55c20aa8e8fb5d82599320fb256235c1ee4476"
+        },
+        {
+          "path": "/usr/bin/tee",
+          "sha256": "647bed5a2845889864391e16ec979caad2c8d5c12977c0fc7eb430eb0e2d59d5"
+        },
+        {
+          "path": "/usr/bin/wc",
+          "sha256": "51a8a691d6fd6ba1dcb0171e4b41be9dada3d904e33c8c71bda3d7f722112df3"
+        }
+      ],
+      "id": "xos.daily_utilities",
+      "license_files": [
+        "usr/share/licenses/xos.daily_utilities/upstream/LICENSE",
+        "usr/share/licenses/xos.daily_utilities/xos/LICENSE",
+        "usr/share/licenses/xos.daily_utilities/xos/NOTICE",
+        "usr/share/licenses/xos.daily_utilities/sdk/usr/share/xos-glibc/COPYING.LIB",
+        "usr/share/licenses/xos.daily_utilities/sdk/usr/share/xos-glibc/LICENSES",
+        "usr/share/licenses/xos.daily_utilities/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING",
+        "usr/share/licenses/xos.daily_utilities/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.LIB",
+        "usr/share/licenses/xos.daily_utilities/sdk/usr/share/xos-glibc/compiler-runtime-licenses/COPYING.RUNTIME",
+        "usr/share/licenses/xos.daily_utilities/sdk/usr/share/xos/terminal-support/licenses/mit_legacy.txt",
+        "usr/share/licenses/xos.daily_utilities/sdk/usr/share/xos/terminal-support/LICENSE"
+      ],
+      "receipt_sha256": "076466354db7e78ee42f54c5bb4dbb94e47863750ae605107783730418713747",
+      "revision": 0,
+      "version": "0.1.0",
+      "xpk_sha256": "e41cc466fd96119f3132cd5a8661f16fec5dbe5947a2ca27f030c7c4a4ffc192"
+    },
+    "wheel": {
+      "executables": [],
+      "id": "python_idna",
+      "license_files": [
+        "usr/share/licenses/python_idna/LICENSE.md"
+      ],
+      "receipt_sha256": "d1307cc662fba64ec0e4506f528fe4cbd0b6fe8acb3cd771b6199e5b56e9bea0",
+      "revision": 0,
+      "upstream_wheel_sha256": "ab7ae7122974553370f0bdb919e1a960b2cd1bc1ef0276416d896db81c14582c",
+      "version": "3.20",
+      "xpk_sha256": "0b1f99369213b2ceb68be9493b8b7a5f85bf99bb2d64587a72bcffb81f532bee"
+    }
+  },
+  "program_counts": {
+    "glibc": 17,
+    "legacy_gnu_seed": 12
+  },
+  "programs": [
+    {
+      "bytes": 3315096,
+      "delivery": "installer",
+      "path": "/usr/bin/dash",
+      "runtime_family": "glibc",
+      "sha256": "f30495d9229d1550bc01b6c6cfb199924058e129d845a6a50c3d303f69e1243a",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 3658368,
+      "delivery": "installer",
+      "path": "/usr/bin/xypm",
+      "runtime_family": "glibc",
+      "sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 9503392,
+      "delivery": "cpython",
+      "path": "/usr/bin/python3",
+      "runtime_family": "glibc",
+      "sha256": "f778ec71ab3c9808cf63c7e05e7631eb5cc4c7e300c81d112fe0e3026efe0d16",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 667752,
+      "delivery": "daily",
+      "path": "/usr/bin/basename",
+      "runtime_family": "glibc",
+      "sha256": "1e098dcf668b842822f34ecbef832ecf5001ef849274a983ab8d8cb7fdfb6b98",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 702560,
+      "delivery": "daily",
+      "path": "/usr/bin/cat",
+      "runtime_family": "glibc",
+      "sha256": "eac887247f7d19ea7dcb147b16d3efeb7a4e48b58e1b4b05ea3fa9b9f52a942a",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 667952,
+      "delivery": "daily",
+      "path": "/usr/bin/cp",
+      "runtime_family": "glibc",
+      "sha256": "f522fb9df42d881d53184ac4d5e1f1e7f590c2e6d61eb1f2d7d1ffafde70b0d2",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 667752,
+      "delivery": "daily",
+      "path": "/usr/bin/dirname",
+      "runtime_family": "glibc",
+      "sha256": "fa6169d9dc360cd2ea829d0cb6f67379e8c2b158fca1d1db080c62ca90d35698",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 668336,
+      "delivery": "daily",
+      "path": "/usr/bin/head",
+      "runtime_family": "glibc",
+      "sha256": "861be09a945b713c121e05b6cc9318cf593f77993ac905a00b7a2894c7e25b9d",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 672552,
+      "delivery": "daily",
+      "path": "/usr/bin/ls",
+      "runtime_family": "glibc",
+      "sha256": "e31ddcb0167f91294cafb7e1e6a22fe457a2fac86c28a10ad951ac5c8b585298",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 668048,
+      "delivery": "daily",
+      "path": "/usr/bin/mkdir",
+      "runtime_family": "glibc",
+      "sha256": "d2b031608f452311bf8450d14a49cc647ce4c104c3f5a328ffb1cf6cc8c60402",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 667984,
+      "delivery": "daily",
+      "path": "/usr/bin/mv",
+      "runtime_family": "glibc",
+      "sha256": "13d624d84be898968028f328dc9693929cf010b578f578cc2b2dfd2d862368d3",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 668008,
+      "delivery": "daily",
+      "path": "/usr/bin/rm",
+      "runtime_family": "glibc",
+      "sha256": "6f27359c92b4fc2558a429e5db2d675187f8e6c8d9516045b6c107e638711f26",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 667896,
+      "delivery": "daily",
+      "path": "/usr/bin/rmdir",
+      "runtime_family": "glibc",
+      "sha256": "6a5a979a837c3e9add987a13bb085b0aa1d802f444c979201c25b9e262642b2f",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 672432,
+      "delivery": "daily",
+      "path": "/usr/bin/tail",
+      "runtime_family": "glibc",
+      "sha256": "92bf16d08bcabb1833272a4d7c55c20aa8e8fb5d82599320fb256235c1ee4476",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 706584,
+      "delivery": "daily",
+      "path": "/usr/bin/tee",
+      "runtime_family": "glibc",
+      "sha256": "647bed5a2845889864391e16ec979caad2c8d5c12977c0fc7eb430eb0e2d59d5",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 672472,
+      "delivery": "daily",
+      "path": "/usr/bin/wc",
+      "runtime_family": "glibc",
+      "sha256": "51a8a691d6fd6ba1dcb0171e4b41be9dada3d904e33c8c71bda3d7f722112df3",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    },
+    {
+      "bytes": 3822584,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-gcc",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "29a54a2a69de813ce153e55322a2a09d0fbd8d0a550120bb01c1db0f61b3e35c",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 3832080,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-g++",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "a1574b29d8891d00f25edae17aefaa91290dc980cd9d7d221e7d302850a8dfcd",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 3822624,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-cpp",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "9dd9ee8dbea3e0a7edf307a4d11cbb98d8d87a98723deeed8b209f81ebc8c2ca",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 2882584,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-as",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "14c0df6c85d5e563fb72fd4de251e31209b9cdf78faac8bb55b220d88034cece",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 3506608,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-ld",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "ca27d758ca2e1c750beaf80455f359370547a1359bf4e30af77c9c70a5822892",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 2066992,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-ar",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "3ba108e6afc08536c2cf0a377669ef83b96336994054a09a6b4bb5e8dcbf1e6a",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 2053880,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-ranlib",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "719297ba172a83ef8b1f154d7cbdf1b0129fff43640719cce78e9a584ce5f277",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 2045712,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-nm",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "653530e6fab489261c67189c497c6ae0b875a671378a6226a8038af1f15c6337",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 2139496,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/x86_64-elf-strip",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "76795c63b831e534b305eccdd9dd52e55007653b79724976147540f5510638d9",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 2882584,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/as",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "14c0df6c85d5e563fb72fd4de251e31209b9cdf78faac8bb55b220d88034cece",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 47587544,
+      "delivery": "gnu_seed",
+      "path": "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "85321572cf4aba927d7c95f0b7ef8008c04bd2798b04531a8f6396764825b12f",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 50529152,
+      "delivery": "gnu_seed",
+      "path": "/usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+      "runtime_family": "legacy_gnu_seed",
+      "sha256": "00beda326c502e55ec83309b782e96572113cc0a308430249520e8781c4cb139",
+      "symbol_markers": [
+        "_impure_ptr"
+      ]
+    },
+    {
+      "bytes": 4313688,
+      "delivery": "gnu_seed",
+      "path": "/usr/bin/gmake",
+      "runtime_family": "glibc",
+      "sha256": "793e6b79d866e42b2633f462c59afc72cd7c716e6e5e7609bcf7e998e58a0ebe",
+      "symbol_markers": [
+        "__libc_start_main"
+      ]
+    }
+  ],
+  "python_source_signature_receipt_sha256": "8eb62f86eb4d10633569a781b8cc22204926d1d9e0ca2d360b9bd94bd67f397c",
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "relinkable_programs": [
+    "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745"
+  ],
+  "remaining_glibc_relink_paths": [
+    "/usr/bin/basename",
+    "/usr/bin/cat",
+    "/usr/bin/cp",
+    "/usr/bin/dash",
+    "/usr/bin/dirname",
+    "/usr/bin/gmake",
+    "/usr/bin/head",
+    "/usr/bin/ls",
+    "/usr/bin/mkdir",
+    "/usr/bin/mv",
+    "/usr/bin/python3",
+    "/usr/bin/rm",
+    "/usr/bin/rmdir",
+    "/usr/bin/tail",
+    "/usr/bin/tee",
+    "/usr/bin/wc"
+  ],
+  "status": "inventory_verified",
+  "work_disk_sha256": "d3c51769258094448a30b57d6028456405888b0501ceebad4ad178234c26df45",
+  "xypm_relink_manifest_sha256": "8a1b679624d278d51b128b2e0b152a443ce14795899a05bc12f04eee893808f2"
+}

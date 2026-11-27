@@ -1,5 +1,9 @@
 # glibc 默认发行验收表
 
+统一命令入口已按 [glibc 流程](glibc_pipeline.md) 选择 glibc；历史 newlib
+流程须显式 `--newlib`。这项工具默认值不改变本表的最终产物、冷启动往返和发行
+资格要求，也不将已发布的 newlib release 改记为 glibc。
+
 以 [0.0.2-1103 发布回执](release_0_0_2_1103.json)、[发行配方](playbook.md) 和
 [组件许可台账](../licensing.md) 为准，核对发行资产和 `release_smoke.py` 实际运行的
 软件。新候选的完整清单应绑定同一份系统、SDK、包 profile 和安装介质。独立候选

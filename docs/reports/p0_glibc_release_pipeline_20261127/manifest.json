@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "files": {
+    "host.log": "7074b8745f2d99a4a416be27e8402046831860298b7c1c357af2059610534f5f",
+    "receipt.json": "952ae396a753168aeaa1cd531135c630f27143a5dc6221e9c75ac773a9d622e0",
+    "sdk_binding.log": "d92cced181ae967ee470f2279896fcbe640d3c9c16b2f20762c197e09ab481cc"
+  }
+}

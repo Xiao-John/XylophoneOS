@@ -1,0 +1,45 @@
+{
+  "base_assets": {
+    "application-sdk.tar.gz": {
+      "bytes": 22797767,
+      "sha256": "5932aa088513e5a0f1369a02bd8ab1e3181585b067e33399c454c65b00374493"
+    },
+    "gnu-seed-sources.tar.gz": {
+      "bytes": 182547934,
+      "sha256": "2315ae91dd36082ad38654250bcfd794bf73ec971316dd024ede48a553e50ac1"
+    },
+    "images.tar.gz": {
+      "bytes": 92532083,
+      "sha256": "6320c0d1f9ef803e93e7aad847fcc97614dc8695f19d038b64835333cf8ab4ab"
+    },
+    "packages.tar.gz": {
+      "bytes": 11500545,
+      "sha256": "f43b84276495277608aa8f75511066da11e46745225cf37f49bc5a8838328505"
+    },
+    "release_manifest.json": {
+      "bytes": 3395,
+      "sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef"
+    },
+    "system_manifest.json": {
+      "bytes": 416799,
+      "sha256": "f513c611974910a9b6eea4c46b5fd53d97856dcacdd6e93f3d566b64ee64e865"
+    }
+  },
+  "format": "xos_glibc_release_supplements_v1",
+  "release_manifest_sha256": "b2b417bdf2fed26d02d22786cf1ed39fa5036324a6b6514bab3e89fdfefd82ef",
+  "supplements": {
+    "component-sources.json": {
+      "bytes": 22907,
+      "sha256": "80048e009ea761149f8e416f35502891d20fdec737dedffcb24adcfd8df47f01"
+    },
+    "component-sources.tar.gz": {
+      "bytes": 26577204,
+      "sha256": "8fa939425e2d7ae9716ab71e29889a3de7c6cd88975e75cf56ea1221c8320e93"
+    },
+    "xypm-relink.tar.gz": {
+      "bytes": 10344974,
+      "sha256": "d51a9f750dcdca20ec6ba00eeb4c05a214087a213df08420538c5726b69a2d91"
+    }
+  },
+  "xypm_relink_manifest_sha256": "1df929c4e0eb1925f3a17e8ea71504a12329336d0b7fce29eb035dc16f8831da"
+}

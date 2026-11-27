@@ -21,6 +21,8 @@ Shell 验收，和发行安装组件的对应源码包。整套发行资产的�
 [安装候选组合](work_log/645ba017_next_stage_glibc_v2_installer.md) ·
 [Qt Quick v2](work_log/659b4dc2_qt_quick_unified_v2.md) ·
 [组件源码](work_log/9c747f60_glibc_v2_component_sources.md)
+冻结 v2 候选的原归档、补充源码与 xypm 复链包已通过十份资产的离线校验。
+[发行资产暂存](work_log/cc50f79b_glibc_v2_distribution_supplements.md)
 [当前普通组合复验](work_log/0227427a_next_stage_mainline.md)
 [网络组合复验](work_log/3d21f4e4_next_stage_network_replay.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)

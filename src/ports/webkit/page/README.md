@@ -51,13 +51,16 @@ Ganesh、纹理图集及协调合成器由其各自后端处理。
 链接器使用 `XOS_SKIA_RASTER_ARCHIVE` 和 `XOS_SKIA_FONTCONFIG_ARCHIVE`。Skia 头来
 自同一锁定源包下的 `Source/ThirdParty/skia`，用 `XOS_SKIA_INCLUDE_DIRECTORY` 指定。
 在只搜索目标库的配置中提供 ICU 79.1、LibXml2、SQLite3、zlib、HarfBuzz 与
-HarfBuzz ICU、Fontconfig、FreeType、PNG 和 JPEG。宿主生成器按原有方式从宿主环境
-获取，Skia 归档和上述依赖均来自 XOS 目标构建。
+HarfBuzz ICU、Fontconfig、FreeType、PNG、JPEG 和 OpenSSL 3 的静态 Crypto 库。宿主生成器
+按原有方式从宿主环境获取，Skia 归档和上述依赖均来自 XOS 目标构建。OpenSSL
+前缀使用同一 glibc SDK 构建。WebCore 采用上游 OpenSSL 算法及 PAL 摘要实现，
+由 `OpenSSL::Crypto` 提供链接依赖。
 
 ```sh
 cmake -S "$WEBKIT_SOURCE" -B "$WEBKIT_OUTPUT" -G Ninja \
   -DPORT=JSCOnly -DXOS_WEBCORE_SOFTWARE=ON -DENABLE_STATIC_JSC=ON \
   -DCMAKE_TOOLCHAIN_FILE="$XOS_WEBKIT_TOOLCHAIN" \
+  -DOPENSSL_ROOT_DIR="$XOS_OPENSSL_PREFIX" \
   -DXOS_SKIA_INCLUDE_DIRECTORY="$WEBKIT_SOURCE/Source/ThirdParty/skia" \
   -DXOS_SKIA_RASTER_ARCHIVE="$SKIA_RASTER_A" \
   -DXOS_SKIA_FONTCONFIG_ARCHIVE="$SKIA_FONTCONFIG_A"

@@ -32,6 +32,10 @@
     {
       "path": "page/font_and_bitstream_formats.patch",
       "sha256": "9e2cecd7698b3db3aba1bb4422d1e2b964f0117546b73df48b31ef93c2cfadae"
+    },
+    {
+      "path": "page/openssl_crypto_backend.patch",
+      "sha256": "16f541bfecbd7080d545dcce11a6ce23d0a374ca776720ba9631f4f3cff3c0be"
     }
   ]
 }

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "files": {
+    "binding.json": "afefa09e27a61bec6fc324c878655cd409c355915aa7ab41f93d780f5b19e0e6",
+    "installer.json": "245304a364a81dc95d2c8c50b6fdfd5a490f66ccd7cc1bd0643ad46ce622f788",
+    "ordinary-abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "ordinary-smoke.log": "ead11c244fa1a84098a561673d1cde5e1d7baafbe0a26e9c2ce43a35ea0d13bd",
+    "stock.json": "6f056385c92e8ec3dca8fe1a7eef6a69e45d15c26499da1fd33a35a4892fea74",
+    "v2-abi.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "v2-smoke.log": "828706ffe122be53ca8035d8114f0a7c10c8814db3d0ebe7157fb57c00708bac"
+  }
+}

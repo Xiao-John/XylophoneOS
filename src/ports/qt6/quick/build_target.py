@@ -3,12 +3,14 @@
 """Rebuild the static XOS Qt Quick target prefix for a verified glibc SDK."""
 
 import argparse
+from contextlib import contextmanager
 import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
+from tempfile import TemporaryDirectory
 
 from build_app import sha
 from quick_kit import PORT, ROOT, QT_ROOT, kit_paths, qt_inputs, verify_kit
@@ -40,6 +42,16 @@ def build_environment():
         env.pop(name, None)
     env["LC_ALL"] = "C.UTF-8"
     return env
+
+
+@contextmanager
+def stage_source(destination):
+    # The final path is the completion marker used by --resume. Keep the
+    # temporary tree on the same filesystem so publishing it is atomic.
+    with TemporaryDirectory(prefix=f".{destination.name}-", dir=destination.parent) as temporary:
+        staged = Path(temporary) / destination.name
+        yield staged
+        staged.rename(destination)
 
 
 def copy_declarative_packages(build, prefix, run):
@@ -141,9 +153,10 @@ def rebuild(args):
     common.extend(f"-DXOS_GLIBC_{label}={tools[name]['path']}" for label, name in
                   (("CC", "gcc"), ("CXX", "g++"), ("AR", "ar"), ("RANLIB", "ranlib")))
     if not source.exists():
-        run([sys.executable, QT_ROOT / "prepare_gui_source.py", paths["qtbase"], source])
-        for patch in BASE_PATCHES:
-            run(["patch", "--batch", "--fuzz=0", "-p1", "-i", patch], cwd=source)
+        with stage_source(source) as staged:
+            run([sys.executable, QT_ROOT / "prepare_gui_source.py", paths["qtbase"], staged])
+            for patch in BASE_PATCHES:
+                run(["patch", "--batch", "--fuzz=0", "-p1", "-i", patch], cwd=staged)
     jobs = str(args.jobs)
     run(["cmake", "-S", source, "-B", base, *common, f"-DCMAKE_TOOLCHAIN_FILE={chainload}",
          "-DQT_QMAKE_TARGET_MKSPEC=xos-g++", "-DFEATURE_gui=ON", "-DFEATURE_freetype=ON",
@@ -157,10 +170,10 @@ def rebuild(args):
     }))
 
     declarative = output / "qtdeclarative_source"
-    if declarative.exists():
-        declarative_source = declarative / f"qtdeclarative-everywhere-src-{version}"
-    else:
-        declarative_source = prepare_source(args.declarative, declarative, version, env)
+    if not declarative.exists():
+        with stage_source(declarative) as staged:
+            prepare_source(args.declarative, staged, version, env)
+    declarative_source = declarative / f"qtdeclarative-everywhere-src-{version}"
     build = output / "qtdeclarative_build"
     packages = prefix / "lib/cmake"
     host_qml = paths["host_qml"]

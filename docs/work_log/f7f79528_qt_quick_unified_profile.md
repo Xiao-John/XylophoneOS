@@ -59,5 +59,31 @@ xsh 首帧耗时 5.664 秒。Dash 首帧耗时 137.281 秒，测量显式使用
 [早先 60 秒回执](../reports/qt_quick_unified_profile_20261127/dash-60s.json)
 [90 秒诊断回执](../reports/qt_quick_unified_profile_20261127/dash-script-90s.json)
 
+同一镜像用固定 FAT 文件复测 glibc 文件会话。三段各定位读取 192 KiB，发出
+96 个请求并收到相同字节。正常计时等待的两段各耗时 960 ms，每次空收后恰好等待
+一个 10 ms 内核时钟周期，吞吐均为 0.195 MiB/s。中间一段仅在诊断程序内把该等待
+换成调度让步，耗时 30 ms，吞吐 6.25 MiB/s。正式 glibc 文件会话不变。
+
+Qt Quick 可载入段按 4 KiB 页和单条消息 3,798 字节的上限需要 13,619 次读，
+若每次等一拍则为 136.190 秒。QtCore 同样有 3,258 次读，对应 32.580 秒。
+两项分别与 137.281 和 33.001 秒的实测一致到约一秒。已定位正式 glibc 接收空消息
+后主动休眠，以及载入器将每个完整页拆成两次读共同放大了冷启动耗时。
+[吞吐及请求时序](../reports/qt_quick_unified_profile_20261127/file-exchange-timing.json)
+[原始逐请求串口](../reports/qt_quick_unified_profile_20261127/file-exchange.serial.log.gz)
+
+## 源码准备中断与续跑
+
+构建器在与最终源码目录同一个文件系统上分别暂存 QtBase 和 Qt Declarative。
+锁定归档和整条补丁链完成后，才将暂存树原子改名为最终源码目录。
+用真实归档运行 [中断回归](../../tests/qt6_quick_source_resume.py)，在 QtBase 首条
+glibc 补丁完成后强制终止，随后在 Qt Declarative 第一个归档文件解出后再次强制
+终止。修复前的构建器在第一次终止后已暴露半成品正式目录，回归按预期失败。
+修复后两次续跑都重做未完成的阶段，两个最终目录的文件路径及内容摘要与原先已
+完成编译的对应树完全相同。
+
+该回归止于配置前，替代了实际 CMake 操作。此前的源、构建、ELF 与客体回执仍
+绑定到原配方，新配方单独保存源树对照与中断结果。
+[续跑回执](../reports/qt_quick_unified_profile_20261127/source-resume.json)
+
 当前验收涵盖软件渲染与 Interactium 图形集成。发行载体的接收者重链接、
 安装替换与回退照常走其独立的验收门。

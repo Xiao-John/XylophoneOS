@@ -26,7 +26,9 @@ python3 -B src/ports/qt6/quick/build_target.py \
 构建器检查 SDK/profile、六项交叉工具、源归档、宿主输入和 Qt 配方，安装 QtBase
 Core/Gui、Qml/Quick 及必要静态插件。沿用 XOS 软件渲染与原生 Interactium QPA。
 目标安装前缀为 `target/`，记录为 `target_receipt.json`。中断后可用相同输入及
-`--resume` 继续 Ninja 目录。
+`--resume` 继续。QtBase 和 Qt Declarative 只在整个源码提取和补丁链完成后
+发布到正式目录。若进程被强制终止，构建目录中遗留的隐藏暂存目录可以在构建停止后
+清理。
 
 ## 在外部目录构建和搬移
 

@@ -64,6 +64,26 @@ B2、B3、B4均绑定同一CPython fingerprint和SDK，报告/限制见
   和终端属性需要真实控制台/中断契约。PY2 的基础行编辑器不声称覆盖这些能力。
 - **UUID。** 名称型 UUID 可较早单独验收；随机 UUID 必须等待安全熵。
 
+### 静态 OpenSSL 与 `_ssl` 的交接边界
+
+CPython 3.14.9 的 `_ssl` 同时编译文件描述符和 MemoryBIO 分支。前者调用 `SSL_set_fd`，
+该入口在 `no-sock` 归档中不存在。CPython 原有 `configure` 的 SSL 链接检查不测试这个
+入口。对当前 SDK 实际编译 `_ssl.c` 会先停在 `socketmodule.h` 引入的 `<netinet/in.h>`，
+该头当前未纳入 SDK。使用此配置只开放独立的 `_hashlib`，以已绑定的静态 `libcrypto.a` 验收。
+
+普通出站 HTTPS 继续按以下依赖推进。
+
+1. 将可信启动者配置的 Net2 服务 PID 接入 glibc 的用户态 socket 后端，继续核对双
+   endpoint peer。复用当前描述符及打开描述生命周期，网络连接不直接占用设备或授予
+   原始帧权限。先定义单线程与线程共享 fd、关闭、失败中的取消、继承和服务重启语义。
+2. 验 `AF_INET/SOCK_STREAM` 出站 `socket/connect`、支持的 `fcntl` 标志、短 `read/write`
+   与 `send/recv`、超时及 fd 就绪等待。当前 glibc 的 `select` 只覆盖单个终端 fd，
+   `poll` 是 stub。Net2 的 `status` 尚不提供逐 fd 的可读/可写就绪，不能借用
+   `connected` 忽略背压。监听和半关闭有独立的服务能力门。
+3. 先以数字 IPv4 验证 OpenSSL 真实 socket BIO。之后复用有期限的 Net2 A 查询接到
+   `getaddrinfo`，保持数字地址、解析失败和服务失败结果可区别。配齐墙钟和明确选择的
+   信任锚，再验证 Python HTTPS 的实际连接、主机名和 CA 拒绝、超时和资源回收。
+
 ## D 档：暂缓，成本高且不是首批朋友使用所需
 
 - 动态扩展加载、`dlopen`、`ctypes`/libffi 和原生 wheel。

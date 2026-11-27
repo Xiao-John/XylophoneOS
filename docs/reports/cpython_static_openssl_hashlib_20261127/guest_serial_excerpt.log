@@ -1,0 +1,8 @@
+[resources] free=129806 tasks=2 completions=0
+CPYTHON_G4_START 3.14.9 xos
+CPYTHON_G4_CLOCK_PASS
+CPYTHON_G4_THREADS_PASS
+[wait] pid=10 kind=exited code=0
+CPYTHON_G4_OPENSSL_HASHLIB_PASS sha256 hmac pbkdf2 scrypt reject
+[wait] pid=11 kind=exited code=0
+[resources] free=129806 tasks=2 completions=0

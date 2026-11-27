@@ -1,0 +1,9 @@
+MODULE__SOCKET_STATE=missing
+MODULE__SSL_STATE=missing
+MODULE__HASHLIB_STATE=yes
+DYNLOADFILE=	dynload_stub.o
+In file included from Modules/_ssl.c:36:
+Modules/socketmodule.h:10:11: fatal error: netinet/in.h: No such file or directory
+   10 | # include <netinet/in.h>
+      |           ^~~~~~~~~~~~~~
+compilation terminated.

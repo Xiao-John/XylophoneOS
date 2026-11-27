@@ -76,6 +76,9 @@ def package(root, product, elfs, resources, notices, profile, sdk, revision, des
                 'Both Mobius executables must bind the same Widgets kit')
         notices = notices | {'QtBase-source-lock.json': QT / 'source_lock.json',
                              'Aurora-artwork-provenance.json': QT / 'aurora/assets/provenance.json'}
+        gui = QT / 'licenses/gui'
+        notices.update({f'qt/gui/{path.relative_to(gui).as_posix()}': path
+                        for path in sorted(gui.rglob('*')) if path.is_file()})
     if any('controlled_tls' in payload for payload in payloads.values()):
         require(product == 'xos.clarke', 'Controlled browser TLS is only available for ClarkE')
         tls_root = CLARKE.parent / 'native_tls'

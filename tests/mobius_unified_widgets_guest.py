@@ -39,13 +39,17 @@ def check_package(package, target, profile, sdk, kit_digest, revision):
         expected = {"elf_sha256": sha(elf), "build_receipt_sha256": sha(receipt),
                     "widgets_kit_manifest_sha256": kit_digest}
         require(expected["elf_sha256"] == files[name]["sha256"] == linked["elf_sha256"]
-                and linked["widgets_kit_manifest_sha256"] == kit_digest,
+                and linked["widgets_kit_manifest_sha256"] == kit_digest
+                and linked["sdk_manifest_sha256"] == profile["sdk_binding"]["sdk_manifest_sha256"],
                 f"Mobius receiver link or Widgets kit binding differs: {name}")
         payloads[name] = expected
     notices = {f"sdk/{name}": path for path, name in sdk_notices(sdk, profile, "cpp")}
     qt = ROOT / "src/ports/qt6"
     notices.update({"QtBase-source-lock.json": qt / "source_lock.json",
                     "Aurora-artwork-provenance.json": qt / "aurora/assets/provenance.json"})
+    gui = qt / "licenses/gui"
+    notices.update({f"qt/gui/{path.relative_to(gui).as_posix()}": path
+                    for path in sorted(gui.rglob("*")) if path.is_file()})
     for name, path in notices.items():
         dest = f"usr/share/licenses/{PACKAGE_ID}/{name}"
         require(dest in manifest["licenses"] and files[dest]["sha256"] == sha(path), f"wrong notice: {name}")
@@ -54,6 +58,9 @@ def check_package(package, target, profile, sdk, kit_digest, revision):
 
 def inspect_disk(work, disk, profile, package, expected, user_data):
     manifest = package["manifest"]
+    installed = query_image(disk, profile, "info", PACKAGE_ID)
+    require(installed["manifest"] == manifest and installed["sha256"] == package["sha256"],
+            "installed package database lost the exact revision or package digest")
     require(query_image(disk, profile, "verify-installed")["files"] == len(manifest["files"]),
             "installed inventory differs from the XPK")
     with Disk(disk, work, True) as mounted:
@@ -88,7 +95,9 @@ def main():
         system = bind_system(args.system)
         image = args.system / "xos-install.iso"
         kit_digest = sha(args.widgets_kit_manifest)
-        require(load_json(args.widgets_kit_manifest)["sdk_manifest_sha256"] == binding["sdk_manifest_sha256"],
+        kit = load_json(args.widgets_kit_manifest)
+        require(kit["sdk_manifest_sha256"] == binding["sdk_manifest_sha256"]
+                and kit["sdk_profile_file_sha256"] == sha(args.profile),
                 "Widgets kit and glibc SDK do not match")
         before, before_elfs = check_package(args.reference, args.reference_target, profile,
                                             args.sdk_build, kit_digest, 0)

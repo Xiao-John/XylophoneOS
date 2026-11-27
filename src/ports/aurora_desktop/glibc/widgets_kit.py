@@ -16,6 +16,7 @@ sys.path[:0] = [str(ROOT / "scripts"), str(QT / "quick")]
 
 from build_app import extract_font, sha
 from glibc_g1_probe import tool_identity
+from quick_kit import relocate_host_tools
 from xypm_format import canonical, load_json, require
 from xypm_sdk_profile import metadata_snapshot, relative_file, sdk_snapshot, verify_profile
 
@@ -53,6 +54,7 @@ def fingerprint(kit):
     relative_file(kit, font.name)
     return {"target_tree_sha256": sdk_snapshot(prefix)[0],
             "host_tree_sha256": sdk_snapshot(host)[0], "font_sha256": sha(font),
+            "notices_tree_sha256": sdk_snapshot(kit / "notices")[0],
             "qt_inputs": {name: sha(path) for name, path in installed_inputs(prefix, host).items()}}
 
 
@@ -68,6 +70,18 @@ def verify_kit(kit, expected, sdk_manifest_sha256, profile_sha256):
             "Widgets kit names a different QtBase release")
     require(manifest["files"] == fingerprint(kit), "Widgets kit files differ from the manifest")
     return digest
+
+
+def stage_notices(output):
+    output.mkdir()
+    qt_manifest = QT / "redistribution_manifest.json"
+    for source in (QT / "source_lock.json", qt_manifest, QT / "patches/MODIFICATIONS.md"):
+        shutil.copyfile(source, output / source.name)
+    for entry in load_json(qt_manifest)["license_texts"]:
+        source = relative_file(ROOT, entry["path"])
+        require(sha(source) == entry["sha256"], f"Qt licence text changed: {source.name}")
+        shutil.copyfile(source, output / source.name)
+    shutil.copytree(QT / "licenses/gui", output / "gui")
 
 
 def stage(args):
@@ -101,9 +115,12 @@ def stage(args):
         require(sha(font_copy) == sha(font), "Widgets build used a different QtBase font")
         shutil.copytree(prefix, target_copy)
         shutil.copytree(host, host_copy)
+        require(sdk_snapshot(host_copy)[0] == host_digest, "Host Qt tools changed during staging")
+        relocate_host_tools(host_copy, ("Qt6WidgetsTools",))
+        stage_notices(staged / "notices")
         files = fingerprint(staged)
         require(files["target_tree_sha256"] == sdk_snapshot(prefix)[0] == target_digest
-                and files["host_tree_sha256"] == sdk_snapshot(host)[0] == host_digest
+                and sdk_snapshot(host)[0] == host_digest
                 and sdk_snapshot(source)[0] == source_digest and sha(cache) == cache_digest
                 and verify_profile(load_json(args.sdk_profile), "glibc", sdk) == binding
                 and sha(args.sdk_profile) == profile_digest,
@@ -114,6 +131,7 @@ def stage(args):
             "qtbase_archive_sha256": archive_digest,
             "qtbase_prepared_tree_sha256": source_digest,
             "qt_build_cache_sha256": cache_digest,
+            "original_host_tree_sha256": host_digest,
             "sdk_manifest_sha256": sdk_digest,
             "sdk_profile_file_sha256": profile_digest,
             "target_tools": tools,

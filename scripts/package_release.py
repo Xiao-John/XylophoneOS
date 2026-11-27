@@ -85,7 +85,13 @@ def main():
     p.add_argument('--glibc-candidate', type=Path, help='stock candidate with bound installer guest qualification')
     p.add_argument('--glibc-app-kit', type=Path, help='application kit used by that candidate')
     p.add_argument('--cpython-package', type=Path, help='same-profile static CPython/zlib XPK')
+    p.add_argument('--gnu-seed-donor', type=Path, help='frozen image, receipt and corresponding source assets')
+    p.add_argument('--gnu-make-receipt', type=Path, help='GNU Make build receipt for this glibc SDK')
+    p.add_argument('--gnu-make-sources', type=Path, help='locked GNU Make archive, signature and keyring')
     a = p.parse_args()
+    seed = (a.gnu_seed_donor, a.gnu_make_receipt, a.gnu_make_sources)
+    if any(seed) and (not all(seed) or not a.glibc_candidate):
+        p.error('GNU Seed requires --glibc-candidate and all of --gnu-seed-donor, --gnu-make-receipt and --gnu-make-sources')
     if a.glibc_candidate:
         if not (a.release_dir and a.glibc_app_kit and a.cpython_package):
             p.error('--glibc-candidate requires --release-dir, --glibc-app-kit and --cpython-package')
@@ -98,7 +104,7 @@ def main():
         try:
             assemble(out, a.glibc_candidate, a.glibc_app_kit,
                      a.daily_package or a.glibc_candidate / 'stock/daily.xpk',
-                     a.cpython_package, a.wheel_package, archive)
+                     a.cpython_package, a.wheel_package, archive, seed=seed if all(seed) else None)
         except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as error:
             p.exit(1, 'glibc release assembly: ' + str(error) + '\n')
         return

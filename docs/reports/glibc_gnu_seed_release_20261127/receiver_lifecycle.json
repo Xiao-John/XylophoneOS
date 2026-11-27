@@ -1,0 +1,29 @@
+{
+  "archive_negative_cases": {
+    "duplicate": "duplicate release archive member: images/gnu_seed_receipt.json",
+    "foreign_member": "unexpected release archive member: images/extra.json",
+    "mismatched_bytes": "release archive entry differs: images/gnu_seed_receipt.json",
+    "missing": "release archive inventory is incomplete"
+  },
+  "incomplete_seed_arguments_rejected": true,
+  "initial_disk_sha256": "4f5885715a722c23f5de86383be385d5ea19897bb87e2a41999ea08f0e162986",
+  "package_lifecycle": {
+    "final_disk_sha256": "3dbab41d2ecd8645e5ae7bc2281bc367fb07f31aa1a08b34b1483d200f75694b",
+    "guest_report_sha256": "a3f8c3fd9eb1775ab9a3b0dea71f81113faf43f8e41e633ba321c04333147e1e",
+    "unchanged_seed_files": 1374
+  },
+  "recipient": {
+    "assets": {
+      "CHECKSUMS.sha256": "dff78140ea7989daa2136370dd461f3c034cdd96bb270af77cb1d81fd26b5340",
+      "application-sdk.tar.gz": "f3874faf4717f1374fc7c5dd5561f35f8e0b7b9a3cb8dd6c9320d5a87861e65b",
+      "gnu-seed-sources.tar.gz": "d3bdc695e336240657c764f50071e7f00e60ca6dba5bf7792ed0475294d10f32",
+      "images.tar.gz": "af4a38b231bbfa787c18d83c414a35aaaddb2a70c61a36b29e9aae1304644fe7",
+      "packages.tar.gz": "25691daeff5b5e55909457a1f53cfd6c5b43d6ee2ef90de5c63a3a72ec3bb73e",
+      "release_manifest.json": "f5ace473e14a6ac9383161151889e0523126bc3dc59bc3d088f9fd589caf29d2",
+      "system_manifest.json": "64d08ebe6ee3cd39a9af41f8322161181066b61b620b04baeafd7843285f864e"
+    },
+    "source_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2"
+  },
+  "release_sha256": "f5ace473e14a6ac9383161151889e0523126bc3dc59bc3d088f9fd589caf29d2",
+  "status": "passed"
+}

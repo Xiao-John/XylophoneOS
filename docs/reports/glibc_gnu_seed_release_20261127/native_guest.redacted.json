@@ -1,0 +1,277 @@
+{
+  "cases": [
+    {
+      "exit_code": 0,
+      "name": "release_python_before_native_builds",
+      "output": "exec-file /usr/bin/python3 -B /src/native/release.py\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000353000\r\n[loader] started pid=10 file=/usr/bin/python3\n[process] event=wait_blocked parent=7 child=10\r\nCould not find platform dependent libraries <exec_prefix>\nRELEASE_PY3_THREADS_JSON_ZLIB_IDNA_OK\n[task] event=reclaimed pid=10 pages=6179\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gcc_version",
+      "output": "x86_64-elf-gcc --version\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000353000\r\n[loader] started pid=11 file=/usr/bin/x86_64-elf-gcc\n[process] event=wait_blocked parent=7 child=11\r\nx86_64-elf-gcc (GCC) 16.2.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n[task] event=reclaimed pid=11 pages=754\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gxx_version",
+      "output": "x86_64-elf-g++ --version\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x0000000000353000\r\n[loader] started pid=12 file=/usr/bin/x86_64-elf-g++\n[process] event=wait_blocked parent=7 child=12\r\nx86_64-elf-g++ (GCC) 16.2.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n[task] event=reclaimed pid=12 pages=756\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gnu_make_version",
+      "output": "gmake --version\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x0000000000353000\r\n[loader] started pid=13 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=13\r\nGNU Make 4.4.1\nBuilt for x86_64-unknown-xos\nCopyright (C) 1988-2023 Free Software Foundation, Inc.\nLicense GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n[task] event=reclaimed pid=13 pages=348\r\n[wait] pid=13 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "as_version",
+      "output": "x86_64-elf-as --version\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x0000000000353000\r\n[loader] started pid=14 file=/usr/bin/x86_64-elf-as\n[process] event=wait_blocked parent=7 child=14\r\nGNU assembler (GNU Binutils) 2.47.20260726\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis program is free software; you may redistribute it under the terms of\nthe GNU General Public License version 3 or later.\nThis program has absolutely no warranty.\nThis assembler was configured for a target of `x86_64-elf'.\n[task] event=reclaimed pid=14 pages=555\r\n[wait] pid=14 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "ld_version",
+      "output": "x86_64-elf-ld --version\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x0000000000353000\r\n[loader] started pid=15 file=/usr/bin/x86_64-elf-ld\n[process] event=wait_blocked parent=7 child=15\r\nGNU ld (GNU Binutils) 2.47.20260726\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis program is free software; you may redistribute it under the terms of\nthe GNU General Public License version 3 or (at your option) a later version.\nThis program has absolutely no warranty.\n[task] event=reclaimed pid=15 pages=700\r\n[wait] pid=15 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "ar_version",
+      "output": "x86_64-elf-ar --version\n[process] event=started pid=16 parent=7\r\n[process] pid=16 address_space=0x0000000000353000\r\n[loader] started pid=16 file=/usr/bin/x86_64-elf-ar\n[process] event=wait_blocked parent=7 child=16\r\nGNU ar (GNU Binutils) 2.47.20260726\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis program is free software; you may redistribute it under the terms of\nthe GNU General Public License version 3 or (at your option) any later version.\nThis program has absolutely no warranty.\n[task] event=reclaimed pid=16 pages=365\r\n[wait] pid=16 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "ranlib_version",
+      "output": "x86_64-elf-ranlib --version\n[process] event=started pid=17 parent=7\r\n[process] pid=17 address_space=0x0000000000353000\r\n[loader] started pid=17 file=/usr/bin/x86_64-elf-ranlib\n[process] event=wait_blocked parent=7 child=17\r\nGNU ranlib (GNU Binutils) 2.47.20260726\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis program is free software; you may redistribute it under the terms of\nthe GNU General Public License version 3 or (at your option) any later version.\nThis program has absolutely no warranty.\n[task] event=reclaimed pid=17 pages=362\r\n[wait] pid=17 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "direct_c_compile_link",
+      "output": "x86_64-elf-gcc --sysroot=/sysroot -v -I/src/native /src/native/project_c.c /src/native/project_value.c -o /out/native/direct_c.elf\n[process] event=started pid=18 parent=7\r\n[process] pid=18 address_space=0x0000000000353000\r\n[loader] started pid=18 file=/usr/bin/x86_64-elf-gcc\n[process] event=wait_blocked parent=7 child=18\r\nReading specs from /usr/lib/gcc/x86_64-elf/16.2.0/specs\nCOLLECT_GCC=x86_64-elf-gcc\nTarget: x86_64-elf\nConfigured with: <historical-source-directory>/configure --build=aarch64-apple-darwin27.0.0 --host=x86_64-unknown-elf --target=x86_64-elf --prefix=/usr --disable-nls --disable-werror --disable-bootstrap --disable-multilib --disable-shared --disable-host-shared --disable-threads --enable-static --enable-languages=c --with-newlib --without-isl --disable-libssp --disable-libquadmath --disable-libgomp --disable-libatomic --disable-libsanitizer --disable-libvtv --disable-libstdcxx --disable-lto\nThread model: single\nSupported LTO compression algorithms: zlib\ngcc version 16.2.0 (GCC) \nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-I' '/src/native' '-o' '/out/native/direct_c.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_c.elf-'\n /usr/libexec/gcc/x86_64-elf/16.2.0/cc1 -quiet -v -I /src/native -isysroot /sysroot /src/native/project_c.c -nostdinc -idirafter /sysroot/usr/include -idirafter /sysroot/usr/lib/compiler-include -mno-red-zone -fno-pie -fno-pic -ftls-model=local-exec -quiet -dumpdir /out/native/direct_c.elf- -dumpbase project_c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -o /tmp/cc000018.s\n[process] event=started pid=19 parent=18\r\n[process] pid=19 address_space=0x00000000007c4000\r\n[process] event=wait_blocked parent=18 child=19\r\nGNU C23 (GCC) version 16.2.0 (x86_64-elf)\n\tcompiled by GNU C version 16.2.0, GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version none\nGGC heuristics: --param ggc-min-expand=30 --param ggc-min-heapsize=4096\n#include \"...\" search starts here:\n#include <...> search starts here:\n /src/native\n /sysroot/usr/include\n /sysroot/usr/lib/compiler-include\nEnd of search list.\nCompiler executable checksum: edd246aaf5ba3399ee8aba4d5f0e54be\n[task] event=reclaimed pid=19 pages=11811\r\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-I' '/src/native' '-o' '/out/native/direct_c.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_c.elf-'\n as -o /tmp/cc000018.o /tmp/cc000018.s\n[process] event=started pid=20 parent=18\r\n[process] pid=20 address_space=0x00000000007c4000\r\n[process] event=wait_blocked parent=18 child=20\r\n[task] event=reclaimed pid=20 pages=645\r\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-I' '/src/native' '-o' '/out/native/direct_c.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_c.elf-'\n /usr/libexec/gcc/x86_64-elf/16.2.0/cc1 -quiet -v -I /src/native -isysroot /sysroot /src/native/project_value.c -nostdinc -idirafter /sysroot/usr/include -idirafter /sysroot/usr/lib/compiler-include -mno-red-zone -fno-pie -fno-pic -ftls-model=local-exec -quiet -dumpdir /out/native/direct_c.elf- -dumpbase project_value.c -dumpbase-ext .c -mtune=generic -march=x86-64 -version -o /tmp/cc000018.s\n[process] event=started pid=21 parent=18\r\n[process] pid=21 address_space=0x00000000007c4000\r\n[process] event=wait_blocked parent=18 child=21\r\nGNU C23 (GCC) version 16.2.0 (x86_64-elf)\n\tcompiled by GNU C version 16.2.0, GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version none\nGGC heuristics: --param ggc-min-expand=30 --param ggc-min-heapsize=4096\n#include \"...\" search starts here:\n#include <...> search starts here:\n /src/native\n /sysroot/usr/include\n /sysroot/usr/lib/compiler-include\nEnd of search list.\nCompiler executable checksum: edd246aaf5ba3399ee8aba4d5f0e54be\n[task] event=reclaimed pid=21 pages=11639\r\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-I' '/src/native' '-o' '/out/native/direct_c.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_c.elf-'\n as -o /tmp/cca00018.o /tmp/cc000018.s\n[process] event=started pid=22 parent=18\r\n[process] pid=22 address_space=0x00000000007c4000\r\n[process] event=wait_blocked parent=18 child=22\r\n[task] event=reclaimed pid=22 pages=643\r\nCOMPILER_PATH=/usr/libexec/gcc/x86_64-elf/16.2.0/:/usr/libexec/gcc/x86_64-elf/16.2.0/:/usr/libexec/gcc/x86_64-elf/:/usr/lib/gcc/x86_64-elf/16.2.0/:/usr/lib/gcc/x86_64-elf/\nLIBRARY_PATH=/usr/lib/gcc/x86_64-elf/16.2.0/:/sysroot/usr/lib/\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-I' '/src/native' '-o' '/out/native/direct_c.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_c.elf.'\n /usr/bin/x86_64-elf-ld --sysroot=/sysroot -m elf_x86_64 -static -T /sysroot/user.ld -L /sysroot/usr/lib --build-id=none -z noexecstack -z max-page-size=4096 -o /out/native/direct_c.elf /sysroot/usr/lib/xos_start.o /sysroot/usr/lib/crti.o /sysroot/usr/lib/crtbegin.o /sysroot/usr/lib/xos_start_c.o /sysroot/usr/lib/xos_stdio_receiver.o -L/usr/lib/gcc/x86_64-elf/16.2.0 -L/sysroot/usr/lib /tmp/cc000018.o /tmp/cca00018.o --start-group /sysroot/usr/lib/libstdc++.a /sysroot/usr/lib/libsupc++.a /sysroot/usr/lib/libc.a /sysroot/usr/lib/libm.a /sysroot/usr/lib/libxos_terminal.a /sysroot/usr/lib/libgcc.a --end-group /sysroot/usr/lib/crtend.o /sysroot/usr/lib/crtn.o\n[process] event=started pid=23 parent=18\r\n[process] pid=23 address_space=0x00000000007c7000\r\n[process] event=wait_blocked parent=18 child=23\r\n/usr/bin/x86_64-elf-ld: /sysroot/usr/lib/libc.a(abort.o): in function `abort':\n/repo/build/unified/sdk_c/glibc-2.44/stdlib/abort.c:77:(.text.unlikely+0xe): warning: raise is not implemented and will always fail\n[task] event=reclaimed pid=23 pages=4251\r\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-I' '/src/native' '-o' '/out/native/direct_c.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_c.elf.'\n[task] event=reclaimed pid=18 pages=757\r\n[wait] pid=18 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "direct_c_execute",
+      "output": "/out/native/direct_c.elf\n[process] event=started pid=24 parent=7\r\n[process] pid=24 address_space=0x0000000000353000\r\n[loader] started pid=24 file=/out/native/direct_c.elf\n[process] event=wait_blocked parent=7 child=24\r\nGLIBC_GNU_SEED_C=2.44\n[task] event=reclaimed pid=24 pages=229\r\n[wait] pid=24 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "direct_cpp_compile_link",
+      "output": "x86_64-elf-g++ --sysroot=/sysroot -v -std=gnu++20 /src/native/project_cpp.cpp /src/native/project_cpp_value.cpp -o /out/native/direct_cpp.elf\n[process] event=started pid=25 parent=7\r\n[process] pid=25 address_space=0x0000000000353000\r\n[loader] started pid=25 file=/usr/bin/x86_64-elf-g++\n[process] event=wait_blocked parent=7 child=25\r\nReading specs from /usr/lib/gcc/x86_64-elf/16.2.0/specs\nCOLLECT_GCC=x86_64-elf-g++\nTarget: x86_64-elf\nConfigured with: <historical-source-directory>/configure --build=aarch64-apple-darwin27.0.0 --host=x86_64-unknown-elf --target=x86_64-elf --prefix=/usr --disable-nls --disable-werror --disable-bootstrap --disable-multilib --disable-shared --disable-host-shared --disable-threads --enable-static --enable-languages=c,c++ --with-newlib --without-isl --disable-libssp --disable-libquadmath --disable-libgomp --disable-libatomic --disable-libsanitizer --disable-libvtv --disable-libstdcxx --disable-lto\nThread model: single\nSupported LTO compression algorithms: zlib\ngcc version 16.2.0 (GCC) \nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-std=gnu++20' '-o' '/out/native/direct_cpp.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_cpp.elf-'\n /usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus -quiet -v -isysroot /sysroot /src/native/project_cpp.cpp -nostdinc -idirafter /sysroot/usr/include -idirafter /sysroot/usr/lib/compiler-include -mno-red-zone -fno-pie -fno-pic -ftls-model=local-exec -quiet -dumpdir /out/native/direct_cpp.elf- -dumpbase project_cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -std=gnu++20 -version -nostdinc++ -isystem /sysroot/usr/include/c++/16.2.0 -isystem /sysroot/usr/include/c++/16.2.0/x86_64-unknown-xos -isystem /sysroot/usr/include/c++/16.2.0/backward -o /tmp/cc000025.s\n[process] event=started pid=26 parent=25\r\n[process] pid=26 address_space=0x00000000007c6000\r\n[process] event=wait_blocked parent=25 child=26\r\nGNU C++20 (GCC) version 16.2.0 (x86_64-elf)\n\tcompiled by GNU C version 16.2.0, GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version none\nGGC heuristics: --param ggc-min-expand=30 --param ggc-min-heapsize=4096\n#include \"...\" search starts here:\n#include <...> search starts here:\n /sysroot/usr/include/c++/16.2.0\n /sysroot/usr/include/c++/16.2.0/x86_64-unknown-xos\n /sysroot/usr/include/c++/16.2.0/backward\n /sysroot/usr/include\n /sysroot/usr/lib/compiler-include\nEnd of search list.\nCompiler executable checksum: 6884aa4d7f7ce4bc0603b68e57b15b8e\n[task] event=reclaimed pid=26 pages=24466\r\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-std=gnu++20' '-o' '/out/native/direct_cpp.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_cpp.elf-'\n as -o /tmp/cc000025.o /tmp/cc000025.s\n[process] event=started pid=27 parent=25\r\n[process] pid=27 address_space=0x00000000007c6000\r\n[process] event=wait_blocked parent=25 child=27\r\n[task] event=reclaimed pid=27 pages=902\r\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-std=gnu++20' '-o' '/out/native/direct_cpp.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_cpp.elf-'\n /usr/libexec/gcc/x86_64-elf/16.2.0/cc1plus -quiet -v -isysroot /sysroot /src/native/project_cpp_value.cpp -nostdinc -idirafter /sysroot/usr/include -idirafter /sysroot/usr/lib/compiler-include -mno-red-zone -fno-pie -fno-pic -ftls-model=local-exec -quiet -dumpdir /out/native/direct_cpp.elf- -dumpbase project_cpp_value.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -std=gnu++20 -version -nostdinc++ -isystem /sysroot/usr/include/c++/16.2.0 -isystem /sysroot/usr/include/c++/16.2.0/x86_64-unknown-xos -isystem /sysroot/usr/include/c++/16.2.0/backward -o /tmp/cc000025.s\n[process] event=started pid=28 parent=25\r\n[process] pid=28 address_space=0x00000000007c6000\r\n[process] event=wait_blocked parent=25 child=28\r\nGNU C++20 (GCC) version 16.2.0 (x86_64-elf)\n\tcompiled by GNU C version 16.2.0, GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version none\nGGC heuristics: --param ggc-min-expand=30 --param ggc-min-heapsize=4096\n#include \"...\" search starts here:\n#include <...> search starts here:\n /sysroot/usr/include/c++/16.2.0\n /sysroot/usr/include/c++/16.2.0/x86_64-unknown-xos\n /sysroot/usr/include/c++/16.2.0/backward\n /sysroot/usr/include\n /sysroot/usr/lib/compiler-include\nEnd of search list.\nCompiler executable checksum: 6884aa4d7f7ce4bc0603b68e57b15b8e\n[task] event=reclaimed pid=28 pages=12391\r\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-std=gnu++20' '-o' '/out/native/direct_cpp.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_cpp.elf-'\n as -o /tmp/cca00025.o /tmp/cc000025.s\n[process] event=started pid=29 parent=25\r\n[process] pid=29 address_space=0x00000000007c6000\r\n[process] event=wait_blocked parent=25 child=29\r\n[task] event=reclaimed pid=29 pages=647\r\nCOMPILER_PATH=/usr/libexec/gcc/x86_64-elf/16.2.0/:/usr/libexec/gcc/x86_64-elf/16.2.0/:/usr/libexec/gcc/x86_64-elf/:/usr/lib/gcc/x86_64-elf/16.2.0/:/usr/lib/gcc/x86_64-elf/\nLIBRARY_PATH=/usr/lib/gcc/x86_64-elf/16.2.0/:/sysroot/usr/lib/\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-std=gnu++20' '-o' '/out/native/direct_cpp.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_cpp.elf.'\n /usr/bin/x86_64-elf-ld --sysroot=/sysroot -m elf_x86_64 -static -T /sysroot/user.ld -L /sysroot/usr/lib --build-id=none -z noexecstack -z max-page-size=4096 -o /out/native/direct_cpp.elf /sysroot/usr/lib/xos_start.o /sysroot/usr/lib/crti.o /sysroot/usr/lib/crtbegin.o /sysroot/usr/lib/xos_start_c.o /sysroot/usr/lib/xos_stdio_receiver.o -L/usr/lib/gcc/x86_64-elf/16.2.0 -L/sysroot/usr/lib /tmp/cc000025.o /tmp/cca00025.o -lstdc++ -lm --start-group /sysroot/usr/lib/libstdc++.a /sysroot/usr/lib/libsupc++.a /sysroot/usr/lib/libc.a /sysroot/usr/lib/libm.a /sysroot/usr/lib/libxos_terminal.a /sysroot/usr/lib/libgcc.a --end-group /sysroot/usr/lib/crtend.o /sysroot/usr/lib/crtn.o\n[process] event=started pid=30 parent=25\r\n[process] pid=30 address_space=0x00000000007ca000\r\n[process] event=wait_blocked parent=25 child=30\r\n/usr/bin/x86_64-elf-ld: /sysroot/usr/lib/libc.a(abort.o): in function `abort':\n/repo/build/unified/sdk_c/glibc-2.44/stdlib/abort.c:77:(.text.unlikely+0xe): warning: raise is not implemented and will always fail\n[task] event=reclaimed pid=30 pages=4084\r\nCOLLECT_GCC_OPTIONS='--sysroot=/sysroot' '-v' '-std=gnu++20' '-o' '/out/native/direct_cpp.elf' '-mtune=generic' '-march=x86-64' '-dumpdir' '/out/native/direct_cpp.elf.'\n[task] event=reclaimed pid=25 pages=760\r\n[wait] pid=25 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "direct_cpp_execute",
+      "output": "/out/native/direct_cpp.elf\n[process] event=started pid=31 parent=7\r\n[process] pid=31 address_space=0x0000000000353000\r\n[loader] started pid=31 file=/out/native/direct_cpp.elf\n[process] event=wait_blocked parent=7 child=31\r\nSL3_CPP_OK\n[task] event=reclaimed pid=31 pages=269\r\n[wait] pid=31 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gnu_make_from_xsh",
+      "output": "gmake -B -r -f /src/native/project.mk all\n[process] event=started pid=32 parent=7\r\n[process] pid=32 address_space=0x0000000000353000\r\n[loader] started pid=32 file=/usr/bin/gmake\n[process] event=wait_blocked parent=7 child=32\r\nx86_64-elf-gcc -std=gnu11 -O2 --sysroot=/sysroot -c /src/native/project_c.c -o /out/native/project_c.o\n[process] event=started pid=33 parent=32\r\n[process] pid=33 address_space=0x000000000062e000\r\n[process] event=wait_blocked parent=32 child=0\r\n[process] event=started pid=34 parent=33\r\n[process] pid=34 address_space=0x0000000000920000\r\n[process] event=wait_blocked parent=33 child=34\r\n[task] event=reclaimed pid=34 pages=11991\r\n[process] event=started pid=35 parent=33\r\n[process] pid=35 address_space=0x0000000000920000\r\n[process] event=wait_blocked parent=33 child=35\r\n[task] event=reclaimed pid=35 pages=645\r\n[task] event=reclaimed pid=33 pages=754\r\nx86_64-elf-gcc -std=gnu11 -O2 --sysroot=/sysroot -c /src/native/project_value.c -o /out/native/project_value.o\n[process] event=started pid=36 parent=32\r\n[process] pid=36 address_space=0x000000000064d000\r\n[process] event=wait_blocked parent=32 child=0\r\n[process] event=started pid=37 parent=36\r\n[process] pid=37 address_space=0x000000000093f000\r\n[process] event=wait_blocked parent=36 child=37\r\n[task] event=reclaimed pid=37 pages=11754\r\n[process] event=started pid=38 parent=36\r\n[process] pid=38 address_space=0x000000000093f000\r\n[process] event=wait_blocked parent=36 child=38\r\n[task] event=reclaimed pid=38 pages=643\r\n[task] event=reclaimed pid=36 pages=754\r\nx86_64-elf-ar rc /out/native/libvalue.a /out/native/project_value.o\n[process] event=started pid=39 parent=32\r\n[process] pid=39 address_space=0x000000000064d000\r\n[process] event=wait_blocked parent=32 child=0\r\n[task] event=reclaimed pid=39 pages=390\r\nx86_64-elf-ranlib /out/native/libvalue.a\n[process] event=started pid=40 parent=32\r\n[process] pid=40 address_space=0x000000000064d000\r\n[process] event=wait_blocked parent=32 child=0\r\n[task] event=reclaimed pid=40 pages=387\r\nx86_64-elf-gcc -static --sysroot=/sysroot -Wl,-Map,/out/native/c.map /out/native/project_c.o /out/native/libvalue.a -o /out/native/c.elf\n[process] event=started pid=41 parent=32\r\n[process] pid=41 address_space=0x000000000064d000\r\n[process] event=wait_blocked parent=32 child=0\r\n[process] event=started pid=42 parent=41\r\n[process] pid=42 address_space=0x0000000000942000\r\n[process] event=wait_blocked parent=41 child=42\r\n/usr/bin/x86_64-elf-ld: /sysroot/usr/lib/libc.a(abort.o): in function `abort':\n/repo/build/unified/sdk_c/glibc-2.44/stdlib/abort.c:77:(.text.unlikely+0xe): warning: raise is not implemented and will always fail\n[task] event=reclaimed pid=42 pages=7332\r\n[task] event=reclaimed pid=41 pages=757\r\nx86_64-elf-g++ -std=gnu++20 -O2 --sysroot=/sysroot -c /src/native/project_cpp.cpp -o /out/native/project_cpp.o\n[process] event=started pid=43 parent=32\r\n[process] pid=43 address_space=0x000000000064d000\r\n[process] event=wait_blocked parent=32 child=0\r\n[process] event=started pid=44 parent=43\r\n[process] pid=44 address_space=0x0000000000941000\r\n[process] event=wait_blocked parent=43 child=44\r\n[task] event=reclaimed pid=44 pages=24618\r\n[process] event=started pid=45 parent=43\r\n[process] pid=45 address_space=0x0000000000941000\r\n[process] event=wait_blocked parent=43 child=45\r\n[task] event=reclaimed pid=45 pages=664\r\n[task] event=reclaimed pid=43 pages=756\r\nx86_64-elf-g++ -std=gnu++20 -O2 --sysroot=/sysroot -c /src/native/project_cpp_value.cpp -o /out/native/project_cpp_value.o\n[process] event=started pid=46 parent=32\r\n[process] pid=46 address_space=0x000000000064d000\r\n[process] event=wait_blocked parent=32 child=0\r\n[process] event=started pid=47 parent=46\r\n[process] pid=47 address_space=0x0000000000941000\r\n[process] event=wait_blocked parent=46 child=47\r\n[task] event=reclaimed pid=47 pages=12573\r\n[process] event=started pid=48 parent=46\r\n[process] pid=48 address_space=0x0000000000941000\r\n[process] event=wait_blocked parent=46 child=48\r\n[task] event=reclaimed pid=48 pages=648\r\n[task] event=reclaimed pid=46 pages=756\r\nx86_64-elf-g++ -static --sysroot=/sysroot -Wl,-Map,/out/native/cpp.map /out/native/project_cpp.o /out/native/project_cpp_value.o -o /out/native/cpp.elf\n[process] event=started pid=49 parent=32\r\n[process] pid=49 address_space=0x000000000064d000\r\n[process] event=wait_blocked parent=32 child=0\r\n[process] event=started pid=50 parent=49\r\n[process] pid=50 address_space=0x0000000000945000\r\n[process] event=wait_blocked parent=49 child=50\r\n/usr/bin/x86_64-elf-ld: /sysroot/usr/lib/libc.a(abort.o): in function `abort':\n/repo/build/unified/sdk_c/glibc-2.44/stdlib/abort.c:77:(.text.unlikely+0xe): warning: raise is not implemented and will always fail\n[task] event=reclaimed pid=50 pages=8826\r\n[task] event=reclaimed pid=49 pages=760\r\n[process] event=started pid=51 parent=32\r\n[process] pid=51 address_space=0x000000000064d000\r\n[process] event=wait_blocked parent=32 child=0\r\nGLIBC_GNU_SEED_MAKE_OK\n[task] event=reclaimed pid=51 pages=317\r\n[task] event=reclaimed pid=32 pages=379\r\n[wait] pid=32 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "make_c_execute",
+      "output": "/out/native/c.elf\n[process] event=started pid=52 parent=7\r\n[process] pid=52 address_space=0x0000000000353000\r\n[loader] started pid=52 file=/out/native/c.elf\n[process] event=wait_blocked parent=7 child=52\r\nGLIBC_GNU_SEED_C=2.44\n[task] event=reclaimed pid=52 pages=229\r\n[wait] pid=52 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "make_cpp_execute",
+      "output": "/out/native/cpp.elf\n[process] event=started pid=53 parent=7\r\n[process] pid=53 address_space=0x0000000000353000\r\n[loader] started pid=53 file=/out/native/cpp.elf\n[process] event=wait_blocked parent=7 child=53\r\nSL3_CPP_OK\n[task] event=reclaimed pid=53 pages=267\r\n[wait] pid=53 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "gnu_make_from_dash",
+      "output": "dash /src/native/build.sh\n[process] event=started pid=54 parent=7\r\n[process] pid=54 address_space=0x0000000000353000\r\n[loader] started pid=54 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=54\r\n[process] event=started pid=55 parent=54\r\n[process] pid=55 address_space=0x000000000060f000\r\n[process] event=wait_blocked parent=54 child=55\r\nx86_64-elf-gcc -std=gnu11 -O2 --sysroot=/sysroot -c /src/native/project_c.c -o /out/native/project_c.o\n[process] event=started pid=56 parent=55\r\n[process] pid=56 address_space=0x000000000076b000\r\n[process] event=wait_blocked parent=55 child=0\r\n[process] event=started pid=57 parent=56\r\n[process] pid=57 address_space=0x0000000000a5d000\r\n[process] event=wait_blocked parent=56 child=57\r\n[task] event=reclaimed pid=57 pages=11991\r\n[process] event=started pid=58 parent=56\r\n[process] pid=58 address_space=0x0000000000a5d000\r\n[process] event=wait_blocked parent=56 child=58\r\n[task] event=reclaimed pid=58 pages=645\r\n[task] event=reclaimed pid=56 pages=754\r\nx86_64-elf-gcc -std=gnu11 -O2 --sysroot=/sysroot -c /src/native/project_value.c -o /out/native/project_value.o\n[process] event=started pid=59 parent=55\r\n[process] pid=59 address_space=0x000000000078a000\r\n[process] event=wait_blocked parent=55 child=0\r\n[process] event=started pid=60 parent=59\r\n[process] pid=60 address_space=0x0000000000a7c000\r\n[process] event=wait_blocked parent=59 child=60\r\n[task] event=reclaimed pid=60 pages=11754\r\n[process] event=started pid=61 parent=59\r\n[process] pid=61 address_space=0x0000000000a7c000\r\n[process] event=wait_blocked parent=59 child=61\r\n[task] event=reclaimed pid=61 pages=643\r\n[task] event=reclaimed pid=59 pages=754\r\nx86_64-elf-ar rc /out/native/libvalue.a /out/native/project_value.o\n[process] event=started pid=62 parent=55\r\n[process] pid=62 address_space=0x000000000078a000\r\n[process] event=wait_blocked parent=55 child=0\r\n[task] event=reclaimed pid=62 pages=392\r\nx86_64-elf-ranlib /out/native/libvalue.a\n[process] event=started pid=63 parent=55\r\n[process] pid=63 address_space=0x000000000078a000\r\n[process] event=wait_blocked parent=55 child=0\r\n[task] event=reclaimed pid=63 pages=387\r\nx86_64-elf-gcc -static --sysroot=/sysroot -Wl,-Map,/out/native/c.map /out/native/project_c.o /out/native/libvalue.a -o /out/native/c.elf\n[process] event=started pid=64 parent=55\r\n[process] pid=64 address_space=0x000000000078a000\r\n[process] event=wait_blocked parent=55 child=0\r\n[process] event=started pid=65 parent=64\r\n[process] pid=65 address_space=0x0000000000a7f000\r\n[process] event=wait_blocked parent=64 child=65\r\n/usr/bin/x86_64-elf-ld: /sysroot/usr/lib/libc.a(abort.o): in function `abort':\n/repo/build/unified/sdk_c/glibc-2.44/stdlib/abort.c:77:(.text.unlikely+0xe): warning: raise is not implemented and will always fail\n[task] event=reclaimed pid=65 pages=7332\r\n[task] event=reclaimed pid=64 pages=757\r\nx86_64-elf-g++ -std=gnu++20 -O2 --sysroot=/sysroot -c /src/native/project_cpp.cpp -o /out/native/project_cpp.o\n[process] event=started pid=66 parent=55\r\n[process] pid=66 address_space=0x000000000078a000\r\n[process] event=wait_blocked parent=55 child=0\r\n[process] event=started pid=67 parent=66\r\n[process] pid=67 address_space=0x0000000000a7e000\r\n[process] event=wait_blocked parent=66 child=67\r\n[task] event=reclaimed pid=67 pages=24618\r\n[process] event=started pid=68 parent=66\r\n[process] pid=68 address_space=0x0000000000a7e000\r\n[process] event=wait_blocked parent=66 child=68\r\n[task] event=reclaimed pid=68 pages=664\r\n[task] event=reclaimed pid=66 pages=756\r\nx86_64-elf-g++ -std=gnu++20 -O2 --sysroot=/sysroot -c /src/native/project_cpp_value.cpp -o /out/native/project_cpp_value.o\n[process] event=started pid=69 parent=55\r\n[process] pid=69 address_space=0x000000000078a000\r\n[process] event=wait_blocked parent=55 child=0\r\n[process] event=started pid=70 parent=69\r\n[process] pid=70 address_space=0x0000000000a7e000\r\n[process] event=wait_blocked parent=69 child=70\r\n[task] event=reclaimed pid=70 pages=12573\r\n[process] event=started pid=71 parent=69\r\n[process] pid=71 address_space=0x0000000000a7e000\r\n[process] event=wait_blocked parent=69 child=71\r\n[task] event=reclaimed pid=71 pages=648\r\n[task] event=reclaimed pid=69 pages=756\r\nx86_64-elf-g++ -static --sysroot=/sysroot -Wl,-Map,/out/native/cpp.map /out/native/project_cpp.o /out/native/project_cpp_value.o -o /out/native/cpp.elf\n[process] event=started pid=72 parent=55\r\n[process] pid=72 address_space=0x000000000078a000\r\n[process] event=wait_blocked parent=55 child=0\r\n[process] event=started pid=73 parent=72\r\n[process] pid=73 address_space=0x0000000000a82000\r\n[process] event=wait_blocked parent=72 child=73\r\n/usr/bin/x86_64-elf-ld: /sysroot/usr/lib/libc.a(abort.o): in function `abort':\n/repo/build/unified/sdk_c/glibc-2.44/stdlib/abort.c:77:(.text.unlikely+0xe): warning: raise is not implemented and will always fail\n[task] event=reclaimed pid=73 pages=8826\r\n[task] event=reclaimed pid=72 pages=760\r\n[process] event=started pid=74 parent=55\r\n[process] pid=74 address_space=0x000000000078a000\r\n[process] event=wait_blocked parent=55 child=0\r\nGLIBC_GNU_SEED_MAKE_OK\n[task] event=reclaimed pid=74 pages=317\r\n[task] event=reclaimed pid=55 pages=379\r\n[process] event=started pid=75 parent=54\r\n[process] pid=75 address_space=0x000000000060f000\r\n[process] event=wait_blocked parent=54 child=75\r\nGLIBC_GNU_SEED_C=2.44\n[task] event=reclaimed pid=75 pages=229\r\n[process] event=started pid=76 parent=54\r\n[process] pid=76 address_space=0x000000000060f000\r\n[process] event=wait_blocked parent=54 child=76\r\nSL3_CPP_OK\n[task] event=reclaimed pid=76 pages=267\r\nGLIBC_GNU_SEED_DASH_OK\n[task] event=reclaimed pid=54 pages=317\r\n[wait] pid=54 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 1,
+      "name": "undefined_symbol_rejected",
+      "output": "x86_64-elf-gcc --sysroot=/sysroot /src/native/link_error.c -o /out/native/invalid.elf\n[process] event=started pid=77 parent=7\r\n[process] pid=77 address_space=0x0000000000353000\r\n[loader] started pid=77 file=/usr/bin/x86_64-elf-gcc\n[process] event=wait_blocked parent=7 child=77\r\n[process] event=started pid=78 parent=77\r\n[process] pid=78 address_space=0x00000000007c4000\r\n[process] event=wait_blocked parent=77 child=78\r\n[task] event=reclaimed pid=78 pages=11656\r\n[process] event=started pid=79 parent=77\r\n[process] pid=79 address_space=0x00000000007c4000\r\n[process] event=wait_blocked parent=77 child=79\r\n[task] event=reclaimed pid=79 pages=643\r\n[process] event=started pid=80 parent=77\r\n[process] pid=80 address_space=0x00000000007c7000\r\n[process] event=wait_blocked parent=77 child=80\r\n/usr/bin/x86_64-elf-ld: /sysroot/usr/lib/libc.a(abort.o): in function `abort':\n/repo/build/unified/sdk_c/glibc-2.44/stdlib/abort.c:77:(.text.unlikely+0xe): warning: raise is not implemented and will always fail\n/usr/bin/x86_64-elf-ld: /tmp/cc000077.o: in function `main':\nlink_error.c:(.text+0x5): undefined reference to `sl4_missing_symbol'\n[task] event=reclaimed pid=80 pages=6751\r\n[task] event=reclaimed pid=77 pages=757\r\n[wait] pid=77 kind=exited code=1\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "cold_boot_c",
+      "output": "/out/native/c.elf\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000353000\r\n[loader] started pid=10 file=/out/native/c.elf\n[process] event=wait_blocked parent=7 child=10\r\nGLIBC_GNU_SEED_C=2.44\n[task] event=reclaimed pid=10 pages=229\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "cold_boot_cpp",
+      "output": "/out/native/cpp.elf\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000353000\r\n[loader] started pid=11 file=/out/native/cpp.elf\n[process] event=wait_blocked parent=7 child=11\r\nSL3_CPP_OK\n[task] event=reclaimed pid=11 pages=267\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    },
+    {
+      "exit_code": 0,
+      "name": "release_python_after_native_builds_and_reboot",
+      "output": "exec-file /usr/bin/python3 -B /src/native/release.py\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x0000000000353000\r\n[loader] started pid=12 file=/usr/bin/python3\n[process] event=wait_blocked parent=7 child=12\r\nCould not find platform dependent libraries <exec_prefix>\nRELEASE_PY3_THREADS_JSON_ZLIB_IDNA_OK\n[task] event=reclaimed pid=12 pages=6179\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+      "resources": [
+        129806,
+        2,
+        0
+      ]
+    }
+  ],
+  "final_disk_sha256": "eb69b56a72f256e98ee065ae5278dbdbecf4ca0570b3d68479f30ad6eb96d8e1",
+  "final_packages": {
+    "files": 57,
+    "status": "verified"
+  },
+  "fixtures": {
+    "/src/native/build.sh": "f6781306719c468e3cdf54b49c60fb1a3c1f352d44023921f7a3a78708cb5910",
+    "/src/native/link_error.c": "1f3ed118a6b55f830101187b883e7f9a84c9e799cfcb97c51b2c2eabd3c72956",
+    "/src/native/project.h": "b0ed2c4e42ec5318b46ebe07b8515ea3a79fedfdde0c387b37db16df7c13022d",
+    "/src/native/project.mk": "8b02aa01f1d7770d503a8aec28590336a769ffd20b66c5b9f46a7cb9290538b8",
+    "/src/native/project_c.c": "38810866dc546c557937a41431034a81f096b145d8212e59ff8525efde08ce32",
+    "/src/native/project_cpp.cpp": "14107406b700fb83f1a9e57b1274151c45826f3efad7d69865b8105e89fbce18",
+    "/src/native/project_cpp_value.cpp": "b460437b000a823f1e7305dc5cac09bfd6d15a896f94365ccdc67b37f47385c2",
+    "/src/native/project_value.c": "c48501ccdd8e82cd40a55d6e5f7b42d8a49080ed848e8392e6b60b7287c21ef3",
+    "/src/native/release.py": "76350439c12032ab155d1c59a4f69681901b65c32403c4510ebb2c238e09e9d4"
+  },
+  "initial_disk_sha256": "4f5885715a722c23f5de86383be385d5ea19897bb87e2a41999ea08f0e162986",
+  "initial_packages": {
+    "files": 57,
+    "status": "verified"
+  },
+  "outputs": {
+    "c.elf": {
+      "bytes": 2770488,
+      "sha256": "51dd83144f041ada42e7fc9878e95c30fbd85182eaf146009238583dd0b2c8eb"
+    },
+    "c.map": {
+      "bytes": 602309,
+      "sha256": "7d18f86314b339472a8013020fc58743ae555697253d4af5c067426dd65c4b81"
+    },
+    "cpp.elf": {
+      "bytes": 3029480,
+      "sha256": "17cbab6deebadcc173f4830f49f6fbd97317e2bff87e00ecde32f9c23d476038"
+    },
+    "cpp.map": {
+      "bytes": 1073014,
+      "sha256": "23d1e8863110a348334635e619adcd709c192631e93c992eb38f51076e5516af"
+    },
+    "direct_c.elf": {
+      "bytes": 2770488,
+      "sha256": "ed3631ceaa7973925e06a0a007def69e50e14d95c9913e10c9413ea928920127"
+    },
+    "direct_cpp.elf": {
+      "bytes": 3041536,
+      "sha256": "46602813898f4c02d81dfb4e9f81f1f9be2423aaaffe7edd38a6fa36c38a3d30"
+    },
+    "libvalue.a": {
+      "bytes": 1158,
+      "sha256": "542f2a9b2a3d75d2411431944a539ef017be210eeb40d19063d3998a08fbadbe"
+    }
+  },
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "release_manifest_sha256": "f5ace473e14a6ac9383161151889e0523126bc3dc59bc3d088f9fd589caf29d2",
+  "runner_sha256": "ac833b8693e8088773334c42b60b372fd286ea23baffea70dff75be714c3d6fe",
+  "sdk": {
+    "kit_tree_sha256": "210063063d6df9d507ca5cb4e2d52c5b458264f1dc2f6e016fe29cc8407b9ace",
+    "profile_file_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v1",
+    "profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+    "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+    "sdk_tree_sha256": "b5fa570d12e502295069ee2bb973586f7bcf1a8ba0dbaf6b2df5b268fe14b77c"
+  },
+  "seed_receipt_sha256": "c62f08b7b73faefc79ad7af575101b2f0188fb53571946f3975f8bff0874854f",
+  "status": "passed_subset",
+  "system": {
+    "build_id": "73601d7ff1c68866",
+    "iso": {
+      "bytes": 913408,
+      "sha256": "cb2e25e00e15c36ae67ff133b6d78aa88b41765f698fc8aa34a1b5dee002f3a5"
+    },
+    "manifest_sha256": "64d08ebe6ee3cd39a9af41f8322161181066b61b620b04baeafd7843285f864e",
+    "source_sha256": "73601d7ff1c688665dbe6dee72d4fea594e46dadc7b232887ba704b8d93f64d4"
+  }
+}

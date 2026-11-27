@@ -1,0 +1,29 @@
+{
+  "archive_names": [
+    "application-sdk.tar.gz",
+    "gnu-seed-sources.tar.gz",
+    "images.tar.gz",
+    "packages.tar.gz"
+  ],
+  "ownership": {
+    "files": 41,
+    "status": "verified"
+  },
+  "packages": {
+    "cpython": {
+      "files": 15,
+      "id": "xos.cpython",
+      "sha256": "2c23731b1f1728953bf604d7f0548f163b6ffcc3179b427548615e9c07ad739b"
+    },
+    "daily": {
+      "files": 26,
+      "id": "xos.daily_utilities",
+      "sha256": "c4b2b404a564d4687446caa4c88280ef09170aad6a1019ff5dec18e497aab98f"
+    }
+  },
+  "status": "passed_host_only",
+  "work_disk": {
+    "bytes": 536870912,
+    "sha256": "a4949b512f9eb275c96b7b103732a7a0080a969e64a6c3715023f7db8420d31a"
+  }
+}

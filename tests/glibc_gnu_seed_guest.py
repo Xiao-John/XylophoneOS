@@ -10,8 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 
 from build_glibc_program import verify_elf
-from glibc_release_packages_guest import boot, command
-from package_glibc_release import INSTALLER, KIT, ORDINARY, verify_disk
+from glibc_release_packages_guest import PYTHON_OK, boot, command
+from package_glibc_release import IMAGES, INSTALLER, KIT, ORDINARY, verify_assembled, verify_disk
+from package_glibc_gnu_seed import SEED_RECEIPT
 from prepare_glibc_gnu_seed import install
 from shell_launch_support import check_result
 from task_smoke import pump
@@ -36,24 +37,36 @@ def fixture_files():
 
 
 def run(args):
-    seed = args.seed_dir
-    output = args.output_dir
-    receipt = load_json(seed / 'seed_receipt.json')
+    receipts = args.seed_dir / 'seed_receipt.json'
+    receipt = load_json(receipts)
+    profile_path = args.release_dir / KIT / 'profile.json'
+    require(sha_file(profile_path) == receipt['sdk']['profile_file_sha256'], 'staged release profile differs')
+    release_digest = sha_file(args.release_dir / 'release_manifest.json')
+    require(release_digest == receipt['release_sha256'], 'staged release differs')
+    return run_seed(args.seed_dir, args.output_dir, receipts, receipt, load_json(profile_path), release_digest)
+
+
+def run_packaged(release_dir, output, python_source):
+    release, profile = verify_assembled(release_dir)
+    require('gnu_seed' in release, 'release has no packaged GNU Seed')
+    images = release_dir / IMAGES
+    path = images / SEED_RECEIPT
+    return run_seed(images, output, path, load_json(path), profile,
+                    sha_file(release_dir / 'release_manifest.json'), python_source=python_source)
+
+
+def run_seed(seed, output, receipt_path, receipt, profile, release_digest, *, python_source=None):
     firmware = {INSTALLER: receipt['installer_iso'], ORDINARY: receipt['system']['iso']}
     for name, expected in firmware.items():
         require(sha_file(seed / name) == expected['sha256'], 'staged image differs: ' + name)
-    profile_path = args.release_dir / KIT / 'profile.json'
-    require(sha_file(profile_path) == receipt['sdk']['profile_file_sha256'], 'staged release profile differs')
-    profile = load_json(profile_path)
     glibc_version = profile['sdk_binding']['libc_version']
-    require(sha_file(args.release_dir / 'release_manifest.json') == receipt['release_sha256'],
-            'staged release differs')
     source = seed / 'work_disk.img'
     require(sha_file(source) == receipt['work_disk_sha256'], 'staged disk differs')
     output.mkdir(parents=True, exist_ok=False)
     work = output / 'work_disk.img'
     report = {'status': 'failed', 'system': receipt['system'], 'sdk': receipt['sdk'],
-              'seed_receipt_sha256': sha_file(seed / 'seed_receipt.json'),
+              'seed_receipt_sha256': sha_file(receipt_path), 'release_manifest_sha256': release_digest,
+              'initial_disk_sha256': receipt['work_disk_sha256'],
               'runner_sha256': sha_file(Path(__file__)), 'cases': []}
     guest = None
 
@@ -79,6 +92,10 @@ def run(args):
         sparse_copy(source, work)
         require(sha_file(work) == receipt['work_disk_sha256'], 'staged disk copy differs')
         files = fixture_files()
+        if python_source is not None:
+            python_fixture = output / 'release.py'
+            python_fixture.write_text(python_source)
+            files['/src/native/release.py'] = python_fixture
         with Disk(work, output) as disk:
             install(disk, files)
             disk.command('mkdir', '/out/native')
@@ -95,6 +112,9 @@ def run(args):
                 exported.unlink()
         guest = boot(seed / ORDINARY, work, output, 'ordinary', receipt['system']['build_id'])
         c_ok = ('GLIBC_GNU_SEED_C=' + glibc_version).encode()
+        if python_source is not None:
+            case('release_python_before_native_builds', 'exec-file /usr/bin/python3 -B /src/native/release.py',
+                 lines=(PYTHON_OK,))
         case('gcc_version', 'x86_64-elf-gcc --version', text=(b'16.2.0',))
         case('gxx_version', 'x86_64-elf-g++ --version', text=(b'16.2.0',))
         case('gnu_make_version', 'gmake --version', lines=(b'GNU Make 4.4.1',))
@@ -119,6 +139,9 @@ def run(args):
         guest = boot(seed / ORDINARY, work, output, 'reboot', receipt['system']['build_id'])
         case('cold_boot_c', '/out/native/c.elf', lines=(c_ok,))
         case('cold_boot_cpp', '/out/native/cpp.elf', lines=(b'SL3_CPP_OK',))
+        if python_source is not None:
+            case('release_python_after_native_builds_and_reboot', 'exec-file /usr/bin/python3 -B /src/native/release.py',
+                 lines=(PYTHON_OK,))
         close()
 
         report['outputs'] = {}
@@ -151,6 +174,7 @@ def run(args):
         if guest is not None:
             close()
         (output / 'report.json').write_bytes(canonical(report))
+    return report
 
 
 def main():

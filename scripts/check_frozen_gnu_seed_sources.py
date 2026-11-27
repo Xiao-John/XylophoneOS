@@ -4,6 +4,7 @@
 import argparse
 import hashlib
 import json
+import shutil
 from pathlib import Path
 import tarfile
 
@@ -18,7 +19,7 @@ CORRESPONDENCE = (
 )
 
 
-def verify(folder):
+def verify(folder, *, material_root=None):
     frozen = load_json(FROZEN)
     assets = {record['name']: record for record in frozen['assets']}
     folder_name = 'xos-' + frozen['version'] + '-sources'
@@ -41,8 +42,15 @@ def verify(folder):
             require(entry.isfile() and entry.size == expected['bytes'],
                     'frozen correspondence size differs: ' + name)
             with archive.extractfile(entry) as stream:
-                require(hashlib.file_digest(stream, 'sha256').hexdigest() == expected['sha256'],
-                        'frozen correspondence bytes differ: ' + name)
+                if material_root is None:
+                    digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+                else:
+                    output = material_root / name
+                    output.parent.mkdir(parents=True, exist_ok=True)
+                    with output.open('xb') as dest:
+                        shutil.copyfileobj(stream, dest, 1 << 20)
+                    digest = sha_file(output)
+                require(digest == expected['sha256'], 'frozen correspondence bytes differ: ' + name)
         require(inventory[SEED_RECORD]['sha256'] == release['seed_manifest_sha256'],
                 'source and release name different GNU Seed build manifests')
         with archive.extractfile(member_prefix + SEED_RECORD) as stream:

@@ -155,6 +155,11 @@ def verify_materials(manifest, hashes, sdk):
             and all(inventory['make/port/' + name]['sha256'] == digest for name, digest in make['inputs'].items())
             and hashes['/usr/share/licenses/gnu_make/COPYING'] == notices['src/ports/gnu_make/upstream/COPYING'],
             'GNU Make source or port recipe is incomplete')
+    expected_files = {'frozen/' + name for name in (SEED_RECORD, *CORRESPONDENCE)}
+    expected_files.update('notices/' + name for name in notices)
+    expected_files.update('make/port/' + name for name in make_inputs)
+    expected_files.update((source, source + '.sig', 'make/gnu-keyring.gpg'))
+    require(set(inventory) == expected_files, 'GNU Seed source archive has unexpected material')
     require(set(frozen['tools']) == set(TOOLS)
             and all(hashes[name] == digest for name, digest in frozen['tools'].items())
             and make['elf_sha256'] == hashes[MAKE_PATH]

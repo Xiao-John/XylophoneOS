@@ -211,11 +211,13 @@ def release_checksums(root, release):
     return ''.join(f'{digest}  {name}\n' for name, digest in sorted(assets.items())).encode()
 
 
-def verify_archive_members(archive_path, expected):
-    paths = {PurePosixPath(name) for name in expected}
-    require(all(not path.is_absolute() and '..' not in path.parts for path in paths),
+def verify_archive_members(archive_path, expected, *, directories=()):
+    paths = {name: PurePosixPath(name) for name in (*expected, *directories)}
+    require(all(path.parts and not path.is_absolute() and '..' not in path.parts
+                and path.as_posix() == name for name, path in paths.items()),
             'release archive member path is invalid')
-    parents = {parent.as_posix() for path in paths for parent in path.parents if parent.parts}
+    parents = {parent.as_posix() for path in paths.values() for parent in path.parents if parent.parts}
+    parents.update(directories)
     pending = dict(expected)
     seen = set()
     with tarfile.open(archive_path, 'r|gz') as archive:
@@ -230,7 +232,7 @@ def verify_archive_members(archive_path, expected):
             with archive.extractfile(entry) as stream:
                 require(hashlib.file_digest(stream, 'sha256').hexdigest() == record['sha256'],
                         'release archive entry differs: ' + entry.name)
-    require(not pending, 'release archive inventory is incomplete')
+    require(not pending and set(directories) <= seen, 'release archive inventory is incomplete')
 
 
 def verify_disk(disk, profile, packages):
@@ -279,7 +281,10 @@ def verify_assembled(root):
                 'GNU Seed release checksums differ')
         verify_seed(release, profile, root, disk)
         for name in (IMAGES, KIT, 'packages'):
+            tree = root / name
             files = {path.relative_to(root).as_posix(): artifact(path)
-                     for path in (root / name).rglob('*') if path.is_file()}
-            verify_archive_members(relative_file(root, name + '.tar.gz'), files)
+                     for path in tree.rglob('*') if path.is_file()}
+            directories = {path.relative_to(root).as_posix() for path in (tree, *tree.rglob('*'))
+                           if path.is_dir()}
+            verify_archive_members(relative_file(root, name + '.tar.gz'), files, directories=directories)
     return release, profile

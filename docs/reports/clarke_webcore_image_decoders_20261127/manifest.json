@@ -1,0 +1,10 @@
+{
+  "files": {
+    "before_bgra.json": "0bc7b70cafc735d66e3ba0aea1be23e2469ebc06f14f9c1bfb0bb14b7d52a4c0",
+    "before_bgra.serial.log.gz": "067fc5f06c4d0cbb2d90f93626ca62001b998b73c85ba6cd89541cf4792cbcbd",
+    "guest.json": "97d306781d4a2d020db84c6f2bf1fa3b0654055ed75a267294454d5411ac1e95",
+    "guest.serial.log.gz": "cfa7a0ec546c89a2beab38a51c6c56c7950b442d780308eb49c8c910c5b5800d",
+    "target.json": "b1b3c28b96fa0199e2ff861f364fe6a0901dbc271752e634d32dbc6be22619da"
+  },
+  "version": 1
+}

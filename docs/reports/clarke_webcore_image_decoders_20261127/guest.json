@@ -1,0 +1,19 @@
+{
+  "elf_sha256": "9f082a3272a5bf543682ec317dd1898266958229ec75e63c002bbb2ceaf1b501",
+  "image_sha256": "dfd82cd3b3ccd2327ea29d5d8c8044980aade5e9cba7bdaaf62403d95c1265ba",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "1841d8c7f903285ce3088bf48690c80c01015f15595cccb752206d5575a2296f",
+  "status": "passed_subset",
+  "system_build_id": "450a2889490fd408",
+  "system_manifest_sha256": "95eca3ac1ef43310c0df69ce54aca1b781ab5cdc8ddd580ddb808f02c88bbc84",
+  "system_tree": "6aef934361cafc41c4364ffb0eaa92f658927bf0"
+}

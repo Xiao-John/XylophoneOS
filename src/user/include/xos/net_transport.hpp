@@ -34,16 +34,24 @@ public:
     void close() { session_.close(); }
     // Use the authenticated session's single resolver ticket. The caller still
     // owns application policy and uses the returned route with normal open().
-    i64 resolve_ipv4(const char* name, u32 length, u64 deadline, resolve_reply& answer) {
+    using resolve_cancel_check = bool (*)(const void*);
+    i64 resolve_ipv4(const char* name, u32 length, u64 deadline, resolve_reply& answer,
+                     resolve_cancel_check should_cancel = nullptr, const void* context = nullptr) {
         answer = {};
+        const auto cancelled = [&] { return should_cancel && should_cancel(context); };
+        if (cancelled()) return closed;
         config_snapshot configuration{};
         i64 result = session_.configuration(deadline, configuration);
         if (result) return result;
-        if (configuration.mode != network_mode::static_direct) return closed;
+        if (configuration.mode != network_mode::static_direct || cancelled()) return closed;
         u64 ticket = 0;
         result = session_.resolve_start(name, length, deadline, ticket);
         if (result) return result;
         for (;;) {
+            if (cancelled()) {
+                if (session_.resolve_cancel(ticket, deadline)) close();
+                return closed;
+            }
             result = session_.resolve_result(ticket, deadline, answer);
             if (result != would_block) break;
             result = pause(deadline);

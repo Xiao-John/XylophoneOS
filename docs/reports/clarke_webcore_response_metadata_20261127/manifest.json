@@ -1,0 +1,10 @@
+{
+  "files": {
+    "authentication.json": "04fa2fb561be5d659fde73a607effc4346f56b024e102a0f8f7530405a4677f8",
+    "authentication.serial.log.gz": "e40c303c846b24bdc3b3c3348d8acf1579756ca66bb6d7afcd8299f8332f74a3",
+    "certificate.json": "c8b2e98e009910ea3215d9206b934e6a601ed0cc19241b24c741b1906ed7a1e2",
+    "certificate.serial.log.gz": "742f5f741e622941ee6b6f7bded686a31f1a22d8dc936ad5c333371649531285",
+    "target.json": "5d637dc9d6a76f881d91d8d6f5dabe7419624b1eb1c8b646ba2fd28190647ccb"
+  },
+  "version": 1
+}

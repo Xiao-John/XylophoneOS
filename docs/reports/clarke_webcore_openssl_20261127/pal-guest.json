@@ -1,0 +1,28 @@
+{
+  "base_tree": "a0fb3977a46d7cd34ab868848e9c4668a789d451",
+  "checks": [
+    "streamed SHA-1",
+    "streamed SHA-256",
+    "streamed SHA-384",
+    "streamed SHA-512",
+    "exit zero",
+    "exact resource recovery"
+  ],
+  "elf_sha256": "e4acd538656e499e047c1513e91c5fcdbae3aaa69ecf51d87c1e34e73879727e",
+  "guest_runner_sha256": "46cb6d8ab52ebb02d667ac28908136ef0dc1bed3816eaca6d8f018327bd72aa3",
+  "image_sha256": "30a2e2ff60220a03e23c86d0467fbc0f4816ebe738aabad436391b0861c636b6",
+  "resources_after": [
+    129709,
+    3,
+    1
+  ],
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "serial_sha256": "1e578ce74927b4e002d51694d199dae6026272294ec487b6b420a950edc8c209",
+  "status": "passed_subset",
+  "system_build_id": "bdb3b5e6c3578aa9",
+  "system_manifest_sha256": "744579762bcfb81f18209f54266fb6dc604eae0b38c9c6c15b9f09c7cbe3e104"
+}

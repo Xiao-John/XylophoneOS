@@ -1,0 +1,58 @@
+{
+  "answer": "192.0.2.45",
+  "build_id": "c8afe20db9c3005d",
+  "capture_sha256": "73b3a760f790b988fc2f2b178cca744b565b64d871599c4861762f61db81dec3",
+  "captured_dns_queries": 3,
+  "cases": {
+    "answer_nxdomain_single_cancel_and_id_reuse": "passed",
+    "stopped_service": "passed",
+    "wrong_service_pid": "passed"
+  },
+  "elf_sha256": "43da047883eec63faa112aff46e05bac2110f870729ba98fef4430c702f3dbf9",
+  "fat_readback_sha256": "43da047883eec63faa112aff46e05bac2110f870729ba98fef4430c702f3dbf9",
+  "fixture_sha256": "4ee6131301b0bf34cfb0f0abd23e2ace6b5e005aeb1f3d7f6c1ead78f7eceefb",
+  "iso_sha256": "8d1bfb280a58abdd2b1171ac6e823c560f5383b3816487d1342218d928633698",
+  "link_receipt_sha256": "7675605baa9a117347259c519571a9400ada56303998a6eccee3f603e867cc15",
+  "net2_headers": {
+    "src/shared/include/xos/net_service_abi.hpp": "14a7cb20681ef4b48f59c2458acb4d31e482934abc264cb7283e416d32a273f0",
+    "src/user/include/xos/net_service_client.hpp": "81f59343ac8da95a5e3c9feba86f10269b5d88c46aad64d21ce975097cf0de98",
+    "src/user/include/xos/net_transport.hpp": "f0b51ddb1d1b23a2d73f6f99b60a3eaeb76e47f5f1bafde9899191bd4898b44f"
+  },
+  "qemu_version": "QEMU emulator version 11.1.2",
+  "resources_after": [
+    129690,
+    3,
+    1
+  ],
+  "resources_before": [
+    129690,
+    3,
+    1
+  ],
+  "runner_sha256": "729dbb4c53b039a3fa9d13b918d0de2d54bb892d32bc817114f7bc18d4464844",
+  "sdk_manifest_sha256": "a9a66e5512346eeea3b734942536b636cf5ba953a0a9f336bcbfe057e5dc98d9",
+  "serial_sha256": "d9788b47a6270e00fb0e04f8b310efef570e1f0179f05052126d6de7420ef261",
+  "software_source_lock_sha256": "8e525b5dea709db1754765fc8129fcbba866a5772a60acac2ebc35e747aaee92",
+  "status": "passed_subset",
+  "system_manifest_sha256": "26db7161206ff7e814758cafb71426c73b1022cccc0bb94efe4e26f89ef42db2",
+  "transactions": [
+    {
+      "question_sha256": "4cce9156d93751e66bcf802572334f567a93df1a379acc8c2fe3f62bfed5d557",
+      "retries": 0,
+      "source_port": 31416,
+      "transaction_id": 25142
+    },
+    {
+      "question_sha256": "c3750018b2767272a2ae9d00ba68b150e8fefe03ab00fa084201685eeb4dbf6b",
+      "retries": 0,
+      "source_port": 35022,
+      "transaction_id": 53499
+    },
+    {
+      "question_sha256": "f99d132513a808abb6db026076d4b2dc832f6766f4e5ae22e6b4080055713186",
+      "retries": 0,
+      "source_port": 30227,
+      "transaction_id": 65298
+    }
+  ]
+}

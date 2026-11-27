@@ -1,0 +1,55 @@
+{
+  "compiler_sha256": "b19620baa8aea69a02136bde577568987a5003f88c231fed16d09990a46c1eb9",
+  "elf_sha256": "25f797944c743e0850d602b6565f5092ed5ee4b9dad0db5b6728a58043ff7759",
+  "fixture_sha256": "a6b1dfe26a7e1aafe448fb31b46d50921461f7495361d504fb746a9b934ebd6c",
+  "generated_compile_commands_sha256": "6a58edc593e3aaababce98394a5c43acd1fcfbed58bc16d963b0f56ee57a9f6c",
+  "generated_webcore_units_with_codec_headers": 2172,
+  "gnu_replay_sha256": "7faa0e1f824a445c70ab53b0a8c9b08afb77818935f8de380e493da2508f13e0",
+  "link_command_sha256": "48b59dd6f7da5eb242f764f360c26c1bc6cb538ffa9546c32a0bde6ef9fe41f2",
+  "objects": {
+    "AV1Utilities.cpp.o": {
+      "command_sha256": "2215105021219b36912d9bf0ad888dc7ecd1e671e8fb6f59b52f5209d9b26ae4",
+      "object_sha256": "627b5bf09328b1b7c30ace28fb3677283cb35954b00a24c1229f92eeb977a53c"
+    },
+    "BitReader.cpp.o": {
+      "command_sha256": "993e2ab950d0724e38a3701ca8924e82f28100c513be1ded0ca58cebdf4de1bb",
+      "object_sha256": "90abf08efd83657f69897396fd5e1d2913f5d9a538f5327a01322e1990f001c4"
+    },
+    "ISOTrackEncryptionBox.cpp.o": {
+      "command_sha256": "e25d7339368d990542d9fd86eee073d80a8ef1a4a3f20dee915918e5811de7b5",
+      "object_sha256": "52b653b2c71362e44696184bc86b5036b5bf25c0e37f67a11e3a182c09e29cde"
+    },
+    "SharedBuffer.cpp.o": {
+      "command_sha256": "68fc43516070e8779c73079007551796bb9e2c1cafe9e27278c74f84820df775",
+      "object_sha256": "acbd7bcca783444c33bdd3c808f18869cd08c0ca366c365f4da5fc116d57c1f3"
+    },
+    "VP9Utilities.cpp.o": {
+      "command_sha256": "72b3d7da89fab4600acefef6560fc6bf20ada8bad84724d5bf8a74071a4beb04",
+      "object_sha256": "805f633b314a88468ef82c879e24645710aaacefb1912af3b046a0d8943a6d97"
+    },
+    "WOFFFileFormat.cpp.o": {
+      "command_sha256": "863a262be7ef115fe2451abb365747208029781ebffb3e9ee69ef1f72af5666c",
+      "object_sha256": "912088c982128e3a8f0a09ca18a546ed412ffc057a6a4001485a34263f374110"
+    },
+    "woff-fixture.o": {
+      "command_sha256": "40392ae31a4a2c69ea2f247304b1e1e17b7fd9ba78674e9d751156287957b212",
+      "object_sha256": "688d4d2f6cd82f1742d02932fcf139c4ff4a6ff9d7c48d329c033541ab9355cd"
+    }
+  },
+  "patch_sha256": "9e2cecd7698b3db3aba1bb4422d1e2b964f0117546b73df48b31ef93c2cfadae",
+  "prepared_manifest_sha256": "c7d6f94b3bd552d149c2f092d6ab0affaa9d471a934b0466242debbdee13e48b",
+  "sdk_manifest_sha256": "b21c8b6388d85a66845c815e486e7f94f21099f914367827d684715f272a892f",
+  "sdk_profile_sha256": "97385873d525a3b8870b21a2e57cf04a7b357061bbc17f15edda65b9a842cb0c",
+  "source_commit": "be8e5b6851e20c0e58626dd607a9eda13afef522",
+  "source_lock_sha256": "5b710ace664113b5e95853e872271b9f34753ce960effe4186b7ae9e784ea07b",
+  "source_patch_count": 25,
+  "target_archive_sha256": {
+    "libWTF.a": "3c53b5f0494f4e65da64147a0328af99f39cb6c716a2d9c0e9d4f93d403deddd",
+    "libbmalloc.a": "56e0f9d6477b62a2a12a48208e6b928c878947aa4a601c82e37eefebaa1017e9",
+    "libicudata.a": "0b5168e5c536398e4985e56bb6bf6a8a6ddabcd0886e8b81913debe6a80caf52",
+    "libicui18n.a": "998d7813a329cc285761591110dc474d4f04321275a792cd7fbc65ee9c5af4b9",
+    "libicuuc.a": "4522f869acd9193e5f527efca375790938aac9e803ef509df11effd9f9452c83",
+    "libskia_raster.a": "0defabc3cd586e3940a9027802d6666d8e43cf7f836e4228e0a88f152ab351c4",
+    "libz.a": "a0c4831c3aab6525dd84173dc22133c6e67976403e1987d3ecf4dace64a25351"
+  }
+}

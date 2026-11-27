@@ -1,0 +1,11 @@
+{
+  "files": {
+    "guest.json": "ff3b8e7f0409a023629453d7b46341174969e844532175ddc9dec2693d0f4d1f",
+    "guest.serial.log.gz": "057f56cfce5142041a77e4dd72e210244b5983f998580173ba3a9f7037c2e9e6",
+    "initial.serial.log.gz": "f8333687e8a1d8f00cd55dbf4ec69f409a69a38d1984f100164e749fde93439c",
+    "initial_fixture.json": "6c68971e37e6a23387939039d9d69491873d8166bb5fc11b2ea4c2b7e469b24d",
+    "initial_link.json": "f8f909c4a6e40ba8db894ce1eff600f1b583386dc5b1d4f3a2a7a84927f211c2",
+    "target.json": "42942c942558715acd0bf0ace4a74aad1a24875676298aecc9c73964c52422d0"
+  },
+  "version": 1
+}

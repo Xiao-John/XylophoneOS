@@ -65,4 +65,10 @@ CPython 的 SSL、Pillow、SQLite、其他压缩模块及扩展，ncursesw/Vim�
 其中的 xypm 重链接归档独立得到发行 ELF。暂存输出带外层清单和完整校验表。
 [发行资产暂存](../work_log/cc50f79b_glibc_v2_distribution_supplements.md)
 
+主线 `960fce43` 的 v2 候选已从实际保留归档完成包生命周期、原生 GNU 工具和
+接收方 SDK 复验。GNU Make 通过 Xshell、Dash 和冷启读回。IDNA 测试修订在实际
+发行盘通过同步中断、内置恢复和冷启重试。当前暂存清单仍需覆盖 glibc 上游源码及
+其余静态程序的替换材料。
+[同候选组合与接收方复验](../work_log/960fce43_glibc_v2_current_release.md)
+
 当前默认发行仍由原配方生产。切换和 newlib 退役以完成上述实际证据和最终组合为准。

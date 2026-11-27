@@ -1,0 +1,59 @@
+{
+  "assembled_disk_sha256": "d3c51769258094448a30b57d6028456405888b0501ceebad4ad178234c26df45",
+  "build_id": "1f593b6ca9cd7904",
+  "checks": [
+    "installer_idempotent_package_setup_and_python_smoke",
+    "cold_ordinary_python_and_native_ownership",
+    "native_foreign_package_rejected_without_transaction",
+    "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+  ],
+  "final_disk_sha256": "83825a88b83bf8843b58f317ff8eec6de30d2b842d4afee00c5594dacafd2f65",
+  "foreign_package_sha256": "9696201a8025f12e6f2fc8a3948dcb78711074513197798f57cb8e2e0eaa1e02",
+  "initial_disk": {
+    "files": 57,
+    "status": "verified"
+  },
+  "installed_disk": {
+    "files": 57,
+    "status": "verified"
+  },
+  "installer_iso_sha256": "ace82cc2c0c68b11f58d15dbb6b28d6751d26ef5ad7fa3f09b26ed0befe74b67",
+  "installer_resources": [
+    125920,
+    2,
+    0
+  ],
+  "ordinary_iso_sha256": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+  "ordinary_resources": [
+    129806,
+    2,
+    0
+  ],
+  "packages": {
+    "cpython": {
+      "files": 15,
+      "id": "xos.cpython",
+      "sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b"
+    },
+    "daily": {
+      "files": 26,
+      "id": "xos.daily_utilities",
+      "sha256": "e41cc466fd96119f3132cd5a8661f16fec5dbe5947a2ca27f030c7c4a4ffc192"
+    },
+    "wheel": {
+      "files": 16,
+      "id": "python_idna",
+      "sha256": "0b1f99369213b2ceb68be9493b8b7a5f85bf99bb2d64587a72bcffb81f532bee"
+    }
+  },
+  "preserved_user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e",
+  "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+  "python_fixture_sha256": "76350439c12032ab155d1c59a4f69681901b65c32403c4510ebb2c238e09e9d4",
+  "qemu": "QEMU emulator version 11.1.2",
+  "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+  "remaining_disk": {
+    "files": 15,
+    "status": "verified"
+  },
+  "status": "passed_subset"
+}

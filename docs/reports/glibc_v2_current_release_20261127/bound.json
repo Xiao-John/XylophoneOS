@@ -1,0 +1,156 @@
+{
+  "status": "passed_subset",
+  "candidate_source_commit": "960fce4347f193f13f5214caee153a03891ab100",
+  "source_tree": "bedf0a786851ff4330d5e9bfa3a72afea6d2fb64",
+  "build_id": "1f593b6ca9cd7904",
+  "candidate_manifest_sha256": "d08ca5ce6f20fc6ad6a36ac5081d2caac464841729383f15d02a1719eb9a2cd1",
+  "application_sdk": {
+    "kit_tree_sha256": "c88b5700828fd54fe99d87e57a84386e25251fc76788acad2df8bab6e77f9c5f",
+    "profile_file_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "profile_id": "xos-x86_64-glibc-unified-cxx-v2",
+    "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+    "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+    "sdk_tree_sha256": "b2fa4f696bbd81b856c25aac39018caca010fb4d55b1908f4e928b4e0c1b5642"
+  },
+  "system_artifacts": {
+    "manifest.json": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999",
+    "install_manifest.json": "abfd1ab90fa5ff8d1d52e3909742cbc86f50e12060918cdd6b44ac78d54a7238",
+    "xos-install.iso": "6b7c91b48516010dffd48c1697323ad1ae3b7381af32ab21a7a4d8a891252bbb",
+    "xos-install-dash.iso": "ace82cc2c0c68b11f58d15dbb6b28d6751d26ef5ad7fa3f09b26ed0befe74b67",
+    "sdk/manifest.json": "83803b1d5ab321dbfea9a8ff69c7a2645999f26a62e5e5ff4b61a7f2a5d79989"
+  },
+  "installer": {
+    "checks": 5,
+    "stock_tools": 13,
+    "exact_stock_outputs": 33,
+    "installer_receipt_sha256": "c0e9d4fbfad79991663f15419085dd319373b882edad832f2e4c31a0de111915",
+    "stock_receipt_sha256": "45abb90c8ef455e144ffae2188a351fa57fb41e4a3932cff8c6fc19756d84df0"
+  },
+  "standard_smoke": {
+    "guest_checks": 79,
+    "license_materials": 10,
+    "qemu": "11.1.2",
+    "original_log_sha256": "2ae378ffe6146ff379ef309a343016bc79173024c1d08e09a14ff5ef963ee068",
+    "abi_log_sha256": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "docs_and_allocated_syscalls_sha256": "02c53c5e2f41d615cdd81e335c3b689eb61ce5b153210d3aeec27b210eaadf43"
+  },
+  "combined_release": {
+    "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+    "work_disk_sha256": "d3c51769258094448a30b57d6028456405888b0501ceebad4ad178234c26df45",
+    "archives": {
+      "application-sdk.tar.gz": {
+        "bytes": 22797767,
+        "sha256": "9ba2618d7ac6ca0fbcb19d1258a521795436cfe713dc2c83bba6ee74b9573bef"
+      },
+      "gnu-seed-sources.tar.gz": {
+        "bytes": 182547602,
+        "sha256": "a4b181b31a8775d51f35df5dd01a8bfb9539d07cbca224a75d74b56e33e1138b"
+      },
+      "images.tar.gz": {
+        "bytes": 92531681,
+        "sha256": "9617aad75f21d98dc8c5d1eccc7686ac1a363f3ea31c616a063ef846bab21ca6"
+      },
+      "packages.tar.gz": {
+        "bytes": 11500546,
+        "sha256": "83a6ca64e236f1513c79900d7f6298c51fbdb4a1928f3e3537518f3a0c3cf55d"
+      }
+    },
+    "packages": {
+      "cpython": {
+        "files": 15,
+        "id": "xos.cpython",
+        "sha256": "24791dcffe72bb428c8b8886be4d1325114f2c571014f52139e204629019740b"
+      },
+      "daily": {
+        "files": 26,
+        "id": "xos.daily_utilities",
+        "sha256": "e41cc466fd96119f3132cd5a8661f16fec5dbe5947a2ca27f030c7c4a4ffc192"
+      },
+      "wheel": {
+        "files": 16,
+        "id": "python_idna",
+        "sha256": "0b1f99369213b2ceb68be9493b8b7a5f85bf99bb2d64587a72bcffb81f532bee"
+      }
+    },
+    "package_checks": [
+      "installer_idempotent_package_setup_and_python_smoke",
+      "cold_ordinary_python_and_native_ownership",
+      "native_foreign_package_rejected_without_transaction",
+      "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+    ],
+    "gnu_seed_cases": 20,
+    "seed_file_readback": 1376,
+    "archive_rejection_cases": [
+      "duplicate",
+      "foreign_member",
+      "mismatched_bytes",
+      "missing"
+    ],
+    "component_source_files": 135,
+    "xypm_detached_elf_sha256": "c2511d6702557e213cd181b8bd5c35a40fd5f2fe4356404b284d0ac442c0e745",
+    "distribution_manifest_sha256": "1a086c10226b56e239143ddeda30569537c758582eb8d9a3598ced5232b09fdc",
+    "distribution_checksums_sha256": "e3d6b7c4c67d7d51f190ad3fc937f9b53ddaf042a8638bd1699aa7212fccbe7c",
+    "distribution_entries": 10,
+    "retained_assets": {
+      "application-sdk.tar.gz": "9ba2618d7ac6ca0fbcb19d1258a521795436cfe713dc2c83bba6ee74b9573bef",
+      "component-sources.json": "4aeb9cd9dda62c961a25cc8b9551781b2cc1776969b064ea230916a904a2e404",
+      "component-sources.tar.gz": "999f4a90a647c83dede89dfb206b7d8e99ad37b79d49e92b7a4255e5b23bc85e",
+      "distribution_manifest.json": "1a086c10226b56e239143ddeda30569537c758582eb8d9a3598ced5232b09fdc",
+      "gnu-seed-sources.tar.gz": "a4b181b31a8775d51f35df5dd01a8bfb9539d07cbca224a75d74b56e33e1138b",
+      "images.tar.gz": "9617aad75f21d98dc8c5d1eccc7686ac1a363f3ea31c616a063ef846bab21ca6",
+      "packages.tar.gz": "83a6ca64e236f1513c79900d7f6298c51fbdb4a1928f3e3537518f3a0c3cf55d",
+      "release_manifest.json": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+      "system_manifest.json": "5b10df80b916d0f391eba20ec6fe45cee9c525bca5cba58faf3c6bc7c1e15999",
+      "xypm-relink.tar.gz": "38d8883e0ff1b575ae746ba8d09e34b3aac1cf00e27f0509e289665fcb614988"
+    },
+    "gnu_make_signature": {
+      "status": "passed",
+      "release_manifest_sha256": "fd95e47c8f99205f1ff1ec6ac77537e00b9f7a46d77046d787ae4d03c361e588",
+      "source_archive_sha256": "a4b181b31a8775d51f35df5dd01a8bfb9539d07cbca224a75d74b56e33e1138b",
+      "gnu_make_inputs": 6,
+      "gnu_make_signer": "6D4EEB02AD834703510B117680CB727A20C79BB2",
+      "signature_log_sha256": "3eece6b56fea02821cd6ccd9f2de4614ccbcd760d5d21e0217e9ada71386bf12"
+    },
+    "sdk_archive_receiver": {
+      "status": "passed",
+      "builds": {
+        "c": {
+          "elf_sha256": "87a0fabc756b797db26e1ae27d9648084ab772aeb0b45b19e5eff750b58d756e",
+          "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+          "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+          "package_sha256": "54e0c702f96c944efc9147cf29e73138dae285e98e611ce045254632af803001",
+          "build_status": "cross_built_guest_not_run",
+          "check_status": "checked_guest_not_run",
+          "package_status": "packed_guest_not_run",
+          "profile": "xos-x86_64-glibc-unified-cxx-v2"
+        },
+        "cpp": {
+          "elf_sha256": "21e8077a2f240a301fd56bdd7eacbda3b0ae2554a1b897c504f1f46b6e01e5f2",
+          "sdk_manifest_sha256": "a732380142271a3b92b949105285e76d4bdfb464ceb57358c66c95668139c3ce",
+          "profile_sha256": "2a2017b8f6b13f41952cee07cafe44ea9b946ed74aa1f5ed1c3359557ac112e1",
+          "package_sha256": "04ce59f23af3d6d1c6e2dffd8a31ac3681358de4b361a867edc65b4a2a17a405",
+          "build_status": "cross_built_guest_not_run",
+          "check_status": "checked_guest_not_run",
+          "package_status": "packed_guest_not_run",
+          "profile": "xos-x86_64-glibc-unified-cxx-v2"
+        }
+      },
+      "override_rejected": true,
+      "archive_sha256": "9ba2618d7ac6ca0fbcb19d1258a521795436cfe713dc2c83bba6ee74b9573bef"
+    },
+    "raw_sha256": {
+      "package_guest.json": "169b340f2236ba5156933f6de5ae9229341620869b85e5ea4e1b363d65897a19",
+      "native_guest.json": "ebc70848b06731872201ca1b3b901e2ff896bf41584d9b603f54ac1d0055d5c1",
+      "combined_guest.json": "0cf1551c48326cb821754d0c2f3c87e12aee05e0bbfd64c08430f71b3365f86b",
+      "receiver.json": "ba303183124b998c0cb15b692a82ec3fd3d52f624fa9070875e938188bf95f3a",
+      "seed_after_removal.json": "a2348a194998c00592ac14985c0d6f3bae1e17c739005a51e98dc05631d824a1",
+      "CHECKSUMS.sha256": "d42e82db742ca07c6587cfc306e3d451675f185e90653b229cd11d7dab3e84d2",
+      "retained-checksums.log": "f7f278836ff7f8baf558ecdcc4fc4f69966659113d14ef3b90c7970afeb0d163",
+      "reopened.json": "36cce71c186e78f8a0680f380047e319a12f3386d33bf66e639b073ac15d7bb6",
+      "gnu-seed-signature-receiver.json": "d93434377ed0ed7834651fa90c1bd306b39b7bcb87fa58230779ee218ae9823f",
+      "sdk-archive-receiver.json": "b6e43c71c3d3223a17854cf12f99b96da305135e06ef9e6fbd648a97b345c232",
+      "guest.log": "4668eb65639fd9021cfec07783d934151066e7132a34d2f689d93c6dea869df0",
+      "linux-oom.txt": "98a0ba7a458b66e20b27921b2386c18382f30b0dc77c7137de643997f6f07d08"
+    }
+  }
+}

@@ -23,6 +23,12 @@ Shell 验收，和发行安装组件的对应源码包。整套发行资产的�
 [组件源码](work_log/9c747f60_glibc_v2_component_sources.md)
 冻结 v2 候选的原归档、补充源码与 xypm 复链包已通过十份资产的离线校验。
 [发行资产暂存](work_log/cc50f79b_glibc_v2_distribution_supplements.md)
+主线 `960fce43` 的 v2 发行候选从对应归档重开。包生命周期四项与
+原生 GNU 工具 20 项通过，接收方 SDK 可在仓库外构建和打包 C/C++。
+发行盘 IDNA 升级实测通过中断恢复和冷启重试。同一系统的冻结 newlib 回退
+通过三次冷启。整套静态程序的替换材料仍待补齐。
+[发行组合](work_log/960fce43_glibc_v2_current_release.md) ·
+[冻结回退](work_log/960fce43_glibc_v2_frozen_newlib_roundtrip.md)
 [当前普通组合复验](work_log/0227427a_next_stage_mainline.md)
 [网络组合复验](work_log/3d21f4e4_next_stage_network_replay.md)
 [复验记录](work_log/1c7f9abb_next_stage_mainline_replay.md)

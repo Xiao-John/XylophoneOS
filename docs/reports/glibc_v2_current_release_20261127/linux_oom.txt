@@ -1,0 +1,2 @@
+$ colima ssh -- sudo dmesg | rg "CONSTRAINT_MEMCG.*task=qemu-system-x86,pid=442287,"
+[15502.213855] oom-kill:constraint=CONSTRAINT_MEMCG,nodemask=(null),cpuset=019a5d1b7d84a92236de39f89c54c33081ed4685f5b3fc29dabdd5c440b055dd,mems_allowed=0,oom_memcg=/docker/019a5d1b7d84a92236de39f89c54c33081ed4685f5b3fc29dabdd5c440b055dd,task_memcg=/docker/019a5d1b7d84a92236de39f89c54c33081ed4685f5b3fc29dabdd5c440b055dd,task=qemu-system-x86,pid=442287,uid=0

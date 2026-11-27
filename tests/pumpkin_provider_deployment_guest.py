@@ -7,7 +7,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
 import signal
 import socket
 import stat
@@ -19,6 +18,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
+from pumpkin_anchored_guest import sparse_snapshot
 from pumpkin_generation_provider import deployment_realm, empty, frame, read_operation, signature
 from pumpkin_user_login import bind_system, credential_file_header, digest, file_magic, file_size, sealed_login_image
 
@@ -186,7 +186,7 @@ def run(system, output, provider_filesystem, multiple_accounts=False):
                 assert not (state / "authority").exists()
                 disk = state / "work.img"
                 original = launcher / "original.img"
-                shutil.copyfile(disk, original)
+                sparse_snapshot(disk, original)
                 os.chown(original, OPERATOR, GROUP)
                 execute("provision-first", "non-operator cannot request first issuance", 1, wallet, as_user=HOLDER)
                 assert revision(0) == record_zero and not wallet.exists()
@@ -252,7 +252,7 @@ def run(system, output, provider_filesystem, multiple_accounts=False):
                     first = resource("publish-named", "registrar commits the first named resource", 3,
                                      generation=0, value=293, text="Pumpkin named resource generation 3 confirmed")
                     old_resource_disk = launcher / "published.img"
-                    shutil.copyfile(disk, old_resource_disk)
+                    sparse_snapshot(disk, old_resource_disk)
                     os.chown(old_resource_disk, OPERATOR, GROUP)
 
                     service.kill()

@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/auxv.h>
@@ -12,6 +13,12 @@ static void __attribute__ ((constructor))
 initialize (void)
 {
   initialized = 17;
+}
+
+static void *
+run_worker (void *argument)
+{
+  return argument;
 }
 
 int
@@ -33,6 +40,10 @@ main (int argc, char **argv)
   free (data);
   if (!acquired || !closed || close (-1) != -1 || errno != EBADF)
     return 34;
-  static const char marker[] = "D1_DYNAMIC_C_OK ctor=1 env=1 auxv=1 file=1 errno=1\n";
+  pthread_t worker = 0;
+  if (pthread_create (&worker, NULL, run_worker, NULL) != ENOTSUP || worker != 0)
+    return 36;
+  static const char marker[] =
+    "D1_DYNAMIC_C_OK ctor=1 env=1 auxv=1 file=1 errno=1 worker_unwinder=required\n";
   return write (STDOUT_FILENO, marker, sizeof (marker) - 1) == sizeof (marker) - 1 ? 0 : 35;
 }

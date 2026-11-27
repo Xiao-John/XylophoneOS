@@ -1,0 +1,54 @@
+{
+  "bootstrap_sha256": "917546c70b108bd27867b84872089d15a1c3b451c3065105b13b2add1e7a7989",
+  "case": "cpp",
+  "guest_command_seconds": 5.251,
+  "guest_markers": [
+    "D1_DYNAMIC_CPP_OK ctor=1 tls=1",
+    "D1_DYNAMIC_CPP_FINI",
+    "D1_DYNAMIC_STATUS=0",
+    "[wait] pid=10 kind=exited code=0"
+  ],
+  "images": {
+    "dependency.so": {
+      "entry": 21990769572000,
+      "phnum": 13,
+      "sha256": "caafe95704fc0f8bbc7fdbb612751cd26e6666ea7abcfdd7102d5c9215fce9db",
+      "span": 1617920
+    },
+    "interpreter.so": {
+      "entry": 26389352914464,
+      "phnum": 7,
+      "sha256": "9f2ab1809df02bcba22cfe7d83ed432c6e75134556280a1e4ce0b373caa6a316",
+      "span": 237568
+    },
+    "main.pie": {
+      "entry": 17592188150080,
+      "phnum": 12,
+      "sha256": "d6d07c77848e03cdad04d765e4f2ea7f1deda25446e981065d47afd7f0844468",
+      "span": 36864
+    }
+  },
+  "pic_crt": {
+    "crtbeginS.o": "d1f9b26b212fe61acae370cae0a61f82632b1bb6d074e4bc8ce1edce3bbd6ca4",
+    "crtendS.o": "2299f1c03b9966209362535ea7ee4a15bc22c11e922820ceccbeb7ae6d28e3d8"
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "raw_report_sha256": "d606a90c3bf1e2286e4fab4b9a286f7275855071150b888e5cecc94a35b35afd",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "scope": "private native GNU interpreter and a versioned application",
+  "serial_sha256": "89da1865d5350faf4a8768928509c487d5b5be2e9d9838acc4100f2808424627",
+  "sources": {
+    "tests/fixtures/glibc_d1/interpreter_application.cpp": "582ff62d356a65cc3b7f5047e3565bea673f37921089783483654e52f0247570",
+    "tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp": "7582d097fbeb5bae4930a0263ff0a5aed25de547199977e14131ac91ff0192f2"
+  },
+  "status": "passed_subset"
+}

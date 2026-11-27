@@ -1,0 +1,18 @@
+--- a/misc/unwind-link.c
++++ b/misc/unwind-link.c
+@@ -55,10 +55,10 @@
+      unlocking in case the dynamic loader somehow triggers
+      unwinding.  */
+-  void *local_libgcc_handle = __libc_dlopen (UNWIND_SONAME);
++  /* The XOS startup closure supplies the unwinder when this profile
++     needs one. Resolving the existing object cannot open a new file. */
++  void *local_libgcc_handle = __libc_dlopen_mode (
++    UNWIND_SONAME, RTLD_NOLOAD | RTLD_NOW | __RTLD_DLOPEN);
+   if (local_libgcc_handle == NULL)
+-    {
+-      __libc_lock_unlock (lock);
+-      return NULL;
+-    }
++    return NULL;
+ 
+   struct unwind_link local;

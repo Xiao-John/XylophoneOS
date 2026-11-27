@@ -1,0 +1,115 @@
+{
+  "bootstrap_sha256": "ef5f84581e7bd6ad08184456312b9922fcd4d97ebc1765f25082c1c2652f7dc7",
+  "case": "shared-std-thread",
+  "dependency_graph": {
+    "libc.so.0.1": [
+      "ld.so.1"
+    ],
+    "libgcc_s.so.1": [
+      "libc.so.0.1"
+    ],
+    "libm.so.0.1": [
+      "libc.so.0.1",
+      "libgcc_s.so.1"
+    ],
+    "libsample.so": [
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libc.so.0.1",
+      "ld.so.1"
+    ],
+    "libstdc++.so.6": [
+      "libm.so.0.1",
+      "libgcc_s.so.1",
+      "libc.so.0.1",
+      "ld.so.1"
+    ],
+    "main.pie": [
+      "libsample.so",
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libc.so.0.1"
+    ]
+  },
+  "guest_command_seconds": 10.176,
+  "guest_markers": [
+    "D2_SHARED_CXX_TLS_DTOR",
+    "D2_STD_THREAD_APP_TLS_DTOR",
+    "D2_STD_THREAD_OK move=joined app-dtor=1 dso-dtor=1 tls=isolated",
+    "D1_DYNAMIC_STATUS=0",
+    "[wait] pid=10 kind=exited code=0"
+  ],
+  "images": {
+    "dependency-1.so": {
+      "entry": 21990802980864,
+      "phnum": 8,
+      "sha256": "1797784df1ff3d2f31f53067b02b8a0b6a55d679de2984a5d07745240333d5bb",
+      "span": 200704
+    },
+    "dependency-2.so": {
+      "entry": 21990836535296,
+      "phnum": 10,
+      "sha256": "4df09851f5cd66deba5a9054ecd91c60f77a247cd6f6fc89855502425438c9ad",
+      "span": 847872
+    },
+    "dependency-3.so": {
+      "entry": 21990870089728,
+      "phnum": 9,
+      "sha256": "c5d8c32b8f187ecc49a8c630b940388d1583aec43f21ba4c54a391e3f4de7e5e",
+      "span": 2789376
+    },
+    "dependency.so": {
+      "entry": 21990769572000,
+      "phnum": 13,
+      "sha256": "caafe95704fc0f8bbc7fdbb612751cd26e6666ea7abcfdd7102d5c9215fce9db",
+      "span": 1617920
+    },
+    "interpreter.so": {
+      "entry": 26389352914464,
+      "phnum": 7,
+      "sha256": "9f2ab1809df02bcba22cfe7d83ed432c6e75134556280a1e4ce0b373caa6a316",
+      "span": 237568
+    },
+    "main.pie": {
+      "entry": 17592188150784,
+      "phnum": 13,
+      "sha256": "0fea5175be136309077a053d04b4020f42a3ec331a33efeaffac7c514c1dfe94",
+      "span": 36864
+    },
+    "sample.so": {
+      "entry": 21990903644160,
+      "phnum": 9,
+      "sha256": "069ea3f34546ef1468eb19c379b29859695b5f708a87190c59822787e75c79e7",
+      "span": 36864
+    }
+  },
+  "pic_crt": {
+    "crtbeginS.o": "d1f9b26b212fe61acae370cae0a61f82632b1bb6d074e4bc8ce1edce3bbd6ca4",
+    "crtendS.o": "2299f1c03b9966209362535ea7ee4a15bc22c11e922820ceccbeb7ae6d28e3d8"
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "raw_report_sha256": "687d4d8ff82fdb81a630a4f4d9065d8ab913b5ecd59118952a2629d108948884",
+  "resources_after": [
+    129696,
+    3,
+    1
+  ],
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "scope": "private native GNU interpreter and a versioned application",
+  "serial_sha256": "193ccb18a623d76b95e125f773d6a732b0ee8c602cc3fcf33b2f446c86be2175",
+  "sources": {
+    "tests/fixtures/glibc_d1/shared_cxx_dependency.cpp": "ecdc47e12e5b3c371f97b7db58095562f8f8d4923b2c1918bc4dd822b431445c",
+    "tests/fixtures/glibc_d1/shared_cxx_exception.hpp": "6c9d99a02b447d2ff7228fcfa62d1c2a4266b51ca62e6a107d2f2e0ec8ae032f",
+    "tests/fixtures/glibc_d1/shared_std_thread_application.cpp": "ee6f0aa5966aedb84ba946ee675708cc2edaaf2092e1a774ce7e85ff5b5b1308",
+    "tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp": "7582d097fbeb5bae4930a0263ff0a5aed25de547199977e14131ac91ff0192f2"
+  },
+  "status": "passed_subset",
+  "std_thread_imports": [
+    "_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE@GLIBCXX_3.4.22",
+    "_ZNSt6thread4joinEv@GLIBCXX_3.4.11"
+  ]
+}

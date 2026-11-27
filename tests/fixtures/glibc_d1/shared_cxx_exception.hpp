@@ -10,3 +10,6 @@ public:
 
 [[noreturn]] void throw_sample_error();
 int exception_sample_state();
+unsigned exception_sample_destroyed();
+bool exception_sample_init_worker_tls(unsigned id);
+bool exception_sample_worker_tls_matches(unsigned id);

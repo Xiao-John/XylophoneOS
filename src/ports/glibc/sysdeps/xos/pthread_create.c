@@ -18,18 +18,21 @@ libc_hidden_data_def (__nptl_last_event)
 const char __nptl_version[] = VERSION;
 #ifdef SHARED
 struct rtld_global *__nptl_rtld_global = &_rtld_global;
-#else
-# include <atomic.h>
-# include <ctype.h>
-# include <libc-diag.h>
-# include <libc-internal.h>
-# include <libioP.h>
-# include <stdlib.h>
-# include <sys/single_threaded.h>
-# include "xos_static_worker.h"
-# include "xos_thread_exit.h"
-# include "xos_thread_identity.h"
-# include "xos_thread_name.h"
+#endif
+#include <atomic.h>
+#include <ctype.h>
+#include <libc-diag.h>
+#include <libc-internal.h>
+#include <libioP.h>
+#include <stdlib.h>
+#include <sys/single_threaded.h>
+#include "xos_static_worker.h"
+#include "xos_thread_exit.h"
+#include "xos_thread_identity.h"
+#include "xos_thread_name.h"
+#ifdef SHARED
+# include <unwind-link.h>
+#endif
 
 struct worker_input
 {
@@ -73,7 +76,7 @@ static void *
 start_worker (void *argument)
 {
   struct pthread *pd = argument;
-  /* The XOS static profile does not select inet/resolv. Its resolver TLS
+  /* The XOS runtime does not select inet/resolv. Its resolver TLS
      symbol is absent, so do not import a component that is not built. A
      future resolver port must add per-thread resolver initialization here. */
   __ctype_init ();
@@ -131,6 +134,13 @@ create_worker (pthread_t *thread, const struct pthread_attr *attr,
   if (status != 0)
     return status == -18 ? ENOTSUP : xos_thread_lifecycle_error (status);
 
+#ifdef SHARED
+  /* A successful launch must support pthread_exit. Resolve the existing
+     authenticated unwinder before reserving any native worker resources. */
+  if (__libc_unwind_link_get () == NULL)
+    return ENOTSUP;
+#endif
+
   /* Initialize stdio locking before any new worker can execute. The
      worker's cleanup decrements the count after it finishes using libc. */
   if (__libc_single_threaded_internal)
@@ -141,13 +151,17 @@ create_worker (pthread_t *thread, const struct pthread_attr *attr,
       __libc_single_threaded = 0;
     }
   atomic_fetch_add_relaxed (&__nptl_nthreads, 1);
-  struct xos_static_worker worker = {
+  const struct xos_thread_worker worker = {
     .run = start_worker, .argument = input, .cleanup = __xos_nptl_cleanup_current,
     .last_process_exit = __xos_nptl_last_process_exit, .prepare = prepare_worker
   };
   struct xos_thread_launch_result launch;
-  status = __xos_static_worker_launch (stacksize,
-            (attr->flags & ATTR_FLAG_DETACHSTATE) != 0, &worker, &launch);
+  const xos_u64 detached = (attr->flags & ATTR_FLAG_DETACHSTATE) != 0;
+#ifdef SHARED
+  status = __xos_shared_worker_launch (stacksize, detached, &worker, &launch);
+#else
+  status = __xos_static_worker_launch (stacksize, detached, &worker, &launch);
+#endif
   if (status == 0)
     {
       *thread = (pthread_t) launch.tid;
@@ -165,20 +179,11 @@ create_worker (pthread_t *thread, const struct pthread_attr *attr,
     return ENOTSUP;
   return xos_thread_lifecycle_error (status);
 }
-#endif
 
 int
 __pthread_create_2_1 (pthread_t *thread, const pthread_attr_t *attr,
                       void *(*start) (void *), void *argument)
 {
-#ifdef SHARED
-  /* Shared builds require an independent dynamic-TLS lifetime policy. */
-  (void) thread;
-  (void) attr;
-  (void) start;
-  (void) argument;
-  return ENOTSUP;
-#else
   struct worker_input input = {
     .start = start, .argument = argument, .c11 = attr == ATTR_C11_THREAD
   };
@@ -192,7 +197,6 @@ __pthread_create_2_1 (pthread_t *thread, const pthread_attr_t *attr,
   result = create_worker (thread, &defaults.internal, &input);
   __pthread_attr_destroy (&defaults.external);
   return result;
-#endif
 }
 versioned_symbol (libc, __pthread_create_2_1, pthread_create, GLIBC_2_34);
 libc_hidden_ver (__pthread_create_2_1, __pthread_create)

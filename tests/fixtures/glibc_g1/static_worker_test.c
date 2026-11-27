@@ -96,7 +96,7 @@ __xos_thread_finish (unsigned long result, void (*last_process_exit) (void))
 int
 main (void)
 {
-  struct xos_static_worker worker = {
+  struct xos_thread_worker worker = {
     .run = run, .argument = &initial, .cleanup = cleanup,
     .last_process_exit = last_exit, .prepare = prepare
   };
@@ -111,7 +111,7 @@ main (void)
   prepare_error = 0;
   assert (__xos_static_worker_launch (sizeof (stack), 1, &worker, &result) == 0);
   assert (started == 1 && result.tid == 19);
-  worker = (struct xos_static_worker) { 0 };
+  worker = (struct xos_thread_worker) { 0 };
   if (setjmp (finished) == 0)
     __xos_thread_entry ((void *) initial.argument);
   assert (calls == 3);

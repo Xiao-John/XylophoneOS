@@ -1,0 +1,20 @@
+libc.so sha256 0ba5b523c7be4111f302ca6cc872cceeb3e8180f089bd0c622ffb04ff5229399
+
+libc.so:     file format elf64-x86-64
+
+
+Disassembly of section .plt:
+
+Disassembly of section .plt.got:
+
+Disassembly of section .text:
+
+0000000000087e20 <dlclose@@GLIBC_2.44>:
+   87e20:	55                   	push   %rbp
+   87e21:	31 f6                	xor    %esi,%esi
+   87e23:	48 8d 3d d6 ff ff ff 	lea    -0x2a(%rip),%rdi        # 87e00 <__xos_dlfcn_unsupported>
+   87e2a:	48 89 e5             	mov    %rsp,%rbp
+   87e2d:	e8 ee 01 00 00       	call   88020 <_dlerror_run>
+   87e32:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+   87e37:	5d                   	pop    %rbp
+   87e38:	c3                   	ret

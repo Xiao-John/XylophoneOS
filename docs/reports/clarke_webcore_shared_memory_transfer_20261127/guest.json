@@ -1,0 +1,130 @@
+{
+  "status": "passed_subset",
+  "build_id": "4ee994892cab2a88",
+  "iso_sha256": "3200744c5253bdf2be4ca44cdf0484dfd82aba98bb57772ffbc32f0495c47d15",
+  "system_manifest_sha256": "8be5366d985235ff64905bda61943d5accb687838b17216cc29f2dfe62aa9dbc",
+  "target_manifest_sha256": "acd5fdc7a2e21ab206a254bc5d07e46fb5ab5fdc5e14433270095b758b92e9b0",
+  "elf_sha256": "31d9a3077839c6915f5db69b2892e297d8e8340a254d6353e799fa82789497f7",
+  "runs": [
+    {
+      "marker_count": 1,
+      "exits": [
+        0
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "cases": [
+        {
+          "mode": 1,
+          "parent": 11,
+          "child": 12
+        },
+        {
+          "mode": 2,
+          "parent": 11,
+          "child": 13
+        },
+        {
+          "mode": 3,
+          "parent": 11,
+          "child": 14
+        },
+        {
+          "mode": 4,
+          "parent": 11,
+          "child": 15
+        }
+      ]
+    },
+    {
+      "marker_count": 1,
+      "exits": [
+        0
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "cases": [
+        {
+          "mode": 1,
+          "parent": 16,
+          "child": 17
+        },
+        {
+          "mode": 2,
+          "parent": 16,
+          "child": 18
+        },
+        {
+          "mode": 3,
+          "parent": 16,
+          "child": 19
+        },
+        {
+          "mode": 4,
+          "parent": 16,
+          "child": 20
+        }
+      ]
+    },
+    {
+      "marker_count": 1,
+      "exits": [
+        0
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "cases": [
+        {
+          "mode": 1,
+          "parent": 21,
+          "child": 22
+        },
+        {
+          "mode": 2,
+          "parent": 21,
+          "child": 23
+        },
+        {
+          "mode": 3,
+          "parent": 21,
+          "child": 24
+        },
+        {
+          "mode": 4,
+          "parent": 21,
+          "child": 25
+        }
+      ]
+    }
+  ],
+  "runner_sha256": "4f88d4181416f502377acf3ced1d9a4e534abc32b9bc76b878349604b80231f6",
+  "fat_readback_sha256": "31d9a3077839c6915f5db69b2892e297d8e8340a254d6353e799fa82789497f7",
+  "qemu": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "restricted_launch": {
+    "exits": [
+      1
+    ],
+    "spawn_denied": true,
+    "cases": 0,
+    "resources_after": [
+      129696,
+      3,
+      1
+    ]
+  },
+  "serial_sha256": "e7e76acd82b8e9c862af72353ae18727198e7c6b0cf9e895fa50ed47625a98b1"
+}

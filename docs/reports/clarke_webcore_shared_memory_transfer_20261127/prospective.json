@@ -1,0 +1,23 @@
+{
+  "graph_pr_candidate": "e176327fb27ec2cf21f7252b65aedd4ff76fed37",
+  "source_with_readme_link": "059807727ed9064ffe181fe7054db76354aa4875",
+  "resolved_tree": "9d8540c8b7881dd72b8063fb4a4d9160794b44c2",
+  "changed_paths": [
+    "docs/reports/clarke_webcore_target_graph_20261127/local_page_and_bindings.json",
+    "docs/reports/clarke_webcore_target_graph_20261127/manifest.json",
+    "docs/reports/clarke_webcore_target_graph_20261127/page_and_layout_objects.json",
+    "docs/work_log/clarke_webcore_target_graph.md",
+    "src/ports/webkit/page/README.md",
+    "src/ports/webkit/page/software_graph.patch",
+    "tests/fixtures/webkit/local_page.cpp",
+    "tests/fixtures/webkit/local_page.html",
+    "tests/webkit_local_page_guest.py"
+  ],
+  "inherited_merge_conflict": [
+    "src/ports/webkit/page/README.md"
+  ],
+  "resolution": "Preserve the graph documentation and the standalone native shared-memory reference.",
+  "locked_archive_zero_fuzz_series": "failed in graph dependency",
+  "rejected_hunk": "software_graph.patch, Source/cmake/OptionsJSCOnly.cmake, hunk 2 at line 26",
+  "actual_guest_and_target_build": "bound to graph head 6cce7095"
+}

@@ -1,0 +1,31 @@
+{
+  "status": "failed",
+  "build_id": "9224e9362cf1d4f9",
+  "iso_sha256": "766d1fa1eed897c6a95a58d473793823e7c46300ed6e0a1470fb4a92f3a02b07",
+  "system_manifest_sha256": "634e398e0143b5edca5443170c283f69b59226d647c5317250e4c25e88c5205b",
+  "target_manifest_sha256": "8530887a978f9e631632879a210118081b7b5743541f3651b2ca2e03253ba391",
+  "elf_sha256": "bcfad5bbe07aa7a464a909d95c1b41419d22f5f98afe956e925b432da8a62b53",
+  "runs": [
+    {
+      "marker_count": 0,
+      "exits": [
+        1
+      ],
+      "resources_after": [
+        129696,
+        3,
+        1
+      ],
+      "cases": []
+    }
+  ],
+  "runner_sha256": "7950649f3cb091ffd34e616ac023ed63c9d97bbbb3b9e7bc4108cdc5f8423999",
+  "fat_readback_sha256": "bcfad5bbe07aa7a464a909d95c1b41419d22f5f98afe956e925b432da8a62b53",
+  "qemu": "QEMU emulator version 11.1.2",
+  "resources_before": [
+    129696,
+    3,
+    1
+  ],
+  "serial_sha256": "2e98565deafb14f6db508a481fb62e85d58744453917ec1eb968ba63c04637af"
+}

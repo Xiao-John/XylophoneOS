@@ -1,0 +1,36 @@
+{
+  "baseline_archive_sha256": "b7d4ff9699e538c46e9642c2c80d0e9113057bad0b6b19b270c503b26e5e5e3c",
+  "baseline_libc_sha256": "50452962afeeadcd6b3bcecd3571cc6b07f29c80e30426715d8134a86fc9d8d0",
+  "baseline_objects": {
+    "dlclose": "d48c159ad86428231abe130e8ed31d4b3833f620ff40dd005aa379c9e85b5393",
+    "dlmopen": "d4e969d22c7ccb92dbcb0a9446d1c9cf99f9f7ee35a27e2ea91bc347d5f62a9f",
+    "dlopen": "fb5cadd1d674bdb437ab597410cf20ba538417958de88595c313ade406d204aa"
+  },
+  "changed_archive_sha256": "ce56a91c63fc73b444f3ade23eb7510b2fa6cc58051e99b952199e8d3590a5fd",
+  "defined_dynamic_symbol_names_types_versions_sha256": "de9528f4eca1f5a2ac09e1febe82c5af8a95b5e232b099a2f4779e8bffb72bbf",
+  "dynamic_tags": [
+    "0x0000000000000001 (NEEDED)             Shared library: [ld.so.1]",
+    "0x000000000000000e (SONAME)             Library soname: [libc.so.0.1]",
+    "0x000000000000001e (FLAGS)              BIND_NOW STATIC_TLS",
+    "0x000000006ffffffb (FLAGS_1)            Flags: NOW"
+  ],
+  "fixed_libc_sha256": "878317020ceb02b0cf55901093e20d0b571bbeb236f49939859de6cef1fb106a",
+  "fixed_objects": {
+    "dlclose.os": "019b582abf42a01a409a8edb6aa03b4af6705dd0700c3a5befe2a8053faa98eb",
+    "dlmopen.os": "ee7774b7fa9f4749ba6aa4dcbccae6121684656ffdb0c56bff9b1f4639507b54",
+    "dlopen.os": "a8fda0a6297027787eb298ca9e9b6e62866873ff1315c6a60ca570a6ff78e6f0"
+  },
+  "gnu_build": "Net2 #343 retained GNU build",
+  "link_log_sha256": "1c8c9b2d7622c17e64118ff7472d5c98bb12d33ef5458d6199c3654c580c1a66",
+  "patch_sha256": "be97f38033e54d1999ce1cce25a65861f5e228632bc1c35f996fc703dba207c6",
+  "pic_log_sha256": "577291c85b7b14c9fd747720ead4a6fbed985b0dc2d1c79f5ab2e7f858edfddb",
+  "ports_comparison": [
+    "61202e5f",
+    "89de1a04"
+  ],
+  "public_linker_symbols": 2075,
+  "replay_runner_sha256": "1a31dbb6a8b82f5e16dd08bcef257a7c4ed3120aadf13733238aa361cf37610b",
+  "rtld_sha256": "5a9621e1e274c68d5a8b6781fc6ecd4d92bdb160962d5b859faa9ffd82fddd6c",
+  "status": "linked",
+  "two_distinct_temporary_directory_relinks_byte_equal": true
+}

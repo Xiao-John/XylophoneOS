@@ -21,6 +21,12 @@ CFLAGS-dl-mutex.os += -ffunction-sections
 CFLAGS-dl-misc.os += -DXOS_RTLD_CLOSED_DEPENDENCIES -ffunction-sections
 CFLAGS-xos_rtld_libc_handoff.os += -ffunction-sections
 endif
+ifeq ($(subdir),dlfcn)
+# The first native shared profile exposes a fixed startup closure.
+CFLAGS-dlopen.os += -DXOS_DLFUNC_FIXED_CLOSURE
+CFLAGS-dlmopen.os += -DXOS_DLFUNC_FIXED_CLOSURE
+CFLAGS-dlclose.os += -DXOS_DLFUNC_FIXED_CLOSURE
+endif
 ifeq ($(subdir),stdlib)
 sysdep_routines += xos_process_exit
 endif

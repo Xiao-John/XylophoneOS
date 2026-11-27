@@ -279,6 +279,9 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
         line = line.strip()
         if line and not line.startswith("#") and "=" in line:
             key, value = line.split("=", 1); env[key] = value
+    # GCC's top-level make also passes CXXFLAGS to native generators such as
+    # build-libcpp. The host compiler wrappers supply the XOS x86-64 ABI flags.
+    optimization = "-O2 -g0"
     env.update({
         "CONFIG_SITE": str(config_site),
         "CC": str(work / "xos-cc"), "CXX": str(work / "xos-cxx"),
@@ -288,8 +291,9 @@ def build(sdk: Path, expected: str, jobs: int, configure_only: bool, stdcxx: Pat
         "LD_FOR_TARGET": obj["ld"], "NM": obj["nm"], "RANLIB": obj["ranlib"],
         "STRIP": obj["strip"], "OBJCOPY_FOR_TARGET": obj["objcopy"],
         "OBJDUMP_FOR_TARGET": obj["objdump"], "READELF_FOR_TARGET": obj["readelf"],
-        "CFLAGS": "-O2 -g0 -mno-red-zone -fno-stack-protector -fno-pic -fno-pie -mcmodel=small",
-        "CXXFLAGS": "-O2 -g0 -mno-red-zone -fno-stack-protector -fno-pic -fno-pie -mcmodel=small",
+        "CFLAGS": optimization, "CXXFLAGS": optimization,
+        "CFLAGS_FOR_BUILD": optimization, "CXXFLAGS_FOR_BUILD": optimization,
+        "CPPFLAGS_FOR_BUILD": "", "LDFLAGS_FOR_BUILD": "",
         "LDFLAGS": "-static -no-pie", "MAKEINFO": "/usr/bin/true",
     })
     # A tiny allocation runtime is needed by libcpp's <new> usage; this is

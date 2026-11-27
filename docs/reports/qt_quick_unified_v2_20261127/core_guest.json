@@ -1,0 +1,17 @@
+{
+  "elf_sha256": "4f2c7eb43010a0937b80e9f31548ac0c4a78144313e028c75ab27a2716ed8a0e",
+  "image_sha256": "68ccb37190ade7bd4c0b33a5c170743087ea24ef09f701b7c296d53853561237",
+  "original_guest_report_sha256": "19c230ec005b0f5ff2b70d1242d302b8977864ed97e8738ca21bd34560dec791",
+  "publication_scope": "Derived receipt with the transient host QEMU command omitted.",
+  "resources_after": [
+    129709,
+    3,
+    1
+  ],
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "status": "PASSED"
+}

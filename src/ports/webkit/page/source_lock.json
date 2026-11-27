@@ -44,6 +44,10 @@
     {
       "path": "page/response_metadata.patch",
       "sha256": "2dcfebb931deae5dd50121d1aaa00cb266cd6e2c28b8ce1b2e096051bb4eb28e"
+    },
+    {
+      "path": "page/jsc_repatch_includes.patch",
+      "sha256": "9bb2b6ee3f0008bd930ae06fdd6d25fbb511dbb6a64cf52decf35ea2337a68e9"
     }
   ]
 }

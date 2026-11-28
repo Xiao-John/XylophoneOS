@@ -14,7 +14,11 @@ struct generation_mark {
 
 // A profile may describe one larger, self-validating published unit.
 // The default account codec retains the original format and size.
+#if XOS_PUMPKIN_PROVISIONING_STORE
+inline constexpr usize publication_payload_capacity = 16368;
+#else
 inline constexpr usize publication_payload_capacity = 4592;
+#endif
 struct publication_codec {
     void* context = nullptr;
     bool (*describe)(void*, const nonce&, const u8*, usize, generation_mark&) = nullptr;

@@ -12,6 +12,7 @@ enum class operation : u8 { ready = 1, read, publish, finish };
 enum class scenario : u8 {
     cycle = 1, healthy, stale, user_enroll, user_login, user_revoke, user_resource, named_empty,
     user_named_read, user_named_put, user_named_erase, user_named_import, user_desktop, user_desktop_admin,
+    provisioning_update, provisioning_reject, provisioning_unknown, provisioning_new,
 };
 
 inline constexpr bool desktop_scenario(scenario mode) {

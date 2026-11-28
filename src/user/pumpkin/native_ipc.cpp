@@ -9,54 +9,12 @@
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
 #include "named_resource_rpc.hpp"
 #endif
+#if XOS_PUMPKIN_PROVISIONING_STORE
+#include "provisioning_protocol.hpp"
+#endif
 
 namespace xos::user::pumpkin {
 
-bool ipc_client::bind(ipc_channel channel, u64 expected_peer) {
-    close();
-    if (expected_peer == 0 || authenticated_peer(channel) != expected_peer) {
-        close_ipc(channel);
-        return false;
-    }
-    channel_ = channel;
-    return true;
-}
-
-void ipc_client::close() {
-    close_ipc(channel_);
-    sequence_ = 0;
-}
-
-exchange ipc_client::call(wire_request& request, wire_reply& reply) {
-    wipe_bytes(&reply, sizeof(reply));
-    const i64 start = monotonic_now();
-    if (!channel_.send || sequence_ == ~u64{0} || start < 0) {
-        close();
-        return exchange::not_sent;
-    }
-    request.sequence = ++sequence_;
-    request.deadline = static_cast<u64>(start) + max_request_ns;
-    if (sdk::ipc_send(channel_.send, &request, sizeof(request)) != 0) {
-        close();
-        return exchange::not_sent;
-    }
-    for (;;) {
-        const auto received = sdk::ipc_recv(channel_.receive, &reply, sizeof(reply));
-        if (received != process_error_would_block) {
-            if (received == sizeof(reply) && valid_reply(request, reply)) {
-                return exchange::received;
-            }
-            break;
-        }
-        const i64 now = monotonic_now();
-        if (now < 0 || static_cast<u64>(now) >= request.deadline || !sleep_tick(static_cast<u64>(now))) {
-            break;
-        }
-    }
-    wipe_bytes(&reply, sizeof(reply));
-    close();
-    return exchange::outcome_unknown;
-}
 
 namespace {
 
@@ -66,6 +24,7 @@ struct transport_session {
     u64 sequence = 0;
     u64 expires = 0;
     u64 reply_expires = 0;
+    bool catalog_publisher = false;
 };
 
 void disconnect(service_core& core, transport_session& session) {
@@ -90,7 +49,10 @@ progress process_request(service_core& core, transport_session& session, u64& no
                          [[maybe_unused]] login_resource* resource = nullptr,
                          [[maybe_unused]] resource_bridge* bridge = nullptr,
                          [[maybe_unused]] named_resource_store* named = nullptr,
-                         [[maybe_unused]] bool registrar = false) {
+                         [[maybe_unused]] bool registrar = false,
+                         [[maybe_unused]] provisioning_store* provisioning = nullptr,
+                         [[maybe_unused]] const entropy_api& entropy = {},
+                         [[maybe_unused]] transport_session* clients = nullptr) {
     if (now >= session.expires) {
         return progress::drop;
     }
@@ -105,8 +67,14 @@ progress process_request(service_core& core, transport_session& session, u64& no
         return progress::drop;
     }
 
-    wire_request request;
+    wire_request request{};
+#if XOS_PUMPKIN_PROVISIONING_STORE
+    alignas(8) u8 incoming[sizeof(provisioning_request)]{};
+    const auto received = sdk::ipc_recv(session.channel.receive, incoming, sizeof(incoming));
+    if (received == sizeof(request)) { __builtin_memcpy(&request, incoming, sizeof(request)); }
+#else
     const auto received = sdk::ipc_recv(session.channel.receive, &request, sizeof(request));
+#endif
     if (received == process_error_would_block) {
         return progress::keep;
     }
@@ -116,6 +84,45 @@ progress process_request(service_core& core, transport_session& session, u64& no
     if (clock_ok) {
         now = static_cast<u64>(received_at);
     }
+#if XOS_PUMPKIN_PROVISIONING_STORE
+    if (received == sizeof(provisioning_request)) {
+        provisioning_request operation{};
+        __builtin_memcpy(&operation, incoming, sizeof(operation));
+        wipe_bytes(incoming, sizeof(incoming));
+        provisioning_reply result{};
+        const publisher_admission admission{clients, [](void* context, const publisher_binding& binding) {
+            if (!context || !binding.peer || !binding.send || !binding.receive || binding.send == binding.receive) {
+                return status::invalid;
+            }
+            const ipc_channel proposed{binding.send, binding.receive};
+            if (authenticated_peer(proposed) != binding.peer) { return status::denied; }
+            auto* sessions = static_cast<transport_session*>(context);
+            for (u32 i = 0; i < client_limit; ++i) {
+                auto& target = sessions[i];
+                if (target.channel.send == binding.send && target.channel.receive == binding.receive) {
+                    if (target.catalog_publisher) { return status::conflict; }
+                    target.catalog_publisher = true;
+                    return status::ok;
+                }
+            }
+            return status::not_found;
+        }};
+        const bool sent = provisioning && clock_ok && now < session.expires &&
+            dispatch_provisioning(*provisioning, core, session.connection,
+                registrar ? provisioning_role::registrar : session.catalog_publisher ?
+                    provisioning_role::catalog_publisher : provisioning_role::client,
+                session.sequence, operation, now, entropy, result, admission) &&
+            sdk::ipc_send(session.channel.send, &result, sizeof(result)) == 0;
+        wipe_bytes(&operation, sizeof(operation)); wipe_bytes(&result, sizeof(result));
+        if (!clock_ok) { return progress::failure; }
+        if (!sent) { return progress::drop; }
+        const auto enqueued_at = monotonic_now();
+        if (enqueued_at < 0 || static_cast<u64>(enqueued_at) < now) { return progress::failure; }
+        now = static_cast<u64>(enqueued_at); session.reply_expires = now + reply_budget_ns;
+        return progress::keep;
+    }
+    wipe_bytes(incoming, sizeof(incoming));
+#endif
     const wire_extension* extension = nullptr;
 #if XOS_PUMPKIN_NATIVE_LOGIN
     struct resource_context { login_resource* resource; ipc_channel channel; bool registrar; };
@@ -180,7 +187,7 @@ progress process_request(service_core& core, transport_session& session, u64& no
 int serve_native(const store_api& store, const nonce& realm, const entropy_api& entropy,
                  ipc_channel control, u64 controller, const char* service_name,
                  backing_liveness backing, login_resource* resource, resource_bridge* bridge,
-                 named_resource_store* named) {
+                 named_resource_store* named, provisioning_store* provisioning) {
     service_core core;
     transport_session registrar, clients[client_limit]{};
     const i64 initial = monotonic_now();
@@ -201,16 +208,24 @@ int serve_native(const store_api& store, const nonce& realm, const entropy_api& 
     int exit_code = 0;
     while (registrar.channel.send != 0) {
         const i64 clock = monotonic_now();
-        if (clock < 0 || (!draining && backing.live != nullptr && !backing.live(backing.context))) {
+        if (clock < 0) {
             exit_code = 12;
             break;
+        }
+        if (!draining && backing.live != nullptr && !backing.live(backing.context)) {
+            // A durable mutation may have queued outcome_unknown. Preserve its
+            // bounded reply drain while admitting no further operations.
+            core.stop();
+            draining = true;
+            exit_code = 12;
         }
         auto now = static_cast<u64>(clock);
         if (core.expire(now) != status::ok) {
             draining = true;
             exit_code = 12;
         }
-        const auto control_result = process_request(core, registrar, now, draining, resource, bridge, named, true);
+        const auto control_result = process_request(core, registrar, now, draining, resource, bridge, named, true,
+                                                    provisioning, entropy, clients);
         if (control_result != progress::keep) {
             if (control_result == progress::failure) {
                 exit_code = 12;
@@ -227,7 +242,8 @@ int serve_native(const store_api& store, const nonce& realm, const entropy_api& 
             if (client.channel.send == 0) {
                 continue;
             }
-            const auto result = process_request(core, client, now, draining, resource, bridge, named);
+            const auto result = process_request(core, client, now, draining, resource, bridge, named, false,
+                                                provisioning, entropy);
             if (result != progress::keep) {
                 disconnect(core, client);
             }

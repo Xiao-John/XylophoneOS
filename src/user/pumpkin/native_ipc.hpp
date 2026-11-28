@@ -40,6 +40,8 @@ struct control_message {
 static_assert(sizeof(control_message) == 32);
 
 enum class exchange { received, not_sent, outcome_unknown };
+struct provisioning_request;
+struct provisioning_reply;
 
 class ipc_client {
 public:
@@ -52,6 +54,10 @@ public:
     void close();
     // The caller controls credential lifetimes in request and reply.
     exchange call(wire_request& request, wire_reply& reply);
+    exchange call(provisioning_request& request, provisioning_reply& reply);
+    // Bootstrap controllers bind delegation to the actual opposite endpoints,
+    // then independently compare their authenticated holder with the spawned child.
+    ipc_channel peer_channel() const { return sdk::ipc_channel_for_peer(channel_); }
 
 private:
     ipc_channel channel_{};
@@ -66,9 +72,11 @@ struct backing_liveness {
 class login_resource;
 class resource_bridge;
 class named_resource_store;
+class provisioning_store;
 int serve_native(const store_api& store, const nonce& realm, const entropy_api& entropy,
                  ipc_channel control, u64 controller, const char* service_name,
                  backing_liveness backing = {}, login_resource* resource = nullptr,
-                 resource_bridge* bridge = nullptr, named_resource_store* named = nullptr);
+                 resource_bridge* bridge = nullptr, named_resource_store* named = nullptr,
+                 provisioning_store* provisioning = nullptr);
 
 }

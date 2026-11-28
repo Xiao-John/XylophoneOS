@@ -18,7 +18,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 ncurses_supervisor_probe=False, glibc_files_death_probe=False,
                 files_private_storage_probe=False, files_private_client_probe=False, pumpkin_durable_probe=False,
                 pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False,
-                pumpkin_user_resource=False, pumpkin_named_resource_store=False,
+                pumpkin_user_resource=False, pumpkin_named_resource_store=False, pumpkin_provisioning_store=False,
                 quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
                 net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None):
     capture = capture_build(build, build_id, 'xos-source-declarations')
@@ -109,19 +109,23 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         login_flags += ("-DXOS_PUMPKIN_USER_RESOURCE=1", "-DXOS_PUMPKIN_RESOURCE_BRIDGE=1")
     if pumpkin_named_resource_store:
         login_flags += ("-DXOS_PUMPKIN_NAMED_RESOURCE_STORE=1",)
+    if pumpkin_provisioning_store:
+        login_flags += ("-DXOS_PUMPKIN_PROVISIONING_STORE=1",)
+    provisioning_flags = ("-DXOS_PUMPKIN_PROVISIONING_STORE=1",) if pumpkin_provisioning_store else ()
     durable_flags += login_flags
     private_storage_flags = (("-DXOS_FILES_PRIVATE_STORAGE_PROBE=1", *private_client_flags)
                              if files_private_storage_probe or files_slot_broker else ())
+    private_storage_flags += provisioning_flags
     fatfs_objects = [compile_fatfs(root / "src/third_party/fatfs/ff.c"),
                      compile_fatfs(root / "src/user/services/fatfs_diskio.cpp", private_storage_flags),
                      compile_fatfs(root / "src/user/services/fatfs_unicode.cpp")]
-    private_broker_objects = [compile_source(root / "src/user/services" / name) for name in
+    private_broker_objects = [compile_source(root / "src/user/services" / name, provisioning_flags) for name in
                               ("files_private_broker.cpp", "files_private_lease.cpp")] if files_slot_broker else []
     durable_objects = {}
     if pumpkin_daemon_probe:
         durable_objects = {name: compile_source(root / "src/user/pumpkin" / name,
                                           ("-Os", "-ffunction-sections", "-fdata-sections", *login_flags)) for name in
-                           ("account_store.cpp", "service_core.cpp", "daemon_protocol.cpp", "native_ipc.cpp")}
+                           ("account_store.cpp", "service_core.cpp", "daemon_protocol.cpp", "native_ipc.cpp", "native_ipc_client.cpp")}
     if pumpkin_native_login:
         durable_objects.update({name: compile_source(root / "src/user/pumpkin" / name,
                                               ("-Os", "-ffunction-sections", "-fdata-sections", *login_flags)) for name in
@@ -133,6 +137,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         durable_objects.update({name: compile_source(root / "src/user/pumpkin" / name,
                                              ("-Os", "-ffunction-sections", "-fdata-sections")) for name in
                                 ("named_resource_store.cpp", "named_resource_rpc.cpp")})
+    if pumpkin_provisioning_store:
+        durable_objects.update({name: compile_source(root / "src/user/pumpkin" / name,
+                                             ("-Os", "-ffunction-sections", "-fdata-sections", *provisioning_flags))
+                                for name in ("provisioning_store.cpp", "provisioning_protocol.cpp", "provisioning_client.cpp")})
     # The bundle installer grew this translation unit; keep -Os so the
     # file-backed install ISO stays within its size budget.
     file_ui_object = compile_source(root / "src/user/services/file_ui.cpp", ("-Os",))
@@ -261,10 +269,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             extra_objects.append(compile_source(root / "tests/fixtures/pumpkin/durable_probe_supervisor.cpp",
                                                 ("-Os", *durable_flags)))
         if name == "pumpkin_durable":
-            extra_objects.extend(compile_source(root / "src/user/pumpkin" / source, ("-Os",)) for source in
+            extra_objects.extend(compile_source(root / "src/user/pumpkin" / source, ("-Os", *provisioning_flags)) for source in
                                  ("disk_test_store.cpp", "files_slot_client.cpp"))
             if pumpkin_anchored_probe:
-                extra_objects.extend(compile_source(root / "src/user/pumpkin" / source, ("-Os",)) for source in
+                extra_objects.extend(compile_source(root / "src/user/pumpkin" / source, ("-Os", *provisioning_flags)) for source in
                                      ("anchored_files_store.cpp", "snapshot_publication.cpp", "generation_guest.cpp"))
         run([tool("g++"), *X86_FLAGS, "-nostdlib", "-static", "-no-pie",
              "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",

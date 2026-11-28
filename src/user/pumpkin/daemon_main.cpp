@@ -16,6 +16,9 @@
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
 #include "named_resource_store.hpp"
 #endif
+#if XOS_PUMPKIN_PROVISIONING_STORE
+#include "provisioning_store.hpp"
+#endif
 
 namespace {
 using namespace xos;
@@ -90,7 +93,7 @@ bool introduce_control(const char* name, u64 parent, const ipc_channel& control,
 int serve_with_parent(const store_api& store, const nonce& realm, const entropy_api& entropy,
                       const char* rendezvous, const char* service_name, backing_liveness backing = {},
                       login_resource* resource = nullptr, resource_bridge* bridge = nullptr,
-                      named_resource_store* named = nullptr) {
+                      named_resource_store* named = nullptr, provisioning_store* provisioning = nullptr) {
     // Zero binds to the real parent. The discovery name supplies no authority.
     ipc_channel control{};
     if (sdk::ipc_channel_create(0, control) != 0) {
@@ -101,7 +104,7 @@ int serve_with_parent(const store_api& store, const nonce& realm, const entropy_
         close_ipc(control);
         return 11;
     }
-    return serve_native(store, realm, entropy, control, controller, service_name, backing, resource, bridge, named);
+    return serve_native(store, realm, entropy, control, controller, service_name, backing, resource, bridge, named, provisioning);
 }
 
 }
@@ -121,7 +124,13 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         if (!slots.bind_bootstrap() || !generation.bind_bootstrap()) {
             return 11;
         }
-#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#if XOS_PUMPKIN_PROVISIONING_STORE
+        anchored_files_store storage(slots.io(), generation.io(), anchored_installation_realm, provisioning_codec());
+        provisioning_store provisions(storage.api(), anchored_installation_realm);
+        auto* provisioning = &provisions;
+        named_resource_store* named = nullptr;
+        const auto store = provisions.accounts();
+#elif XOS_PUMPKIN_NAMED_RESOURCE_STORE
         anchored_files_store storage(slots.io(), generation.io(), anchored_installation_realm, named_resource_codec());
         named_resource_store names(storage.api(), anchored_installation_realm);
         auto* named = &names;
@@ -131,6 +140,9 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         named_resource_store* named = nullptr;
         const auto store = storage.api();
 #endif
+#if !XOS_PUMPKIN_PROVISIONING_STORE
+        provisioning_store* provisioning = nullptr;
+#endif
         if (anchor_initialize && provision_store(store, anchored_installation_realm) != status::ok) {
             return 11;
         }
@@ -138,7 +150,8 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
             files_slot_client& slots;
             anchor_guest::client& generation;
             named_resource_store* named;
-        } live{slots, generation, named};
+            provisioning_store* provisioning;
+        } live{slots, generation, named, provisioning};
 #if XOS_PUMPKIN_NATIVE_LOGIN
         login_resource approved_resource;
         auto* resource = &approved_resource;
@@ -157,8 +170,11 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
                                        if (!state.named->live()) { return false; }
 #endif
+#if XOS_PUMPKIN_PROVISIONING_STORE
+                                       if (!state.provisioning->live()) { return false; }
+#endif
                                        return state.slots.live() && state.generation.live();
-                                   }}, resource, bridge, named);
+                                   }}, resource, bridge, named, provisioning);
     }
 #endif
 #if XOS_PUMPKIN_DURABLE_PROBE

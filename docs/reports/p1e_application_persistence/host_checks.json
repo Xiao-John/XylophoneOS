@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "scope": "production C++ host tests and retained-profile regression; summary of observed SDK executions",
+  "checks": [
+    "pumpkin_provisioning_host ordinary",
+    "pumpkin_provisioning_host ASan+UBSan with detect_leaks=0",
+    "pumpkin_host core/protocol/publication/named store",
+    "pumpkin_daemon_loop_host daemon/broker/import/selector",
+    "pumpkin_generation_authority_host 9 tests"
+  ],
+  "not_run": [
+    "LeakSanitizer under ptrace",
+    "physical storage power-loss qualification"
+  ]
+}

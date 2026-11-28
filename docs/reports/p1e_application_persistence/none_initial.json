@@ -1,0 +1,66 @@
+{
+  "scenario": 1,
+  "injected_fault": "none",
+  "events": [
+    {
+      "read_revision": null
+    },
+    {
+      "candidate_revision": 1,
+      "reply": "committed",
+      "selected_revision": 1
+    },
+    {
+      "read_revision": 1
+    },
+    {
+      "candidate_revision": 2,
+      "reply": "committed",
+      "selected_revision": 2
+    },
+    {
+      "read_revision": 2
+    },
+    {
+      "candidate_revision": 3,
+      "reply": "committed",
+      "selected_revision": 3
+    },
+    {
+      "read_revision": 3
+    },
+    {
+      "candidate_revision": 4,
+      "reply": "committed",
+      "selected_revision": 4
+    },
+    {
+      "read_revision": 4
+    },
+    {
+      "candidate_revision": 5,
+      "reply": "committed",
+      "selected_revision": 5
+    },
+    {
+      "read_revision": 5
+    },
+    {
+      "candidate_revision": 6,
+      "reply": "committed",
+      "selected_revision": 6
+    },
+    {
+      "read_revision": 6
+    },
+    {
+      "candidate_revision": 7,
+      "reply": "committed",
+      "selected_revision": 7
+    }
+  ],
+  "status": "passed",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "finish_code": 1,
+  "authority_revision": 7
+}

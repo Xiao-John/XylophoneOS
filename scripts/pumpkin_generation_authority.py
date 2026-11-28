@@ -15,6 +15,7 @@ import struct
 _record = struct.Struct("<8s16sQI32s")
 _tag = b"PUMGEN\0\1"
 _named_tag = b"PUMGEN\0\2"
+_provisioning_tag = b"PUMGEN\0\3"
 _digest_size = 32
 _record_size = _record.size + _digest_size
 _zero_digest = bytes(_digest_size)
@@ -35,14 +36,16 @@ class generation_mark:
     length: int
     checksum: bytes
     named_resources: bool = False
+    provisioning: bool = False
 
     def __post_init__(self):
         # P0 has a 48-byte header, up to 64 accounts of 68 bytes, and
         # a 32-byte checksum. The authority stores only that checksum.
-        envelope = 144 if self.named_resources else 0
+        envelope = 6192 if self.provisioning else 144 if self.named_resources else 0
         if (not _valid_realm(self.realm) or type(self.revision) is not int or
                 not 1 <= self.revision <= _max_revision or type(self.length) is not int or
                 type(self.named_resources) is not bool or
+                type(self.provisioning) is not bool or (self.provisioning and self.named_resources) or
                 not 80 + envelope <= self.length <= 4432 + envelope or
                 (self.length - 80 - envelope) % 68 != 0 or
                 not isinstance(self.checksum, bytes) or len(self.checksum) != _digest_size):
@@ -61,16 +64,17 @@ class publish_result(Enum):
 
 
 class generation_authority:
-    def __init__(self, root, realm, *, named_resources=False):
+    def __init__(self, root, realm, *, named_resources=False, provisioning=False):
         if not _valid_realm(realm):
             raise ValueError("a nonzero realm is required")
         self._root = Path(root).absolute()
         self._realm = realm
         self._realm_directory = realm.hex()
-        if type(named_resources) is not bool:
+        if type(named_resources) is not bool or type(provisioning) is not bool or (provisioning and named_resources):
             raise ValueError("invalid generation format profile")
         self._named_resources = named_resources
-        self._tag = _named_tag if named_resources else _tag
+        self.provisioning = provisioning
+        self._tag = _provisioning_tag if provisioning else _named_tag if named_resources else _tag
 
     @property
     def named_resources(self):
@@ -118,7 +122,7 @@ class generation_authority:
         if revision == 0 and length == 0 and checksum == _zero_digest:
             return None
         try:
-            return generation_mark(realm, revision, length, checksum, self.named_resources)
+            return generation_mark(realm, revision, length, checksum, self.named_resources, self.provisioning)
         except ValueError as error:
             raise generation_error("invalid authority generation fields") from error
 
@@ -172,9 +176,10 @@ class generation_authority:
         """Compare the full current mark and durably advance one revision."""
         if (not isinstance(next_mark, generation_mark) or next_mark.realm != self._realm or
                 next_mark.named_resources != self.named_resources or
+                next_mark.provisioning != self.provisioning or
                 (expected is not None and
                  (not isinstance(expected, generation_mark) or expected.realm != self._realm or
-                  expected.named_resources != self.named_resources))):
+                  expected.named_resources != self.named_resources or expected.provisioning != self.provisioning))):
             raise ValueError("authority publication does not match its configured realm and format")
         previous = 0 if expected is None else expected.revision
         if previous == _max_revision or next_mark.revision != previous + 1:

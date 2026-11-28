@@ -2,6 +2,9 @@
 #include "durable_probe.hpp"
 #include "durable_probe_supervisor.hpp"
 #include "../../../src/user/pumpkin/anchored_installation.hpp"
+#if XOS_PUMPKIN_PROVISIONING_STORE
+#include "../../../src/user/pumpkin/provisioning_protocol.hpp"
+#endif
 #if XOS_PUMPKIN_ANCHORED_PROBE
 #include "../../../src/user/pumpkin/generation_guest.hpp"
 #endif
@@ -215,7 +218,7 @@ bool dash_login(u64 pid, const credential& key) {
     return delivered && exited && result.outcome == process_outcome::exited && result.code == 0;
 }
 
-bool revoke_live_session(daemon& server, const test_account& account_data, bool with_dash = true) {
+[[maybe_unused]] bool revoke_live_session(daemon& server, const test_account& account_data, bool with_dash = true) {
     if (!lookup(server, account_data.identity, false)) {
         return false;
     }
@@ -234,12 +237,16 @@ bool revoke_live_session(daemon& server, const test_account& account_data, bool 
         login(user, account_data.key, reply, wire_status::denied);
 }
 
-bool check_revoked(daemon& server, const wire_id& account_id, const credential& key) {
+[[maybe_unused]] bool check_revoked(daemon& server, const wire_id& account_id, const credential& key) {
     ipc_client user;
     wire_reply reply;
     return lookup(server, account_id, true) && bind_ordinary(user, server.pid) &&
         login(user, key, reply, wire_status::denied);
 }
+
+#if XOS_PUMPKIN_PROVISIONING_STORE
+#include "provisioning_probe.hpp"
+#endif
 
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
 constexpr char resource_name[] = "preview";
@@ -467,7 +474,9 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
                                           {static_cast<u64>(proxy), proxy_control.transmit});
         switch (mode) {
         case anchor_guest::scenario::cycle: {
-#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#if XOS_PUMPKIN_PROVISIONING_STORE
+            passed = started && provisioning_cycle(server) && server.stop();
+#elif XOS_PUMPKIN_NAMED_RESOURCE_STORE
             passed = started && named_cycle(server) && server.stop();
 #elif XOS_PUMPKIN_NATIVE_LOGIN
             if (started) {
@@ -483,7 +492,21 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
             break;
         }
         case anchor_guest::scenario::healthy:
-#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#if XOS_PUMPKIN_PROVISIONING_STORE
+            passed = started && provisioning_recovered(server, false) && server.stop();
+            break;
+        case anchor_guest::scenario::provisioning_new:
+            passed = started && provisioning_recovered(server, true) && server.stop();
+            break;
+        case anchor_guest::scenario::provisioning_update:
+            passed = started && provisioning_update(server, status::ok) && server.stop();
+            break;
+        case anchor_guest::scenario::provisioning_reject:
+            passed = started && provisioning_update(server, status::io_error) && server.stop();
+            break;
+        case anchor_guest::scenario::provisioning_unknown:
+            passed = started && provisioning_update(server, status::outcome_unknown) && server.stop(12);
+#elif XOS_PUMPKIN_NAMED_RESOURCE_STORE
             passed = started && named_recover_then_erase(server) && server.stop();
             break;
         case anchor_guest::scenario::named_empty:

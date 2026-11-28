@@ -1,0 +1,101 @@
+{
+  "status": "passed",
+  "scope": "packaged glibc C/C++ kit; actual SDK loader archive without diagnostic override",
+  "source_revision": "1b8b0ae1cc1fc29bfde69b4f0d69f49a9b8a39d0",
+  "source_files": {
+    "scripts/build_spawn_pipe_probe.py": "50452214d86d187e26f15ed5ecc8fd1ad80c7093448c8d675aae84bb5a71bc05",
+    "tests/fixtures/glibc_g3/spawn_pipe_routes.c": "fb17ea84494f89abd80ce8255da8d540fb4f49b19ea384ec1d5396662bfacfa7",
+    "src/user/loader/load.cpp": "7b9bc97c98fd7cdf66fd94d24f5c01137327efa70d3549270d03ca8f43644888",
+    "src/user/loader/image_reader.hpp": "e1162a6bc2cc53ddeb7174a7074981bba8e9cc024b65c48d033ff333ab8804fd",
+    "scripts/build_dynamic_program.py": "a737feb737fbdf6678fe490044789027888c21447d88af45ffd993d4f2bc4e09",
+    "scripts/glibc_g1_probe.py": "0e508036b6e4098faa290c4e41c32b651aea54167fbf5d3b4c9283732fabc451",
+    "scripts/xypm_sdk_profile.py": "58ba003d4d44837949c370e4693e3834540296722c35180b98fe3deb1858ae32",
+    "scripts/sdk_receipt.py": "902e3351a5ca7e3fcb99c5f5827ebb983cf65f593fcec52b55a3868388e67bbd",
+    "tests/shell_launch_support.py": "6a4b7d2555db36025633008fdb50ce66a0c323804985b7a37b36858edc5b7544"
+  },
+  "native_system_build_id": "ec96cc19110d9906",
+  "native_system_manifest_sha256": "62b60bd97f45f86f5e898d490bcd51922c21f01f89957caa6ea475118bef19c0",
+  "native_sdk": {
+    "sdk_manifest_sha256": "8814a536758459d257aa03b46f863f1973dbf118d1199beeb6675c91070436a0",
+    "sdk_tree_sha256": "30a9805e12ffb19235129d14f24c950eefce1776cd94ccaf568c5f08285fd74e",
+    "target": "x86_64-elf",
+    "abi": 1
+  },
+  "packaged_sdk": {
+    "runtime_family": "glibc",
+    "runtime_model": "threaded",
+    "libc_version": "2.44",
+    "sdk_manifest_sha256": "56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703",
+    "sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab"
+  },
+  "linked_archive_sha256": {
+    "usr/lib/libc.a": "b08924cc0101c363df8867dd966565ce109f6ea4c819c95a34c48c4d4de5a991",
+    "usr/lib/libxos_terminal.a": "02b2c3348c3f5b7b08d9870edeae6b1ca82ebca599f72ef07128a13b0e90c73f"
+  },
+  "loader_mode": "sdk_archive",
+  "artifacts": {
+    "spawn_pipe.elf": "9d8e6531b4e3c8bd185f33125bec84e8ebf383c2bd71433a32d3ef63f4143833",
+    "probe.o": "1dfa0b534aee97b5491c1212a71e1f7d58c8a3b2da4d6b18e47c9b2776a15e50"
+  },
+  "baseline_resources": [
+    129793,
+    2,
+    0
+  ],
+  "checks": [
+    {
+      "round": 0,
+      "status": "passed",
+      "cases": [
+        "routed_read_write_alias_flags_cloexec_eof_before_exit",
+        "kernel_extra_alias_after_original_stdio_close",
+        "unrouted_pipe_explicit_rejection_parent_preserved",
+        "closed_reader_epipe"
+      ],
+      "child_executions": 4,
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    }
+  ],
+  "bound_input_count": 2035,
+  "inputs_rechecked_before_export": true,
+  "build_steps": [
+    {
+      "name": "compile-fixture",
+      "exit_code": 0
+    },
+    {
+      "name": "link",
+      "exit_code": 0
+    },
+    {
+      "name": "strip",
+      "exit_code": 0
+    }
+  ],
+  "raw_local_receipts": {
+    "build_sha256": "83f9c563f2b54184f47b0cd391021c3a4ac42487b8bb20cb25324dc492a18c7f",
+    "guest_sha256": "0e3dd37dd1af81a6aa225c8bc5559e87551a416dc34dc62355ce0f8ad4df78a4"
+  },
+  "not_qualified": [
+    "independent unrouted pipe-object transfer",
+    "additional kernel pipe routes",
+    "terminal-actor dynamic exec",
+    "physical hardware"
+  ],
+  "replay": [
+    "python3 scripts/build_spawn_pipe_probe.py --system \"${XOS_SYSTEM}\" --system-source \"${XOS_NATIVE_SOURCE}\" --sdk-build \"${XOS_KIT}/sdk\" --sdk-manifest-sha256 56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703 --sdk-tree-sha256 7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab --sdk-loader --output \"${XOS_FIXTURE}\"",
+    "python3 tests/spawn_pipe_guest.py --system \"${XOS_SYSTEM}\" --system-source \"${XOS_NATIVE_SOURCE}\" --sdk-build \"${XOS_KIT}/sdk\" --fixture \"${XOS_FIXTURE}\" --repeat 1 --output \"${XOS_GUEST_REPORT}\""
+  ],
+  "public_source_mapping": {
+    "local_producer_revision": "1b8b0ae1cc1fc29bfde69b4f0d69f49a9b8a39d0",
+    "public_revision": "0056c9fad097dddfeede319ff7c63b3ebd2bfcd5",
+    "shared_git_tree_sha1": "3c67a6f4ce7ee0061af3ef743c07b9d6757f1fb1",
+    "result": "identical complete Git trees",
+    "public_url": "https://github.com/Xiao-John/XylophoneOS/commit/0056c9fad097dddfeede319ff7c63b3ebd2bfcd5",
+    "observation": "The public commit tree was read from GitHub and exactly matches the locally recorded producer tree. Original receipts and revision fields are unchanged."
+  }
+}

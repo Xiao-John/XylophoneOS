@@ -1,8 +1,10 @@
 {
   "version": 1,
   "files": {
-    "README.md": "bbec0efd5636d78ead33fbefaa6cb3aea5906f8b424486bb9564e4131f63567f",
+    "README.md": "d12a9df3afaf173fda88ff13c3f8255de839dead24de69656a3c9efcce5053de",
+    "r1_public_download.json": "74ce6738b526973e0cd210631039101ab396795f0b02b42f23d4195f8d8d6096",
     "r1_sdk_consumer.json": "cfdbb39667363490ba170cec59c9b33dfc523ecbe898a29d6c27eba788bda25a",
+    "release_assets.json": "db35af779f2c5b351ea700506ec96cd4cbeed8c9551405c177cda2e27b1385e9",
     "sdk_public_download.json": "e7afff33a94680ec9dbae01a470cd387344d4a6553a3fcd6e63335e16b027ddb",
     "sdk_publication.json": "88653a36623e7b193efabf705475b64e6b76948db483b7e5377d53090aff7731",
     "sdk_recovery_qualification.json": "4a4075aaf00cbb417a483e6476bbf7b9133485ccd15b2bd90204f7d9c77658c1"

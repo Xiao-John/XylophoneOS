@@ -1,0 +1,103 @@
+{
+  "schema": 1,
+  "observed_at_utc": "2026-11-28T06:17:00Z",
+  "status": "passed",
+  "observation_method": "Read-only GitHub release, Git ref and latest-release API responses; original SDK asset identity compared with the retained build-run receipt. R1 body claims cross-checked with its public qualification and fresh host-SDK example receipt.",
+  "release": {
+    "id": 461317287,
+    "tag_name": "xos-sdk-glibc-preview-3",
+    "url": "https://github.com/Xiao-John/XylophoneOS/releases/tag/xos-sdk-glibc-preview-3",
+    "published_at": "2026-11-28T06:00:04Z",
+    "draft": false,
+    "prerelease": true,
+    "uploaded_asset_count": 7,
+    "generated_source_links_excluded": true
+  },
+  "assets": [
+    {
+      "id": 803481989,
+      "name": "p0-r1-glibc-release-20261128.tar",
+      "size": 430346240,
+      "digest": "sha256:492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4",
+      "state": "uploaded"
+    },
+    {
+      "id": 803482667,
+      "name": "p0-r1-glibc-release-20261128.tar.sha256",
+      "size": 99,
+      "digest": "sha256:b7119a0b62f53c294d6a17ea2242290284219e76516f4e83c1848692cb7e27ed",
+      "state": "uploaded"
+    },
+    {
+      "id": 803323025,
+      "name": "package.json",
+      "size": 1659,
+      "digest": "sha256:bcf274b3e1f691f285a1b0b428a01cef3cb26b1b679a5b2d446056e30360228b",
+      "state": "uploaded"
+    },
+    {
+      "id": 803323030,
+      "name": "qualification.json",
+      "size": 3194,
+      "digest": "sha256:c2c8c62c560134302cedf26e7da386ae95f1b43531b04036bcfab13167d45aa5",
+      "state": "uploaded"
+    },
+    {
+      "id": 803323027,
+      "name": "SHA256SUMS",
+      "size": 381,
+      "digest": "sha256:28fc98fa3132f1314b904bf69c340bb848cd758b3fb046f4301753cbe9d06bfb",
+      "state": "uploaded"
+    },
+    {
+      "id": 803323029,
+      "name": "xos-sdk-glibc-preview-3-linux-x86_64.tar.zst",
+      "size": 373222439,
+      "digest": "sha256:d3a4dd424fe33215df1d5ef9f93415b634799d52b4126d07dbe08f1fb59b1dcb",
+      "state": "uploaded"
+    },
+    {
+      "id": 803323024,
+      "name": "xos-sdk-glibc-preview-3-sources.tar.zst",
+      "size": 144590773,
+      "digest": "sha256:f883ab48729e90ce887a2ad89c02c34b63af3145e5bd4d7dbdd0b768884b60cf",
+      "state": "uploaded"
+    }
+  ],
+  "original_sdk_five_unchanged": {
+    "passed": true,
+    "baseline_run": 46110344041,
+    "compared_fields": [
+      "id",
+      "name",
+      "size",
+      "digest"
+    ]
+  },
+  "tag": {
+    "ref": "refs/tags/xos-sdk-glibc-preview-3",
+    "object_type": "commit",
+    "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f"
+  },
+  "stable_latest": {
+    "id": 434061503,
+    "tag_name": "v0.0.2-1103",
+    "url": "https://github.com/Xiao-John/XylophoneOS/releases/tag/v0.0.2-1103",
+    "draft": false,
+    "prerelease": false
+  },
+  "release_body_review": {
+    "status": "passed",
+    "host_sdk_profile": "xos-x86_64-glibc-host-8b2dee22a327",
+    "r1_profile": "xos-x86_64-glibc-p0-20261128",
+    "r1_profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "r1_system_build_id": "7c8c59058be0b5f1",
+    "explicit_r1_kit_selection": true,
+    "independent_profiles_stated": true,
+    "independent_checksum_sets_stated": true,
+    "new_gcc_sources_distinguished_from_historical_seed": true,
+    "r1_example_claim_limited_to_build_check_pack_and_profile_verification": true,
+    "r1_example_guest_execution_claimed": false
+  },
+  "limitations": "This observation verifies the API state and release description at the stated time; the original binary qualifications retain their own source and profile identities."
+}

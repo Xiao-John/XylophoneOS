@@ -70,7 +70,7 @@ SHA-256 `437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d`,
 and its system build is `7c8c59058be0b5f1`. Check the current delivery state in
 the [publication receipt](p0_glibc_preview_3_delivery.json).
 
-Once the R1 assets are available, download both
+Download both
 `p0-r1-glibc-release-20261128.tar` and its `.tar.sha256` file into the extracted
 host SDK directory. The tar is 430,346,240 bytes, with SHA-256
 `492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4`.

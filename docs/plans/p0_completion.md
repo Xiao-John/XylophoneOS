@@ -67,10 +67,11 @@ published fresh minimal evidence per module, and retained each result's actual
 source, SDK, image and configuration identities. Different qualified profiles
 are not relabelled as one identical system.
 
-**Publication status: SDK prerelease published and verified; R1 hosted-asset delivery pending.**
+**Publication status: P0 SDK/R1 public delivery verified.**
 The [final delivery receipt](../releases/p0_glibc_preview_3_delivery.json) records
-the observed SDK tag, successful recovery workflow and five public-download
-digests. R1 upload and its hosted-asset verification remain pending.
+the original SDK tag, successful recovery workflow, all five SDK asset digests,
+and both R1 asset identities. All seven assets were publicly downloaded and
+verified; the R1 tar also passes its 22/19-entry checksum sets and 20-file manifest.
 The new [glibc host SDK](../releases/glibc_host_sdk.md) defaults to static glibc
 C/C++; the R1 distribution has a separate, explicitly bound application profile.
 Use the matching R1 kit for its disk and packages.
@@ -110,8 +111,9 @@ and prior failures remain in history; their outcomes are not rewritten.
 This table replaces the initial broad workstreams with concrete outcomes.
 It preserves the original P0 acceptance requirements. New capability work can
 start once its named technical prerequisites pass. Fresh final integration and
-network evidence are now public through the module PRs above. The SDK and R1
-hosted-delivery gate is tracked separately until its actual upload is verified.
+network evidence are public through the module PRs above. The SDK/R1
+hosted-delivery gate has also passed, with actual public-download evidence in
+the final receipt. Each remaining workstream retains its named acceptance.
 
 | Priority / workstream | Next-round deliverable | Entry dependency | Acceptance and retained boundary |
 | --- | --- | --- | --- |
@@ -146,7 +148,8 @@ operations; a natural-language command alone is not a capability.
 ## Next implementation sequence
 
 1. Preserve the qualified P0 release, profiles, materials and replay commands;
-   finish and verify the hosted SDK/R1 delivery receipt before marking delivery closed.
+   use the verified hosted-delivery receipt as the source of artifact identities
+   when repeating checks or building the next version.
 2. Build ordinary consumers on the bounded read-only observation/proposal
    interface delivered in [#434](https://github.com/Xiao-John/XylophoneOS/pull/434).
    Its versioned endpoint, ordinary clients and offline replay are qualified

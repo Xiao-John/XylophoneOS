@@ -101,8 +101,9 @@ R1 的最终静态发行组合绑定系统 `7c8c59058be0b5f1` 和独立 profile
 `xos-x86_64-glibc-p0-20261128`，完成普通 79 项、许可材料 10 项、ABI、实际
 安装盘、原生 C/C++/Make/Python、升级中断恢复及冻结 newlib 往返验收。五组
 独立接收方逐字节复现全部 17 个静态程序，替换一个 libc 成员后各组真实客体
-均通过。外层 tar 及源码/重链接材料已冻结；公开上传仍待完成，实际交付状态
-见[发布回执](p0_glibc_preview_3_delivery.json)，不以本地冻结代替公开可获得性。
+均通过。外层 tar 及校验文件现已随 prerelease 公开；独立无认证下载复核外层
+摘要、22/19 项校验表与 20 项冻结清单通过，公开字节与原保存版相同。
+[发布回执](p0_glibc_preview_3_delivery.json) 记录实际资产 ID、大小、摘要和下载证据。
 [R1 资格及材料](../reports/p0_release_final_20261128/README.md)
 
 宿主 SDK 与 R1 的应用 profile 分别绑定，使用 R1 盘时调用随包

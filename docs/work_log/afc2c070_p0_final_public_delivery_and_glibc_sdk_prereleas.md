@@ -3,9 +3,9 @@
 ## Scope and current delivery gate
 
 This final integration record joins the per-module public PRs and fresh minimal
-evidence with the actual SDK and R1 distribution assets. The SDK is published and verified; R1 upload remains
-pending at this checkpoint. The [delivery receipt](../releases/p0_glibc_preview_3_delivery.json)
-records completed observations separately from pending hosted-delivery gates.
+evidence with the actual SDK and R1 distribution assets. Both are published and
+verified through independent public downloads. The [delivery receipt](../releases/p0_glibc_preview_3_delivery.json)
+records the seven uploaded asset identities and the completed public-delivery gate.
 The original [P0 acceptance requirements](../plans/p0_completion.md) are retained.
 
 The SDK was built at `8b2dee22a3272692603e9d01534c9b648375d04f`; its system is
@@ -71,7 +71,7 @@ the durably saved R1 tar/checksum survived. The final documentation was restored
 the SDK recovery code was reconstructed and rechecked before #436. Retained
 structured source/log digests are not claimed to restore lost raw log bytes.
 
-## Verification and remaining work
+## Final public delivery verification
 
 All five SDK assets were downloaded from their public release URLs without
 authentication and independently matched against server sizes/digests and
@@ -86,14 +86,31 @@ Its embedded receipt and ELF match the new build. This specific generated
 application was not run in a guest; the original R1 guest qualification is
 unchanged. The report records actual tools and all relevant bindings.
 
-The staged 12-file public-path scan is PUBLIC_READY with zero findings; all
-five new evidence leaves match the flat index. Relative links and the work log
-identifier have been checked. Final checks must be rerun after actual R1
-publication changes. Those checks are recorded against
-the actual staged delivery tree. No new OS build is implied by this documentation
-checkpoint. Upload the preserved R1 tar
-and checksum, then bind their observed hosted identities and checksums in the
-delivery receipt before marking the public-delivery gate closed.
+R1 tar asset `803481989` and checksum asset `803482667` were uploaded to the
+same prerelease. Independent unauthenticated downloads match the saved bytes.
+The tar contains 23 regular files and one directory, with no links: all 22
+bundle checksum entries, 19 frozen checksum entries and 20 frozen manifest
+file sizes/digests pass. The original five SDK asset IDs/sizes/digests and the
+`8b2dee22` tag remain unchanged; stable Latest remains `v0.0.2-1103`.
+
+The final staged 14-file public-path scan is PUBLIC_READY with zero findings;
+all seven new evidence leaves match the flat index. Relative links, JSON
+references and the work log identifier pass. The qualification commands include:
+
+```sh
+# Run from the directory containing each matching downloaded asset set.
+sha256sum -c SHA256SUMS
+sha256sum -c p0-r1-glibc-release-20261128.tar.sha256
+# Run from the candidate checkout after staging the actual final diff.
+python3 tests/check_public_evidence_paths.py --index --base origin/main
+python3 scripts/verify_evidence_index.py docs/reports/p0_public_delivery_20261128/manifest.json
+```
+
+The independent R1 public receiver additionally reads the tar without extraction,
+rejects unexpected members/links and checks its inner checksum sets and manifest.
+Its actual invocation and helper digest are retained in the download receipt.
+This documentation milestone adds no new OS-build or guest qualification; the
+module reports, SDK recovery consumer and R1 example retain their actual scopes.
 
 Stable `v0.0.2-1103`, the separately qualified Qt profiles and original frozen
 newlib rollback media keep their own identities. Installed DHCP with dynamic

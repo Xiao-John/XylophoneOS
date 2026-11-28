@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "sdk_published_r1_upload_pending",
+  "status": "p0_public_delivery_verified",
   "checkpoint_date": "2026-11-28",
   "checkpoint_timezone": "Asia/Shanghai",
   "repository": "Xiao-John/XylophoneOS",
@@ -12,7 +12,12 @@
     "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
     "validation_commit": "b60b9aea68f6f270abc0e97077f92adeaa2e72f8",
     "url": "https://github.com/Xiao-John/XylophoneOS/releases/tag/xos-sdk-glibc-preview-3",
-    "published_at": "2026-11-28T06:00:04Z"
+    "published_at": "2026-11-28T06:00:04Z",
+    "uploaded_asset_count": 7,
+    "sdk_asset_count": 5,
+    "r1_asset_count": 2,
+    "stable_latest": "v0.0.2-1103",
+    "final_observation": "../reports/p0_public_delivery_20261128/release_assets.json"
   },
   "sdk": {
     "system_build_id": "4a379155cac2fbbf",
@@ -99,7 +104,7 @@
     }
   ],
   "r1": {
-    "status": "qualified_outer_bundle_not_yet_uploaded",
+    "status": "published_and_public_download_verified",
     "filename": "p0-r1-glibc-release-20261128.tar",
     "bytes": 430346240,
     "sha256": "492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4",
@@ -135,7 +140,34 @@
       "not_applicable": 7,
       "scope": "Recorded material review, not a legal opinion."
     },
-    "host_sdk_consumer_evidence": "../reports/p0_public_delivery_20261128/r1_sdk_consumer.json"
+    "host_sdk_consumer_evidence": "../reports/p0_public_delivery_20261128/r1_sdk_consumer.json",
+    "assets": [
+      {
+        "id": 803481989,
+        "name": "p0-r1-glibc-release-20261128.tar",
+        "bytes": 430346240,
+        "sha256": "492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4",
+        "state": "uploaded",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/p0-r1-glibc-release-20261128.tar",
+        "created_at": "2026-11-28T06:15:36Z",
+        "updated_at": "2026-11-28T06:15:51Z"
+      },
+      {
+        "id": 803482667,
+        "name": "p0-r1-glibc-release-20261128.tar.sha256",
+        "bytes": 99,
+        "sha256": "b7119a0b62f53c294d6a17ea2242290284219e76516f4e83c1848692cb7e27ed",
+        "state": "uploaded",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/p0-r1-glibc-release-20261128.tar.sha256",
+        "created_at": "2026-11-28T06:15:51Z",
+        "updated_at": "2026-11-28T06:15:52Z"
+      }
+    ],
+    "public_download_verified": true,
+    "public_download_evidence": "../reports/p0_public_delivery_20261128/r1_public_download.json",
+    "published_outer_checksum_entries_verified": 22,
+    "published_frozen_checksum_entries_verified": 19,
+    "published_frozen_manifest_files_verified": 20
   },
   "boundaries": [
     "SDK host and R1 application profiles are distinct; use R1 application-sdk/xos-app for the R1 release disk.",
@@ -143,5 +175,6 @@
     "Each module's guest evidence retains its actual source, SDK, image and configuration; it is not one combined installed network profile.",
     "Online dynamic loading, dynamic fork-to-exec controller migration, independent pipe-object transfer and successful pthread_cancel remain outside the qualified profile.",
     "Physical NIC and arbitrary power-loss behavior, production time/entropy and OCSP/CRL, full WebCore and multiple-window composition retain their own acceptance requirements."
-  ]
+  ],
+  "verified_at_utc": "2026-11-28T06:18:06.092679+00:00"
 }

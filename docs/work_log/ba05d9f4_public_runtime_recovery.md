@@ -105,3 +105,47 @@ This completes the runtime's bounded public startup, ordinary spawn and
 same-PID exec execution gate. R2's final three-round generation test and
 R1's final SDK packaging, candidate and detached-receiver gates remain
 independently owned evidence; this report does not substitute for them.
+
+## Final SDK pipe transfer and the extended runtime matrix
+
+The release candidate subsequently exposed a concrete ordinary-spawn pipe
+regression in the daily-tools pipeline. A parent-owned pipe token was copied
+into the child's v3 FD snapshot even though kernel stdio setup had transferred
+the endpoint into a child-owned fixed route. The child's first read therefore
+returned `EBADF`. Commit `58ab5a8b` normalizes ordinary-spawn descriptors to
+those child routes, shares routes across aliases, and closes duplicate unused
+route references so final-close EOF is observable before the child exits.
+The same-PID exec path and strict legacy static-stdio rules remain separate.
+
+The permanent public fixture covers real reads and writes, shared flags,
+CLOEXEC, a nested child that reads an extra alias after fd0 closes, a write
+alias after fd1 closes, EOF while the child is still alive, unrouted-pipe
+rejection without parent mutation, and EPIPE after the last reader closes.
+The finite object-override diagnostic is retained as diagnostic evidence.
+
+Frozen source `08c97e1c9a9f3ee4a03cae24ad02214809786782` then produced
+native system `eeb192efd1422062`, C SDK v5, public GNU runtime v6, shared
+GCC v5, four fresh application closures and a four-root launcher. The formal
+[SDK archive qualification](../reports/public_spawn_pipe_sdk_final_20261128/README.md)
+passed all four groups and four actual child executions using
+`--sdk-loader`, with no loader-object override. It restored the exact
+129778/2/0 baseline and rechecked all 1154 bound inputs. An independently
+anchored old SDK was correctly rejected because its delivered loader source
+did not match the tested source.
+
+The [extended public runtime qualification](../reports/public_runtime_pipe_final_20261128/README.md)
+passed all nine cases in one complete round: the original eight entry,
+constructor, policy, spawn, same-PID exec, shared C++ and thread scenarios,
+plus the same real pipe fixture executing inside its approved GNU closure.
+Each case restored the exact 129678/3/1 baseline, and all 3352 input bindings
+were checked before and after execution and again at export. The 30-second
+production startup limit and bounded fixture handshakes were unchanged.
+The earlier failures and passing eight-case composition keep their original
+identities; these new reports qualify only the rebuilt final bytes.
+
+The native routing bound remains one input and two output routes, with
+aliases and Files objects represented in the 32-entry FD snapshot. Arbitrary
+independent pipe-token transfer and additional routes remain P1, alongside
+durable global activation, power-loss recovery, online dynamic loading and
+the other explicitly deferred controller domains. Final R2 and R1 release
+qualification remain independently bound reports.

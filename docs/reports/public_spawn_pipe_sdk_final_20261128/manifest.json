@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "f876bcb350e52f7924afa30156feca8ef1bcf43e6d7e3a0ff61bf1bbe47b19f7",
+    "build.json": "7d3654f8ad9663dc9fa15cd098bcb60241c5968aebed443f5075d2cf9ca3b248",
+    "conversion.json": "8b4954d4deb22b2abec9a69beeeaefff9bbe78d0e6570bf842065a0c2f325f44",
+    "guest.json": "a79a26da74997ac6fa362a3251817d41f61ab3c2c81d919f952a174dfce8e38f",
+    "stale_sdk_rejection.json": "5db12e1c6f71d620edd19e08aebd468b7a68ae281626489261c4237f7d6cf4bd"
+  }
+}

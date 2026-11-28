@@ -1,0 +1,10 @@
+{
+  "rule": "Known environment roots replaced by explicit replay templates; actual observations and all source, artifact and tool identities remain unchanged. Raw serial logs remain local.",
+  "raw_guest_sha256": "5f7d1a8abf0309919d415493d02bb71200f8a22e0dfe089aa8f1b2131dbd5c05",
+  "raw_build_sha256": "aa7763b9a9aed84b5e1cd69560e3fd35b1f5f73525af07f880f43988e0a34802",
+  "raw_local_logs_sha256": {
+    "serial_qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "serial_serial.log": "292949ec459687db7e1699998101d455e27c23da9fc5325644af4254da3cebe9",
+    "round_0.log": "70abac375441af416ddad2420b0ee8f2b482b26bf7c9f9200a3125b0d400121c"
+  }
+}

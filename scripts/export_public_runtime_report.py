@@ -25,11 +25,15 @@ def main():
     parser.add_argument('--stage', type=Path, action='append', required=True)
     parser.add_argument('--source-rebuild', type=Path)
     parser.add_argument('--historical-guest-dir', type=Path, action='append', default=[])
+    parser.add_argument('--require-pipe', action='store_true',
+                        help='Require the ninth public dynamic pipe/alias/EOF case')
     args = parser.parse_args()
     guest_path = args.guest_dir / 'report.json'
     guest = json.loads(guest_path.read_bytes())
     required = {'c-basic', 'c-policy', 'c-spawn', 'c-exec', 'cpp-xsh', 'cpp-dash', 'thread-xsh', 'thread-dash'}
-    if (guest.get('status') != 'passed' or len(guest['checks']) != 8 * guest['rounds']
+    if args.require_pipe:
+        required.add('c-pipe')
+    if (guest.get('status') != 'passed' or len(guest['checks']) != len(required) * guest['rounds']
             or {row['name'] for row in guest['checks']} != required
             or any(row['status'] != 'passed' or row['resources_before'] != row['resources_after']
                    or row['resources_after'] != guest['baseline_resources'] for row in guest['checks'])):
@@ -134,6 +138,17 @@ ELF would require restaging and another guest run.
             failed = ', '.join(row['name'] for row in checks if row.get('status') != 'passed') or 'none'
             history_section += (f"- Attempt {index}: `{data['status']}`, system `{data.get('native_build_id', 'unknown')}`, "
                                 f"{passed}/{len(checks)} recorded cases passed; unsuccessful cases: {failed}.\n")
+    pipe_section = ''
+    if args.require_pipe:
+        pipe_section = '''The additional dynamic C pipe case uses the public posix_spawn API
+within its own approved GNU closure. It checks real pipe reads and writes,
+shared status flags across stdio and extra-FD aliases, CLOEXEC exclusion,
+a second-generation spawn retaining a read alias after fd0 closes, a retained
+write alias after fd1 closes, last-close EOF while the child remains alive,
+explicit rejection of unrouted pipes without changing the parent's endpoints,
+and EPIPE after the last reader closes. This is a real dynamic execution;
+the separately recorded finite static loader override is not reused as its
+qualification.\n\n'''
     (out / 'README.md').write_text(f'''# Public GNU runtime: ordinary entry qualification
 
 The exact native system `{guest['native_build_id']}` passed all **{len(guest['checks'])}**
@@ -167,6 +182,7 @@ lookup before the initial READY. Readiness is sent once by shared libc
 after both constructor phases; later internal initialization must not
 replay it. Controller authentication and replay rejection stay strict.
 
+{pipe_section}
 The sequential ELF-metadata parser preserves the 30-second absolute startup
 budget. Each entry's wall time includes controller installation, any requested
 activation, inspection, launch, native/GNU startup and final completion; it

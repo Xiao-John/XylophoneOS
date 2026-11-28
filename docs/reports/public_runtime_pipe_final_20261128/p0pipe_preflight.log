@@ -1,0 +1,5 @@
+DYNAMIC_PREFLIGHT object=0 error=0 symbols=0 relocations=0 versions=0
+DYNAMIC_PREFLIGHT object=1 error=0 symbols=35 relocations=8 versions=3
+DYNAMIC_PREFLIGHT object=2 error=0 symbols=23 relocations=23 versions=1
+DYNAMIC_PREFLIGHT object=3 error=0 symbols=2100 relocations=990 versions=8
+DYNAMIC_PREFLIGHT closure=0

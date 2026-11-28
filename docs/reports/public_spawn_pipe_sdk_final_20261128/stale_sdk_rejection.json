@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "observed_error": "SDK loader source differs from the selected tested source",
+  "raw_failed_receipt_sha256": "f4d00cefe2ac71707709d16aa799e3370b8322e1a97cd502b06304534a038d1e",
+  "elf_created": false,
+  "meaning": "The old SDK had valid independently supplied anchors but its manifest and packaged loader source did not match the source under test. The archive-only mode failed before linking."
+}

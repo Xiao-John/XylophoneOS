@@ -1,0 +1,175 @@
+{
+  "status": "passed_explicit_profile",
+  "module": "P0-N4",
+  "qualified_source_commit": "7d4489df05b5e6bff57794773d3f4a1727d8cc57",
+  "preview_sdk_release": "xos-sdk-preview-2",
+  "preview_sdk_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "environment": "Linux x86-64 Preview 2 ordinary launcher, QEMU 11.1.3 TCG, one vCPU per guest",
+  "offline_network_namespace": "not_qualified",
+  "system_build_id": "39cb2c9af47cc7d8",
+  "system_image_sha256": "6da53ad541f74b5a625bf59ebfb5cd3477e5371728c7e4d37aceb1c38e2c92bb",
+  "system_manifest_sha256": "809de31c3455b8f158f2522b900521cec8b810fe7828871cb8f394f91bdf636e",
+  "system_source_file_count": 2211,
+  "system_source_map_sha256": "6b637ea755514eb4ea40dda675b9fd4030d9278acca610c4dd28fc51de65a206",
+  "original_report_sha256": "22429b08f9537702679257226d0412d6102009318b749121342b49cd1f3c24d7",
+  "evidence_scope": "Fresh result extracts from the checked-in runners. Raw serial output, packet captures and host command/tool inventories are retained locally, not included in this report.",
+  "runner": "tests/native_tls_guest.py",
+  "runner_sha256": "922ddafa23bf3b46079a0e5e7e7a9fb7ecd90367e01c8e39c668af6b517e2dcc",
+  "glibc_sdk_manifest_sha256": "9bb39b94106b9604d58acc5dc4c78829439c4eba6f456e7afdd270c99a154e22",
+  "probe_sha256": "66b45a818cffe047c4141748ab76f49517922fd8482a4434ff91dff33971ac1f",
+  "mbed_tls_archive_sha256": "3359a349e23db3d5536fcee032ae7b2ecbfc08972fab643089b5cbf2a375c98c",
+  "checks": [
+    {
+      "scenario": "valid",
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "application_request": true,
+      "version": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true
+    },
+    {
+      "scenario": "wrong-name",
+      "guest": "NATIVE_TLS_REJECT scenario=wrong-name flags=0x00000004",
+      "application_request": false
+    },
+    {
+      "scenario": "unknown-ca",
+      "guest": "NATIVE_TLS_REJECT scenario=unknown-ca flags=0x00000008",
+      "application_request": false
+    },
+    {
+      "scenario": "missing-intermediate",
+      "guest": "NATIVE_TLS_REJECT scenario=missing-intermediate flags=0x00000008",
+      "application_request": false
+    },
+    {
+      "scenario": "expired",
+      "guest": "NATIVE_TLS_REJECT scenario=expired flags=0x00000001",
+      "application_request": false
+    },
+    {
+      "scenario": "truncated",
+      "guest": "NATIVE_TLS_REJECT scenario=truncated status=-29312",
+      "application_request": true,
+      "version": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384"
+    },
+    {
+      "scenario": "valid",
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "application_request": true,
+      "version": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true
+    },
+    {
+      "scenario": "store-selftest",
+      "status": "passed_before_network"
+    },
+    {
+      "scenario": "store-tampered",
+      "status": "passed_before_network"
+    },
+    {
+      "scenario": "store-stale",
+      "status": "passed_before_network"
+    },
+    {
+      "scenario": "store-public",
+      "status": "parsed_pinned_CA_snapshot"
+    },
+    {
+      "scenario": "store-valid",
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "application_request": true,
+      "version": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true
+    },
+    {
+      "scenario": "store-second",
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "application_request": true,
+      "version": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true
+    },
+    {
+      "scenario": "store-unknown-ca",
+      "guest": "NATIVE_TLS_REJECT scenario=store-unknown-ca flags=0x00000008",
+      "application_request": false
+    },
+    {
+      "scenario": "store-wrong-name",
+      "guest": "NATIVE_TLS_REJECT scenario=store-wrong-name flags=0x00000004",
+      "application_request": false
+    },
+    {
+      "scenario": "store-expired",
+      "guest": "NATIVE_TLS_REJECT scenario=store-expired flags=0x00000001",
+      "application_request": false
+    },
+    {
+      "scenario": "store-removed",
+      "guest": "NATIVE_TLS_REJECT scenario=store-removed flags=0x00000008",
+      "application_request": false
+    },
+    {
+      "scenario": "store-updated",
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "application_request": true,
+      "version": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true
+    },
+    {
+      "scenario": "store-rollback",
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "application_request": true,
+      "version": "TLSv1.3",
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true
+    },
+    {
+      "scenario": "no_rdrand",
+      "startup": "exited_127_before_network"
+    }
+  ],
+  "resources_after_every_exchange": [
+    129506,
+    4,
+    2
+  ],
+  "trust_parser_cases": 15,
+  "public_ca_parse": {
+    "count": 118,
+    "generation": 20261105,
+    "source_url": "https://curl.se/ca/cacert.pem",
+    "source_sha256": "427c064216761a1e72a8b30f0d954d08cb6e4435a82091fb865afd20c8497285",
+    "snapshot_sha256": "8bc902a15d7d0a7d1161b26fce999fcb1e7215b2c22003bad935a0abafe8ac29",
+    "scope": "bounded pinned snapshot parsing, not public Internet TLS or browser policy qualification"
+  },
+  "https_adapter": {
+    "status": "target_compiled",
+    "source": "src/ports/browser_http/https_transport.cpp",
+    "source_sha256": "49c61206982ff3c1d502063022332f62fcd89dd8974cedf35e1ab42485b25860",
+    "object_sha256": "7904dbb0ff811d49e780a7bea606674f59f1b96887944dc38e99623da201d083",
+    "compiler_sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+    "sdk_manifest_sha256": "9bb39b94106b9604d58acc5dc4c78829439c4eba6f456e7afdd270c99a154e22",
+    "full_Qt_consumer": "not_run"
+  },
+  "source_and_artifact_validation": "The runner verified system sources/artifacts, probe source and ELF hashes, native-network headers, glibc SDK manifest binding, generated public certificate bindings and trust-store fixture hashes.",
+  "not_qualified": [
+    "public_CA_online_handshake",
+    "production_trusted_time",
+    "hardware_entropy_qualification",
+    "DNS",
+    "NetworkProcess",
+    "concurrent_tls_callers",
+    "HTTP2_HTTP3",
+    "full Qt consumer",
+    "physical power-loss atomicity",
+    "automatic CA updates and OCSP/CRL"
+  ],
+  "derivation": "Minimized fresh-run result derived from the retained original report identified by original_report_sha256. Random nonces and reply/challenge/frame payload bytes are omitted; pass/fail, counts, booleans, resource values and artifact digests are unchanged."
+}

@@ -192,10 +192,10 @@ error get_request(const url& u, char* out, size_t cap, size_t& size) {
     return error::ok;
 }
 
-error parse_response(const unsigned char* data, size_t n, bool eof, response& out) {
+error parse_response_bounded(const unsigned char* data, size_t n, bool eof, size_t body_limit, response& out) {
     out = response{};
     if (!data && n) return error::invalid;
-    if (n > max_headers + max_body) return error::too_large;
+    if (n > max_headers && n - max_headers > body_limit) return error::too_large;
     size_t end = 0;
     const size_t scan = n < max_headers ? n : max_headers;
     for (size_t i = 0; i + 3 < scan; ++i)
@@ -233,7 +233,7 @@ error parse_response(const unsigned char* data, size_t n, bool eof, response& ou
             for (size_t i = start; i < stop; ++i) {
                 if (s[i] < '0' || s[i] > '9') return error::invalid;
                 const size_t digit = size_t(s[i] - '0');
-                if (body > (max_body - digit) / 10) return error::too_large;
+                if (digit > body_limit || body > (body_limit - digit) / 10) return error::too_large;
                 body = body * 10 + digit;
             }
         } else if (equal(s + pos, colon - pos, "transfer-encoding")) return error::unsupported;
@@ -257,6 +257,10 @@ error parse_response(const unsigned char* data, size_t n, bool eof, response& ou
     out.body_offset = end; out.body_length = body;
     if (n - end < body) return eof ? error::truncated : error::need_more;
     return n - end == body ? error::ok : error::invalid;
+}
+
+error parse_response(const unsigned char* data, size_t n, bool eof, response& out) {
+    return parse_response_bounded(data, n, eof, max_body, out);
 }
 
 bool is_redirect(unsigned status) { return status == 301 || status == 302 || status == 303 || status == 307 || status == 308; }

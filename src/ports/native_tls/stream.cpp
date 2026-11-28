@@ -76,8 +76,7 @@ int stream::prepare(xos::u64 service_pid, xos::u32 address, xos::u16 port,
     started_ = true;
     deadline_ = deadline;
     const auto now = xos::sdk::syscall(xos::sys_clock_monotonic);
-    if (now < 0 || deadline <= static_cast<xos::u64>(now) ||
-        deadline - static_cast<xos::u64>(now) > xos::net2::max_request_ns)
+    if (now < 0 || deadline <= static_cast<xos::u64>(now))
         return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     if (xos_tls_wall_time(nullptr) < 0 || psa_crypto_init() != PSA_SUCCESS)
         return MBEDTLS_ERR_SSL_INTERNAL_ERROR;
@@ -97,18 +96,20 @@ int stream::handshake(xos::u64 service_pid, xos::u32 address, xos::u16 port,
     if (status) return status;
     status = mbedtls_ssl_set_hostname(&ssl_, hostname);
     if (status) return status;
+    const auto deadline = request_deadline();
+    if (!deadline) return fail(MBEDTLS_ERR_SSL_TIMEOUT);
     auto network = tcp_.connect(service_pid);
     if (!network && route == route_source::net2_dns) {
         xos::u32 length = 0;
         while (hostname[length]) ++length;
         xos::net2::resolve_reply answer{};
-        network = tcp_.resolve_ipv4(hostname, length, deadline_, answer);
+        network = tcp_.resolve_ipv4(hostname, length, deadline, answer);
         if (network) return fail(static_cast<int>(network));
         if (answer.address != address) return fail(static_cast<int>(xos::net2::denied));
         address = answer.address;
     }
     if (!network)
-        network = tcp_.open(xos::net2::protocol::tcp, address, port, deadline_, handle_);
+        network = tcp_.open(xos::net2::protocol::tcp, address, port, deadline, handle_);
     if (network) return fail(transport_result(network));
     mbedtls_ssl_set_bio(&ssl_, this, send, receive, nullptr);
     status = mbedtls_ssl_handshake(&ssl_);
@@ -147,7 +148,9 @@ int stream::finish() {
     if (!verified_ || !peer_closed_) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     const int status = mbedtls_ssl_close_notify(&ssl_);
     if (status) return fail(status);
-    const auto network = tcp_.close_connection(handle_, deadline_);
+    const auto deadline = request_deadline();
+    if (!deadline) return fail(MBEDTLS_ERR_SSL_TIMEOUT);
+    const auto network = tcp_.close_connection(handle_, deadline);
     if (network) return fail(transport_result(network));
     handle_ = 0;
     verified_ = false;
@@ -157,12 +160,25 @@ int stream::finish() {
 
 int stream::send(void* context, const unsigned char* data, size_t size) {
     auto& self = *static_cast<stream*>(context);
-    return transport_result(self.tcp_.write(self.handle_, data, chunk_size(size), self.deadline_));
+    const auto deadline = self.request_deadline();
+    if (!deadline) return MBEDTLS_ERR_SSL_TIMEOUT;
+    return transport_result(self.tcp_.write(self.handle_, data, chunk_size(size), deadline));
 }
 
 int stream::receive(void* context, unsigned char* data, size_t size) {
     auto& self = *static_cast<stream*>(context);
-    return transport_result(self.tcp_.read(self.handle_, data, chunk_size(size), self.deadline_));
+    const auto deadline = self.request_deadline();
+    if (!deadline) return MBEDTLS_ERR_SSL_TIMEOUT;
+    return transport_result(self.tcp_.read(self.handle_, data, chunk_size(size), deadline));
+}
+
+xos::u64 stream::request_deadline() const {
+    const auto current = xos::sdk::syscall(xos::sys_clock_monotonic);
+    if (current < 0) return 0;
+    const auto now = static_cast<xos::u64>(current);
+    if (now >= deadline_) return 0;
+    if (deadline_ - now <= xos::net2::max_request_ns) return deadline_;
+    return now + xos::net2::max_request_ns;
 }
 
 int stream::fail(int error) {
@@ -173,7 +189,8 @@ int stream::fail(int error) {
 
 void stream::release() {
     if (handle_) {
-        (void) tcp_.cancel_connection(handle_, deadline_);
+        const auto deadline = request_deadline();
+        if (deadline) (void) tcp_.cancel_connection(handle_, deadline);
         handle_ = 0;
     }
     tcp_.close();

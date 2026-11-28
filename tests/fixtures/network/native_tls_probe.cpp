@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-#include "http.hpp"
+#include "https_transport.hpp"
 #include "stream.hpp"
 #include "tls_test_root.h"
 #ifdef XOS_TLS_TRUST_STORE_PROBE
@@ -49,6 +49,49 @@ int record_verified_peer(const native_tls::stream& stream) {
     putchar('\n');
     return 0;
 }
+constexpr size_t large_body_size = 2 * 1024 * 1024 + 7;
+unsigned char header_workspace[browser_http::max_headers];
+
+int streamed_https(unsigned long pid, unsigned long port, const char* nonce, bool truncated) {
+    const auto now = xos::sdk::syscall(xos::sys_clock_monotonic);
+    const auto wall = xos_tls_wall_time(nullptr);
+    xos::u32 address = 0;
+    if (now < 0 || wall < 0 || !xos::net2::parse_ipv4("10.0.2.2", address))
+        return error("platform", -1);
+    printf("NATIVE_TLS_CLOCK realtime=%ld\n", static_cast<long>(wall));
+    browser_http::url target{};
+    target.protocol = browser_http::scheme::https;
+    target.port = static_cast<xos::u16>(port);
+    memcpy(target.host, hostname, sizeof hostname);
+    snprintf(target.target, sizeof target.target, "/%s", nonce);
+    struct body_state { const char* nonce; size_t received; } body{nonce, 0};
+    browser_http::response response{};
+    const auto status = browser_http::fetch_https_stream(
+        {pid, address, tls_test_root, sizeof tls_test_root, native_tls::route_source::pinned},
+        target, [](void* context, const unsigned char* bytes, xos::u32 size) -> xos::i64 {
+            auto& state = *static_cast<body_state*>(context);
+            for (xos::u32 i = 0; i < size; ++i)
+                if (bytes[i] != static_cast<unsigned char>(state.nonce[state.received++ % 32]))
+                    return xos::net2::invalid;
+            return size;
+        }, &body, header_workspace, sizeof header_workspace, large_body_size,
+        static_cast<xos::u64>(now) + 180'000'000'000ull, response);
+    if (truncated) {
+        if (status != xos::net2::io || body.received != large_body_size - 1 || response.status)
+            return error("stream-truncated", static_cast<int>(status));
+        puts("NATIVE_TLS_REJECT scenario=stream-truncated");
+    } else {
+        if (status || response.status != 200 || response.body_length != large_body_size ||
+            body.received != large_body_size)
+        {
+            printf("NATIVE_TLS_STREAM_PROGRESS bytes=%zu\n", body.received);
+            return error("stream-body", static_cast<int>(status));
+        }
+        printf("NATIVE_TLS_HTTPS status=200 bytes=%zu close_notify=verified\n", body.received);
+    }
+    return 0;
+}
+
 #ifdef XOS_TLS_TRUST_STORE_PROBE
 int trust_store_selftest() {
     using native_tls::trust_store_result;
@@ -122,6 +165,9 @@ int main(int argc, char** argv) {
     if (!pid || !port || strlen(nonce) != 32 ||
         strspn(nonce, "0123456789abcdef") != 32)
         return error("arguments", -1);
+
+    if (!strcmp(scenario, "stream") || !strcmp(scenario, "stream-truncated"))
+        return streamed_https(pid, port, nonce, !strcmp(scenario, "stream-truncated"));
 
     const char* name = hostname;
     const char* verification_case = scenario;

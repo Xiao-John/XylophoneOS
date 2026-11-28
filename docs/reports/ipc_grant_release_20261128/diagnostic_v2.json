@@ -1,0 +1,180 @@
+{
+  "build_id": "4739c522efb8898b",
+  "cases": [
+    {
+      "iteration": 0,
+      "name": "features",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "quota",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "fragments",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "pinned",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "foreign",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "owner_first",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "holder_first",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "holder_exit",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    }
+  ],
+  "compile_command": [
+    "${XOS_HOST_SDK}/bin/x86_64-elf-g++",
+    "-std=c++17",
+    "-Os",
+    "-g",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-ffreestanding",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-fno-stack-protector",
+    "-fno-pie",
+    "-fno-pic",
+    "-mno-red-zone",
+    "-mgeneral-regs-only",
+    "-nostdinc++",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-I",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/include",
+    "-I",
+    "${XOS_REPO}/src/user/include",
+    "${XOS_REPO}/tests/fixtures/ipc_v1_grant/release_probe.cpp",
+    "-nostdlib",
+    "-static",
+    "-no-pie",
+    "-Wl,--gc-sections,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+    "-T",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/user.ld",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/crt0.o",
+    "-Wl,--start-group",
+    "${XOS_REPO}/build/p1h_system_v5/threading_core/libxos_thread_core.a",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/lib/libxos.a",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/lib/libxos_loader.a",
+    "-Wl,--end-group",
+    "-o",
+    "${XOS_REPO}/build/p1_grant_release_diagnostic_v2/grant_release.elf"
+  ],
+  "diagnostic_source_mismatch": [
+    "src/ports/glibc/sysdeps/xos/xos_net2_socket.c",
+    "tests/fixtures/glibc_net2/socket_host.c",
+    "tests/fixtures/ipc_v1_grant/release_probe.cpp"
+  ],
+  "elf_sha256": "f13cd163955aecaf759a25067f0114e73873ab2afaa4cb779f0e821ab6eb64c1",
+  "error": "grant target failed: exec-driver /bin/grant_release.elf owner_exit\n[process] event=started pid=23 parent=7\r\n[process] pid=23 address_space=0x0000000000373000\r\n[loader] started pid=23 file=/bin/grant_release.elf\n[process] event=wait_blocked parent=7 child=23\r\n[process] event=started pid=24 parent=23\r\n[process] pid=24 address_space=0x000000000055a000\r\nGRANT_RELEASE_CHILD pid=24\n[task] event=reclaimed pid=23 pages=96\r\nGRANT_RELEASE_FAIL receive result=0\n[task] event=reclaimed pid=24 pages=96\r\n[wait] pid=23 kind=exited code=0\nxsh> ",
+  "image_sha256": "e02b800384cd74fe80a3ba25a80f2758612232170d0340048e7b303d39588472",
+  "not_covered": [
+    "multicore shootdown",
+    "allocation fault injection",
+    "VM-continuation target race"
+  ],
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/p1h_system_v5/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129769,
+    2,
+    0
+  ],
+  "runner_sha256": "9705617eb1a50eb7584f895205912e1d352474796377fdd64911059bae2c1d17",
+  "scope": "native SDK without libc; actual sys88 action24 and sys87 budget accounting",
+  "sdk_tree_sha256": "8e0dbb77c23e42bed610733143c62304d50a0d29da538db40f109483cc9c80ae",
+  "serial_sha256": "aa4361b30cdcaddaa6617d9fb17a73330cdc1ba5a3068f374f37e35adf1c5bed",
+  "source_sha256": "719048d2310d78ba364312bb1d35e87a5bf0792e61a3ee6cbdd38768a323ce9f",
+  "status": "failed",
+  "system_manifest_sha256": "e930e4573726ee69f43d254f2848be02c9896a5d1127b03da6f1a801debdef9c",
+  "thread_core_sha256": "bdca110c6490393dfdf3e850fcafb72fcb4e5c1cf57faf3c620b0f93ec261052",
+  "thread_header_sha256": "2268ae6fb2040932bff73af0755096c4d8c9aebc342c17391bcadc6b874d69df"
+}

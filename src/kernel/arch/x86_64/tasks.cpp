@@ -3,6 +3,7 @@
 #include <xos/task.hpp>
 #include <xos/display.hpp>
 #include <xos/thread_abi.hpp>
+#include <xos/observation_abi.hpp>
 #include "../../core/thread_lifecycle.hpp"
 #include "../../core/stream_lease.hpp"
 #include "../../core/vm_pin.hpp"
@@ -86,6 +87,7 @@ struct process_record {
 #endif
     u64 cr3;
     u64 pid;
+    u64 image_generation;
     u64 ticks;
     cpu_totals cpu;
     cpu_totals child_cpu;
@@ -794,6 +796,7 @@ process_record* prepare_task(const char* name) {
     vm1_probe_regions[static_cast<u32>(task - tasks)].clear();
     vm2_failures[static_cast<u32>(task - tasks)] = vm2_failure_injection{};
     task->pid = next_pid++;
+    task->image_generation = 1;
     copy_name(task->name, name);
     task->cr3 = create_address_space();
     if (task->cr3 == 0) { *task = process_record{}; return nullptr; }
@@ -1030,6 +1033,88 @@ ipc_name_record* find_ipc_name(const char* name) {
 bool ipc_service_published(u64 pid) {
     for (const auto& entry : ipc_names) if (entry.used && entry.owner_pid == pid) return true;
     return false;
+}
+
+// Fixed-size, read-only P1-A observation. Authorization precedes identity
+// comparisons so an unrelated PID or guessed endpoint reveals no state.
+observe_native::result observe_snapshot(const observe_native::request& request,
+                                        observe_native::snapshot& output) {
+    using namespace observe_native;
+    output = {};
+    if (request.version != version || request.size != sizeof(request) || request.reserved ||
+        request.kind < query::process || request.kind > query::service ||
+        request.deadline_ns == 0 || request.deadline_ns == ~u64{0}) return result::invalid;
+    const u64 observed_at = clock::monotonic_ns();
+    if (observed_at >= request.deadline_ns) return result::deadline;
+    process_record* target = nullptr;
+    if (request.kind == query::service) {
+        const auto* endpoint = endpoint_for(request.target);
+        if (endpoint == nullptr || (!endpoint->generic && !endpoint->generic_channel))
+            return result::denied;
+        u64 peer = 0;
+        if (endpoint->sender_pid == current->pid) peer = endpoint->receiver_pid;
+        else if (endpoint->receiver_pid == current->pid) peer = endpoint->sender_pid;
+        else return result::denied;
+        target = task_by_pid(peer);
+        if (target == nullptr || target->state == task_state::dead ||
+            target->state == task_state::building || target->closing) return result::unavailable;
+    } else {
+        target = request.target ? task_by_pid(request.target) : current;
+        if (target == nullptr || (target != current && target->parent != current->pid))
+            return result::denied;
+    }
+    if ((request.expected_pid && request.expected_pid != target->pid) ||
+        (request.expected_generation && request.expected_generation != target->image_generation))
+        return result::stale;
+    snapshot value{};
+    value.version = version;
+    value.size = sizeof(value);
+    value.kind = request.kind;
+    value.observed_at_ns = observed_at;
+    value.pid = target->pid;
+    value.image_generation = target->image_generation;
+    if (target->closing) value.flags |= flag_closing;
+    // Process records can retain "running" while their last runnable thread
+    // blocks. Use the existing thread-aware scheduler view, not that old mark.
+    switch (state_label(*target)) {
+    case 'B': value.process_state = state::building; break;
+    case 'N': value.process_state = state::fresh; break;
+    case 'r': value.process_state = state::ready; break;
+    case 'R': value.process_state = state::running; break;
+    case 'W': value.process_state = state::waiting; break;
+    case 'D': value.process_state = state::dead; break;
+    default: return result::unavailable;
+    }
+    if (request.kind == query::service) {
+        value.object_token = request.target;
+        if (ipc_service_published(target->pid)) value.flags |= flag_service_published;
+    } else {
+        value.parent_pid = target->parent;
+        value.ticks = target->ticks;
+        for (const auto& thread : threads) {
+            if (thread.process != target || thread.state == thread_state::free) continue;
+            ++value.threads;
+            if (thread.state == thread_state::blocked) ++value.blocked_threads;
+        }
+        if (request.kind == query::resources) {
+            value.pages = target->user_pages;
+            value.page_limit = process_max_pages;
+            value.pipe_references = target->pipe_reference_count;
+            value.pipe_reference_limit = process_max_pipe_refs;
+            value.channel_limit = ipc_max_owned_channels;
+            value.name_limit = ipc_max_owned_names;
+            for (const auto& endpoint : endpoints) {
+                if (endpoint.used && endpoint.generic && endpoint.owner_pid == target->pid &&
+                    endpoint.handle == endpoint.channel_id) ++value.owned_channels;
+            }
+            for (const auto& name : ipc_names)
+                if (name.used && name.owner_pid == target->pid) ++value.owned_names;
+        }
+    }
+    value.completed_at_ns = clock::monotonic_ns();
+    if (value.completed_at_ns >= request.deadline_ns) return result::deadline;
+    output = value;
+    return result::ok;
 }
 
 bool create_generic_channel(u64 sender_pid, u64 receiver_pid, u64 owner_pid,
@@ -4791,7 +4876,9 @@ void* process_syscall(interrupt_frame* frame) {
             current->recv_handle != response->handle) {
             result = process_error_state; break;
         }
-        if (next_endpoint_handle > 0xfffffffeull) { result = process_error_resources; break; }
+        if (next_endpoint_handle > 0xfffffffeull || current->image_generation == ~u64{0}) {
+            result = process_error_resources; break;
+        }
         ipc_v1_revoke_process(current->pid);
         revoke_generic_ipc_process(current->pid);
         device_revoke_process(current->pid);
@@ -4824,6 +4911,7 @@ void* process_syscall(interrupt_frame* frame) {
         current->send_handle = current->session_request_handle = request->handle;
         current->recv_handle = current->session_response_handle = response->handle;
         current->cr3 = stage->cr3;
+        ++current->image_generation;
         current->io_window_first = current->io_window_length = 0;
         (void)set_user_io_permissions(0, 0, false);
         current->user_pages = stage->user_pages;
@@ -5779,6 +5867,25 @@ void* dispatch_syscall(interrupt_frame* frame) {
     if(number==sys_device){return device_authorize_syscall(frame);}
     i64 result = sys_error_invalid_argument;
     switch (number) {
+    case sys_observe: {
+        observe_native::request request{};
+        observe_native::snapshot output{};
+        result = static_cast<i64>(observe_native::result::invalid);
+        if (frame->rdx || (frame->rdi & 7) || (frame->rsi & 7) ||
+            !user_range_ok(frame->rdi, sizeof(request), false)) break;
+        copy_from_user(&request, frame->rdi, sizeof(request));
+        result = static_cast<i64>(observe_snapshot(request, output));
+        if (result) break;
+        if (!user_range_ok(frame->rsi, sizeof(output), true)) {
+            result = static_cast<i64>(observe_native::result::invalid); break;
+        }
+        output.completed_at_ns = clock::monotonic_ns();
+        if (output.completed_at_ns >= request.deadline_ns) {
+            result = static_cast<i64>(observe_native::result::deadline); break;
+        }
+        copy_to_user(frame->rsi, &output, sizeof(output));
+        break;
+    }
     case sys_process_cpu_time: {
         process_cpu_time output{};
         if (frame->rsi != 0 || frame->rdx != 0 || (frame->rdi & 7) ||

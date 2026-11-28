@@ -1,0 +1,93 @@
+{
+  "status": "passed_scoped_p1_a",
+  "date": "2026-11-28",
+  "timezone": "Asia/Shanghai",
+  "scope": "P1-A read-only typed observations and recorded proposal evaluation",
+  "sdk_preview_archive_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "tool_versions": {
+    "gcc": "16.2.0",
+    "g++": "16.2.0",
+    "binutils": "2.47.20260726",
+    "nasm": "3.02",
+    "qemu": "11.1.3"
+  },
+  "profiles": {
+    "ordinary": {
+      "build_id": "0036a7ffb163749b",
+      "source_sha256": "0036a7ffb163749b18472d24c09a180512011871d2cd4d48ff03966142a9ab53",
+      "system_manifest_sha256": "08a850ff3ff4d356fcbae1b4d1e38698208b777c76147a2dd9ca42cb85904bfd",
+      "iso_sha256": "3861432309eb49b4780c1f44d7e8c1af10a593a3b699b0709da4104567984312",
+      "sdk_tree_sha256": "cac8b07387dae073d9cde8f1c58352e1c41187ff0ee7b1866ab3d7e972b6bb94",
+      "probe_receipt_sha256": "8bab93cf6f6de5bcca8d77a00918d8e5ac5914ebef1618a270f160f0c4292d7c",
+      "probe_artifacts": {
+        "observation.elf": "8f950f5f196d65a8c97e89d0beb6522796b4b9aca5ca8c9909670c560501da67"
+      },
+      "libc_linked": false
+    },
+    "network": {
+      "build_id": "c59a2f5ac6e57ebe",
+      "source_sha256": "c59a2f5ac6e57ebe12fbcbb2b181800412309709d6a82af752387ee3dd075ddf",
+      "system_manifest_sha256": "2d245a85d16c1d585cce709ba44939dae23605741a3ad1c19fe5ffb81e54f6b2",
+      "iso_sha256": "c2762595f25503d8708cc9f84f5dcd3328c119d4d8bcc648cac5c38d00c45a8a",
+      "sdk_tree_sha256": "af5fda2a32bac4a1865bb10508b75c3a7c2018e187706e7b0fba9fd586881154",
+      "probe_receipt_sha256": "b2f75dc22bb4ee94952d5f696ce528a6393b146d468326bfae4e499a61cbb013",
+      "probe_artifacts": {
+        "observation.elf": "8f950f5f196d65a8c97e89d0beb6522796b4b9aca5ca8c9909670c560501da67"
+      },
+      "libc_linked": false
+    }
+  },
+  "host_checks": {
+    "native_asan_ubsan_groups": 6,
+    "transport_asan_ubsan_groups": 11,
+    "process_wait_asan_ubsan_groups": 13,
+    "replay_assertions": 201,
+    "real_loaded_trust_checks": 14,
+    "schema_count": 3,
+    "synthetic_pairs": 8
+  },
+  "guest_checks": {
+    "ordinary_cases": 21,
+    "ordinary_replays": 69,
+    "network_cases": 3,
+    "network_replays": 18,
+    "trust_runs": 3,
+    "trust_checks": 45,
+    "trust_replays": 15,
+    "ipc_lifecycle_cases": 4
+  },
+  "abi": "passed",
+  "thread_component_link": "threading_component_whole_archive_relocatable_link",
+  "license_material_checks": {
+    "ordinary": {
+      "status": "passed",
+      "scope": "registered_materials_and_sdk_copies",
+      "registered_material_count": 10,
+      "original_report_sha256": "e379301703b4b09754146422dcc57b142ed4d3e13fa5f0efe88d70b5a37d9180"
+    },
+    "network": {
+      "status": "passed",
+      "scope": "registered_materials_and_sdk_copies",
+      "registered_material_count": 10,
+      "original_report_sha256": "db919e6475023cf1c1e828629587c0202608b6514c286a0be4c89dcb41c2d1ff"
+    }
+  },
+  "all_replays_repeat_identical": true,
+  "execution_authority": false,
+  "automatic_retry": false,
+  "trust_scope": "Real loaded CA snapshots selected locally for new connections; direct source/JSON guest path, remote transport covered separately.",
+  "not_qualified": [
+    "P0 closure or release promotion",
+    "global atomic inventory",
+    "persistent generation provisioning",
+    "process-tree budgets",
+    "DHCP transition observation",
+    "runtime ELF launch by this fixture",
+    "fork image-generation guest case",
+    "TLS handshake or existing-stream trust replacement by this fixture",
+    "default installed profile",
+    "full rebuilt threading/glibc SDK distribution",
+    "model generation",
+    "autonomous writes"
+  ]
+}

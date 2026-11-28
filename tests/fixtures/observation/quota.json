@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "validator_version": 1,
+  "policy_version": 1,
+  "logical_time_ns": 1100,
+  "policy": {
+    "caller_pid": 71,
+    "allowed_actions": [
+      "inspect",
+      "diagnose",
+      "refresh_observation"
+    ],
+    "allowed_scopes": [
+      "self",
+      "direct_child",
+      "held_endpoint",
+      "controller",
+      "application",
+      "service"
+    ],
+    "allowed_targets": [
+      {
+        "kind": "process",
+        "object_id": 41
+      },
+      {
+        "kind": "service",
+        "object_id": 7
+      },
+      {
+        "kind": "resource",
+        "object_id": 41
+      },
+      {
+        "kind": "runtime",
+        "object_id": 10
+      },
+      {
+        "kind": "network",
+        "object_id": 52
+      },
+      {
+        "kind": "trust",
+        "object_id": 11
+      }
+    ],
+    "max_observation_age_ns": 1000
+  },
+  "observation": {
+    "schema_version": 1,
+    "observation_id": 12,
+    "source": {
+      "pid": 41,
+      "epoch": 2
+    },
+    "caller_pid": 71,
+    "logical_time_ns": 1000,
+    "valid_until_ns": 2000,
+    "status": "quota",
+    "records": []
+  },
+  "proposal": {
+    "schema_version": 1,
+    "proposal_id": 4,
+    "observation_id": 12,
+    "source": {
+      "pid": 41,
+      "epoch": 2
+    },
+    "caller_pid": 71,
+    "target": {
+      "kind": "process",
+      "object_id": 41,
+      "generation": 3
+    },
+    "action": "inspect",
+    "expires_ns": 1900
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "scope": "synthetic recorded observation/proposal pairs; not guest evidence",
+  "cases": [
+    {
+      "file": "self_inspect.json",
+      "status": "accepted_proposal",
+      "reason": "validated_recorded_proposal"
+    },
+    {
+      "file": "service_restart.json",
+      "status": "stale",
+      "reason": "source_incarnation"
+    },
+    {
+      "file": "unauthorized.json",
+      "status": "unauthorized",
+      "reason": "target_policy"
+    },
+    {
+      "file": "deadline.json",
+      "status": "deadline",
+      "reason": "recorded_validity"
+    },
+    {
+      "file": "quota.json",
+      "status": "quota",
+      "reason": "observation_outcome"
+    },
+    {
+      "file": "revoked_endpoint.json",
+      "status": "revoked",
+      "reason": "target_observation_outcome"
+    },
+    {
+      "file": "unavailable_network.json",
+      "status": "unavailable",
+      "reason": "target_observation_outcome"
+    },
+    {
+      "file": "unsupported_write.json",
+      "status": "unsupported",
+      "reason": "proposal_action"
+    }
+  ]
+}

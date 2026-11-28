@@ -1,5 +1,12 @@
 # XOS 当前状态（全局快照）
 
+2026-11-28 · P1-A 只读观测与提案回放里程碑。新增有界 sys90 状态源、按
+PID/镜像代次授权的普通用户态 endpoint，以及六类 observation 和独立 proposal
+schema。普通客体 21 组、静态 Net2 3 轮、真实 loaded trust 45 项和 IPC 生命周期
+4 组通过，102 份实际记录重复回放一致。提案不授予执行权限，接口不执行写入；
+runtime catalog 仍局部易失，trust 记录选定的已加载 store，不改变既有 TLS stream。
+P0 闭环仍按原工作线推进。[P1-A 记录](work_log/63c043b9_p1_a_observation.md)
+
 2026-11-27 · 下一阶段里程碑。主线已合入可显式选择的 glibc C/C++ 应用 SDK、
 原生 xypm 客体维护、Qt Quick 软件渲染及外部应用工具包、Mobius glibc 会话和
 工作盘迁移。Pumpkin 开发配置已验跨重启登录、持久多账户和独立资源 broker。
@@ -97,7 +104,7 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 - 宪法 xos_plan v1.7：C28 驱动纯洁性、C29 时间域、C30 命名归属、C31 建设基础
   而非制造已经完成的假象；v1.7 删除 localpilot 隔离表述（`localpilot/` 已移出主
   工作区）。
-- ABI 有 78 个已分配 syscall（`docs_consistency` 实测）。sys67 匿名 VM 已实现，
+- ABI 有 79 个已分配 syscall（`docs_consistency` 实测）。sys67 匿名 VM 已实现，
   涵盖 VM1/VM2 和恢复后的 VM3 限定客体场景，完整资格待验。sys112 支撑用户态
   VirtIO-Net 纵切。sys20 wait-any、sys35 当前线程 TLS 和 sys51 有界退出清理
   均按各自契约和受测阶段登记。[ABI 登记](contracts/abi_registry.md)
@@ -106,6 +113,7 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 
 | 线 | 状态 | 记录 |
 |---|---|---|
+| P1-A 观测与提案 | 有界只读 endpoint、六类实际来源及离线提案验证已验；无执行授权、模型依赖或自动重试 | [本次交付](work_log/63c043b9_p1_a_observation.md)、[接口契约](contracts/observation_service.md) |
 | 应用故障包 FB0–FB2 | 受限通过；FB3/FB4、断电安全、全局收集未验 | [0080](work_log/0080_fb0_fault_bundle.md)、[0081](work_log/0081_fb1_fb2_fault_bundle.md) |
 | 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
 | VirtIO-Net / N2–N3 | sys112 授权的用户态驱动和 lwIP v2 已合入。传输、多应用隔离、生命周期和撤销有绑定客体结果。raw 诊断保持隔离。 | [原始帧纵切](contracts/net_user_driver.md)、[v2 契约](contracts/net_service_v2.md)、[多应用复验](work_log/69b0e274_network_guest_readiness_and_window.md) |
@@ -158,6 +166,8 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 
 ## 下一步
 
+- 在 P1-A 只读接口上接入普通消费者；持久写入先完成 P1-B 与相关 P1-C/E 的
+  显式授权、预算、恢复及结果未知契约。[P1 路线](plans/p0_completion.md)
 - 组合候选通过 79 项常规、10 项许可材料和 50 次 glibc 客体运行。收口须从最终
   主线提交重建系统和两套 SDK，实际运行组合门禁，并将结果绑定到该源码与产物。
   [组合复验](work_log/ea2d71c6_next_stage_combined_guest.md)

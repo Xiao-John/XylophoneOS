@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "scope": "production endpoint with host transport substitutes",
+  "guest": "not_run",
+  "source_sha256": {
+    "tests/observation_transport_host.py": "201e6dd98344f655dfcd81d1f0b3ba9dd7782044df4ffabf274cd17f00bb138e",
+    "tests/fixtures/observation_transport_host.cpp": "52fc1b123aef56f0d4c42de45a2c7dfbbb33bd72ecc9b5d1918df65e2a022a6a",
+    "src/user/observation/endpoint.cpp": "41cd16159a847ea8e921e4c9828dfc8edf8a43b8450b02db8a5a9c54a74cc834",
+    "src/user/include/xos/observation.hpp": "8ecfa7e00e32e85a5079f75ec34910e1504ab07289fbfbc2be7e06645652ece3",
+    "src/user/include/xos/sdk.hpp": "cd34445a2cf4ff65651f4efb88f8be2cfe15ea2fb7bab6af2a9630d05722f42a",
+    "src/shared/include/xos/observation_service_abi.hpp": "9ddbd62b028e9e150b9e35b1188a6b78dcb889029f305f474d9d6dfee1c5568e",
+    "src/shared/include/xos/observation_abi.hpp": "4dbdb29840a515da2e792d30b3d28264e384992fa8841c839277131d69f1920e"
+  },
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "returncode": 0,
+  "checks": [
+    "PASS authorization, per-peer read budget and unrelated-client usability",
+    "PASS pending success loses data on revoke before mailbox publication",
+    "PASS grant revision cannot bless a capture made under an older grant",
+    "PASS explicit retirement reclaims capacity; exec identity needs fresh authority",
+    "PASS malformed requests and repeated sequences never trigger capture; malformed provider fails closed",
+    "PASS stale preconditions and exact/late deadlines discard pending observations",
+    "PASS malformed infinite deadline cannot retain a blocked reply beyond the service budget",
+    "PASS exec-preserved endpoint cannot reuse old image authority or publish an older pending success",
+    "PASS defensive peer change during capture retires the route before any success publication",
+    "PASS ordinary client drives one bounded exchange; no retry after unresponsive service",
+    "PASS client verifies both peer routes and reports changed service epoch without capture"
+  ]
+}

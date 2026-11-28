@@ -37,14 +37,22 @@ public:
     trust_store_result load_file(const char* path, const trust_store_pin& expected);
     bool ready() const { return count_ != 0; }
     size_t anchor_count() const { return count_; }
-    uint64_t generation() const { return generation_; }
+    uint64_t generation() const { return pin_.generation; }
+    // Copy only the identity committed by a successful load. An unready store
+    // has no active identity, including after any failed load attempt.
+    bool capture_pin(trust_store_pin& output) const {
+        output = {};
+        if (!ready()) return false;
+        output = pin_;
+        return true;
+    }
 
 private:
     friend class stream;
     int copy_to(mbedtls_x509_crt* destination) const;
     mbedtls_x509_crt anchors_{};
     size_t count_ = 0;
-    uint64_t generation_ = 0;
+    trust_store_pin pin_{};
 };
 
 }

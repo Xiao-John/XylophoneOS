@@ -1,0 +1,175 @@
+{
+  "status": "passed",
+  "qualification": "threading_component_whole_archive_relocatable_link",
+  "scope": "8 native components compiled with the threading SDK recipe flags; no SDK libc, CRT, pthread runtime or guest was built or run",
+  "complete_threading_sdk": "not_built",
+  "guest": "not_run",
+  "libc_linked": false,
+  "function_sections": false,
+  "garbage_collection": false,
+  "sources": {
+    "src/user/observation/endpoint.cpp": "41cd16159a847ea8e921e4c9828dfc8edf8a43b8450b02db8a5a9c54a74cc834",
+    "src/user/observation/json.cpp": "538de3fa0b92aad1ee7958aa25d39f5dc7e469a7f3ea2d5b111a41d26791a7b7",
+    "src/user/observation/sources.cpp": "c21fdb1400dbf8acaac550e763f3280cceeb778d7f4a4e86efb19ca869512c9a",
+    "src/user/loader/dynamic/generation.cpp": "09d55f0b2c6f0571b433ea25ec182d9305bfb9dbf932e9a234bdb741083e844e",
+    "src/user/loader/dynamic/identity.cpp": "1da4640550eee5f3766bfc01ff6f3d7cbf6d3e00c9b4c91e8fc1c5a141c365c1",
+    "src/user/arch/x86_64/syscall.cpp": "b69c2d81b575d86ea5f55e489690db0171a13b5ff208f9c9a9eb1f7b9c17b1a2",
+    "src/user/sdk/text.cpp": "6f9a8389c89d02f94d9003381fe438ab39705494095ad50593862eaad0cf9d21",
+    "src/shared/runtime/memory.cpp": "dcb0cabd06523fc1cdad1b8f7f48c97dd4f1d30c8e4bdf717fda4c969d20cb09"
+  },
+  "recipes": {
+    "scripts/build_threading_sdk.py": "2f9683ce2f52598bad18b544d938cb7bd0094f473feeca6daf0d031588e07dde",
+    "src/user/threading/compile.py": "46c1de050d7ae48fab63a36b84144a2997102f3fc08897bfe798cad44302815b"
+  },
+  "check_script_sha256": "652efcb916dd0f69e1d368c22c4b617edcbdd8c216f9aea3d12156dc6eb2827f",
+  "tools": {
+    "x86_64-elf-g++": {
+      "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "x86_64-elf-as": {
+      "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-ld": {
+      "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-ar": {
+      "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0",
+      "version": "GNU ar (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-nm": {
+      "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f",
+      "version": "GNU nm (GNU Binutils) 2.47.20260726"
+    },
+    "x86_64-elf-readelf": {
+      "sha256": "a6e0ff4b51a996352b63f45270e1381035acba1445da79e91c6efee837edac9d",
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+    },
+    "cc1plus": {
+      "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+    }
+  },
+  "inputs_unchanged": true,
+  "command_paths": "Repository-relative argv executed inside the SDK launcher; the launcher_command is a derived portable rendering with XOS_SDK.",
+  "launcher_command": "\"$XOS_SDK/xos-sdk\" --workdir \"$PWD\" bash -c 'python3 build/p1_a_thread_component_link/component_check.py'",
+  "prior_check_attempt": {
+    "report": "build/p1_a_thread_component_link/first_attempt/report.json",
+    "sha256": "9e72a68080c2a881c5babe220ce8917a36a1a467ed8a5c05ce20fc5d5421a630",
+    "result": "The compile and whole-archive link succeeded, but the initial check incorrectly rejected normal inline COMDAT sections. The corrected check verifies absence of section-splitting flags; all components are rebuilt."
+  },
+  "headers": {
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/audio_abi.hpp": "6b9e27332b5163d2eceb9e364581a80f74be098c8b47711f7b577f7e9b4b901d",
+    "src/shared/include/xos/device_abi.hpp": "cdece558f19833d44f5d372a674d430e869c8a9d8fdfb8d1a81e49581a10fa11",
+    "src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+    "src/shared/include/xos/dynamic_abi.hpp": "96a8c327fc64c406757e5d3aeb5ccd95e9cdd20d1d9a167728d58ef570a9217e",
+    "src/shared/include/xos/dynamic_startup_abi.h": "749b84b10fcfa2c951b1f590747f2625158b339c3255a3123415b097a437b463",
+    "src/shared/include/xos/file_abi.hpp": "9e6e6585dd8dee2e9b2db8d10fac7aeeffb693b41f8f4702d119bbfee3e5c4aa",
+    "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "src/shared/include/xos/launch_control_abi.h": "b8e32d0971b10d35efe7c5f857f076fb1ed6f6782b2e6b1ff3ae4201a1ae371d",
+    "src/shared/include/xos/net_abi.hpp": "14e0baf22c2de09588c8924b07a05a7b6095fc4db0b9d408405efbaa18cd819e",
+    "src/shared/include/xos/net_service_abi.hpp": "8365d89889c7d8bc32318dc56c85fb6ce012aee703e779a3dc37d8a16987091f",
+    "src/shared/include/xos/observation_abi.hpp": "4dbdb29840a515da2e792d30b3d28264e384992fa8841c839277131d69f1920e",
+    "src/shared/include/xos/observation_service_abi.hpp": "0c832f6eba5fed6871bbc3e652cda743ef5548f1a0aadaa77c1b58e00bb09fed",
+    "src/shared/include/xos/process_abi.hpp": "e7097ee765656ed758382af9d7a44e6723fedf774e3fa8d30bc1667d53eb3542",
+    "src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+    "src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+    "src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+    "src/user/include/xos/audio_client.hpp": "75b4ef444194a38a9f64889b49c849ad399870129c81b2971ae27f8bfbd38746",
+    "src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+    "src/user/include/xos/device.hpp": "a51d315ee644b727da7db66bb3111c3553a85e6fb8c0e8b6870dc70b07c08e5d",
+    "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "src/user/include/xos/dynamic.hpp": "269c57f63a62c6d4bd4f36386d17200137af65815fa3f5d989546f335583313c",
+    "src/user/include/xos/dynamic_elf.hpp": "ae7155bf1d8709b3d02646742813b6d9149176bb0558dc3e2893c3a56a19015a",
+    "src/user/include/xos/dynamic_launch.hpp": "1484042cb1804a8cd388eed2365efaed95972d7c72d6a2b68660ad1a97058c11",
+    "src/user/include/xos/elf.hpp": "c93092a90a6bd6295ddb4f3352cc47d597cb0c4d71047870399db3585dfd9f28",
+    "src/user/include/xos/execution.hpp": "1da5993a6ee873e56ae7533aa85221ac5c27d6c86c1ccc69719b3e702c000a08",
+    "src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+    "src/user/include/xos/file_client.hpp": "e7cda26359bf88b784fd40aa544f3a51c1c4d0677b6db2499c9804bd1cfe978b",
+    "src/user/include/xos/file_ui.hpp": "b078a633cb47dd6537ae4bc945a766750e0467b860bfaa677275d5d92758123c",
+    "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "src/user/include/xos/launch_control.hpp": "36496f2565236ede0294504124e242d7bd7d46c761443bb91bc7acb95c1be419",
+    "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "src/user/include/xos/net_client.hpp": "b4024b191e578f9af9820ed5b09622b4ba137c949026465ebd6134e63a8b7b62",
+    "src/user/include/xos/net_service_client.hpp": "64abc994ef3998106428f466ee5c64b034aaae4f4dc989b6cb9edc37a224e7a8",
+    "src/user/include/xos/net_transport.hpp": "6f5e7a5ba2cca4ebcec93a43f170adc8e93c385c25098377b259a7d0ac100674",
+    "src/user/include/xos/observation.hpp": "8ecfa7e00e32e85a5079f75ec34910e1504ab07289fbfbc2be7e06645652ece3",
+    "src/user/include/xos/observation_sources.hpp": "4fc7b534f1ba5ae8a69ac68cbd67ec8b530cd05cd4147fe8a9850243c60c640e",
+    "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "src/user/include/xos/sdk.hpp": "cd34445a2cf4ff65651f4efb88f8be2cfe15ea2fb7bab6af2a9630d05722f42a",
+    "src/user/include/xos/spawn.hpp": "67ff2bdddd735b8751962cb8808be9804f883b5e3d692bfa59ee2dd01c53d6d3",
+    "src/user/include/xos/terminal_client.hpp": "3ef1d2d4e763a510f32457dd2eccb37cabe1ea7df5f3ba2cc50814cbf6ea56fb",
+    "src/user/include/xos/terminal_control.hpp": "b2f803aa503e91c6c35ab174b0f7e6638c0edcec32375d33dd98b404fa00f78e",
+    "src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+    "src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+    "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+    "src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e"
+  },
+  "header_count": 48,
+  "compile_flags": [
+    "-Bbuild/p1_a_thread_component_link/tools/",
+    "-std=c++20",
+    "-O2",
+    "-g",
+    "-ffreestanding",
+    "-fno-rtti",
+    "-fno-stack-protector",
+    "-fno-pic",
+    "-fno-pie",
+    "-mno-red-zone",
+    "-march=x86-64",
+    "-mcmodel=small",
+    "-ftls-model=local-exec",
+    "-DXOS_THREADED_RUNTIME",
+    "-nostdinc++",
+    "-Ibuild/p1_a_thread_component_link/include",
+    "-Isrc/user/threading",
+    "-fno-exceptions"
+  ],
+  "flag_mapping": "Same native-unit flags as scripts/build_threading_sdk.py; private -B tool links and copied xos/ headers are under this output instead of SDK/cache paths. No -ffunction-sections, -fdata-sections or linker --gc-sections.",
+  "undefined": {
+    "strong": [],
+    "weak": [
+      {
+        "symbol": "xos_console_write_hook",
+        "type": "w"
+      }
+    ],
+    "allowed_weak_explanation": "The existing sdk::write implementation in xos/sdk.hpp uses optional weak xos_console_write_hook; absent a hook it invokes the native syscall. No stub is supplied by this check."
+  },
+  "required_symbols": {
+    "xos::observation::sources::capture(": true,
+    "xos::dynamic::activation_catalog::capture(": true,
+    "xos::dynamic::identity_valid(": true,
+    "xos::dynamic::inspect_identity(": true
+  },
+  "section_note": "Inline COMDAT .text/.rodata sections are normal without -ffunction-sections and were retained by the whole-archive relocatable link.",
+  "archive_members": [
+    "src_user_observation_endpoint.cpp.o",
+    "src_user_observation_json.cpp.o",
+    "src_user_observation_sources.cpp.o",
+    "src_user_loader_dynamic_generation.cpp.o",
+    "src_user_loader_dynamic_identity.cpp.o",
+    "src_user_arch_x86_64_syscall.cpp.o",
+    "src_user_sdk_text.cpp.o",
+    "src_shared_runtime_memory.cpp.o"
+  ],
+  "artifacts": {
+    "build/p1_a_thread_component_link/libobservation_component.a": "221e024e997259fef54cb0258c053db4c629ff8c7666cd5138fc1ec4cbed0cf9",
+    "build/p1_a_thread_component_link/observation_component.o": "97753a33666eec5165c885c176346074f027a3b13a2e072df724780923b43ee8"
+  },
+  "object_artifacts": {
+    "build/p1_a_thread_component_link/objects/src_user_observation_endpoint.cpp.o": "3a741e3388631bf8bd2772f181f6b6f8cb174c46afb91acce761a31bb97f76e8",
+    "build/p1_a_thread_component_link/objects/src_user_observation_json.cpp.o": "23dda8378405beea6528afa0850377c36145dd398d1c974abfe957299c716072",
+    "build/p1_a_thread_component_link/objects/src_user_observation_sources.cpp.o": "bcdcc441d45612504176cae711da294107f6c16b501efe5af8bd72623d89cab5",
+    "build/p1_a_thread_component_link/objects/src_user_loader_dynamic_generation.cpp.o": "bd141b08783a0d07b6e087334d7e18e43188d42967a2b8c570b15e5cdbfc709b",
+    "build/p1_a_thread_component_link/objects/src_user_loader_dynamic_identity.cpp.o": "9fbd8e1284d800964073cba9159672823a3329eda6fa182fe7b1ed77ff8b0a3c",
+    "build/p1_a_thread_component_link/objects/src_user_arch_x86_64_syscall.cpp.o": "7931bccd5e9e5f1730247aad517d6944c81ef636dd3ce5b63fa0e29d46be50cb",
+    "build/p1_a_thread_component_link/objects/src_user_sdk_text.cpp.o": "c84392d2dd0406fafefdcdfd67ad60fcbecfc982e82c74c0b8385d399f6ca63b",
+    "build/p1_a_thread_component_link/objects/src_shared_runtime_memory.cpp.o": "5b78b740ec0ca32427b5a6b6ad97ab0d3ced162883ed034b80cac4552af343f3"
+  }
+}

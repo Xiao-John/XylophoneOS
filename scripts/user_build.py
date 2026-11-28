@@ -8,6 +8,7 @@ import struct
 from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
 from ipc_v1_manifest import ipc_v1_manifest_entry
 from ipc_endpoint_manifest import ipc_endpoint_manifest_entry
+from observation_manifest import observation_manifest_entry
 from device_manifest import device_manifest_entry
 from archive_provenance import capture_build, copy_archive_provenance, digest
 from lwip_service_build import build as build_lwip_service
@@ -72,6 +73,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     sdk_objects = [compile_source(root / name) for name in (
         "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/sdk/terminal_client.cpp",
         "src/user/sdk/launch_control.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
+    sdk_objects.extend(compile_source(source) for source in sorted((root / "src/user/observation").glob("*.cpp")))
     sdk_objects.extend(compile_source(source, ("-w", "-ffunction-sections", "-fdata-sections")
                                       if source.name == "newlib_syscalls.cpp" else ("-w",))
                        for source in sorted((root / "src/user/libc").glob("*.cpp")))
@@ -357,6 +359,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                      "unit": "nanoseconds", "scope": ["process", "current_thread", "waited_children"]},
         "ipc_v1": ipc_v1_manifest_entry(),
         "ipc_endpoint": ipc_endpoint_manifest_entry(),
+        "observation": observation_manifest_entry(),
         "device_authorization": device_manifest_entry(),
         "network_service": net_configuration,
         "diagnostic_extensions": {"fault_bundle_format": 1, "loader_receipt": "sha256-held-instance",

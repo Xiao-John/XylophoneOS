@@ -19,7 +19,8 @@
 | 87 | 87 | allocated | SL1 创建能力：`sys_process_authority`（shell_launch 契约；并行占号 84 与 Interactium 撞号，按已合入登记改列 87） |
 | 88 | 88 | allocated | 通用 IPC v1；IP2/IP3 有既有客体记录，IP4 bulk 可调用但本组合 guest 未运行，IP5 性能资格独立 |
 | 89 | 89 | allocated | 自身进程/当前线程 CPU 时间；版本 1，已实现但未客体验收 |
-| 90 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；其余接口尚未登记 |
+| 90 | 90 | allocated | `sys_observe` v1：自身/直接子进程、持有 IPC 端点的有界只读观测；[契约](native_observation.md)，资格见专项记录 |
+| 91 | 95 | reserved | 系统底座线：通用等待/信号/进程控制；其余接口尚未登记 |
 | 96 | 111 | reserved | 显示/输入线的后续机制；现有65/66保留 |
 | 112 | 112 | allocated | 设备授权线 v1 `sys_device`。grant/MMIO/DMA/IRQ/撤销已实现，已有[网络纵切限定客体证据](net_user_driver.md)，通用资格见[契约](device_authorization_v1.md)§9 |
 | 113 | 127 | reserved | 设备授权线：后续机制 |
@@ -138,6 +139,7 @@ sys20 第三参数 bit0 为非阻塞，bit1 与第一参数为零共同选择显
 | 87 | `sys_process_authority` | `src/shared/include/xos/process_abi.hpp` |
 | 88 | `sys_ipc_v1` | `src/shared/include/xos/ipc_v1_abi.hpp` |
 | 89 | `sys_process_cpu_time` | `src/shared/include/xos/process_abi.hpp` |
+| 90 | `sys_observe` | `src/shared/include/xos/observation_abi.hpp` |
 | 112 | `sys_device` | `src/shared/include/xos/device_abi.hpp` |
 | 84 | `sys_ipc_endpoint` | `src/shared/include/xos/process_abi.hpp` |
 | 85 | `sys_ipc_wait` | `src/shared/include/xos/process_abi.hpp` |
@@ -159,7 +161,6 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 | 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
 |---:|---|---|---|---|
 | 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | allocated | 已实现，完整资格待验。[契约](anonymous_vm.md)与[恢复记录](../work_log/58b24599_vm3_lifecycle_sdk.md) |
-| 90 | `sys_observe` | P1-A 系统底座线；v1 受权限约束的进程、资源与持有端点只读状态 | claimed | 登记合入后由 `codex/p1-a-observation` 实施；版本、身份、deadline 与文件占用见[认领记录](../work_log/eb2b4c9a_p1_a_scoped_observation_syscall_claim.md)，尚未实现或验收 |
 | files op 29 | `file::op::set_metadata` | 文件/包管理共用服务；FAT 诚实子集 | allocated (M1) | [契约](file_metadata_v1.md)；`tests/file_metadata_guest.py` |
 | files op 30/31 | `file::op::read_at/write_at` | G3 文件模块；显式位置，不改共享 offset | allocated | [契约](glibc_files_v1.md#定位读写与目录流)；`tests/glibc_files_extra_host.py` |
 | files op 32 | `file::op::remove_directory` | 在同一请求内确认目标为目录、为空并移除 | allocated | [路径变更](glibc_files_v1.md#路径变更)；`tests/fixtures/glibc_g3/path_mutations.c` |

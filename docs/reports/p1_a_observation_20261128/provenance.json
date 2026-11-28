@@ -1,0 +1,1371 @@
+{
+  "format": "derived P1-A evidence export v1",
+  "policy": "Original source paths are repository-relative. Original raw file hashes identify the new P1-A runs only. Host invocation paths and sibling-file hash lists are omitted; numerical outcomes and identities are unchanged. The flat manifest alone hashes exported files. No P0 acceptance report is imported.",
+  "exports": [
+    {
+      "source": "build/p1_a_final_native/report.json",
+      "source_sha256": "5b51c6df1e83f12ae0ccc745386f1728a7c315ea26a87504e0ca5380e5209c5b",
+      "export": "native_host.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": []
+    },
+    {
+      "source": "build/p1_a_capture_recheck_transport/report.json",
+      "source_sha256": "ca5d0d77338c97624a6f16e9bd9bd18f66127cb7677005729a8b3ac0063d7682",
+      "export": "transport_host.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": []
+    },
+    {
+      "source": "build/p1_a_final_process_wait/report.json",
+      "source_sha256": "49fcf8d81ae2ce4e27f60d35f6178cb8df34c4da291955dfcf438caa38bd42cc",
+      "export": "process_wait_host.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": [
+        "command"
+      ]
+    },
+    {
+      "source": "build/p1_a_loaded_trust_replay/report.json",
+      "source_sha256": "a98ab06dc5282f839b2836bf19b32ad04624404ffebcc327c48d11e839bd0a8e",
+      "export": "replay_host.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": []
+    },
+    {
+      "source": "build/p1_a_loaded_trust_schema/report.json",
+      "source_sha256": "521239f721d5108dd86f26267664f6718371daeff525af4e96233b2424c84495",
+      "export": "schema_host.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": []
+    },
+    {
+      "source": "build/p1_a_thread_component_link/report.json",
+      "source_sha256": "6801f42f15d2059dd31c37144b3d7a3451c3d17e657bd6fcd88b7499f70c97ba",
+      "export": "thread_component_link.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": [
+        "commands",
+        "tools.*.path",
+        "tools.*.resolved_path"
+      ]
+    },
+    {
+      "source": "build/p1_a_final_abi_v2/abi_doc_report.json",
+      "source_sha256": "951a42e8f872978104c121b4a98c29a7cdb59974376bd5c3551bfaa9dfbbc197",
+      "export": "abi.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": []
+    },
+    {
+      "source": "build/p1_a_trust_host/receipt.json",
+      "source_sha256": "c8ca9456e6f9d36181b5a00b1f2e0b5e6ec3e515320f315de2aa67c89422aba7",
+      "export": "trust_host.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": [
+        "commands",
+        "sanitized_environment",
+        "tools.*.path"
+      ]
+    },
+    {
+      "source": "build/p1_a_trust_probe/receipt.json",
+      "source_sha256": "5e1dd80796cc3de5387b03bf9712b4fec167e04a908bc4f9a60c7f03cb9240a3",
+      "export": "trust_fixture.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": [
+        "commands",
+        "sanitized_environment",
+        "tools.*.path"
+      ]
+    },
+    {
+      "source": "build/p1_a_guest_v3/report.json",
+      "source_sha256": "40c129a5df1045ca6062f691fdda4bd08049b85be1baa1e7f0bda808dd0da932",
+      "export": "ordinary_guest.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": [
+        "qemu_command",
+        "replays"
+      ]
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0001.json",
+      "source_sha256": "e819ef933812d863a697cfb03ebfd9779b3c966f9f82195f5e6f33179e1a9d7b",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0001_result.json",
+      "source_sha256": "d14d301aa145908b9d72ba48922c9bb5bfb7f0466bbbf93b510f1bd4f3e18281",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0002.json",
+      "source_sha256": "e0acc990942a71d0a96f2e3e4eacb6ea43bf5666f65314c59ad1a1d9fbeadb88",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0002_result.json",
+      "source_sha256": "085ef70c203909d149ba3813ac290b3ff4cdecc00359cda73f3d12571dc5d8da",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0003.json",
+      "source_sha256": "8eac6d7df81d3ef7f78e1db40a6c3632ab9f7410201f79cf5bbf9a2ce5717eda",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0003_result.json",
+      "source_sha256": "b1782d644216c7cb70e2f89ebb7df74096d02b8e5fc9843a364a39ff4022c6b6",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0004.json",
+      "source_sha256": "3b3b1f6cea6ea90caaf5a73926c4cbd2292760da9d3904c1e896968e81985a3a",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0004_result.json",
+      "source_sha256": "078628d1c7d3ad4d3b0eaa1e737f182b12eedd5b8a2e34ff66d104f8b881b3aa",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0005.json",
+      "source_sha256": "10e05e8fd9374960e8fd3e27054525144ec3ebeab0c8e6785ea48820f80ad9d1",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0005_result.json",
+      "source_sha256": "ca5a07f17cacb854175035a1f1847aa11dc0298749d14eb62e44e1d5d6a3c77e",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0006.json",
+      "source_sha256": "e4385d4bcd30bd7a63abf154fdd0cf960f487c2b9267c71c4c9ca6f9e1e8f676",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0006_result.json",
+      "source_sha256": "192ec5600a142244b3bece535fd05af1aca694a0303d999085f10aa950af89bc",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0007.json",
+      "source_sha256": "cdcd5a06a9873d87a6a2e628f795194b00292db688531f72b5ab7632672812e9",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0007_result.json",
+      "source_sha256": "df15ef168410d00c192475f35c43369dddf5b4b6c0a34d090bdd59eb3d3d4110",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0008.json",
+      "source_sha256": "b84dd12780659793632958f9a1870cde991fef15bd13c8b1a18a4a50a5265a8c",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0008_result.json",
+      "source_sha256": "601b9eb3aa0238ca1c7661a0b4c57bb1c97bd89273caa08cef2cb5b2591508b3",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0009.json",
+      "source_sha256": "1832e7c4897eba8a0a1cbdbab3b7e096e37e54c900484b77fcc3a1cfa894deae",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0009_result.json",
+      "source_sha256": "668894cff450f9652fdca14c0cd3417e2b41c7f5b9d2ebcf574e5d2e0294d54f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0010.json",
+      "source_sha256": "bd993262bbb05000d2b399b9c1d59adb54f9521861e43103a1e9913cbd3e46be",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0010_result.json",
+      "source_sha256": "269d9a4f033cc7478cc9364f9ccca0823b0ce65c9b893959ba31963864c048ef",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0011.json",
+      "source_sha256": "27f2e639f77bfc40a1a7527946d395c84dbf0e8738a2d9096c207182d89941df",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0011_result.json",
+      "source_sha256": "c3c28fa335ef7f669f57578452ce33641557b9477370c6cac36065ff91b3b991",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0012.json",
+      "source_sha256": "755ae9e420aa5e7fca142b59d7c90571c3c49f031341c656983705f86edb5a83",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0012_result.json",
+      "source_sha256": "ee80fd1c9ba59392293d6b9a1606263e563718844f64e1c132d1cf9572e9b424",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0013.json",
+      "source_sha256": "ef4df3177c030d737deaee754dfd0eb3ace97c8f47cc3c6a96b924e96ecd92ef",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0013_result.json",
+      "source_sha256": "585c48f085da1bcaa8d6baf0fd9459e0f59ea18ca3ba57785bf93fd6ad328498",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0014.json",
+      "source_sha256": "9083ddade9348a84f9d407795b895b4da4e0ef7717dff3e9a0edc743caa36d0d",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0014_result.json",
+      "source_sha256": "2b2e0e58016247d0d2d93dc39138ab3346071069f702a04ca37a534998d8a151",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0015.json",
+      "source_sha256": "84beae983f75a86a4bdb56a2b58996d7e5327d031f769b0e4e0802bc01eab206",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0015_result.json",
+      "source_sha256": "853ef3992af7f9bc483095a3dfe4699f2c22d178c6e8a8d1fed3803d45261a19",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0016.json",
+      "source_sha256": "86d1f837fc263dd628a90f4bd9d161a1639618f7bfd31ee7c26d49cf7ec87c68",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0016_result.json",
+      "source_sha256": "26238ad299d5d2cffd8906433e0bd85f6aefdfe16a3d419bd0574c365c04a9e5",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0017.json",
+      "source_sha256": "3effd7dddb07f79962ef2367838887aa2e7f79633ca707665e52b1ed3ae57e04",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0017_result.json",
+      "source_sha256": "7315ba4889a3ca0422318aa8de5fb10ac41bf4d6156a5bd494d92a7878eb9d0f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0018.json",
+      "source_sha256": "fabc1358d3a29f1d2fafb22fa7ae00f1bda1fe5dca237681997c6fb22d61713f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0018_result.json",
+      "source_sha256": "49087458e6e1bac903cc4ca29816c85992e444c3352604d847c07e4746b58a58",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0019.json",
+      "source_sha256": "1cbc2f4372b384a85ec661ea78d7c7de6ca826060616751215518a672bafa87d",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0019_result.json",
+      "source_sha256": "9e72284badc747d34c5b35b8bc536dae12a3e08c6db3067ad4f45c7fcc8ed637",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0020.json",
+      "source_sha256": "f2bd273fb937bc8fdbe3e065264a5f569b0cf6d019961a6d7c1a9ca310bdf473",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0020_result.json",
+      "source_sha256": "05bdda8cfba594f9369753ab73c0cc36628640de24843dda498c2b85999dd589",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0021.json",
+      "source_sha256": "92f5fa234b722f79ae36d9c2b14b0a93f28fae23e373bfa479262a00139a8a69",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0021_result.json",
+      "source_sha256": "1574142ce071228a318436a75dc8ff3cc5a8506e1de73bdbdd46ad2dbbf36b0e",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0022.json",
+      "source_sha256": "9b2dba0086d174e43c84682d99b74f2bc7ab566cf658f1c92f8c3a5cc563bcf8",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0022_result.json",
+      "source_sha256": "3a0580c4bbe7f5b46975775671bfc038db1a3e8602781658e69f0156f8ac9b0f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0023.json",
+      "source_sha256": "dae38c589e0f2434971d8c2831eefaaf02f749c9ad09fb3898c42a1d46521d4f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0023_result.json",
+      "source_sha256": "021500e3f40ad9b02a64e0f86fd7c0d386e5500137b5ce39785060d3494eb13d",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0024.json",
+      "source_sha256": "675064ecebef38789eb877271ebe73c83bd93809d64db2a37b39079e36752840",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0024_result.json",
+      "source_sha256": "0e3dc6d787660ca8dd2ce9bcc25d11a9015a67e7deb01b5e540f8d201a92de3e",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0025.json",
+      "source_sha256": "0d9d89bf328d0fe73784406fef25153de3bfde289f5ceb120a0a79033e507088",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0025_result.json",
+      "source_sha256": "438f0e7de1f51d527dcb73c2e63c8b1e9b7cb7aec1916dffcc944f7af211abe4",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0026.json",
+      "source_sha256": "8cff48298c5da9b44d9a6db9937e57749122e7e76bd8a1de07f889727749291c",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0026_result.json",
+      "source_sha256": "55a6cafde44af3feed889765826a740ce1556121cc31338b20ebfa626531033e",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0027.json",
+      "source_sha256": "c2d4203f70b5c1eb414507b9b20f6ecc14f267bb77139c83b8ac2dd6947f7d67",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0027_result.json",
+      "source_sha256": "8ee4ac260e3e539b85c713e9a7b3a49fdf4ab182e2bf09527cb6452f64fbef91",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0028.json",
+      "source_sha256": "4dfe50eee9534c03f8759d9714ed4d167bb80cf32514fbc6c842350be0f3d4de",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0028_result.json",
+      "source_sha256": "cbea5c68ab456bb373eef7bd1025f29b5939e001b39144bf9a3ae9a4f2908c71",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0029.json",
+      "source_sha256": "f8a858c2f00ef42c2e38acfdfc51130d4be532c8b76f6c058b966b80bed55d97",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0029_result.json",
+      "source_sha256": "75c2bd0874f955944fc952228c2018980b0d86c6a1a73b31b7e7f838ee881910",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0030.json",
+      "source_sha256": "e1e6d9b10fa6ae4c28fcbb070447eac106a480566716c9bb85707ae5367b47f3",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0030_result.json",
+      "source_sha256": "6383613244fb03af1ea081d58da9e34c2f73b21f4a8fe9bcf9b8b142af6aac06",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0031.json",
+      "source_sha256": "599e13d9a18da596d5b9db29f0a7fd9398fa10ab038102e8b5760176bdbcf713",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0031_result.json",
+      "source_sha256": "5198aac0270ccf0113667b085bd17e215f3764c22e88b3540457744f4e71c19a",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0032.json",
+      "source_sha256": "53507439524ae5f3eb430171651904b02be665a71a6562ac7367078fd8c8395b",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0032_result.json",
+      "source_sha256": "84e4d627fae577d091d08459d5dd91ae9d8b3620d9875903c75ee038c7b351ba",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0033.json",
+      "source_sha256": "b4efa06d9b740dc7ddfc3aac697081ac12b2ba8fbbf61c2446ed6fbc72a2c7b3",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0033_result.json",
+      "source_sha256": "898cb3b789171a5d4efbe6b48987d39b6fb54fe8821ca2a1fa9c8894b734b6f8",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0034.json",
+      "source_sha256": "559d1c14146b4a5ad04c45d293ef08113bdfc974b3b63cdcde1bc06e767e7eff",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0034_result.json",
+      "source_sha256": "b691b3fbe4f7dcaac30ac06f427114bf342ad9a7258fb8d0c5ee8ad56639e94b",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0035.json",
+      "source_sha256": "aa67193712837387818f5eef281f90aeb721d849dc9e32d8cd9d18921a4b7c35",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0035_result.json",
+      "source_sha256": "a9af31f2255d5854214cbabcec0fc3ef8966f4de502c4553d13621cfb9c7edc8",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0036.json",
+      "source_sha256": "450b044b1c3df0f11a5d4eaa7c703cb7cff8b97621701743bc2e1eb0e06ec3f4",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0036_result.json",
+      "source_sha256": "056eaa58f1efb0c82e8d3dc3a016bee6ffb7a21a5f32567d45e30ecc1f6d37b9",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0037.json",
+      "source_sha256": "3ebda17d48317e46abb48e0bd44549eb9f4f627f885e01f86bd56bd3ac6084c6",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0037_result.json",
+      "source_sha256": "77eb11a7a297a4e508a10e8e1811d4404bcd92b65196400061381424fda479ac",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0038.json",
+      "source_sha256": "1e6ff76b82220347ce3aee60d535915fc76cd41d4f0130f37678efe3cda917bd",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0038_result.json",
+      "source_sha256": "1761fafb70d4d774941e46c1dd8991ddf97b23bedf268014d851d3264b392fe8",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0039.json",
+      "source_sha256": "0f47f5a89848a8a9230a0c84a045977377ffcb8dbbff7c1b4d2b8dba7caa6930",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0039_result.json",
+      "source_sha256": "443b9c42e45654b687c4075805f281b49ad5847a2c419f04b701bcba52e4141f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0040.json",
+      "source_sha256": "b5ed5dd843e77b1ff8cad67962d8678ddebd47ec1204c7c592e13e99cbb0a63a",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0040_result.json",
+      "source_sha256": "6b20b2f5abf42af7ba88219463288424aa8694c77b7b554d65bac97787b2f678",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0041.json",
+      "source_sha256": "4afe0cfd3e240490b43fdcdd8710039c7affaa3d2b5ac47c937e7decec4a6325",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0041_result.json",
+      "source_sha256": "66542157684b053cde294c10d4f248a8d5d75f68db2e56b60528be2b5823cf02",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0042.json",
+      "source_sha256": "6166427e7378c52e7d7e6e9fccb48ebc42c0def6add5337d4e7bda88a94d46a5",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0042_result.json",
+      "source_sha256": "86e20b85f47f1309c109dcaf5003966166e3869cd167518603d3635eebd635ff",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0043.json",
+      "source_sha256": "7722f27050d54e75c01211a9acae5ee95f13d7c2832c5cf6b80cd53a110b6d8a",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0043_result.json",
+      "source_sha256": "dc7e73052adce74b6d2871703623066e7378c5f8e54355180bf6e56117a246e0",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0044.json",
+      "source_sha256": "38c4bfa890b7107ea511ccc6db035cef7af1febd931f571e72cee2c1b58283f1",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0044_result.json",
+      "source_sha256": "7bbe4187f84cea1ba6d49d463c4588609da55c2e34a22755029d1e4345189d88",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0045.json",
+      "source_sha256": "74c15de8f37c162860862020bfa3df2b15c4457262b806957dc467ade77a42bb",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0045_result.json",
+      "source_sha256": "c4ee33d04f7aff389a3628d3a9e6f28eec74fc47532a6997c0b892f6375e4a67",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0046.json",
+      "source_sha256": "08a97611e0a0d49c2167978dfba0a29dab2c0a9a6b9336ace26d042d5364413c",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0046_result.json",
+      "source_sha256": "de878d3f200cd64aab005906a6c7174d6a19448f892ae5f8715e1bc5ad938226",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0047.json",
+      "source_sha256": "13879b7cff3d39261e567dfb906e8c53925f0046bcad7e8d87bda68f32c31f10",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0047_result.json",
+      "source_sha256": "a3a811a1f76cb65dd23b3cb3f5f4476b376da565337d1e8e6c5184ff590ccc0d",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0048.json",
+      "source_sha256": "e9ed94856662414653b60293a9e77b5411b255a576b5ea890d1948276551c5a2",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0048_result.json",
+      "source_sha256": "6351406ca282375fba8e6e2f5189d26685bf492417bd9702477a2214899b75c9",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0049.json",
+      "source_sha256": "5edd59d692c3bc8eac0eacb0c5b909a456906fdcd80b508c882dc07bb9677b0d",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0049_result.json",
+      "source_sha256": "8417e07381b2e5cc92f457795c4b5558439b095d38186e65157c186dd24ac98f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0050.json",
+      "source_sha256": "afc5118e6f861e0b02673e5cfeb1c69db9ef8f062d703f672f10b6157456d8c9",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0050_result.json",
+      "source_sha256": "d1353e9796a526eb03d3cb52a6760c9ffafdabcf96a6bc21bed6aa517d78d0bd",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0051.json",
+      "source_sha256": "d60e9b762218c511c6503c7e19fc5ecb1a0d6790e228dd99a33913fb881285f7",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0051_result.json",
+      "source_sha256": "03f4c2c74f0c04974219d50ba2b602d804d5aa1649617d2734af15deee308330",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0052.json",
+      "source_sha256": "c888b92cc8116a4be36f9811aab3d687ec6151d2d25c009259ce7dd6791357a0",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0052_result.json",
+      "source_sha256": "72525137929a08ea20050fe51bfcdb9d5f5ed9eab5816d2abbf2069bca3cc9c6",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0053.json",
+      "source_sha256": "3e4764f942ad07ada189f86b2b120e345645596b5bf440fb4f34a1eb2fa21960",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0053_result.json",
+      "source_sha256": "5be2a32a7b72edf25efcaff8ae260db3c35e05798385f2d54cb2f2013575c40f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0054.json",
+      "source_sha256": "0e8fdec8e033c61f72b4fd056ba29ceed5ed9518b85a204da03dc6dc060ea4da",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0054_result.json",
+      "source_sha256": "45c330129f5de0fdd50087128be3df5c59e033ea6d676e1d5eeebf930b1eab01",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0055.json",
+      "source_sha256": "b4b4fbfd4c1b0d264f5a4c64a92a4b79851f5c155e2c7b18cf47298e8c8904f0",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0055_result.json",
+      "source_sha256": "b8a3baf464999a2232a754f17f6abe8cd60f6962fe9dd01a624b3fbece7c2233",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0056.json",
+      "source_sha256": "664fd86ae402382eab66c24db9fdd92fa020f273ca60ac583f2e63b9444c3986",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0056_result.json",
+      "source_sha256": "0de1b488b093c565e66ad86e3d3478eac1afe0d8c184df53916d1a635dadaccb",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0057.json",
+      "source_sha256": "7f9508f747db4fa4eaa3ea266fd9a3814636657a6bbc8f07c766970ada18ce7e",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0057_result.json",
+      "source_sha256": "acabb98b4d5d583e08033a4de096b7f2a9df196edd8360aa2fcd76f2cf62cb9e",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0058.json",
+      "source_sha256": "f2e704869dcb18634f0b1e791c1a62722b14a4d784c01d56848409ef7eda59b6",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0058_result.json",
+      "source_sha256": "e0c5da3151b36e6d201c70711770fa7a22e82940979efce3031b924c3b87b7e4",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0059.json",
+      "source_sha256": "53a2ebbbb882dc1fcac565547920a48cd57c09028630d8281cd0d12dea4e9e4a",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0059_result.json",
+      "source_sha256": "2fda1f7d26893fec04ffdc6f5f14ba6cb17fb8a6a5d867305a7067f0bd4ba695",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0060.json",
+      "source_sha256": "fa0d00cb9012c74c9486830169e537a19c16711d743cf8c6fa5007ea15bb1ec5",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0060_result.json",
+      "source_sha256": "af2aabf7c4d9ba89b5bd4e34085152232ed5b5ce1b71ddf82852d7b23e3db691",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0061.json",
+      "source_sha256": "26fa96ab71aee104e728681af3f3f1228454f17897060ecf11de1ee44cf6dd48",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0061_result.json",
+      "source_sha256": "a8ebc2a085bb4b4afdfce0a410a4d1e9917f5a800ba8c2b8bab5b0856306545f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0062.json",
+      "source_sha256": "cd5cbd4f067e098d8d5125f0718943a0845559fb8ad1a7f6dbed174e2417f9a3",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0062_result.json",
+      "source_sha256": "a3bc7af2ffcbccf2d55f1ae119ba14a8a2016bb7cc90f44fc3856338403e3f4c",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0063.json",
+      "source_sha256": "e4edad7a8790bd6edb37baaf4751f5ddd269855a172ab0fc0aecadae0f86579b",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0063_result.json",
+      "source_sha256": "cd3c5a329fe745a90c3a9e34e6e179ec48e7a01988b9f7be5e2cc7e8c955dd8d",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0064.json",
+      "source_sha256": "a4fa8cd8466b45948b8641630639c808390fe86c2774fcd167b932430a3a3224",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0064_result.json",
+      "source_sha256": "cc047f3f9522fbe5e4f03f7498f75a8c03da6b35f36c0d944b7b47ef4cd1733d",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0065.json",
+      "source_sha256": "1a03a0bc9b98b179554d94f9dfe8a34977779373a8379cfaa650f9d6e6339555",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0065_result.json",
+      "source_sha256": "5cc705ecf86e988a1f983b41d0011068f4f5942a0b0191e6f5d5567ba21fa9b1",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0066.json",
+      "source_sha256": "0a4cff1bdc9c02175c9b1f5d1ba710789be2b27524b65cd83a2b9d54733dac10",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0066_result.json",
+      "source_sha256": "794689376cc64f702e95f080d1e9e5b6e64ccbbfd14be6642da358f4dd971b30",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0067.json",
+      "source_sha256": "d742beb7ced3bcdbf4b680a89d554bc280d9d7fe05b01205d9c1befb69bdaf4d",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0067_result.json",
+      "source_sha256": "83a4d41d0787807c5e1471d50bbc524f74105cb3cf31bb931f23d785fc05ad63",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0068.json",
+      "source_sha256": "a285d5dc5c4583b8853944adaf38c80d3be04b5c61166bb151fcaab17f19eb1c",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0068_result.json",
+      "source_sha256": "3cc1dc5d9241651dd9b3eb8577d7792024b3bcaf02a574c048ccfdbeb3fa073f",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0069.json",
+      "source_sha256": "9ba711949780cd8a2ace4b57a4c7ce165cfe82656650582e9e97d8886503ee3a",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_guest_v3/replay_0069_result.json",
+      "source_sha256": "13d5f33570e6fe1e3c5709a5f4f93d2d365c97f58c63b594c1ecf12ae41b9860",
+      "export": "ordinary_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_guest_v3/guest_serial.log",
+      "source_sha256": "e69cb3c280dca675c22f30d179e509b401e5c294ddca4fb790e044019857946c",
+      "export": "ordinary_serial.log.gz",
+      "operation": "lossless gzip, mtime=0; decompressed bytes identical to original"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/report.json",
+      "source_sha256": "2f403175fee399e8fefd942b8949486af9b67ea97b2ae267c5e36379404b6633",
+      "export": "network_guest.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": [
+        "qemu_command",
+        "replays"
+      ]
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0001.json",
+      "source_sha256": "36486b4b9d775f9f8b4c48345515ca1f835ddb3d8383b8cfc75e7157c7802f3a",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0001_result.json",
+      "source_sha256": "06701a72150f5fb124138618c8f6d1968cea9035af8f808e8e2b7c18c8901527",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0002.json",
+      "source_sha256": "49de740709b049839d2ab19d314c8ed373d60951f5b1ac502fb8e591cc2008e5",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0002_result.json",
+      "source_sha256": "61fbbb6d12a98b5add8f739f1fe8efcf919c57ec2aee159b3628386030f3a333",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0003.json",
+      "source_sha256": "99a98a7aeea8dc20b3fc9ae93227d57e8def59e9e075d086b5b561296cdd836d",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0003_result.json",
+      "source_sha256": "92ebf65511eff096a6452d24be8eb1a29486dbd666ff0e771cce1fd0b4debc0f",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0004.json",
+      "source_sha256": "72f3f30f713e0836d3e09409aef8a9efa636042cc0715c11b3a76af184ae186c",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0004_result.json",
+      "source_sha256": "b8419a108b01c5bb51574c5ae525578c0c74d34c174623141f827f1e64eaf743",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0005.json",
+      "source_sha256": "0a005cde71da08cbeafaed0d456a28399118c585f0eece4705d46d46a703bf45",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0005_result.json",
+      "source_sha256": "c176abc5479eca5a73a0a2659ce8d0c57ce09dbb3224878105643f5b0f81812e",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0006.json",
+      "source_sha256": "3d738ad4a625e1dee7b30f903067d2f2499ba19c1341ad5ab6a7b7dbb9090d54",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0006_result.json",
+      "source_sha256": "139b2849844957166208e4653fcf325078717dded50b378d32983b1ee0a378b6",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0007.json",
+      "source_sha256": "2e0fd104cfc27484993b97640851f7068aaf9eeb3a3949796979c190d30203c2",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0007_result.json",
+      "source_sha256": "9684936e7dc9ea0595ab73e6fabb73947c69d3da0ecf3e872e780e7a0b67bccd",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0008.json",
+      "source_sha256": "4c755e2984d1120b92574f8e4029c3a452c03dd2c94400be7813769f965e82c3",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0008_result.json",
+      "source_sha256": "d19a13fcffaf7d0904e77ef8751340a345e231be1224ad59e6bd7de84457dc19",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0009.json",
+      "source_sha256": "bd1917df10e6af91c2c02499b6d1f507f23d9b2b83401b4e1d6022ce3841cf0e",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0009_result.json",
+      "source_sha256": "a0c8832fc327a0409417a7a8db9278e55a72c4438123dece89f76aa91584e06a",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0010.json",
+      "source_sha256": "c05c3c803a69cea90f049684bef5beae24b1919926ffc5a0ebd99476019e9edd",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0010_result.json",
+      "source_sha256": "eccb641520acf8778f2d824fee5aa595026cc19e179f324e5b99104dfe843d53",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0011.json",
+      "source_sha256": "f7a81123d0b95bbef232e7fd674c8e6df038112e8521c4b813601b57e61c281f",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0011_result.json",
+      "source_sha256": "156349ae6fea03b798691e8f0c1296fbac89f6b4b8ec94ad17c51888c9905eb5",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0012.json",
+      "source_sha256": "b02adea73ca6c7d90e53de6c25c9e2bb3b362f46a8b04dcc1d701fc0497a86b5",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0012_result.json",
+      "source_sha256": "4711cc452eee6d6ebb357bde96e67fca96593c7120b7c6b97eb0ddbd36cd585b",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0013.json",
+      "source_sha256": "45688e03c43154c0bf7bb4978f8372ce0fc6babaecdec467a0aaa628277f789a",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0013_result.json",
+      "source_sha256": "10a2eae97f270b3a5c7c50eed09f0311dc64b69c248e6aa38f30c98dff98566d",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0014.json",
+      "source_sha256": "37d051c8e5b97560543337e3e3d1587cd60cad71499dbacf79e52c13aefba9e9",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0014_result.json",
+      "source_sha256": "43b7a0e18798115246435b1ecfe8405b0c139e027a9d27fc38b1d01a27556a72",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0015.json",
+      "source_sha256": "504d94bf111ce6af75ccbede03ec7c50542ad46a93f59c586fdc616e7bd1e72b",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0015_result.json",
+      "source_sha256": "134366bb69e9282aae0a2004b33e252466ae29e5caedf05a51b2c6db11ec4ba7",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0016.json",
+      "source_sha256": "a7d5c3940f5b9eb99bcbdad9389ed58cf37fb1fa646b3289314baef881143756",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0016_result.json",
+      "source_sha256": "6a4ffd415a3fa8778f143493cc68abe20630c74281aff6d8eaf4ada1a76aa759",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0017.json",
+      "source_sha256": "7f041e3c34db3776c77aaa1a89d72abb55c19d75ca5f36047d7c20f5f41a4534",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0017_result.json",
+      "source_sha256": "e67bb2ffc278526f4690f7d8531f7a81a0a9d33cbaf7adecd0196340fd6bd018",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0018.json",
+      "source_sha256": "b6e3a98bbd588bc2a33628150003fa772b21109918487964ca876cbb249bbae3",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/replay_0018_result.json",
+      "source_sha256": "394d68938a02bce7aed859cd5710979e3b1e48a0287850e1ada1e827693d5079",
+      "export": "network_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_network_guest_v3/guest_serial.log",
+      "source_sha256": "6837664fffe9dc278abcd4cfcc0df1c0f630c500f934fb263b6b61f30e036fd3",
+      "export": "network_serial.log.gz",
+      "operation": "lossless gzip, mtime=0; decompressed bytes identical to original"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/report.json",
+      "source_sha256": "ad0d4b13b95fd29a7d4751d598a6826af0e012fed0665131056511a942341bb1",
+      "export": "trust_guest.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": [
+        "qemu_command",
+        "replays"
+      ]
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0001.json",
+      "source_sha256": "d0169a53f78c5759423812f9856bb920df2b0721fb59c673f9a24bf94a9b4ed8",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0001_result.json",
+      "source_sha256": "b999aa7ba40d2d2bd98f6a33f22f5a93c4812081c5316a88f53ac41c8457f28d",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0002.json",
+      "source_sha256": "b2dae6cd858859e398bc0170239df76393ea334e41ab563c1ffcc72240932df7",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0002_result.json",
+      "source_sha256": "89d0591a4123ffddd6f5eb6d22500294710a8a44ac7e65d0a5e7cb5abc127f90",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0003.json",
+      "source_sha256": "c48fcd74ea0948820b5c2b8095df8535012837b22df506737935b8a6a8c13749",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0003_result.json",
+      "source_sha256": "e1a71441e6b103cf3ca9d97facab7fa0a16f8b0ddc77403d217bc8118f235b7d",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0004.json",
+      "source_sha256": "ee456a70a3a667f42cb26f947e301144ad7e7d7bf25797d48727d5a30bfc8014",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0004_result.json",
+      "source_sha256": "8199b4c67df62d2530c12c546c22c036894fbeecbeb0434e0dc45849b61070a6",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0005.json",
+      "source_sha256": "7d006e212c5d14046f33507cf18f4af070af6ca5f5e9fc3801c77acb738be5ef",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0005_result.json",
+      "source_sha256": "d8edf5837dbabec9a8fb0d0ca70dece1e6e07de749ccf73aacab7a66ae94f3d0",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0006.json",
+      "source_sha256": "f06fb3e6f224b3cae2cd9584854f352418ae53e93a3bcf9940a764d68843075a",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0006_result.json",
+      "source_sha256": "0e12acd1ece77bfa117727b98059aa99b9294f8e7fc28767bad71a0237104002",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0007.json",
+      "source_sha256": "2c9274fb0a63c639491e0c28ace8cb46c3c6483026f0d5b153fb1970ff08a9a5",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0007_result.json",
+      "source_sha256": "4e441f98e1f01f0863dabf7317e1473dc5a2fc5dcba658fdec13a633b5ddbb03",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0008.json",
+      "source_sha256": "e8990d545f66039ffd511da2da213ae929a7090c51bb9d731b824c8b7439460f",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0008_result.json",
+      "source_sha256": "eccda24eac65ee572c9eb86febc3459f45b8eadaa4c7b476936ba295932987bb",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0009.json",
+      "source_sha256": "407d996e25b6df22d490fe385cf2e1bec7f7b40645853c3e1636ad92ae338530",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0009_result.json",
+      "source_sha256": "0c583ad81efa81dc91ee7d85ad64e33234dbb6d1b9e7305b55ceeb5745f0ab12",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0010.json",
+      "source_sha256": "00b78ab903a89cb700ccc3bd86d066abde65f5ae8a17fde32ddac32a12835635",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0010_result.json",
+      "source_sha256": "e74859206f6d936eb089b7fd3a35c862be5ddc0e27b2b99b55254251b3044085",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0011.json",
+      "source_sha256": "29b9cb0c0df19e720032a741c778801b75268f1d2ed9a23add844d789a51bd02",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0011_result.json",
+      "source_sha256": "4bad40d72dc63c0b0efadffd89c2c153b4a32e7585c1473fadb9cc544b7b8913",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0012.json",
+      "source_sha256": "2bd7ef03dd15977508793ec45ef6d439c6b16796f30dbebbff050a89f140cf24",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0012_result.json",
+      "source_sha256": "8314be75a8cb9b968a181a7d34229ad6d4d4a51f6df6725484c40347d2ce4502",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0013.json",
+      "source_sha256": "cd0f9a98198eddec4867d16394c585190f48509eb63be2962639f1df8865793d",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0013_result.json",
+      "source_sha256": "f85a13d9cc284736ed3a063a2ba10d2e2073bcc2afada14f1df33df9c1dc3104",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0014.json",
+      "source_sha256": "39bfee346c6e1978f66551ffd09449e205dc8f46dcc4aafe9e31d482ee7cfd55",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0014_result.json",
+      "source_sha256": "56e73e0ce84b69dfa691e62320cdbf887b85ecf42a3336248575886666e4d3d6",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0015.json",
+      "source_sha256": "f9d30f2a42e58e2330ff2d9d7dbf1860a4eef5f3b367194fa6b8264877fa129a",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.input"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/replay_0015_result.json",
+      "source_sha256": "e00dbde519faa043651a38ac0f6fe8c2be675a0cc81e3cff2d9591361b8f7164",
+      "export": "trust_replays.json",
+      "operation": "JSON object copied into entries.result"
+    },
+    {
+      "source": "build/p1_a_trust_guest_v3/guest_serial.log",
+      "source_sha256": "62a40a460d332c0465c504e1a61aad6ab1eb6648b3d1292c46f864a56b739fd8",
+      "export": "trust_serial.log.gz",
+      "operation": "lossless gzip, mtime=0; decompressed bytes identical to original"
+    },
+    {
+      "source": "build/p1_a_ipc_guest_v3/report.json",
+      "source_sha256": "33397aedad33f1916cae694b6485ad260d9e8e98fc332afc4cd3c029358031f7",
+      "export": "ipc_guest.json",
+      "operation": "JSON derivation; retained values unchanged",
+      "omitted_fields": [
+        "evidence_files",
+        "qemu_command"
+      ]
+    },
+    {
+      "source": "build/p1_a_ipc_guest_v3/guest_serial.log",
+      "source_sha256": "14c0362410791c86df045a498cf0d446bf2f5604c89020cd621549fd9d4a2acb",
+      "export": "ipc_serial.log.gz",
+      "operation": "lossless gzip, mtime=0; decompressed bytes identical to original"
+    }
+  ]
+}

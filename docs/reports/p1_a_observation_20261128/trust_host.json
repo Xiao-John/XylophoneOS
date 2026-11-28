@@ -1,0 +1,78 @@
+{
+  "status": "passed",
+  "profile": "loaded_trust_snapshot",
+  "target": "host",
+  "sources": {
+    "tests/fixtures/observation_trust_probe.cpp": "5cae6179966f854486cd67485c12d4c35de781237611a61d7d206e8b99d5e216",
+    "src/ports/native_tls/trust_store.cpp": "40515c965d5f70097c103e98294a9980d492c6d0d1828c04cb60a595cb6ec920",
+    "src/ports/native_tls/trust_store.hpp": "7b1682bd4f729e5614b1971733e768d6cbd4e3b07095e8d1bb781790d6436898",
+    "src/ports/native_tls/observation.hpp": "bdc377dda73a191400fe1a8271f35c624da52d964ac2e97b59c81960b6bfd578",
+    "src/ports/native_tls/platform.c": "212bdd70c767c881001fbb64effc88d16ebb638aafbda84fdb130c8293118636",
+    "src/ports/native_tls/mbedtls_xos_config.h": "f34feb5330a8d1e1745bb54155d400f308de330e86e0eb216f9e42d32fe73a87",
+    "src/ports/native_tls/tf_psa_crypto_xos_config.h": "69ca59d27157762e5044d63069c6768975844b18edf3556b7776dca797475135",
+    "src/ports/native_tls/source_lock.json": "e4aa78dad05aab0f2a31b8b7e80df7bf53faf7a0c23b7df0eff4db16ae6b49a5",
+    "src/user/include/xos/observation_sources.hpp": "4fc7b534f1ba5ae8a69ac68cbd67ec8b530cd05cd4147fe8a9850243c60c640e",
+    "src/user/include/xos/observation.hpp": "8ecfa7e00e32e85a5079f75ec34910e1504ab07289fbfbc2be7e06645652ece3",
+    "src/shared/include/xos/observation_service_abi.hpp": "0c832f6eba5fed6871bbc3e652cda743ef5548f1a0aadaa77c1b58e00bb09fed",
+    "scripts/build_observation_trust_probe.py": "0338ca4f40727788954ee4530821bf87721743436a2d60e63b8912837c3aa6c0",
+    "scripts/package_tls_trust_store.py": "b84f1dd2a183de89ca5ce895c86d1cf1c7b4a2b35c0290c133acddefebe8475d",
+    "scripts/build_glibc_program.py": "5c63b120681020ad392909c4c8886fba800488afe8ed5d7ba5d550e24862d201",
+    "scripts/glibc_g1_probe.py": "0e508036b6e4098faa290c4e41c32b651aea54167fbf5d3b4c9283732fabc451",
+    "scripts/xypm_sdk_profile.py": "58ba003d4d44837949c370e4693e3834540296722c35180b98fe3deb1858ae32",
+    "src/user/observation/sources.cpp": "c21fdb1400dbf8acaac550e763f3280cceeb778d7f4a4e86efb19ca869512c9a",
+    "src/user/observation/json.cpp": "538de3fa0b92aad1ee7958aa25d39f5dc7e469a7f3ea2d5b111a41d26791a7b7",
+    "src/user/observation/endpoint.cpp": "41cd16159a847ea8e921e4c9828dfc8edf8a43b8450b02db8a5a9c54a74cc834",
+    "src/user/loader/dynamic/generation.cpp": "09d55f0b2c6f0571b433ea25ec182d9305bfb9dbf932e9a234bdb741083e844e",
+    "src/user/sdk/text.cpp": "6f9a8389c89d02f94d9003381fe438ab39705494095ad50593862eaad0cf9d21",
+    "src/user/arch/x86_64/syscall.cpp": "b69c2d81b575d86ea5f55e489690db0171a13b5ff208f9c9a9eb1f7b9c17b1a2"
+  },
+  "guest": "not_run",
+  "tls_handshake": "not_run",
+  "network_traffic": "not_run",
+  "reused_build_receipt_sha256": "78b8df1a0258fafdb8719f5b008989ae52d014b57ba8cf1396e8b5a75bd877fe",
+  "archive_sha256": "3359a349e23db3d5536fcee032ae7b2ecbfc08972fab643089b5cbf2a375c98c",
+  "reused_archives": {
+    "mbedtls/library/libmbedx509.a": "7486205398e8722d0b2f6c40777d6628b718137cb075f3bc66465e8678e84f61",
+    "mbedtls/tf-psa-crypto/core/libtfpsacrypto.a": "f468d69b10a22baff515d3bc23ba479eb72e22e05ccbac030fd383a81bf05164"
+  },
+  "fixture_pins": {
+    "7": "ac0e118b395c97236fd4696d3db124dfc1547174193459625a0fb544a1e0c6d1",
+    "8": "7e65408e07367d3c11ea9df8ea6c3706a7e3c1a90e7e1764a23bcd58d8815b1e"
+  },
+  "tools": {
+    "gcc": {
+      "available": true,
+      "sha256": "a23ecab8ff08f09ad8c80602c2c5df7f49e09c25905cb8975902e101bf72635f",
+      "version_exit_code": 0,
+      "version": "x86_64-linux-gnu-gcc-14 (Debian 14.2.0-19) 14.2.0"
+    },
+    "g++": {
+      "available": true,
+      "sha256": "6b3696e4dcb85e1c949c732a02befa50e3983ecf94ce7e8e58d9d503b954b79d",
+      "version_exit_code": 0,
+      "version": "x86_64-linux-gnu-g++-14 (Debian 14.2.0-19) 14.2.0"
+    }
+  },
+  "checks": [
+    "null_context_zeroed",
+    "empty_store_zeroed",
+    "empty_identity_zeroed",
+    "wrong_digest_unavailable",
+    "wrong_generation_unavailable",
+    "malformed_der_unavailable",
+    "verified_store_load",
+    "verified_pin_owned_copy",
+    "reload_preserves_loaded_identity",
+    "replacement_store_load",
+    "selected_original",
+    "selected_replacement",
+    "authorized_rollback_selection",
+    "detached_selection_unavailable"
+  ],
+  "artifacts": {
+    "observation_trust_host": "4e8420188906509bc036552d0b74425a8b1f600bda07ff06ef649f83e17ed4b1",
+    "observation_trust_data.hpp": "d62a5f0e27af8505be6a98ff929a707fd69403f72602685f0cc659e46c6e14f1",
+    "trust-7.bin": "ac0e118b395c97236fd4696d3db124dfc1547174193459625a0fb544a1e0c6d1",
+    "trust-8.bin": "7e65408e07367d3c11ea9df8ea6c3706a7e3c1a90e7e1764a23bcd58d8815b1e"
+  }
+}

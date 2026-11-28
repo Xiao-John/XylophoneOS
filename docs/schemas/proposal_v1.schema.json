@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "XOS P1-A recorded proposal v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "proposal_id": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "observation_id": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "pid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "pid",
+        "epoch"
+      ],
+      "additionalProperties": false
+    },
+    "caller_pid": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "process",
+            "service",
+            "resource",
+            "runtime",
+            "network",
+            "trust"
+          ]
+        },
+        "object_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "kind",
+        "object_id",
+        "generation"
+      ],
+      "additionalProperties": false
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "[a-z][a-z0-9_]*"
+    },
+    "expires_ns": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    }
+  },
+  "required": [
+    "schema_version",
+    "proposal_id",
+    "observation_id",
+    "source",
+    "caller_pid",
+    "target",
+    "action",
+    "expires_ns"
+  ],
+  "additionalProperties": false,
+  "description": "Model output is a recorded input. Version 1 evaluates inspect, diagnose and refresh_observation only; other action names receive unsupported. No command, free-form payload, grant or execution token is accepted."
+}

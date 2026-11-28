@@ -14,6 +14,7 @@ import shutil
 import subprocess
 from ipc_v1_manifest import ipc_v1_manifest_entry
 from ipc_endpoint_manifest import ipc_endpoint_manifest_entry
+from observation_manifest import observation_manifest_entry
 from device_manifest import device_manifest_entry
 from archive_provenance import capture_build, copy_archive_provenance
 from archive_member_map import verify_bundle
@@ -73,6 +74,7 @@ def main():
                     *sorted((ROOT / 'src/ports/newlib/patches').glob('*.patch')),
                     ROOT / 'scripts/build.py', ROOT / 'scripts/toolchain.py', ROOT / 'scripts/user_build.py',
                     ROOT / 'scripts/ipc_v1_manifest.py', ROOT / 'scripts/device_manifest.py',
+                    ROOT / 'scripts/observation_manifest.py',
                     ROOT / 'src/ports/gcc/patches/0008-xos-thread-clock-boundary.patch',
                     ROOT / 'src/user/threading/compile.py', ROOT / 'src/user/arch/x86_64/user.ld',
                     ROOT / 'src/user/arch/x86_64/start.asm']
@@ -180,9 +182,12 @@ def main():
                         if p.name not in ('pthread_single.cpp', 'posix_clock.cpp')),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
                ROOT / 'src/user/sdk/terminal_client.cpp', ROOT / 'src/user/sdk/launch_control.cpp',
+               *sorted((ROOT / 'src/user/observation').glob('*.cpp')),
                ROOT / 'src/user/arch/x86_64/syscall.cpp', ROOT / 'src/user/arch/x86_64/tls.cpp',
                ROOT / 'src/shared/runtime/memory.cpp',
                *sorted((ROOT / 'src/user/loader').glob('*.cpp')),
+               ROOT / 'src/user/loader/dynamic/generation.cpp',
+               ROOT / 'src/user/loader/dynamic/identity.cpp',
                *sorted((ROOT / 'src/user/threading').glob('*.cpp')),
                ROOT / 'src/user/arch/x86_64/thread_context.cpp',
                ROOT / 'src/user/arch/x86_64/thread_core.cpp']
@@ -354,6 +359,7 @@ def main():
                'display_extensions': {'version': 1, 'syscalls': [65, 66], 'pixel_format': 'XRGB8888', 'surface_count': 1},
                'ipc_v1': ipc_v1_manifest_entry(),
                'ipc_endpoint': ipc_endpoint_manifest_entry(),
+               'observation': observation_manifest_entry(),
                'device_authorization': device_manifest_entry(),
                'network_service': {'wire_version': 2, 'server_selection': 'verified_service_pid',
                                    'guest_qualification': 'not_run'},

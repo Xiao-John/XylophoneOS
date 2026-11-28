@@ -1,0 +1,12 @@
+{
+  "schemas": "draft202012 valid",
+  "schema_count": 3,
+  "fixtures": 8,
+  "configured_pin_rejected": true,
+  "status": "passed",
+  "schema_sha256": {
+    "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+    "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+    "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+  }
+}

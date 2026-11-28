@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "validator_version": 1,
+  "policy_version": 1,
+  "logical_time_ns": 2000,
+  "policy": {
+    "caller_pid": 71,
+    "allowed_actions": [
+      "inspect",
+      "diagnose",
+      "refresh_observation"
+    ],
+    "allowed_scopes": [
+      "self",
+      "direct_child",
+      "held_endpoint",
+      "controller",
+      "application",
+      "service"
+    ],
+    "allowed_targets": [
+      {
+        "kind": "process",
+        "object_id": 41
+      },
+      {
+        "kind": "service",
+        "object_id": 7
+      },
+      {
+        "kind": "resource",
+        "object_id": 41
+      },
+      {
+        "kind": "runtime",
+        "object_id": 10
+      },
+      {
+        "kind": "network",
+        "object_id": 52
+      },
+      {
+        "kind": "trust",
+        "object_id": 11
+      }
+    ],
+    "max_observation_age_ns": 1000
+  },
+  "observation": {
+    "schema_version": 1,
+    "observation_id": 12,
+    "source": {
+      "pid": 41,
+      "epoch": 2
+    },
+    "caller_pid": 71,
+    "logical_time_ns": 1000,
+    "valid_until_ns": 2000,
+    "status": "ok",
+    "records": [
+      {
+        "kind": "process",
+        "scope": "self",
+        "object_id": 41,
+        "generation": 3,
+        "status": "ok",
+        "data": {
+          "parent_pid": 1,
+          "state": "running",
+          "threads": 2
+        }
+      },
+      {
+        "kind": "service",
+        "scope": "held_endpoint",
+        "object_id": 7,
+        "generation": 6,
+        "status": "ok",
+        "data": {
+          "owner_pid": 52,
+          "interface_version": 1,
+          "state": "available"
+        }
+      },
+      {
+        "kind": "resource",
+        "scope": "self",
+        "object_id": 41,
+        "generation": 3,
+        "status": "ok",
+        "data": {
+          "owner_pid": 41,
+          "endpoints_used": 2,
+          "endpoint_limit": 4,
+          "names_used": 0,
+          "name_limit": 2,
+          "parent_pid": 1
+        }
+      },
+      {
+        "kind": "runtime",
+        "scope": "controller",
+        "object_id": 10,
+        "generation": 5,
+        "status": "ok",
+        "data": {
+          "controller_pid": 41,
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "kind": "network",
+        "scope": "service",
+        "object_id": 52,
+        "generation": 9,
+        "status": "ok",
+        "data": {
+          "service_pid": 52,
+          "mode": "dhcp",
+          "state": "ready"
+        }
+      },
+      {
+        "kind": "trust",
+        "scope": "application",
+        "object_id": 11,
+        "generation": 11,
+        "status": "ok",
+        "data": {
+          "owner_pid": 41,
+          "digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "selection": "loaded_snapshot"
+        }
+      }
+    ]
+  },
+  "proposal": {
+    "schema_version": 1,
+    "proposal_id": 4,
+    "observation_id": 12,
+    "source": {
+      "pid": 41,
+      "epoch": 2
+    },
+    "caller_pid": 71,
+    "target": {
+      "kind": "process",
+      "object_id": 41,
+      "generation": 3
+    },
+    "action": "inspect",
+    "expires_ns": 1900
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "runs": [
+    {
+      "round": 0,
+      "case": "network",
+      "resources": [
+        129601,
+        3,
+        1
+      ],
+      "observations": 6,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "network",
+      "resources": [
+        129601,
+        3,
+        1
+      ],
+      "observations": 6,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "network",
+      "resources": [
+        129601,
+        3,
+        1
+      ],
+      "observations": 6,
+      "status": "passed"
+    }
+  ],
+  "runner_sha256": "98f67f82577c9c03389b7a261331cded4dea439a881990f0165453e47dbbc729",
+  "network": "live_static_configuration",
+  "not_run": [
+    "model_generation",
+    "autonomous_writes",
+    "installed_profile",
+    "fork_generation_guest",
+    "global_atomic_snapshot",
+    "runtime_ELF_load",
+    "trust_bundle_load"
+  ],
+  "system_build_id": "c59a2f5ac6e57ebe",
+  "iso_sha256": "c2762595f25503d8708cc9f84f5dcd3328c119d4d8bcc648cac5c38d00c45a8a",
+  "system_manifest_sha256": "2d245a85d16c1d585cce709ba44939dae23605741a3ad1c19fe5ffb81e54f6b2",
+  "fixture_receipt_sha256": "b2f75dc22bb4ee94952d5f696ce528a6393b146d468326bfae4e499a61cbb013",
+  "sdk_tree_sha256": "af5fda2a32bac4a1865bb10508b75c3a7c2018e187706e7b0fba9fd586881154",
+  "baseline": [
+    129601,
+    3,
+    1
+  ],
+  "public_export": "Derived report; host QEMU command and sibling-file hashes omitted. See provenance.",
+  "replay_count": 18,
+  "replay_status_counts": {
+    "accepted_proposal": 15,
+    "unavailable": 3
+  }
+}

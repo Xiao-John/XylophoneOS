@@ -1,0 +1,9 @@
+# Derived transcript; original byte identity is recorded in conversion.json.
+${XOS_SOURCE}/tests/fixtures/static_stdio_compat/probe.cpp: In function 'int xos_user_main(const xos::startup_info*)':
+${XOS_SOURCE}/tests/fixtures/static_stdio_compat/probe.cpp:84:103: error: deducing from brace-enclosed initializer list requires '#include <initializer_list>'
+    5 | #include <xos/thread_abi.hpp>
+  +++ |+#include <initializer_list>
+    6 |
+......
+   84 |     for (const u32 token : {input.read_token, input.write_token, output.read_token, output.write_token})
+      |                                                                                                       ^

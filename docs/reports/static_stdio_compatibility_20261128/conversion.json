@@ -1,0 +1,28 @@
+{
+  "templates": {
+    "XOS_GUEST_TEMP": "Ephemeral test FAT image directory.",
+    "XOS_NATIVE_SOURCE": "Immutable native production source export at the stated revision; system lives under build/system.",
+    "XOS_PREVIEW2_CELLAR": "Packaged Preview 2 build dependencies.",
+    "XOS_PREVIEW2_PREFIX": "Preview 2 tool wrapper prefix.",
+    "XOS_SOURCE": "Git checkout containing the qualified production overlay and test sources."
+  },
+  "transform": [
+    "Sort JSON keys and template environment paths without changing source identities, statuses or observations.",
+    "Normalize transcript CR/LF to LF, remove trailing whitespace and prepend an explicit derived-transcript notice.",
+    "Wrap the original native system manifest with its original unpublished SHA; source/artifact identities remain unchanged."
+  ],
+  "unpublished_raw_sha256": {
+    "diagnostic_guest_failure.json": "94114daad9f5616ed17d05a4c499d8f509a16f834185ed63d04326e893487b35",
+    "diagnostic_guest_failure.log": "d02bcdcf87994ee0b174d5411a255c4b930f08661deb933505d520b40bc24cc3",
+    "fixture_build.json": "90fd7d861e8168f32a7ad62f2edd74311b67d010228f90a4a980703524da8854",
+    "guest_report.json": "5cb56c3043a843e272ee71db164b46d262f42e8d3309a871810bf2e93f59f61d",
+    "guest_serial.log": "bd83655254bcf57063e17656c4deedae8ecc523209f71d2c2b658c23ab22f766",
+    "initial_compile_failure.json": "4c3dd40f3fad45d98adf5d3e1b794ec4f2cd8a26d8c62120faa5a489b94cd098",
+    "initial_compile_failure.log": "d496ba9fc69cc5a7a4be2a3ab4817b7194ef91eb7abf971695a9c19006cb7cf1",
+    "initial_guest_failure.json": "370cef88850a063223920afb775d3517d7f149dc0181385471751b06efd6fa4f",
+    "initial_guest_failure.log": "3d3bb5834edca32f048e6debc8444639e55cecb4cde49bc322848416fa4dec56",
+    "round_0.log": "0ee61bdb705d687f6e2de167ef7d16adf265d75f5399cf1fbac48194347212b7",
+    "round_1.log": "bfcff59856bedcb0d4326d9d4a6978f3535bd775e95a6caf438fb8a4ab77212a",
+    "round_2.log": "b7822ae7230080a0bedb97621d805bde1f329e07ebe31fa504150bbd8bc8a7d4"
+  }
+}

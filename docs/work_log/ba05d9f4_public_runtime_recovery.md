@@ -53,3 +53,30 @@ approved closure rejects them after digest validation. A fresh native SDK,
 C SDK and public GNU/C++ composition is required before the worker correction
 can receive its own execution qualification. The preserved failed attempt is
 not P0 completion evidence.
+
+## Constructor READY and real unwind initialization
+
+The next complete composition used native system `c1575e2adfc6fa5d` and
+capsule version 2. Six ordinary public-runtime cases again passed, then
+the first real thread case exposed a different failure: the GNU internal
+already-loaded unwinder lookup entered `_dl_init` a second time and the
+old hook sent another READY. The controller correctly rejected the replay.
+Inspection also established that the main executable's constructors run
+after the original loader hook, so that hook could acknowledge too early.
+
+Commit `786b051b` moves READY to the initial shared-libc `__libc_start_main`
+path after DSO and executable constructors, immediately before `main`.
+The existing authenticated descriptor/artifact are used and no controller
+checks are weakened. An independent finite GNU relink then passed three
+real guest regressions: constructor completion before parent posix_spawn
+returns, and real constructor/main std::thread execution through both xsh
+and dash. Each restored the observed 129680/3/1 baseline exactly. Source,
+commands, new ELF/generation hashes and all 878 diagnostic inputs are
+preserved alongside the original v4 failure in the
+[READY regression report](../reports/public_runtime_ready_regression_20261128/README.md).
+
+The diagnostic is explicitly not a new SDK producer or a transfer of old
+qualification. It isolates the concrete regression before the next unified
+native/C SDK rebuild, which also includes the separately tested ordinary
+static-stdio compatibility correction. The complete eight-case runtime
+matrix and independent R2 transitions remain required on those final bytes.

@@ -1,0 +1,21 @@
+{
+  "files": {
+    "README.md": "e544791ec3dd31b1f5730090139d4fc23029d83466759b4f009713619d220427",
+    "conversion.json": "f59de4fe335990301f7e508151b00a6322e3e9502becbca756062d9edcac76b9",
+    "diagnostic_guest_failure.json": "7318acb71559d5a9c9ac34078fee7e40e492aaa988ea66f2f4752d74af793375",
+    "diagnostic_guest_failure.log": "ef5d6e65cd934a7ba33f2b59509a7bcd6ddf512dec354ac7dd65f3d909189f1d",
+    "fixture_build.json": "e4af4e03240f0f1098d9ccfc73387b0a259a2d9db00907ba19b81cc46fed3ce1",
+    "guest_report.json": "3ce6a8811a31eac63b6bbf4e036072a7cab203fc35d172a36fae10870ca42b7c",
+    "guest_serial.log": "59dc7f28ad3534fac7fb38d6930b62586a20897d29b3bfa1370a70cbc5c66ff2",
+    "initial_compile_failure.json": "fe3ce2a1e9fed8b1220553641ebf1a8b5c9899bcf1c2c2eb99652b32395b9455",
+    "initial_compile_failure.log": "e7d4ea754a93e92d3c5c6bd3691c38def0b8211e5aea577fbd35c1fcf67c366c",
+    "initial_guest_failure.json": "6c097d63e9374144d5335512991310fa076b88e9ca99f844f7ad434ada018694",
+    "initial_guest_failure.log": "4f50f69a7f58a4ad2d9a434b0386bdd13fc0527b7a20a738d780308eae191e93",
+    "round_0.log": "acf23bcc66addd368b5e9fff274b017922be7b335156d01b8d0b79b5ab83fa6a",
+    "round_1.log": "48b637bf8345ea7d129b37c5f9f38fea5f71779b54fc6d5844433fc4881a6e85",
+    "round_2.log": "76b7affa3121e506d081c7d1e11f2320a31cafc8b1ee2e4f43ac812671033d8d",
+    "source_binding.json": "e8924ebe9a8ada750ba3d4862a416ea5ed1532b97b02385ec862002c9dbe38d9",
+    "system_manifest.json": "70f18073deb6c04d52a7749f54f7dccc7522921241f85b81aa4a331e71e16054"
+  },
+  "version": 1
+}

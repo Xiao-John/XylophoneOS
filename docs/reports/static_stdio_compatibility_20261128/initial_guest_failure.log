@@ -1,0 +1,143 @@
+# Derived transcript; original byte identity is recorded in conversion.json.
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=c1575e2adfc6fa5d
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x0000000000273110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130165 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x000000000036b000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+ping
+bad length
+bad pointer
+tx
+Aping
+Abad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+Abad length
+bad pointer
+tx
+Abad length
+bad pointer
+Aping
+bad length
+bad pointer
+Atx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+Abad length
+bad pointer
+ping
+bad length
+bad pointer
+tx
+Aping
+AAbad length
+bad pointer
+tx
+bad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+xsh> tAping
+race on
+xsh: trace on
+xsh> Abad length
+bad pointer
+tx
+demo quietAbad length
+bad pointer
+
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> audio stop
+[task] event=reclaimed pid=9 pages=99
+audio: service stopped
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/static_stdio_probe.elf
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000036b000
+[loader] started pid=10 file=/bin/static_stdio_probe.elf
+[process] event=wait_blocked parent=7 child=10
+[process] event=started pid=11 parent=10
+[process] pid=11 address_space=0x00000000003ab000
+[process] event=wait_blocked parent=10 child=11
+STATIC_STDIO_CHILD raw
+[task] event=reclaimed pid=11 pages=44
+STATIC_STDIO_PASS raw_kernel_stdio
+[process] event=started pid=12 parent=10
+[process] pid=12 address_space=0x00000000003ab000
+[process] event=wait_blocked parent=10 child=12
+STATIC_STDIO_CHILD v3
+[task] event=reclaimed pid=12 pages=44
+STATIC_STDIO_PASS v3_keeps_descriptor_startup
+[process] event=started pid=13 parent=10
+[process] pid=13 address_space=0x00000000003ab000
+[process] event=wait_blocked parent=10 child=13
+STATIC_STDIO_CHILD closed_stdin
+[task] event=reclaimed pid=13 pages=44
+STATIC_STDIO_PASS raw_closed_stdin
+[process] event=started pid=14 parent=10
+[process] pid=14 address_space=0x00000000003ab000
+[process] event=wait_blocked parent=10 child=14
+[task] event=reclaimed pid=14 pages=44
+STATIC_STDIO_PASS raw_pipe_alias
+STATIC_STDIO_FAIL extra_fd_rejected code=-1
+[task] event=reclaimed pid=10 pages=63
+[wait] pid=10 kind=exited code=1
+xsh>

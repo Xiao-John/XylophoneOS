@@ -1,0 +1,63 @@
+{
+  "baseline": [
+    129779,
+    2,
+    0
+  ],
+  "error": "b'exec-driver /bin/static_stdio_probe.elf\\n[process] event=started pid=10 parent=7\\r\\n[process] pid=10 address_space=0x000000000036b000\\r\\n[loader] started pid=10 file=/bin/static_stdio_probe.elf\\n[process] event=wait_blocked parent=7 child=10\\r\\n[process] event=started pid=11 parent=10\\r\\n[process] pid=11 address_space=0x00000000003ab000\\r\\n[process] event=wait_blocked parent=10 child=11\\r\\nSTATIC_STDIO_CHILD raw\\n[task] event=reclaimed pid=11 pages=44\\r\\nSTATIC_STDIO_PASS raw_kernel_stdio\\n[process] event=started pid=12 parent=10\\r\\n[process] pid=12 address_space=0x00000000003ab000\\r\\n[process] event=wait_blocked parent=10 child=12\\r\\nSTATIC_STDIO_CHILD v3\\n[task] event=reclaimed pid=12 pages=44\\r\\nSTATIC_STDIO_PASS v3_keeps_descriptor_startup\\n[process] event=started pid=13 parent=10\\r\\n[process] pid=13 address_space=0x00000000003ab000\\r\\n[process] event=wait_blocked parent=10 child=13\\r\\nSTATIC_STDIO_CHILD closed_stdin\\n[task] event=reclaimed pid=13 pages=44\\r\\nSTATIC_STDIO_PASS raw_closed_stdin\\n[process] event=started pid=14 parent=10\\r\\n[process] pid=14 address_space=0x00000000003ab000\\r\\n[process] event=wait_blocked parent=10 child=14\\r\\n[task] event=reclaimed pid=14 pages=44\\r\\nSTATIC_STDIO_PASS raw_pipe_alias\\nSTATIC_STDIO_FAIL extra_fd_rejected code=-1\\n[task] event=reclaimed pid=10 pages=63\\r\\n[wait] pid=10 kind=exited code=1\\nxsh> '",
+  "fixture_receipt_sha256": "b791baf48a25205023f66739508d5698b320059308ab00fe53fb50b90df21ad0",
+  "image_sha256": "94dddaf6da7b8a68617fb8ade2980c91f797eef73f4062d8d9a0d25049edb550",
+  "installed_artifacts": {
+    "bad_marker.elf": "c60f86989b396015ae707e279e312fe4f4f6290a09cb01d0a79d58316ff54385",
+    "raw_stdio.elf": "dec9344353d5d681d69e18a512f1c87005a178be3ddc9880214d3ccf2c91f61b",
+    "static_stdio_probe.elf": "09c8e2d30f1845ac9945236cc5f04a8ca6e3d663068f3eca790f6ff856d013eb",
+    "v3_stdio.elf": "01539322692e230961789cf15a24229635c2fb07a7c0d348bfc5a1753499b03b"
+  },
+  "loader_source_sha256": "6c67569169ab3dca4b84d7650c0345024dc632ca4649da51e08bbf42db816486",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_NATIVE_SOURCE}/build/system/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_GUEST_TEMP}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "runner_sources": {
+    "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+    "scripts/sdk_receipt.py": "902e3351a5ca7e3fcb99c5f5827ebb983cf65f593fcec52b55a3868388e67bbd",
+    "scripts/work_disk.py": "9ad9180df909cabfc4e3820089680ca03e1df1ebe2c2da66dada214c76c7fe28",
+    "tests/boot_smoke.py": "a2fcf2909f10fc5f68bb69f7ff66cedf55a488443e5d59f735fc55788c2e3e2c",
+    "tests/process_smoke.py": "38e41d54222a2734b32000f30fe1677d10056454362f6d47e3b6259861721ee6",
+    "tests/shell_launch_support.py": "6a4b7d2555db36025633008fdb50ce66a0c323804985b7a37b36858edc5b7544",
+    "tests/static_stdio_compat_guest.py": "3202408395a8ab9cfed8d49a3cc774fafdd0dd64a93972851ed9afe7a1fc61f9",
+    "tests/task_smoke.py": "38ff9083d0afa4f9a77778a1bf8a689bbdba1b4307bb3d25fe9403f580a3d824"
+  },
+  "runs": [],
+  "status": "failed",
+  "system_build_id": "c1575e2adfc6fa5d",
+  "system_manifest_sha256": "94f00c8f19f7a6fa98db64b0da2d7c97393723955502967b120e6d8ffcc81472"
+}

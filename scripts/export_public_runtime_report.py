@@ -151,12 +151,20 @@ The C cases cover constructors, TLS, relocation, environment, explicit runtime
 dlopen/dlmopen/dlclose denial, inherited FD aliases/shared cursors, CLOEXEC,
 ordinary posix_spawn with authenticated readiness, failed exec cancellation
 that retains the old process, and successful same-PID image replacement.
+The spawn case checks that the main executable's constructor has finished
+before posix_spawn returns, using a constructor-created completion file.
 The C++ cases exercise actual shared GNU libstdc++/libgcc/libm, a separately
 linked C++ DSO, cross-DSO exceptions, RTTI, unwinding, TLS teardown, atexit,
 std::thread move/join and isolated application/DSO thread-local state. C++ and
 thread programs enter through both ordinary xsh and dash commands. The outer
 dash is a separately bound static-libc baseline; it is used as a shell entry,
 not represented as a build of the tested shared libc.
+
+The thread executable also creates and joins a real worker inside its main
+program constructor. This exercises the internal already-loaded unwinder
+lookup before the initial READY. Readiness is sent once by shared libc
+after both constructor phases; later internal initialization must not
+replay it. Controller authentication and replay rejection stay strict.
 
 The sequential ELF-metadata parser preserves the 30-second absolute startup
 budget. Each entry's wall time includes controller installation, any requested

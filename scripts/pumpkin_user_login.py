@@ -265,7 +265,8 @@ def select_deployment(system, binding, deployment):
     if deployment is None:
         require(installed_realm is None, "This login image requires its independent deployment provider")
     else:
-        require(deployment.realm.hex() == installed_realm and deployment.system_manifest_sha256 == binding[1]
+        require(not deployment.provisioning and
+                deployment.realm.hex() == installed_realm and deployment.system_manifest_sha256 == binding[1]
                 and deployment.named_resources == named, "System image does not match the deployment profile")
     return named
 

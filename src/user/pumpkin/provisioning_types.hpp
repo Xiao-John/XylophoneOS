@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "account_store.hpp"
+#include <xos/catalog_abi.hpp>
 
 namespace xos::user::pumpkin {
 inline constexpr u32 application_limit = 8;
 inline constexpr u32 application_data_bytes = 512;
-inline constexpr u32 catalog_root_limit = 4;
+inline constexpr u32 catalog_root_limit = catalog::root_limit;
 inline constexpr u32 application_read = 1;
 inline constexpr u32 application_write = 2;
 
@@ -18,22 +19,8 @@ struct repository_checkpoint {
     u8 metadata_sha256[32]{};
     bool operator==(const repository_checkpoint&) const = default;
 };
-struct catalog_root {
-    u64 generation = 0;
-    u8 manifest_sha256[32]{};
-    char manifest[128]{};
-    bool operator==(const catalog_root&) const = default;
-};
-struct approved_catalog {
-    u32 count = 0;
-    u32 active = 0;
-    u64 epoch = 0;
-    u32 revoked = 0;
-    u32 reserved = 0;
-    u8 sdk_sha256[32]{};
-    catalog_root roots[catalog_root_limit]{};
-    bool operator==(const approved_catalog&) const = default;
-};
+using catalog_root = catalog::root;
+using approved_catalog = catalog::snapshot;
 struct application_record {
     u64 number = 0;
     u64 owner = 0;

@@ -535,6 +535,17 @@ fork 使用独立物理页复制；线程运行时仍不支持 fork/exec。详�
 [dynamic_admission_v1](contracts/dynamic_admission_v1.md)。本组件不修改公开
 spawn/exec 的静态 ELF 限制，也不把元数据检查成功当作 runtime-ready。
 
+## P1-C 持久 catalog 与动态 capsule v3
+
+公共 native SDK 增加 catalog_abi.hpp 与 dynamic::install_anchored。受信控制器
+把实际认证的 daemon、realm 和 named service 绑定到只读 capsule v3；每次
+spawn/exec admission 重新查询 PCQ1，核对自身、current 和目标根。普通易失
+install 的空 binding 保持旧功能边界。PPR1 追加 publisher_checkpoint=12 和
+registrar-only activate_generation=13，原操作与帧大小不变，不新增 syscall。
+SDK archive、bootstrap、共享 GNU libc/rtld 必须成套重建并核对 v3 native ABI。
+字段、撤销模型、fork/exec 传播与资格范围见
+[Pumpkin catalog authority](contracts/pumpkin_catalog_authority.md)。
+
 ## N3 原生网络便利API（2026-11-25）
 
 SDK自动携带`<xos/net_transport.hpp>`，兼容C++17，提供PID固定的connect、TCP/UDP

@@ -37,7 +37,8 @@ NATIVE_SOURCES = ('src/ports/glibc/terminal_support.cpp', 'src/user/sdk/terminal
 PUBLIC_NATIVE_SOURCES = NATIVE_SOURCES + (
     'src/user/sdk/launch_control.cpp', 'src/user/loader/dynamic/identity.cpp',
     'src/user/loader/dynamic/generation.cpp', 'src/user/loader/dynamic/elf.cpp',
-    'src/user/loader/dynamic/closure.cpp', 'src/user/loader/dynamic/startup.cpp',
+    'src/user/loader/dynamic/closure.cpp', 'src/user/loader/dynamic/authority.cpp',
+    'src/user/loader/dynamic/startup.cpp',
     'src/user/loader/dynamic/spawn.cpp', 'src/user/loader/dynamic/rtld_control.cpp')
 
 
@@ -91,7 +92,8 @@ def main():
     recipe_inputs = {path: sha(path) for path in recipe_paths}
     port_inputs = {path: sha(path) for path in PORT.rglob('*') if path.is_file()}
     startup_abi_inputs = {name: sha(ROOT / name) for name in (
-        'src/shared/include/xos/dynamic_startup_abi.h', 'src/shared/include/xos/dynamic_abi.hpp')}
+        'src/shared/include/xos/dynamic_startup_abi.h', 'src/shared/include/xos/dynamic_abi.hpp',
+        'src/shared/include/xos/catalog_abi.hpp')}
     report = {'status': 'building', 'scope': 'private_fixed_startup_closure',
               'sdk_binding': binding, 'tools': tools, 'make': make,
               'sanitized_environment': removed, 'steps': [],
@@ -100,7 +102,7 @@ def main():
               'port_inputs': {str(path.relative_to(ROOT)): digest for path, digest in port_inputs.items()},
               'excluded_artifacts': ['sotruss-lib.so: audit is outside the fixed-closure profile']}
     if args.public_startup:
-        abi_inputs = {'domain': 'xos-glibc-dynamic-capsule-v2',
+        abi_inputs = {'domain': 'xos-glibc-dynamic-capsule-v3',
                       'sdk_manifest_sha256': sdk_digest, 'startup_headers': startup_abi_inputs}
         abi_bytes = json.dumps(abi_inputs, sort_keys=True, separators=(',', ':')).encode()
         report.update(scope='public_fixed_startup_closure', public_startup=True,

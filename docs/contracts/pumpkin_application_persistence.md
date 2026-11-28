@@ -68,7 +68,7 @@ data revision，安装 receipt 只能引用当前 catalog 中未撤销的批准�
 账户撤销和应用撤销写入同一受保护发布单元；撤销提交后，新操作检查当前状态，
 包括已经建立的其他连接。已经通过授权、进入单一 owner loop 的一次操作可以
 完成。此处不承诺立即终止正在计算的程序；动态后代的启动撤销由 P1-C 的 live
-admission 契约另行完成。
+admission 使用 [持久 catalog authority](pumpkin_catalog_authority.md) 的独立绑定与查询。
 
 ## Catalog 与发行控制器接口
 
@@ -95,6 +95,11 @@ fork 不继承有效 endpoint，需要受控 bootstrap 重新建立。
 所有 provisioning 请求使用独立 PPR1/version 1 帧，保留原账户协议。两种帧共享
 同一连接的严格递增 sequence、有限 deadline 和 bounded reply drain。格式错误、
 重放和超时关闭连接；发送后的未知结果不重放。公有 syscall ABI 没有变化。
+
+P1-C 保持帧布局和既有操作编号不变，增加 publisher_checkpoint=12 和
+registrar-only activate_generation=13。active 也可撤销；全部根撤销的状态
+可持久恢复且不允许启动。旧 reader 若不能识别这种状态必须拒绝，不能把它
+解释为空 catalog 或清除撤销位。
 
 ## 证据
 

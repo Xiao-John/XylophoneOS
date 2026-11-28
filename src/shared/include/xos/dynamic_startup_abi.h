@@ -6,7 +6,7 @@
    read-only launch capsule outside it so constructors may enable threads. */
 #define XOS_DYNAMIC_STARTUP_ADDRESS 0x71000000ULL
 #define XOS_DYNAMIC_STARTUP_MAGIC 0x3150555453594458ULL
-#define XOS_DYNAMIC_STARTUP_VERSION 2U
+#define XOS_DYNAMIC_STARTUP_VERSION 3U
 typedef struct xos_dynamic_startup_prefix {
     __UINT64_TYPE__ magic;
     __UINT32_TYPE__ version, size;

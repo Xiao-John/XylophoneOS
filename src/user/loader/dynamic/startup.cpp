@@ -11,6 +11,7 @@ bool validate_capsule(const startup_capsule& capsule) {
         || !capsule.policy.count || capsule.policy.count > activation_max_generations
         || capsule.policy.active >= capsule.policy.count || capsule.policy.reserved
         || !capsule.policy.sequence || capsule.policy.revoked >> capsule.policy.count
+        || !catalog::authority_valid(capsule.authority)
         || validate_generation(capsule.selected) != error::none) return false;
     u8 digest[32];
     sha256 hash;

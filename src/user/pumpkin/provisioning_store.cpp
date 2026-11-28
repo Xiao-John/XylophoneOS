@@ -47,7 +47,7 @@ bool catalog_valid(const approved_catalog& catalog, const repository_checkpoint&
     if (!catalog.count) { return zero(catalog) && zero(checkpoint); }
     if (catalog.count > catalog_root_limit || !catalog.epoch || catalog.epoch > revision ||
         catalog.active >= catalog.count || catalog.reserved ||
-        (catalog.revoked >> catalog.count) || (catalog.revoked & (1u << catalog.active)) ||
+        (catalog.revoked >> catalog.count) ||
         !has_bytes(catalog.sdk_sha256, 32) || !checkpoint.key_epoch || !checkpoint.sequence ||
         !checkpoint.trusted_unix_seconds || !has_bytes(checkpoint.repository_id, 32) ||
         !has_bytes(checkpoint.metadata_sha256, 32)) { return false; }
@@ -329,7 +329,8 @@ status provisioning_store::stage_catalog(const provisioning_version& expected, c
     const auto& next = candidate.catalog;
     const auto& checkpoint = candidate.checkpoint;
     if (revision_ == ~u64{0} || catalog_.epoch == ~u64{0}) { return status::exhausted; }
-    if (!next.count || !catalog_valid(next, checkpoint, revision_ + 1) || next.epoch != catalog_.epoch + 1 ||
+    if (!next.count || !catalog_valid(next, checkpoint, revision_ + 1) ||
+        (next.revoked & (1u << next.active)) || next.epoch != catalog_.epoch + 1 ||
         next.count < catalog_.count || (next.revoked & catalog_.revoked) != catalog_.revoked) { return status::invalid; }
     if (catalog_.count) {
         if (__builtin_memcmp(checkpoint.repository_id, checkpoint_.repository_id, 32) ||
@@ -347,11 +348,31 @@ status provisioning_store::stage_catalog(const provisioning_version& expected, c
 status provisioning_store::revoke_generation(const provisioning_version& expected, u32 index) {
     if (failed_ || !revision_) { return status::unavailable; }
     if (expected != version()) { return status::conflict; }
-    if (index >= catalog_.count || index == catalog_.active || (catalog_.revoked & (1u << index))) { return status::invalid; }
+    if (index >= catalog_.count || (catalog_.revoked & (1u << index))) { return status::invalid; }
     if (catalog_.epoch == ~u64{0} || authorization_epoch_ == ~u64{0} || revision_ == ~u64{0}) { return status::exhausted; }
+    const auto previous_active = catalog_.active;
     catalog_.revoked |= 1u << index; ++catalog_.epoch; ++authorization_epoch_;
+    if (index == catalog_.active) {
+        for (u32 i = 0; i < catalog_.count; ++i) {
+            if (!(catalog_.revoked & (1u << i))) { catalog_.active = i; break; }
+        }
+    }
     const auto result = commit(account_data_, account_length_);
-    if (result != replace_result::committed) { catalog_.revoked &= ~(1u << index); --catalog_.epoch; --authorization_epoch_; }
+    if (result != replace_result::committed) {
+        catalog_.active = previous_active; catalog_.revoked &= ~(1u << index);
+        --catalog_.epoch; --authorization_epoch_;
+    }
+    return outcome(result);
+}
+status provisioning_store::activate_generation(const provisioning_version& expected, u32 index) {
+    if (failed_ || !revision_) { return status::unavailable; }
+    if (expected != version()) { return status::conflict; }
+    if (index >= catalog_.count || (catalog_.revoked & (1u << index))) { return status::denied; }
+    if (catalog_.epoch == ~u64{0} || revision_ == ~u64{0}) { return status::exhausted; }
+    const auto previous_active = catalog_.active;
+    catalog_.active = index; ++catalog_.epoch;
+    const auto result = commit(account_data_, account_length_);
+    if (result != replace_result::committed) { catalog_.active = previous_active; --catalog_.epoch; }
     return outcome(result);
 }
 }

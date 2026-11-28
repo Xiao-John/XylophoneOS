@@ -1,0 +1,14 @@
+{
+  "files": {
+    "README.md": "b67a3ab641ba945840fbd41b941cd744bd0cbbe3f77f1552f0c7072812b43d3e",
+    "authority_host.json": "77feffa0c73ee714dbba9c865cc04aa915ca6262763da522d45c4136d87aa639",
+    "closure_host.json": "192f67327dc5a6a3af5e80b74c67d5a5315124d1f62dd6131afaea3d21fe50c8",
+    "conversion.json": "e234cc342c58dcadd4a8d5859d0700dc04f7711de6697535b0915b60b28d8c47",
+    "guest.json": "6aa80ea061619a21d245848af3e6093612487774cc037854b7d7f98c4e414913",
+    "host.json": "375762c50fe18bb48df0a70f139cbc16f331153797b42dfb490d9b5216c4d8c3",
+    "report.json": "082f829b1d767792304de5f7e891e9a693dbe872ec4cf7aa2f2c03675991c537",
+    "source_compatibility.json": "f3d9e95126ec79df620f27e81a23c88093ce1fa155b2624fbbcf6f6f01cf4d9d",
+    "system_build.json": "2f5b1b8f39629ed541eeea69e6c3f68cf84caddd2325ea7ebc599ec956248ee1"
+  },
+  "version": 1
+}

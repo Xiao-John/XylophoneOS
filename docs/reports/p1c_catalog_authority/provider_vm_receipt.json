@@ -1,0 +1,85 @@
+{
+  "command_profile": {
+    "accel": "tcg,thread=single",
+    "cpu": "max",
+    "guest_network": false,
+    "host_uid_mutation": false,
+    "memory_mib": 768,
+    "readonly_exports": [
+      "published SDK rootfs",
+      "frozen provider fixture source"
+    ],
+    "smp": 1,
+    "writable_test_state": "guest tmpfs"
+  },
+  "earlier_attempts": [
+    {
+      "attempt": "recovered2",
+      "qualification": "failed; never counted as a passing run",
+      "serial_raw_sha256": "936e79bba7b879999a9fadaf73f1b1e4f56329fd612e35bc9c0c29d3252cad7e"
+    },
+    {
+      "attempt": "recovered3",
+      "qualification": "failed; never counted as a passing run",
+      "serial_raw_sha256": "710ee3b3058568371e6d7e8bfe3ffff023128e15561918c2a2a56a3ac6c2816a"
+    },
+    {
+      "attempt": "recovered4",
+      "qualification": "failed; never counted as a passing run",
+      "serial_raw_sha256": "4fe9946fbf56211fbcc9cba860f5be0e6540b003ef89a5ac5ef25c3559cba7ca"
+    },
+    {
+      "attempt": "recovered5",
+      "qualification": "failed; never counted as a passing run",
+      "serial_raw_sha256": "135b91f0a1277aabf0a6a0786aa8aaf0dd260682ce716357367a27fc84aa621a"
+    }
+  ],
+  "earlier_attempts_note": "Early fixture realm length, process startup or import overhead failures remain separate from the successful recovered6 run; no earlier result was reclassified.",
+  "format": "xos-p1c-provider-vm-receipt-v1",
+  "initramfs_sha256": "6beb809f18ca5a29749b2c4fdfd285a45222e322137cd899aba5eb590af96108",
+  "kernel_sha256": "ae5af9d80dbc3b653d3aaab0233804e0e520517156f795a2668b8a2b2e6dc104",
+  "producer_raw_sha256": {
+    "build_initramfs.py": "dca0a7f874204f7d76fe251acaabffbdfb0537f7feef88703c15062d577644c9",
+    "run_vm.py": "c79d354116d4062b3e612deaf2864292b8dc7f6bf979ab91af2ae61df3910166"
+  },
+  "qemu_exit": 0,
+  "runtime": {
+    "execution": "published SDK QEMU via its bundled Linux loader and libraries; no proot",
+    "host_file_manifest_sha256": "7d16c12364928b1e3cef47582d7fdd2a95f159865f69421d6c327b499a9df64c",
+    "host_sdk": {
+      "application_kit_tree_sha256": "58618c50d0abfe85a216db33020fed4c1e0d45c81940aba10f2a271c05f79006",
+      "base_sdk_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+      "binding": {
+        "guest_qualification": "not_run",
+        "profile_id": "xos-x86_64-glibc-host-8b2dee22a327",
+        "profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+        "runtime_family": "glibc",
+        "sdk_tree_sha256": "3b7f05a77d720c6de494a470f495d4688c103e83a84ae997c13a21663ca9624c",
+        "status": "candidate_binding_verified"
+      },
+      "guest_qualification": "requires fresh extracted archive consumer validation",
+      "host_files_unchanged": true,
+      "inherited_host_file_count": 45919,
+      "inherited_host_tree_sha256": "9561e50b026d7aecd5ba1f81524e0cfe083d53be7dc8a49e98eaf76ef0556be0",
+      "profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+      "schema": 1,
+      "source_archive": {
+        "name": "xos-sdk-glibc-preview-3-sources.tar.zst",
+        "sha256": "f883ab48729e90ce887a2ad89c02c34b63af3145e5bd4d7dbdd0b768884b60cf"
+      },
+      "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+      "system": {
+        "build_id": "4a379155cac2fbbf",
+        "iso_sha256": "54fbdcd601dad5ac406f0cf5f8c354887ea06b0946dec03191c13235feb725a7",
+        "manifest_sha256": "79efe36c521072b2495d522f9ba171ca228c9eedaa4dbcb970300b811622ad79",
+        "source_sha256": "4a379155cac2fbbf2fa7d4801b37dbb59f07c5116800bb39389d6d642c21edc4"
+      },
+      "tag": "xos-sdk-glibc-preview-3"
+    },
+    "host_sdk_json_sha256": "6823e578d75de6a8dca14cdda2c33789b7218bc0d8843f2202c0e5009878c600"
+  },
+  "scope": "real Linux guest UID isolation, public SDK rootfs and source read-only, no guest network",
+  "serial_raw_sha256": "45b332ba25c2166b21d77325f366c698c31e965681673a8229e0bedb87061438",
+  "status": "passed",
+  "test_exit": 0
+}

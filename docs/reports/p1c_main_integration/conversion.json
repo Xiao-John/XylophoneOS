@@ -1,0 +1,50 @@
+{
+  "conversion": "guest.json retains exact original bytes; other JSON records preserve semantic fields and use portable source/tool placeholders",
+  "format": "xos-p1c-main-public-conversion-v1",
+  "guest_log_digests": {
+    "gnu_live_revoke": {
+      ".json": {
+        "bytes": 377,
+        "sha256": "7f813ed63666d15a45ca7e096ccd4f200b0781df25ef3c1297c6fc0b397256ae"
+      },
+      "_qemu.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "_serial.log": {
+        "bytes": 2731,
+        "sha256": "8f14c156891f9611c9ee241dfbb302db564e5c1fc077f9c0fa284930d6e8ac6f"
+      }
+    },
+    "initial": {
+      ".json": {
+        "bytes": 481,
+        "sha256": "bb172b05b82e652182627625a2cea301c3ecfcce1927c26a12e3f4c08ae7543d"
+      },
+      "_qemu.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "_serial.log": {
+        "bytes": 2866,
+        "sha256": "788d420ee1000ac2de1416bdd7d73ba92e7242890b3ceca60421fc7ba22c1f3d"
+      }
+    }
+  },
+  "original_guest_report_sha256": "6aa80ea061619a21d245848af3e6093612487774cc037854b7d7f98c4e414913",
+  "original_host_digests": {
+    "abi/abi_doc_report.json": "951a42e8f872978104c121b4a98c29a7cdb59974376bd5c3551bfaa9dfbbc197",
+    "abi/registry_report.json": "49c358b0bf96e09d05cfc9229b42fa184c19f89fe9f8a38fe2cc235ad2d665d4",
+    "authority/report.json": "46b7a2548b48abdb85c4f321db5e35663044ec941db81f2caa36c311be5bd744",
+    "closure/report.json": "f54f37d5b3f251dca2b3db2b38558bea38011855d218dcc457e30378efd25fba",
+    "provisioning-asan.log": "46a716ef63fa7bed66f367c85ce379a5e5ccee5d4fbc7cd87cf5e61830b4deb2",
+    "provisioning.log": "46a716ef63fa7bed66f367c85ce379a5e5ccee5d4fbc7cd87cf5e61830b4deb2"
+  },
+  "original_qualification_files_unchanged": 24,
+  "original_source_compatibility_sha256": "f3d9e95126ec79df620f27e81a23c88093ce1fa155b2624fbbcf6f6f01cf4d9d",
+  "post_run_system_artifact_checks": 321,
+  "post_run_system_source_checks": 2327,
+  "runner_sha256": "3d8a4135186b63e83c8e7ea85633d68eec59d9b61d3add1d3f1999f2163bd062",
+  "separate_qualification": "Original 23 boots and producer manifests are unchanged; this report adds only two integrated-image compatibility boots",
+  "shared_boot_helper_sha256": "30cab2c55eb7d5f8a622df90e6f4fb09bc61215726736ccba2222fa8b38e24c8"
+}

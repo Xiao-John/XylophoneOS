@@ -27,7 +27,8 @@ def main():
     out = args.output.resolve()
     out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
-    paths = [ROOT / name for name in ('src/user/loader/dynamic/closure.cpp', 'src/user/loader/dynamic/generation.cpp',
+    paths = [ROOT / name for name in ('src/user/loader/dynamic/closure.cpp', 'src/user/loader/dynamic/authority.cpp',
+             'src/user/loader/dynamic/generation.cpp',
              'src/user/loader/dynamic/identity.cpp', 'src/user/loader/dynamic/elf.cpp', 'src/user/loader/elf.cpp',
              'tests/fixtures/dynamic_closure_host.cpp')]
     tracked = [*paths, ROOT / 'tests/fixtures/dynamic_closure_object.cpp',

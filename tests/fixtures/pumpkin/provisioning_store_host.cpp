@@ -156,12 +156,46 @@ void protocol_authority() {
     request.expected = live.store.version(); request.candidate = candidate();
     assert(call(request, provisioning_role::client) == status::denied);
     assert(call(request, provisioning_role::catalog_publisher) == status::ok);
+    request = {}; request.operation = provisioning_operation::publisher_checkpoint;
+    const auto checkpoint_version = live.store.version();
+    assert(call(request, provisioning_role::client) == status::denied);
+    assert(call(request, provisioning_role::catalog_publisher) == status::ok);
+    assert(call(request, provisioning_role::registrar) == status::ok);
+    assert(live.store.version() == checkpoint_version);
+    request = {}; request.operation = provisioning_operation::activate_generation;
+    request.app.application = 0; request.expected = checkpoint_version;
+    assert(call(request, provisioning_role::client) == status::denied);
+    assert(call(request, provisioning_role::catalog_publisher) == status::denied);
+    assert(call(request, provisioning_role::registrar) == status::ok);
+    assert(call(request, provisioning_role::registrar) == status::conflict);
     request = {}; request.operation = provisioning_operation::revoke_application;
     request.app.application = app.number; request.app.authorization_epoch = app.authorization_epoch;
     assert(call(request, provisioning_role::catalog_publisher) == status::denied);
     assert(live.core.revoke_account(live.registrar, ++live.now, owner) == status::ok);
     u64 epoch = 0;
     assert(live.store.authorize_application(owner, other.number, other_key, epoch) == status::denied);
+}
+void active_root_revocation() {
+    media disk; fixture live(disk);
+    assert(provision_store(live.store.accounts(), realm) == status::ok && live.start());
+    assert(live.store.stage_catalog(live.store.version(), candidate()) == status::ok);
+    const auto before = live.store.version();
+    assert(live.store.revoke_generation(before, 1) == status::ok);
+    repository_checkpoint checkpoint{}; approved_catalog catalog{};
+    assert(live.store.checkpoint(checkpoint, catalog) == status::ok);
+    assert(catalog.revoked == 2 && catalog.active == 0 && catalog.epoch == 2 && checkpoint.sequence == 1);
+    assert(live.store.version().authorization_epoch == before.authorization_epoch + 1);
+    assert(live.store.activate_generation(live.store.version(), 1) == status::denied);
+    assert(live.store.revoke_generation(live.store.version(), 0) == status::ok);
+    fixture recovered(disk); assert(recovered.start());
+    assert(recovered.store.checkpoint(checkpoint, catalog) == status::ok);
+    assert(catalog.revoked == 3 && catalog.epoch == 3 && checkpoint.sequence == 1);
+    assert(recovered.store.activate_generation(recovered.store.version(), 0) == status::denied);
+    assert(recovered.store.activate_generation(recovered.store.version(), 1) == status::denied);
+    auto next = candidate(4, 2);
+    assert(recovered.store.stage_catalog(recovered.store.version(), next) == status::invalid);
+    next.catalog.revoked = 3;
+    assert(recovered.store.stage_catalog(recovered.store.version(), next) == status::invalid);
 }
 void full_accounts() {
     media disk; fixture live(disk);
@@ -176,6 +210,6 @@ void full_accounts() {
 }
 }
 int main() {
-    transaction_cases(); protocol_authority(); full_accounts();
-    std::puts("PASS production provisioning store: torn stage, rejected CAS, committed/uncommitted unknown, exact recovery, stale disk, cross-app denial, durable revocation, catalog checkpoint, full 64-account capacity");
+    transaction_cases(); protocol_authority(); active_root_revocation(); full_accounts();
+    std::puts("PASS production provisioning store: torn stage, rejected CAS, committed/uncommitted unknown, exact recovery, stale disk, cross-app denial, durable revocation, catalog checkpoint, publisher role, persistent activation, all-root revocation, full 64-account capacity");
 }

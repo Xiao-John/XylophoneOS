@@ -1,0 +1,56 @@
+{
+  "conversion": "guest_report.json preserves exact original bytes; boot JSON records are aggregated without semantic changes and bind raw log hashes; system metadata uses portable tool/source placeholders; producer manifests remain immutable",
+  "derived_files": [
+    "guest_report.json",
+    "guest_boots.json",
+    "system_build.json"
+  ],
+  "format": "xos-p1c-guest-public-conversion-v1",
+  "gnu_fixture_sha256": "d483dbb5edad5a2a944d43d21ad9cf08329073729aafe2364e1006b2f90b09a6",
+  "native_fixture_sha256": "b660ced088de4ec11c26820ecabbf308262dc5d4cd77b00d51e2e6d396370240",
+  "original_per_boot_sha256": {
+    "authority_unavailable.json": "c212c9353b9a0c8ab5aec77a623248d2c7f54cdb1b80993faafacfb38eb7073a",
+    "cold_all_revoked.json": "52205d1192a0b78a9891dff2d44a5df05f9903646a2a468f91fcb65f08584b50",
+    "cold_revoked.json": "e1d51473b0fc4c2cab22879187c626f38cee04a754c87cf945af8752ee6a3306",
+    "committed_unknown_cold_recovery.json": "abefc1500e4e772a75e3b0c48460b9f6a2b5e60e96bb70c6f45c602d1a5a15d4",
+    "committed_unknown_initial.json": "bb172b05b82e652182627625a2cea301c3ecfcce1927c26a12e3f4c08ae7543d",
+    "committed_unknown_mutation.json": "7d109ff2b5ae40ab23a009e426ff62e80368060377da867b8797c183a8a30b09",
+    "committed_unknown_stale_disk.json": "b0a2ece2070c8d36d91b90669ea6a4b00697d6fa241637021b58b598930b7634",
+    "gnu_live_revoke.json": "7f813ed63666d15a45ca7e096ccd4f200b0781df25ef3c1297c6fc0b397256ae",
+    "initial.json": "bb172b05b82e652182627625a2cea301c3ecfcce1927c26a12e3f4c08ae7543d",
+    "native_owner_after.json": "acc4f3cc65e00ca3ff1ed7557191ff3176cf744fb8bc0ef06b5b1ca606ff18b5",
+    "native_owner_before.json": "d8f84830cc8a2281c21a04deb74a701ae9cdd3738931d9de3582911af72c0261",
+    "none_cold_recovery.json": "abefc1500e4e772a75e3b0c48460b9f6a2b5e60e96bb70c6f45c602d1a5a15d4",
+    "none_initial.json": "bb172b05b82e652182627625a2cea301c3ecfcce1927c26a12e3f4c08ae7543d",
+    "none_mutation.json": "1af98573852123737b4484ad2136fd920112d6440fdc975e29930cce7b1c89f0",
+    "none_stale_disk.json": "b0a2ece2070c8d36d91b90669ea6a4b00697d6fa241637021b58b598930b7634",
+    "rejected_cas_cold_recovery.json": "92d493439576be634f55e1ec4c1311afe237befadb874f829e0d53919703f9fa",
+    "rejected_cas_initial.json": "bb172b05b82e652182627625a2cea301c3ecfcce1927c26a12e3f4c08ae7543d",
+    "rejected_cas_mutation.json": "af4063b90de4f20b50b96848237da78f922f6826759e5e67d54b5a8da39217d1",
+    "revoke_last.json": "300b1276654dfc6e50507e5caea3834d8e613941d8f2a096231f650b9c29cfa2",
+    "unavailable_initial.json": "bb172b05b82e652182627625a2cea301c3ecfcce1927c26a12e3f4c08ae7543d",
+    "uncommitted_unknown_cold_recovery.json": "92d493439576be634f55e1ec4c1311afe237befadb874f829e0d53919703f9fa",
+    "uncommitted_unknown_initial.json": "bb172b05b82e652182627625a2cea301c3ecfcce1927c26a12e3f4c08ae7543d",
+    "uncommitted_unknown_mutation.json": "1ba4837a135be8c16bc730178d5c5541c4887feadfb80754c34d2946eed6f945"
+  },
+  "original_report_sha256": "c28d990b93178ff8652ba0725668b982369c82cf8026b3abc89fc52b487d8a68",
+  "post_run_recheck": {
+    "runtime_artifacts": 9,
+    "runtime_original_manifest_sha256": "a7a6360491bb8ebe13b85aab61be7d61d0cd26137d1f02f433d7ca908e8bd0dc",
+    "runtime_source_inputs": {
+      "native_inputs": 154,
+      "port_inputs": 303,
+      "recipe_inputs": 14
+    },
+    "system_artifacts": 320,
+    "system_source_inputs": 2309
+  },
+  "runner_sha256": "30cab2c55eb7d5f8a622df90e6f4fb09bc61215726736ccba2222fa8b38e24c8",
+  "scope": "23 real XOS guest boots with developer generation authority, production Files/daemon/loader and GNU apps",
+  "separate_gates": {
+    "independent_linux_uid_provider": "provider_report.json",
+    "physical_power_loss": "not_qualified",
+    "shared_gnu_fork": "ENOSYS; P1-K2 composition remains separate",
+    "signed_distribution": "P1-D; not claimed by explicit C fixture catalog provisioning"
+  }
+}

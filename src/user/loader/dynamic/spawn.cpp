@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "startup.hpp"
+#include "authority.hpp"
 #include <xos/execution.hpp>
 #include <xos/sdk.hpp>
 #include <xos/thread_abi.hpp>
@@ -7,6 +8,14 @@
 namespace xos::dynamic {
 error install(const launch_policy& policy, u64 absolute_deadline) {
     return configure(policy, absolute_deadline);
+}
+error install_anchored(const catalog::authority& authority, u64 absolute_deadline) {
+    if (configured()) { return error::state; }
+    launch_policy policy{};
+    const auto selected = read_authority(authority, absolute_deadline, policy);
+    if (selected != error::none) { return selected; }
+    const auto installed = install(policy, absolute_deadline);
+    return installed == error::none ? restore_authority(authority) : installed;
 }
 namespace {
 closure selected;
@@ -49,6 +58,7 @@ void fill_capsule(const launch::descriptor& control) {
     capsule.prefix = {XOS_DYNAMIC_STARTUP_MAGIC, XOS_DYNAMIC_STARTUP_VERSION, sizeof(capsule),
                       control, artifact(selected.ticket), {}};
     (void)export_policy(capsule.policy);
+    (void)export_authority(capsule.authority);
     capsule.selected = selected.value;
     for (u32 i = 1; i < selected.value.header.object_count; ++i) {
         const auto& source = selected.images[i];
@@ -210,6 +220,7 @@ extern "C" long xos_dynamic_adopt_startup(xos::u64 deadline) {
     if (!validate_capsule(startup) || startup.prefix.control.child_pid != sdk::pid()
         || startup.prefix.control.deadline != deadline) return -22;
     if (configure(startup.policy, deadline) != error::none) return -8;
+    if (restore_authority(startup.authority, startup.prefix.artifact) != error::none) return -8;
     active_control = startup.prefix.control;
     active_artifact = startup.prefix.artifact;
     return 0;

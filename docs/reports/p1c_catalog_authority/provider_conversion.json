@@ -1,0 +1,37 @@
+{
+  "derived_integrity": "manifest.json is the sole flat index of derived leaf bytes",
+  "format": "xos-p1c-provider-evidence-derived-v1",
+  "raw_to_derived": {
+    "provider_report.json": {
+      "derived_file": "provider_report.json",
+      "raw_sha256": "2a737eb1f368b350617f75453c4485ab3f9b84f5d8657dfcb67b5f163263c421",
+      "source": "ops/p1-linux-vm/report-recovered6.json"
+    },
+    "provider_vm_initramfs.json": {
+      "derived_file": "provider_vm_initramfs.json",
+      "raw_sha256": "3332f21e6f2553b928b964a53381ddc70ac9539953ffc4d85e41280806b6d660",
+      "source": "ops/p1-linux-vm/initramfs-receipt.json"
+    },
+    "provider_vm_inputs.json": {
+      "derived_file": "provider_vm_inputs.json",
+      "raw_sha256": "ae03df3ca4fc81b7b113cd6cd3b5ef05d57629a3d782e1115569266a3f27be00",
+      "source": "ops/p1-linux-vm/inputs-receipt.json"
+    },
+    "provider_vm_qemu.json": {
+      "derived_file": "provider_vm_qemu.json",
+      "raw_sha256": "52f204efedb6e2ccdbe4acc9655804250f390512bc5bb41b0227761d179f71cc",
+      "source": "ops/p1-linux-vm/direct-qemu-receipt.json"
+    },
+    "provider_vm_receipt.json": {
+      "derived_file": "provider_vm_receipt.json",
+      "raw_sha256": "823d9a56d9b18d1dbb8fa41a0a75cc060e29bde46b88adc5fdf3bcf0a06814ad",
+      "source": "ops/p1-linux-vm/receipt-recovered6.json"
+    },
+    "provider_vm_sources.json": {
+      "derived_file": "provider_vm_sources.json",
+      "raw_sha256": "4ad01bef9554054eb0613f6cbc6ed2c5631468623eaecb01e47c802823f80aee",
+      "source": "ops/p1-linux-vm/provider-source-receipt.json"
+    }
+  },
+  "rule": "Copy facts and source hashes; add explicit VM scope, preserve raw hashes, select only the four consumed kernel/initramfs packages. The report itself contains 12 functional checks plus three process readiness metrics."
+}

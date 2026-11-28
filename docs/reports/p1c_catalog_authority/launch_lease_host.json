@@ -1,0 +1,70 @@
+{
+  "cli_rejections": {
+    "cases": [
+      {
+        "args": [
+          "python3",
+          "scripts/build.py",
+          "--pumpkin-launch-storage-lease"
+        ],
+        "diagnostic": "build.py: error: launch probe/lease requires provisioning and an isolated explicit launch fixture",
+        "exit": 2
+      },
+      {
+        "args": [
+          "python3",
+          "scripts/build.py",
+          "--pumpkin-launch-storage-lease",
+          "--pumpkin-anchored-probe",
+          "--pumpkin-provisioning-store",
+          "--output-dir",
+          "build/rejected-launch-lease"
+        ],
+        "diagnostic": "build.py: error: launch probe/lease requires provisioning and an isolated explicit launch fixture",
+        "exit": 2
+      }
+    ],
+    "status": "passed"
+  },
+  "format": "xos-p1c-launch-lease-host-v1",
+  "leak_sanitizer": "disabled under ptrace; ASan/UBSan ran",
+  "profiles_ns": {
+    "desktop": 1860000000000,
+    "launch_acceptance": 300000000000,
+    "short_operation": 30000000000
+  },
+  "runs": {
+    "asan": {
+      "checks": [
+        "PASS exclusive reader/writer lifecycle and stale binding rejection",
+        "PASS partial writes stay in memory and later lease verifies full slot",
+        "PASS sync/readback failures return outcome unknown",
+        "PASS boot-pair and actual target-parent checks with endpoint cleanup",
+        "PASS short, desktop and explicit launch deadlines remain bounded and revoke with the controller"
+      ],
+      "exit": 0,
+      "log_sha256": "a229efa91aae9c805e808a4eedc291eb00f0a32434e5b193eb40ee78a32a14fd"
+    },
+    "ordinary": {
+      "checks": [
+        "PASS exclusive reader/writer lifecycle and stale binding rejection",
+        "PASS partial writes stay in memory and later lease verifies full slot",
+        "PASS sync/readback failures return outcome unknown",
+        "PASS boot-pair and actual target-parent checks with endpoint cleanup",
+        "PASS short, desktop and explicit launch deadlines remain bounded and revoke with the controller"
+      ],
+      "exit": 0,
+      "log_sha256": "a229efa91aae9c805e808a4eedc291eb00f0a32434e5b193eb40ee78a32a14fd"
+    }
+  },
+  "scope": "production broker/lease with modeled kernel; explicit finite profile and controller death; not a guest qualification",
+  "sources": {
+    "src/user/services/files_private_broker.cpp": "6b9826319b083a6dcf4944c0f4ca4850ad825abbcc069937961e24fd95b126dc",
+    "src/user/services/files_private_broker.hpp": "9de4b909481c8706ef845974b4f56eca38683c4ceb95b6ab7403d8440703da79",
+    "src/user/services/files_private_lease.cpp": "24244aca2406eaa121d80b680c24f7ba960e8c758d43322517e7b3bdb55709c1",
+    "src/user/services/files_private_lease.hpp": "53a25219546127868f296e740c3b66e92cefbb707366f0abcd874b9a8e02c49f",
+    "tests/fixtures/pumpkin/files_private_lease_host.cpp": "74c6da5f32b3cb0f34a4d2e1ff0cbbc7b67957daa61a0a114f7a3717de6d26bb",
+    "tests/pumpkin_files_lease_host.py": "0c771bf7c0bdcf5cd3a4a2ed163aa3b8e58b75f877f28b8ca7990b7581116a5b"
+  },
+  "status": "passed"
+}

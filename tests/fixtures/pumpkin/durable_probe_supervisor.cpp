@@ -4,6 +4,12 @@
 #include "../../../src/user/pumpkin/anchored_installation.hpp"
 #if XOS_PUMPKIN_PROVISIONING_STORE
 #include "../../../src/user/pumpkin/provisioning_protocol.hpp"
+#if XOS_PUMPKIN_CATALOG_PROBE
+#include <xos/dynamic_launch.hpp>
+#include <xos/execution.hpp>
+#include "../../../src/user/loader/dynamic/authority.hpp"
+#include "pumpkin_catalog_fixture.hpp"
+#endif
 #endif
 #if XOS_PUMPKIN_ANCHORED_PROBE
 #include "../../../src/user/pumpkin/generation_guest.hpp"
@@ -72,12 +78,14 @@ public:
         options.stdio[0] = pipe.read_token;
         const char* mode = initialize ? "--durable-init-test" : "--durable-test";
 #if XOS_PUMPKIN_ANCHORED_PROBE
+        struct backing_offer { u64 proxy; anchor_guest::pair* channels; };
+        backing_offer backing{anchor.proxy, &backing_channels};
         if (anchor.proxy != 0) {
             mode = initialize ? "--anchored-init-test" : "--anchored-test";
-            options.prepare_context = &anchor.proxy;
+            options.prepare_context = &backing;
             options.prepare_child = [](u64 child, void* context) -> i64 {
-                anchor_guest::pair endpoints{};
-                return anchor_guest::create_pair(child, *static_cast<u64*>(context), endpoints)
+                auto& offered = *static_cast<backing_offer*>(context);
+                return anchor_guest::create_pair(child, offered.proxy, *offered.channels)
                     ? 0 : process_error_denied;
             };
         }
@@ -94,7 +102,7 @@ public:
 #if XOS_PUMPKIN_ANCHORED_PROBE
         if (delivered && anchor.proxy != 0) {
             const anchor_guest::bind_proxy binding{pid};
-            delivered = sdk::channel_send_wait(anchor.control, &binding, sizeof(binding), anchor_guest::deadline()) == 0 &&
+            delivered = anchor_guest::control_send_wait(anchor.control, &binding, sizeof(binding), anchor_guest::deadline()) == 0 &&
                 write_pipe(pipe.write_token, &anchor.proxy, sizeof(anchor.proxy));
         }
 #endif
@@ -124,6 +132,12 @@ public:
     u64 pid = 0;
     ipc_client control;
     bool control_admitted = false;
+#if XOS_PUMPKIN_ANCHORED_PROBE
+    // Kernel-returned handles for the owner-only daemon/proxy sys81 pair.
+    // channel_get enumerates only sender/receiver participation, so this pair
+    // cannot be counted by enumerating the supervisor's visible endpoints.
+    anchor_guest::pair backing_channels{};
+#endif
 
 private:
     bool accept_control(discovery& entry) {
@@ -246,6 +260,9 @@ bool dash_login(u64 pid, const credential& key) {
 
 #if XOS_PUMPKIN_PROVISIONING_STORE
 #include "provisioning_probe.hpp"
+#if XOS_PUMPKIN_CATALOG_PROBE
+#include "catalog_probe.hpp"
+#endif
 #endif
 
 #if XOS_PUMPKIN_NAMED_RESOURCE_STORE
@@ -420,24 +437,42 @@ void run(u32 image, grant_function grant, const char* mode) {
 int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unused]] u32 holder_image,
                  [[maybe_unused]] u32 broker_image, [[maybe_unused]] const native_login::desktop_session* desktop) {
     anchor_guest::pair proxy_control{};
+#if XOS_PUMPKIN_LAUNCH_PROBE
+    if (sdk::ipc_name_publish(anchor_guest::launch_control_service)) return 21;
+#endif
     sdk::spawn_options options{};
     for (auto& fd : options.stdio) fd = -2;
     options.prepare_context = &proxy_control;
     options.prepare_child = [](u64 child, void* context) -> i64 {
+#if XOS_PUMPKIN_LAUNCH_PROBE
+        (void)context;
+#else
         auto& endpoints = *static_cast<anchor_guest::pair*>(context);
         if (!anchor_guest::create_pair(sdk::pid(), child, endpoints)) return process_error_denied;
+#endif
         return sdk::pio_grant(pio_grant_action::grant, child, pio_resource_com1);
     };
     const char* args[]{"p2_anchor_proxy"};
     const i64 proxy = sdk::spawn_image_options(proxy_image, 1, args, options);
+#if XOS_PUMPKIN_LAUNCH_PROBE
+    const bool connected = proxy > 0 && anchor_guest::accept_control(static_cast<u64>(proxy), proxy_control);
+    (void)sdk::ipc_name_unpublish(anchor_guest::launch_control_service);
+    if (!connected) {
+        if (proxy > 0) {
+            (void)sdk::syscall(10, static_cast<u64>(proxy));
+            process_status failed{}; (void)sdk::wait(static_cast<u64>(proxy), failed);
+        }
+        return 21;
+    }
+#endif
     if (proxy <= 0) return 21;
 
     anchor_guest::scenario mode{};
-    bool ready = sdk::channel_receive_wait(proxy_control.receive, &mode, sizeof(mode),
+    bool ready = anchor_guest::control_receive_wait(proxy_control.receive, &mode, sizeof(mode),
                                                  anchor_guest::deadline()) == sizeof(mode);
 #if XOS_PUMPKIN_USER_LOGIN
     user_login::account_packet selection{};
-    ready = ready && sdk::channel_receive_wait(proxy_control.receive, &selection, sizeof(selection),
+    ready = ready && anchor_guest::control_receive_wait(proxy_control.receive, &selection, sizeof(selection),
         anchor_guest::deadline()) == sizeof(selection) && user_login::selected_account(selection, mode);
     const account_name chosen{selection.name, selection.length};
 #endif
@@ -445,7 +480,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
     const auto named_mode = named_operator::for_scenario(mode);
     named_operator::packet named_input{};
     if (ready && named_mode != named_operator::operation{} &&
-        (sdk::channel_receive_wait(proxy_control.receive, &named_input, sizeof(named_input), anchor_guest::deadline()) !=
+        (anchor_guest::control_receive_wait(proxy_control.receive, &named_input, sizeof(named_input), anchor_guest::deadline()) !=
              sizeof(named_input) || !named_operator::selection(named_input, named_mode))) {
         (void)sdk::syscall(10, static_cast<u64>(proxy));
         process_status failed{};
@@ -467,6 +502,9 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
     if (ready && bounded_start) {
         daemon server;
         bool initialized = mode == anchor_guest::scenario::cycle;
+#if XOS_PUMPKIN_CATALOG_PROBE
+        initialized = initialized || mode == anchor_guest::scenario::catalog_initial;
+#endif
 #if XOS_PUMPKIN_USER_LOGIN
         initialized = initialized || selection.initialize;
 #endif
@@ -518,6 +556,32 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         case anchor_guest::scenario::stale:
             passed = !started && server.control_admitted && server.stop(11);
             break;
+#if XOS_PUMPKIN_CATALOG_PROBE
+        case anchor_guest::scenario::catalog_initial:
+            passed = started && catalog_seed(server) && catalog_leaf(server, 0, 0) && server.stop(); break;
+        case anchor_guest::scenario::catalog_old:
+            passed = started && catalog_leaf(server, 0, 0) && server.stop(); break;
+        case anchor_guest::scenario::catalog_switch:
+            passed = started && catalog_switch(server, status::ok) && server.stop(); break;
+        case anchor_guest::scenario::catalog_new:
+            passed = started && catalog_leaf(server, 1, 0) && server.stop(); break;
+        case anchor_guest::scenario::catalog_descendants:
+            passed = started && catalog_descendants(server, false) && server.stop(); break;
+        case anchor_guest::scenario::catalog_revoked:
+            passed = started && catalog_leaf(server, 1, 1) && server.stop(); break;
+        case anchor_guest::scenario::catalog_unknown:
+            passed = started && catalog_switch(server, status::outcome_unknown) && server.stop(12); break;
+        case anchor_guest::scenario::catalog_reject:
+            passed = started && catalog_switch(server, status::io_error) && server.stop(); break;
+        case anchor_guest::scenario::catalog_unavailable:
+            passed = started && catalog_descendants(server, true); break;
+        case anchor_guest::scenario::catalog_owner_admission:
+            passed = started && catalog_owner_admission(server) && server.stop(); break;
+        case anchor_guest::scenario::catalog_revoke_last:
+            passed = started && catalog_revoke_last(server) && server.stop(); break;
+        case anchor_guest::scenario::catalog_all_revoked:
+            passed = started && catalog_all_revoked(server) && server.stop(); break;
+#endif
 #if XOS_PUMPKIN_USER_LOGIN
         case anchor_guest::scenario::user_enroll:
             if (started) {
@@ -598,6 +662,9 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #endif
 #endif
     u8 outcome = static_cast<u8>(passed);
+#if XOS_PUMPKIN_CATALOG_PROBE
+    if (!passed && catalog_failure) outcome = catalog_failure;
+#endif
 #if XOS_PUMPKIN_USER_RESOURCE && XOS_PUMPKIN_NAMED_RESOURCE_STORE
     if (passed && named_result) {
         named_input.sequence = 2;
@@ -606,7 +673,7 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
         if (named_mode != named_operator::operation::select || named_result != 1) {
             __builtin_memset(named_input.payload, 0, sizeof(named_input.payload));
         }
-        passed = sdk::channel_send_wait(proxy_control.transmit, &named_input, sizeof(named_input),
+        passed = anchor_guest::control_send_wait(proxy_control.transmit, &named_input, sizeof(named_input),
                                        anchor_guest::deadline()) == 0;
         outcome = passed ? named_result : 0;
     }
@@ -628,12 +695,15 @@ int run_anchored(u32 image, u32 proxy_image, grant_function grant, [[maybe_unuse
 #endif
 #endif
     const anchor_guest::supervisor_result result{outcome};
-    if (!ready || sdk::channel_send_wait(proxy_control.transmit, &result, sizeof(result), anchor_guest::deadline()) != 0) {
+    if (!ready || anchor_guest::control_send_wait(proxy_control.transmit, &result, sizeof(result), anchor_guest::deadline()) != 0) {
         (void)sdk::syscall(10, static_cast<u64>(proxy));
     }
     process_status child{};
     const bool stopped = sdk::wait(static_cast<u64>(proxy), child) == 0 &&
         child.outcome == process_outcome::exited && child.code == 0;
+#if XOS_PUMPKIN_LAUNCH_PROBE
+    anchor_guest::close_control(proxy_control);
+#endif
     return passed && stopped ? 0 : 22;
 }
 #endif

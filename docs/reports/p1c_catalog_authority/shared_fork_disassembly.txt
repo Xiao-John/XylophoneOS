@@ -1,0 +1,14 @@
+
+${XOS_GNU_RUNTIME}/gnu/libc.so:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+00000000000d7ec0 <__fork>:
+   d7ec0:	64 48 8b 14 25 00 00 	mov    %fs:0x0,%rdx
+   d7ec7:	00 00
+   d7ec9:	48 8b 05 d0 3f 0a 00 	mov    0xa3fd0(%rip),%rax        # 17bea0 <_GLOBAL_OFFSET_TABLE_+0x158>
+   d7ed0:	c7 04 02 58 00 00 00 	movl   $0x58,(%rdx,%rax,1)
+   d7ed7:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+   d7edc:	c3                   	ret
+   d7edd:	0f 1f 00             	nopl   (%rax)

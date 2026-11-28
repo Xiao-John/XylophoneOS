@@ -43,12 +43,13 @@ readonly pin 读取；之后映射和转移仍使用这些开放描述，不能�
 bootstrap 自身继续受普通静态 ELF 装载器及 128 KiB 文件界限检查。控制器把
 已验证映射计划、固定批准根、选定 generation、已转移 pin 和启动控制描述
 写入只读 capsule；客体不能修改 capsule 后把新字节当成批准结果。
-capsule 的内部布局版本为 2，固定从 `0x71000000` 开始；它位于线程 stack/TLS
+capsule 的内部布局版本为 3，显式携带可选 catalog authority binding，固定从
+`0x71000000` 开始；它位于线程 stack/TLS
 保留区 `[0x70000000, 0x71000000)` 之后，并在初始进程栈之前。编译期检查
 同时排除静态 TLS、进程 heap、DSO 映射区和早期 GNU heap；动态闭包预检还
 拒绝 bootstrap 的 LOAD 覆盖 capsule 或线程区域。普通静态 ELF 的历史地址
 兼容性保持原定义。公共 native NOTE 的 ABI 摘要绑定 C SDK manifest 和上述
-启动 ABI 头文件内容，防止旧 capsule 与新地址的运行时混用。
+启动和 catalog ABI 头文件内容，防止旧 capsule 与新运行时混用。
 
 bootstrap 用同一开放描述映射 main 与 interpreter，准备 argv/env/auxv、
 GNU 初始栈及 Files 会话，再进入真正的 GNU `ld.so`。早期 heap 固定为 8 MiB，
@@ -137,9 +138,11 @@ runtime/source、C++ 依赖、程序 stage、批准 launcher 和 shell 工具，
 
 批准目录是每个控制器内有界、易失的状态，支持完整预检后激活、批准回滚、
 expected sequence 和撤销。失败保留旧 active；已经捕获的 pin 不会被换成
-另一份文件。只读 capsule 继承的是启动时政策快照，不是跨进程实时撤销协议。
+另一份文件。普通 install 的只读 capsule 继承启动时政策快照。
+显式 install_anchored 则按 [持久 catalog authority](pumpkin_catalog_authority.md)
+在每次启动核对当前持久批准与自身身份，并将 binding 传播到 fork/exec 后代。
 
-持久全局目录、断电恢复、跨后代撤销广播、动态 fork→exec 的父控制权迁移、
+任意物理断电、跨后代撤销广播、动态 fork→exec 的完整父控制权迁移、
 在线库装卸，以及 terminal actor 的完整动态 exec 组合仍需独立 P1 契约和
 资格。普通 console/pipe/Files stdio 与 terminal actor 是不同启动协议，
 不能把前者的成功报告扩张为后者已通过。

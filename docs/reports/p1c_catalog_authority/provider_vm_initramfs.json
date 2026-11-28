@@ -1,0 +1,99 @@
+{
+  "exports": [
+    "published host SDK rootfs (read-only)",
+    "frozen P1-C provider fixture source (read-only)"
+  ],
+  "format": "p1-linux-provider-vm-v1",
+  "guest_network": false,
+  "host_identity_modified": false,
+  "initramfs_sha256": "6beb809f18ca5a29749b2c4fdfd285a45222e322137cd899aba5eb590af96108",
+  "inputs": {
+    "TRAILER!!!": {
+      "mode": "0o0",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "bin": {
+      "mode": "0o40755",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "bin/busybox": {
+      "mode": "0o100755",
+      "sha256": "7608fb9732b11e9cd0f7cdeaa537ca61a4991907b83b2fdf6fcdcb577f07d932",
+      "size": 2063232
+    },
+    "bin/sh": {
+      "mode": "0o120777",
+      "sha256": "9d75f0d7c398df565d7ac04c6819b62d6d8f9560f5eb4672596ecd8f7e96ae91",
+      "size": 7
+    },
+    "dev": {
+      "mode": "0o40755",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "dev/console": {
+      "mode": "0o20600",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "init": {
+      "mode": "0o100755",
+      "sha256": "95713cf16358c873b387350ac1ca447ab66d17f4e02882f023c6482a5d70498f",
+      "size": 807
+    },
+    "lib": {
+      "mode": "0o40755",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "lib/modules": {
+      "mode": "0o40755",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "lib/modules/9p.ko": {
+      "mode": "0o100644",
+      "sha256": "77e845c3263faefe181f9a7931eadf58079397e89fbe1d78c26a4c427f8d31bf",
+      "size": 206031
+    },
+    "lib/modules/9pnet.ko": {
+      "mode": "0o100644",
+      "sha256": "33b5a43373373dba718b1b52d71828263fb421b3e5880f0f0ef2afce1313ba31",
+      "size": 223576
+    },
+    "lib/modules/9pnet_virtio.ko": {
+      "mode": "0o100644",
+      "sha256": "6bc2521f9f02c50b0742b6356cc60f6373f9285e92bcfb1f8885ca3f9974743d",
+      "size": 37783
+    },
+    "lib/modules/netfs.ko": {
+      "mode": "0o100644",
+      "sha256": "e798a1d2c276d11cb032d2f8b5f782f277143db85f997b220da3e0fec6b8e314",
+      "size": 752975
+    },
+    "newroot": {
+      "mode": "0o40755",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "proc": {
+      "mode": "0o40755",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "run-test.sh": {
+      "mode": "0o100755",
+      "sha256": "65bbdfcc03d3dcb6c6274026fd81aae5b32ca0824e6edef4bc3278e4ceffd554",
+      "size": 420
+    },
+    "sys": {
+      "mode": "0o40755",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  },
+  "kernel_sha256": "ae5af9d80dbc3b653d3aaab0233804e0e520517156f795a2668b8a2b2e6dc104",
+  "writable_storage": "guest tmpfs only"
+}

@@ -1,0 +1,82 @@
+{
+  "checks": {
+    "abi_table": {
+      "current": {
+        "anonymous": 21,
+        "anonymous_seal": 22,
+        "clone_session": 20,
+        "cwd_get": 27,
+        "cwd_set": 26,
+        "maintenance_acquire": 23,
+        "maintenance_release": 24,
+        "read_at": 30,
+        "remove_directory": 32,
+        "resolve_path": 28,
+        "sys_channel": 81,
+        "sys_clock_realtime": 64,
+        "sys_display": 65,
+        "sys_display_present": 66,
+        "sys_ipc_endpoint": 84,
+        "sys_ipc_name": 86,
+        "sys_ipc_wait": 85,
+        "sys_irq_event": 83,
+        "sys_observe": 90,
+        "sys_pio_grant": 82,
+        "sys_pipe_wait": 54,
+        "sys_process_cpu_time": 89,
+        "sys_process_guard": 62,
+        "sys_random_bytes": 63,
+        "sys_stream_lease": 80,
+        "truncate": 25,
+        "write_at": 31
+      },
+      "historical_reports": "not_modified",
+      "status": "passed"
+    },
+    "authority": {
+      "derived": "authority_host.json",
+      "original_report_sha256": "46b7a2548b48abdb85c4f321db5e35663044ec941db81f2caa36c311be5bd744",
+      "results": 18,
+      "status": "passed"
+    },
+    "closure": {
+      "derived": "closure_host.json",
+      "original_report_sha256": "f54f37d5b3f251dca2b3db2b38558bea38011855d218dcc457e30378efd25fba",
+      "results": 46,
+      "status": "passed"
+    },
+    "provisioning": {
+      "command": [
+        "python3",
+        "-B",
+        "tests/pumpkin_provisioning_host.py",
+        "--output",
+        "${XOS_INTEGRATION_BUILD}/provisioning"
+      ],
+      "observed_process_exit": 0,
+      "raw_log_sha256": "46a716ef63fa7bed66f367c85ce379a5e5ccee5d4fbc7cd87cf5e61830b4deb2",
+      "status": "passed"
+    },
+    "provisioning-asan": {
+      "command": [
+        "python3",
+        "-B",
+        "tests/pumpkin_provisioning_host.py",
+        "--sanitize",
+        "--output",
+        "${XOS_INTEGRATION_BUILD}/provisioning-asan"
+      ],
+      "observed_process_exit": 0,
+      "raw_log_sha256": "46a716ef63fa7bed66f367c85ce379a5e5ccee5d4fbc7cd87cf5e61830b4deb2",
+      "status": "passed"
+    },
+    "syscall_registry": {
+      "allocated_syscalls": 79,
+      "scope": "production check_registry only; full historical-link scan not run in sparse integration checkout",
+      "status": "passed"
+    }
+  },
+  "format": "xos-p1c-main-host-checks-v1",
+  "leak_sanitizer": "not_run; ASAN_OPTIONS=detect_leaks=0 in the SDK ptrace environment",
+  "status": "passed"
+}

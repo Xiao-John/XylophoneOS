@@ -8,6 +8,8 @@ namespace {
 xos::i64 clock_value = 100;
 xos::u64 authenticated_peer = 42;
 bool mismatched_receive_peer = false, no_reply = false, malformed = false;
+bool old_server = false;
+unsigned snapshot_mutation = 0;
 unsigned send_count, close_count;
 xos::net2::message last_request;
 }
@@ -38,7 +40,27 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
         response.version = version; response.action = last_request.action;
         response.sequence = last_request.sequence + (malformed ? 1 : 0); response.object = last_request.object;
         if (last_request.action == operation::send) response.result = last_request.length;
-        return header_bytes;
+        if (last_request.action == operation::capabilities) {
+            if (old_server) response.result = unsupported;
+            else {
+                const capability_snapshot snapshot{socket_extension_revision,
+                    capability_readiness | capability_shutdown_write, snapshot_mutation ? 1u : 0u};
+                response.length = sizeof(snapshot); std::memcpy(response.data, &snapshot, sizeof(snapshot));
+            }
+        }
+        if (last_request.action == operation::readiness) {
+            readiness_snapshot snapshot{1, ready_read | ready_write, 2, 37, 0, 0};
+            if (snapshot_mutation == 1) snapshot.generation = 0;
+            if (snapshot_mutation == 2) snapshot.reserved = 1;
+            if (snapshot_mutation == 3) snapshot.events |= 128;
+            if (snapshot_mutation == 4) snapshot.readable_bytes = tcp_receive_bytes + 1;
+            if (snapshot_mutation == 5) snapshot.events &= ~ready_read;
+            if (snapshot_mutation == 6) snapshot.writable_bytes = 0;
+            if (snapshot_mutation == 7) snapshot.error = reset;
+            if (snapshot_mutation == 8) snapshot.events |= ready_write_closed;
+            response.length = sizeof(snapshot); std::memcpy(response.data, &snapshot, sizeof(snapshot));
+        }
+        return header_bytes + response.length;
     }
     assert(false); return -1;
 }
@@ -67,6 +89,23 @@ int main() {
     no_reply = false; assert(!client.connect(42));
     request.deadline = u64(clock_value) + 20'000'000;
     assert(client.request(request, reply) == 3 && request.sequence == 1);
+    capability_snapshot capabilities{};
+    assert(client.capabilities(request.deadline, capabilities) == 0 &&
+           capabilities.flags == (capability_readiness | capability_shutdown_write));
+    readiness_snapshot readiness{};
+    assert(client.readiness(77, request.deadline, readiness) == 0 && readiness.readable_bytes == 2);
+    assert(client.shutdown_write(77, request.deadline) == 0);
+    old_server = true;
+    assert(client.capabilities(request.deadline, capabilities) == unsupported);
+    assert(client.request(request, reply) == 3); // Unsupported probe preserves old operations.
+    old_server = false;
+    for (snapshot_mutation = 1; snapshot_mutation <= 8; ++snapshot_mutation) {
+        assert(client.readiness(77, request.deadline, readiness) == io && !readiness.generation);
+        assert(!client.connect(42));
+    }
+    snapshot_mutation = 1;
+    assert(client.capabilities(request.deadline, capabilities) == io && !capabilities.revision);
+    snapshot_mutation = 0; assert(!client.connect(42));
     clock_value = -1; assert(client.request(request, reply) == io);
     std::puts("PASS N2 SDK: pinned peers, exact responses, pre-send deadlines, no replay after delivery, reconnect sequence, clock failure");
 }

@@ -28,6 +28,7 @@ RESPONSE_LABELS = {
     'http': 'NET2_HTTP status=201 bytes=32',
     'udp': 'NET2_UDP bytes=32',
     'tcp_close': 'NET2_TCP bytes=32',
+    'tcp_half': 'NET2_HALF_CLOSE bytes=32',
 }
 
 
@@ -113,7 +114,7 @@ def main():
                             active.append(connection)
                         with connection:
                             connection.settimeout(20); data = b''
-                            if kind == 'tcp_close':
+                            if kind in ('tcp_close', 'tcp_half'):
                                 while len(data) < 32:
                                     part = connection.recv(32 - len(data))
                                     if not part:
@@ -121,6 +122,15 @@ def main():
                                     data += part
                                 if data != nonce.encode():
                                     raise ValueError('TCP request nonce mismatch')
+                                if kind == 'tcp_half':
+                                    if connection.recv(1) != b'':
+                                        raise ValueError('half-close did not deliver FIN after nonce')
+                                    host['client_eof_before_response'] = True
+                                    host['request_sha256'] = hashlib.sha256(data).hexdigest()
+                                    connection.sendall(challenge)
+                                    connection.shutdown(socket.SHUT_WR)
+                                    host['verified_half_close'] = True
+                                    return
                                 connection.sendall(challenge)
                                 queued = b''
                                 while True:
@@ -329,6 +339,7 @@ def main():
             for shell in (['xsh', 'dash'] if args.dash else ['xsh']):
                 exchange('http', pid, baseline, shell); exchange('udp', pid, baseline, shell)
                 exchange('tcp_close', pid, baseline, shell)
+                exchange('tcp_half', pid, baseline, shell)
             concurrent_exchanges(pid, baseline)
             nonce = secrets.token_hex(16)
             output = command(guest, f'exec-file /bin/netprobe.elf http {pid + 1} 9 {nonce}',
@@ -351,6 +362,7 @@ def main():
             if replacement == pid:
                 raise AssertionError('service PID unexpectedly reused')
             exchange('http', replacement, resources(guest))
+            exchange('tcp_half', replacement, resources(guest))
             stopped = command(guest, 'net-stop', b'kind=exited code=', timeout=60)
             if b'[net] close=0' not in stopped or b'kind=exited code=0' not in stopped:
                 raise AssertionError('replacement reset/close failure')

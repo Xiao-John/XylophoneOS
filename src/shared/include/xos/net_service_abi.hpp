@@ -20,7 +20,8 @@ enum class protocol : u16 { none = 0, tcp = 1, udp = 2 };
 enum class operation : u32 {
     information = 1, open = 2, status = 3, send = 4, receive = 5,
     close = 6, cancel = 7, revoke_peer = 8, stop = 9,
-    configuration = 10, configure = 11, resolve_start = 12, resolve_result = 13, resolve_cancel = 14
+    configuration = 10, configure = 11, resolve_start = 12, resolve_result = 13, resolve_cancel = 14,
+    capabilities = 15, readiness = 16, shutdown_write = 17
 };
 inline constexpr i64 invalid = -201, denied = -202, resources = -203, would_block = -204;
 inline constexpr i64 timeout = -205, closed = -206, io = -207, unsupported = -208;
@@ -30,6 +31,11 @@ inline constexpr i64 dns_refused = -214, dns_truncated = -215, config_changed = 
 inline constexpr u32 configuration_revision = 1, resolve_in_a = 1, dns_name_limit = 253;
 enum class network_mode : u32 { disabled = 0, static_direct = 1 };
 inline constexpr u32 connecting = 1, connected = 2, eof = 4, failed = 8;
+inline constexpr u32 socket_extension_revision = 1;
+inline constexpr u32 capability_readiness = 1, capability_shutdown_write = 2;
+inline constexpr u32 ready_read = 1, ready_write = 2, ready_eof = 4, ready_error = 8;
+inline constexpr u32 ready_write_closed = 16, ready_connecting = 32;
+inline constexpr u32 ready_all = 63;
 struct message {
     u32 version;
     operation action;
@@ -55,10 +61,20 @@ struct config_snapshot {
 };
 struct config_request { u32 revision; network_mode mode; u64 expected_epoch; };
 struct resolve_reply { u64 epoch, expiry; u32 address, reserved; };
+struct capability_snapshot { u32 revision, flags; u64 reserved; };
+// A level snapshot: generation changes when an observed snapshot changes. It
+// is not an edge count, a subscription or a reservation of readable bytes.
+struct readiness_snapshot {
+    u64 generation;
+    u32 events, readable_bytes, writable_bytes, reserved;
+    i64 error;
+};
 static_assert(__builtin_offsetof(message, data) == header_bytes);
 static_assert(sizeof(message) == header_bytes + payload_bytes && sizeof(information) == 32);
 static_assert(sizeof(config_snapshot) == 48 && __builtin_offsetof(config_snapshot, epoch) == 8 &&
               __builtin_offsetof(config_snapshot, reserved) == 40);
 static_assert(sizeof(config_request) == 16 && __builtin_offsetof(config_request, expected_epoch) == 8);
 static_assert(sizeof(resolve_reply) == 24 && __builtin_offsetof(resolve_reply, address) == 16);
+static_assert(sizeof(capability_snapshot) == 16);
+static_assert(sizeof(readiness_snapshot) == 32 && __builtin_offsetof(readiness_snapshot, error) == 24);
 }

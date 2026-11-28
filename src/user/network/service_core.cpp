@@ -215,6 +215,15 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
         return true;
     }
     if (stopping_) { output.result = closed; return true; }
+    if (input.action == operation::capabilities) {
+        if (input.object) { output.result = invalid; return true; }
+        const capability_snapshot capabilities{socket_extension_revision,
+            (stack_.readiness ? capability_readiness : 0) |
+            (stack_.shutdown_write ? capability_shutdown_write : 0), 0};
+        __builtin_memcpy(output.data, &capabilities, sizeof(capabilities));
+        output.length = sizeof(capabilities);
+        return true;
+    }
     if (input.action >= operation::configuration && input.action <= operation::resolve_cancel)
         return resolve(slot, input, now, output);
     if (opening) {
@@ -237,8 +246,9 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
         if (output.result) { release(free); output.object = 0; }
         return true;
     }
-    if (static_cast<u32>(input.action) < static_cast<u32>(operation::status) ||
-        static_cast<u32>(input.action) > static_cast<u32>(operation::cancel)) {
+    if ((static_cast<u32>(input.action) < static_cast<u32>(operation::status) ||
+         static_cast<u32>(input.action) > static_cast<u32>(operation::cancel)) &&
+        input.action != operation::readiness && input.action != operation::shutdown_write) {
         output.result = unsupported; return true;
     }
     const i64 found = find_connection(slot, input.object);
@@ -247,6 +257,18 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
     switch (input.action) {
     case operation::status:
         output.result = stack_.status(stack_.context, connection_slot, output.flags); break;
+    case operation::readiness: {
+        readiness_snapshot snapshot{};
+        output.result = stack_.readiness ? stack_.readiness(stack_.context, connection_slot, snapshot) : unsupported;
+        if (!output.result) {
+            __builtin_memcpy(output.data, &snapshot, sizeof(snapshot));
+            output.length = sizeof(snapshot);
+        }
+        break;
+    }
+    case operation::shutdown_write:
+        output.result = stack_.shutdown_write ? stack_.shutdown_write(stack_.context, connection_slot) : unsupported;
+        break;
     case operation::send:
         output.result = stack_.send(stack_.context, connection_slot, input.data, input.length); break;
     case operation::receive:

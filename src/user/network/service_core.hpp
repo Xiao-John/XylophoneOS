@@ -13,6 +13,8 @@ struct stack_api {
     i64 (*receive)(void*, u32, u8*, u32, u32&, u32&);
     i64 (*close)(void*, u32, bool);
     u32 (*dropped)(void*);
+    i64 (*readiness)(void*, u32, net2::readiness_snapshot&) = nullptr;
+    i64 (*shutdown_write)(void*, u32) = nullptr;
 };
 using resolver_completion = void (*)(void*, u64, i64, u32, u64, u64);
 struct resolver_api {

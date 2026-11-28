@@ -1,6 +1,6 @@
 # XOS 当前状态（全局快照）
 
-## 2026-11-28 · 三项 Issue 与 P1-B/E 已合入
+## 2026-11-28 · 三项 Issue 与 P1-B/C/D/E 已合入
 
 [#124](https://github.com/Xiao-John/XylophoneOS/issues/124)、
 [#125](https://github.com/Xiao-John/XylophoneOS/issues/125)、
@@ -10,20 +10,37 @@
 [#440](https://github.com/Xiao-John/XylophoneOS/pull/440)、
 [#439](https://github.com/Xiao-John/XylophoneOS/pull/439) 合入，三个 Issue 均已关闭。
 
-当前整合基线为 `6332527ab64e92371266363f41f3247717a3cac8`。P1-B 的六维
-进程树累计预算、资源归属和可观测 Files 不确定结果隔离已随
+P1-B 的六维进程树累计预算、资源归属和可观测 Files 不确定结果隔离已随
 [#443](https://github.com/Xiao-John/XylophoneOS/pull/443) 合入；27 项真实客体
 检查、46 项普通及 ASan/UBSan host 检查以及 E 基线上的 9 项集成客体检查均通过。
 P1-E 的应用私有数据授权与数据/安装 metadata 原子恢复已随
 [#442](https://github.com/Xiao-John/XylophoneOS/pull/442) 合入，14 次新 VM
 启动覆盖正常提交、确定拒绝、已提交/未提交的未知结果及冷启动恢复。
 
-P1-C 的持久 catalog 与后代撤销、P1-D 的官方认证分发和真实应用启动、
-P1-F 的完整 WebCore/Qt 页面及隔离生命周期仍在验收中，尚未关闭。执行环境
-回退后的未发布源码正从保留记录恢复到独立工作分支；缺失的构建产物和日志
-重新生成，旧摘要不能代替新验收。现有 P0 prerelease 保留其独立资格。
+P1-C 的持久 catalog、代际恢复与后代撤销已随
+[#454](https://github.com/Xiao-John/XylophoneOS/pull/454) 合入。冻结生产组合通过
+23 次实际启动，覆盖同 PID exec、GNU posix_spawn 父／子／孙在撤销前可用、
+撤销后拒绝及 provider 故障；独立 Linux UID provider 另通过 12 项功能与
+3 项启动时序检查。新的 native 镜像又通过初次激活和三代 live revoke 两场
+兼容验收，原 23 场的源码、产物与报告身份均保留。
+
+P1-D 的官方签名元数据、依赖闭包检查、不可变 staging 和应用启动已随
+[#457](https://github.com/Xiao-John/XylophoneOS/pull/457) 合入。原组合的
+8 次启动包含 15 次安装器运行及 8 次 GNU 应用运行，覆盖正常安装、升级、
+签名／新鲜度／回退／依赖拒绝和 staging 中断。基于 C 已合入主线的新 native
+镜像另通过正式仓库安装、升级及旧签名回退拒绝三次启动；两组报告与交付包
+保持各自真实构建身份，没有重新签名或把旧 GNU runtime 标成重建产物。
+
+P1-F 的完整 WebCore/Qt 页面及隔离生命周期仍在构建和验收，尚未关闭。
+已有实际启动失败清理、TLS 与字体后端的组件证据；完整 DOM/CSS 绘制、Qt
+显示及连续导航／取消／渲染故障的组合验收完成后才更新 F 状态。P0 glibc
+preview-3 prerelease 保留其独立发行资格，不自动包含后续 P1 构建。
 
 [P1-B 记录](work_log/fe6b306b_p1_b_cumulative_process_budgets_and_observable_f.md) ·
+[P1-C 记录](work_log/d7afe98c_p1c_catalog_authority.md) ·
+[C 主线兼容](work_log/6f637e1c_p1c_main_integration.md) ·
+[P1-D 记录](work_log/7f23b8e4_p1_d_authenticated_distribution.md) ·
+[D 主线兼容](work_log/d9389a24_p1d_main_integration.md) ·
 [P1-E 记录](work_log/4368aa56_p1e_application_persistence.md)
 
 ## 2026-11-28 · P0 发行闭环

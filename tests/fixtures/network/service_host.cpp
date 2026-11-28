@@ -418,7 +418,7 @@ void socket_capabilities_and_isolation() {
            capabilities.flags == (capability_readiness | capability_shutdown_write), "explicit extension support");
     expect(env.request(owner, operation::capabilities, 1).result == invalid, "capabilities has no handle");
     const u64 handle = env.connected_tcp(owner);
-    for (const auto action : {operation::readiness, operation::shutdown_write}) {
+    for (const auto action : {operation::readiness, operation::shutdown_write, operation::shutdown_read}) {
         expect(env.request(other, action, handle).result == denied, "extensions preserve handle ownership");
         auto malformed = env.input(owner, action, handle); malformed.flags = 1;
         expect(env.dispatch(owner, malformed).result == invalid, "extension flags must be zero");
@@ -429,6 +429,61 @@ void socket_capabilities_and_isolation() {
            env.request(owner, operation::shutdown_write, udp).result == unsupported, "extension explicitly TCP only");
     expect(env.request(owner, operation::cancel, handle).result == 0, "cancel extended socket");
     expect(env.request(owner, operation::readiness, handle).result == closed, "stale snapshot handle rejected");
+}
+void readiness_page_and_read_shutdown() {
+    environment env; const u32 owner = env.attach(), other = env.attach(102);
+    env.core.enable_readiness_pages();
+    auto query = env.input(owner, operation::capabilities); query.flags = capabilities_extended;
+    auto reply = env.dispatch(owner, query); capability_snapshot features{};
+    std::memcpy(&features, reply.data, sizeof(features));
+    expect(!reply.result && features.revision == socket_extension_revision_2 && features.flags == 15,
+           "v2 explicitly negotiates pages and read shutdown");
+    expect(env.request(owner, operation::readiness_bind).result == 0, "authorized page binding");
+    const u32 controller = env.attach(environment::controller);
+    expect(env.request(controller, operation::readiness_bind).result == denied, "controller has no application page");
+    const u64 handle = env.connected_tcp(owner); env.peer.echo_tcp = false;
+    readiness_page page{};
+    expect(env.core.capture_readiness(owner, page, env.peer.now) == 0 && page.count == 1 &&
+           page.session_generation == env.core.generation(owner) && page.records[0].handle == handle &&
+           page.records[0].ready.events == ready_write, "snapshot binds owner and live connection");
+    expect(env.core.capture_readiness(other, page, env.peer.now) == 0 && page.count == 0,
+           "other application cannot enumerate owner's connection");
+    const auto incoming = pattern(37);
+    env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | psh_bit, incoming); env.poll();
+    expect(env.request(owner, operation::shutdown_read, handle).result == 0, "discard buffered receive bytes");
+    expect(env.request(owner, operation::shutdown_read, handle).result == 0, "read shutdown idempotent");
+    expect(!env.peer.tcp_rst_count && !env.peer.tcp_fin_count, "read shutdown never transmits RST or FIN");
+    expect(env.receive(owner, handle).flags == eof, "local read returns EOF after shutdown");
+    expect(env.core.capture_readiness(owner, page, env.peer.now) == 0 &&
+           (page.records[0].ready.events & (ready_read | ready_eof | ready_read_closed | ready_write)) ==
+            (ready_read | ready_eof | ready_read_closed | ready_write), "page records independent shutdown directions");
+    expect(!(env.readiness(owner, handle).events & ready_read_closed), "legacy snapshot retains original bit mask");
+    env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | psh_bit, incoming); env.poll();
+    expect(env.receive(owner, handle).flags == eof && !env.readiness(owner, handle).readable_bytes,
+           "late peer data is ACKed and discarded after read shutdown");
+    const auto outgoing = pattern(49);
+    expect(env.send(owner, handle, outgoing).result == static_cast<i64>(outgoing.size()), "write direction remains usable");
+    env.poll();
+    expect(env.peer.tcp_connection().client_data == outgoing, "real peer receives surviving write half");
+    expect(env.request(owner, operation::shutdown_write, handle).result == 0, "both directions can shut independently");
+    env.poll();
+    expect(env.peer.tcp_fin_count == 1 && !env.peer.tcp_rst_count, "combined shutdown emits one clean FIN");
+}
+void read_shutdown_after_clean_fin() {
+    // The two SHUT_RDWR wire operations can straddle a completed peer FIN.
+    environment env; const u32 other = env.attach();
+    const u64 ended = env.connected_tcp(other);
+    const auto incoming = pattern(37);
+    env.peer.answer_fin = false; env.peer.echo_tcp = false;
+    auto& remote = env.peer.tcp_connection();
+    env.peer.tcp_packet(remote, ack_bit | psh_bit, incoming); env.poll();
+    expect(env.request(other, operation::shutdown_write, ended).result == 0, "write shutdown before read discard");
+    env.poll();
+    env.peer.tcp_packet(remote, ack_bit | fin_bit); env.poll();
+    expect(env.request(other, operation::shutdown_read, ended).result == 0,
+           "read shutdown succeeds after clean transport retirement");
+    expect(env.receive(other, ended).flags == eof && !env.readiness(other, ended).readable_bytes,
+           "retired transport buffered input is discarded without PCB access");
 }
 void tcp_level_readiness() {
     environment env; const u32 slot = env.attach(); env.peer.answer_syn = false;
@@ -792,6 +847,8 @@ const test_case cases[] = {
     {"connection_quotas", connection_quotas}, {"revoke_policy", revoke_policy},
     {"deadlines_and_idle", deadlines_and_idle}, {"tcp_echo_and_eof", tcp_echo_and_eof},
     {"socket_capabilities_and_isolation", socket_capabilities_and_isolation},
+    {"readiness_page_and_read_shutdown", readiness_page_and_read_shutdown},
+    {"read_shutdown_after_clean_fin", read_shutdown_after_clean_fin},
     {"tcp_level_readiness", tcp_level_readiness}, {"tcp_readiness_backpressure", tcp_readiness_backpressure},
     {"tcp_half_close_keeps_receive", tcp_half_close_keeps_receive},
     {"tcp_half_close_passive_and_pressure", tcp_half_close_passive_and_pressure},

@@ -17,6 +17,7 @@ struct stack_api {
     i64 (*readiness)(void*, u32, net2::readiness_snapshot&) = nullptr;
     i64 (*shutdown_write)(void*, u32) = nullptr;
     i64 (*lease_status)(void*, net2::lease_snapshot&) = nullptr;
+    i64 (*shutdown_read)(void*, u32) = nullptr;
 };
 using resolver_completion = void (*)(void*, u64, i64, u32, u64, u64);
 struct resolver_api {
@@ -38,6 +39,8 @@ public:
     bool dispatch(u32 session, const net2::message& request, u32 bytes,
                   u64 now, net2::message& reply);
     void shutdown();
+    void enable_readiness_pages() { readiness_pages_ = true; }
+    i64 capture_readiness(u32 session, net2::readiness_page&, u64 now);
     bool stopping() const { return stopping_; }
     u32 session_count() const;
     u32 connection_count() const;
@@ -59,7 +62,7 @@ private:
     u32 address_ = net2::static_address, mask_ = net2::static_mask, gateway_ = net2::permitted_address;
     net2::network_mode mode_ = net2::network_mode::disabled;
     u64 config_epoch_ = 1, next_ticket_ = 1;
-    bool stopping_ = false;
+    bool stopping_ = false, readiness_pages_ = false;
     i64 find_connection(u32 owner, u64 handle) const;
     void release(u32 slot);
     bool resolve(u32 slot, const net2::message& request, u64 now, net2::message& reply);

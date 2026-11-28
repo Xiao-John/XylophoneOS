@@ -572,3 +572,16 @@ HTTP库位于`src/ports/browser_http/transport.*`，通过原生TCP完成数字I
 不确定操作、deadline、token、隔离原因与所属 PID；不能清除隔离或重放副作用。
 线程竞争返回即时 `error::state`，失败不覆盖观察输出。完整权限、计费单位、
 失败语义和验证范围见 [P1-B 契约](contracts/process_tree_budget.md)。
+
+## Net2 socket extension revision 2
+
+本节为 draft 代码审阅入口；完整资格包尚待公开授权。目标资格以绑定实际
+输入和产物的独立报告为准。
+
+新 SDK 通过 capabilities request flags=1 显式询问 revision 2；flags=0 保持原
+revision 1。op19 将只读 readiness grant 委派给当前认证 session，op20 实施 TCP
+读方向关闭。对应 libc 支持非阻塞 connect、SO_ERROR、SHUT_RD/RDWR 与保留原
+open-description 的 poll；即时负快照必须在本次调用期间采样，否则返回 EAGAIN。
+共享页生命周期、freshness、deadline 与回滚见
+[readiness page 契约](contracts/net_readiness_pages.md)。SDK manifest 单独记录
+接口可用性，目标资格仍由同版本镜像、SDK 和实际 peer 的专项证据确立。

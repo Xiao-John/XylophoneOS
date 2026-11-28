@@ -10,6 +10,7 @@ from ipc_v1_manifest import ipc_v1_manifest_entry
 from ipc_endpoint_manifest import ipc_endpoint_manifest_entry
 from observation_manifest import observation_manifest_entry
 from interactium_manifest import interactium_manifest_entry
+from net_readiness_manifest import net_readiness_manifest_entry
 from device_manifest import device_manifest_entry
 from archive_provenance import capture_build, copy_archive_provenance, digest
 from lwip_service_build import build as build_lwip_service
@@ -412,6 +413,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         "ipc_v1": ipc_v1_manifest_entry(),
         "ipc_endpoint": ipc_endpoint_manifest_entry(),
         "observation": observation_manifest_entry(),
+        "network_readiness": net_readiness_manifest_entry(),
         "device_authorization": device_manifest_entry(),
         "network_service": net_configuration,
         "diagnostic_extensions": {"fault_bundle_format": 1, "loader_receipt": "sha256-held-instance",

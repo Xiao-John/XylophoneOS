@@ -75,6 +75,7 @@ i64 send(u32 endpoint, const void* source, u64 length) {
 namespace xos::sdk {
 void print(const char*, u32) {}
 i64 syscall(u64 number, u64 first, u64 second, u64 third) {
+    if (number == 88 && first == 0) return -104; // Host loop fixture does not emulate bulk grants.
     if (number == sys_clock_monotonic) return static_cast<i64>(now);
     if (number == sys_random_bytes) {
         std::memset(reinterpret_cast<void*>(first), 0x39, static_cast<usize>(second)); return 0;

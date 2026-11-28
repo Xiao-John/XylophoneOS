@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "2103602b3203691b2680de89c5af340031599c757dd7fda5e1ae952e9d9eef94",
+    "conversion.json": "34e61d2b9991f821126e58b30fba34139b0af8c642b7e58c503ba3e19b145773",
+    "ordinary.log": "dd45a004494aeaa95940dc4a0b246cafd2d2f9a0375d5ba59fe33160b62a803d",
+    "report.json": "059d822968bd200a217eadf3a1cb0062bfb0fd32460e32061088106e1bc81108",
+    "sanitized.log": "dd45a004494aeaa95940dc4a0b246cafd2d2f9a0375d5ba59fe33160b62a803d"
+  }
+}

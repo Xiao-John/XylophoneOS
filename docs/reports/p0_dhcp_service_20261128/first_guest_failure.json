@@ -1,0 +1,86 @@
+{
+  "build_id": "f548f91803edba5e",
+  "error": "dhcp: missing any of (b'NET_USER_DRIVER_PASS',); output=bytearray(b'h\\nbad pointer\\ntx\\nAping\\nbad length\\nbad pointer\\ntx\\nxsh> tAbad length\\nbad pointer\\nrace on\\nxsh: trace on\\nxsh> Aping\\ndemo quietAbad length\\nbad pointer\\ntx\\n\\n[task] event=killed_by_supervisor pid=1\\r\\n[task] event=reclaimed pid=1 pages=11\\r\\n[task] event=killed_by_supervisor pid=2\\r\\n[task] event=reclaimed pid=2 pages=11\\r\\n[task] event=killed_by_supervisor pid=3\\r\\n[task] event=reclaimed pid=3 pages=11\\r\\n[task] event=killed_by_supervisor pid=4\\r\\n[task] event=reclaimed pid=4 pages=11\\r\\n[sup] demo tasks stopped\\nxsh> audio stop\\n[task] event=reclaimed pid=10 pages=99\\r\\naudio: service stopped\\nxsh> net-stop\\n[process] event=wait_blocked parent=7 child=9\\r\\n[net] close=0\\n[task] event=reclaimed pid=9 pages=110\\r\\n[wait] pid=9 kind=exited code=0\\nxsh> net-probe 41\\n[process] event=started pid=11 parent=7\\r\\n[process] pid=11 address_space=0x0000000000373000\\r\\n[process] event=wait_blocked parent=7 child=11\\r\\n[net-probe] gateway_timeout\\n[net] close=0\\n[task] event=reclaimed pid=11 pages=110\\r\\n[wait] pid=11 kind=exited code=1\\nxsh> ')",
+  "image_sha256": "9dd887fcb3e391e41c71b0d39c07f83e4091e91e121f70ec157db6e864b596b6",
+  "manifest_artifact": "first_system_manifest.json",
+  "network_profile": {
+    "acquisition_seconds": 60,
+    "addresses": [
+      "10.0.2.15",
+      "10.0.2.16"
+    ],
+    "egress": [
+      {
+        "cidr": "10.0.2.2/32",
+        "ports": [
+          3333,
+          3333
+        ],
+        "protocol": "udp"
+      }
+    ],
+    "gateways": [
+      "10.0.2.2"
+    ],
+    "max_lease_seconds": 4294967294,
+    "pci_instance": 41,
+    "resolvers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "revision": 1,
+    "servers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "source_sha256": "2a86e93c53ae5d46d8308ad41eb017eae95a8d05b203e4d850c6d4a8c3697cbf",
+    "subnet": "10.0.2.0/24"
+  },
+  "peer_error": null,
+  "peer_reports": [],
+  "peer_sha256": "76a06f42329433838715d12b6098b97e232db66b7f60ab4a0d825bf0233e87f5",
+  "probe_sha256": "a11240b4106bfccc96b684099782cf3972a1c7e0f7963584446b3ebf25d52242",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_SOURCE_ROOT}/build/dhcp_system/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_TEMP}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "socket,id=xosnet,connect=127.0.0.1:51291",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
+    "-object",
+    "filter-dump,id=xos_capture,netdev=xosnet,file=${XOS_SOURCE_ROOT}/build/dhcp_guest_first/network.pcap"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "runner_sha256": "8aaaad01ef192c0b3b99c093b9998459a8de45bfd9cf9dd780fa09b6e966db02",
+  "scenarios": [],
+  "sdk_tree_sha256": "c3e725b5efee707bd889473fc2b5985d692af93aefa201826d36b008eff010ba",
+  "status": "failed"
+}

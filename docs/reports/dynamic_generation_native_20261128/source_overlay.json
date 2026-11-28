@@ -1,0 +1,25 @@
+{
+  "base_revision": "86a06b0ae5b6033a1249d362618227b9bd4db0f1",
+  "overlays": {
+    "scripts/build_dynamic_generation_probe.py": {
+      "sha256": "4e3c6dbf14b0bfd2703203c324e300c51213e71297192550e33126c50eb9117d",
+      "source_commit": "a686ccb6"
+    },
+    "scripts/build_dynamic_launcher.py": {
+      "sha256": "1d41e850daa829c66280cdb7ff0407e3f4ebd7a6898357b07d4d82ee6473a1e0",
+      "source_commit": "285d5ec2"
+    },
+    "src/user/tools/dynamic_run.cpp": {
+      "sha256": "c3f0157602bf96d835653a543a62f80e2935fec9cecd746e28821dbe699ed9ca",
+      "source_commit": "3a8887aa"
+    },
+    "tests/dynamic_generation_guest.py": {
+      "sha256": "33aad9791530899213d76790eee3af9c9259554147aecd0ce9d6ea4ae88b043a",
+      "source_commit": "f1c4bfc2"
+    },
+    "tests/fixtures/dynamic_generation_probe.cpp": {
+      "sha256": "df5ded2317311ece27914a85f162167cd80eb15fb3a0e964186c7d65bbe88b5b",
+      "source_commit": "c864db2b"
+    }
+  }
+}

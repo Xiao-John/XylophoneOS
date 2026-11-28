@@ -60,3 +60,41 @@ callback 在 PREPARE/READY 检查请求根的当前本地撤销状态；运行�
 fork 可以接管不同 PID 的私有复制锁，但保留的政策只是 fork 时快照。该层
 没有持久防回滚、分发签名、跨后代撤销广播、进程树配额或在线更新守护进程；
 这些仍属于 P1。公共 GNU runtime 的组合资格另行记录。
+
+## 原生批准入口与构建边界
+
+`dynamic-run SLOT TARGET [args...]` 是显式启用公共动态路径的原生入口。
+构建时最多批准四个 generation binary；每个根的完整摘要、ID、客体 manifest
+规范绝对路径和 main 路径编进只读程序。运行时只接受指定槽的精确 main，
+不从相邻 JSON、环境变量或可写目录发现新的批准。初始 active 为 0；选择
+其他槽先执行同一控制器的 `activate` 完整预检，再用普通
+`execution::inspect`、`spawn_file_diagnosed_receipt` 和 `sdk::wait_flags` 启动并等待。
+普通 child 的 `prepare_child` 按既有 supervisor 合同调用
+`process_authority_mode::copy_from_caller`，复制调用者已有的创建权限；它不
+提高调用者本身的权限，也不引入新的批准根。
+
+`scripts/build_dynamic_launcher.py` 必须收到互相独立、由调用方明确提供的
+`--sdk-manifest-sha256` 与 `--sdk-tree-sha256`。只提供 SDK 路径或自动读取同目录
+manifest 不构成锚。构建先比较 manifest 字节，再验证完整 glibc SDK 的 sysroot、
+运行库、源验证材料及元数据，复制完整快照并在复制前后和链接后重新核验两个锚。
+传入的 generation 还必须声明同一个 SDK manifest 摘要。根摘要仅在此构建步骤
+从显式批准的二进制计算；构建检查结构/闭包声明，实际对象字节和 ELF 语义由
+运行时 `install`/`activate` 再完整预检。
+
+原生控制器另绑定 `--system` 和产生它的不可变 `--system-source`：系统源和
+全部产物、完整 SDK 文件/目录清单、导出公共头、archive member provenance
+均校验，并复制原生 SDK 快照后再链接。内部 `thread_core.hpp` 按 SDK exporter
+的规则不属于导出头。此原始原生 SDK 不能冒称已打包的 newlib C++ SDK，也不会
+与 GNU C SDK 的头文件或对象混链。编译产物仍标为 `built_not_run`；客体验收
+使用原始 ELF/系统/根的实际哈希另给结果。
+
+入口按公开 startup v1/v2/v3 转发参数、环境、稳定 cwd 引用和普通
+console/pipe/Files 描述符；v3 同一 Files object 的别名保持同一 OFD。
+完整表先验证，再处理仅剩 CLOEXEC 的对象；未知 close 结果不重放。
+独立且不对应 stdio route 的管道、terminal actor 协议和不支持的标志会明确
+拒绝。本入口没有宣称 terminal actor 适配，也不因此扩大动态闭包的权限。
+
+`tests/fixtures/dynamic_generation_probe.cpp` 是独立验收入口，不扩展生产 CLI。
+它从同一个批准根 header 构建，用真实公共 C main 检查同控制器的
+0→1→0、旧 pin 生命周期、失败候选保留旧状态、sequence 和撤销；构建 helper
+重新验证 launcher 的源/根/两个完整 SDK 快照以及调用方提供的独立锚。

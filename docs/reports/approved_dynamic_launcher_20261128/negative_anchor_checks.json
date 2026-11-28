@@ -1,0 +1,23 @@
+{
+  "source_commit": "285d5ec2",
+  "status": "passed",
+  "cases": [
+    {
+      "case": "wrong_manifest_anchor",
+      "status": "passed",
+      "builder_status": "failed",
+      "compiler_commands": 0,
+      "elf_created": false,
+      "error": "C SDK differs from independently supplied manifest anchor"
+    },
+    {
+      "case": "wrong_tree_anchor",
+      "status": "passed",
+      "builder_status": "failed",
+      "compiler_commands": 0,
+      "elf_created": false,
+      "error": "complete C SDK differs from independently supplied anchors"
+    }
+  ],
+  "scope": "actual build invocations with one independent anchor replaced by 64 zeroes"
+}

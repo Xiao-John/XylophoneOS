@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "c550cfb9f0897638b9ea137c22b1b0ec609268f7fcc24f28476d27d343d5d3c7",
+    "failed-v2-guest-report.json": "1a05561b36bfa5d135a44bfdac91b19f32b32c11c603737a93e83725ab238d48",
+    "failed-v2-guest-serial.log": "ed3dc498b3a8a8601bd9558f470571f1b2fbd84f668c315f54c8e33c684eee1c",
+    "fixture-receipt.json": "9d9366813a1f33b747215aa512aba6c7dbe6e8201b56c43c776add54da47da8a",
+    "guest-report.json": "212cb2a1acdfdccca896bb94ac130c8c0492ab887c4a60f187b6d9c9984ea3bd",
+    "guest-serial.log": "a26adf1bf320de3060636cbc6cab378b5039bafecb7e77c821188cd4dc4df6ea",
+    "host-report.json": "6b376fe75b560507654012070b8d8a18625b3a5045f317dfd4ad52a9dfd21941",
+    "ordinary-host.log": "737ccdadfa2b2c2ecc55b8be3597f0e224b9e43f232ab626401f937e6f484b9c",
+    "report-bindings.json": "939df8283031bdc2d9232ac6dbf01cb58d4a0df6fad07386e0d1fa3375bc3b10",
+    "sanitized-host.log": "737ccdadfa2b2c2ecc55b8be3597f0e224b9e43f232ab626401f937e6f484b9c",
+    "serial-bindings.json": "ca562e4967acc2d4c48b5689704eae5e72aa4d30b5f7ce1d779a8e277373b823",
+    "system-binding.json": "08dfe3e1943a2e5b3f86e2ca1b0613e23a6327b6780812796f56e5fa5894f4a3"
+  }
+}

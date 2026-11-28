@@ -3,6 +3,7 @@
 extern "C" {
 #include "lwip/init.h"
 #include "lwip/dns.h"
+#include "lwip/dhcp.h"
 #include "lwip/etharp.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"
@@ -40,6 +41,11 @@ extern "C" int xos_lwip_dns_clock(uint64_t* value) {
     if (now < 0) return ERR_IF;
     *value = static_cast<uint64_t>(now);
     return ERR_OK;
+}
+#endif
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+extern "C" int xos_lwip_dhcp_xid(u32_t* value) {
+    return value && active_stack ? active_stack->dhcp_xid(*value) : ERR_ARG;
 }
 #endif
 extern "C" void xos_lwip_diag(const char*, ...) { if (active_stack) active_stack->fault(); }
@@ -83,7 +89,11 @@ i64 lwip_stack::initialize(const frame_io& callbacks, const u8* mac) {
     if (failure_) { active_stack = nullptr; return failure_; }
     lwip_init();
     ip4_addr_t address, mask, gateway;
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    ip4_addr_set_zero(&address); ip4_addr_set_zero(&mask); ip4_addr_set_zero(&gateway);
+#else
     IP4_ADDR(&address, 10, 0, 2, 15); IP4_ADDR(&mask, 255, 255, 255, 0); IP4_ADDR(&gateway, 10, 0, 2, 2);
+#endif
     for (u32 i = 0; i < 6; ++i) interface_.hwaddr[i] = mac[i];
     if (!netif_add(&interface_, &address, &mask, &gateway, this, configure, ethernet_input)) {
         active_stack = nullptr; return resources;
@@ -93,6 +103,13 @@ i64 lwip_stack::initialize(const frame_io& callbacks, const u8* mac) {
 }
 void lwip_stack::shutdown() {
     if (active_) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+        gate_open_ = false;
+        (void)lease_.invalidate(dhcp::reason::stopped);
+        dhcp_enabled_ = false;
+        stop_dhcp_client(); dhcp_cleanup(&interface_);
+        etharp_cleanup_netif(&interface_);
+#endif
 #ifdef XOS_LWIP_DNS_LIFETIME
         configure_dns(0);
 #endif
@@ -108,14 +125,24 @@ err_t lwip_stack::link_output(netif* interface, pbuf* packet) {
     u8 frame[1514];
     const u16_t copied = pbuf_copy_partial(packet, frame, packet->tot_len, 0);
     if (copied != packet->tot_len) return ERR_BUF;
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    const auto clock = self.monotonic_time();
+    if (clock < 0 || !self.dhcp_wire(frame, copied, static_cast<u64>(clock), false)) return ERR_RTE;
+#endif
     const i64 result = self.io_.transmit(self.io_.context, frame, copied);
     // The frame transport uses native net2 backpressure at this boundary.
     if (result == would_block) return ERR_MEM;
     if (result) { self.failure_ = io; return ERR_IF; }
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (!self.dhcp_wire(frame, copied, static_cast<u64>(clock), true)) { self.failure_ = io; return ERR_IF; }
+#endif
     return ERR_OK;
 }
 i64 lwip_stack::poll() {
     if (!active_ || failure_) return failure_ ? failure_ : closed;
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+#endif
     const i64 began = io_.clock(io_.context);
     if (began < 0) { failure_ = io; return failure_; }
     // A queued SYN-ACK cannot revive a connection after its absolute deadline.
@@ -125,6 +152,9 @@ i64 lwip_stack::poll() {
         const i64 size = io_.receive(io_.context, frame, sizeof(frame));
         if (size < 0) { failure_ = io; break; }
         if (!size) break;
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+        if (advance_dhcp()) return failure_;
+#endif
         if (size > static_cast<i64>(sizeof(frame))) { failure_ = io; break; }
         auto* packet = pbuf_alloc(PBUF_RAW, static_cast<u16_t>(size), PBUF_POOL);
         if (!packet) { if (dropped_ != ~u32{0}) ++dropped_; continue; }
@@ -137,7 +167,13 @@ i64 lwip_stack::poll() {
         tcp_arg(item.tcp, nullptr); tcp_recv(item.tcp, nullptr); tcp_err(item.tcp, nullptr);
         item.tcp = nullptr;
     }
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+#endif
     sys_check_timeouts();
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+#endif
     const i64 now = io_.clock(io_.context);
     if (now < 0) failure_ = io;
     else expire_connects(static_cast<u64>(now));
@@ -209,6 +245,10 @@ void lwip_stack::on_datagram(void* context, udp_pcb*, pbuf* packet, const ip_add
     pbuf_free(packet);
 }
 i64 lwip_stack::open(u32 slot, protocol transport, u32 address, u16 port, u64 deadline) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+    if (!gate_open_) return closed;
+#endif
     if (slot >= connection_limit || failure_) return io;
     auto& item = connections_[slot];
     if (item.tcp || item.udp) return resources;
@@ -232,6 +272,10 @@ i64 lwip_stack::open(u32 slot, protocol transport, u32 address, u16 port, u64 de
     return 0;
 }
 i64 lwip_stack::status(u32 slot, u32& flags) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+    if (!gate_open_) return closed;
+#endif
     auto& item = connections_[slot]; flags = 0;
     if (item.error) { flags = failed; return item.error; }
     if (!item.tcp && !item.udp && !(item.established && item.ended)) return closed;
@@ -240,6 +284,10 @@ i64 lwip_stack::status(u32 slot, u32& flags) {
     return 0;
 }
 i64 lwip_stack::send(u32 slot, const u8* data, u32 length) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+    if (!gate_open_) return closed;
+#endif
     auto& item = connections_[slot];
     if (length > payload_bytes || (length && !data)) return invalid;
     if (item.error) return item.error;
@@ -262,6 +310,10 @@ i64 lwip_stack::send(u32 slot, const u8* data, u32 length) {
     (void)tcp_output(item.tcp); return count;
 }
 i64 lwip_stack::receive(u32 slot, u8* data, u32 capacity, u32& length, u32& flags) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+    if (!gate_open_) return closed;
+#endif
     auto& item = connections_[slot]; length = flags = 0;
     if (!capacity || capacity > payload_bytes || !data) return invalid;
     if (item.udp) {
@@ -284,6 +336,10 @@ i64 lwip_stack::receive(u32 slot, u8* data, u32 capacity, u32& length, u32& flag
     return would_block;
 }
 i64 lwip_stack::readiness(u32 slot, readiness_snapshot& snapshot) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+    if (!gate_open_) return closed;
+#endif
     auto& item = connections_[slot];
     if (item.udp) return unsupported;
     readiness_snapshot current{};
@@ -309,6 +365,10 @@ i64 lwip_stack::readiness(u32 slot, readiness_snapshot& snapshot) {
     return 0;
 }
 i64 lwip_stack::shutdown_write(u32 slot) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+    if (!gate_open_) return closed;
+#endif
     auto& item = connections_[slot];
     if (item.udp) return unsupported;
     if (item.error) return item.error;
@@ -356,7 +416,13 @@ stack_api lwip_stack::api() {
         [](void* self) { return static_cast<lwip_stack*>(self)->dropped_; },
         [](void* self, u32 slot, readiness_snapshot& snapshot) {
             return static_cast<lwip_stack*>(self)->readiness(slot, snapshot); },
-        [](void* self, u32 slot) { return static_cast<lwip_stack*>(self)->shutdown_write(slot); }};
+        [](void* self, u32 slot) { return static_cast<lwip_stack*>(self)->shutdown_write(slot); },
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+        [](void* self, lease_snapshot& value) { return static_cast<lwip_stack*>(self)->lease_status(value); }
+#else
+        nullptr
+#endif
+    };
 }
 
 #ifdef XOS_LWIP_DNS_LIFETIME
@@ -398,6 +464,10 @@ void lwip_stack::on_dns_found(const char* name, const ip_addr_t* address, void* 
 }
 
 i64 lwip_stack::resolve_name(const char* name, u64 token, resolver_completion callback, void* owner) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+    if (!gate_open_) return closed;
+#endif
     if (!active_ || failure_) return failure_ ? failure_ : closed;
     for (auto& subscription : subscriptions_) {
         if (subscription.token) continue;

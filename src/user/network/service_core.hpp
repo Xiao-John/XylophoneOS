@@ -16,6 +16,7 @@ struct stack_api {
     u32 (*dropped)(void*);
     i64 (*readiness)(void*, u32, net2::readiness_snapshot&) = nullptr;
     i64 (*shutdown_write)(void*, u32) = nullptr;
+    i64 (*lease_status)(void*, net2::lease_snapshot&) = nullptr;
 };
 using resolver_completion = void (*)(void*, u64, i64, u32, u64, u64);
 struct resolver_api {
@@ -40,6 +41,8 @@ public:
     bool stopping() const { return stopping_; }
     u32 session_count() const;
     u32 connection_count() const;
+    void enable_dhcp();
+    bool publish_dhcp(u32 address, u32 mask, u32 gateway, u32 resolver);
 private:
     struct session { u64 peer, last_sequence, last_active, generation; } sessions_[net2::session_limit]{};
     struct connection { u64 handle; u32 owner; } connections_[net2::connection_limit]{};
@@ -53,6 +56,7 @@ private:
     resolver_api resolver_{};
     egress_policy policy_{};
     u32 resolver_address_ = net2::permitted_address;
+    u32 address_ = net2::static_address, mask_ = net2::static_mask, gateway_ = net2::permitted_address;
     net2::network_mode mode_ = net2::network_mode::disabled;
     u64 config_epoch_ = 1, next_ticket_ = 1;
     bool stopping_ = false;

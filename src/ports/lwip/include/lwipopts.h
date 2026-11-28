@@ -16,10 +16,19 @@
 #define LWIP_UDP 1
 #define LWIP_TCP 1
 
+#ifdef XOS_NET_DHCP_PROFILE
+#define LWIP_DHCP 1
+#define XOS_LWIP_DHCP_AUTHORITY 1
+#define LWIP_ACD 1
+#define LWIP_DHCP_DOES_ACD_CHECK 1
+#define LWIP_DHCP_MAX_DNS_SERVERS 0
+#define LWIP_DHCP_BOOTP_FILE 0
+#else
 #define LWIP_DHCP 0
+#endif
 #define LWIP_AUTOIP 0
 #define LWIP_IGMP 0
-#if defined(XOS_NET_DNS_PROBE) || defined(XOS_NET_STATIC_RESOLVER)
+#if defined(XOS_NET_DNS_PROBE) || defined(XOS_NET_STATIC_RESOLVER) || defined(XOS_NET_DHCP_PROFILE)
 #define LWIP_DNS 1
 #define XOS_LWIP_DNS_LIFETIME 1
 #else

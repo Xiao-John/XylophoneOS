@@ -43,7 +43,8 @@ public:
         config_snapshot configuration{};
         i64 result = session_.configuration(deadline, configuration);
         if (result) return result;
-        if (configuration.mode != network_mode::static_direct || cancelled()) return closed;
+        if ((configuration.mode != network_mode::static_direct && configuration.mode != network_mode::dhcp) ||
+            !configuration.address || !configuration.resolver || cancelled()) return closed;
         u64 ticket = 0;
         result = session_.resolve_start(name, length, deadline, ticket);
         if (result) return result;

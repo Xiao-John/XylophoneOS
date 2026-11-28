@@ -19,7 +19,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False,
                 pumpkin_user_resource=False, pumpkin_named_resource_store=False,
                 quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
-                net_static_profile=None, pumpkin_deployment_realm=None):
+                net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -140,12 +140,13 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                           for name in ("window_manager.cpp", "service.cpp", "dispatcher.cpp",
                                        "service_loop.cpp", "ipc_transport.cpp")]
     net_objects, net_includes, net_configuration = build_lwip_service(root, build, sdk, run, tool, X86_FLAGS,
-                                                                     net_dns_probe, net_static_profile)
+                                                                     net_dns_probe, net_static_profile, net_dhcp_profile)
     if net_configuration["enabled"]:
         net_objects += [compile_source(root / "src/user/network" / name,
                                       (*net_includes, "-Os", "-ffunction-sections", "-fdata-sections"))
                         for name in ("service_core.cpp", "lwip_stack.cpp", "service_loop.cpp",
-                                     *(("dns_probe.cpp",) if net_dns_probe else ()))]
+                                     *(("dns_probe.cpp",) if net_dns_probe else ()),
+                                     *(("dhcp_policy.cpp", "lwip_dhcp.cpp") if net_dhcp_profile else ()))]
     archive = sdk / "lib/libxos.a"
     if archive.exists():
         archive.unlink()
@@ -222,8 +223,9 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 extra_flags += ("-DXOS_QUIET_DEMOS_ON_LAUNCH=1",)
             if net_dns_probe:
                 extra_flags += ("-DXOS_NET_DNS_PROBE=1",)
-            if net_static_profile:
-                extra_flags += (f"-DXOS_NET_STATIC_INSTANCE={net_static_profile['pci_instance']}u",)
+            installation_profile = net_dhcp_profile or net_static_profile
+            if installation_profile:
+                extra_flags += (f"-DXOS_NET_STATIC_INSTANCE={installation_profile['pci_instance']}u",)
         if name == "files" and glibc_files_death_probe:
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "files":

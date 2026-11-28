@@ -1,0 +1,124 @@
+{
+  "exports": [
+    {
+      "original_sha256": "8ec1da0403ef6001d2566ab9a43d374b43a398568818b33130685a736543c60e",
+      "output": "docs/reports/p0_dhcp_service_20261128/system_manifest.json",
+      "public_sha256": "58b76558c1c0cbc648c792cb7e57cee8ff0cab2e42cb26d969241c966f89e68c",
+      "source": "build/dhcp_system_dns/manifest.json"
+    },
+    {
+      "original_sha256": "87715cfd09a5c348fdeb34b79d1c879ac7b271e293147e820ce6a4a4913d5182",
+      "output": "docs/reports/p0_dhcp_service_20261128/net_lwip_inputs.json",
+      "public_sha256": "87715cfd09a5c348fdeb34b79d1c879ac7b271e293147e820ce6a4a4913d5182",
+      "source": "build/dhcp_system_dns/net_lwip_inputs.json"
+    },
+    {
+      "original_sha256": "73fabe6a3bb0f9105837b9140ed2446302a23db87d9da7c0e5f03eea977634dc",
+      "output": "docs/reports/p0_dhcp_service_20261128/probe_receipt.json",
+      "public_sha256": "e83d282c0d8700e4c62f76244f10e2a24ec225d5c8941f5406cdebb441226bfe",
+      "source": "build/dhcp_probe_dns/receipt.json"
+    },
+    {
+      "original_sha256": "1eab21a750f32dd88b2b179e67106138f49e496e72b22c6aeafd20cde7023edd",
+      "output": "docs/reports/p0_dhcp_service_20261128/guest_report.json",
+      "public_sha256": "1d318b3a523d6395462326fe9d45c82d2b19ff021bd8cff452269ff888d7e61e",
+      "source": "build/dhcp_guest_dns/report.json"
+    },
+    {
+      "original_sha256": "0ebaa50eb451fd03ed8271a6193599d717fdf515434bbe202ed3e31881771d88",
+      "output": "docs/reports/p0_dhcp_service_20261128/network.pcap",
+      "public_sha256": "0ebaa50eb451fd03ed8271a6193599d717fdf515434bbe202ed3e31881771d88",
+      "source": "build/dhcp_guest_dns/network.pcap"
+    },
+    {
+      "original_sha256": "206e94b3dcc9298b5445b6cb2d47c0ee101e0ec434fded2d16a1ec1fecf69eae",
+      "output": "docs/reports/p0_dhcp_service_20261128/guest_serial.log",
+      "public_sha256": "206e94b3dcc9298b5445b6cb2d47c0ee101e0ec434fded2d16a1ec1fecf69eae",
+      "source": "build/dhcp_guest_dns/dhcp_serial.log"
+    },
+    {
+      "original_sha256": "8344b9494f849b8ae6df4908bf18e9ffcbd096e679e4b1db7119327c9212d530",
+      "output": "docs/reports/p0_dhcp_service_20261128/dhcp_host.json",
+      "public_sha256": "8344b9494f849b8ae6df4908bf18e9ffcbd096e679e4b1db7119327c9212d530",
+      "source": "build/dhcp_host_final_v2/result.json"
+    },
+    {
+      "original_sha256": "74e4f332e7aeffd448a412d2f1477892f05143f1deb46df083d784777fa20ecb",
+      "output": "docs/reports/p0_dhcp_service_20261128/dhcp_host.log",
+      "public_sha256": "74e4f332e7aeffd448a412d2f1477892f05143f1deb46df083d784777fa20ecb",
+      "source": "build/dhcp_host_final_v2.log"
+    },
+    {
+      "original_sha256": "77bc713d8af263a7857964b712ff862a1062abe4c08dd4af3a2ce9461f3b4630",
+      "output": "docs/reports/p0_dhcp_service_20261128/static_host.json",
+      "public_sha256": "77bc713d8af263a7857964b712ff862a1062abe4c08dd4af3a2ce9461f3b4630",
+      "source": "build/dhcp_static_final/result.json"
+    },
+    {
+      "original_sha256": "16f6b578af5760ddc37f86216e4b9c42a1f835118c1a440e9204fa5121c146fb",
+      "output": "docs/reports/p0_dhcp_service_20261128/static_host.log",
+      "public_sha256": "16f6b578af5760ddc37f86216e4b9c42a1f835118c1a440e9204fa5121c146fb",
+      "source": "build/dhcp_static_final.log"
+    },
+    {
+      "original_sha256": "719f12921083acaf0598425f4ee9d09dca6c6a3e9467eb6d174002f1348f4e69",
+      "output": "docs/reports/p0_dhcp_service_20261128/sdk_client.log",
+      "public_sha256": "719f12921083acaf0598425f4ee9d09dca6c6a3e9467eb6d174002f1348f4e69",
+      "source": "build/dhcp_sdk_client_final.log"
+    },
+    {
+      "original_sha256": "7fe66479894d4b424ae6d6c5d8445595ca5eba5a0af8f9c43d38fdd2026ebdeb",
+      "output": "docs/reports/p0_dhcp_service_20261128/profile.log",
+      "public_sha256": "7fe66479894d4b424ae6d6c5d8445595ca5eba5a0af8f9c43d38fdd2026ebdeb",
+      "source": "build/dhcp_profile_final.log"
+    },
+    {
+      "original_sha256": "3ed0c63ddbf9c41412542e27318ee48a4b0e70b9e4b96c27a60f940ed06c523d",
+      "output": "docs/reports/p0_dhcp_service_20261128/native_transport_host.json",
+      "public_sha256": "048bec776d79d6ac5d22852624df18cfbb06a241c268a0e6657bb2a6a05f5067",
+      "source": "build/dhcp_transport_final/result.json"
+    },
+    {
+      "original_sha256": "7accd3347b7831c276e4a5dffa6bdeab9eaacd0800688576a6690e244b57ab9c",
+      "output": "docs/reports/p0_dhcp_service_20261128/native_transport_host.log",
+      "public_sha256": "7accd3347b7831c276e4a5dffa6bdeab9eaacd0800688576a6690e244b57ab9c",
+      "source": "build/dhcp_transport_final.log"
+    },
+    {
+      "original_sha256": "a6afbdfcb61cf3d3ededda07abab723155a4cd4a5e7af8dfddbf59fea231aa99",
+      "output": "docs/reports/p0_dhcp_service_20261128/first_guest_failure.json",
+      "public_sha256": "3f5e19d2b07df7827fab31a470bec69f082a843ec6e917986b8465d8fb659dda",
+      "source": "build/dhcp_guest_first/report.json"
+    },
+    {
+      "original_sha256": "c7ff994edc756f73b008ead46bbff88454466ce19ad5d737e2bded81cac7cb1e",
+      "output": "docs/reports/p0_dhcp_service_20261128/first_guest_serial.log",
+      "public_sha256": "c7ff994edc756f73b008ead46bbff88454466ce19ad5d737e2bded81cac7cb1e",
+      "source": "build/dhcp_guest_first/dhcp_serial.log"
+    },
+    {
+      "original_sha256": "7800706563e801e5c2cce170e9a2a91222e787797ee8f6061a9e0472b26c43d5",
+      "output": "docs/reports/p0_dhcp_service_20261128/first_network.pcap",
+      "public_sha256": "7800706563e801e5c2cce170e9a2a91222e787797ee8f6061a9e0472b26c43d5",
+      "source": "build/dhcp_guest_first/network.pcap"
+    },
+    {
+      "original_sha256": "8b1f0f5262280f3b1a14a133e5289cb545410a9fe64a70992dd9cfc75c100a91",
+      "output": "docs/reports/p0_dhcp_service_20261128/first_system_manifest.json",
+      "public_sha256": "ee2f6d9527fa66aad9ade32ebe9f68cd3af58092bcb8bbff6211e27fcb98c99e",
+      "source": "build/dhcp_system/manifest.json"
+    },
+    {
+      "original_sha256": "2e8383eb33ce7038577a99865098516831b9fc034932686dfa8f9a33a14c71a3",
+      "output": "docs/reports/p0_dhcp_service_20261128/startup_test_development_failure.log",
+      "public_sha256": "de7609c9a1f2513c758c50cad6009e4713c27d1b7cba431f85ce9633f696d5ae",
+      "source": "build/dhcp_host_final.log"
+    }
+  ],
+  "rules": [
+    "Replace source/build, toolchain and ephemeral host roots with XOS template variables.",
+    "Guest report uses artifact paths rather than hashes of sibling exported evidence; original full reports are recorded by the conversion map.",
+    "Source/binary/input identity hashes remain evidence of external build inputs; flat manifest alone binds exported report leaves."
+  ],
+  "source_commit": "da889821137645a014e47d13109042fd0d34caf8"
+}

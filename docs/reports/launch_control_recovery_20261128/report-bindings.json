@@ -1,0 +1,42 @@
+[
+  {
+    "file": "fixture-receipt.json",
+    "input_sha256": "e6fc42d0a31010e3395d5207b8e09b59f4c7d3effc8f88581151a5fcf1b82d49",
+    "input_kind": "original report",
+    "transform": "known root paths to documented XOS templates; observations and source/artifact digests unchanged",
+    "exported_binding": "manifest.json:files[fixture-receipt.json]",
+    "source_commit": "6c1ded23"
+  },
+  {
+    "file": "guest-report.json",
+    "input_sha256": "1ba3a3feed47e130649e8a09d06428b833f4206ff18c456bb962fa0af8076a0f",
+    "input_kind": "original report",
+    "transform": "known root paths to documented XOS templates; observations and source/artifact digests unchanged",
+    "exported_binding": "manifest.json:files[guest-report.json]",
+    "source_commit": "6c1ded23"
+  },
+  {
+    "file": "host-report.json",
+    "input_sha256": "2960dc448684157f6f1a0085cb59d47118018c62cdac9e2911a08576c8ce2cfe",
+    "input_kind": "original report",
+    "transform": "known root paths to documented XOS templates; observations and source/artifact digests unchanged",
+    "exported_binding": "manifest.json:files[host-report.json]",
+    "source_commit": "6c1ded23"
+  },
+  {
+    "file": "failed-v2-guest-report.json",
+    "input_sha256": "9f8a15e8b85909ea5606d7ecfcd28b248f30d702cbdea1cdc756529a106d73fe",
+    "input_kind": "original report",
+    "transform": "known root paths to documented XOS templates; observations and source/artifact digests unchanged",
+    "exported_binding": "manifest.json:files[failed-v2-guest-report.json]",
+    "source_commit": "6c1ded23"
+  },
+  {
+    "file": "system-binding.json",
+    "input_sha256": "da2adcc420b495824798c46df68ebae14f497dcb7344402d2d41978cedf45cd0",
+    "input_kind": "selected raw-system-manifest fields",
+    "transform": "known root paths to documented XOS templates; observations and source/artifact digests unchanged",
+    "exported_binding": "manifest.json:files[system-binding.json]",
+    "source_commit": "6c1ded23"
+  }
+]

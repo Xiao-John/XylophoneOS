@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "${XOS_ROOT}/scripts/build_dynamic_launcher.py", line 208, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_ROOT}/scripts/build_dynamic_launcher.py", line 116, in main
+    c_binding = anchor_sdk(c_sdk, args.sdk_manifest_sha256, args.sdk_tree_sha256)
+  File "${XOS_ROOT}/scripts/build_dynamic_launcher.py", line 79, in anchor_sdk
+    raise ValueError('complete C SDK differs from independently supplied anchors')
+ValueError: complete C SDK differs from independently supplied anchors

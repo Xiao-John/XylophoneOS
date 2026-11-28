@@ -1,0 +1,25 @@
+DHCP_PRODUCTION_PASS renew
+DHCP_PRODUCTION_PASS expire
+DHCP_PRODUCTION_PASS nak_config_change
+DHCP_PRODUCTION_PASS rebind_new_issuer
+DHCP_PRODUCTION_PASS malformed_reply
+DHCP_PRODUCTION_PASS acd_conflict
+DHCP_PRODUCTION_PASS conflict_backoff_recover
+DHCP_PRODUCTION_PASS request_tx_anchor
+DHCP_PRODUCTION_PASS queued_arp_retirement
+DHCP_PRODUCTION_PASS no_static_fallback
+DHCP_PRODUCTION_PASS untransmitted_request
+DHCP_PRODUCTION_PASS max_finite_lease
+DHCP_PRODUCTION_PASS arp_deferred_request_anchor
+line 122: first DISCOVER pressure recorded
+Traceback (most recent call last):
+  File "${XOS_SOURCE_ROOT}/tests/net_dhcp_stack_host.py", line 58, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_SOURCE_ROOT}/tests/net_dhcp_stack_host.py", line 49, in main
+    subprocess.run([str(binary), case], check=True, timeout=30)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['${XOS_SOURCE_ROOT}/build/dhcp_host_final/dhcp_stack_host', 'initial_discover_backpressure']' died with <Signals.SIGABRT: 6>.

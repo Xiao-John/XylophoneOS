@@ -348,6 +348,45 @@ void strict_reply_shapes() {
     }
     ++groups;
 }
+void dhcp_resolver_cases() {
+    auto configuration = step(operation::configuration);
+    config_snapshot config{configuration_revision, network_mode::dhcp, 7, resolve_in_a,
+        static_address, static_mask, permitted_address, permitted_address, 0, 0};
+    configuration.payload.resize(sizeof(config));
+    std::memcpy(configuration.payload.data(), &config, sizeof(config));
+    auto resolved = step(operation::resolve_result);
+    resolve_reply answer{7, 20'000'000'000ull, permitted_address, 0};
+    resolved.payload.resize(sizeof(answer));
+    std::memcpy(resolved.payload.data(), &answer, sizeof(answer));
+    scenario({configuration, step(operation::resolve_start), resolved});
+    {
+        client value; connected_client(value); resolve_reply output{};
+        assert(!value.resolve_ipv4("live.dhcp.test", 14, deadline(), output));
+        assert(output.address == permitted_address && output.epoch == 7 && requests.size() == 3);
+    }
+    disconnected();
+    // A pending acquisition must not create a resolver ticket or send a query.
+    config.address = config.mask = config.gateway = config.resolver = 0;
+    std::memcpy(configuration.payload.data(), &config, sizeof(config));
+    scenario({configuration});
+    {
+        client value; connected_client(value); resolve_reply output{};
+        assert(value.resolve_ipv4("live.dhcp.test", 14, deadline(), output) == closed);
+        assert(!output.address && requests.size() == 1);
+    }
+    disconnected();
+    // A lease can intentionally omit DNS authority without disabling sockets.
+    config.address = static_address; config.mask = static_mask; config.gateway = permitted_address;
+    std::memcpy(configuration.payload.data(), &config, sizeof(config));
+    scenario({configuration});
+    {
+        client value; connected_client(value); resolve_reply output{};
+        assert(value.resolve_ipv4("live.dhcp.test", 14, deadline(), output) == closed);
+        assert(requests.size() == 1);
+    }
+    disconnected(); ++groups;
+}
+
 }
 
 namespace xos::sdk {
@@ -405,7 +444,7 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
         reply.version = version;
         reply.action = request.action;
         reply.sequence = request.sequence;
-        reply.object = request.action == operation::open
+        reply.object = (request.action == operation::open || request.action == operation::resolve_start)
             ? (instruction.result == 0 ? instruction.opened_handle : 0) : request.object;
         reply.result = instruction.result;
         reply.flags = instruction.flags;
@@ -431,6 +470,7 @@ int main() {
     receive_and_datagram_rejection_cases();
     malformed_envelope_cases();
     strict_reply_shapes();
+    dhcp_resolver_cases();
     std::printf("PASS N3 native client: groups=%u UDP-zero,required-retry,connecting,short-write,would-block,close-preserves-siblings,timeout-no-replay,EOF,malformed,cleanup strict-replies=1\n",
                 groups);
 }

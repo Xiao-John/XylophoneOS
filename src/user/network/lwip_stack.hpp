@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "service_core.hpp"
+#include "dhcp_policy.hpp"
 extern "C" {
 #include "lwip/netif.h"
 #include "lwip/tcp.h"
@@ -27,6 +28,16 @@ public:
     u32 random_word();
     i64 random_checked(u32& result);
     void fault() { failure_ = net2::io; }
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    using configuration_publisher = bool (*)(void*, u32, u32, u32, u32);
+    i64 start_dhcp(const dhcp::policy&, u64 budget, configuration_publisher, void*);
+    i64 advance_dhcp();
+    i64 lease_status(net2::lease_snapshot&);
+    int dhcp_reply(pbuf*, const ip_addr_t*, u16_t);
+    int dhcp_bind();
+    int dhcp_acd(int state);
+    int dhcp_xid(u32&);
+#endif
 private:
     struct connection {
         tcp_pcb* tcp;
@@ -44,6 +55,26 @@ private:
     i64 failure_ = 0;
     u32 dropped_ = 0;
     bool active_ = false;
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    dhcp::policy dhcp_policy_{};
+    dhcp::lease_clock lease_{};
+    configuration_publisher publish_ = nullptr;
+    void* publisher_ = nullptr;
+    u64 acquisition_budget_ = 0, acquisition_deadline_ = 0, candidate_generation_ = 0;
+    u32 last_xid_ = 0, accepted_ = 0, rejected_ = 0, conflicts_ = 0;
+    u32 start_attempts_ = 0, start_failures_ = 0;
+    u64 start_retry_at_ = 0;
+    dhcp::reason last_reason_ = dhcp::reason::none;
+    bool dhcp_enabled_ = false, published_ = false, gate_open_ = false;
+    bool stop_pending_ = false, restart_pending_ = false, renew_pending_ = false, rebind_pending_ = false;
+    bool retire_pending_ = false;
+    i64 start_dhcp_client(u64 now);
+    void stop_dhcp_client();
+    void observe_dhcp(u64 now);
+    void retire_dhcp();
+    bool restart_clock(u64 now, bool new_budget);
+    bool dhcp_wire(const u8*, u32, u64, bool committed);
+#endif
 #ifdef XOS_LWIP_DNS_LIFETIME
     struct dns_subscription { u64 token; resolver_completion callback; void* owner; } subscriptions_[net2::client_sessions]{};
     void configure_dns(u32 address);

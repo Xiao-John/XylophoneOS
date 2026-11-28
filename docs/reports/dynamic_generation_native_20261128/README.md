@@ -95,3 +95,21 @@ This is the volatile per-controller P0 activation/rollback gate. Durable policy,
 cross-descendant revocation and process-tree budgets remain P1. Later GNU
 producer corrections require explicit byte-identity mapping or new execution;
 this report's v3 hashes and observations must not be changed to stand for them.
+
+## Corrected unsigned masks: explicit source correspondence
+
+The later `bf8566e0` correction makes two O_CLOEXEC unsigned conversions explicit.
+The actual rebuild test `b2a924c8` recompiles the corrected shared object,
+substitutes one member in the 1654-member archive, preserves the other 1653 and
+their order, performs the partial and full GNU link, and strips the installed
+library. The resulting installed libc is byte-for-byte identical to the one
+already executed here.
+
+`source_byte_correspondence.json` records an independent follow-up: all 166
+producer-rebuild inputs and all five artifacts were rehashed, the corrected
+source/test were matched to their original Git blobs, the new installed libc
+was directly byte-compared with C3, and every remaining C3 object plus all three
+generation binaries was compared with the passed R2 run. All match. The libc
+identity remains `9a52abb56b230dc785bb79519e8e69b87ddc83b3504a3199342dc8460158249f`.
+The corresponding guest observations remain the existing execution of those
+exact bytes; no extra guest run or changed historical hash is claimed.

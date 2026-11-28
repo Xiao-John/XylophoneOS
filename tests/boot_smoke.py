@@ -261,8 +261,18 @@ def main():
             bad_path.write_bytes(bad)
             guest = Guest(bad_path, "bad_stage", cpu="qemu64")
             try:
-                guest.expect(b"BOOT_ERROR: stage_two_magic")
-                registers = guest.qmp("human-monitor-command", {"command-line": "info registers"})
+                guest.expect(b"BOOT_ERROR: stage_two_magic\r\n")
+                # The UART marker precedes the final CLI/HLT instructions.
+                # A QMP round trip can observe that legitimate short window;
+                # require the real halted state within a bounded interval.
+                deadline = time.monotonic() + 2
+                registers = ""
+                while time.monotonic() < deadline:
+                    registers = guest.qmp("human-monitor-command", {"command-line": "info registers"})
+                    if "HLT=1" in registers:
+                        break
+                    time.sleep(0.01)
+                (ROOT / "build/bad_stage_registers.log").write_text(registers)
                 if "HLT=1" not in registers or b"xos> " in guest.output:
                     raise AssertionError("Corrupt stage was not safely stopped")
                 results.append("corrupt_stage_rejected")

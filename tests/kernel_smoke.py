@@ -98,7 +98,10 @@ def main():
         from run_qemu import qemu_command
         qemu_version = subprocess.check_output([qemu_command(build / "xos-install.iso")[0], "--version"],
                                                text=True).splitlines()[0]
-        if qemu_version != "QEMU emulator version " + LOCK["qemu"]:
+        pinned_qemu = "QEMU emulator version " + LOCK["qemu"]
+        # The authenticated prerelease SDK includes a Debian package suffix.
+        # Retain the exact upstream pin, matching bootstrap_toolchain's policy.
+        if qemu_version != pinned_qemu and not qemu_version.startswith(pinned_qemu + " "):
             raise AssertionError(f"Unpinned QEMU: {qemu_version}")
         report["qemu"] = qemu_version
 

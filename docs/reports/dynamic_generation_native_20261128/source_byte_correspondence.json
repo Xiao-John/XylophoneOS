@@ -1,0 +1,28 @@
+{
+  "archive_members": 1654,
+  "checked_guest_payload_and_generations": {
+    "/apps/p0c/main": "f118a878df120e79c1d85fcf40999d92616ecc6c32c4322475ccb0435bb4f1fc",
+    "/apps/p0c2/main": "f118a878df120e79c1d85fcf40999d92616ecc6c32c4322475ccb0435bb4f1fc",
+    "/usr/lib/xos/generations/p0c.bin": "3fc958eafaae04485b978c27fe4fc4a7525197ce6fac54799ded09a61fc5541a",
+    "/usr/lib/xos/generations/p0c2.bin": "db2f28a2a6b5fbb7a5634d30786e1cc4b35a2ea428005514ea771a43766d0801",
+    "/usr/lib/xos/generations/p0missing.bin": "3e0c982883948632cadaec0b322d9e7245ea29ae904257aa50f93d8f7b58a88b",
+    "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "4a913902b8e6bd116c86b0ad717eedf0d8c992ab19d4e01451a21211129dd777",
+    "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "d715be02b77cf07b227af2a4ea518d51cfdf74a3aecaf63833936835ae9e3fc3",
+    "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "9a52abb56b230dc785bb79519e8e69b87ddc83b3504a3199342dc8460158249f"
+  },
+  "corrected_source_commit": "bf8566e0",
+  "guest_observations_unchanged": true,
+  "guest_reexecuted": false,
+  "installed_libc_sha256": "9a52abb56b230dc785bb79519e8e69b87ddc83b3504a3199342dc8460158249f",
+  "raw_producer_report_sha256": "de332a4a854b12566651cadc640d2eaee202cbd3ccab4a6076ea0f513bacafac",
+  "raw_r2_report_sha256": "40c08b925bc561f8bdeff88835b4601455d5f30603306e13489af0de8d3911c2",
+  "rebuild_artifacts_rechecked": 5,
+  "rebuild_inputs_rechecked": 166,
+  "rebuild_test_commit": "b2a924c8",
+  "rule": "the actual recompiled member was archive-substituted, partial/full-linked, stripped and byte-compared with C3; all other installed C3 objects and all three approved roots still match the passed guest report",
+  "scope": "independent correspondence of corrected source to the exact installed R2 guest bytes",
+  "source_after_sha256": "1fc68853c81f1c8be581d52fb2931b44d60e24544357dc57edf62960bc277a9a",
+  "source_before_sha256": "8a8511cf58f52cd5776f9252bdd4ba358dbc6c19abcef8de20d4649c4ee756d8",
+  "status": "passed",
+  "unchanged_archive_members": 1653
+}

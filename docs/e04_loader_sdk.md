@@ -4,6 +4,15 @@
 架构原则见xos_plan.md；ABI登记见[全表](contracts/abi_registry.md)，源码/回执见对应主题历史。
 原始E04与后续各次记录可按history/source_index.json恢复，不覆盖旧SDK或冻结报告。
 
+## 启动控制与公共等待
+
+可选 [launch-control v1](contracts/launch_control.md) 用共享 C wire 与 sys81
+双向单槽对实现 READY/ACK、后继 exec 批准及失败/取消。artifact admission 由
+controller 当前策略决定；执行字节须由加载器独立验证。SDK、newlib、glibc 的
+公共 wait hook 泵全部已登记 child，避免阻塞 sys20 使 READY 无人消费。旧静态
+入口保持原行为；header/archive/调用方成套重建。恢复资格和限制见
+[工作记录](work_log/58ab96c0_launch_control_recovery.md)。
+
 ## 当前ABI速查（0086）
 
 共享头是数值来源；下表由`tests/abi_doc_consistency.py`核对，仅对当前说明生效。

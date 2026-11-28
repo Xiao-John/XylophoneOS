@@ -62,6 +62,7 @@ def main():
         if verified_newlib['artifacts']['x86_64-elf/lib/' + name] != sha(prefix / 'x86_64-elf/lib' / name):
             raise SystemExit('newlib archive differs from its build receipt')
     owned_inputs = [*sorted((ROOT / 'src/shared/include').rglob('*.hpp')),
+                    *sorted((ROOT / 'src/shared/include').rglob('*.h')),
                     *sorted((ROOT / 'src/user').rglob('*.hpp')),
                     *sorted((ROOT / 'src/user/include').rglob('*.h')),
                     *sorted((ROOT / 'src/user/threading/include').rglob('*.h')),
@@ -178,7 +179,7 @@ def main():
     sources = [*sorted(p for p in (ROOT / 'src/user/libc').glob('*.cpp')
                         if p.name not in ('pthread_single.cpp', 'posix_clock.cpp')),
                ROOT / 'src/user/sdk/file_client.cpp', ROOT / 'src/user/sdk/text.cpp',
-               ROOT / 'src/user/sdk/terminal_client.cpp',
+               ROOT / 'src/user/sdk/terminal_client.cpp', ROOT / 'src/user/sdk/launch_control.cpp',
                ROOT / 'src/user/arch/x86_64/syscall.cpp', ROOT / 'src/user/arch/x86_64/tls.cpp',
                ROOT / 'src/shared/runtime/memory.cpp',
                *sorted((ROOT / 'src/user/loader').glob('*.cpp')),

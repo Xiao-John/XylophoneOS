@@ -139,11 +139,16 @@ i64 spawn_image_options(u32 image, u32 argc, const char* const* argv,
 i64 spawn_file(const char* path, u32 argc, const char* const* argv);
 i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
                        const spawn_options& options);
+extern "C" i64 xos_launch_wait_hook(u64, process_status*, u32) __attribute__((weak));
+inline i64 wait_flags(u64 child, process_status& status, u32 flags = 0) {
+    if (xos_launch_wait_hook) return xos_launch_wait_hook(child, &status, flags);
+    return syscall(sys_process_wait, child, reinterpret_cast<u64>(&status), flags);
+}
 inline i64 wait(u64 child, process_status& status) {
-    return syscall(sys_process_wait, child, reinterpret_cast<u64>(&status));
+    return wait_flags(child, status);
 }
 inline i64 wait_any(process_status& status, bool nonblocking = false) {
-    return syscall(sys_process_wait, 0, reinterpret_cast<u64>(&status),
+    return wait_flags(0, status,
                    process_wait_any | (nonblocking ? process_wait_nonblocking : 0));
 }
 inline i64 cpu_time(process_cpu_time& result) {

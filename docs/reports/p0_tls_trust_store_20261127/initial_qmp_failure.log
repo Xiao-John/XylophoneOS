@@ -1,0 +1,1 @@
+qemu-system-x86_64: -qmp unix:${XOS_QEMU_TMP}/qmp.sock,server=on,wait=off: Failed to create Unix socket: Operation not permitted

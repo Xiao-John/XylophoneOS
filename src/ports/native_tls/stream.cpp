@@ -53,8 +53,25 @@ stream::~stream() {
 int stream::connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
                     const char* hostname, const unsigned char* trust_anchor,
                     size_t trust_anchor_size, xos::u64 deadline, route_source route) {
-    if (started_ || !service_pid || !address || !port || !valid_dns_name(hostname) ||
-        !trust_anchor || !trust_anchor_size)
+    if (!trust_anchor || !trust_anchor_size || trust_anchor_size > max_trust_anchor_bytes)
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
+    int status = prepare(service_pid, address, port, hostname, deadline);
+    if (!status) status = mbedtls_x509_crt_parse_der(&anchor_, trust_anchor, trust_anchor_size);
+    return status ? status : handshake(service_pid, address, port, hostname, route);
+}
+
+int stream::connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
+                    const char* hostname, const trust_store& store,
+                    xos::u64 deadline, route_source route) {
+    if (!store.ready()) return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
+    int status = prepare(service_pid, address, port, hostname, deadline);
+    if (!status) status = store.copy_to(&anchor_);
+    return status ? status : handshake(service_pid, address, port, hostname, route);
+}
+
+int stream::prepare(xos::u64 service_pid, xos::u32 address, xos::u16 port,
+                    const char* hostname, xos::u64 deadline) {
+    if (started_ || !service_pid || !address || !port || !valid_dns_name(hostname))
         return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     started_ = true;
     deadline_ = deadline;
@@ -64,9 +81,12 @@ int stream::connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
         return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     if (xos_tls_wall_time(nullptr) < 0 || psa_crypto_init() != PSA_SUCCESS)
         return MBEDTLS_ERR_SSL_INTERNAL_ERROR;
-    int status = mbedtls_x509_crt_parse_der(&anchor_, trust_anchor, trust_anchor_size);
-    if (status) return status;
-    status = mbedtls_ssl_config_defaults(&config_, MBEDTLS_SSL_IS_CLIENT,
+    return 0;
+}
+
+int stream::handshake(xos::u64 service_pid, xos::u32 address, xos::u16 port,
+                      const char* hostname, route_source route) {
+    int status = mbedtls_ssl_config_defaults(&config_, MBEDTLS_SSL_IS_CLIENT,
                                          MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT);
     if (status) return status;
     mbedtls_ssl_conf_min_tls_version(&config_, MBEDTLS_SSL_VERSION_TLS1_3);

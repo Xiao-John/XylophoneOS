@@ -38,10 +38,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("archive", "sdk", "test-root", "output"):
         parser.add_argument("--" + name, type=Path, required=True)
+    parser.add_argument("--trust-fixtures", type=Path,
+                        help="explicit generated trust-store guest fixture header")
     args = parser.parse_args()
     archive = args.archive.resolve(strict=True)
     sdk = args.sdk.resolve(strict=True)
     test_root = args.test_root.resolve(strict=True)
+    trust_fixtures = args.trust_fixtures.resolve(strict=True) if args.trust_fixtures else None
+    if trust_fixtures and trust_fixtures.name != 'tls_trust_fixtures.hpp':
+        parser.error('--trust-fixtures must name tls_trust_fixtures.hpp')
     output = args.output.resolve()
     if test_root.name != "tls_test_root.h":
         parser.error("--test-root must name the generated tls_test_root.h")
@@ -117,15 +122,16 @@ def main():
         "DISABLE_PACKAGE_CONFIG_AND_INSTALL": "ON", **configs,
     }
     browser = ROOT / "src/ports/browser_http"
-    sources = [HERE / "platform.c", HERE / "stream.cpp", browser / "http.cpp",
+    sources = [HERE / "platform.c", HERE / "stream.cpp", HERE / "trust_store.cpp", browser / "http.cpp",
                ROOT / "tests/fixtures/network/native_tls_probe.cpp"]
     helpers = [ROOT / "scripts" / name for name in
                ("build_glibc_program.py", "glibc_g1_probe.py", "xypm_sdk_profile.py")]
-    inputs = [*sources, *configs.values(), HERE / "stream.hpp", HERE / "build_probe.py",
+    inputs = [*sources, *configs.values(), HERE / "stream.hpp", HERE / "trust_store.hpp", HERE / "build_probe.py",
               browser / "http.hpp", lock_path, *helpers,
               *(ROOT / path for path in NET_HEADERS + PLATFORM_SOURCES)]
     input_hashes = {path.relative_to(ROOT).as_posix(): sha(path) for path in inputs}
     test_root_hash = sha(test_root)
+    trust_hash = sha(trust_fixtures) if trust_fixtures else None
     run("configure", [cmake["path"], "-S", upstream, "-B", cmake_build,
                       *(f"-D{name}={value}" for name, value in cmake_options.items())])
     run("mbedtls", [cmake["path"], "--build", cmake_build, "--parallel", "2", "--target", "mbedtls"])
@@ -134,6 +140,9 @@ def main():
     includes = [HERE, browser, test_root.parent, upstream / "include",
                 upstream / "tf-psa-crypto/include", upstream / "tf-psa-crypto/drivers/builtin/include",
                 ROOT / "src/user/include", ROOT / "src/shared/include"]
+    if trust_fixtures:
+        includes.append(trust_fixtures.parent)
+        cflags.append('-DXOS_TLS_TRUST_STORE_PROBE=1')
     objects = []
     for source in sources:
         obj = output / (source.stem + ".o")
@@ -163,6 +172,8 @@ def main():
         sha(archive) != lock["archive_sha256"]
     ):
         raise ValueError("archive, SDK manifest, or test trust anchor changed")
+    if trust_fixtures and sha(trust_fixtures) != trust_hash:
+        raise ValueError('trust-store fixture changed')
     for identity in (*tools.values(), cmake):
         if sha(Path(identity["path"])) != identity["sha256"]:
             raise ValueError("tool changed during compilation")
@@ -175,6 +186,7 @@ def main():
         "archives": {str(path.relative_to(output)): sha(path) for path in archives},
         "tools": {**tools, "cmake": cmake}, "sanitized_environment": removed,
         "program_headers": headers, "elf_sha256": sha(elf),
+        **({'trust_fixture_sha256': trust_hash} if trust_fixtures else {}),
     }
     (output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
 

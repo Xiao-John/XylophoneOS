@@ -3,7 +3,8 @@
 This is a static, user-space TLS 1.3 client for the ClarkE secure transport
 milestone. It uses the kernel-authenticated N2 network service and its lwIP
 TCP stream. Applications supply an expected network-service PID, a resolved
-IPv4 address, a DNS name for X.509 and SNI, and a DER trust anchor. TLS
+IPv4 address, a DNS name for X.509 and SNI, and a DER trust anchor or an
+independently pinned, immutable CA snapshot. TLS
 authenticates the remote peer independently of native IPC authentication.
 
 The [official Mbed TLS 4.1.1 LTS release](https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-4.1.1)
@@ -47,9 +48,34 @@ single-threaded clients because the library's PSA state is process-global.
 The stream lives in user space and leaves the request protocol and its origin
 policy with the application. Future command-line HTTPS clients and a ClarkE
 network process can reuse the transport after qualification of their own
-policy and concurrency requirements. Public trust store, production time
-assurance, hardware entropy qualification, DNS integration, multithreaded
-clients, and NetworkProcess integration are outside the current evidence.
+policy and concurrency requirements. Production time assurance, hardware
+entropy qualification, public-Internet TLS handshakes, multithreaded clients,
+and NetworkProcess integration are outside the current evidence.
+
+## Versioned CA snapshots
+
+`trust_store.hpp` supports up to 256 CA anchors, 16 KiB per DER certificate and
+1 MiB per snapshot. The application supplies a `trust_store_pin` with an
+independently authorized generation and SHA-256. `load`/`load_file` reject
+changed bytes, another generation, malformed/non-CA certificates, duplicate
+anchors, nonzero reserved fields and trailing bytes. A failed load leaves the
+object unready. A successfully loaded object is immutable; replacing its file
+cannot change already loaded trust. Each TLS stream copies the chosen anchors
+and retains the existing hostname, clock, chain and TLS-closure checks.
+
+The snapshot format, authority boundary, update/rollback rules and deployment
+example are in [the trust-store contract](../../../docs/contracts/tls_trust_store.md).
+`browser_http::https_route::store` selects this implementation for the HTTPS
+transport. The existing single-root developer path remains available. No
+untrusted file, receipt, DNS answer or generation number grants itself trust.
+
+The packer accepts explicit PEM bytes and an independently chosen source
+digest. It validates real certificates with OpenSSL, emits deterministic DER
+ordering and exclusively publishes a new file. It never fetches updates or
+chooses a new pin. The public Mozilla/curl snapshot used in the P0 parser gate
+is a separate input, not bundled as a default trust decision. Its converted
+PEM lacks Firefox's extra out-of-band CA constraints; successful parsing does
+not claim Firefox-equivalent trust policy.
 
 ## Reproduce
 
@@ -79,3 +105,13 @@ the guest's leaf digest with the server's actual DER certificate. Certificate
 rejections expose no verified leaf and send no application request. Another VM disables RDRAND and checks
 that the same program exits before `main`. The private test certificate keys
 stay in the host fixture directory.
+
+Add `--trust-store` to `prepare` and pass the generated
+`tls_trust_fixtures.hpp` as `build_probe.py --trust-fixtures` to qualify the
+snapshot path. Optionally provide `prepare --public-trust-store FILE` for
+parsing a separately compiled public CA snapshot. That option constructs a
+test-only pin from its input; it is never an application trust-provisioning
+mechanism. The guest covers two independent accepted roots, removal, explicit
+authorized rollback, wrong roots/names/expiry, immutable loaded state, tampering,
+generation mismatch and bounded parser rejection. The host compiler gate is
+`tests/tls_trust_store_test.py --output build/trust-store-host`.

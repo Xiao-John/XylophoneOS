@@ -32,7 +32,7 @@ OTHER_NAME = "other.xos.test"
 CERT_DENIALS = {"wrong-name", "unknown-ca", "missing-intermediate", "expired"}
 
 
-def prepare(destination):
+def prepare(destination, trust_store=False, public_store=None):
     destination.mkdir(mode=0o700, parents=True, exist_ok=False)
     openssl = shutil.which("openssl")
     if not openssl:
@@ -41,20 +41,23 @@ def prepare(destination):
     def run(*args):
         return subprocess.check_output([openssl, *args], cwd=destination, stderr=subprocess.PIPE)
 
-    for authority in ("root", "other-root"):
+    for authority in (("root", "other-root", "second-root") if trust_store else ("root", "other-root")):
         run("req", "-x509", "-newkey", "rsa:2048", "-noenc", "-sha256", "-days", "7",
             "-subj", "/CN=XOS TLS Test " + authority, "-keyout", authority + ".key",
             "-out", authority + ".pem", "-addext", "basicConstraints=critical,CA:TRUE,pathlen:1",
             "-addext", "keyUsage=critical,keyCertSign,cRLSign")
 
     now = datetime.now(timezone.utc)
-    for name, issuer, role in (
+    certificates_to_create = [
         ("intermediate", "root", "issuer"),
         ("valid", "intermediate", "leaf"),
         ("expired", "intermediate", "leaf"),
         ("wrong-host", "intermediate", "leaf"),
         ("unknown-ca", "other-root", "leaf"),
-    ):
+    ]
+    if trust_store:
+        certificates_to_create.append(("second", "second-root", "leaf"))
+    for name, issuer, role in certificates_to_create:
         hostname = OTHER_NAME if name == "wrong-host" else HOSTNAME
         ext = destination / "extensions.cnf"
         ext.write_text(
@@ -81,6 +84,8 @@ def prepare(destination):
         path = destination / (name + ".pem")
         chain = (destination / "intermediate.pem").read_bytes() if name != "unknown-ca" else b""
         (destination / (name + "-chain.pem")).write_bytes(path.read_bytes() + chain)
+    if trust_store:
+        (destination / 'second-chain.pem').write_bytes((destination / 'second.pem').read_bytes())
     run("verify", "-CAfile", "root.pem", "-untrusted", "intermediate.pem",
         "-verify_hostname", HOSTNAME, "valid.pem")
     der = run("x509", "-in", "root.pem", "-outform", "DER")
@@ -92,6 +97,40 @@ def prepare(destination):
                "root_der_sha256": sha256(der).hexdigest(),
                "root_header_sha256": sha(header),
                "public_fixtures": {file.name: sha(file) for file in destination.glob("*.pem")}}
+    if trust_store:
+        from package_tls_trust_store import compile_snapshot
+        source_1 = (destination / 'root.pem').read_bytes() + (destination / 'second-root.pem').read_bytes()
+        source_2 = (destination / 'second-root.pem').read_bytes()
+        snapshots = [compile_snapshot(source_1, 1)[0], compile_snapshot(source_2, 2)[0]]
+        header = '#include "trust_store.hpp"\n'
+        for index, data in enumerate(snapshots, 1):
+            (destination / f'tls-roots-{index}.bin').write_bytes(data)
+            digest = ', '.join(f'0x{value:02x}' for value in sha256(data).digest())
+            header += f'static const native_tls::trust_store_pin tls_store_pin_{index}' + '{' + f'{index}, ' + '{' + digest + '}};\n'
+        header += 'static const unsigned char tls_store_fixture[] = {' + ', '.join(str(value) for value in snapshots[0]) + '};\n'
+        leaf = run('x509', '-in', 'valid.pem', '-outform', 'DER')
+        header += 'static const unsigned char tls_leaf_fixture[] = {' + ', '.join(str(value) for value in leaf) + '};\n'
+        if public_store:
+            import struct
+            public = public_store.read_bytes()
+            if len(public) < 32 or len(public) > 1024 * 1024 or public[:8] != b'XOSTRUST':
+                raise ValueError('invalid explicit public trust snapshot')
+            generation = struct.unpack_from('<Q', public, 16)[0]
+            count = struct.unpack_from('<I', public, 12)[0]
+            if not generation or not 1 <= count <= 256:
+                raise ValueError('invalid public trust snapshot identity')
+            digest = ', '.join(f'0x{value:02x}' for value in sha256(public).digest())
+            header += '#define XOS_TLS_PUBLIC_STORE_FIXTURE 1\n'
+            header += 'static const native_tls::trust_store_pin tls_public_store_pin{' + f'{generation}, ' + '{' + digest + '}};\n'
+            header += f'static constexpr size_t tls_public_store_count = {count};\n'
+            (destination / 'tls-public-roots.bin').write_bytes(public)
+        tampered = bytearray(snapshots[0]); tampered[-1] ^= 1
+        (destination / 'tls-roots-bad.bin').write_bytes(tampered)
+        (destination / 'tls_trust_fixtures.hpp').write_text(header)
+        binding['trust_store_fixtures'] = {name: sha(destination / name) for name in
+            ('tls-roots-1.bin', 'tls-roots-2.bin', 'tls-roots-bad.bin', 'tls_trust_fixtures.hpp')}
+        if public_store:
+            binding['trust_store_fixtures']['tls-public-roots.bin'] = sha(destination / 'tls-public-roots.bin')
     (destination / "certificates.json").write_text(json.dumps(binding, indent=2) + "\n")
 
 
@@ -119,13 +158,15 @@ def check_resources(guest, baseline):
 
 
 def exchange(guest, pid, scenario, certificates):
-    name = OTHER_NAME if scenario == "wrong-name" else HOSTNAME
-    certificate = scenario if scenario in {"expired", "unknown-ca"} else "valid"
+    case = scenario.removeprefix('store-')
+    name = OTHER_NAME if case == "wrong-name" else HOSTNAME
+    certificate = case if case in {"expired", "unknown-ca"} else 'second' if case in ('second', 'updated') else "valid"
+    rejected = case in CERT_DENIALS or case == 'removed'
     nonce = secrets.token_hex(16)
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     context.minimum_version = context.maximum_version = ssl.TLSVersion.TLSv1_3
     context.num_tickets = 0
-    chain_file = "valid.pem" if scenario == "missing-intermediate" else certificate + "-chain.pem"
+    chain_file = "valid.pem" if case == "missing-intermediate" else certificate + "-chain.pem"
     context.load_cert_chain(certificates / chain_file,
                             certificates / (certificate + ".key"))
     server = {"application_request": False}
@@ -169,7 +210,7 @@ def exchange(guest, pid, scenario, certificates):
                         tls.sendall(header[:13])
                         tls.sendall(header[13:] + body[:11])
                         tls.sendall(body[11:])
-                        if scenario == "truncated":
+                        if case == "truncated":
                             tls.shutdown(socket.SHUT_WR)
                         else:
                             tls.unwrap().close()
@@ -194,20 +235,20 @@ def exchange(guest, pid, scenario, certificates):
     if server.get("sni") != name:
         raise AssertionError(f"{scenario}: TLS SNI mismatch")
     peer_leaf = re.findall(rb"NATIVE_TLS_PEER_LEAF_SHA256 ([0-9a-f]{64})\r?\n", output)
-    if scenario in CERT_DENIALS:
+    if rejected:
         required = f"NATIVE_TLS_REJECT scenario={scenario} flags=0x".encode()
         if required not in output or server["application_request"] or "handshake_alert" not in server:
             raise AssertionError(f"{scenario}: missing authenticated certificate refusal")
         if peer_leaf:
             raise AssertionError(f"{scenario}: rejected certificate was exposed as verified")
     else:
-        required = (b"NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified" if scenario == "valid"
+        required = (b"NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified" if case != "truncated"
                     else b"NATIVE_TLS_REJECT scenario=truncated")
         if required not in output or server.get("version") != "TLSv1.3" or not server["application_request"]:
             raise AssertionError(f"{scenario}: HTTPS result differs from the TLS peer")
-        if scenario == "valid" and not server.get("client_close_notify"):
+        if case != "truncated" and not server.get("client_close_notify"):
             raise AssertionError("Peer did not receive the client's TLS close_notify")
-        leaf_der = ssl.PEM_cert_to_DER_cert((certificates / "valid.pem").read_text())
+        leaf_der = ssl.PEM_cert_to_DER_cert((certificates / (certificate + '.pem')).read_text())
         expected_leaf = sha256(leaf_der).hexdigest()
         if peer_leaf != [expected_leaf.encode()]:
             raise AssertionError(f"{scenario}: verified leaf differs from the TLS peer")
@@ -223,7 +264,7 @@ def test(system, probe, certificates, output):
     output.mkdir(parents=True, exist_ok=False)
     report = {"status": "not_run", "runner_sha256": sha(Path(__file__)),
               "scope": "controlled_ipv4_user_space_tls13", "checks": [],
-              "not_run": ["public_CA_store", "production_trusted_time", "hardware_entropy_qualification",
+              "not_run": ["public_CA_online_handshake", "production_trusted_time", "hardware_entropy_qualification",
                           "DNS", "NetworkProcess", "concurrent_tls_callers", "HTTP2_HTTP3"]}
     guest = None
     try:
@@ -235,6 +276,13 @@ def test(system, probe, certificates, output):
         verify_hashes(system, {name: art["sha256"] for name, art in manifest["artifacts"].items()})
         verify_hashes(ROOT, receipt["inputs"])
         verify_hashes(certificates, cert_binding["public_fixtures"])
+        trust_fixtures = cert_binding.get('trust_store_fixtures')
+        if trust_fixtures:
+            verify_hashes(certificates, trust_fixtures)
+            if receipt.get('trust_fixture_sha256') != trust_fixtures['tls_trust_fixtures.hpp']:
+                raise ValueError('trust-store probe is not bound to these fixture bytes')
+        elif receipt.get('trust_fixture_sha256'):
+            raise ValueError('missing trust-store fixture binding')
         elf = probe / "native_tls_probe.elf"
         image = system / "xos-install.iso"
         sdk = json.loads((system / "sdk/manifest.json").read_text())
@@ -256,8 +304,14 @@ def test(system, probe, certificates, output):
             create_fat32(disk, 512)
             transfer(disk, "mkdir", "/bin")
             transfer(disk, "import", "/bin/tls.elf", elf)
+            if trust_fixtures:
+                for name in trust_fixtures:
+                    if name.endswith('.bin'):
+                        transfer(disk, 'import', '/' + name, certificates / name)
             report["status"] = "failed"
-            guest = Guest(image, "guest", iso=True, work_disk=disk, network=True, log_dir=output)
+            # This serial-only runner never uses QMP. Do not require an unused
+            # Unix control socket on hosts that disallow that socket family.
+            guest = Guest(image, "guest", iso=True, work_disk=disk, network=True, qmp_enabled=False, log_dir=output)
             report["qemu"] = subprocess.check_output([guest.command[0], "--version"], text=True).splitlines()[0]
             report["qemu_command"] = guest.command
             boot(guest)
@@ -268,6 +322,28 @@ def test(system, probe, certificates, output):
                 report["checks"].append(exchange(guest, pid, scenario, certificates))
                 check_resources(guest, baseline)
             report["resources_after_every_exchange"] = list(baseline)
+            if trust_fixtures:
+                for scenario in ('store-selftest', 'store-tampered', 'store-stale'):
+                    row = command(guest, f'exec-file /bin/tls.elf {pid} 1 {scenario} {secrets.token_hex(16)}',
+                                  b'kind=exited code=', timeout=45)
+                    marker = b'TRUST_STORE_SELFTEST_PASS' if scenario == 'store-selftest' else b'TRUST_STORE_REJECT'
+                    if marker not in row or b'NATIVE_TLS_ERROR' in row or b'kind=exited code=0' not in row:
+                        raise AssertionError(f'{scenario}: {row!r}')
+                    check_resources(guest, baseline)
+                    report['checks'].append({'scenario': scenario, 'status': 'passed_before_network'})
+                if 'tls-public-roots.bin' in trust_fixtures:
+                    row = command(guest, f'exec-file /bin/tls.elf {pid} 1 store-public {secrets.token_hex(16)}',
+                                  b'kind=exited code=', timeout=60)
+                    if b'TRUST_PUBLIC_STORE_PASS' not in row or b'NATIVE_TLS_ERROR' in row or b'kind=exited code=0' not in row:
+                        raise AssertionError(f'public store: {row!r}')
+                    check_resources(guest, baseline)
+                    report['checks'].append({'scenario': 'store-public', 'status': 'parsed_pinned_CA_snapshot',
+                                             'snapshot_sha256': trust_fixtures['tls-public-roots.bin']})
+                for scenario in ('store-valid', 'store-second', 'store-unknown-ca', 'store-wrong-name',
+                                 'store-expired', 'store-removed', 'store-updated', 'store-rollback'):
+                    report['checks'].append(exchange(guest, pid, scenario, certificates))
+                    check_resources(guest, baseline)
+                report['trust_store_fixtures'] = trust_fixtures
             guest.close()
             guest = None
 
@@ -277,7 +353,7 @@ def test(system, probe, certificates, output):
                 cannot_connect.setblocking(False)
                 port = cannot_connect.getsockname()[1]
                 guest = Guest(image, "no_entropy", cpu="qemu64,-rdrand", iso=True, work_disk=disk,
-                              network=True, log_dir=output)
+                              network=True, qmp_enabled=False, log_dir=output)
                 report["qemu_no_entropy_command"] = guest.command
                 boot(guest)
                 output_line = command(guest, f"exec-file /bin/tls.elf 1 {port} valid {secrets.token_hex(16)}",
@@ -308,13 +384,19 @@ def main():
     os.umask(0o077)
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="mode", required=True)
-    sub.add_parser("prepare").add_argument("--certificates", type=Path, required=True)
+    preparation = sub.add_parser("prepare")
+    preparation.add_argument("--certificates", type=Path, required=True)
+    preparation.add_argument('--trust-store', action='store_true')
+    preparation.add_argument('--public-trust-store', type=Path,
+                             help='explicit precompiled public CA snapshot for parser qualification')
     check = sub.add_parser("test")
     for name in ("system", "probe", "certificates", "output"):
         check.add_argument("--" + name, type=Path, required=True)
     args = parser.parse_args()
     if args.mode == "prepare":
-        prepare(args.certificates.resolve())
+        if args.public_trust_store and not args.trust_store:
+            parser.error('--public-trust-store requires --trust-store')
+        prepare(args.certificates.resolve(), args.trust_store, args.public_trust_store)
     else:
         test(args.system.resolve(), args.probe.resolve(), args.certificates.resolve(), args.output.resolve())
 

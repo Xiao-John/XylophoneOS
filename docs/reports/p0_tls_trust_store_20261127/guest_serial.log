@@ -1,0 +1,343 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=2ef59f282e0e110c
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x0000000000268110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130176 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x0000000000360000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+Aping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+Abad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+Aping
+Abad length
+bad pointer
+tx
+ping
+Abad length
+bad pointer
+tx
+bad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+xsh> tAping
+bad length
+bad pointer
+tx
+race on
+xsh: trace on
+xsh> Aping
+demo quieAbad length
+bad pointer
+tx
+t
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> net-start 41
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x0000000000360000
+[net-start] pid=10
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 42373 valid 2c6e007dd7181f614f39a65fbe4dab99
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x00000000005eb000
+[loader] started pid=11 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=11
+NATIVE_TLS_CLOCK realtime=1795796799
+NATIVE_TLS_PEER_LEAF_SHA256 662e1f5bacdcb85ea26f47adbd5fa57c7b4f98ae4c1e3e9a2d0cf7adbad5f3c0
+NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified
+[task] event=reclaimed pid=11 pages=407
+[wait] pid=11 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 44819 wrong-name b24eb286214e4aa1e62941527262b1dc
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x00000000005eb000
+[loader] started pid=12 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=12
+NATIVE_TLS_CLOCK realtime=1795796801
+NATIVE_TLS_REJECT scenario=wrong-name flags=0x00000004
+[task] event=reclaimed pid=12 pages=407
+[wait] pid=12 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 55361 unknown-ca ffcd9c8f09f7b9a3eed857d55a152fdd
+[process] event=started pid=13 parent=7
+[process] pid=13 address_space=0x00000000005eb000
+[loader] started pid=13 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=13
+NATIVE_TLS_CLOCK realtime=1795796802
+NATIVE_TLS_REJECT scenario=unknown-ca flags=0x00000008
+[task] event=reclaimed pid=13 pages=407
+[wait] pid=13 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 33983 missing-intermediate 2a7a91cd7067796815dbdb71e7a4205e
+[process] event=started pid=14 parent=7
+[process] pid=14 address_space=0x00000000005eb000
+[loader] started pid=14 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=14
+NATIVE_TLS_CLOCK realtime=1795796804
+NATIVE_TLS_REJECT scenario=missing-intermediate flags=0x00000008
+[task] event=reclaimed pid=14 pages=407
+[wait] pid=14 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 49379 expired c45b4dfae431b04e83ddae81bf8b82e2
+[process] event=started pid=15 parent=7
+[process] pid=15 address_space=0x00000000005eb000
+[loader] started pid=15 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=15
+NATIVE_TLS_CLOCK realtime=1795796805
+NATIVE_TLS_REJECT scenario=expired flags=0x00000001
+[task] event=reclaimed pid=15 pages=407
+[wait] pid=15 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 57583 truncated aabb4bd12d03262b080f7738e48d7e04
+[process] event=started pid=16 parent=7
+[process] pid=16 address_space=0x00000000005eb000
+[loader] started pid=16 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=16
+NATIVE_TLS_CLOCK realtime=1795796806
+NATIVE_TLS_PEER_LEAF_SHA256 662e1f5bacdcb85ea26f47adbd5fa57c7b4f98ae4c1e3e9a2d0cf7adbad5f3c0
+NATIVE_TLS_REJECT scenario=truncated status=-29312
+[task] event=reclaimed pid=16 pages=407
+[wait] pid=16 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 36879 valid 347a87903035637aab30e0dcfdf7ecfc
+[process] event=started pid=17 parent=7
+[process] pid=17 address_space=0x00000000005eb000
+[loader] started pid=17 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=17
+NATIVE_TLS_CLOCK realtime=1795796808
+NATIVE_TLS_PEER_LEAF_SHA256 662e1f5bacdcb85ea26f47adbd5fa57c7b4f98ae4c1e3e9a2d0cf7adbad5f3c0
+NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified
+[task] event=reclaimed pid=17 pages=407
+[wait] pid=17 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 1 store-selftest d9a1f854aa35d1b20bf9373cdda53788
+[process] event=started pid=18 parent=7
+[process] pid=18 address_space=0x00000000005eb000
+[loader] started pid=18 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=18
+TRUST_STORE_SELFTEST_PASS checks=15
+[task] event=reclaimed pid=18 pages=407
+[wait] pid=18 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 1 store-tampered 58bbb6a35ed0cd1b8a019e2050f7343f
+[process] event=started pid=19 parent=7
+[process] pid=19 address_space=0x00000000005eb000
+[loader] started pid=19 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=19
+TRUST_STORE_REJECT scenario=store-tampered
+[task] event=reclaimed pid=19 pages=662
+[wait] pid=19 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 1 store-stale ee876ff7fb3afc2a4ee120a32cc4c0f6
+[process] event=started pid=20 parent=7
+[process] pid=20 address_space=0x00000000005eb000
+[loader] started pid=20 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=20
+TRUST_STORE_REJECT scenario=store-stale
+[task] event=reclaimed pid=20 pages=662
+[wait] pid=20 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 1 store-public dcf26c4aad6a3b10206666ab0ac9c96e
+[process] event=started pid=21 parent=7
+[process] pid=21 address_space=0x00000000005eb000
+[loader] started pid=21 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=21
+TRUST_PUBLIC_STORE_PASS generation=20261105 count=118
+[task] event=reclaimed pid=21 pages=728
+[wait] pid=21 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 37685 store-valid 01b1b0e3cda0af6feb60ec4ed5cc31af
+[process] event=started pid=22 parent=7
+[process] pid=22 address_space=0x00000000005eb000
+[loader] started pid=22 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=22
+TRUST_STORE_READY generation=1 count=2
+NATIVE_TLS_CLOCK realtime=1795796814
+NATIVE_TLS_PEER_LEAF_SHA256 662e1f5bacdcb85ea26f47adbd5fa57c7b4f98ae4c1e3e9a2d0cf7adbad5f3c0
+NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified
+[task] event=reclaimed pid=22 pages=662
+[wait] pid=22 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 58041 store-second b90526d7175420f21e863240f0af4e85
+[process] event=started pid=23 parent=7
+[process] pid=23 address_space=0x00000000005eb000
+[loader] started pid=23 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=23
+TRUST_STORE_READY generation=1 count=2
+NATIVE_TLS_CLOCK realtime=1795796816
+NATIVE_TLS_PEER_LEAF_SHA256 d07fa2a3c8fd887ecce1ef60a8284d0e0e6f9fef32535abef104b703615b38d5
+NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified
+[task] event=reclaimed pid=23 pages=662
+[wait] pid=23 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 57675 store-unknown-ca ff03b743ca5bd7f2c4c67baae1f4bb7c
+[process] event=started pid=24 parent=7
+[process] pid=24 address_space=0x00000000005eb000
+[loader] started pid=24 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=24
+TRUST_STORE_READY generation=1 count=2
+NATIVE_TLS_CLOCK realtime=1795796818
+NATIVE_TLS_REJECT scenario=store-unknown-ca flags=0x00000008
+[task] event=reclaimed pid=24 pages=662
+[wait] pid=24 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 56889 store-wrong-name f55f7f1280db10246081d7e6dc61d898
+[process] event=started pid=25 parent=7
+[process] pid=25 address_space=0x00000000005eb000
+[loader] started pid=25 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=25
+TRUST_STORE_READY generation=1 count=2
+NATIVE_TLS_CLOCK realtime=1795796819
+NATIVE_TLS_REJECT scenario=store-wrong-name flags=0x00000004
+[task] event=reclaimed pid=25 pages=662
+[wait] pid=25 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 59485 store-expired 7d4e794195954133577d4bd9bce19a72
+[process] event=started pid=26 parent=7
+[process] pid=26 address_space=0x00000000005eb000
+[loader] started pid=26 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=26
+TRUST_STORE_READY generation=1 count=2
+NATIVE_TLS_CLOCK realtime=1795796821
+NATIVE_TLS_REJECT scenario=store-expired flags=0x00000001
+[task] event=reclaimed pid=26 pages=662
+[wait] pid=26 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 40405 store-removed f85855f07858ee43a5aebebff358396d
+[process] event=started pid=27 parent=7
+[process] pid=27 address_space=0x00000000005eb000
+[loader] started pid=27 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=27
+TRUST_STORE_READY generation=2 count=1
+NATIVE_TLS_CLOCK realtime=1795796822
+NATIVE_TLS_REJECT scenario=store-removed flags=0x00000008
+[task] event=reclaimed pid=27 pages=662
+[wait] pid=27 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 43889 store-updated f8859b5c443d664b321276b662733bef
+[process] event=started pid=28 parent=7
+[process] pid=28 address_space=0x00000000005eb000
+[loader] started pid=28 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=28
+TRUST_STORE_READY generation=2 count=1
+NATIVE_TLS_CLOCK realtime=1795796824
+NATIVE_TLS_PEER_LEAF_SHA256 d07fa2a3c8fd887ecce1ef60a8284d0e0e6f9fef32535abef104b703615b38d5
+NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified
+[task] event=reclaimed pid=28 pages=662
+[wait] pid=28 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh> exec-file /bin/tls.elf 10 39389 store-rollback c27b40139511657daf2476a037507f0d
+[process] event=started pid=29 parent=7
+[process] pid=29 address_space=0x00000000005eb000
+[loader] started pid=29 file=/bin/tls.elf
+[process] event=wait_blocked parent=7 child=29
+TRUST_STORE_READY generation=1 count=2
+NATIVE_TLS_CLOCK realtime=1795796825
+NATIVE_TLS_PEER_LEAF_SHA256 662e1f5bacdcb85ea26f47adbd5fa57c7b4f98ae4c1e3e9a2d0cf7adbad5f3c0
+NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified
+[task] event=reclaimed pid=29 pages=662
+[wait] pid=29 kind=exited code=0
+xsh> stats
+[resources] free=129525 tasks=4 completions=2
+xsh>

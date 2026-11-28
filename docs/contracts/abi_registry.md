@@ -299,8 +299,11 @@ busy/state/resources 或无效请求不允许部分 unmap/释放；复用现有 
 invalid_argument、unsupported 等错误。最后引用释放后才销毁底页；原 owner 和
 budget_mask/树预算归属不因新增/减少 holder 被转移或提前返还 credit。
 
-known/supported feature mask 相应为 `0x3f`，旧内核对未知 action 返回 unsupported。
-Net2 readiness page capability 只有在 bulk_grant 与 grant_release 都可用时才发布。
+`query_features` 新增 opt-in flag bit 1（mask `0x2`）：flags 0/1 继续返回原
+known/supported mask `0x1f`，flags 2/3 才返回 `0x3f`，原 bit 0 的 direct-switch
+counter 语义不变。旧内核拒绝 flag 2 为 invalid_argument，对未知 action 返回
+unsupported。SDK 第三个 `include_grant_release` 参数默认 false；Net2 使用
+显式 `(false, true)` 查询，只有 bulk_grant 与 grant_release 都可用才发布页能力。
 匹配 kernel/shared ABI/SDK/libc 后需要真实 quota、foreign handle、拒绝输出、
 失败原子性及 service/client 任一先退出的 guest 证据。本认领不宣称该实现已通过。
 

@@ -1,0 +1,18 @@
+{
+  "artifacts": {
+    "dhcp_policy_host": "31d80b2d4aaa9cb5549fe697d9ab0793b8e12d0c6666965d0dc2e2003e3c7067",
+    "dhcp_policy_target.o": "c5500470e5dc013861fa1d77f8aa428e671dc4606af4c45c20051606fc11a423"
+  },
+  "command_environment": "ASAN_OPTIONS=detect_leaks=0 was set outside the SDK launcher and not forwarded",
+  "exit_code": 1,
+  "observation_scope": "stderr lines captured by tool output; initial runner did not persist the --list stream; final runner now does",
+  "observed_stderr": [
+    "==13==LeakSanitizer has encountered a fatal error.",
+    "==13==HINT: For debugging, try setting environment variable LSAN_OPTIONS=verbosity=1:log_threads=1",
+    "==13==HINT: LeakSanitizer does not work under ptrace (strace, gdb, etc)"
+  ],
+  "qualification": "failed before semantic cases",
+  "resolution": "Run env ASAN_OPTIONS=detect_leaks=0 inside SDK launcher; ASan/UBSan 14 scenarios passed; LeakSanitizer not_run",
+  "source_binding": "first_host_result.json inputs",
+  "stage": "first sanitized executable --list"
+}

@@ -195,6 +195,15 @@ struct process_stats { u32 free_pages; u32 tasks; u32 completions; u32 reserved;
 // it to authorize handle transfer instead of trusting a caller-supplied PID.
 struct file_session_info { u64 pid; u64 parent_pid; u32 request_handle; u32 response_handle; };
 struct pipe_handles { u32 read_token; u32 write_token; };
+// sys54 optional query mode; old wait byte counts 0..4096 stay unchanged.
+inline constexpr u64 pipe_wait_query_mode = u64{1} << 63;
+inline constexpr u32 pipe_status_version = 1;
+inline constexpr u32 pipe_status_read_end = 1, pipe_status_write_end = 2, pipe_status_peer_closed = 4;
+struct pipe_status_snapshot {
+    u32 version, size, readable, writable, flags, reserved;
+    u64 reserved2;
+};
+static_assert(sizeof(pipe_status_snapshot) == 32);
 enum class ipc_endpoint_action : u64 { create = 0, revoke = 1, query_peer = 2, close = 3 };
 // file_reply_until uses a nonzero absolute monotonic nanosecond deadline in
 // arg3 and is limited to the current process's authenticated file reply route.

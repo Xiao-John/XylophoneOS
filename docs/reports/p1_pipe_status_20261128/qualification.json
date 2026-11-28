@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "scope": "owned_non_consuming_native_pipe_status_v1",
+  "guest_rounds": 3,
+  "cases_per_round": 9,
+  "resource_baseline": [
+    129790,
+    2,
+    0
+  ],
+  "resource_return_after_each_round": true,
+  "system_build_id": "11a789e000461e5f",
+  "source_sha256": "11a789e000461e5fcdabce6b9b7986fd3c02844e1b86c24528e0513a570be34c",
+  "inputs_remain_checked_before_and_after_guest": true,
+  "prior_attempt": {
+    "status": "build_failed_before_guest",
+    "reason": "native crt0 requires xos_user_main; fixture originally used main",
+    "build_id": "ba936c928235c1fe",
+    "fixture_sha256": "23feb7cc6b6cdac71b1a864a51087bb1c97c4159b71676b0e43d6e6c0bfed20d",
+    "source_change": "fix native fixture entry and run it with exec-driver; kernel/ABI/query implementation unchanged"
+  },
+  "retained_limits": [
+    "pipe status only; connected-socket readiness is qualified separately under P1-H",
+    "does not grant pipe transfer authority; independent transfer is P1-K5",
+    "snapshot is one current kernel observation; later IO rechecks state",
+    "ordinary byte-count wait semantics and console refusal unchanged"
+  ]
+}

@@ -398,6 +398,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             "max_fork_depth": 3, "replacement_reservations": 1, "fd_count": 32, "spawn_argument_bytes": 255,
             "exec_argument_bytes": 4095, "startup_bytes": 16384, "pipe_atomic_bytes": 4096,
             "pipe_wait_write_minimum": True, "pipe_wait_deadline": "implemented_unqualified",
+            "pipe_status_query": {"syscall": 54, "mode": 1 << 63, "version": 1,
+                                  "bytes": 32, "ownership": "held_pipe_or_stdio_route"},
             "stream_lease": {"syscall": 80, "status": "claim_unsupported"},
             "channel": {"syscall": 81, "status": "implemented_unqualified"},
             "ipc_wait": {"syscall": 85, "receive_until_mode": 5, "send_until_mode": 6,

@@ -1,0 +1,333 @@
+{
+  "build_id": "11a789e000461e5f",
+  "abi": 1,
+  "target": "x86_64-elf",
+  "archive_provenance": {
+    "version": 1,
+    "manifests": {
+      "lib/libxos.a.member_manifest.json": "cb7473b1d603299df0a891abb88107243244aa2db2813361046513809c0cf14d",
+      "lib/libxos_loader.a.member_manifest.json": "678bf307908cda17c985e4bfe1402f64d300bbb8f5794fb5015469c1c2c72b50"
+    },
+    "legacy_archives": {
+      "lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+      "lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+    }
+  },
+  "configuration": {
+    "architecture": "x86_64",
+    "platform": "pc",
+    "firmware": "bios",
+    "kernel_base": 1048576,
+    "kernel_max_file_bytes": 8388608,
+    "kernel_max_memory_bytes": 16777216,
+    "easter_eggs": true,
+    "iso_payload_address": 33554432,
+    "iso_payload_max_bytes": 33554432
+  },
+  "runtime_model": "single",
+  "process_exit_cleanup": {
+    "syscall": 51,
+    "mode": 1,
+    "request_version": 1,
+    "deadline_max_ns": 30000000000,
+    "guest_qualification": "not_run"
+  },
+  "display_extensions": {
+    "version": 1,
+    "syscalls": [
+      65,
+      66
+    ],
+    "pixel_format": "XRGB8888",
+    "surface_count": 1
+  },
+  "vm_extensions": {
+    "version": 1,
+    "syscall": 67,
+    "status": "implemented_unqualified"
+  },
+  "process_budget": {
+    "version": 1,
+    "syscall": 87,
+    "set_mode": 4,
+    "query_mode": 5,
+    "config_bytes": 64,
+    "snapshot_bytes": 192,
+    "dimensions": [
+      "processes",
+      "pages",
+      "threads",
+      "ipc_objects",
+      "names",
+      "pipes"
+    ],
+    "scope": "inherited_cumulative_domains",
+    "guest_qualification": "not_run"
+  },
+  "dynamic_controller_observation": {
+    "version": 1,
+    "snapshot_bytes": 72,
+    "quarantine_reset": "process_lifetime",
+    "automatic_replay": false
+  },
+  "thread_extensions": {
+    "join_options": {
+      "version": 1,
+      "syscall": 44,
+      "size": 32,
+      "third_argument": "options_pointer"
+    },
+    "target_cpu_time": {
+      "version": 1,
+      "syscall": 41,
+      "mode": 1,
+      "size": 56
+    },
+    "guest_qualification": "not_run"
+  },
+  "cpu_time": {
+    "version": 1,
+    "syscall": 89,
+    "status": "implemented_unqualified",
+    "unit": "nanoseconds",
+    "scope": [
+      "process",
+      "current_thread",
+      "waited_children"
+    ]
+  },
+  "ipc_v1": {
+    "abi_version": 1,
+    "syscall": 88,
+    "status": "supported",
+    "features": [
+      "endpoint_call_v1",
+      "deadline_v1",
+      "notification_v1",
+      "wait_set_v1",
+      "bulk_grant_v1"
+    ],
+    "guest_qualification": {
+      "endpoint_call_v1": "previously_qualified",
+      "deadline_v1": "previously_qualified",
+      "notification_v1": "previously_qualified",
+      "wait_set_v1": "previously_qualified",
+      "bulk_grant_v1": "not_run"
+    }
+  },
+  "ipc_endpoint": {
+    "syscalls": [
+      84,
+      85,
+      86
+    ],
+    "quota_owner": "authenticated_pid",
+    "max_owned_channels": 4,
+    "max_owned_names": 2,
+    "pending_connections_count_as_channels": true,
+    "guest_qualification": "not_run"
+  },
+  "observation": {
+    "version": 1,
+    "syscall": 90,
+    "native_request_bytes": 48,
+    "native_snapshot_bytes": 120,
+    "scopes": [
+      "self",
+      "direct_child",
+      "held_endpoint"
+    ],
+    "deadline": "absolute_monotonic_ns",
+    "read_only": true,
+    "service": {
+      "version": 1,
+      "request_bytes": 64,
+      "response_bytes": 208,
+      "max_clients": 4,
+      "max_reads_per_grant": 64,
+      "max_request_ns": 5000000000,
+      "authority": "authenticated_peer_pid_and_image_generation",
+      "sources": [
+        "process",
+        "service",
+        "resource",
+        "runtime",
+        "network",
+        "trust"
+      ]
+    },
+    "proposal_execution": false,
+    "guest_qualification": "separate_matching_run"
+  },
+  "device_authorization": {
+    "abi_version": 1,
+    "syscall": 112,
+    "status": "implemented_unverified",
+    "operations": [
+      "grant",
+      "query",
+      "map",
+      "unmap",
+      "dma_alloc",
+      "dma_release",
+      "irq_bind",
+      "irq_wait",
+      "irq_ack",
+      "revoke",
+      "close"
+    ],
+    "profile": "exclusive_unused_pci_network_function",
+    "authority": "bootstrap_supervisor_owned_building_child",
+    "dma_isolation": "trusted_driver_and_device_no_iommu",
+    "dma_devices": [
+      "virtio_net_pci_1af4_1041",
+      "virtio_net_modern_capabilities_1af4_1000"
+    ],
+    "dma_release": "kernel_observed_virtio_reset_or_quarantine",
+    "guest_qualification": "not_run"
+  },
+  "network_service": {
+    "enabled": false,
+    "wire_version": 2,
+    "guest_qualification": "not_run"
+  },
+  "diagnostic_extensions": {
+    "fault_bundle_format": 1,
+    "loader_receipt": "sha256-held-instance",
+    "diagnostic_shell_command": "diag"
+  },
+  "file_identity": {
+    "version": 1,
+    "wire_version": 2,
+    "status": "implemented_unverified",
+    "cwd_operations": [
+      26,
+      27,
+      28
+    ],
+    "directory_flag": 1024,
+    "pin_flag": 2048,
+    "list_identity_flag": 4096,
+    "list_identity_record_bytes": 13,
+    "positioned_operations": [
+      30,
+      31
+    ],
+    "positioned_preserves_offset": true
+  },
+  "process_extensions": {
+    "syscalls": [
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86
+    ],
+    "file_operations": [
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31
+    ],
+    "wait": {
+      "syscall": 20,
+      "nonblocking_flag": 1,
+      "any_flag": 2,
+      "any_target": 0,
+      "completion_bytes": 48,
+      "guest_qualification": "not_run"
+    },
+    "thread_pointer": {
+      "syscall": 35,
+      "current_thread_mode": 1,
+      "guest_qualification": "not_run"
+    },
+    "startup_versions": [
+      1,
+      2,
+      3
+    ],
+    "exec_image_abi": 3,
+    "exec_marker": ".xos.exec",
+    "fork_supported": true,
+    "exec_supported": true,
+    "single_main_thread_only": true,
+    "max_fork_depth": 3,
+    "replacement_reservations": 1,
+    "fd_count": 32,
+    "spawn_argument_bytes": 255,
+    "exec_argument_bytes": 4095,
+    "startup_bytes": 16384,
+    "pipe_atomic_bytes": 4096,
+    "pipe_wait_write_minimum": true,
+    "pipe_wait_deadline": "implemented_unqualified",
+    "pipe_status_query": {
+      "syscall": 54,
+      "mode": 9223372036854775808,
+      "version": 1,
+      "bytes": 32,
+      "ownership": "held_pipe_or_stdio_route"
+    },
+    "stream_lease": {
+      "syscall": 80,
+      "status": "claim_unsupported"
+    },
+    "channel": {
+      "syscall": 81,
+      "status": "implemented_unqualified"
+    },
+    "ipc_wait": {
+      "syscall": 85,
+      "receive_until_mode": 5,
+      "send_until_mode": 6,
+      "deadline": "absolute_monotonic_ns",
+      "readiness_before_deadline": true,
+      "guest_qualification": "not_run"
+    },
+    "pio_grant": {
+      "syscall": 82,
+      "status": "implemented_unqualified"
+    },
+    "irq_event": {
+      "syscall": 83,
+      "status": "implemented_unqualified"
+    },
+    "pipe_atomic_flag": "0x8000000000000000"
+  },
+  "licenses": {
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "NOTICE": "dd2d47bae96472ce65252423f76ec3b868e83b4a03b34753f77f74f7a3c3f62e",
+    "licenses/GFDL-1.3.texi": "2b6a0198db38b8c8969e4581b2873d69411906ba8e6057c19fd6f5e00e291b2b",
+    "licenses/components.json": "1a35f0e920e3a615e7eaf134f1090a5955454f8279d845eaac439f971f658677",
+    "licenses/fatfs.txt": "5e865b99f0a4800b699d356a20887741c49681d36f712ba9cd0c2c65dea89f7c",
+    "licenses/legacy_mit_files.json": "56bdd672a3c0545cf5043289c0b29a4fef49ba0d3fef2fd29350e6f2ec093429",
+    "licenses/lwip.txt": "ef4aac92e05e87cd1cdc140870ed52206ba03d4a7fe46c1e11d7ffa6c87d252b",
+    "licenses/mit_legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+    "licenses/newlib.txt": "f3afe48e4bc6ed8466a42e9dacb6be1d8f9cbf5aac15cb8e474a5ccde8b40ef6",
+    "licenses/open_items.json": "dfbb1456412c729c2b90f2aa5d92318e068798f39d3ebbbaecb233b9384efa0f"
+  },
+  "libc": {
+    "name": "newlib",
+    "version": "4.6.0.20260123",
+    "libc_sha256": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+    "libm_sha256": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "status": "built_not_run",
+  "sources": {
+    "tests/fixtures/pipe_status_probe.cpp": "9d9428a139772321662f3d4020fc612ebd97ae55809fefc1a536c2940fb8cbe3",
+    "scripts/build_pipe_status_probe.py": "6b62948f8b2a30ecd3241dc214a87e8826e0180e3543f720eae250e99ea8ca83",
+    "src/shared/include/xos/process_abi.hpp": "727a831e40dd2f764ee8daaa33f89355ce5bf4d1c7cc82c8a80ab10d38000082",
+    "src/user/include/xos/sdk.hpp": "bc031082e1e44cc90dc8c61badeea6e562664fcaa87ab76beafc38ca72d04221"
+  },
+  "sdk_tree_sha256": "8cfeb1fdd6851d0266573f550f31b81d23066c384aacbaa2fed06b8b0b4c4821",
+  "elf_sha256": "2734b6f5177b5d5ac4d941d39fdc5561d67ca42c3f5b2b8125d23ea72092f8fc",
+  "commands": [
+    [
+      "${TOOL_BIN}/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wconversion",
+      "-Wshadow",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-threadsafe-statics",
+      "-fno-use-cxa-atexit",
+      "-fno-unwind-tables",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-stack-protector",
+      "-fno-pic",
+      "-fno-pie",
+      "-mno-red-zone",
+      "-mgeneral-regs-only",
+      "-nostdinc++",
+      "-I",
+      "${REPO}/build/p1_pipe_system_v2/sdk/include",
+      "${REPO}/tests/fixtures/pipe_status_probe.cpp",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "${REPO}/build/p1_pipe_system_v2/sdk/user.ld",
+      "${REPO}/build/p1_pipe_system_v2/sdk/crt0.o",
+      "-Wl,--start-group",
+      "${REPO}/build/p1_pipe_system_v2/sdk/lib/libxos.a",
+      "${REPO}/build/p1_pipe_system_v2/sdk/lib/libxos_loader.a",
+      "-Wl,--end-group",
+      "-o",
+      "${REPO}/build/p1_pipe_probe_v2/pipe_status.elf"
+    ]
+  ]
+}

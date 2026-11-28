@@ -216,7 +216,7 @@ create/delegate/map/unmap/close（delegate 保持同值句柄），supported mas
 | 接口 | 认领者与文件范围 | 版本、用途和兼容 |
 | --- | --- | --- |
 | Net2 operations 19 `readiness_bind` / 20 `shutdown_read`；capability 掩码 `0x4` / `0x8` | P1-H 网络线；`net_service_abi.hpp`、Net2 service/client、glibc socket bridge | claimed；capabilities 请求 flags=1 显式选择 revision 2，flags=0 保持旧 revision 1 与原能力位。旧服务拒绝 flags=1 时回退旧查询和有限等待。复用 sys88 grant，不新增 syscall。op19 的 32 字节响应绑定 4096 字节只读客户端页、session generation；页的有效结构为版本 1、128 字节，含序列、采样单调时间和两个绑定 handle 的 readiness/result。op20 是同 socket 所有权的无负载读方向关闭；readiness 的 `0x40` 只在新版页出现，旧 op16 mask 保持。 |
-| sys54 `sys_pipe_wait` 的显式 query mode `1ull << 63` | P1-H/P1-K5 共用机制；kernel pipe dispatch、`process_abi.hpp`、SDK、glibc poll | claimed；arg1 为调用者已持有的 pipe token 或 pipe stdio route，arg2 为模式值，arg3 指 32 字节版本 1 `pipe_status_snapshot`。旧 arg2=0–4096 的等待/期限含义不变，旧内核拒绝新模式。只读当前方向 byte count、方向和 peer_closed，不消费数据、不创造授权；console 拒绝。 |
+| sys54 `sys_pipe_wait` 的显式 query mode `1ull << 63` | P1-H/P1-K5 共用机制；kernel pipe dispatch、`process_abi.hpp`、SDK、glibc poll | allocated；[pipe_status_v1](pipe_status_v1.md) 已有独立 native guest 资格；arg1 为调用者已持有的 pipe token 或 pipe stdio route，arg2 为模式值，arg3 指 32 字节版本 1 `pipe_status_snapshot`。旧 arg2=0–4096 的等待/期限含义不变，旧内核拒绝新模式。只读当前方向 byte count、方向和 peer_closed，不消费数据、不创造授权；console 拒绝。 |
 | glibc `xos/sleep.h` 的 `xos_sleep_query` / `xos_sleep_interrupt` | P1-K1 运行时线；glibc XOS sleep adapter、公共头和 SDK manifest | claimed；版本 1、48 字节精确 sleep ticket，绑定 PID/TID/sequence/deadline。复用 sys48/49，既有正常 nanosleep/clock_nanosleep 保持；新机制是同进程显式中断，不是 POSIX 信号或 pthread_cancel。 |
 
 Net2 页只对认证会话授予 read 权；服务保留写映射，连接、grant 和映射生命周期

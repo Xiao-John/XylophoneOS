@@ -1,0 +1,55 @@
+{
+  "format": "public_evidence_provenance_v1",
+  "files": {
+    "report.json": {
+      "source": "build/p1_pipe_guest_v2/report.json",
+      "original_sha256": "4eaffa0480635b8aa0d69e16bfd3b9daa57ef7bac8ab48ac4892f3881cee2dab",
+      "public_sha256": "4eaffa0480635b8aa0d69e16bfd3b9daa57ef7bac8ab48ac4892f3881cee2dab",
+      "transformation": "host root replaced by ${REPO}; all content otherwise retained"
+    },
+    "fixture_receipt.json": {
+      "source": "build/p1_pipe_probe_v2/receipt.json",
+      "original_sha256": "e91191001d4ed1507367b742556ca16376fe42ca6ab5b978301acb5e7154a86c",
+      "public_sha256": "b9a532341b0b2bd55c728f4446a280b5d1845caaf1e1952a41395c71cc42c18e",
+      "transformation": "host root/tool prefixes replaced by ${REPO}, ${TOOL_BIN}, ${TOOL_ROOT}; hashes and output otherwise retained"
+    },
+    "sdk_manifest.json": {
+      "source": "build/p1_pipe_system_v2/sdk/manifest.json",
+      "original_sha256": "0b1d8cce46bfee1e2d4983e892c52ce0eeef6ef6be86abc388fb4bb1cc436b1b",
+      "public_sha256": "0b1d8cce46bfee1e2d4983e892c52ce0eeef6ef6be86abc388fb4bb1cc436b1b",
+      "transformation": "host root replaced by ${REPO}; all content otherwise retained"
+    },
+    "qemu.log": {
+      "source": "build/p1_pipe_guest_v2/pipe_status_qemu.log",
+      "original_sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+      "public_sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+      "transformation": "host root replaced by ${REPO}; all content otherwise retained"
+    },
+    "probe_build.log": {
+      "source": "build/p1_pipe_probe_v2/build.log",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "public_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "host root replaced by ${REPO}; all content otherwise retained"
+    },
+    "initial_link_failure.log": {
+      "source": "build/p1_pipe_probe/build.log",
+      "original_sha256": "8caebe2212a0e4070ab5308fb4b50c4e3a5f7a6e90a334e940472f6aaa2802d1",
+      "public_sha256": "56dbd2ab7f40573c4ee09efe92e7b93c223abad75cd6ccf4200d59e9f23a42ee",
+      "transformation": "host root/tool prefixes replaced by ${REPO}, ${TOOL_BIN}, ${TOOL_ROOT}; hashes and output otherwise retained"
+    },
+    "serial.log.gz": {
+      "source": "build/p1_pipe_guest_v2/pipe_status_serial.log",
+      "original_sha256": "d9acf8a28ec338cf1f0d7a5e7c7fb200faed95a13f369e9c5b59d3c6a4e1582d",
+      "transformation": "lossless gzip mtime=0; uncompressed bytes unchanged",
+      "uncompressed_public_sha256": "d9acf8a28ec338cf1f0d7a5e7c7fb200faed95a13f369e9c5b59d3c6a4e1582d",
+      "public_sha256": "fe5775c7f522cce76c87a119257e2413c2326c560207e2db60b2d6676e7ba757"
+    },
+    "system_manifest.json.gz": {
+      "source": "build/p1_pipe_system_v2/manifest.json",
+      "original_sha256": "3d8c42ff3e79d9236785cfd3ff2b3f2c62e71d1b9611a4432df3f2cdcfad3f8c",
+      "transformation": "host root/tool prefixes replaced by ${REPO}, ${TOOL_BIN}, ${TOOL_ROOT}; hashes and output otherwise retained; lossless gzip mtime=0",
+      "uncompressed_public_sha256": "8fd5cfc5d6183943da4a4f9be1aa598635117761757d8a297abf96df3312b927",
+      "public_sha256": "7a86a244c04af2826edcb4e629698b8d817dc19c0daaf235bd7348ca607c424e"
+    }
+  }
+}

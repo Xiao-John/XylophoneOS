@@ -207,6 +207,31 @@ create/delegate/map/unmap/close（delegate 保持同值句柄），supported mas
 每个op只在其服务/协议版本内解释，不与syscall共用“全球号表”。上述服务具体布局仍以
 共享头和专项契约为准；若新需求改变结构，必须独立评估版本/尺寸/向后兼容，不只抢新编号。
 
+## P1-H / P1-K1 协作认领（2026-11-28）
+
+本节只协调下一实现的公共接口；`claimed` 不生成源码常量、能力位或资格。
+实现 PR 须同时交付共享头、调用方/服务、SDK 清单、契约与真实客体证据，
+再将实际接口移入上方服务命名空间。现有 syscall 编号、布局和保留号段不变。
+
+| 接口 | 认领者与文件范围 | 版本、用途和兼容 |
+| --- | --- | --- |
+| Net2 operations 19 `readiness_bind` / 20 `shutdown_read`；capability 掩码 `0x4` / `0x8` | P1-H 网络线；`net_service_abi.hpp`、Net2 service/client、glibc socket bridge | claimed；capabilities 请求 flags=1 显式选择 revision 2，flags=0 保持旧 revision 1 与原能力位。旧服务拒绝 flags=1 时回退旧查询和有限等待。复用 sys88 grant，不新增 syscall。op19 的 32 字节响应绑定 4096 字节只读客户端页、session generation；页的有效结构为版本 1、128 字节，含序列、采样单调时间和两个绑定 handle 的 readiness/result。op20 是同 socket 所有权的无负载读方向关闭；readiness 的 `0x40` 只在新版页出现，旧 op16 mask 保持。 |
+| glibc `xos/sleep.h` 的 `xos_sleep_query` / `xos_sleep_interrupt` | P1-K1 运行时线；glibc XOS sleep adapter、公共头和 SDK manifest | claimed；版本 1、48 字节精确 sleep ticket，绑定 PID/TID/sequence/deadline。复用 sys48/49，既有正常 nanosleep/clock_nanosleep 保持；新机制是同进程显式中断，不是 POSIX 信号或 pthread_cancel。 |
+
+Net2 页只对认证会话授予 read 权；服务保留写映射，连接、grant 和映射生命周期
+须覆盖关闭、撤销、服务死亡和资源耗尽。seqlock 一致不等于状态新鲜：`poll(0)`
+可以使用有效正就绪提示，但不能把调用开始以前的负快照当成本次 not-ready；
+没有本次新鲜负快照时返回明确的 unknown/EAGAIN。有限等待沿用调用者原始绝对
+期限；超时和迟到回复不能增加预算。回滚到旧服务不得把缺失能力伪造成成功。
+
+sleep ticket 的字段固定为四个 u32（version、size、reserved、reserved2）和
+四个 u64（pid、tid、sequence、deadline_ns），合计 48 字节；所有 reserved 必须为零。
+只允许查询和中断本进程当前已登记的 wait，陈旧 ticket 返回 ESRCH，重复中断返回
+EALREADY，跨 PID 返回 EPERM，仍登记但已到期限返回 ETIMEDOUT。sequence 不回绕，fork 不继承活动 ticket；失败不影响
+后续 wait。相对等待被中断时报告剩余单调时长，绝对等待不改 rem；clock_nanosleep
+直接返回错误码且保持 errno。缺少新 API 的旧 SDK 保留原非中断语义，不能冒称支持。
+四个活动槽满时返回 EAGAIN，序号耗尽返回 EOVERFLOW；线程退出清理必须验收。pthread_cancel 保持现行 ENOTSUP。
+
 ## 分配流程
 
 1. 使用者先提供最小缺口/探针，说明是否能复用现有SDK/IPC；Qt具体边界见qt_platform.md。

@@ -1,0 +1,69 @@
+{
+  "dhcp_production_lwip_acd": {
+    "result": "passed",
+    "scenarios": [
+      "renew",
+      "expire",
+      "nak_config_change",
+      "rebind_new_issuer",
+      "malformed_reply",
+      "acd_conflict",
+      "conflict_backoff_recover",
+      "request_tx_anchor",
+      "queued_arp_retirement",
+      "no_static_fallback",
+      "untransmitted_request",
+      "max_finite_lease",
+      "arp_deferred_request_anchor",
+      "initial_discover_backpressure",
+      "initial_discover_budget",
+      "initial_udp_pcb_pressure",
+      "initial_udp_pcb_budget",
+      "clock_regression"
+    ],
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "asan_options": "detect_leaks=0",
+    "original_report_sha256": "8344b9494f849b8ae6df4908bf18e9ffcbd096e679e4b1db7119327c9212d530"
+  },
+  "dhcp_profile_negative_cases": 24,
+  "egress_profile_cases": [
+    "valid_v2",
+    "valid_v1",
+    "deny_all",
+    "explicit_all_addresses",
+    "host_bits",
+    "prefix_out_of_range",
+    "missing_prefix",
+    "noncanonical_prefix",
+    "ipv6",
+    "cidr_type",
+    "protocol",
+    "protocol_type",
+    "port_zero",
+    "port_overflow",
+    "port_reverse",
+    "port_bool",
+    "port_float",
+    "port_missing",
+    "rule_quota",
+    "duplicate_rule",
+    "egress_type",
+    "unknown_field",
+    "revision_bool",
+    "revision_unknown",
+    "v1_cannot_expand_policy",
+    "duplicate_json_key",
+    "oversized"
+  ],
+  "egress_profile_status": "passed",
+  "native_sdk_client": "passed pinned peer/exact response/deadline/reconnect/no-replay checks",
+  "license_materials": {
+    "checked": 10,
+    "open": 0
+  },
+  "abi_document_consistency": "passed",
+  "leak_sanitizer": "not_run"
+}

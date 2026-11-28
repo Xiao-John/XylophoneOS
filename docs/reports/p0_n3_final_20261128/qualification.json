@@ -1,0 +1,186 @@
+{
+  "status": "passed_explicit_profile",
+  "module": "P0-N3",
+  "qualified_source_commit": "7d4489df05b5e6bff57794773d3f4a1727d8cc57",
+  "preview_sdk_release": "xos-sdk-preview-2",
+  "preview_sdk_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "environment": "Linux x86-64 Preview 2 ordinary launcher, QEMU 11.1.3 TCG, one vCPU per guest",
+  "offline_network_namespace": "not_qualified",
+  "system_build_id": "92444fb7645ca1dc",
+  "system_image_sha256": "9a33dc98bb6458cfd2b78cd73f4af50f10bbb8a6972868b702d511c36cf5c805",
+  "system_manifest_sha256": "d55a5854fa3ee77434ddd9dcc0a553e95ef783c0fb50d0f6af928f52bcc16afa",
+  "system_source_file_count": 2211,
+  "system_source_map_sha256": "6b637ea755514eb4ea40dda675b9fd4030d9278acca610c4dd28fc51de65a206",
+  "original_report_sha256": "047d7c1b5ddca7732a270aeac6c8fa57169cca60e02c52403b983c07b6f7c2e7",
+  "evidence_scope": "Fresh result extracts from the checked-in runners. Raw serial output, packet captures and host command/tool inventories are retained locally, not included in this report.",
+  "runner": "tests/net_dhcp_guest.py",
+  "runner_sha256": "d164000b84be8e25f0aadfaabdc2eb9b5efe6beee57f0617808e37ec3476165b",
+  "peer_sha256": "d62b8a641615a55b2fd6c7bd816fc6095368aa08ce2ded55ee084846552b853e",
+  "profile": {
+    "acquisition_seconds": 60,
+    "addresses": [
+      "10.0.2.15",
+      "10.0.2.16"
+    ],
+    "egress": [
+      {
+        "cidr": "10.0.2.2/32",
+        "ports": [
+          3333,
+          3333
+        ],
+        "protocol": "udp"
+      }
+    ],
+    "gateways": [
+      "10.0.2.2"
+    ],
+    "max_lease_seconds": 4294967294,
+    "pci_instance": 41,
+    "resolvers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "revision": 1,
+    "servers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "source_sha256": "2a86e93c53ae5d46d8308ad41eb017eae95a8d05b203e4d850c6d4a8c3697cbf",
+    "subnet": "10.0.2.0/24"
+  },
+  "native_sdk_tree_sha256": "8ac4c9fdab24dd6dfc888204f2abff3ddf429be6e5b6b8eadd20bc255196857c",
+  "probe_sha256": "ff7719e2a0c998d41d4b8cbd89d52b1cfbb17880956caeff4375b7f3efff6161",
+  "resources_before": [
+    129768,
+    2,
+    0
+  ],
+  "resources_after": [
+    129768,
+    2,
+    0
+  ],
+  "scenarios": [
+    {
+      "scenario": "renew",
+      "dns_queries": 1,
+      "injected_malformed": 0,
+      "status": "passed",
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=2 state=4 address=167772687 server=167772674 request=23390000000 t1=37390000000 t2=47390000000 expiry=59390000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0"
+      ],
+      "resources_after": [
+        129768,
+        2,
+        0
+      ],
+      "application_udp_challenges": 1
+    },
+    {
+      "scenario": "expire",
+      "dns_queries": 5,
+      "injected_malformed": 0,
+      "status": "passed",
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=3 state=1 address=0 server=0 request=0 t1=0 t2=0 expiry=0 reason=5 rejected=0 conflicts=0 starts=2 start_failures=0"
+      ],
+      "resources_after": [
+        129768,
+        2,
+        0
+      ],
+      "application_udp_challenges": 1
+    },
+    {
+      "scenario": "nak_config_change",
+      "dns_queries": 6,
+      "injected_malformed": 0,
+      "status": "passed",
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=4 state=4 address=167772688 server=167772674 request=74630000000 t1=88630000000 t2=98630000000 expiry=110630000000 reason=1 rejected=0 conflicts=0 starts=2 start_failures=0"
+      ],
+      "resources_after": [
+        129768,
+        2,
+        0
+      ],
+      "application_udp_challenges": 2
+    },
+    {
+      "scenario": "rebind_new_issuer",
+      "dns_queries": 1,
+      "injected_malformed": 0,
+      "status": "passed",
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=2 state=4 address=167772687 server=167772675 request=97390000000 t1=111390000000 t2=121390000000 expiry=133390000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0"
+      ],
+      "resources_after": [
+        129768,
+        2,
+        0
+      ],
+      "application_udp_challenges": 1
+    },
+    {
+      "scenario": "malformed",
+      "dns_queries": 1,
+      "injected_malformed": 4,
+      "status": "passed",
+      "native_snapshots": [],
+      "resources_after": [
+        129768,
+        2,
+        0
+      ],
+      "application_udp_challenges": 1
+    },
+    {
+      "scenario": "acd_conflict",
+      "dns_queries": 0,
+      "injected_malformed": 0,
+      "status": "passed",
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=1 state=1 address=0 server=0 request=0 t1=0 t2=0 expiry=0 reason=2 rejected=0 conflicts=1 starts=1 start_failures=0"
+      ],
+      "resources_after": [
+        129768,
+        2,
+        0
+      ],
+      "application_udp_challenges": 0
+    },
+    {
+      "scenario": "conflict_backoff_recover",
+      "dns_queries": 1,
+      "injected_malformed": 0,
+      "status": "passed",
+      "native_snapshots": [],
+      "resources_after": [
+        129768,
+        2,
+        0
+      ],
+      "application_udp_challenges": 1
+    },
+    {
+      "scenario": "service_restart",
+      "resources_after": [
+        129768,
+        2,
+        0
+      ],
+      "status": "passed",
+      "application_udp_challenges": 2
+    }
+  ],
+  "source_and_artifact_validation": "The existing runner validated all system sources/artifacts and fixture/SDK bindings before and after the complete guest sequence.",
+  "not_qualified": [
+    "Physical NICs",
+    "multiple-resolver failover",
+    "IPv6 and relay",
+    "default installed DHCP plus dynamic GNU applications",
+    "general network reachability"
+  ],
+  "derivation": "Minimized fresh-run result derived from the retained original report identified by original_report_sha256. Random nonces and reply/challenge/frame payload bytes are omitted; pass/fail, counts, booleans, resource values and artifact digests are unchanged."
+}

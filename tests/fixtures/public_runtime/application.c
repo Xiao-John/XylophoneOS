@@ -3,6 +3,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sched.h>
 #include <spawn.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,8 +24,13 @@ __attribute__((constructor)) static void initialize(void)
         /* A parent must not return from posix_spawn while this executable's
            initializer is still running. The delay makes an early rtld READY
            observable before the completed constructor publishes its file. */
-        const struct timespec delay = {0, 100000000};
-        if (nanosleep(&delay, NULL) != 0) _Exit(51);
+        struct timespec begin, now;
+        if (clock_gettime(CLOCK_MONOTONIC, &begin) != 0) _Exit(51);
+        const long long deadline = (long long)begin.tv_sec * 1000000000LL
+            + begin.tv_nsec + 100000000LL;
+        do {
+            if (sched_yield() || clock_gettime(CLOCK_MONOTONIC, &now)) _Exit(51);
+        } while ((long long)now.tv_sec * 1000000000LL + now.tv_nsec < deadline);
         const int fd = open("/tests/constructor_ready", O_WRONLY | O_CREAT | O_EXCL, 0600);
         if (fd < 0 || write(fd, "READY", 5) != 5 || close(fd) != 0) _Exit(52);
     }

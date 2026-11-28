@@ -1,0 +1,21 @@
+{
+  "rule": "mechanical explicit environment-root templates; observations and all hashes unchanged",
+  "reports": {
+    "failed_v4_guest.json": {
+      "raw_sha256": "ac2a8b8a5d41e1e0b32dd808ac3a0f91c4ac2867e4610560b39fe1179a8ac7f6",
+      "verified_inputs": 3323
+    },
+    "diagnostic_guest.json": {
+      "raw_sha256": "ffcd8153a00fa5cc51d943e3ffe494acc3aeb881e7dec3e232130d09cb7e926f",
+      "verified_inputs": 878
+    },
+    "failed_v4_serial.log.gz": {
+      "raw_sha256": "04cda8135b58ff164a96d3db2755960bd910d1a37b3494ecf4739d4a7162f4c3"
+    },
+    "diagnostic_serial.log.gz": {
+      "raw_sha256": "57c1ecff7b4b7ac346384127272aead6d29701f4cfe4acee39306f1c09e71575"
+    }
+  },
+  "qualification_transfer": false,
+  "gnu_relative_commands": "GNU ../ input and include paths are mechanically resolved against each recorded command cwd before environment-root templating; raw command report hash is retained."
+}

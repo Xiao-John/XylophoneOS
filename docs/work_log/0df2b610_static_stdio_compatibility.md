@@ -45,3 +45,9 @@ probe ELF SHA 为
 本次是实际新 loader 与既有 c157 kernel/SDK 的组合验证。最终统一 source、
 完整 native/静态 SDK、installer 外部 hello 与 GNU READY 修复的组合资格
 尚待主任务重建和执行，不能把这里的通过转移到尚未运行的产物。
+
+完整派生证据及原始失败记录见
+[静态标准流资格报告](../reports/static_stdio_compatibility_20261128/README.md)。
+导出保留原始 source/ELF/SDK 身份，实际 14 项构建与运行源文件另外逐一核对
+`bddaf0fa4650beaacaa5094acca9def6c02e09e2` 的 Git blob；不把导出文件的
+字节摘要替换成原始 receipt 的摘要。

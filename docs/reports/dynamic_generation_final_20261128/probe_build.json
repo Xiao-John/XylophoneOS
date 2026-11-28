@@ -1,0 +1,141 @@
+{
+  "approved_generations": [
+    {
+      "id": 1,
+      "main": "/apps/p0c/main",
+      "manifest": "/usr/lib/xos/generations/p0c.bin",
+      "sha256": "76b190d753bad80ffd0ada8e13572e4fc3a4234e7fc7ece5493009c443a02148",
+      "snapshot": "generation_0.bin"
+    },
+    {
+      "id": 2,
+      "main": "/apps/p0c2/main",
+      "manifest": "/usr/lib/xos/generations/p0c2.bin",
+      "sha256": "a27c69b2427e5ad9c3cc723ea4c0387203041545e564385737a5fa44b665a2fd",
+      "snapshot": "generation_1.bin"
+    },
+    {
+      "id": 3,
+      "main": "/apps/p0missing/main",
+      "manifest": "/usr/lib/xos/generations/p0missing.bin",
+      "sha256": "866434f172d32f122a0baa5dcb6aa721ff449e2f16aaf0d821a008e59c1d4c79",
+      "snapshot": "generation_2.bin"
+    }
+  ],
+  "artifacts": {
+    "dynamic_generation.elf": "79b3e9620830b822d68e63dfdf5e9e6264dbfea3a0abb9d004e5d0dab62a4872",
+    "dynamic_roots.hpp": "7bcf42271185c7061655bab783a129886eb9434c20bd82182cba08c87f9d9f95"
+  },
+  "commands": [
+    [
+      "${XOS_PREVIEW2_PREFIX}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wconversion",
+      "-Wshadow",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-threadsafe-statics",
+      "-fno-use-cxa-atexit",
+      "-fno-unwind-tables",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-stack-protector",
+      "-fno-pic",
+      "-fno-pie",
+      "-mno-red-zone",
+      "-mgeneral-regs-only",
+      "-nostdinc++",
+      "-I",
+      "${XOS_R2_SOURCE}/build/dynamic_launcher_activation_v5/native_sdk_snapshot/include",
+      "-I",
+      "${XOS_R2_SOURCE}/build/dynamic_generation_probe_v5",
+      "${XOS_R2_SOURCE}/tests/fixtures/dynamic_generation_probe.cpp",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "${XOS_R2_SOURCE}/build/dynamic_launcher_activation_v5/native_sdk_snapshot/user.ld",
+      "${XOS_R2_SOURCE}/build/dynamic_launcher_activation_v5/native_sdk_snapshot/crt0.o",
+      "-Wl,--start-group",
+      "${XOS_R2_SOURCE}/build/dynamic_launcher_activation_v5/native_sdk_snapshot/lib/libxos.a",
+      "${XOS_R2_SOURCE}/build/dynamic_launcher_activation_v5/native_sdk_snapshot/lib/libxos_loader.a",
+      "-Wl,--end-group",
+      "-o",
+      "${XOS_R2_SOURCE}/build/dynamic_generation_probe_v5/dynamic_generation.elf"
+    ],
+    [
+      "${XOS_PREVIEW2_PREFIX}/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_R2_SOURCE}/build/dynamic_generation_probe_v5/dynamic_generation.elf"
+    ]
+  ],
+  "guest": "not_run",
+  "launcher_receipt_sha256": "5874d1e7e217cefe18d2e8fa921406979759e2afb1b100e65e6b875276f6555a",
+  "native_sdk_tree_sha256": "dca0aa4e45262357ba3a1dfe10b33b65287942b6a086183868db88febfa68f93",
+  "native_system_build_id": "faad61f4f20be0f7",
+  "sdk_manifest_sha256": "59e9daf663168bb591479434f373ad9616e19b8dab155d6a2c1a1d461d4aa95a",
+  "sdk_tree_sha256": "a1109d8caad10d6a921aeae9d74ed4e3d8e648b3cf3c9adc7c5f4c9edce12a31",
+  "sources": {
+    "scripts/build_dynamic_generation_probe.py": "4e3c6dbf14b0bfd2703203c324e300c51213e71297192550e33126c50eb9117d",
+    "scripts/build_dynamic_launcher.py": "1d41e850daa829c66280cdb7ff0407e3f4ebd7a6898357b07d4d82ee6473a1e0",
+    "scripts/sdk_receipt.py": "902e3351a5ca7e3fcb99c5f5827ebb983cf65f593fcec52b55a3868388e67bbd",
+    "scripts/toolchain.py": "cdb3658dfacb14fdb0da85a553f81f7d5bd508447fc484535abf6f155020d1c1",
+    "tests/fixtures/dynamic_generation_probe.cpp": "df5ded2317311ece27914a85f162167cd80eb15fb3a0e964186c7d65bbe88b5b"
+  },
+  "status": "built_not_run",
+  "toolchain": {
+    "executables": {
+      "ar": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+      },
+      "as": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+      },
+      "cc1": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+      },
+      "cc1plus": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+      },
+      "g++": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+      },
+      "gcc": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+      },
+      "ld": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+      },
+      "nasm": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/nasm/3.02/bin/nasm",
+        "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+      },
+      "nm": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+      },
+      "objcopy": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+      }
+    },
+    "g++": "16.2.0",
+    "gcc": "16.2.0",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "target": "x86_64-elf"
+  }
+}

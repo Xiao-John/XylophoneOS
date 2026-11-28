@@ -1,0 +1,25 @@
+{
+  "actual_linked_loader_source_sha256": "6c67569169ab3dca4b84d7650c0345024dc632ca4649da51e08bbf42db816486",
+  "checked_at": "After real guest completed, actual source and immutable Git blob checked against the unchanged before/after source hashes in the original build/guest receipts.",
+  "fixture_and_runner_revision": "bddaf0fa4650beaacaa5094acca9def6c02e09e2",
+  "native_source_revision": "3699916df590a2fe0ea9b419836ded2d9344e6b3",
+  "scope": "New production load.cpp explicitly linked into the probe; all native SDK headers, CRT, kernel, services and other archive members are the exact bound c157 composition. Full rebuilt final-system qualification is separate.",
+  "source_files": {
+    "scripts/build_static_stdio_probe.py": "059dd05c9e976eee833ab5a47df967664cfe09e741fb479b2bd9b285bb9a274a",
+    "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+    "scripts/sdk_receipt.py": "902e3351a5ca7e3fcb99c5f5827ebb983cf65f593fcec52b55a3868388e67bbd",
+    "scripts/toolchain.py": "cdb3658dfacb14fdb0da85a553f81f7d5bd508447fc484535abf6f155020d1c1",
+    "scripts/work_disk.py": "9ad9180df909cabfc4e3820089680ca03e1df1ebe2c2da66dada214c76c7fe28",
+    "src/user/loader/image_reader.hpp": "e1162a6bc2cc53ddeb7174a7074981bba8e9cc024b65c48d033ff333ab8804fd",
+    "src/user/loader/load.cpp": "6c67569169ab3dca4b84d7650c0345024dc632ca4649da51e08bbf42db816486",
+    "tests/boot_smoke.py": "a2fcf2909f10fc5f68bb69f7ff66cedf55a488443e5d59f735fc55788c2e3e2c",
+    "tests/fixtures/static_stdio_compat/probe.cpp": "b219b831ab9d8b3cb2ed5fc3ee9a3aead77496756518b73b822a26b3b84bb75d",
+    "tests/fixtures/static_stdio_compat/target.cpp": "8074f4d5aafab7cab4827e9b8b48d5bad30132e570ffdffb2b3cbd445be8467f",
+    "tests/process_smoke.py": "38e41d54222a2734b32000f30fe1677d10056454362f6d47e3b6259861721ee6",
+    "tests/shell_launch_support.py": "6a4b7d2555db36025633008fdb50ce66a0c323804985b7a37b36858edc5b7544",
+    "tests/static_stdio_compat_guest.py": "3202408395a8ab9cfed8d49a3cc774fafdd0dd64a93972851ed9afe7a1fc61f9",
+    "tests/task_smoke.py": "38ff9083d0afa4f9a77778a1bf8a689bbdba1b4307bb3d25fe9403f580a3d824"
+  },
+  "status": "passed",
+  "system_build_id": "c1575e2adfc6fa5d"
+}

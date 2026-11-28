@@ -1,0 +1,44 @@
+# Derived transcript; original byte identity is recorded in conversion.json.
+exec-driver /bin/static_stdio_probe.elf
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000036b000
+[loader] started pid=10 file=/bin/static_stdio_probe.elf
+[process] event=wait_blocked parent=7 child=10
+[process] event=started pid=11 parent=10
+[process] pid=11 address_space=0x00000000003ab000
+[process] event=wait_blocked parent=10 child=11
+STATIC_STDIO_CHILD raw
+[task] event=reclaimed pid=11 pages=44
+STATIC_STDIO_PASS raw_kernel_stdio
+[process] event=started pid=12 parent=10
+[process] pid=12 address_space=0x00000000003ab000
+[process] event=wait_blocked parent=10 child=12
+STATIC_STDIO_CHILD v3
+[task] event=reclaimed pid=12 pages=44
+STATIC_STDIO_PASS v3_keeps_descriptor_startup
+[process] event=started pid=13 parent=10
+[process] pid=13 address_space=0x00000000003ab000
+[process] event=wait_blocked parent=10 child=13
+STATIC_STDIO_CHILD closed_stdin
+[task] event=reclaimed pid=13 pages=44
+STATIC_STDIO_PASS raw_closed_stdin
+[process] event=started pid=14 parent=10
+[process] pid=14 address_space=0x00000000003ab000
+[process] event=wait_blocked parent=10 child=14
+[task] event=reclaimed pid=14 pages=44
+STATIC_STDIO_PASS raw_pipe_alias
+STATIC_STDIO_PASS extra_fd_rejected
+STATIC_STDIO_PASS status_flags_rejected
+STATIC_STDIO_PASS route_mismatch_rejected
+STATIC_STDIO_PASS duplicate_fd_rejected
+STATIC_STDIO_PASS alias_conflict_rejected
+STATIC_STDIO_PASS replacement_still_requires_v3
+STATIC_STDIO_PASS malformed_optin_rejected
+STATIC_STDIO_PASS files_stdio_rejected
+STATIC_STDIO_PASS legacy_files_transfer_rejected
+STATIC_STDIO_PASS cleanup_record_rejected
+STATIC_STDIO_PASS pinned_bootstrap_no_downgrade
+STATIC_STDIO_OK cases=15
+[task] event=reclaimed pid=10 pages=63
+[wait] pid=10 kind=exited code=0
+xsh>

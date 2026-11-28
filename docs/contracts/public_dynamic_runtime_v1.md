@@ -67,6 +67,27 @@ READY，构造函数中创建线程也不会提前发布启动成功。错误路
 kernel console、已路由到 stdio 的 pipe，以及普通 Files 描述可进入 v1–v3
 启动布局。socket 和未路由 pipe 不能被伪装成其他描述符。
 
+普通 v3 spawn 的 pipe token 属于父进程；`sys_process_stdio` 只把它转成
+子进程的固定 kernel route，不能把父 token 原样交给子进程读取。loader
+按开放描述对象把所有别名转换为同一子 route，并在启动前关闭没有被快照
+引用的重复 route。因此关闭最后一个 FD 时立即释放子 pipe 端点，不依赖
+进程退出产生 EOF。`FD_CLOEXEC` 记录不进入新 FD 表，父进程的表与 token
+所有权保持原样。若一个 kernel route 仅剩 fd >= 3 的别名，原 POSIX stdio
+已关闭，loader 可借用空闲的同方向传输 route；它不会把已关闭的 stdio
+重新加入子 FD 表。该传输机制只有一个读取 route 和两个写入 route，最多
+32 个 FD 是快照及别名数量上限，不表示可继承 32 个独立 pipe 对象；未路由
+pipe 继续在 glibc bridge 明确返回 `ENOTSUP`。同 PID `execve` 保留既有
+token，不能套用普通 spawn 的 route 转换。旧静态 v1/v2 降级的准入条件也
+保持不变。
+
+`build_spawn_pipe_probe.py` 的默认模式明确记录为 `diagnostic_override`，
+用于把所选真实 loader 对象显式链接到一个有独立 SDK 双锚的诊断程序。
+最终 SDK 门使用 `--sdk-loader`：核对 SDK 输入记录和随 SDK 分发的
+`load.cpp` 摘要与受测源码完全一致，只从已验证的 `libxos_terminal.a`
+链接，不插入 loader override。两种模式的 receipt 与执行报告分别保留。
+同一个公共 C 夹具也可构建为 `p0pipe` 批准根，由公共动态运行时矩阵的
+第九场 `c-pipe` 真正启动；最终报告导出加 `--require-pipe` 强制要求该场通过。
+
 `execve` 使用真实 kernel image replacement。新闭包完整预检后，旧进程先
 向原启动控制器发送 PREPARE，并获得新 generation/nonce 的 ALLOW。新映像
 继续使用同 PID、原有 Files 所有者及明确保留的控制通道。commit 前失败，旧

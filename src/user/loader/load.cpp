@@ -376,6 +376,8 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             const auto* descriptor_extension = reinterpret_cast<const startup_exec_extension*>(page + startup_exec_offset);
             auto* descriptors = reinterpret_cast<startup_descriptor*>(page + descriptor_extension->descriptors - startup_address);
             u32 transferred[32]{};
+            u32 object_routes[32]{};
+            u32 used_routes = 0;
             for (u32 i = 0; result >= 0 && i < options->descriptor_count; ++i) {
                 auto& descriptor = descriptors[i];
                 if (descriptor.fd >= 32 || descriptor.object >= 32 || descriptor.reserved
@@ -383,10 +385,80 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                     result = process_error_invalid;
                     break;
                 }
+                const auto& source = options->descriptors[i];
+                for (u32 previous = 0; previous < i; ++previous) {
+                    const auto& alias = options->descriptors[previous];
+                    const bool same_object = source.object == alias.object;
+                    const bool same_handle = source.kind == alias.kind && source.handle == alias.handle;
+                    if (source.fd == alias.fd || same_object != same_handle ||
+                        (same_object && source.flags != alias.flags)) {
+                        result = process_error_invalid;
+                        break;
+                    }
+                }
+                if (result < 0) break;
+                if (descriptor.kind == 1 || descriptor.kind == 3 || descriptor.kind == 4) {
+                    // Ordinary spawn transfers a pipe into a fixed child route,
+                    // not into the child's private pipe-token table. The v3 FD
+                    // snapshot must name that child route, including every
+                    // extra-FD alias of the same open description. Exec keeps
+                    // its existing native handles and never enters this block.
+                    if (object_routes[descriptor.object]) {
+                        descriptor.kind = static_cast<u32>(startup_fd_kind::kernel);
+                        descriptor.handle = object_routes[descriptor.object] - 1;
+                        continue;
+                    }
+                    const bool readable = descriptor.kind == 3 ||
+                        (descriptor.kind == 1 && descriptor.handle == 0);
+                    if ((descriptor.kind == 1 && descriptor.handle > 2) ||
+                        (descriptor.kind != 1 && descriptor.handle < process_pipe_token_min)) {
+                        result = process_error_invalid;
+                        break;
+                    }
+                    u32 route = 3;
+                    for (u32 fd = 0; fd < 3; ++fd) {
+                        const i64 inherited = options->stdio[fd] == -1
+                            ? static_cast<i64>(fd) : options->stdio[fd];
+                        if ((fd == 0) == readable && inherited == static_cast<i64>(descriptor.handle) &&
+                            options->file_handles[fd] == 0 && options->open_paths[fd] == nullptr) {
+                            route = fd;
+                            break;
+                        }
+                    }
+                    // A retained extra-FD kernel alias can outlive its original
+                    // user stdio slot. Use a vacant transport route without
+                    // adding that slot to the child's POSIX descriptor table.
+                    if (route == 3 && descriptor.kind == 1) {
+                        for (u32 fd = 0; fd < 3; ++fd) {
+                            if ((fd == 0) == readable && options->stdio[fd] == -2 &&
+                                !(used_routes & (1u << fd)) && options->file_handles[fd] == 0 &&
+                                options->open_paths[fd] == nullptr) {
+                                result = syscall(sys_process_stdio, static_cast<u64>(child), fd,
+                                                 descriptor.handle);
+                                if (result == 0) route = fd;
+                                break;
+                            }
+                        }
+                    }
+                    if (result < 0) break;
+                    if (route == 3) { result = process_error_invalid; break; }
+                    descriptor.kind = static_cast<u32>(startup_fd_kind::kernel);
+                    descriptor.handle = route;
+                    object_routes[descriptor.object] = route + 1;
+                    used_routes |= 1u << route;
+                    continue;
+                }
                 if (descriptor.kind != 2) continue;
                 u32& target = transferred[descriptor.object];
                 if (!target) result = file_client.transfer(descriptor.handle, static_cast<u64>(child), target);
                 if (result == 0) descriptor.handle = target;
+            }
+            // Aliased stdio can create two native routes but owns only one
+            // v3 open description. Retire every unused route before start so
+            // close(last FD) really releases the last child pipe endpoint.
+            for (u32 fd = 0; result >= 0 && fd < 3; ++fd) {
+                if (!(used_routes & (1u << fd)))
+                    result = syscall(sys_process_stdio, static_cast<u64>(child), fd, process_stdio_close);
             }
         }
         if (result >= 0 && options->delegate_spawn_depth != 0) {

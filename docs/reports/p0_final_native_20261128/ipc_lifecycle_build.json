@@ -1,0 +1,113 @@
+{
+  "artifacts": {
+    "ipc_exec_probe.elf": "84f1794384370e08c14df31bd03fd2080a91500a047823e1487ef44bce679525"
+  },
+  "commands": [
+    [
+      "${XOS_PREVIEW2_PREFIX}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-threadsafe-statics",
+      "-fno-use-cxa-atexit",
+      "-fno-unwind-tables",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-stack-protector",
+      "-fno-pic",
+      "-fno-pie",
+      "-mno-red-zone",
+      "-mgeneral-regs-only",
+      "-nostdinc++",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-I",
+      "${XOS_EXECUTION_SOURCE}/build/ipc_exec_v4/include",
+      "-idirafter",
+      "${XOS_FINAL_NATIVE_SOURCE}/build/sdk/include",
+      "${XOS_EXECUTION_SOURCE}/tests/fixtures/ipc_exec/ipc_exec_probe.cpp",
+      "${XOS_EXECUTION_SOURCE}/src/user/arch/x86_64/thread_core.cpp",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "${XOS_FINAL_NATIVE_SOURCE}/build/sdk/user.ld",
+      "${XOS_FINAL_NATIVE_SOURCE}/build/sdk/crt0.o",
+      "-Wl,--start-group",
+      "${XOS_FINAL_NATIVE_SOURCE}/build/sdk/lib/libxos.a",
+      "${XOS_FINAL_NATIVE_SOURCE}/build/sdk/lib/libxos_loader.a",
+      "-Wl,--end-group",
+      "-o",
+      "${XOS_EXECUTION_SOURCE}/build/ipc_exec_v4/ipc_exec_probe.elf"
+    ]
+  ],
+  "libc_linked": false,
+  "sdk_tree_sha256": "25c705d9e1388330db72d75ca1c22e129fe7a330a7810c9afedd49fdd5ebdde6",
+  "sources": {
+    "scripts/build_ipc_exec_probe.py": "e35cd6f5886751ad94ce8be62f4e2a827de086206fbc58f509883f101f14b7ce",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "src/shared/include/xos/process_abi.hpp": "e7097ee765656ed758382af9d7a44e6723fedf774e3fa8d30bc1667d53eb3542",
+    "src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+    "src/user/arch/x86_64/thread_core.cpp": "25e43b0a323994e11c77cd1533f6144a3bc8e788b62499ade4331c1f1f3e0732",
+    "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "src/user/include/xos/sdk.hpp": "ed7fef9df4affd52b3a5b99a15954e3407978c8ed12b38ed8fc04408e18353e1",
+    "src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+    "tests/fixtures/ipc_common.hpp": "65faaa090a739587f02efcb8170df2810945855bbe23ecf4087d6d9db8248368",
+    "tests/fixtures/ipc_exec/ipc_exec_probe.cpp": "d08a709530171e1e8a6eeef3234dfd1bdafc0db1d6ceaddf219249d751b539a3"
+  },
+  "toolchain": {
+    "executables": {
+      "ar": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+      },
+      "as": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+      },
+      "cc1": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+      },
+      "cc1plus": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+      },
+      "g++": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+      },
+      "gcc": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+      },
+      "ld": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+      },
+      "nasm": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/nasm/3.02/bin/nasm",
+        "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+      },
+      "nm": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+      },
+      "objcopy": {
+        "path": "${XOS_PREVIEW2_HOMEBREW}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+      }
+    },
+    "g++": "16.2.0",
+    "gcc": "16.2.0",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "target": "x86_64-elf"
+  }
+}

@@ -20,16 +20,20 @@ def sha(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('guest-dir', 'runtime-build', 'gcc-shared-build', 'launcher-build',
-                 'workspace', 'preview-prefix', 'preview-cellar', 'preview-temp', 'output'):
+                 'workspace', 'preview-prefix', 'preview-cellar', 'preview-tools', 'preview-temp', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--stage', type=Path, action='append', required=True)
     parser.add_argument('--source-rebuild', type=Path)
     parser.add_argument('--historical-guest-dir', type=Path, action='append', default=[])
+    parser.add_argument('--require-pipe', action='store_true',
+                        help='Require the ninth public dynamic pipe/alias/EOF case')
     args = parser.parse_args()
     guest_path = args.guest_dir / 'report.json'
     guest = json.loads(guest_path.read_bytes())
     required = {'c-basic', 'c-policy', 'c-spawn', 'c-exec', 'cpp-xsh', 'cpp-dash', 'thread-xsh', 'thread-dash'}
-    if (guest.get('status') != 'passed' or len(guest['checks']) != 8 * guest['rounds']
+    if args.require_pipe:
+        required.add('c-pipe')
+    if (guest.get('status') != 'passed' or len(guest['checks']) != len(required) * guest['rounds']
             or {row['name'] for row in guest['checks']} != required
             or any(row['status'] != 'passed' or row['resources_before'] != row['resources_after']
                    or row['resources_after'] != guest['baseline_resources'] for row in guest['checks'])):
@@ -78,6 +82,7 @@ def main():
     mappings = [('XOS_ROOT', ROOT), ('XOS_WORKSPACE', args.workspace),
                 ('XOS_PREVIEW2_CELLAR', args.preview_cellar),
                 ('XOS_PREVIEW2_BREW', args.preview_prefix),
+                ('XOS_PREVIEW2_TOOLS', args.preview_tools),
                 ('XOS_PREVIEW2_TEMP', args.preview_temp)]
     for name, path in raw.items():
         content = json.loads(path.read_bytes())
@@ -133,6 +138,17 @@ ELF would require restaging and another guest run.
             failed = ', '.join(row['name'] for row in checks if row.get('status') != 'passed') or 'none'
             history_section += (f"- Attempt {index}: `{data['status']}`, system `{data.get('native_build_id', 'unknown')}`, "
                                 f"{passed}/{len(checks)} recorded cases passed; unsuccessful cases: {failed}.\n")
+    pipe_section = ''
+    if args.require_pipe:
+        pipe_section = '''The additional dynamic C pipe case uses the public posix_spawn API
+within its own approved GNU closure. It checks real pipe reads and writes,
+shared status flags across stdio and extra-FD aliases, CLOEXEC exclusion,
+a second-generation spawn retaining a read alias after fd0 closes, a retained
+write alias after fd1 closes, last-close EOF while the child remains alive,
+explicit rejection of unrouted pipes without changing the parent's endpoints,
+and EPIPE after the last reader closes. This is a real dynamic execution;
+the separately recorded finite static loader override is not reused as its
+qualification.\n\n'''
     (out / 'README.md').write_text(f'''# Public GNU runtime: ordinary entry qualification
 
 The exact native system `{guest['native_build_id']}` passed all **{len(guest['checks'])}**
@@ -151,6 +167,8 @@ The C cases cover constructors, TLS, relocation, environment, explicit runtime
 dlopen/dlmopen/dlclose denial, inherited FD aliases/shared cursors, CLOEXEC,
 ordinary posix_spawn with authenticated readiness, failed exec cancellation
 that retains the old process, and successful same-PID image replacement.
+The spawn case checks that the main executable's constructor has finished
+before posix_spawn returns, using a constructor-created completion file.
 The C++ cases exercise actual shared GNU libstdc++/libgcc/libm, a separately
 linked C++ DSO, cross-DSO exceptions, RTTI, unwinding, TLS teardown, atexit,
 std::thread move/join and isolated application/DSO thread-local state. C++ and
@@ -158,6 +176,13 @@ thread programs enter through both ordinary xsh and dash commands. The outer
 dash is a separately bound static-libc baseline; it is used as a shell entry,
 not represented as a build of the tested shared libc.
 
+The thread executable also creates and joins a real worker inside its main
+program constructor. This exercises the internal already-loaded unwinder
+lookup before the initial READY. Readiness is sent once by shared libc
+after both constructor phases; later internal initialization must not
+replay it. Controller authentication and replay rejection stay strict.
+
+{pipe_section}
 The sequential ELF-metadata parser preserves the 30-second absolute startup
 budget. Each entry's wall time includes controller installation, any requested
 activation, inspection, launch, native/GNU startup and final completion; it
@@ -173,6 +198,7 @@ The flat root manifest covers all exported leaves and git authenticates it.
 environment-path substitution. `${{XOS_WORKSPACE}}` is the explicitly selected
 development workspace; `${{XOS_ROOT}}` is this checkout. The Preview2 prefix,
 Cellar and temporary-root templates identify that pinned SDK environment.
+The Preview2 tools template identifies its selected compiler-wrapper root.
 Within the recorded guest shell commands, `${{XOS_GUEST_TESTS}}` means `/tests`
 and `${{XOS_GUEST_APPS}}` means `/apps`; those templates are never applied to
 host source paths or artifact identities. Serial output preserves guest paths.

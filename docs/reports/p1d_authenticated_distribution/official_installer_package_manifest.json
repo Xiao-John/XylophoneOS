@@ -1,0 +1,21 @@
+{
+  "cache_key": "df6857205c780165f789",
+  "elf": "${XOS_SDK_WORKSPACE}/worktrees/p1_d/.cache/xos_seed/xypm/df6857205c780165f789/project/build/xypm.elf",
+  "files": 210,
+  "package": "${XOS_SDK_WORKSPACE}/worktrees/p1_d/.cache/xos_seed/xypm/df6857205c780165f789/xypm.xpk",
+  "sha256": "6e2be19d6bb1cc01c680f12a86ffbd1bd3720199c1eb69e01740d9957aa0d033",
+  "status": "packed_guest_not_run",
+  "target_profile": "xos-x86_64-glibc-p1-20261128-v1",
+  "public_projection": {
+    "raw_report_sha256": "c23879438ecb076088c1fbdf86ae3105eabe811d8e526b59f03dda322a3d4209",
+    "raw_bytes": 415,
+    "raw_source": ".cache/xos_seed/xypm/df6857205c780165f789/manifest.json",
+    "transform": "JSON presentation and source/workspace or SDK installation prefixes only; all observed status, results, bytes digests, bounds and commands retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "development SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the development SDK"
+    },
+    "raw_report_unchanged": true
+  }
+}

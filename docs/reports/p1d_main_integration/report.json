@@ -1,0 +1,78 @@
+{
+  "format": "xos-p1d-main-integration-v1",
+  "status": "passed",
+  "main_parent": "a4d409695c4368a8522a15cb8565fd5905064d72",
+  "distribution_parent": "03462213d0fd950341880866971d88e76d8421eb",
+  "merge_base": "6332527ab64e92371266363f41f3247717a3cac8",
+  "source_tree_before_integration_evidence": "974c4e0fb864527694f4683a06fb3e44ed7b858b",
+  "textual_conflicts": [],
+  "d_parent_paths_preserved": 94,
+  "main_outside_d_paths_unchanged": true,
+  "native_system": {
+    "build_id": "48e4b5ee9477606d",
+    "manifest_sha256": "df2ab408cee5781923be51888a792dcb1a20a31f53506355397a64200cebde62",
+    "sdk_manifest_sha256": "02469459b96cd2129b1e50100fc4978375633ec9ac626ea1550ff09f9cc36851",
+    "sdk_tree_sha256": "5e6ebc1565d78024d807f7daaea799cd8f8634d0481aea130e6d1f48aafc22bc",
+    "artifacts": {
+      "xos-install.iso": "c9cda3e4c5037f7f92cd578025520da90469071490986e189349f4ea74ab2742",
+      "user_files.image.elf": "9d5b07f82bed4d5a2069d638a6dea5a9bb60d059ec8d333796d5dd71d915fb93",
+      "user_supervisor.image.elf": "0278ec7eadd8cd3f3691aa39a1471ce2af85cbc436d43bcd455f96a0737a7bc0",
+      "user_pumpkin_durable.image.elf": "c7dd9217d37fd1e36ecec9056080eaef0f9dbffdec01a91a25539eeaac2e6fac",
+      "user_p2_anchor_proxy.image.elf": "117ebc741a545b6e94fa8130d5ed323c1a924e78bf447df39d052914ddb43fb5"
+    }
+  },
+  "sdk": {
+    "tree_sha256": "ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254",
+    "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b"
+  },
+  "frozen_runtime_manifest_sha256": "a7a6360491bb8ebe13b85aab61be7d61d0cd26137d1f02f433d7ca908e8bd0dc",
+  "frozen_runtime_native_abi": "9dafe8ee0e45fbc1ccb00ee2362d1be5db38584553efcb8ae7a50d699cd4c849",
+  "old_runtime_input_differences": 8,
+  "additional_native_inputs": 3,
+  "new_guest_result": {
+    "boots": 3,
+    "installer_processes": 3,
+    "successful_installs": 2,
+    "rejected_old_release": 1,
+    "gnu_application_executions": 3,
+    "raw_report_sha256": "8a218056a8315ce0a1f6d07636316f0b6cd11bfc5dda566f1544b140d45c6bd1"
+  },
+  "unchanged_earlier_acceptance": {
+    "boots": 8,
+    "installer_processes": 15,
+    "gnu_application_executions": 8,
+    "evidence_files": 68,
+    "all_bytes_unchanged": true,
+    "evidence_manifest_sha256": "cc15539af0dad16ee413d66754b2f4fabf517b0b7d6a980a33ecfea9c574f869"
+  },
+  "frozen_delivery_kit": {
+    "sha256": "31db15ce0320405657fa75deadf33b2f1aa247ff2da7a2abbd8c070d0a86f0e5",
+    "bytes": 5701429,
+    "unchanged": true,
+    "repacked": false
+  },
+  "backing_lease": {
+    "profile": "launch_acceptance",
+    "duration_ns": 300000000000
+  },
+  "per_request_deadline_ns": 5000000000,
+  "installer_staging_deadline_ns": 120000000000,
+  "scope": "Compatibility of the existing official signed packages, public installer and frozen GNU runtime on the C-merged native main image with all G/H/K main content preserved; no GNU rebuild, no new signatures, no relabeling of the original acceptance or kit",
+  "limits": [
+    "Explicit developer COM1 authority; independent UID provider evidence remains in P1-C.",
+    "No qualification of new shared-libc sleep APIs or shared GNU fork from rebuilding an updated port.",
+    "No arbitrary physical-power-loss claim; publication and immutable staging retain the original bounds."
+  ],
+  "independent_source_review": {
+    "result": "no concrete blocker",
+    "scope": "read-only C owner review; no file edits or repeated tests",
+    "observations": [
+      "HEAD and MERGE_HEAD match the recorded exact parents",
+      "four identity headers match both the staged receipt and C main bytes",
+      "PPR12/13 protocol headers, implementation and store preserve C main",
+      "94 incoming D paths match the actual staged index",
+      "two native, two recipe and four port changes plus three new native inputs are counted correctly",
+      "scope distinguishes the new native image from historical v3 and does not claim a GNU rebuild"
+    ]
+  }
+}

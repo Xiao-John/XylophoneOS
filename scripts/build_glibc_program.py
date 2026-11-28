@@ -66,6 +66,9 @@ def main():
                         help='link the profile-verified startup stdio receiver')
     parser.add_argument('--source', type=Path, action='append', required=True)
     parser.add_argument('--include-dir', type=Path, action='append', default=[])
+    parser.add_argument('--link-archive', type=Path, action='append', default=[],
+                        help='explicit static archive; content is bound before and after linking')
+    parser.add_argument('--gc-sections', action='store_true')
     parser.add_argument('--project-inputs', type=Path, help='build receipt inputs relative to the current project directory')
     parser.add_argument('--define', action='append', default=[], metavar='NAME[=VALUE]')
     parser.add_argument('--output', type=Path, required=True)
@@ -89,6 +92,21 @@ def main():
     if any(not path.is_dir() for path in includes):
         parser.error('--include-dir must name a directory')
     inputs = load_json(args.project_inputs) if args.project_inputs else None
+    archives = []
+    for path in args.link_archive:
+        if path.is_symlink():
+            parser.error('archive symlink rejected')
+        archive = path.resolve(strict=True)
+        if archive.suffix != '.a' or not archive.is_file() or archive.read_bytes()[:8] != b'!<arch>\n':
+            parser.error('--link-archive requires a regular static archive')
+        if inputs is not None:
+            project = Path.cwd().resolve()
+            if (not archive.is_relative_to(project)
+                    or inputs.get(archive.relative_to(project).as_posix()) != sha(archive)):
+                parser.error('archive is outside the recorded project inputs')
+        archives.append(archive)
+    if len(archives) != len(set(archives)):
+        parser.error('duplicate link archive')
     if args.output.is_symlink():
         parser.error('output must be a new ELF path')
     output = args.output.resolve()
@@ -143,6 +161,8 @@ def main():
               'sdk_manifest_sha256': sha(manifest_path) if manifest_path.is_file() else None,
               'compiler': compiler, 'sanitized_environment': removed,
               'sources': {str(path): sha(path) for path in sources}, 'steps': [],
+              'link_archives': {str(path): sha(path) for path in archives},
+              'gc_sections': args.gc_sections,
               'guest_qualification': 'not_run'}
     if candidate is not None:
         report['profile_binding'] = binding
@@ -188,6 +208,8 @@ def main():
         if inputs is not None:
             flags.append('-ffile-prefix-map=' + str(Path.cwd()) + '=/xos-app')
         flags.extend('-D' + item for item in args.define)
+        if args.gc_sections:
+            flags += ['-ffunction-sections', '-fdata-sections']
         objects = []
         for i, source in enumerate(sources):
             obj = work / ('program_' + str(i) + '.o')
@@ -209,13 +231,13 @@ def main():
         if candidate is not None and 'usr/lib/libxos_terminal.a' not in candidate['sdk_binding']['link_artifacts']:
             terminal = []
         linked = work / 'program.elf'
-        run('link', driver + ['-static', '-no-pie',
+        run('link', driver + (['-Wl,--gc-sections'] if args.gc_sections else []) + ['-static', '-no-pie',
                      '-nostdlib', '-Wl,--build-id=none', '-Wl,-z,noexecstack',
                      '-Wl,-z,max-page-size=4096',
                      '-T', str(sdk / 'user.ld'), '-o', str(linked),
                      str(lib / 'xos_start.o'), str(lib / 'crti.o'),
                      str(lib / 'crtbegin.o'), str(lib / 'xos_start_c.o'), *objects,
-                     '-Wl,--start-group', *cxx_libraries, str(lib / 'libc.a'), str(lib / 'libm.a'),
+                     '-Wl,--start-group', *map(str, archives), *cxx_libraries, str(lib / 'libc.a'), str(lib / 'libm.a'),
                      *terminal,
                      str(lib / 'libgcc.a'), *unwind, '-Wl,--end-group',
                      str(lib / 'crtend.o'), str(lib / 'crtn.o')])
@@ -223,7 +245,8 @@ def main():
         if args.stdio_transfer:
             require_stdio_marker(linked.read_bytes(), linked.name)
         if (sha(Path(__file__)) != report['builder_sha256']
-                or any(sha(path) != report['sources'][str(path)] for path in sources)):
+                or any(sha(path) != report['sources'][str(path)] for path in sources)
+                or any(sha(path) != report['link_archives'][str(path)] for path in archives)):
             raise RuntimeError('source changed during compilation')
         if candidate is not None:
             if (verify_profile(load_json(args.profile), 'glibc', args.sdk.parent) != binding

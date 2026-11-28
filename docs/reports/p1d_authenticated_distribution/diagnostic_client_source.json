@@ -1,0 +1,7 @@
+{
+  "instrumented_source_sha256": "a651f64ae7f508146c4634c098dbb38bb943b8e42f03822d78cc9d037c8c79ff",
+  "original_installer_manifest_sha256": "21eba8435e8589bef5a141649ceaa35ce5263a10f00631c2281f3ff6f29aee01",
+  "original_source_sha256": "f56e2d500bb8435a3220b6b57342e403f8efefe0f15896da81361c9388b3e14c",
+  "scope": "failure-only observational copied-client diagnostics; no authority/deadline/return-value change",
+  "source": "/work/worktrees/p1_d/build/p1d-xypm-ipc-diagnostic-v1/project/src/pumpkin/provisioning_client.cpp"
+}

@@ -1,0 +1,41 @@
+{
+  "generation_id": 1102,
+  "generation_sha256": "a6efac6cbae46c09c28e707e7636e7fdf6501ff851db4355396a823ba5e91257",
+  "lock": "lock.json",
+  "objects": [
+    {
+      "path": "/usr/lib/xos/objects/a1d55c28186af302cdd4dcba5402663cfe8af8b7cedd8f904abf230eeaf399dc.elf",
+      "sha256": "a1d55c28186af302cdd4dcba5402663cfe8af8b7cedd8f904abf230eeaf399dc"
+    },
+    {
+      "path": "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1",
+      "sha256": "bea7ada46c03b2c2ad1233de0784651a5e70dd9929b52472e0fc735973318a2b"
+    },
+    {
+      "path": "/usr/lib/xos/objects/5198f53084649ccd6335c53e491cf5873045184503de592f7e0dc38a0a75526d.elf",
+      "sha256": "5198f53084649ccd6335c53e491cf5873045184503de592f7e0dc38a0a75526d"
+    },
+    {
+      "path": "/usr/lib/xos/objects/370dfd7a5d03e7ef8405c237354e5a40d9de89072058e56be2f0e7499d87955b.elf",
+      "sha256": "370dfd7a5d03e7ef8405c237354e5a40d9de89072058e56be2f0e7499d87955b"
+    }
+  ],
+  "package_id": "xos.p1d.external",
+  "package_sha256": "87ad45a6e150c2100df7fbfd12a7450b8cdac0dc60872cc8c144ea080e6c58f8",
+  "profile_sha256": "736d3353d9aad14d019dbc678b77dbb8f6fe8585bed84b71e1f858566a7a3f9f",
+  "program_manifest_sha256": "27a585e2c63b2495c89eac6c86a6623f3367ea29ed1f9b304452f5886d662ce0",
+  "repository": "repository",
+  "status": "unsigned_distribution_built",
+  "public_projection": {
+    "raw_report_sha256": "f7c4b39a828e4619b24afd5f68729b7b801f9c66e20b071644322e7af4b58e55",
+    "raw_bytes": 1314,
+    "raw_source": "build/p1d-distribution-v2/report.json",
+    "transform": "JSON presentation and source/workspace or SDK installation prefixes only; all observed status, results, bytes digests, bounds and commands retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "development SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the development SDK"
+    },
+    "raw_report_unchanged": true
+  }
+}

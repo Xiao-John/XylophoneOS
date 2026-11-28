@@ -1,0 +1,45 @@
+{
+  "status": "NOT_PUBLIC_READY",
+  "source": "worktree",
+  "base": null,
+  "files_selected": 3,
+  "files_scanned": 3,
+  "findings": [
+    {
+      "location": ".cache/xos_seed/xypm/9e1f5fd24cdb50428746/xypm.xpk",
+      "category": "linux_home",
+      "classification": "CONFIRMED_PRIVATE_PATH",
+      "status": "OPEN"
+    },
+    {
+      "location": ".cache/xos_seed/xypm/9e1f5fd24cdb50428746/xypm.xpk",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": ".cache/xos_seed/xypm/9e1f5fd24cdb50428746/xypm.xpk!member_1",
+      "category": "linux_home",
+      "classification": "CONFIRMED_PRIVATE_PATH",
+      "status": "OPEN"
+    },
+    {
+      "location": ".cache/xos_seed/xypm/9e1f5fd24cdb50428746/xypm.xpk!member_1",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    }
+  ],
+  "public_projection": {
+    "raw_report_sha256": "4f52b0a8c06737d5f033e6c30aaa4eb1c0918614f6b4d25a5d1a9d3a66e8627e",
+    "raw_bytes": 912,
+    "raw_source": "build/p1d-distribution-public-paths.json",
+    "transform": "JSON presentation and source/workspace or SDK installation prefixes only; all observed status, results, bytes digests, bounds and commands retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "development SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the development SDK"
+    },
+    "raw_report_unchanged": true
+  }
+}

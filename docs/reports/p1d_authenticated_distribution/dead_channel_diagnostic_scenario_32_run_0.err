@@ -1,0 +1,2 @@
+P1D_IPC_DIAG op=6 send=26 receive=27 sequence=4 now=33500000000 sent=-1 peer_result=-1 peer=0 writable=-1
+xypm: authenticated distribution stopped: catalog request was not delivered

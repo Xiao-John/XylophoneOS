@@ -1,0 +1,132 @@
+{
+  "architecture": "x86_64",
+  "byte_order": "little",
+  "compiler_version": "16.2.0",
+  "features": [
+    "cxx_runtime",
+    "directories",
+    "file_io",
+    "heap",
+    "static_tls",
+    "stdio",
+    "stdio_transfer",
+    "threads"
+  ],
+  "format_version": 1,
+  "id": "xos-x86_64-glibc-p1-20261128-v1",
+  "layout": "glibc_static_native_tls_v1",
+  "runtime_family": "glibc",
+  "runtime_model": "threaded",
+  "sdk_binding": {
+    "archive_members": {
+      "usr/lib/libc.a": 1688,
+      "usr/lib/libgcc.a": 147,
+      "usr/lib/libm.a": 831,
+      "usr/lib/libstdc++.a": 199,
+      "usr/lib/libsupc++.a": 65,
+      "usr/lib/libxos_terminal.a": 17
+    },
+    "compiler": {
+      "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "gxx_sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "target": "x86_64-elf",
+      "version": "16.2.0"
+    },
+    "cxx_runtime": {
+      "gcc_version": "16.2.0",
+      "include_directories": [
+        "usr/include/c++/16.2.0",
+        "usr/include/c++/16.2.0/x86_64-unknown-xos",
+        "usr/include/c++/16.2.0/backward"
+      ],
+      "locale_model": "generic",
+      "source_authentication": {
+        "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+        "key_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+        "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+        "report_sha256": "05ad907dd5730faa8e41e26fdcc4146ef91572425b6f154bce4b172e77b4c22e",
+        "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+        "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+        "source_lock_sha256": "d43c0bd20209831ad936520999a106661ecca7911b9d80068007e65efae89026",
+        "status": "upstream_signature_verified",
+        "verification_files": {
+          "gcc_source_verification/gpgv.log": "81f75ace9bf61ee7f64b835e518dc4cda053ee4814a28ead6f0ffac5a79edd95",
+          "gcc_source_verification/gpgv.status": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4",
+          "gcc_source_verification/release_key.gpg": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+          "gcc_source_verification/report.json": "05ad907dd5730faa8e41e26fdcc4146ef91572425b6f154bce4b172e77b4c22e"
+        }
+      },
+      "target": "x86_64-unknown-xos",
+      "thread_model": "posix",
+      "unwinder": {
+        "frame_registry": "pthread_mutex",
+        "replaced_members": {
+          "emutls.o": "0aa7c2fb60441b44b066add1ec2cb951b69ba2364b4a4e6f0d5c2d74f4e447d8",
+          "unwind-c.o": "c2100138cc1c381a8d5f12e15ee8ab91a5dec3248a977b8640bf9f6939659a29",
+          "unwind-dw2-fde.o": "a253c3c958eac1e479cb8e3f7051bd9761f54080c2d7e9bfeb49e09790923b92",
+          "unwind-dw2.o": "2737dccaa009f5a49286f038c3fdaa491039137a459a392b2265e48b7e7ff08d",
+          "unwind-sjlj.o": "a2bff809d228057b7c3e9b98276a95610839edb93eb3d662756cc403d2372173"
+        },
+        "thread_model": "posix"
+      }
+    },
+    "format_version": 1,
+    "libc_version": "2.44",
+    "link_artifacts": {
+      "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+      "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+      "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+      "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+      "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+      "usr/lib/libc.a": "ec14da8503339cb3d2667759e8eaf00922beac5417d70cae42cf3a318bdd2570",
+      "usr/lib/libgcc.a": "88beb76641fdae379002b70e5bbb59fb1da96ae476c5d2bc703f738cdc4924c0",
+      "usr/lib/libm.a": "80ab9b97341e1033bae66ae93c4d16962cc043307cdb28ecc6ceab8880b3610f",
+      "usr/lib/libstdc++.a": "78b8abbb7f2e9163b65bf19adb24eedef924cc1e1720e4f97896d185493dc655",
+      "usr/lib/libsupc++.a": "66629c6ec15a661f621da656e9c88c9f6af986c1c85f46a1c261d2ba6e4decc0",
+      "usr/lib/libxos_terminal.a": "6313f89b1df5c82fd5ced0cdd0c11292addd5ae80e946ac51e6314257f8b6526",
+      "usr/lib/xos_start.o": "48084e19037c54f1ca8da325404011528656d457698f030e46a9a7f1930f979c",
+      "usr/lib/xos_start_c.o": "199c4a3c68f392555542ede7654e06c7aea35c277aa0019bbc8330cc0b3fa69c",
+      "usr/lib/xos_stdio_receiver.o": "7395dd0120cafc229d09036fec2a6766452ac417d2a5247e19290cc86df3c53a"
+    },
+    "runtime_family": "glibc",
+    "runtime_model": "threaded",
+    "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+    "sdk_tree_sha256": "ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254",
+    "source_authentication": {
+      "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+      "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+      "report_sha256": "3e4af7cce082eb1991aa7dcbeef6a1753c24a39b7e50873331b0226cc8981f47",
+      "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+      "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+      "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+      "status": "upstream_signature_verified",
+      "verification_files": {
+        "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+        "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+        "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af",
+        "source_verification/report.json": "3e4af7cce082eb1991aa7dcbeef6a1753c24a39b7e50873331b0226cc8981f47"
+      }
+    }
+  },
+  "sdk_tree_sha256": [
+    "ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254"
+  ],
+  "startup_version": 3,
+  "status": "candidate_guest_not_run",
+  "syscall_abi": 1,
+  "verified_system_builds": [],
+  "word_bits": 64,
+  "public_projection": {
+    "raw_report_sha256": "736d3353d9aad14d019dbc678b77dbb8f6fe8585bed84b71e1f858566a7a3f9f",
+    "raw_bytes": 6157,
+    "raw_source": "../p1_f/build/p1f-profile.json",
+    "transform": "JSON presentation and source/workspace or SDK installation prefixes only; all observed status, results, bytes digests, bounds and commands retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "development SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the development SDK"
+    },
+    "raw_report_unchanged": true
+  }
+}

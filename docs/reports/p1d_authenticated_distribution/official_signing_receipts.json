@@ -1,0 +1,41 @@
+{
+  "releases": [
+    {
+      "bootstrap_sha256": "54dc7ba7ec1c2870a3ca002147f49425269edaa2c3c73587241ef7f415dcccee",
+      "generation_sha256": "cafa89c951df33be8d1e48382facaa820dac4d1e2811a9463aaa4d157cd56c57",
+      "key_epoch": 1,
+      "metadata_sha256": "bc9a62f84dd1a54f5f536b353f788fbd0f663ee0eb4cc8a546287279b9780b68",
+      "repository_id": "xos.official",
+      "sequence": 1,
+      "signature_sha256": "e2c59ab0351ea67a94dec91908e3867f7f44d43e143b59d387687cb189f71db8",
+      "issued_at": 1795866871,
+      "expires_at": 1795953331,
+      "output": "build/p1d-official-signature-v1"
+    },
+    {
+      "bootstrap_sha256": "54dc7ba7ec1c2870a3ca002147f49425269edaa2c3c73587241ef7f415dcccee",
+      "generation_sha256": "a6efac6cbae46c09c28e707e7636e7fdf6501ff851db4355396a823ba5e91257",
+      "key_epoch": 1,
+      "metadata_sha256": "ff73a37608363d8c6e054252733e938216d8a019e96705938b88964b0aad6443",
+      "repository_id": "xos.official",
+      "sequence": 2,
+      "signature_sha256": "bdbd5d233a45f4de9523d3076c225a8aaec64ad4ec622d870305e04bde9eada0",
+      "issued_at": 1795866871,
+      "expires_at": 1795953331,
+      "output": "build/p1d-official-signature-v2"
+    }
+  ],
+  "private_material_included": false,
+  "public_projection": {
+    "raw_report_sha256": "19a3664787d8c9fa4a47d2734759108fa4457969d8db9019e100e5b0be35e7e2",
+    "raw_bytes": 1229,
+    "raw_source": "../../ops/p1d-official-signing-receipts.json",
+    "transform": "JSON presentation and source/workspace or SDK installation prefixes only; all observed status, results, bytes digests, bounds and commands retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "development SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the development SDK"
+    },
+    "raw_report_unchanged": true
+  }
+}

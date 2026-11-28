@@ -1,0 +1,25 @@
+{
+  "status": "failed",
+  "scenario": 32,
+  "events": [
+    {
+      "read_revision": null
+    },
+    {
+      "published_revision": 1,
+      "outcome": "committed"
+    }
+  ],
+  "diagnostics": {
+    "run_0.out": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    },
+    "run_0.err": {
+      "sha256": "acc2da64799e757c3dab4d0bb7346b372b1ff9ba734eaaafe04c890d552eb48d",
+      "text": "P1D_IPC_DIAG op=6 send=26 receive=27 sequence=4 now=33500000000 sent=-1 peer_result=-1 peer=0 writable=-1\nxypm: authenticated distribution stopped: catalog request was not delivered\n"
+    }
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "finish_code": 83
+}

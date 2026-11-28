@@ -1,0 +1,277 @@
+{
+  "format_version": 1,
+  "files": {
+    "README.md": {
+      "sha256": "5dbd74c7c75bade67bcb50443adb27d01068b92c04b13c940cf7386c1a16675b",
+      "bytes": 7593
+    },
+    "application_native_sdk_binding.json": {
+      "sha256": "c163d61a5f1c9c7124b8872a3d83ce632c4ad3996323b3f24ab0a7cf6a96d558",
+      "bytes": 861
+    },
+    "application_native_sdk_manifest.json": {
+      "sha256": "2a0169ad35b9ca88e08d7005c6ed354bd73d4d3059b16d54d175854688b6365a",
+      "bytes": 8916
+    },
+    "application_v1_build_manifest.json": {
+      "sha256": "6195fc44aa22cb5f8528e2fc16dbafd8923e1b77f9322d51144187dffc110cd7",
+      "bytes": 17977
+    },
+    "application_v2_build_manifest.json": {
+      "sha256": "083d82f7c97b84be8fe93705628e58c56fd8a42c79a0bc83c3ecb378963fc81d",
+      "bytes": 17977
+    },
+    "dead_channel_diagnostic_report.json": {
+      "sha256": "36ef647ce879e6ab63f1c70e4f449a3a55434027ccf8c3f0307bf8518dc64ed5",
+      "bytes": 86017
+    },
+    "dead_channel_diagnostic_scenario_32.json": {
+      "sha256": "3afb9be63511f0cf7cc2c82b188aca497a162851f52550ab9f7f0726e09f44cf",
+      "bytes": 730
+    },
+    "dead_channel_diagnostic_scenario_32_run_0.err": {
+      "sha256": "acc2da64799e757c3dab4d0bb7346b372b1ff9ba734eaaafe04c890d552eb48d",
+      "bytes": 182
+    },
+    "dead_channel_diagnostic_scenario_32_run_0.out": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "dead_channel_diagnostic_serial_base64.json": {
+      "sha256": "26ce3715dcfebedc6a14da5b30adbd035985854acf4505ee4d1f02cfc3b35375",
+      "bytes": 3675
+    },
+    "delivery_public_path_gate.json": {
+      "sha256": "7c56fe3458aa55f11e7708dbe9c79ce52faf28b0c8d1d39bf3d12559185bad90",
+      "bytes": 134
+    },
+    "delivery_receipt.json": {
+      "sha256": "d707084d769c350f8039dbf9fbb6aa72ed492b84930629b5b2a7e9f465b8c682",
+      "bytes": 1602
+    },
+    "diagnostic_cleanup.json": {
+      "sha256": "05c6c166d9036ba033472e95bd468c223226021837576db0eb4442b6a842a0b6",
+      "bytes": 124913
+    },
+    "diagnostic_client_build_receipt.json": {
+      "sha256": "fe61083f0dfe85160077b74511a311e750b227f773f982c4c866a01fa78ad86e",
+      "bytes": 20980
+    },
+    "diagnostic_client_builder.py": {
+      "sha256": "3a6c9b1c1ea8a3429e476ccdca9abe36ee8326a21cf3933f6d5617fac6b80fa8",
+      "bytes": 2927
+    },
+    "diagnostic_client_source.json": {
+      "sha256": "480dd17bc1a5a29ab87bd6c4445a58754bfcf673afe3e90591d3eb1ec2f3e32e",
+      "bytes": 530
+    },
+    "diagnostic_provisioning_client.cpp": {
+      "sha256": "a651f64ae7f508146c4634c098dbb38bb943b8e42f03822d78cc9d037c8c79ff",
+      "bytes": 2382
+    },
+    "distribution_v1_report.json": {
+      "sha256": "a82dbe37c89069eaeefd8ccff1e556f82d86f2b5a485ba5c65f418cbd3d22d27",
+      "bytes": 1957
+    },
+    "distribution_v2_report.json": {
+      "sha256": "87400776eea45448679877b0ef0ff0ace89d89696f56d2da9f49d3fa5bbf3783",
+      "bytes": 1957
+    },
+    "first_cas_failure_report.json": {
+      "sha256": "ca5e52d6ec30878974abb264ebc45750b840920f0abcd742971b39869d5a62be",
+      "bytes": 87278
+    },
+    "first_cas_failure_scenario_32.json": {
+      "sha256": "3caaeaea12f9108cb1796aa00504925c5f194b88c13a830359e7ea1d29543787",
+      "bytes": 623
+    },
+    "first_cas_failure_scenario_32_run_0.err": {
+      "sha256": "2930bc92fb2f74b84bdb169477a73c4a1a9b433469d84d857418cd67abe304ca",
+      "bytes": 76
+    },
+    "first_cas_failure_scenario_32_run_0.out": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "first_cas_failure_serial_base64.json": {
+      "sha256": "bce570fc6dcb0e2d893607acc2ed285274e0f5303f59a8e69a923369f18df46c",
+      "bytes": 3666
+    },
+    "glibc_sdk_manifest.json": {
+      "sha256": "b5ff5b87753ecd668796665b893aeca436b56aea095ae139d4711e0cd6f19e09",
+      "bytes": 331732
+    },
+    "glibc_sdk_profile.json": {
+      "sha256": "a663d51a8ee73931a6f8b5afa2a8ce5194fc1ea50a12d90aee5682416adeac0d",
+      "bytes": 6793
+    },
+    "host_authentication.json": {
+      "sha256": "8404284977fdb2e9cc45a2cfaf2e2e18bcbcd71ce4d0ef8b86f481ce8c803e22",
+      "bytes": 78125
+    },
+    "host_authentication_sanitized.json": {
+      "sha256": "b17e96eea539f1e1c880f481f1fc0faf48d1fa8839483c15f7d46ace220f2160",
+      "bytes": 78196
+    },
+    "host_openssl_snapshot.json": {
+      "sha256": "386555a8affdafa4998d2f163f7254aa1416b18a364d9dc2657a29699bf7d3a5",
+      "bytes": 14408
+    },
+    "installer_original_public_path_gate.json": {
+      "sha256": "cdd767e9a952fd2fc717b3b18ce822fea5f7d263b0bc03fb97a27ccdb02e0755",
+      "bytes": 1557
+    },
+    "installer_public_path_gate.json": {
+      "sha256": "3d503a6cea6f12eab4997e6abd37d0ba1fb6f94b80a530212fe98882d02d78b6",
+      "bytes": 785
+    },
+    "installer_strip_guard_analysis.json": {
+      "sha256": "15329e28d25300a28353cd0aef380288ba3792bb29ab0c04a0da2e87e9f9a55f",
+      "bytes": 1594
+    },
+    "interruption_installer_build_receipt.json": {
+      "sha256": "f27c26cb2c875a25ff17196f1c8e1cd0e2b092be6dac0964a6317e164490de1c",
+      "bytes": 21661
+    },
+    "lease_console_diagnostic_report.json": {
+      "sha256": "bc8d96eda1f138550958e25192bb47d281b0c3c1d51d722e3df29d4fe40af155",
+      "bytes": 94328
+    },
+    "lease_console_diagnostic_scenario_32_serial_base64.json": {
+      "sha256": "9cfe694212c4e9e2b0a080da850d0e5c38f6fbb079511fdd6a48e6eca91f733f",
+      "bytes": 3731
+    },
+    "logging_close_failure_report.json": {
+      "sha256": "d022565a24b9ae4236737c86dc03ec57c66eb1e18045389d2569b282f6d8fe2d",
+      "bytes": 85833
+    },
+    "logging_close_failure_scenario_32.json": {
+      "sha256": "4bc4201c3cd3032693ec084029260b008d3ebd576e6e8881deae7b1d8f134d91",
+      "bytes": 546
+    },
+    "logging_close_failure_scenario_32_run_0.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "logging_close_failure_scenario_32_run_0.out": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "logging_close_failure_serial_base64.json": {
+      "sha256": "0960a0770265d13a6038c85094b18b490a5aa9fd7aa5e7789372fb2736f90006",
+      "bytes": 3679
+    },
+    "official_guest_report.json": {
+      "sha256": "0ea48deb7a339f0d06d517a843edf05402691d3d7fd5254f9d4a93df41c91ab8",
+      "bytes": 54634
+    },
+    "official_installer_build_receipt.json": {
+      "sha256": "4ae3a488b64c6c624c642c02fb11ed7333fd76c1126d4a59674fc0571d3d7ffe",
+      "bytes": 26372
+    },
+    "official_installer_original_build_receipt.json": {
+      "sha256": "74a6efad4f105b6271b4775f03085c4b9a121526c3fab1abd710805e4ed6698f",
+      "bytes": 21672
+    },
+    "official_installer_package_manifest.json": {
+      "sha256": "9d5f6bb22f41dc6073bfe5f1b3d380491118fa125e67826bb7cc8a0c61437eeb",
+      "bytes": 1105
+    },
+    "official_scenario_32_serial_base64.json": {
+      "sha256": "d35536da5f4d2411e44a83220ae83d50209aee1415de735539d1a2141f4a880e",
+      "bytes": 4112
+    },
+    "official_scenario_35_serial_base64.json": {
+      "sha256": "f3e315d8bd630ceb2418f95b629f4db3e79d695b806e7c6e1b60ec471e8944ef",
+      "bytes": 3956
+    },
+    "official_scenario_36_serial_base64.json": {
+      "sha256": "a0bd72341379729830483348fb09f87374f822318b6acaa2142695923c2ab1e4",
+      "bytes": 3532
+    },
+    "official_signing_receipts.json": {
+      "sha256": "c8a8baf8ee442f3da735d6182167cb95f1bc8ac26190635b511b9f55b4756d0e",
+      "bytes": 1879
+    },
+    "p3_regression.log": {
+      "sha256": "10f2f14bb1d8e543a340d18fa78aa2906c697a9e9b71c21c840552567413d7a7",
+      "bytes": 4787
+    },
+    "package_cache_regression.log": {
+      "sha256": "a1451b9fb5e2a221785babe923490afbf24afab9dc7b63da594402fbb42ebfd1",
+      "bytes": 19
+    },
+    "qualification.json": {
+      "sha256": "d5ef9825329a9e76458f1bfbc6fb15d20c814632b0fbb595b3a9a6be6096679c",
+      "bytes": 5538
+    },
+    "recovery_checkpoint.json": {
+      "sha256": "e2be94d28f627f0ffabfee648c9795775d6019ac6d748fc8d22681fc917d8d9f",
+      "bytes": 788
+    },
+    "release_replay_vectors.json": {
+      "sha256": "2f6b7100aac7bf4f33ee7ab654ef92f0ffb0956fe216bcd4f6be6b58a7d2a48f",
+      "bytes": 68802
+    },
+    "runtime_final_source_binding.json": {
+      "sha256": "57f88c810af97545ea092dc0ab502aec4c8c41119ec0e261cd1fe57e1c4b8809",
+      "bytes": 1886
+    },
+    "runtime_gcc_source_cleanup.json": {
+      "sha256": "714683704c50ac99c6560a305b61b78d08a40d10a8169afebf36fecb378ebf65",
+      "bytes": 1288
+    },
+    "runtime_glibc_source_cleanup.json": {
+      "sha256": "3a6b3d286472ecb336aaef593bdd74e1b52ae00e9a0d7fc7313f5e119a1e929f",
+      "bytes": 1348
+    },
+    "shared_runtime_manifest.json": {
+      "sha256": "ac606f6e7a8ae65af832d91f7db840d64d1c9eb331ef87a1aad9a156f928deed",
+      "bytes": 129681
+    },
+    "system_build_report.json": {
+      "sha256": "2b6d071b8f6fa8ccb27f39e26d9c44d0fbee5a0153ebdb962e7d4dd65822062e",
+      "bytes": 603893
+    },
+    "system_manifest.json": {
+      "sha256": "d42e1125d3c6c43fac6c133e6faefd3eecf51981faea0e7e8e37e846dd7891c9",
+      "bytes": 595784
+    },
+    "target_openssl_report.json": {
+      "sha256": "ccb2200f30be0919983f0fc76133878ff7c229566083cb307a1d64a5acd030ad",
+      "bytes": 19283
+    },
+    "test_guest_report.json": {
+      "sha256": "57817db88b33971d5cc5b3936a4590161a971756bd975504c04db5b69e389a6d",
+      "bytes": 103697
+    },
+    "test_installer_build_receipt.json": {
+      "sha256": "6cd766968877dab362c8f3bece79b084ac71cf08786e6b372eb4ae8ba61e3b61",
+      "bytes": 21661
+    },
+    "test_repository_public_trust.json": {
+      "sha256": "3dcafac6f28afb5394a2190849bcb88e6054877f40720fac3b63b0d585f659fd",
+      "bytes": 940
+    },
+    "test_scenario_32_serial_base64.json": {
+      "sha256": "b4cce5c8cb8515bcc2e9e8d45e0ab22ed9c36069b123ddd83103fffa7793c9f0",
+      "bytes": 4160
+    },
+    "test_scenario_33_serial_base64.json": {
+      "sha256": "4a0bd673e60c5080588a6a83341af998f12798e0e6e2041b2799438ee71473ea",
+      "bytes": 3536
+    },
+    "test_scenario_34_serial_base64.json": {
+      "sha256": "d28ffc7a8b945251a8d9c801fa90a710fb40743a480cda77e491ddbcfd8dfc27",
+      "bytes": 3500
+    },
+    "test_scenario_35_serial_base64.json": {
+      "sha256": "952fc9c35e34f9e820743b402ef8242b7f403d2b09dce8e210c927aa6e5f2628",
+      "bytes": 3968
+    },
+    "test_scenario_36_serial_base64.json": {
+      "sha256": "bc6cfd4096e827ef25787494d13e41408ea6a1b7d3d213d32603b445d01e1a2e",
+      "bytes": 3576
+    }
+  }
+}

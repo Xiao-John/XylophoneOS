@@ -1,0 +1,169 @@
+{
+  "status": "passed",
+  "scope": "volatile single-controller approved GNU generation activation, rollback and revocation",
+  "producer_source_revision": "1b8b0ae1cc1fc29bfde69b4f0d69f49a9b8a39d0",
+  "producer_source_tree": "3c67a6f4ce7ee0061af3ef743c07b9d6757f1fb1",
+  "source_inputs_rechecked_against_git": 392,
+  "native_system_build_id": "ec96cc19110d9906",
+  "native_iso_sha256": "61b5db82695fdc7b90a03168f8b050a7b99e859880efc387036531a8d93d7f2e",
+  "native_system_manifest_sha256": "62b60bd97f45f86f5e898d490bcd51922c21f01f89957caa6ea475118bef19c0",
+  "native_sdk": {
+    "manifest_sha256": "8814a536758459d257aa03b46f863f1973dbf118d1199beeb6675c91070436a0",
+    "files_and_directories_tree_sha256": "a6b1a5d0246035ad3426d2276fe5331cc5f3ed3118a800e1b643c88e8fc38603",
+    "files_only_tree_sha256": "30a9805e12ffb19235129d14f24c950eefce1776cd94ccaf568c5f08285fd74e",
+    "files": 239,
+    "directories": 12
+  },
+  "c_sdk": {
+    "manifest_sha256": "9bb39b94106b9604d58acc5dc4c78829439c4eba6f456e7afdd270c99a154e22",
+    "full_tree_sha256": "081ca8515881a8d608a64e5bb72f2b3df56a3a48f6247a02a66d7d2e83bfee37"
+  },
+  "runtime_status": "public_runtime_built_not_run",
+  "runtime_build_steps": 75,
+  "all_runtime_steps_passed": true,
+  "runtime_native_abi": "e830a8bc8a48d660447ace92dd27c31410669c1392a5afb41a33a23697b1db19",
+  "runtime_artifacts": {
+    "gnu/libc.so": "94291b3ea313ea77036f3ff106573443d31865a3a5c82285c622dab4eaa168ee",
+    "gnu/elf/ld.so": "2a6dccdaf9b1dde37a557bd038b43fe501baaea41d2653f8b4aaca1dbdb9ad54",
+    "gnu/elf/xos_file_session.os": "807818e008bd8a0d037a33955ce531235a0e4e905100fb18befdeb87ccde1dee",
+    "gnu/csu/Scrt1.o": "a89039af90596fd24b304209e47d628e5cf808681989ba9aff2038a2f64b72d7",
+    "gnu/csu/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+    "gnu/csu/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+    "pic_crt/target/libgcc/crtbeginS.o": "66fda995333df8d1df62f3aa3d7f1c59b166b720711ef2b95024d395d4713868",
+    "pic_crt/target/libgcc/crtendS.o": "eb9e096ff419207d8fe8a843de4237bca2aeff31002b82f99dff800e8d915a29",
+    "native_pic/libxos_terminal_pic.a": "72e7fe173b65da8935e15c6828263f272ee6b41587b6feaf01050af495087099"
+  },
+  "authenticated_sources": {
+    "glibc_source_verification": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+    "gcc_source_verification": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e"
+  },
+  "launcher_elf_sha256": "6b07872b50874219ed4a9cf1336dc4b15c164a60fa06838284d9bd5413ab9f14",
+  "probe_elf_sha256": "61b672a5615b98504487156534258fd58b320e7f3b6695334221963d8c9238ad",
+  "approved_generations": [
+    {
+      "id": 1,
+      "sha256": "3b0b3bc19961ead2994dd9b6176beb782c2930aed429f066ed01a37d7fccb74e",
+      "manifest": "/usr/lib/xos/generations/p0c.bin",
+      "main": "/apps/p0c/main"
+    },
+    {
+      "id": 2,
+      "sha256": "1934468f74bf84002f62704b97bcc0acbbb363d153ab6bd4d2b52a853f2f6a26",
+      "manifest": "/usr/lib/xos/generations/p0c2.bin",
+      "main": "/apps/p0c2/main"
+    },
+    {
+      "id": 3,
+      "sha256": "b36808eaddb24ccc7e937131d7451cdfddba6311b3873d3b20a92969eef39524",
+      "manifest": "/usr/lib/xos/generations/p0missing.bin",
+      "main": "/apps/p0missing/main"
+    }
+  ],
+  "installed_files": {
+    "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "63d59ae0847fb3e7fbba477f0b50d9d3e2dc97ff85b6b6b811d5b50e025091dc",
+    "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "5a409fc3e956cb9a78029ace05e0741714573d7360f64080118f071dc0c4567a",
+    "/apps/p0c/main": "e639801350998a3a7a419a16d032a922b779276c106c82026b1fe6d53d162717",
+    "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "975b956876f7f03b0348bcf5e326954b37db59f189ebeec1e653a03488c055c4",
+    "/apps/p0c2/main": "e639801350998a3a7a419a16d032a922b779276c106c82026b1fe6d53d162717",
+    "/usr/lib/xos/generations/p0c.bin": "3b0b3bc19961ead2994dd9b6176beb782c2930aed429f066ed01a37d7fccb74e",
+    "/usr/lib/xos/generations/p0c2.bin": "1934468f74bf84002f62704b97bcc0acbbb363d153ab6bd4d2b52a853f2f6a26",
+    "/usr/lib/xos/generations/p0missing.bin": "b36808eaddb24ccc7e937131d7451cdfddba6311b3873d3b20a92969eef39524",
+    "/bin/r2_probe.elf": "61b672a5615b98504487156534258fd58b320e7f3b6695334221963d8c9238ad"
+  },
+  "deliberately_missing_main": "/apps/p0missing/main",
+  "baseline_resources": [
+    129793,
+    2,
+    0
+  ],
+  "runs": [
+    {
+      "round": 0,
+      "status": "passed",
+      "cases": [
+        "initial_generation_0",
+        "activate_1_preserves_old_pin",
+        "stale_sequence_rejected",
+        "failed_activation_preserves_old",
+        "rollback_0",
+        "revocation_blocks_future_admission",
+        "active_revocation_blocks_capture"
+      ],
+      "public_c_launches": 4,
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "status": "passed",
+      "cases": [
+        "initial_generation_0",
+        "activate_1_preserves_old_pin",
+        "stale_sequence_rejected",
+        "failed_activation_preserves_old",
+        "rollback_0",
+        "revocation_blocks_future_admission",
+        "active_revocation_blocks_capture"
+      ],
+      "public_c_launches": 4,
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "status": "passed",
+      "cases": [
+        "initial_generation_0",
+        "activate_1_preserves_old_pin",
+        "stale_sequence_rejected",
+        "failed_activation_preserves_old",
+        "rollback_0",
+        "revocation_blocks_future_admission",
+        "active_revocation_blocks_capture"
+      ],
+      "public_c_launches": 4,
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    }
+  ],
+  "total_generation_checks": 21,
+  "actual_public_gnu_c_launches": 12,
+  "source_and_artifact_inputs_rechecked_before_export": true,
+  "raw_local_receipts": {
+    "guest_sha256": "4caa807f9e07f40ad6d84cffed1171563bbaf585edfbfea411058845a9e149c0",
+    "launcher_sha256": "817b92ec26a67ee7e5085b7eac1d806eee97b933ea054b8c1cc75e2c08f1cb7e",
+    "probe_sha256": "039d88b30d8ce19f7a12c67dffd4e108194baefa9e081cb03a14232c8f309841",
+    "program_sha256": "f6c5b66872d8990489e947533d7e1a6be705f59f7123debdea51f7bc03ba3825",
+    "runtime_sha256": "e10b1a2f073de8ee69f3e7f38e38812cdd487c1d33c06e9c8fe098ecc957a59c"
+  },
+  "not_qualified": [
+    "persistent or global generation catalogs",
+    "cross-descendant revocation",
+    "process-tree quotas",
+    "power-loss recovery",
+    "online DSO loading"
+  ],
+  "replay": {
+    "producer": "scripts/build_glibc_shared_runtime.py --public-startup, then scripts/build_dynamic_program.py with tests/fixtures/public_runtime/application.c as p0c generation 1; supply the recorded C/native SDK anchors",
+    "variants": "Use scripts/dynamic_artifacts.py generation_record on the identical explicit ELF entries. Generation 2 replaces only the main guest path with /apps/p0c2/main. Generation 3 replaces it with /apps/p0missing/main. Approve all three binary roots in scripts/build_dynamic_launcher.py; install no main for generation 3.",
+    "probe": "python3 scripts/build_dynamic_generation_probe.py --launcher-build \"${XOS_LAUNCHER}\" --sdk-manifest-sha256 9bb39b94106b9604d58acc5dc4c78829439c4eba6f456e7afdd270c99a154e22 --sdk-tree-sha256 081ca8515881a8d608a64e5bb72f2b3df56a3a48f6247a02a66d7d2e83bfee37 --output \"${XOS_PROBE}\"",
+    "guest": "python3 tests/dynamic_generation_guest.py --system \"${XOS_SYSTEM}\" --system-source \"${XOS_NATIVE_SOURCE}\" --fixture \"${XOS_PROBE}\" --launcher-build \"${XOS_LAUNCHER}\" --program-build \"${XOS_PROGRAM}\" --runtime-build \"${XOS_RUNTIME}\" --program-source-revision 1b8b0ae1cc1fc29bfde69b4f0d69f49a9b8a39d0 --source-repository \"${XOS_RUNTIME_SOURCE}\" --sdk-manifest-sha256 9bb39b94106b9604d58acc5dc4c78829439c4eba6f456e7afdd270c99a154e22 --sdk-tree-sha256 081ca8515881a8d608a64e5bb72f2b3df56a3a48f6247a02a66d7d2e83bfee37 --repeat 3 --output \"${XOS_GUEST_REPORT}\""
+  },
+  "public_source_mapping": {
+    "local_producer_revision": "1b8b0ae1cc1fc29bfde69b4f0d69f49a9b8a39d0",
+    "public_revision": "0056c9fad097dddfeede319ff7c63b3ebd2bfcd5",
+    "shared_git_tree_sha1": "3c67a6f4ce7ee0061af3ef743c07b9d6757f1fb1",
+    "result": "identical complete Git trees",
+    "public_url": "https://github.com/Xiao-John/XylophoneOS/commit/0056c9fad097dddfeede319ff7c63b3ebd2bfcd5",
+    "observation": "The public commit tree was read from GitHub and exactly matches the locally recorded producer tree. Original receipts and revision fields are unchanged."
+  }
+}

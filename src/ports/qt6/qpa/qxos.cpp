@@ -20,6 +20,7 @@
 #include <qpa/qwindowsysteminterface.h>
 #include <private/qfreetypefontdatabase_p.h>
 #include "qeventdispatcher_xos_p.h"
+#include "frame_receipt.hpp"
 #include <xos/interactium_abi.hpp>
 #include <xos/process_abi.hpp>
 #include <xos/sdk.hpp>
@@ -457,6 +458,13 @@ public:
         }
         return client_->commit_frame(id_,serial);
     }
+    xos::qt::frame_commit_receipt last_frame() const { return last_frame_; }
+    void record_frame(xos::i64 result) {
+        last_frame_.serial = frame_serial_;
+        last_frame_.result = result;
+    }
+private:
+    xos::qt::frame_commit_receipt last_frame_{1, sizeof(xos::qt::frame_commit_receipt), 0, xos::process_error_state};
 };
 class backing_store final : public QPlatformBackingStore {
     QImage image;
@@ -479,6 +487,7 @@ public:
         const QRegion clipped=region.intersected(image.rect());
         const auto begin=xos::thread::clock();
         const auto rc=platform->flush(image,clipped);
+        platform->record_frame(rc);
         if(rc) { qWarning("XOS QPA: Interactium frame commit failed (%lld)",(long long)rc); QCoreApplication::exit(72); return; }
         std::printf("[qpa-frame] rects=%d stride=%d ns=%llu\n",clipped.rectCount(),image.bytesPerLine(),
             (unsigned long long)(xos::thread::clock()-begin));
@@ -506,6 +515,11 @@ public:
     QAbstractEventDispatcher *createEventDispatcher() const override { return new gui_dispatcher; }
     QPlatformFontDatabase *fontDatabase() const override { return &fonts; }
 };
+}
+extern "C" bool xos_qpa_frame_receipt(const QWindow* requested, xos::qt::frame_commit_receipt* result) {
+    if(!requested || !result || !requested->handle() || QThread::currentThread()!=requested->thread()) return false;
+    *result=static_cast<const ::window*>(requested->handle())->last_frame();
+    return true;
 }
 extern "C" void xos_qpa_pause_input(unsigned milliseconds) {
     pauseUntil.store(xos::thread::clock()+xos::u64(milliseconds)*1000000);

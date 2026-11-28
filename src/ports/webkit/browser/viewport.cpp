@@ -18,6 +18,7 @@
 #include <cstring>
 #include <thread>
 #include <vector>
+#include "../../qt6/qpa/frame_receipt.hpp"
 
 Q_IMPORT_PLUGIN(QXosIntegrationPlugin)
 namespace {
@@ -139,6 +140,8 @@ private:
     }
     void paint() {
         if (!isExposed()) return;
+        xos::qt::frame_commit_receipt before{};
+        if (!xos_qpa_frame_receipt(this, &before)) { QGuiApplication::exit(13); return; }
         backing_.resize(size()); const QRegion region(QRect(QPoint(0, 0), size()));
         backing_.beginPaint(region);
         QPainter painter(backing_.paintDevice());
@@ -158,6 +161,11 @@ private:
         painter.drawText(24, 316, QStringLiteral("WebCore DOM/CSS • isolated renderer and network"));
         painter.drawText(24, 344, QStringLiteral("Enter / F5: navigate    Esc: cancel    Ctrl+Q: close"));
         painter.end(); backing_.endPaint(); backing_.flush(region);
+        xos::qt::frame_commit_receipt committed{};
+        if (!xos_qpa_frame_receipt(this, &committed) || committed.version != 1 || committed.size != sizeof(committed) ||
+            !committed.serial || committed.serial <= before.serial || committed.result) {
+            QGuiApplication::exit(13); return;
+        }
         if (pending_present_) {
             packet value{}; value.action = operation::presented; value.navigation = navigation_; value.length = 32;
             std::memcpy(value.data, frame_digest_.data(), 32);
@@ -165,8 +173,9 @@ private:
             pending_present_ = false;
             char hexadecimal[65];
             for (unsigned i = 0; i < 32; ++i) std::snprintf(hexadecimal + i * 2, 3, "%02x", frame_digest_[i]);
-            std::printf("CLARKE_VIEWPORT_PRESENT navigation=%llu x=24 y=100 width=320 height=180 sha256=%s\n",
-                        static_cast<unsigned long long>(navigation_), hexadecimal); std::fflush(stdout);
+            std::printf("CLARKE_VIEWPORT_PRESENT navigation=%llu x=%d y=%d width=320 height=180 frame=%llu sha256=%s\n",
+                        static_cast<unsigned long long>(navigation_), x()+24, y()+100,
+                        static_cast<unsigned long long>(committed.serial), hexadecimal); std::fflush(stdout);
         }
     }
     ipc_channel channel_{};

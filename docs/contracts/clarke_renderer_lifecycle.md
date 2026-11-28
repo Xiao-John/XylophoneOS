@@ -23,7 +23,12 @@ The application protocol is revision 1 (`0x314b4c43`), with a 32-byte header,
 Every message is checked for exact length, operation, navigation, sequence of
 offsets and payload shape. Complete documents and frames carry SHA-256 digests.
 No partially received frame replaces the visible page. Qt acknowledges a frame
-only after its exposed window has flushed the actual backing store.
+only after its exposed window has flushed the actual backing store. The QPA
+records the actual Interactium commit result and a per-window serial. A same-process,
+GUI-thread-only revision-1 receipt (24 bytes: version, size, serial, result)
+lets the viewport require an advanced serial and zero result before `presented`.
+This is not a new kernel syscall or Interactium wire operation. A void Qt flush
+call alone is insufficient evidence that presentation succeeded.
 
 The parent creates two short-lived sys81 one-way bootstrap channels before
 startup. The child checks their kernel-reported peer and controller PID, creates
@@ -81,6 +86,24 @@ including failure. Cleanup is confirmed only when the recorded PID equals the
 prepared child, never-started and abort-attempted are both one, and abort returned
 zero. A negative spawn result is insufficient. Unknown/failed abort retains the
 denial, emits failure and ends the browser session.
+
+## Controlled HTTPS boundary
+
+The network broker uses the actual OpenSSL port over a bounded native net2 BIO.
+Its build pins one DNS origin, one IPv4 route and an explicit DER CA. TLS requires
+chain and hostname verification, SNI, the normal certificate validity check and
+at least TLS 1.2. HTTP framing is bounded, redirects are disabled and only a
+complete response is forwarded to the renderer. This profile does not claim DNS
+resolution, a public CA store or unrestricted internet browsing.
+
+The entire exchange, including shutdown, shares one three-second monotonic
+deadline, 4096 transport calls and 512 KiB of wire traffic. A blocking
+`SSL_shutdown` returning zero means the local close notification has been sent;
+the broker makes one further bounded call to receive the peer notification.
+It accepts only return one and does not treat unauthenticated EOF as success.
+Failures clear the response and close the native client. The isolated TLS guest
+uses this same production fetcher and tests both shutdown orders, a withheld
+notification, transport truncation and invalid certificate chains/names/dates.
 
 ## Qualification requirements
 

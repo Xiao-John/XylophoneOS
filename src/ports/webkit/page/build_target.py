@@ -143,7 +143,7 @@ def build(args):
             '-DXOS_WEBCORE_SOFTWARE=ON', '-DENABLE_STATIC_JSC=ON', '-DUSE_SYSTEM_MALLOC=ON',
             '-DENABLE_JIT=OFF', '-DENABLE_C_LOOP=OFF', '-DENABLE_WEBASSEMBLY=OFF',
             '-DENABLE_SAMPLING_PROFILER=OFF', '-DUSE_LIBBACKTRACE=OFF', '-DUSE_SYSTEM_UNIFDEF=ON',
-            '-DUNIFDEF_EXECUTABLE=' + str(unifdef), '-DUSE_THIN_ARCHIVES=OFF', '-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON',
+            '-DUNIFDEF_EXECUTABLE=' + str(unifdef), '-DUSE_THIN_ARCHIVES=ON', '-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON',
             '-DUSE_LCMS=OFF', '-DUSE_WOFF2=OFF', '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_SYSTEM_NAME=XOS',
             '-DCMAKE_SYSTEM_PROCESSOR=x86_64', '-DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY',
             '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON', '-DWEBKIT_MAX_BUNDLE_SIZE=' + str(args.bundle_size),
@@ -189,6 +189,20 @@ def build(args):
             raster / 'codecs/png/lib/libpng.a', raster / 'codecs/jpeg/lib/libjpeg.a', raster / 'zlib/lib/libz.a',
             *(args.webp / ('prefix/lib/lib' + name + '.a') for name in ('webpdemux', 'webp', 'sharpyuv')),
             args.openssl / 'prefix/usr/lib/libcrypto.a']
+        thin_members = {}
+        for archive in archives:
+            with archive.open('rb') as stream: thin = stream.read(8) == b'!<thin>\n'
+            if not thin: continue
+            names = subprocess.check_output([tools['ar']['path'], 't', archive], env=env, text=True).splitlines()
+            if not names: raise ValueError('empty thin archive: ' + str(archive))
+            for name in names:
+                member = Path(name)
+                if not member.is_absolute(): member = archive.parent / member
+                member = member.resolve(strict=True)
+                if not member.is_relative_to(cmake) or not member.is_file():
+                    raise ValueError('thin archive member escapes its build: ' + name)
+                thin_members[str(member.relative_to(ROOT))] = digest(member)
+        inputs.update({ROOT / name: expected for name, expected in thin_members.items()})
         elf = out / 'local_page.elf'
         run('link-local-page', [drivers / 'cxx', '-Wl,--gc-sections,--no-keep-memory', *objects,
                                '-Wl,--start-group', *archives, '-Wl,--end-group', '-o', elf])
@@ -199,6 +213,7 @@ def build(args):
             raise ValueError('SDK/source changed during WebCore build')
         report.update(status='webcore_local_page_linked', elf_sha256=digest(elf), program_headers=headers,
             objects={path.name: digest(path) for path in objects},
+            thin_members=thin_members,
             archives={str(path.relative_to(ROOT)): digest(path) for path in archives},
             inputs={str(path.relative_to(ROOT)): expected for path, expected in inputs.items()})
         save()

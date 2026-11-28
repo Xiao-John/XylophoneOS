@@ -87,11 +87,42 @@ net2 新扩展最终使用 operation **21**、独立 revision 1 请求与快照�
 | `build/p1f-profile.json` | `736d3353d9aad14d019dbc678b77dbb8f6fe8585bed84b71e1f858566a7a3f9f` |
 | C++ SDK tree | `ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254` |
 
-Profile id 为 `xos-x86_64-glibc-p1-20261128-v1`。C SDK 的 glibc 源码、configure
-目录和最终 sysroot 保留供动态 runtime 工作线只读消费。C++ 构建完成后核验全部
+Profile id 为 `xos-x86_64-glibc-p1-20261128-v1`。C SDK 的 glibc 源码与 configure
+目录先保留供动态 runtime 工作线协调；该线随后完成独立重建并确认不再消费这些
+临时输入，本线才核验 1106 个保留文件并删除已完成的可重建 source/configure，
+最终 sysroot 和 SDK manifest 前后不变。C++ 构建完成后核验全部
 最终 artifacts，再清理仅本线可重建的 `work` 临时目录；前后 1987 个 sysroot 文件
 摘要完全一致，SDK manifest 未改动。GNU 签名材料、源包对应性材料和全部构建日志
 保留。该清理不触及其他工作区或已发布 SDK。
 
-OpenSSL 和 ICU 按 jobs 2 顺序重建，其他依赖、WebCore 完整链接与 Qt 构建继续。
-目前的成功项是恢复源码、锁定输入和新的 SDK 构建，不是 P1-F 的整页验收。
+OpenSSL 3.5.9 已实际生成静态库和 probe ELF，报告状态为
+`static_sdk_and_probe_linked`，其 guest 尚未运行：
+
+| 产物 | SHA-256 |
+| --- | --- |
+| `build/p1f-openssl/report.json` | `2fe74a7144b9286a8fd3dd5f6f22b8fb33d52c7a8b6b9f835ec403de27d32266` |
+| `prefix/usr/lib/libcrypto.a` | `a3dc4ba4d2da1f5c6b0f940c56ac901a6eb8c07bfdf03599802216b9bc1b5d96` |
+| `prefix/usr/lib/libssl.a` | `c85f2cd53d5f122c2e26e4347351a3f6497edb0df59aa86ad4286585a1974e0b` |
+
+ICU 按 jobs 2 重建，其他依赖、WebCore 完整链接与 Qt 构建继续。目前的成功项
+是恢复源码、锁定输入和新的 SDK/OpenSSL 构建，不是 P1-F 的整页验收。
+
+## 第三份恢复检查点的变更（验收待运行）
+
+- QPA 保留实际 frame commit 返回值和每窗 serial。视口只有在同一 GUI 线程读取
+  到新的成功 receipt 才发送 `presented`，避免把 Qt 的 void `flush` 当成成功结果。
+- WebCore 使用 thin archive 控制磁盘峰值；构建记录逐个绑定真实 member 对象。
+  后续链接仍重新核验完整对象闭包，归档生成本身没有全页验收资格。
+- 仅 ClarkE bundle/隔离 launch-probe 配置的 supervisor 安装镜像使用 `--strip-all`；
+  完整带符号 ELF 和构建来源保留，既有 128 KiB 镜像上限不变。此修复对应真实
+  native 构建中镜像 131208 字节比 131072 上限多 136 字节的问题。
+- 新增真实 guest runners：20 次真实 start 拒绝与 abort 回收、double-abort 保留；
+  六类 WebCore DOM/CSS 几何和像素及错误颜色负例；独立生产 HTTPS fetcher 的
+  受控 TLS 对端。当前检查点不把这些待运行 runner 当作通过证据。
+- 按 [OpenSSL shutdown 契约](https://docs.openssl.org/master/man3/SSL_shutdown/)
+  修正 blocking BIO 的双阶段关闭。首个零返回不是错误；第二次等待仍受原始
+  deadline/call/byte 预算约束，未放宽 EOF、证书或主机名检查。
+- net2 host fixtures 增加 query/release 的畸形响应、畸形请求、普通 peer 越权、
+  满表失败、释放后容量恢复及 40 个 policy 生命周期；实际执行结果后续补录。
+
+源码检查点仍不代表 WebCore full-page、Qt scanout 或任何新 guest 通过。

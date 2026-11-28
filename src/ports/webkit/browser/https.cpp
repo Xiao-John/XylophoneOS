@@ -117,7 +117,13 @@ i64 fetch(u64 service, const browser_http::url& target, unsigned char* buffer,
         return source.native.error ? source.native.error : net2::io;
     }, &source, buffer, capacity, result);
     if (status) { result = {}; return status; }
-    if (SSL_shutdown(tls.stream) != 1) { result = {}; return native.error ? native.error : net2::io; }
+    // This BIO blocks within the original request deadline. The first local
+    // shutdown may only send close_notify and return zero; the second receives
+    // the peer's authenticated close. Zero is not an SSL_get_error input.
+    if (!native.permitted()) { result = {}; return native.error; }
+    int shutdown = SSL_shutdown(tls.stream);
+    if (shutdown == 0 && native.permitted()) shutdown = SSL_shutdown(tls.stream);
+    if (shutdown != 1) { result = {}; return native.error ? native.error : net2::io; }
     status = native.client.close_connection(native.handle, deadline);
     if (status) { result = {}; return status; }
     native.handle = 0;

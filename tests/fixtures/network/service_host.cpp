@@ -408,6 +408,21 @@ void retired_peer_policy() {
     expect(policy(controller, peer_policy_action::release_retired, 0).result == invalid, "release requires target");
     expect(policy(controller, peer_policy_action::release_retired, environment::controller).result == invalid,
            "controller self release rejected");
+    for (u32 mutation = 0; mutation < 8; ++mutation) {
+        auto input=env.input(controller,operation::peer_policy);
+        peer_policy_request payload{peer_policy_revision,sizeof(peer_policy_request),peer_policy_action::query,0};
+        input.length=sizeof(payload);
+        if (mutation==0) payload.size=15;
+        if (mutation==1) payload.reserved=1;
+        if (mutation==2) input.length=15;
+        if (mutation==3) input.length=17;
+        if (mutation==4) input.flags=1;
+        if (mutation==5) input.address=permitted_address;
+        if (mutation==6) input.port=443;
+        if (mutation==7) input.transport=protocol::tcp;
+        std::memcpy(input.data,&payload,sizeof(payload));
+        expect(env.dispatch(controller,input).result==invalid,"malformed peer policy rejected without allocation");
+    }
     for (u64 pid = 201; pid < 241; ++pid) {
         expect(env.request(controller, operation::revoke_peer, pid).result == 0, "more than sixteen policy lifetimes");
         expect(env.core.attach(pid, env.peer.now) == denied, "denial prevents raw attach");
@@ -426,6 +441,15 @@ void retired_peer_policy() {
         expect(policy(controller, peer_policy_action::release_retired, pid).result == 0, "retirement idempotent");
     }
     expect(env.request(ordinary, operation::capabilities).result == 0, "unrelated ordinary broker remains usable");
+    for (u64 pid=301;pid<301+revoked_peer_limit;++pid)
+        expect(env.request(controller,operation::revoke_peer,pid).result==0,"fill bounded policy table");
+    expect(env.request(controller,operation::revoke_peer,400).result==resources,"full policy table fails closed");
+    expect(policy(ordinary,peer_policy_action::release_retired,301).result==denied,"full table does not weaken authentication");
+    expect(env.request(controller,operation::revoke_peer,400).result==resources,"unauthorized release frees no capacity");
+    expect(policy(controller,peer_policy_action::release_retired,301).result==0,"retire one full-table entry");
+    expect(env.request(controller,operation::revoke_peer,400).result==0,"recovered slot admits one new denial");
+    expect(env.core.attach(400,env.peer.now)==denied && env.core.attach(302,env.peer.now)==denied,
+           "new and unrelated existing denials remain enforced");
     expect(env.request(controller, static_cast<operation>(0x7fffffff)).result == unsupported, "unknown wire operation rejected");
 }
 void deadlines_and_idle() {

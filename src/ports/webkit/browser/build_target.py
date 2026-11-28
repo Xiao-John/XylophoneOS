@@ -2,11 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Link the actual WebCore renderer, bounded network broker and Qt viewport."""
 import argparse
-import ipaddress
 import json
 import os
 from pathlib import Path
-import re
 import shlex
 import shutil
 import subprocess
@@ -19,6 +17,7 @@ sys.path[:0] = [str(ROOT / 'scripts'), str(PORT.parent)]
 from build_glibc_program import verify_elf
 from glibc_g1_probe import clean_build_environment, tool_identity
 from target_inputs import digest, recheck_inputs
+from tls_policy import write_policy
 from xypm_sdk_profile import metadata_snapshot, verify_profile
 
 
@@ -62,6 +61,7 @@ def build(args):
     inputs.update(recorded_files(args.openssl, ssl, 'installed', args.openssl / 'prefix'))
     inputs.update({ROOT / name: value for name, value in page['inputs'].items()})
     inputs.update({ROOT / name: value for name, value in page['archives'].items()})
+    inputs.update({ROOT / name: value for name, value in page.get('thin_members', {}).items()})
     inputs.update({args.page / name: value for name, value in page['objects'].items()})
     for directory in (PORT, ROOT / 'src/shared/include/xos', ROOT / 'src/user/include/xos',
                       QT / 'qpa', QT / 'runtime', ROOT / 'src/ports/browser_http',
@@ -75,15 +75,6 @@ def build(args):
     for name, actual in tools.items():
         if not actual.get('available') or (name != 'strip' and actual['sha256'] != sdk['tools']['x86_64-elf-' + name]['sha256']):
             raise ValueError('target tool differs from SDK: ' + name)
-    match = re.fullmatch(r'https://([a-z0-9.-]+)(?::([0-9]{1,5}))?', args.tls_origin)
-    if not match: raise ValueError('select an explicit lowercase DNS HTTPS origin')
-    host_name, port_text = match.groups(); port = int(port_text or 443)
-    if not 1 <= port <= 65535 or len(host_name) > 253 or '.' not in host_name or not all(
-        re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', part) for part in host_name.split('.')):
-        raise ValueError('invalid HTTPS origin')
-    address = ipaddress.IPv4Address(args.tls_address)
-    anchor = args.tls_root_der.read_bytes()
-    if not 1 <= len(anchor) <= 4096 or anchor[0] != 0x30: raise ValueError('select a bounded DER CA trust anchor')
     inputs[args.tls_root_der] = digest(args.tls_root_der)
     recheck_inputs(inputs)
     out = args.output; out.mkdir(parents=True, exist_ok=False)
@@ -93,10 +84,7 @@ def build(args):
     include_list = drivers / 'cxx-includes.txt'
     include_list.write_text('\n'.join(profile['sdk_binding']['cxx_runtime']['include_directories']) + '\n')
     policy_header = out / 'tls_policy.hpp'
-    policy_header.write_text('#pragma once\nstatic constexpr char clarke_tls_host[] = "' + host_name + '";\n'
-        'static constexpr unsigned clarke_tls_port = ' + str(port) + ';\n'
-        'static constexpr unsigned clarke_tls_address = ' + str(int(address)) + ';\n'
-        'static constexpr unsigned char clarke_tls_anchor[] = {' + ','.join(map(str,anchor)) + '};\n')
+    policy = write_policy(args.tls_origin,args.tls_address,args.tls_root_der,policy_header)
     inputs[policy_header] = digest(policy_header)
     env, removed = clean_build_environment(os.environ)
     env.update(LC_ALL='C', COMPILER_PATH=str(drivers / 'binutils'), XOS_ICU_SDK=str(args.sdk_build / 'sysroot'),
@@ -175,12 +163,12 @@ def build(args):
         recheck_inputs(inputs)
         if verify_profile(profile,'glibc',args.sdk_build) != binding: raise ValueError('SDK changed during browser build')
         record.update(status='clarke_webcore_browser_linked',program_headers=headers,
+            objects={path.name:digest(path) for path in out.glob('*.o')},
             artifacts={name:digest(out/name) for name in ('viewport.elf','network.elf','renderer.elf','dom_css.elf','DejaVuSans.ttf')},
             inputs={str(path.relative_to(ROOT)):value for path,value in inputs.items()},
             network_policy={'wire_version':2,'peer_policy_operation':21,'peer_policy_revision':1,
                 'document_limit':65536,'navigation_timeout_ns':15000000000,'redirect_limit':0,
-                'https':{'origin':args.tls_origin,'ipv4_address':str(address),'ca_sha256':digest(args.tls_root_der),
-                         'minimum_tls':'1.2','verify_chain':True,'verify_hostname':True,'require_close_notify':True}},
+                'https':policy},
             feature_scope=['DOM','CSS box model','flex','grid','cascade','clipping','transforms','text','software RGBA paint'])
         save(); (out/'manifest.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n')
     except BaseException as error:

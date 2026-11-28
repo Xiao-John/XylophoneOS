@@ -306,7 +306,12 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                if name in libc_programs else [str(archive)]),
              "-o", str(executable)])
         image = build / f"user_{name}.image.elf"
-        run([tool("objcopy"), "--strip-debug", str(executable), str(image)])
+        # The fixed bootstrap image bound is unchanged. Browser/probe builds
+        # retain the complete ELF and provenance above, but omit its symbol
+        # tables from the embedded supervisor image, just as deployed programs
+        # can carry a separate full diagnostic ELF.
+        strip = "--strip-all" if name == "supervisor" and (clarke_bundle or clarke_launch_probe) else "--strip-debug"
+        run([tool("objcopy"), strip, str(executable), str(image)])
         data = image.read_bytes()
         if name not in disk_programs and len(data) > 131072:
             raise SystemExit(f"User ELF {name} exceeds image read limit")

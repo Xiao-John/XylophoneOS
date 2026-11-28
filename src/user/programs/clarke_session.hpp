@@ -70,7 +70,7 @@ public:
                 if (waited && waited != thread_error_timeout) { fatal_ = true; break; }
             }
         }
-        return stop();
+        return stop(closing);
     }
 private:
     enum class phase { idle, document, frame, presented };
@@ -311,9 +311,10 @@ private:
         }
         return true;
     }
-    bool stop() {
+    bool stop(bool graceful_ui = false) {
         (void)finish(outcome::cancelled, false);
-        const bool renderer = retire(renderer_, true, false), broker = retire(broker_, true, false), ui = retire(ui_, true, false);
+        const bool renderer = retire(renderer_, true, false), broker = retire(broker_, true, false);
+        const bool ui = retire(ui_, !graceful_ui, graceful_ui);
         authority_.close();
         bool restored = false; process_stats after{}; const u64 deadline = deadline_after(bootstrap_ns);
         do {

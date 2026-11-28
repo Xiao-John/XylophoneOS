@@ -1,0 +1,20 @@
+{
+  "before_check_unpublished_sha256": "f6ae36ac2e87549ba6d40c00948ddcf336a75644a571d233364aa1b5c598ab19",
+  "derived_export_note": "Unchanged observations; original unpublished byte identity is retained in conversion.json.",
+  "files_and_directories_tree_sha256": "dca0aa4e45262357ba3a1dfe10b33b65287942b6a086183868db88febfa68f93",
+  "guest_report_unpublished_sha256": "f896c39e9fa308d6df77a4ce78a6ce69e25be91146ff5b4a7ffbd6223192c4dd",
+  "method": "bind_system verifies all sources and artifacts; inspect_native_sdk verifies both full file inventories; verify_sdk verifies complete directories, file contents, metadata and archive provenance for system SDK and actual C5 native SDK snapshot. Both comparisons require exact equality.",
+  "native_sdk": {
+    "abi": 1,
+    "sdk_manifest_sha256": "fc8b81adef3b0397bb7743093091ffc21d07f14c6a33504e1d087d11e8601ffa",
+    "sdk_tree_sha256": "25c705d9e1388330db72d75ca1c22e129fe7a330a7810c9afedd49fdd5ebdde6",
+    "target": "x86_64-elf"
+  },
+  "phase": "passed before completion and rechecked after successful real guest",
+  "program_manifest_sha256": "80dfc342a96db3e312b5885ce5416ca4541d3e2a6c1b028c4dd5d554bc2f1312",
+  "source_revision": "299ea47cc991fb781e8671c41213a02c169f4130",
+  "status": "passed",
+  "system_build_id": "faad61f4f20be0f7",
+  "verified_directories": 12,
+  "verified_files": 239
+}

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "904eb20aac3e5ff53ad8e5dae64125e270a4dce508568b48c26868da40869572",
+    "conversion.json": "fb12d52add777088cf4fce74336be4eab4c5b89129a8e49136d98425ef78e4e6",
+    "generation_probe_authority_build.json": "6903494781cf8be20769f53facff0387c1fb2241599820e7403b756418949235",
+    "generation_probe_build.json": "4143ca38b05136579707aed9ccaa32315503db06dcb44ce3e1583fbad5ac42b3",
+    "launcher_activation_authority_build.json": "f2e28bf7c048258a85c95086f229ab278af3b40e15117a97c74012d9b9a940d1",
+    "launcher_activation_build.json": "7e95977165ecd5de39c6758e7f28ca7a3fa7d8c5c1e7dc30b58978dab4e7df7a",
+    "launcher_c_authority_build.json": "3d27beeee6d8b246f93e036c664a3e58f424828db8e084da0baacd49b6959e77",
+    "launcher_c_build.json": "b96e9bdd2535936486b59ccf5d211f61256a1d01793cac2d4a652bb280e9df32",
+    "negative_anchor_checks.json": "aea591cec41f03b5aba258080c22a8177e5933e4bc6f241a8cdb9a9c6e32fc68",
+    "rejected_manifest.json": "bec7502eaeb67f84e133bd5b97a8055a330cc47b4a9d881df2d00ddaa14311de",
+    "rejected_manifest.log": "0c49404c5ad77dc402928585edabfcdf7fe92137889c2b2cd4277271df90f78a",
+    "rejected_tree.json": "5f59c4b75d4b369927764f078284d44f4455b5338414b5f28a9bec812194d522",
+    "rejected_tree.log": "05ec3126cf1859f90b3c396c64919c80cefc2fe05da072eb2b0aecfea1cebded"
+  }
+}

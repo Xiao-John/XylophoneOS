@@ -1,0 +1,11 @@
+{
+  "status": "failed_historical_attempt_preserved",
+  "raw_report_sha256": "e50057fad81bb98a7deda70e6ce6089e8ea52625fb127210996e7d307c81d758",
+  "raw_serial_sha256": "b3b4ef8c095c8465d8213306aafbf8fe04ab218a84a322dd25ae7879c12574c5",
+  "rule": "mechanical explicit environment-root templates; all observations, input hashes and artifact identities unchanged",
+  "verified_inputs": 3376,
+  "guest_command_roots": {
+    "XOS_GUEST_TESTS": "/tests",
+    "XOS_GUEST_APPS": "/apps"
+  }
+}

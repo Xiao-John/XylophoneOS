@@ -1,0 +1,100 @@
+{
+  "conversion": [
+    {
+      "source_identity": "c864db2b; runner f1c4bfc2; native fb881e4e",
+      "raw_input": "build/dynamic_generation_guest_v3/report.json",
+      "raw_sha256": "2ddccb1acc983a26e6a6e60e069d11a9cfe7deda1f56e4dced645e3ac3293e06",
+      "output": "baseline_report.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[baseline_report.json]"
+    },
+    {
+      "source_identity": "c864db2b; native fb881e4e",
+      "raw_input": "build/dynamic_generation_guest_v3/guest_serial.log",
+      "raw_sha256": "38bcee1b8c85c9bc431e62043d068b34ff7fee3005b44d2143d2af4db7778090",
+      "output": "baseline_serial.log",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[baseline_serial.log]"
+    },
+    {
+      "source_identity": "c864db2b",
+      "raw_input": "build/dynamic_generation_probe_v3/receipt.json",
+      "raw_sha256": "a872f857381737d5c5f98a23fbf15287cdedf53aef88fa04a2061b154fc86db1",
+      "output": "baseline_probe_build.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[baseline_probe_build.json]"
+    },
+    {
+      "source_identity": "63226767",
+      "raw_input": "build/dynamic_generation_guest_v1/report.json",
+      "raw_sha256": "424ddaf4d48f50c4538d5290a17bfac5a50d316e299298ecd38a63977f136bdd",
+      "output": "failed_git_source_report.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[failed_git_source_report.json]"
+    },
+    {
+      "source_identity": "f1c4bfc2; probe 3a8887aa",
+      "raw_input": "build/dynamic_generation_guest_v2/report.json",
+      "raw_sha256": "2cb11cc0433409690597e865dee35da9c80e48144296082244657388da0e4f5e",
+      "output": "failed_capture_report.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[failed_capture_report.json]"
+    },
+    {
+      "source_identity": "f1c4bfc2; probe 3a8887aa",
+      "raw_input": "build/dynamic_generation_guest_v2/guest_serial.log",
+      "raw_sha256": "8a28f593e4aaa0e99bdfc34ce0bf49b642c0cc51ba79f0b68f7ca98ab8cc5191",
+      "output": "failed_capture_serial.log",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[failed_capture_serial.log]"
+    },
+    {
+      "source_identity": "base 86a06b0a plus owned source_overlay.json",
+      "raw_input": "${XOS_R2_ROOT}/build/dynamic_generation_guest_final_v1/report.json",
+      "raw_sha256": "40c08b925bc561f8bdeff88835b4601455d5f30603306e13489af0de8d3911c2",
+      "output": "final_report.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[final_report.json]"
+    },
+    {
+      "source_identity": "base 86a06b0a plus owned source_overlay.json",
+      "raw_input": "${XOS_R2_ROOT}/build/dynamic_generation_guest_final_v1/guest_serial.log",
+      "raw_sha256": "c0e6dc5f7d93e128b0afd62ae97d7492c01eded096fcd82f920e27e970f80347",
+      "output": "final_serial.log",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[final_serial.log]"
+    },
+    {
+      "source_identity": "base 86a06b0a plus launcher 3a8887aa and builder 285d5ec2",
+      "raw_input": "${XOS_R2_ROOT}/build/dynamic_launcher_activation_final_v1/receipt.json",
+      "raw_sha256": "ac82cf943a707cbde8e12f385dfdfd5ea6b7f33f8e8e886895ab118fe666cc76",
+      "output": "final_launcher_build.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[final_launcher_build.json]"
+    },
+    {
+      "source_identity": "base 86a06b0a plus probe c864db2b and helper a686ccb6",
+      "raw_input": "${XOS_R2_ROOT}/build/dynamic_generation_probe_final_v1/receipt.json",
+      "raw_sha256": "ab818194ab70e1d73347c8d438faf9fc6c9c4eead5fc4fb135314f4ff421c007",
+      "output": "final_probe_build.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[final_probe_build.json]"
+    },
+    {
+      "source_identity": "base 86a06b0a plus five original owned Git blobs",
+      "raw_input": "${XOS_R2_ROOT}/source_overlay.json",
+      "raw_sha256": "0b2940e50989c0ae12fbb5277997062b6ae28f2c983dbe5004fbcbbbeaaf68db",
+      "output": "source_overlay.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[source_overlay.json]"
+    },
+    {
+      "source_identity": "post-run direct sdk_receipt/xos_app cross-check against frozen native e8b8ba5e2645c5c2",
+      "raw_input": "${XOS_R2_ROOT}/build/dynamic_generation_guest_final_v1/native_cross_binding.json",
+      "raw_sha256": "30e800a1bd7a33fb14a2275efb57facf3600198f69a84d583950ea0216007b35",
+      "output": "native_cross_binding.json",
+      "rule": "known environment paths to XOS templates; JSON keys sorted; serial CR/LF and trailing whitespace normalized only; observations and source/artifact/SDK hashes retained",
+      "exported_binding": "manifest.json:files[native_cross_binding.json]"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "approved_generations": [],
+  "commands": [],
+  "error": "complete C SDK differs from independently supplied anchors",
+  "guest": "not_run",
+  "scope": "native controller with compile-time approved roots",
+  "status": "failed"
+}

@@ -368,6 +368,13 @@ __xos_file_adopt_startup (struct xos_file_session *early, xos_u64 deadline)
         }
     }
   unlock_session ();
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+  if (result == 0)
+    {
+      extern long xos_dynamic_adopt_startup (xos_u64) __attribute__ ((visibility ("hidden")));
+      result = xos_dynamic_adopt_startup (deadline);
+    }
+#endif
   return result;
 }
 #endif
@@ -774,6 +781,74 @@ __xos_file_spawn_end (struct xos_spawn_stdio *stdio)
         if (stdio->object[fd] >= 0) (void) close_object (stdio->object[fd]);
       unlock_session ();
     }
+  unlock_runtime (&spawn_cwd_lock);
+}
+
+long
+__xos_file_exec_begin (struct xos_exec_descriptors *snapshot, xos_u64 deadline)
+{
+  if (snapshot == NULL || deadline == 0 || deadline > LONG_MAX) return -EINVAL;
+  memset (snapshot, 0, sizeof (*snapshot));
+  long error = lock_runtime_until (&spawn_cwd_lock, deadline);
+  if (error != 0) return error;
+  error = begin_until (deadline);
+  if (error != 0) { unlock_runtime (&spawn_cwd_lock); return error; }
+  unsigned int kept[object_limit] = { 0 };
+  int terminal = 0;
+  for (int fd = 0; fd < fd_limit; ++fd)
+    {
+      const int index = object_for (fd);
+      if (index < 0 || descriptors[fd].close_on_exec) continue;
+      const struct open_object *object = &objects[index];
+      if (object->kind == kind_socket) { error = -ENOTSUP; break; }
+      kept[index] = 1;
+      terminal |= object->kind == kind_terminal;
+      snapshot->items[snapshot->count++] = (struct xos_file_startup_descriptor) {
+        (xos_u32) fd, (xos_u32) index, object->kind, object->handle,
+        object->flags & ~(unsigned int) O_CLOEXEC, 0
+      };
+    }
+  for (int index = 0; error == 0 && index < object_limit; ++index)
+    {
+      const struct open_object *object = &objects[index];
+      if (object->kind == kind_socket && object->references) { error = -ENOTSUP; break; }
+      if (object->kind == kind_none || kept[index] || object->kind == kind_terminal) continue;
+      if (snapshot->count == fd_limit) { error = -EMFILE; break; }
+      snapshot->items[snapshot->count++] = (struct xos_file_startup_descriptor) {
+        ~(xos_u32) 0, (xos_u32) index, object->kind, object->handle,
+        object->flags & ~(unsigned int) O_CLOEXEC, 0
+      };
+    }
+  if (error == 0)
+    for (int index = 0; index < object_limit; ++index)
+      if (objects[index].kind != kind_none && objects[index].references)
+        { ++objects[index].references; snapshot->retained[index] = 1; }
+  unlock_session ();
+  if (error != 0) { unlock_runtime (&spawn_cwd_lock); return error; }
+  if (terminal)
+    {
+      error = __xos_terminal_exec_begin (snapshot->terminal_channels,
+                                         &snapshot->terminal_sequence, deadline);
+      if (error == 0) snapshot->terminal_locked = 1;
+      else __xos_file_exec_end (snapshot, deadline);
+    }
+  return error;
+}
+
+void
+__xos_file_exec_end (struct xos_exec_descriptors *snapshot, xos_u64 deadline)
+{
+  if (snapshot->terminal_locked) __xos_terminal_exec_end ();
+  if (lock_runtime_until (&session_lock, deadline) == 0)
+    {
+      for (int index = 0; index < object_limit; ++index)
+        if (snapshot->retained[index]) (void) close_object_until (index, deadline);
+      unlock_session ();
+    }
+  else
+    for (int index = 0; index < object_limit; ++index)
+      if (snapshot->retained[index])
+        (void) __atomic_fetch_add (&poll_releases[index], 1, __ATOMIC_RELEASE);
   unlock_runtime (&spawn_cwd_lock);
 }
 

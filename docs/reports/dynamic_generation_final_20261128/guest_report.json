@@ -1,0 +1,170 @@
+{
+  "approved_generations": [
+    {
+      "id": 1,
+      "main": "/apps/p0c/main",
+      "manifest": "/usr/lib/xos/generations/p0c.bin",
+      "sha256": "76b190d753bad80ffd0ada8e13572e4fc3a4234e7fc7ece5493009c443a02148",
+      "snapshot": "generation_0.bin"
+    },
+    {
+      "id": 2,
+      "main": "/apps/p0c2/main",
+      "manifest": "/usr/lib/xos/generations/p0c2.bin",
+      "sha256": "a27c69b2427e5ad9c3cc723ea4c0387203041545e564385737a5fa44b665a2fd",
+      "snapshot": "generation_1.bin"
+    },
+    {
+      "id": 3,
+      "main": "/apps/p0missing/main",
+      "manifest": "/usr/lib/xos/generations/p0missing.bin",
+      "sha256": "866434f172d32f122a0baa5dcb6aa721ff449e2f16aaf0d821a008e59c1d4c79",
+      "snapshot": "generation_2.bin"
+    }
+  ],
+  "baseline": [
+    129778,
+    2,
+    0
+  ],
+  "deliberately_missing_main": "/apps/p0missing/main",
+  "input_receipts": {
+    "${XOS_C_STAGE}/manifest.json": "80dfc342a96db3e312b5885ce5416ca4541d3e2a6c1b028c4dd5d554bc2f1312",
+    "${XOS_FINAL_SOURCE}/build/manifest.json": "5346748099086783edec06ab9e7dc186e67d524c1e29f369cbc8db0f8e685c21",
+    "${XOS_PUBLIC_RUNTIME_BUILD}/manifest.json": "aad6aac205fc33e42d30a3fb056b2a0a22b466e6f2ff2a50eddb13fe936df26a",
+    "${XOS_R2_SOURCE}/build/dynamic_generation_probe_v5/receipt.json": "5b0934bcc55f9c4259f92d6828d943ca8a435b771622098547adb90d34d4ae8b",
+    "${XOS_R2_SOURCE}/build/dynamic_launcher_activation_v5/receipt.json": "5874d1e7e217cefe18d2e8fa921406979759e2afb1b100e65e6b875276f6555a"
+  },
+  "installed_files": {
+    "/apps/p0c/main": "f3c9fba2a02ae7603dcbf2dc28f54acd91efbd5922f5f5ec956646b5f6a938ba",
+    "/apps/p0c2/main": "f3c9fba2a02ae7603dcbf2dc28f54acd91efbd5922f5f5ec956646b5f6a938ba",
+    "/bin/r2_probe.elf": "79b3e9620830b822d68e63dfdf5e9e6264dbfea3a0abb9d004e5d0dab62a4872",
+    "/usr/lib/xos/generations/p0c.bin": "76b190d753bad80ffd0ada8e13572e4fc3a4234e7fc7ece5493009c443a02148",
+    "/usr/lib/xos/generations/p0c2.bin": "a27c69b2427e5ad9c3cc723ea4c0387203041545e564385737a5fa44b665a2fd",
+    "/usr/lib/xos/generations/p0missing.bin": "866434f172d32f122a0baa5dcb6aa721ff449e2f16aaf0d821a008e59c1d4c79",
+    "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "005607c9b32f1fdccd42b0fb119dcd21635bca5fcdfeba53c1763fddcb2b2b02",
+    "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "40bf51f79a8d529044cee4b9f929b94f58f9f64667b357791f37551a325ce7b2",
+    "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "0abbf40192c882914c686c0628537bf4264cf11a32b282d7de897f65c9532917"
+  },
+  "iso_sha256": "c200100651fe8161e69773c0963ebf3bb1c0dcb899f1b07b3aa66ddb10c19dae",
+  "native_sdk_tree_sha256": "dca0aa4e45262357ba3a1dfe10b33b65287942b6a086183868db88febfa68f93",
+  "program_source_revision": "299ea47cc991fb781e8671c41213a02c169f4130",
+  "program_sources": {
+    "scripts/build_dynamic_program.py": "a737feb737fbdf6678fe490044789027888c21447d88af45ffd993d4f2bc4e09",
+    "scripts/dynamic_artifacts.py": "e6c4401258e857c627333119f56fa46af8d8791db5ed6b19c1b27b30c0d0fdd9",
+    "scripts/dynamic_preflight.cpp": "88858058f33568477147c6a32e9741d9d1c97297ba38db4cd09a7221af5e668b",
+    "src/user/loader/dynamic/bootstrap.cpp": "b53c3eaf7d1ce33a5b153c7070cd0b88e308ecf4317cf4d6fccc39d2d42c4215",
+    "src/user/loader/dynamic/elf.cpp": "6703011b4b43e501ddbc6f9074a508fb946dc7216e1da5f52bf635b041577c14",
+    "src/user/loader/dynamic/generation.cpp": "09d55f0b2c6f0571b433ea25ec182d9305bfb9dbf932e9a234bdb741083e844e",
+    "src/user/loader/dynamic/identity.cpp": "1da4640550eee5f3766bfc01ff6f3d7cbf6d3e00c9b4c91e8fc1c5a141c365c1",
+    "src/user/loader/dynamic/startup.hpp": "0eecfdff04f4df98f21663222ecd3972575de1220a8dee55ccfe7aaeee20af67",
+    "src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "tests/fixtures/public_runtime/application.c": "b4b847ba4d861792df163104d3205b5720ad3c06d78aea6130cb6f5198952949"
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_FINAL_SOURCE}/build/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_R2_GUEST_TEMP}${XOS_WORK_DIR}.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "runner_sources": {
+    "scripts${XOS_WORK_DIR}_disk.py": "9ad9180df909cabfc4e3820089680ca03e1df1ebe2c2da66dada214c76c7fe28",
+    "scripts/build_dynamic_launcher.py": "1d41e850daa829c66280cdb7ff0407e3f4ebd7a6898357b07d4d82ee6473a1e0",
+    "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+    "scripts/sdk_receipt.py": "902e3351a5ca7e3fcb99c5f5827ebb983cf65f593fcec52b55a3868388e67bbd",
+    "tests/boot_smoke.py": "651b1226c871ec310bcf0c39107713f450c26962ce3ae28400639f4adf2aff63",
+    "tests/dynamic_generation_guest.py": "33aad9791530899213d76790eee3af9c9259554147aecd0ce9d6ea4ae88b043a",
+    "tests/process_smoke.py": "38e41d54222a2734b32000f30fe1677d10056454362f6d47e3b6259861721ee6",
+    "tests/shell_launch_support.py": "6a4b7d2555db36025633008fdb50ce66a0c323804985b7a37b36858edc5b7544",
+    "tests/task_smoke.py": "38ff9083d0afa4f9a77778a1bf8a689bbdba1b4307bb3d25fe9403f580a3d824"
+  },
+  "runs": [
+    {
+      "cases": [
+        "initial_generation_0",
+        "activate_1_preserves_old_pin",
+        "stale_sequence_rejected",
+        "failed_activation_preserves_old",
+        "rollback_0",
+        "revocation_blocks_future_admission",
+        "active_revocation_blocks_capture"
+      ],
+      "public_c_launches": 4,
+      "resources": [
+        129778,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "cases": [
+        "initial_generation_0",
+        "activate_1_preserves_old_pin",
+        "stale_sequence_rejected",
+        "failed_activation_preserves_old",
+        "rollback_0",
+        "revocation_blocks_future_admission",
+        "active_revocation_blocks_capture"
+      ],
+      "public_c_launches": 4,
+      "resources": [
+        129778,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "cases": [
+        "initial_generation_0",
+        "activate_1_preserves_old_pin",
+        "stale_sequence_rejected",
+        "failed_activation_preserves_old",
+        "rollback_0",
+        "revocation_blocks_future_admission",
+        "active_revocation_blocks_capture"
+      ],
+      "public_c_launches": 4,
+      "resources": [
+        129778,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    }
+  ],
+  "sdk_manifest_sha256": "59e9daf663168bb591479434f373ad9616e19b8dab155d6a2c1a1d461d4aa95a",
+  "sdk_tree_sha256": "a1109d8caad10d6a921aeae9d74ed4e3d8e648b3cf3c9adc7c5f4c9edce12a31",
+  "status": "passed",
+  "system_build_id": "faad61f4f20be0f7"
+}

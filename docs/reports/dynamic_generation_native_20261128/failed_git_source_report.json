@@ -1,0 +1,16 @@
+{
+  "error": "Command '['git', 'rev-parse', 'e78c7ba1^{commit}']' returned non-zero exit status 128.",
+  "runner_sources": {
+    "scripts/build_dynamic_launcher.py": "1d41e850daa829c66280cdb7ff0407e3f4ebd7a6898357b07d4d82ee6473a1e0",
+    "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+    "scripts/sdk_receipt.py": "902e3351a5ca7e3fcb99c5f5827ebb983cf65f593fcec52b55a3868388e67bbd",
+    "scripts/work_disk.py": "9ad9180df909cabfc4e3820089680ca03e1df1ebe2c2da66dada214c76c7fe28",
+    "tests/boot_smoke.py": "a2fcf2909f10fc5f68bb69f7ff66cedf55a488443e5d59f735fc55788c2e3e2c",
+    "tests/dynamic_generation_guest.py": "48d63f88508b41dc168e2ac677eea21609dc43bc140dfcc0c1b59d32bdea2b5e",
+    "tests/process_smoke.py": "38e41d54222a2734b32000f30fe1677d10056454362f6d47e3b6259861721ee6",
+    "tests/shell_launch_support.py": "6a4b7d2555db36025633008fdb50ce66a0c323804985b7a37b36858edc5b7544",
+    "tests/task_smoke.py": "38ff9083d0afa4f9a77778a1bf8a689bbdba1b4307bb3d25fe9403f580a3d824"
+  },
+  "runs": [],
+  "status": "failed"
+}

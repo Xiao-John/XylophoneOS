@@ -30,8 +30,11 @@ if [[ $shared == yes ]]; then
         after=("$XOS_SHARED_GLIBC/stdlib/atexit.oS" -Wl,--as-needed,-l:libgcc_s.so.1,-l:libc.so.0.1,-l:ld.so.1
                "$XOS_GCC_PIC_CRT/crtendS.o" "$XOS_SHARED_GLIBC/csu/crtn.o")
     fi
+    if [[ -n ${XOS_NATIVE_DYNAMIC_NOTE:-} ]]; then
+        before+=("$XOS_NATIVE_DYNAMIC_NOTE")
+    fi
     exec "$compiler" "${flags[@]}" "${language[@]}" -nostdlib \
-        -Wl,-shared,--build-id=none,-z,noexecstack,-z,now,-z,relro,-z,max-page-size=8192,-z,separate-code,--eh-frame-hdr,-z,defs \
+        -Wl,-shared,--hash-style=both,--build-id=none,-z,noexecstack,-z,now,-z,relro,-z,max-page-size=8192,-z,separate-code,--eh-frame-hdr,-z,defs \
         -L"$XOS_GCC_LINK" -Wl,-rpath-link,"$XOS_GCC_LINK" "${before[@]}" "$@" "${after[@]}"
 fi
 if [[ $shared_probe == yes ]]; then

@@ -1,0 +1,33 @@
+# Derived transcript; original byte identity is recorded in conversion.json.
+exec-driver /bin/r2_probe.elf
+[process] event=started pid=15 parent=7
+[process] pid=15 address_space=0x000000000036c000
+[loader] started pid=15 file=/bin/r2_probe.elf
+[process] event=wait_blocked parent=7 child=15
+[process] event=started pid=16 parent=15
+[process] pid=16 address_space=0x00000000006de000
+P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1
+[task] event=reclaimed pid=16 pages=867
+R2_PROBE_PASS initial_generation_0
+[process] event=started pid=17 parent=15
+[process] pid=17 address_space=0x00000000006de000
+P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1
+[task] event=reclaimed pid=17 pages=867
+R2_PROBE_PASS activate_1_preserves_old_pin
+R2_PROBE_PASS stale_sequence_rejected
+[process] event=started pid=18 parent=15
+[process] pid=18 address_space=0x00000000006de000
+P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1
+[task] event=reclaimed pid=18 pages=867
+R2_PROBE_PASS failed_activation_preserves_old
+[process] event=started pid=19 parent=15
+[process] pid=19 address_space=0x00000000006de000
+P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1
+[task] event=reclaimed pid=19 pages=867
+R2_PROBE_PASS rollback_0
+R2_PROBE_PASS revocation_blocks_future_admission
+R2_PROBE_PASS active_revocation_blocks_capture
+R2_PROBE_OK cases=7 sequence=5 revoked=3
+[task] event=reclaimed pid=15 pages=496
+[wait] pid=15 kind=exited code=0
+xsh>

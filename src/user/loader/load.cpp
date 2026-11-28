@@ -10,6 +10,10 @@
 #include <xos/vm.hpp>
 #include "image_reader.hpp"
 
+extern "C" bool xos_dynamic_spawn_hook(const char*, xos::u32, const char* const*,
+    const xos::sdk::spawn_options*, xos::execution::launch_diagnostic*,
+    xos::execution::image_receipt*, const xos::execution::image_receipt*, xos::i64*) __attribute__((weak));
+
 namespace xos::sdk {
 namespace {
 // The supervisor is single threaded. Keep large working objects out of its
@@ -84,7 +88,8 @@ private:
 // Ordinary spawn stays compatible with existing static v1/v2 applications.
 bool image_opt_in(elf::read_exact_fn read, void* context, u64 size,
                   const elf::load_plan& plan, const char* expected, u32 name_size,
-                  u64 magic, u32 version) {
+                  u64 magic, u32 version, bool* absent = nullptr) {
+    if (absent != nullptr) *absent = false;
     u8 header[64], section[64], strings[64], name[16], record[16];
     auto value = [](const u8* bytes, u32 count) {
         u64 result = 0;
@@ -94,6 +99,10 @@ bool image_opt_in(elf::read_exact_fn read, void* context, u64 size,
     auto range = [size](u64 offset, u64 length) { return offset <= size && length <= size-offset; };
     if (!read(context,0,header,sizeof(header))) return false;
     const u64 offset=value(header+40,8), count=value(header+60,2), names=value(header+62,2);
+    if (!offset && !count && !names) {
+        if (absent != nullptr) *absent = true;
+        return false;
+    }
     if (value(header+58,2)!=64 || !count || count>4096 || names>=count ||
         !range(offset,count*64) || !read(context,offset+names*64,strings,64)) return false;
     const u64 string_offset=value(strings+24,8), string_size=value(strings+32,8);
@@ -101,8 +110,9 @@ bool image_opt_in(elf::read_exact_fn read, void* context, u64 size,
     for (u64 i=0;i<count;++i) {
         if (!read(context,offset+i*64,section,64)) return false;
         const u64 label=value(section,4);
-        if (name_size > sizeof(name) || label>string_size || name_size>string_size-label ||
-            !read(context,string_offset+label,name,name_size)) continue;
+        if (name_size > sizeof(name) || label>=string_size) return false;
+        if (name_size>string_size-label) continue;
+        if (!read(context,string_offset+label,name,name_size)) return false;
         bool matches=true;
         for (u32 j=0;j<name_size;++j) matches=matches && name[j]==static_cast<u8>(expected[j]);
         if (!matches) continue;
@@ -119,14 +129,53 @@ bool image_opt_in(elf::read_exact_fn read, void* context, u64 size,
         }
         return false;
     }
+    if (absent != nullptr) *absent = true;
     return false;
+}
+
+// A v3 snapshot can describe just the kernel routes that v2 already carries.
+// Preserve ordinary static callers only when that representation is exact;
+// never discard an extra FD, Files ownership, cleanup record or status flag.
+bool legacy_stdio_snapshot(const spawn_options& options) {
+    if (options.replace_image || !options.descriptors || options.descriptor_count > 3 ||
+        options.terminal_send_handle || options.exec_terminal_send_handle) return false;
+    u32 seen = 0;
+    for (u32 fd = 0; fd < 3; ++fd) {
+        if (options.file_handles[fd] || options.open_paths[fd] || options.open_flags[fd]) return false;
+    }
+    for (u32 i = 0; i < options.descriptor_count; ++i) {
+        const auto& item = options.descriptors[i];
+        if (item.fd >= 3 || item.object >= 32 || item.reserved || (seen & (1u << item.fd)) ||
+            item.flags != (item.fd == 0 ? 0u : 1u)) return false;
+        const auto kind = static_cast<startup_fd_kind>(item.kind);
+        if (kind == startup_fd_kind::kernel) {
+            if (item.handle > 2 || ((item.fd == 0) != (item.handle == 0))) return false;
+        } else if (kind == startup_fd_kind::pipe_read || kind == startup_fd_kind::pipe_write) {
+            if (item.handle < process_pipe_token_min ||
+                ((item.fd == 0) != (kind == startup_fd_kind::pipe_read))) return false;
+        } else return false;
+        const i64 route = options.stdio[item.fd] == -1 ? static_cast<i64>(item.fd) : options.stdio[item.fd];
+        if (route != static_cast<i64>(item.handle)) return false;
+        for (u32 j = 0; j < i; ++j) {
+            const auto& previous = options.descriptors[j];
+            const bool same_route = item.kind == previous.kind && item.handle == previous.handle;
+            if ((item.object == previous.object) != same_route) return false;
+        }
+        seen |= 1u << item.fd;
+    }
+    for (u32 fd = 0; fd < 3; ++fd) {
+        if (!(seen & (1u << fd)) && options.stdio[fd] != -2) return false;
+    }
+    return true;
 }
 
 i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                  void* read_context, u32 argc, const char* const* argv,
                  bool close_file, u32 file_handle, const spawn_options* options = nullptr,
                  execution::launch_diagnostic* diagnostic = nullptr,
-                 verified_image_snapshot* snapshot = nullptr) {
+                 verified_image_snapshot* snapshot = nullptr,
+                 i64 (*pinned_prepare)(u64, void*) = nullptr, void* pinned_context = nullptr,
+                 bool allow_legacy_stdio = true) {
     if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::none, 0, elf::error::none}; }
     if (argc == 0 || argc > process_max_args || argv == nullptr ||
         read_exact == nullptr || name == nullptr) {
@@ -152,6 +201,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         return error;
     };
     const bool replacing = options != nullptr && options->replace_image;
+    bool descriptor_startup = replacing || (options != nullptr && options->descriptor_count != 0);
     if (options != nullptr && (options->exec_channel_count > exec_preserve_channels_max ||
         (options->exec_channel_count != 0 && (!replacing || options->exec_channels == nullptr)))) {
         return fail_before_create(process_error_invalid);
@@ -180,10 +230,15 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     // Pre-B2 static CRTs silently ignore file_handles. Never report successful
     // inheritance into an unadvertised target or reopen its paths as a proxy.
-    if ((replacing || inherits_file) && !image_opt_in(read_exact, read_context, size, plan,
-                                                      ".xos.exec", 10, exec_image_abi_magic, 3)) {
-        if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
-        return fail_before_create(thread_error_unsupported);
+    bool exec_opt_in_absent = false;
+    if ((descriptor_startup || inherits_file) && !image_opt_in(read_exact, read_context, size, plan,
+                                                      ".xos.exec", 10, exec_image_abi_magic, 3, &exec_opt_in_absent)) {
+        if (allow_legacy_stdio && exec_opt_in_absent && !inherits_file && options != nullptr && legacy_stdio_snapshot(*options)) {
+            descriptor_startup = false;
+        } else {
+            if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
+            return fail_before_create(thread_error_unsupported);
+        }
     }
     if ((terminal_startup || terminal_exec) && !image_opt_in(read_exact, read_context, size, plan,
                                           ".xos.tty", 9, terminal_image_abi_magic, 1)) {
@@ -197,11 +252,11 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     auto* page = startup_page;
     for (usize i = 0; i < sizeof(startup_page); ++i) { page[i] = 0; }
     const u64 startup_address = process_stack_top - sizeof(startup_page);
-    const usize argv_offset = replacing ? 192 : options == nullptr ? 64 : 160;
+    const usize argv_offset = descriptor_startup ? 192 : options == nullptr ? 64 : 160;
     const usize env_offset = argv_offset + (argc + 1) * sizeof(u64);
     usize position = (env_offset + (env_count + 1) * sizeof(u64) + 15) & ~usize{15};
     auto* startup = reinterpret_cast<startup_info*>(page);
-    *startup = {startup_magic, replacing ? 3u : options == nullptr ? 1u : 2u, sizeof(startup_info), argc, 3,
+    *startup = {startup_magic, descriptor_startup ? 3u : options == nullptr ? 1u : 2u, sizeof(startup_info), argc, 3,
                 startup_address + argv_offset, {0, 1, 2},
                 options == nullptr ? 0u : startup_extension_offset};
     auto* arguments = reinterpret_cast<u64*>(page + argv_offset);
@@ -250,7 +305,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         }
     }
 
-    if (replacing) {
+    if (descriptor_startup) {
         if (options->descriptor_count > 32 ||
             (options->descriptor_count && options->descriptors == nullptr)) {
             return fail_before_create(process_error_invalid);
@@ -316,6 +371,23 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             if (options->open_paths[fd] != nullptr || options->stdio[fd] == -2) { continue; }
             const u64 source = options->stdio[fd] == -1 ? fd : static_cast<u64>(options->stdio[fd]);
             result = syscall(sys_process_stdio, static_cast<u64>(child), fd, source);
+        }
+        if (result >= 0 && descriptor_startup) {
+            const auto* descriptor_extension = reinterpret_cast<const startup_exec_extension*>(page + startup_exec_offset);
+            auto* descriptors = reinterpret_cast<startup_descriptor*>(page + descriptor_extension->descriptors - startup_address);
+            u32 transferred[32]{};
+            for (u32 i = 0; result >= 0 && i < options->descriptor_count; ++i) {
+                auto& descriptor = descriptors[i];
+                if (descriptor.fd >= 32 || descriptor.object >= 32 || descriptor.reserved
+                    || descriptor.kind < 1 || descriptor.kind > 5) {
+                    result = process_error_invalid;
+                    break;
+                }
+                if (descriptor.kind != 2) continue;
+                u32& target = transferred[descriptor.object];
+                if (!target) result = file_client.transfer(descriptor.handle, static_cast<u64>(child), target);
+                if (result == 0) descriptor.handle = target;
+            }
         }
         if (result >= 0 && options->delegate_spawn_depth != 0) {
             result = syscall(sys_process_delegate, static_cast<u64>(child),
@@ -388,6 +460,9 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     if (result >= 0 && options != nullptr && options->prepare_child != nullptr) {
         result = options->prepare_child(static_cast<u64>(child), options->prepare_context);
     }
+    if (result >= 0 && pinned_prepare != nullptr) {
+        result = pinned_prepare(static_cast<u64>(child), pinned_context);
+    }
     if (result >= 0 && terminal_startup) {
         const u32 handle = *options->terminal_send_handle;
         if (handle == 0) result = process_error_invalid;
@@ -452,6 +527,10 @@ i64 spawn_buffer_options(const char* name, const u8* bytes, u64 size, u32 argc,
 }
 
 i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const spawn_options* options) {
+    i64 dynamic_result = 0;
+    if (xos_dynamic_spawn_hook != nullptr &&
+        xos_dynamic_spawn_hook(path, argc, argv, options, nullptr, nullptr, nullptr, &dynamic_result))
+        return dynamic_result;
     if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
         return process_error_invalid;
     }
@@ -476,6 +555,10 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
         for (u32 i = 0; i < sizeof(receipt->digest); ++i) receipt->digest[i] = 0;
         receipt->size = 0;
     }
+    i64 dynamic_result = 0;
+    if (xos_dynamic_spawn_hook != nullptr &&
+        xos_dynamic_spawn_hook(path, argc, argv, &options, &diagnostic, receipt, expected, &dynamic_result))
+        return dynamic_result;
     if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
         diagnostic = {execution::launch_stage::prepare, process_error_invalid, elf::error::none};
         return process_error_invalid;
@@ -543,6 +626,17 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
     return child;
 }
 
+i64 spawn_pinned_impl(const char* name, u64 size, elf::read_exact_fn read, void* context,
+    u32 argc, const char* const* argv, const spawn_options& options,
+    execution::launch_diagnostic& diagnostic, u64 deadline,
+    i64 (*prepare)(u64, void*), void* prepare_context) {
+    if (!deadline || !file_client.set_deadline(deadline)) return process_error_invalid;
+    const i64 result = spawn_reader(name, size, read, context, argc, argv, false, 0,
+                                   &options, &diagnostic, nullptr, prepare, prepare_context, false);
+    (void)file_client.set_deadline(0);
+    return result;
+}
+
 i64 spawn_file(const char* path, u32 argc, const char* const* argv) {
     return spawn_file_impl(path, argc, argv, nullptr);
 }
@@ -584,6 +678,12 @@ i64 spawn_image_options(u32 image, u32 argc, const char* const* argv,
 }
 
 namespace xos::execution {
+i64 spawn_pinned_image(const char* name, u64 size, elf::read_exact_fn read, void* context,
+    u32 argc, const char* const* argv, const sdk::spawn_options& options,
+    launch_diagnostic& diagnostic, u64 deadline, i64 (*prepare)(u64, void*), void* prepare_context) {
+    return sdk::spawn_pinned_impl(name, size, read, context, argc, argv, options,
+                                diagnostic, deadline, prepare, prepare_context);
+}
 i64 spawn_file_diagnosed(const char* path, u32 argc, const char* const* argv,
                          const sdk::spawn_options& options,
                          launch_diagnostic& diagnostic) {

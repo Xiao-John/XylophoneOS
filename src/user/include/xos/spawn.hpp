@@ -52,7 +52,9 @@ struct spawn_options {
     // Explicit bounded delegation. A non-supervisor may only grant a smaller
     // depth than it received; zero leaves the child unprivileged.
     u32 delegate_spawn_depth = 0;
-    // Same-session descriptors are restored by the replacement's libc startup.
+    // v3 descriptors are restored by the target's libc startup. Spawn transfers
+    // regular Files descriptions once per object, preserving aliases/cursors;
+    // exec retains same-session handles through atomic replacement.
     // fd=UINT32_MAX requests last-object CLOEXEC cleanup before new main.
     bool replace_image = false;
     u32 exec_depth_mode = 0;

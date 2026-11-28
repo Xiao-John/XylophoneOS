@@ -14,6 +14,7 @@ from build_glibc_sdk import ROOT, sha
 from glibc_g1_probe import clean_build_environment, select_gnu_make, tool_identity
 from xypm_sdk_profile import inspect_sdk
 from verify_gcc_shared_source import extract_verified_source, read_archive, read_lock, verify_source
+from dynamic_artifacts import write_note
 
 SOURCE_LOCK = ROOT / 'src/ports/gcc/source_lock.json'
 DRIVER = ROOT / 'scripts/glibc_shared_gcc_driver.sh'
@@ -90,6 +91,8 @@ def main():
     for name in ('archive', 'signature', 'keyring', 'sdk-build', 'glibc-source', 'gnu-build', 'pic-crt', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--jobs', type=int, choices=(1, 2), default=1)
+    parser.add_argument('--public-runtime', type=Path,
+                        help='bind native identities to a verified public GNU runtime build')
     args = parser.parse_args()
     sdk_build = args.sdk_build.resolve(strict=True)
     gnu_build = args.gnu_build.resolve(strict=True)
@@ -107,6 +110,16 @@ def main():
     sdk = json.loads(sdk_path.read_bytes())
     sdk_binding = inspect_sdk('glibc', sdk_build)['binding']
     libc, interpreter = gnu_build / 'libc.so', gnu_build / 'elf/ld.so'
+    public = None
+    if args.public_runtime:
+        report_path = args.public_runtime.resolve(strict=True) / 'manifest.json'
+        public = json.loads(report_path.read_bytes())
+        if (public.get('status') != 'public_runtime_built_not_run' or not public.get('public_startup')
+                or public['sdk_binding'] != sdk_binding
+                or public['artifacts'].get('gnu/libc.so') != sha(libc)
+                or public['artifacts'].get('gnu/elf/ld.so') != sha(interpreter)):
+            raise ValueError('shared GCC does not match the bound public runtime')
+        bindings[report_path] = sha(report_path)
     original = {file: sha(file) for file in (
         sdk_path, libc, interpreter, *(gnu_build / 'csu' / name for name in ('Scrt1.o', 'crti.o', 'crtn.o')),
         *(args.pic_crt / name for name in ('crtbeginS.o', 'crtendS.o')))}
@@ -132,6 +145,13 @@ def main():
         with log.open('w') as stream:
             subprocess.run(command, env=env, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT, check=True)
         return log.read_text(errors='replace')
+
+    native_note = None
+    if public:
+        assembly, native_note = output / 'native_identity.S', output / 'native_identity.o'
+        write_note(assembly, public['native_abi'], 4)
+        run('native-identity', [tools['gcc']['path'], '-c', assembly, '-o', native_note])
+        env['XOS_NATIVE_DYNAMIC_NOTE'] = str(native_note)
 
     extract_verified_source(archive_data, source_verification, work)
     del archive_data
@@ -181,8 +201,10 @@ def main():
     gcc_env = dict(env)
     env, _ = clean_build_environment(env)
     math = gnu_build / 'math/libm.so'
-    math_flags = ('LDFLAGS-m.so=-nostdlib -Wl,-shared,--eh-frame-hdr,-z,now,-z,relro,-z,noexecstack,'
+    math_flags = ('LDFLAGS-m.so=-nostdlib -Wl,-shared,--hash-style=both,--eh-frame-hdr,-z,now,-z,relro,-z,noexecstack,'
                   '-z,nomark-plt,-z,nopack-relative-relocs,-z,max-page-size=8192,-z,separate-code')
+    if native_note:
+        math_flags += ' ' + str(native_note)
     run('build-libm', [make, '-C', glibc / 'math', 'objdir=' + str(gnu_build), jobs,
                       '-o', libc, '-o', interpreter,
                       f'link-libc-deps={libc} {interpreter} {gcc_dso}',
@@ -242,6 +264,9 @@ def main():
                 'sanitized_environment': removed, 'bound_inputs': {str(p): digest for p, digest in original.items()},
                 'recipe_sha256': sha(Path(__file__)), 'driver_sha256': sha(DRIVER),
                 'plugin_headers': {name: sha(plugin / name) for name in ('auto-host.h', 'tm.h', 'tsystem.h', 'coretypes.h')}}
+    if public:
+        manifest.update(public_startup=True, native_abi=public['native_abi'],
+                        public_runtime_manifest_sha256=bindings[report_path])
     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 
 

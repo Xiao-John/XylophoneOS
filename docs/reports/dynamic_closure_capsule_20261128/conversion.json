@@ -1,0 +1,16 @@
+{
+  "exact_git_blob_inputs_verified": 55,
+  "owned_test_git_revision": "5cc9d66de6257aa08d4d3446e99df846e21976b6",
+  "production_git_revision": "3699916df590a2fe0ea9b419836ded2d9344e6b3",
+  "templates": {
+    "XOS_PREVIEW2_CELLAR": "Packaged SDK dependencies.",
+    "XOS_PREVIEW2_PREFIX": "SDK executable wrapper prefix.",
+    "XOS_SOURCE_SNAPSHOT": "Fresh source export at the stated production Git revision with the stated two test overlays."
+  },
+  "transform": [
+    "Sort JSON object keys and indent consistently.",
+    "Replace environment prefixes using declared XOS variables; retain all source and artifact digests.",
+    "Concatenate exact per-case process logs in report order."
+  ],
+  "unpublished_raw_report_sha256": "ea2707f5fded831927183bd5a264c9b9a381f000fd2587f657ef6726dfeb2517"
+}

@@ -8,5 +8,4 @@ __shutdown (int fd, int how)
 {
   return xos_file_result (__xos_net2_shutdown_fd (fd, how));
 }
-libc_hidden_def (__shutdown)
 weak_alias (__shutdown, shutdown)

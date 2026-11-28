@@ -1,0 +1,14 @@
+{
+  "program_native_binding": {
+    "abi": 1,
+    "sdk_manifest_sha256": "61d3f52a178071cd6d2809b37669b8542e6dd93f5b429b5a924807e76b3e3779",
+    "sdk_tree_sha256": "29eeceac7b5913ccf66116d6420a502069ab357efbe80b2917515d4e971bdaee",
+    "target": "x86_64-elf"
+  },
+  "scope": "Post-run complete native SDK snapshot equality; distinct existing inventory algorithms explicitly recorded.",
+  "sdk_receipt_full_tree_with_directories_sha256": "2c9b485aa083b764b215bb6f37c795e3cb7dc333abe6f8811b1b357a036565aa",
+  "status": "passed",
+  "system_build_id": "c1575e2adfc6fa5d",
+  "system_sdk_manifest_sha256": "61d3f52a178071cd6d2809b37669b8542e6dd93f5b429b5a924807e76b3e3779",
+  "xos_app_file_inventory_sha256": "29eeceac7b5913ccf66116d6420a502069ab357efbe80b2917515d4e971bdaee"
+}

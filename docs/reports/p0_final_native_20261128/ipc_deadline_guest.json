@@ -1,0 +1,124 @@
+{
+  "artifacts": {
+    "ipc_deadline_probe.elf": "e99a36f928611d0b0bff18d4e04355f2ba496bfff2843b072fa45dad6d119e24"
+  },
+  "baseline": [
+    129778,
+    2,
+    0
+  ],
+  "build_id": "faad61f4f20be0f7",
+  "checks": [
+    {
+      "markers": [
+        "IPC_DEADLINE_PASS receive_timeout peer_alive",
+        "IPC_DEADLINE_PASS send_timeout payload_preserved",
+        "IPC_DEADLINE_PASS immediate expired readiness_first",
+        "IPC_DEADLINE_PASS scope_and_legacy_rejected",
+        "IPC_DEADLINE_PASS ready_wakes_receive_send",
+        "IPC_DEADLINE_PASS close_wakes_both no_wrap timeout_final"
+      ],
+      "mode": "parent",
+      "nonce": "a7a15183588f43e591114ca33fef5398",
+      "resources": [
+        129778,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "markers": [
+        "IPC_DEADLINE_PASS receive_timeout peer_alive",
+        "IPC_DEADLINE_PASS send_timeout payload_preserved",
+        "IPC_DEADLINE_PASS immediate expired readiness_first",
+        "IPC_DEADLINE_PASS scope_and_legacy_rejected",
+        "IPC_DEADLINE_PASS ready_wakes_receive_send",
+        "IPC_DEADLINE_PASS close_wakes_both no_wrap timeout_final"
+      ],
+      "mode": "parent",
+      "nonce": "df5531892a592121d12ff0c0fce57c8e",
+      "resources": [
+        129778,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "markers": [
+        "IPC_DEADLINE_PASS receive_timeout peer_alive",
+        "IPC_DEADLINE_PASS send_timeout payload_preserved",
+        "IPC_DEADLINE_PASS immediate expired readiness_first",
+        "IPC_DEADLINE_PASS scope_and_legacy_rejected",
+        "IPC_DEADLINE_PASS ready_wakes_receive_send",
+        "IPC_DEADLINE_PASS close_wakes_both no_wrap timeout_final"
+      ],
+      "mode": "parent",
+      "nonce": "4ccd1d4657edab50b95a5b45c625db20",
+      "resources": [
+        129778,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "guest_qemu.log",
+      "sha256": "9680b0b2c919191be90f25bb59e5a9462b02aa9e87eb0d1fd60b861380748d2e"
+    },
+    {
+      "path": "guest_serial.log",
+      "sha256": "3ee3e15eb29005ed99f2f46fc28ff27ab3cc976ea901b81451126d7bce9cf784"
+    }
+  ],
+  "fixture_receipt_sha256": "95186697ba23f03b2fce58cd5ab4e5d69a7626e4646eb81fea3474bdcc1374e6",
+  "image_sha256": "c200100651fe8161e69773c0963ebf3bb1c0dcb899f1b07b3aa66ddb10c19dae",
+  "initial_disk_sha256": "ba0791b07a05397ca773e714f877a2c22f967a0a800049a6ae858132a4027322",
+  "not_run": [
+    "sys81_explicit_channel_inheritance_stress",
+    "terminal_display_interactium_regression"
+  ],
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_FINAL_NATIVE_SOURCE}/build/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_GUEST_TEMP}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "runner_sha256": "c964c7e9c15f6c81eb2a72d965743469903d16fb5b89791780e6de163e2bff78",
+  "sdk_tree_sha256": "25c705d9e1388330db72d75ca1c22e129fe7a330a7810c9afedd49fdd5ebdde6",
+  "status": "passed",
+  "suite": "deadline",
+  "system_manifest_sha256": "5346748099086783edec06ab9e7dc186e67d524c1e29f369cbc8db0f8e685c21"
+}

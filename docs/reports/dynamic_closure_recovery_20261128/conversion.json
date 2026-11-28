@@ -1,0 +1,7 @@
+{
+  "source_commit": "302161d3",
+  "raw_report_sha256": "4c9a401d2c23c304fdb790a720dbec1bdee38bddb29ff4592feedd2f126e8395",
+  "output": "report.json",
+  "rule": "known environment roots to documented XOS templates; all observations and source/artifact/tool hashes unchanged",
+  "exported_binding": "manifest.json:files[report.json]"
+}

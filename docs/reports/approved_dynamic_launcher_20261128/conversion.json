@@ -1,0 +1,84 @@
+{
+  "conversion": [
+    {
+      "source_commit": "285d5ec2",
+      "raw_input": "build/dynamic_launcher_c_v2/receipt.json",
+      "raw_sha256": "51190e53cd99a06fa4c67e021f650f4dfd2b506e69f6ed57d5873b6627f5fe06",
+      "output": "launcher_c_build.json",
+      "rule": "known Preview 2 work, tool wrapper, packaged dependency and prefix roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged",
+      "exported_binding": "manifest.json:files[launcher_c_build.json]"
+    },
+    {
+      "source_commit": "285d5ec2",
+      "raw_input": "build/dynamic_launcher_activation_v1/receipt.json",
+      "raw_sha256": "dd2a027dcd94787e3fdf4ef8d2edec609da08153475219e492c9bca31b09748b",
+      "output": "launcher_activation_build.json",
+      "rule": "known Preview 2 work, tool wrapper, packaged dependency and prefix roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged",
+      "exported_binding": "manifest.json:files[launcher_activation_build.json]"
+    },
+    {
+      "source_commit": "a686ccb6",
+      "raw_input": "build/dynamic_generation_probe_v1/receipt.json",
+      "raw_sha256": "52a2deca7e25fce8e7b64ee11fd9496e8e62679ddb97734b43f3d4e866c58c9f",
+      "output": "generation_probe_build.json",
+      "rule": "known Preview 2 work, tool wrapper, packaged dependency and prefix roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged",
+      "exported_binding": "manifest.json:files[generation_probe_build.json]"
+    },
+    {
+      "source_commit": "285d5ec2",
+      "raw_input": "build/dynamic_launcher_wrong_manifest_v1/receipt.json",
+      "raw_sha256": "13b9c8ca9cdf95700e48e56295c8dbd8e328de290fd8ca154639ad4b9dcbe8bd",
+      "output": "rejected_manifest.json",
+      "rule": "known Preview 2 environment roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged; JSON keys sorted to distinguish the raw input and exported representation",
+      "exported_binding": "manifest.json:files[rejected_manifest.json]"
+    },
+    {
+      "source_commit": "285d5ec2",
+      "raw_input": "build/dynamic_launcher_wrong_tree_v1/receipt.json",
+      "raw_sha256": "7bd52bba52f04e564d526723c503411e851200dff0e86554d0c2bba926ecdbbd",
+      "output": "rejected_tree.json",
+      "rule": "known Preview 2 environment roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged; JSON keys sorted to distinguish the raw input and exported representation",
+      "exported_binding": "manifest.json:files[rejected_tree.json]"
+    },
+    {
+      "source_commit": "285d5ec2",
+      "raw_input": "build/dynamic_launcher_wrong_manifest_v1/rejection.log",
+      "raw_sha256": "69f768667172b5f0a144c544617c55007fbf8b534651fca5e43834c462e78f9d",
+      "output": "rejected_manifest.log",
+      "rule": "known Preview 2 environment roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged",
+      "exported_binding": "manifest.json:files[rejected_manifest.log]"
+    },
+    {
+      "source_commit": "285d5ec2",
+      "raw_input": "build/dynamic_launcher_wrong_tree_v1/rejection.log",
+      "raw_sha256": "f092c5f5be0c419def23064534d774b1962884bdfbcbfcd478f0a22f5dfb0936",
+      "output": "rejected_tree.log",
+      "rule": "known Preview 2 environment roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged",
+      "exported_binding": "manifest.json:files[rejected_tree.log]"
+    },
+    {
+      "source_commit": "3a8887aa",
+      "raw_input": "build/dynamic_launcher_c_v3/receipt.json",
+      "raw_sha256": "d60f38a5d38565c97c7394a1ee3aecfaa9d01dfe3acc53897bb1e0590b267ed0",
+      "output": "launcher_c_authority_build.json",
+      "rule": "known Preview 2 work, tool wrapper, packaged dependency and prefix roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged",
+      "exported_binding": "manifest.json:files[launcher_c_authority_build.json]"
+    },
+    {
+      "source_commit": "3a8887aa",
+      "raw_input": "build/dynamic_launcher_activation_v2/receipt.json",
+      "raw_sha256": "3522293b7797d84c618ce2212f8377533e0d02aa30067d785532a2fbc96267ec",
+      "output": "launcher_activation_authority_build.json",
+      "rule": "known Preview 2 work, tool wrapper, packaged dependency and prefix roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged",
+      "exported_binding": "manifest.json:files[launcher_activation_authority_build.json]"
+    },
+    {
+      "source_commit": "3a8887aa",
+      "raw_input": "build/dynamic_generation_probe_v2/receipt.json",
+      "raw_sha256": "4fe789deb20a1fc6ce37bbd57397095374d290a9fcc725d4e77c6ed362eed1a4",
+      "output": "generation_probe_authority_build.json",
+      "rule": "known Preview 2 work, tool wrapper, packaged dependency and prefix roots replaced by documented XOS templates; observations, source/artifact/tool hashes unchanged",
+      "exported_binding": "manifest.json:files[generation_probe_authority_build.json]"
+    }
+  ]
+}

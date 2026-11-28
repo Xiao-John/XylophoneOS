@@ -1,0 +1,31 @@
+{
+  "templates": {
+    "XOS_ALTERNATE_GENERATIONS": "Explicit newly built id2/id3 records for this final C5 stage.",
+    "XOS_C_SDK_BUILD": "Independently anchored static C SDK v4.",
+    "XOS_C_STAGE": "Final C5 program stage.",
+    "XOS_FINAL_SOURCE": "Immutable final native/GNU producer source at the stated revision.",
+    "XOS_PREVIEW2_HOMEBREW": "Packaged Preview 2 build dependencies.",
+    "XOS_PREVIEW2_PREFIX": "Preview 2 tool wrapper prefix.",
+    "XOS_PUBLIC_RUNTIME_BUILD": "Final complete public GNU v5 build.",
+    "XOS_R2_GUEST_TEMP": "Ephemeral R2 FAT disk directory.",
+    "XOS_R2_SOURCE": "Complete matching final source export used to build and execute the R2 fixture.",
+    "XOS_WORK_DIR": "Session mount for other explicit build inputs."
+  },
+  "transform": [
+    "Sort JSON keys and template environment paths without changing source/artifact identities, statuses or observations.",
+    "Normalize transcript CR/LF to LF, remove trailing whitespace, and prepend an explicit derived-transcript notice.",
+    "Append a derived-export notice to the already canonical native cross-binding JSON to distinguish exported bytes from its original unpublished receipt."
+  ],
+  "unpublished_raw_sha256": {
+    "guest_report.json": "f896c39e9fa308d6df77a4ce78a6ce69e25be91146ff5b4a7ffbd6223192c4dd",
+    "guest_serial.log": "3e9c00ec055efb45a3bc313f23faad036ac715593398fc4d4ea9b60d0f403b96",
+    "launcher_build.json": "5874d1e7e217cefe18d2e8fa921406979759e2afb1b100e65e6b875276f6555a",
+    "native_cross_binding.json": "86582ac0aad8d523376664c0a29bed4da1a7a809d235deeb53d57a2478826af9",
+    "probe_build.json": "5b0934bcc55f9c4259f92d6828d943ca8a435b771622098547adb90d34d4ae8b",
+    "program_build.json": "80dfc342a96db3e312b5885ce5416ca4541d3e2a6c1b028c4dd5d554bc2f1312",
+    "round_0.log": "8f081070782477808fb46e084ce80e0c182aa98614f1a6dd19801c3b8727ba9f",
+    "round_1.log": "3d73d65fa166ea947b00584aaba5b072cb8e93018ddeac6660ecc6aba3b3e647",
+    "round_2.log": "61006b9942bbe29643e0d727b955d01ed9097fd3d98477de971d9f9fbbb7b15c",
+    "runtime_build.json": "aad6aac205fc33e42d30a3fb056b2a0a22b466e6f2ff2a50eddb13fe936df26a"
+  }
+}

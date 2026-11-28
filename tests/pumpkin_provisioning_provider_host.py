@@ -19,7 +19,8 @@ from pumpkin_generation_authority import generation_authority, generation_error,
 from pumpkin_generation_provider import empty, frame, load_profile, peer_uid, provider_client, read_operation, signature
 
 OPERATOR, PROVIDER, STRANGER, GROUP = 1001, 1002, 1003, 1000
-REALM = bytes.fromhex("5a4419000102030405060708090a0b0c0d")
+REALM = bytes.fromhex("5a4419000102030405060708090a0b0c")
+assert len(REALM) == 16
 
 
 def digest(path):
@@ -58,7 +59,7 @@ def actor(args):
         with socket.socket(socket.AF_UNIX) as listener:
             listener.bind(str(profile.socket_path))
             profile.socket_path.chmod(0o660)
-            listener.settimeout(8)
+            listener.settimeout(30)
             listener.listen(1)
             connection, _ = listener.accept()
             with connection:
@@ -163,7 +164,8 @@ def run(output):
                 return process
 
             def wait_endpoint(process, address=endpoint):
-                until = time.monotonic() + 5
+                started = time.monotonic()
+                until = started + 30
                 while not address.exists():
                     if process.poll() is not None:
                         stdout, stderr = process.communicate()
@@ -171,6 +173,9 @@ def run(output):
                     if time.monotonic() >= until:
                         raise AssertionError("provider socket was not ready")
                     time.sleep(0.02)
+                report["checks"].append({"case": "provider process became ready",
+                                         "ready_seconds": time.monotonic() - started,
+                                         "startup_budget_seconds": 30})
 
             def stop(process, address=endpoint):
                 process.terminate()

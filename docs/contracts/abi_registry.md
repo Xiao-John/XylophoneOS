@@ -191,7 +191,8 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 | startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；glibc 终端接收 v2/v3 的受限客体资格见 [e6b8c410](../work_log/e6b8c410_glibc_terminal.md)，出站继承单独推进 |
 | glibc terminal | 既有 startup kind5 正式命名为 terminal；CRT capability bit1；libc 本地 TCGETS/TCSETS/TCSETSW/TCSETSF=0x5401–0x5404，FIONCLEX/FIOCLEX=0x5450/0x5451 | [glibc_terminal_v1](glibc_terminal_v1.md)；复用 native terminal v2，glibc termios 逐字段转换，实际资格按独立工作日志 |
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |
-| dynamic identity / generation | ELF note `XOS\0`/`0x584f5301`，identity v1 128字节；generation v1 header128/object512，最多12对象 | [准入组件](dynamic_admission_v1.md)；独立文件格式，不新增 syscall 或修改 startup；公开动态启动、持久激活与 ready 仍待闭环 |
+| dynamic identity / generation | ELF note `XOS\0`/`0x584f5301`，identity v1 128字节；generation v1 header128/object512，最多12对象 | [准入组件](dynamic_admission_v1.md)；[公共 GNU 启动](public_dynamic_runtime_v1.md)；文件格式独立于 syscall，具体组合按对应产物验收 |
+| Pumpkin catalog / dynamic capsule | capsule v3 增加64字节 authority binding；PCQ1/version1 request40/reply784；PPR1保留1592/1560字节，新增op12/13 | [持久 catalog authority](pumpkin_catalog_authority.md)；旧操作编号不变，旧动态组合须重建并核对 native ABI；不新增 syscall |
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |
 | net 服务协议 | v1 information/transmit/receive/stop，raw Ethernet 1514 字节 | 用户态 VirtIO-net。[纵切契约](net_user_driver.md)记录 ARP、IRQ 与 reset 的限定客体验收 |

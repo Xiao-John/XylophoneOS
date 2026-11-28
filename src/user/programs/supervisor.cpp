@@ -1123,10 +1123,12 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (persistent_recovery_gate) return 21;
     u32 holder = 0;
     u32 broker = 0;
-#if XOS_PUMPKIN_NATIVE_LOGIN
-    // The headless login run needs one more process than the generation-only
-    // probe. Release the boot demos before creating any protected endpoints.
+#if XOS_PUMPKIN_NATIVE_LOGIN || XOS_PUMPKIN_CATALOG_PROBE
+    // Login holders and catalog descendants need the existing process budget.
+    // Release boot demos before creating any protected endpoints.
     quiet_boot_demos();
+#endif
+#if XOS_PUMPKIN_NATIVE_LOGIN
     holder = image_named(user::pumpkin::native_login::holder_image);
 #endif
 #if XOS_PUMPKIN_USER_RESOURCE

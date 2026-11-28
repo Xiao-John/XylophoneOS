@@ -1,0 +1,40 @@
+{
+  "checks": [
+    {
+      "kind": "ordinary",
+      "output": "build/p1c-provisioning-host",
+      "raw_log_sha256": "46a716ef63fa7bed66f367c85ce379a5e5ccee5d4fbc7cd87cf5e61830b4deb2",
+      "status": "passed",
+      "stdout": "PASS production provisioning store: torn stage, rejected CAS, committed/uncommitted unknown, exact recovery, stale disk, cross-app denial, durable revocation, catalog checkpoint, publisher role, persistent activation, all-root revocation, full 64-account capacity"
+    },
+    {
+      "kind": "ASan+UBSan",
+      "output": "build/p1c-provisioning-asan",
+      "raw_log_sha256": "46a716ef63fa7bed66f367c85ce379a5e5ccee5d4fbc7cd87cf5e61830b4deb2",
+      "status": "passed",
+      "stdout": "PASS production provisioning store: torn stage, rejected CAS, committed/uncommitted unknown, exact recovery, stale disk, cross-app denial, durable revocation, catalog checkpoint, publisher role, persistent activation, all-root revocation, full 64-account capacity"
+    }
+  ],
+  "not_run": [
+    "LeakSanitizer under ptrace",
+    "physical power-loss qualification"
+  ],
+  "scope": "production provisioning store/codec/protocol host execution inside published glibc SDK environment",
+  "sources": {
+    "src/shared/include/xos/catalog_abi.hpp": "334e1473a39983a0f2d5cc521d5ce5d01dddaf1e26e0e4473dd440dafd3221b4",
+    "src/user/pumpkin/account_store.cpp": "c4ac7c613d34fbd92711872fb046eeca2d97dce8535b853f9d96358dbaefa4a6",
+    "src/user/pumpkin/account_store.hpp": "c32c19bed6e1863189721a1a837f5b5c5b3cb5d0e24de8b3e020fb312ce21668",
+    "src/user/pumpkin/provisioning_protocol.cpp": "cb46115ea994158518f07568702457c53a9ee2e4c834bf8c4845c12b8aff50c2",
+    "src/user/pumpkin/provisioning_protocol.hpp": "e8a6a987dc831d0c97a4776d76dd7800a786fb117895d1b4a8b2e89f6b91bfab",
+    "src/user/pumpkin/provisioning_store.cpp": "05764a9a1bc9daa7c3ca32be14b6d959ac62b54944b5ad33e68fe150ea48f35c",
+    "src/user/pumpkin/provisioning_store.hpp": "8c27184f9797c7d0af0c4efbd35aa3307becbe19111d5eab125827c54c7ebec4",
+    "src/user/pumpkin/provisioning_types.hpp": "6a504fe88734bf8025483340979dfa6ecbc568377a5c87e9e6046d60de78cf8b",
+    "src/user/pumpkin/service_core.cpp": "641645e48f5a243db201a33e6c15910ff45b2f5bfcd0214e1b8b0c5425b3b363",
+    "src/user/pumpkin/service_core.hpp": "bf7c5ab81f152a62a22ba2b3bc694ece968ea41049ad8dd1bad5e4d35b39e026",
+    "src/user/pumpkin/snapshot_publication.cpp": "143396f0e70cf18a39afebfb7f252ae94f6b719af092e34f4977471c6a4f4b55",
+    "src/user/pumpkin/snapshot_publication.hpp": "288b00513eb57c97737ba57ae841c7a9d085462746315489277ef98471812b66",
+    "tests/fixtures/pumpkin/provisioning_store_host.cpp": "50cbc52d19c7c2471030a3890fed9d321f53f89bbd22071401e4b76fc0071d69",
+    "tests/pumpkin_provisioning_host.py": "3dab26b7341424802d5d3b6a874b31e87377a12aa65ec3cb7fa47f219b41646c"
+  },
+  "status": "passed"
+}

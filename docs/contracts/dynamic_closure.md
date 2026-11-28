@@ -16,6 +16,8 @@ generation 根、各根 manifest 的规范绝对路径、SDK 摘要、当前索�
 临时 pin 已关闭，才发布当前政策。`activation_catalog::restore` 支持只读
 启动 capsule 携带的既有 sequence/revoked 状态；它验证该状态且不能覆盖
 已初始化 catalog。此复制不是与父控制器之间的实时同步协议。
+可选持久模式另由 [Pumpkin catalog authority](pumpkin_catalog_authority.md)
+提供实时 admission 查询；基础易失 configure 不因此取得该资格。
 
 `acquire(path, deadline, closure)` 只选择当前已批准、未撤销根。manifest 在
 同一个 pin 上读成私有快照并验证完整摘要；精确 main 路径不同才返回独立的

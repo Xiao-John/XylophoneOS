@@ -69,6 +69,8 @@ def main():
                         help="headless developer test with an exclusive COM1 generation proxy")
     parser.add_argument("--pumpkin-provisioning-store", action="store_true",
                         help="explicit v2 private-region application/catalog transaction profile")
+    parser.add_argument("--pumpkin-catalog-fixture", type=Path,
+                        help="explicit two-generation catalog test fixture; requires provisioning")
     parser.add_argument("--pumpkin-native-login", action="store_true",
                         help="exercise trusted credential delivery in the anchored developer profile")
     parser.add_argument("--pumpkin-user-login", action="store_true",
@@ -118,6 +120,8 @@ def main():
     if args.pumpkin_provisioning_store and (not args.pumpkin_anchored_probe or
                                           args.pumpkin_named_resource_store or args.pumpkin_native_login):
         parser.error("provisioning requires its dedicated anchored profile")
+    if args.pumpkin_catalog_fixture is not None and not args.pumpkin_provisioning_store:
+        parser.error("catalog fixture requires the dedicated provisioning profile")
     if args.pumpkin_native_login and not args.pumpkin_anchored_probe:
         parser.error("native Pumpkin login requires the anchored developer profile")
     if args.pumpkin_user_login and not args.pumpkin_native_login:
@@ -165,6 +169,10 @@ def main():
     if not nasm:
         raise SystemExit("NASM not found; install it or set NASM=/path/to/nasm")
     BUILD.mkdir(parents=True, exist_ok=True)
+    catalog_metadata = {}
+    if args.pumpkin_catalog_fixture is not None:
+        from pumpkin_catalog_fixture import emit
+        catalog_metadata = emit(args.pumpkin_catalog_fixture, BUILD / "pumpkin_catalog_fixture.hpp")
     # Bind the relocated cross compiler to the exact selected target tools.
     # This environment belongs only to this build process, not native host tests.
     target_tools = BUILD / "target_tools"
@@ -231,7 +239,7 @@ def main():
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
                                       **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2}
                                          if args.pumpkin_user_login else {}),
-                                      **deployment, **desktop_metadata,
+                                      **deployment, **desktop_metadata, **catalog_metadata,
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
@@ -265,6 +273,7 @@ def main():
                                  pumpkin_user_resource=args.pumpkin_user_resource,
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
                                  pumpkin_provisioning_store=args.pumpkin_provisioning_store,
+                                 pumpkin_catalog_fixture=bool(catalog_metadata),
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
                                  net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile, net_dhcp_profile=net_dhcp_profile)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
@@ -424,7 +433,7 @@ def main():
         **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
         **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2} if args.pumpkin_user_login else {}),
-        **deployment, **desktop_metadata,
+        **deployment, **desktop_metadata, **catalog_metadata,
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),

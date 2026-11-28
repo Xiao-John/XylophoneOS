@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "sysdeps/xos/xos_file_runtime.h"
 #include <errno.h>
+#include <fcntl.h>
 #include <limits.h>
 #include <string.h>
 #include <sys/types.h>
@@ -64,8 +65,11 @@ extern "C" int __xos_spawn_path(pid_t* output, const char* path, char* const arg
                                       static_cast<u64>(process_authority_mode::query));
     if (authority < 0) { return authority == process_error_denied ? EPERM : EIO; }
     bool inherit_create = authority == 1;
-    xos_spawn_stdio snapshot{};
-    const long locked = __xos_file_spawn_begin(&snapshot);
+    const i64 now = sdk::syscall(sys_clock_monotonic);
+    if (now < 0 || now > 0x7fffffffffffffffLL - 30000000000LL) return EIO;
+    const u64 deadline = static_cast<u64>(now) + 30000000000ULL;
+    xos_exec_descriptors snapshot{};
+    const long locked = __xos_file_exec_begin(&snapshot, deadline);
     if (locked < 0) { return static_cast<int>(-locked); }
 
     sdk::spawn_options options{};
@@ -73,14 +77,36 @@ extern "C" int __xos_spawn_path(pid_t* output, const char* path, char* const arg
     options.environment_count = env_count;
     options.prepare_child = prepare_child;
     options.prepare_context = &inherit_create;
-    for (unsigned int fd = 0; fd < 3; ++fd) {
-        options.stdio[fd] = snapshot.route[fd];
-        options.file_handles[fd] = snapshot.file_handle[fd];
-        options.open_flags[fd] = snapshot.open_flags[fd];
+    startup_descriptor descriptors[32]{};
+    options.descriptors = descriptors;
+    for (auto& route : options.stdio) route = -2;
+    int unsupported = snapshot.terminal_locked ? ENOTSUP : 0;
+    for (u32 i = 0; i < snapshot.count && !unsupported; ++i) {
+        const auto& source = snapshot.items[i];
+        if (source.fd == 0xffffffffu) continue;
+        if (source.kind == xos_file_kind_pipe_read || source.kind == xos_file_kind_pipe_write) {
+            bool routed = false;
+            for (u32 j = 0; j < snapshot.count; ++j) {
+                const auto& route = snapshot.items[j];
+                routed = routed || (route.fd < 3 && route.handle == source.handle && route.kind == source.kind);
+            }
+            if (!routed) { unsupported = ENOTSUP; break; }
+        }
+        if (source.fd < 3 && source.kind != xos_file_kind_file) {
+            if (source.flags & O_NONBLOCK || ((source.fd == 0) !=
+                (source.kind == xos_file_kind_pipe_read || (source.kind == xos_file_kind_kernel && source.handle == 0)))) {
+                unsupported = ENOTSUP;
+                break;
+            }
+            options.stdio[source.fd] = source.handle;
+        }
+        descriptors[options.descriptor_count++] = {source.fd, source.object, source.kind,
+            source.handle, source.flags, source.reserved};
     }
+    if (unsupported) { __xos_file_exec_end(&snapshot, deadline); return unsupported; }
     execution::launch_diagnostic diagnostic{};
     const i64 child = execution::spawn_file_diagnosed(path, argc, argv, options, diagnostic);
-    __xos_file_spawn_end(&snapshot);
+    __xos_file_exec_end(&snapshot, deadline);
     if (child < 0) { return launch_error(child, diagnostic); }
     if (output != nullptr) { *output = static_cast<pid_t>(child); }
     return 0;
@@ -98,7 +124,7 @@ extern "C" int __xos_exec_path(const char* path, char* const argv[], char* const
     if (!argc) return EINVAL;
     if (argc > process_max_args || environment_count > startup_environment_max) return E2BIG;
     const i64 now = sdk::syscall(sys_clock_monotonic);
-    if (now < 0 || now > INT64_MAX - 30000000000LL) return EIO;
+    if (now < 0 || now > 0x7fffffffffffffffLL - 30000000000LL) return EIO;
     const u64 deadline = static_cast<u64>(now) + 30000000000ULL;
     xos_exec_descriptors snapshot{};
     const auto captured = __xos_file_exec_begin(&snapshot, deadline);

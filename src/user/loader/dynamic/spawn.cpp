@@ -5,6 +5,9 @@
 #include <xos/thread_abi.hpp>
 
 namespace xos::dynamic {
+error install(const launch_policy& policy, u64 absolute_deadline) {
+    return configure(policy, absolute_deadline);
+}
 namespace {
 closure selected;
 alignas(4096) startup_capsule capsule;

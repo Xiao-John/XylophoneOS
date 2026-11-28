@@ -36,6 +36,9 @@ struct closure {
 bool pin_read(void* context, u64 offset, u8* destination, u32 length);
 bool configured();
 error configure(const launch_policy& policy, u64 absolute_deadline);
+// Explicitly link and enable ordinary SDK inspection/spawn routes. Programs
+// which never call this keep the optional runtime out of their static image.
+error install(const launch_policy& policy, u64 absolute_deadline);
 error export_policy(launch_policy& policy);
 error acquire(const char* path, u64 deadline, closure& result);
 error acquire_index(u32 index, u64 deadline, closure& result);

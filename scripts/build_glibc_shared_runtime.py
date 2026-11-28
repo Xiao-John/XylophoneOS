@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Rebuild the private fixed-closure GNU runtime; this is not a public dynamic SDK."""
+"""Build the authenticated GNU runtime, with an explicit public native startup mode."""
 
 import argparse
 import json
@@ -9,6 +9,7 @@ from pathlib import Path
 import shlex
 import shutil
 import subprocess
+import hashlib
 
 from build_glibc_sdk import PORT, ROOT, sha
 from build_glibc_shared_gcc import TARGET, configure_xos, rewrite
@@ -16,6 +17,8 @@ from glibc_g1_probe import clean_build_environment, select_gnu_make, tool_identi
 from verify_glibc_source import extract_verified_source, read_archive, verify_source
 from verify_gcc_shared_source import read_lock as gcc_lock, verify_source as verify_gcc
 from xypm_sdk_profile import inspect_sdk, metadata_snapshot, relative_file
+from dynamic_artifacts import write_note
+from build_glibc_terminal_support import input_paths as native_input_paths
 
 
 # This is the existing native _dl_sysdep_start composition. The official
@@ -24,13 +27,18 @@ RTLD_ROUTINES = ('$(all-dl-routines) dl-audit dl-compat dl-diagnostics '
                  'dl-diagnostics-cpu dl-diagnostics-kernel dl-environ dl-hwcaps '
                  'dl-hwcaps-subdirs dl-hwcaps_split dl-libc_freeres dl-minimal '
                  'dl-mutex dl-profile dl-usage rtld')
-SHARED_FLAGS = ('-Wl,-shared,--eh-frame-hdr,-z,now,-z,relro,-z,noexecstack,'
+SHARED_FLAGS = ('-Wl,-shared,--hash-style=both,--eh-frame-hdr,-z,now,-z,relro,-z,noexecstack,'
                 '-z,nomark-plt,-z,nopack-relative-relocs,-z,max-page-size=8192,-z,separate-code')
 NATIVE_SOURCES = ('src/ports/glibc/terminal_support.cpp', 'src/user/sdk/terminal_client.cpp',
                   'src/user/arch/x86_64/syscall.cpp', 'src/user/loader/elf.cpp',
                   'src/ports/glibc/wait_support.cpp', 'src/ports/glibc/spawn_support.cpp',
                   'src/user/loader/load.cpp', 'src/user/sdk/file_client.cpp',
                   'src/user/sdk/text.cpp', 'src/user/arch/x86_64/tls.cpp')
+PUBLIC_NATIVE_SOURCES = NATIVE_SOURCES + (
+    'src/user/sdk/launch_control.cpp', 'src/user/loader/dynamic/identity.cpp',
+    'src/user/loader/dynamic/generation.cpp', 'src/user/loader/dynamic/elf.cpp',
+    'src/user/loader/dynamic/closure.cpp', 'src/user/loader/dynamic/startup.cpp',
+    'src/user/loader/dynamic/spawn.cpp', 'src/user/loader/dynamic/rtld_control.cpp')
 
 
 def main():
@@ -38,6 +46,9 @@ def main():
     for name in ('sdk-build', 'glibc-archive', 'gcc-archive', 'gcc-signature', 'gcc-keyring', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--jobs', type=int, choices=(1, 2), default=2)
+    parser.add_argument('--public-startup', action='store_true')
+    parser.add_argument('--sdk-manifest-sha256')
+    parser.add_argument('--sdk-tree-sha256')
     args = parser.parse_args()
     output = args.output.absolute()
     if output.exists() or output.is_symlink():
@@ -47,6 +58,9 @@ def main():
     metadata, sdk_digest = metadata_snapshot(sdk / 'manifest.json')
     if binding['sdk_manifest_sha256'] != sdk_digest:
         raise ValueError('SDK manifest changed while selecting the build')
+    if args.public_startup and (args.sdk_manifest_sha256 != sdk_digest
+            or args.sdk_tree_sha256 != binding['sdk_tree_sha256']):
+        raise ValueError('public startup requires both independent expected SDK manifest and full-tree digests')
     tools = {name: tool_identity('x86_64-elf-' + name) for name in (
         'gcc', 'g++', 'as', 'ld', 'ar', 'ranlib', 'nm', 'objcopy', 'objdump', 'readelf')}
     for name, tool in tools.items():
@@ -56,10 +70,23 @@ def main():
     env, removed = clean_build_environment(os.environ)
     env.update(CONFIG_SITE='/dev/null', LC_ALL='C')
     output.mkdir(parents=True)
+    original_sdk = sdk
+    if args.public_startup:
+        sdk = output / 'sdk_snapshot'
+        sdk.mkdir()
+        shutil.copytree(original_sdk / 'sysroot', sdk / 'sysroot', symlinks=False)
+        shutil.copyfile(original_sdk / 'manifest.json', sdk / 'manifest.json')
+        for directory in ('source_verification', 'gcc_source_verification'):
+            if (original_sdk / directory).exists():
+                shutil.copytree(original_sdk / directory, sdk / directory)
+        if (inspect_sdk('glibc', sdk)['binding'] != binding
+                or inspect_sdk('glibc', original_sdk)['binding'] != binding):
+            raise ValueError('full SDK anchor changed before/after immutable build snapshot')
     recipe_paths = [ROOT / 'scripts' / name for name in (
         'build_glibc_shared_runtime.py', 'build_glibc_shared_gcc.py', 'build_glibc_sdk.py',
         'verify_glibc_source.py', 'verify_gcc_shared_source.py', 'glibc_g1_probe.py',
-        'xypm_sdk_profile.py', 'xos_app.py', 'xypm_format.py', 'archive_member_map.py')]
+        'xypm_sdk_profile.py', 'xos_app.py', 'xypm_format.py', 'archive_member_map.py',
+        'dynamic_artifacts.py', 'build_glibc_terminal_support.py')]
     recipe_paths += [ROOT / 'src/ports/gcc/shared_source_auth.json', ROOT / 'src/ports/gcc/source_lock.json']
     recipe_inputs = {path: sha(path) for path in recipe_paths}
     port_inputs = {path: sha(path) for path in PORT.rglob('*') if path.is_file()}
@@ -70,6 +97,12 @@ def main():
               'recipe_inputs': {str(path.relative_to(ROOT)): digest for path, digest in recipe_inputs.items()},
               'port_inputs': {str(path.relative_to(ROOT)): digest for path, digest in port_inputs.items()},
               'excluded_artifacts': ['sotruss-lib.so: audit is outside the fixed-closure profile']}
+    if args.public_startup:
+        report.update(scope='public_fixed_startup_closure', public_startup=True,
+            native_abi=hashlib.sha256(('xos-glibc-dynamic-v1:' + sdk_digest).encode()).hexdigest(),
+            expected_sdk_manifest_sha256=args.sdk_manifest_sha256,
+            expected_sdk_tree_sha256=args.sdk_tree_sha256,
+            sdk_snapshot='verified_before_and_after_full_copy')
 
     def save():
         (output / 'manifest.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -115,6 +148,12 @@ def main():
         rewrite(elf_makefile, '\t$(do-install-program)\nendif\n\ntests-static-normal :=',
                 '\t$(do-install-program)\nendif # xos-private-fixed-closure\nendif\n\ntests-static-normal :=')
         report['private_elf_makefile_sha256'] = sha(elf_makefile)
+        if args.public_startup:
+            # libc's hosted diagnostic executable is outside the native DSO
+            # role. Remove that build input, rather than rewriting ELF bytes.
+            rules = source / 'Makerules'
+            rewrite(rules, '\t\t\t $(elf-objpfx)interp.os \\\n', '', count=2)
+            report['public_makerules_sha256'] = sha(rules)
         report['source'] = source.name
         for name, tool in (('cc', 'gcc'), ('cxx', 'g++')):
             wrapper = output / name
@@ -123,12 +162,27 @@ def main():
             wrapper.chmod(0o755)
 
         # Build from the exact native support materials shipped by this SDK.
-        terminal, terminal_digest = metadata_snapshot(sdk / 'terminal_support/manifest.json')
-        materials = sdk / 'sysroot/usr/share/xos/terminal-support'
-        sources = {name: relative_file(materials, name) for name in terminal['inputs']}
-        if any(sha(path) != terminal['inputs'][name] or terminal['inputs'][name] != metadata['inputs'].get(name)
-               for name, path in sources.items()):
-            raise ValueError('native support source materials changed')
+        if args.public_startup:
+            native_paths = set(native_input_paths()) | {ROOT / name for name in PUBLIC_NATIVE_SOURCES}
+            native_inputs = {str(path.relative_to(ROOT)): sha(path) for path in sorted(native_paths)}
+            materials = output / 'native_inputs'
+            sources = {}
+            for name, expected in native_inputs.items():
+                target = materials / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / name, target)
+                if sha(target) != expected:
+                    raise ValueError('native source changed during snapshot: ' + name)
+                sources[name] = target
+            terminal_digest = hashlib.sha256(json.dumps(native_inputs, sort_keys=True).encode()).hexdigest()
+            report['native_inputs'] = native_inputs
+        else:
+            terminal, terminal_digest = metadata_snapshot(sdk / 'terminal_support/manifest.json')
+            materials = sdk / 'sysroot/usr/share/xos/terminal-support'
+            sources = {name: relative_file(materials, name) for name in terminal['inputs']}
+            if any(sha(path) != terminal['inputs'][name] or terminal['inputs'][name] != metadata['inputs'].get(name)
+                   for name, path in sources.items()):
+                raise ValueError('native support source materials changed')
         native = output / 'native_pic'
         native.mkdir()
         for name, path in sources.items():
@@ -148,16 +202,32 @@ def main():
                  '-I', native / 'include', '-isystem', sdk / 'sysroot/usr/include',
                  '-isystem', sdk / 'sysroot/usr/lib/compiler-include', '-Wall', '-Wextra', '-Werror']
         objects = []
-        for index, name in enumerate(NATIVE_SOURCES):
+        object_paths = {}
+        for index, name in enumerate(PUBLIC_NATIVE_SOURCES if args.public_startup else NATIVE_SOURCES):
             if name not in sources:
                 raise ValueError('selected SDK lacks native support source: ' + name)
             target = native / (str(index) + '_' + Path(name).stem + '.o')
             run('native-compile-' + str(index), [*flags, '-MMD', '-MF', str(target) + '.d',
                                                 '-c', sources[name], '-o', target])
             objects.append(target)
+            object_paths[name] = target
         native_archive = native / 'libxos_terminal_pic.a'
         run('native-archive', [tools['ar']['path'], 'rcsD', native_archive, *objects])
         report['native_support_manifest_sha256'] = terminal_digest
+        public_flags = ''
+        libc_identity = ''
+        rtld_identity = ''
+        if args.public_startup:
+            for name, role in (('rtld', 2), ('libc', 4)):
+                assembly, obj = native / (name + '_identity.S'), native / (name + '_identity.o')
+                write_note(assembly, report['native_abi'], role)
+                run('identity-' + name, [tools['gcc']['path'], '-c', assembly, '-o', obj])
+            libc_identity = str(native / 'libc_identity.o') + ' '
+            rtld_identity = ' '.join(map(str, (native / 'rtld_identity.o',
+                object_paths['src/user/loader/dynamic/rtld_control.cpp'],
+                object_paths['src/user/sdk/launch_control.cpp'],
+                object_paths['src/user/arch/x86_64/syscall.cpp'])))
+            public_flags = 'CPPFLAGS-config += -DXOS_PUBLIC_DYNAMIC_STARTUP\n'
 
         build = output / 'gnu'
         build.mkdir()
@@ -168,15 +238,20 @@ def main():
         run('configure', [source / 'configure', '--build=' + triplet, '--host=' + TARGET,
             '--prefix=/usr', '--disable-werror', '--enable-shared', '--enable-default-pie',
             '--disable-multi-arch', '--disable-mathvec', '--without-selinux', '--disable-nscd'], build)
-        (build / 'configparms').write_text('ASFLAGS += -Wa,--divide\n'
+        (build / 'configparms').write_text('ASFLAGS += -Wa,--divide\n' + public_flags
             + 'LDFLAGS.so += ' + SHARED_FLAGS + '\nLDFLAGS-rtld += ' + SHARED_FLAGS
-            + '\nLDLIBS-c.so += ' + str(native_archive) + '\n')
-        run('official-shared-guard', [make['path'], '-C', source / 'elf', 'objdir=' + str(build),
-            '-j1', build / 'elf/dl-sysdep.os'], rejection='XOS dynamic interpreter startup is not implemented')
+            + ' ' + rtld_identity + '\nLDLIBS-c.so += ' + libc_identity + str(native_archive) + '\n')
+        if not args.public_startup:
+            run('official-shared-guard', [make['path'], '-C', source / 'elf', 'objdir=' + str(build),
+                '-j1', build / 'elf/dl-sysdep.os'], rejection='XOS dynamic interpreter startup is not implemented')
         # Exclude the unshipped audit module, whose hosted GCC CRT is outside
         # this native composition. Do not silently accept a failing make lib.
-        run('build-private-runtime', [make['path'], '-j' + str(args.jobs),
-            'rtld-routines=' + RTLD_ROUTINES, 'xos-private-fixed-closure=yes', 'lib'], build)
+        if args.public_startup:
+            run('build-public-runtime', [make['path'], '-j' + str(args.jobs),
+                'xos-private-fixed-closure=yes', 'lib'], build)
+        else:
+            run('build-private-runtime', [make['path'], '-j' + str(args.jobs),
+                'rtld-routines=' + RTLD_ROUTINES, 'xos-private-fixed-closure=yes', 'lib'], build)
         if not (build / 'elf/ld.so.1').samefile(build / 'elf/ld.so'):
             raise ValueError('GNU interpreter SONAME alias differs from the built interpreter')
 
@@ -224,10 +299,13 @@ def main():
         files += [target / name for name in ('crtbeginS.o', 'crtendS.o')]
         files += [native_archive]
         report['artifacts'] = {str(path.relative_to(output)): sha(path) for path in files}
-        if inspect_sdk('glibc', sdk)['binding'] != binding:
+        if (inspect_sdk('glibc', sdk)['binding'] != binding
+                or inspect_sdk('glibc', original_sdk)['binding'] != binding):
             raise ValueError('selected C SDK changed during the build')
         if any(sha(path) != digest for path, digest in (recipe_inputs | port_inputs).items()):
             raise ValueError('recipe or native port changed during the build')
+        if args.public_startup and any(sha(ROOT / name) != value for name, value in native_inputs.items()):
+            raise ValueError('public native support inputs changed during build')
         if any(sha(Path(tool['path'])) != tool['sha256'] for tool in tools.values()):
             raise ValueError('target tool changed during the build')
         for path, digest in ((args.glibc_archive, report['glibc_source_verification']['archive_sha256']),
@@ -236,7 +314,7 @@ def main():
                              (args.gcc_keyring, verified['keyring_sha256'])):
             if sha(path) != digest:
                 raise ValueError('authenticated source input changed during the build')
-        report['status'] = 'private_runtime_built_not_run'
+        report['status'] = 'public_runtime_built_not_run' if args.public_startup else 'private_runtime_built_not_run'
         save()
     except BaseException as error:
         report['status'] = 'failed'

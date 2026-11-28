@@ -157,6 +157,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         return error;
     };
     const bool replacing = options != nullptr && options->replace_image;
+    const bool descriptor_startup = replacing || (options != nullptr && options->descriptor_count != 0);
     if (options != nullptr && (options->exec_channel_count > exec_preserve_channels_max ||
         (options->exec_channel_count != 0 && (!replacing || options->exec_channels == nullptr)))) {
         return fail_before_create(process_error_invalid);
@@ -185,7 +186,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     // Pre-B2 static CRTs silently ignore file_handles. Never report successful
     // inheritance into an unadvertised target or reopen its paths as a proxy.
-    if ((replacing || inherits_file) && !image_opt_in(read_exact, read_context, size, plan,
+    if ((descriptor_startup || inherits_file) && !image_opt_in(read_exact, read_context, size, plan,
                                                       ".xos.exec", 10, exec_image_abi_magic, 3)) {
         if (diagnostic != nullptr) *diagnostic = {execution::launch_stage::inspect, thread_error_unsupported, elf::error::none};
         return fail_before_create(thread_error_unsupported);
@@ -202,11 +203,11 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     auto* page = startup_page;
     for (usize i = 0; i < sizeof(startup_page); ++i) { page[i] = 0; }
     const u64 startup_address = process_stack_top - sizeof(startup_page);
-    const usize argv_offset = replacing ? 192 : options == nullptr ? 64 : 160;
+    const usize argv_offset = descriptor_startup ? 192 : options == nullptr ? 64 : 160;
     const usize env_offset = argv_offset + (argc + 1) * sizeof(u64);
     usize position = (env_offset + (env_count + 1) * sizeof(u64) + 15) & ~usize{15};
     auto* startup = reinterpret_cast<startup_info*>(page);
-    *startup = {startup_magic, replacing ? 3u : options == nullptr ? 1u : 2u, sizeof(startup_info), argc, 3,
+    *startup = {startup_magic, descriptor_startup ? 3u : options == nullptr ? 1u : 2u, sizeof(startup_info), argc, 3,
                 startup_address + argv_offset, {0, 1, 2},
                 options == nullptr ? 0u : startup_extension_offset};
     auto* arguments = reinterpret_cast<u64*>(page + argv_offset);
@@ -255,7 +256,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         }
     }
 
-    if (replacing) {
+    if (descriptor_startup) {
         if (options->descriptor_count > 32 ||
             (options->descriptor_count && options->descriptors == nullptr)) {
             return fail_before_create(process_error_invalid);
@@ -321,6 +322,23 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             if (options->open_paths[fd] != nullptr || options->stdio[fd] == -2) { continue; }
             const u64 source = options->stdio[fd] == -1 ? fd : static_cast<u64>(options->stdio[fd]);
             result = syscall(sys_process_stdio, static_cast<u64>(child), fd, source);
+        }
+        if (result >= 0 && descriptor_startup) {
+            const auto* descriptor_extension = reinterpret_cast<const startup_exec_extension*>(page + startup_exec_offset);
+            auto* descriptors = reinterpret_cast<startup_descriptor*>(page + descriptor_extension->descriptors - startup_address);
+            u32 transferred[32]{};
+            for (u32 i = 0; result >= 0 && i < options->descriptor_count; ++i) {
+                auto& descriptor = descriptors[i];
+                if (descriptor.fd >= 32 || descriptor.object >= 32 || descriptor.reserved
+                    || descriptor.kind < 1 || descriptor.kind > 5) {
+                    result = process_error_invalid;
+                    break;
+                }
+                if (descriptor.kind != 2) continue;
+                u32& target = transferred[descriptor.object];
+                if (!target) result = file_client.transfer(descriptor.handle, static_cast<u64>(child), target);
+                if (result == 0) descriptor.handle = target;
+            }
         }
         if (result >= 0 && options->delegate_spawn_depth != 0) {
             result = syscall(sys_process_delegate, static_cast<u64>(child),

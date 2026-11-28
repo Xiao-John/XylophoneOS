@@ -20,8 +20,9 @@ struct reader {
     bool mapped(u64 a,u64 n,u32 rights) const { return segment(a,n,rights,false)!=nullptr; }
     bool string(u64 table,u64 bytes,u64 index,char (&out)[128]) {
         if(index>=bytes)return false;
-        for(u32 i=0;i<sizeof(out);++i) {
-            if(i>=bytes-index || !memory(table+index+i,&out[i],1))return false;
+        const u32 amount=bytes-index<sizeof(out)?static_cast<u32>(bytes-index):sizeof(out);
+        if(!memory(table+index,out,amount))return false;
+        for(u32 i=0;i<amount;++i) {
             if(!out[i]) { for(u32 j=i+1;j<sizeof(out);++j)out[j]=0;return true; }
             if(static_cast<u8>(out[i])<0x20 || static_cast<u8>(out[i])==0x7f)return false;
         } return false;
@@ -93,19 +94,29 @@ bool symbols(reader& r,const dynamic_info& d) {
         if(!r.memory(d.gnu_hash,h,16))return false;
         const u64 n=value(h,4),base=value(h+4,4),bloom=value(h+8,4),shift=value(h+12,4);
         if(!n || n>262144 || base>count || !power(bloom) || bloom>262144 || shift>=64
-          || !r.segment(d.gnu_hash,16+8*bloom+4*n+4*(count-base),map_read))return false;
+          || !r.segment(d.gnu_hash,16+8*bloom+4*n,map_read))return false;
+        bool nonempty=false;
         for(u64 i=0;i<n;++i) { if(!r.memory(d.gnu_hash+16+8*bloom+4*i,h,4))return false;
-            const u64 b=value(h,4);if(b && (b<base || b>=count))return false; }
-        if(count>base && (!r.memory(d.gnu_hash+16+8*bloom+4*n+4*(count-base-1),h,4) || !(value(h,4)&1)))return false;
+            const u64 b=value(h,4);if(b && (b<base || b>=count))return false;nonempty=nonempty || b!=0; }
+        // An executable with only undefined dynamic symbols has no GNU hash
+        // chains, even when symoffset is below the SysV nchain count.
+        if(nonempty && (!r.segment(d.gnu_hash,16+8*bloom+4*n+4*(count-base),map_read)
+          || !r.memory(d.gnu_hash+16+8*bloom+4*n+4*(count-base-1),h,4) || !(value(h,4)&1)))return false;
     }
     if(d.versions && !r.segment(d.versions,2*count,map_read))return false;
     for(u64 i=0;i<count;++i) {
         u8 s[24];if(!r.memory(d.symbols+i*24,s,24) || value(s,4)>=d.string_bytes)return false;
         // Symbol names can be long C++ manglings. Bound the scan by the actual
         // string table rather than truncating a valid GNU symbol to 128 bytes.
-        u64 name=value(s,4);u8 c=1;for(u32 n=0;c && n<4096;++n) {
-            if(name>=d.string_bytes || !r.memory(d.strings+name++,&c,1))return false;
-        } if(c)return false;
+        u64 name=value(s,4);bool terminated=false;
+        for(u32 scanned=0;!terminated && scanned<4096;) {
+            u8 block[64];
+            const u64 available=d.string_bytes-name;
+            const u32 amount=available<sizeof(block)?static_cast<u32>(available):sizeof(block);
+            if(!amount || !r.memory(d.strings+name,block,amount))return false;
+            for(u32 n=0;n<amount;++n)terminated=terminated || block[n]==0;
+            name+=amount;scanned+=amount;
+        } if(!terminated)return false;
         const u32 kind=s[4]&15,bind=s[4]>>4;const u64 shndx=value(s+6,2),address=value(s+8,8),bytes=value(s+16,8);
         if((kind>6 && kind!=10) || (bind>2 && bind!=10) || (s[5]&~3u))return false;
         if(shndx && shndx!=0xfff1) {

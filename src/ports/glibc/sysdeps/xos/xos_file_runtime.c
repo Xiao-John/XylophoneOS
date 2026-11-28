@@ -115,13 +115,6 @@ __xos_file_adopt_early_session (struct xos_file_session *early)
   if (result != 0) return result;
   result = initialized ? -EBUSY : __xos_file_session_take (&session, early);
   unlock_session ();
-#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
-  if (result == 0)
-    {
-      extern long xos_dynamic_adopt_startup (xos_u64) __attribute__ ((visibility ("hidden")));
-      result = xos_dynamic_adopt_startup (deadline);
-    }
-#endif
   return result;
 }
 #endif
@@ -375,6 +368,13 @@ __xos_file_adopt_startup (struct xos_file_session *early, xos_u64 deadline)
         }
     }
   unlock_session ();
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+  if (result == 0)
+    {
+      extern long xos_dynamic_adopt_startup (xos_u64) __attribute__ ((visibility ("hidden")));
+      result = xos_dynamic_adopt_startup (deadline);
+    }
+#endif
   return result;
 }
 #endif
@@ -845,6 +845,10 @@ __xos_file_exec_end (struct xos_exec_descriptors *snapshot, xos_u64 deadline)
         if (snapshot->retained[index]) (void) close_object_until (index, deadline);
       unlock_session ();
     }
+  else
+    for (int index = 0; index < object_limit; ++index)
+      if (snapshot->retained[index])
+        (void) __atomic_fetch_add (&poll_releases[index], 1, __ATOMIC_RELEASE);
   unlock_runtime (&spawn_cwd_lock);
 }
 

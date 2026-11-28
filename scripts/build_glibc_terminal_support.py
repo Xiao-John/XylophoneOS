@@ -16,7 +16,10 @@ SOURCES = ('src/ports/glibc/terminal_support.cpp', 'src/user/sdk/terminal_client
            'src/user/arch/x86_64/syscall.cpp', 'src/user/loader/elf.cpp',
            'src/ports/glibc/wait_support.cpp', 'src/user/sdk/launch_control.cpp',
            'src/ports/glibc/spawn_support.cpp', 'src/user/loader/load.cpp',
-           'src/user/sdk/file_client.cpp', 'src/user/sdk/text.cpp', 'src/user/arch/x86_64/tls.cpp')
+           'src/user/sdk/file_client.cpp', 'src/user/sdk/text.cpp', 'src/user/arch/x86_64/tls.cpp',
+           'src/user/loader/dynamic/identity.cpp', 'src/user/loader/dynamic/generation.cpp',
+           'src/user/loader/dynamic/elf.cpp', 'src/user/loader/dynamic/closure.cpp',
+           'src/user/loader/dynamic/startup.cpp', 'src/user/loader/dynamic/spawn.cpp')
 HEADER_ROOTS = ('src/shared/include/xos', 'src/user/include/xos')
 
 

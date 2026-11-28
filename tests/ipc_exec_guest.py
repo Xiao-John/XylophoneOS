@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Exercise IPC revocation with failed and successful exec in a real guest."""
+"""Qualify IPC authority, deterministic blocked revocation, and service restart."""
 import argparse
 import hashlib
 import json
@@ -19,6 +19,7 @@ from process_smoke import command, resources
 from task_smoke import send_bytes, pump
 from work_disk import transfer
 from xos_app import tree_receipt
+from process_wait_any_guest import system_identity, verify_system_identity
 
 
 def sha(path):
@@ -41,6 +42,9 @@ def main():
     guest = None
 
     def verify_inputs():
+        verify_system_identity(system, identity)
+        if sha(fixture / 'receipt.json') != receipt_hash:
+            raise ValueError('fixture receipt changed during acceptance')
         for name, digest in manifest['sources'].items():
             if sha(ROOT / name) != digest:
                 raise ValueError('system source mismatch: ' + name)
@@ -56,8 +60,11 @@ def main():
                 raise ValueError('fixture artifact mismatch: ' + name)
 
     try:
+        identity = system_identity(system)
         manifest = json.loads((system / 'manifest.json').read_text())
-        receipt = json.loads((fixture / 'receipt.json').read_text())
+        receipt_bytes = (fixture / 'receipt.json').read_bytes()
+        receipt_hash = hashlib.sha256(receipt_bytes).hexdigest()
+        receipt = json.loads(receipt_bytes)
         verify_inputs()
         report.update(build_id=manifest['build_id'], image_sha256=sha(system / 'xos-install.iso'),
                       system_manifest_sha256=sha(system / 'manifest.json'),
@@ -76,25 +83,36 @@ def main():
             send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=60)
             command(guest, 'demo quiet', b'demo tasks')
+            command(guest, 'audio stop', b'xsh> ')
             pump(guest, 0.2)
             baseline = resources(guest)
             report['baseline'] = baseline
             for round_number in range(args.repeat):
                 nonce = secrets.token_hex(16)
-                output = command(guest, 'exec-driver /bin/ipcexec.elf parent ' + nonce,
-                                 b'kind=exited code=', timeout=45)
-                expected = b'IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected'
-                if (expected not in output or b'IPC_EXEC_CHILD_PASS' not in output or
-                    not re.search(rb'\[wait\].*kind=exited code=0', output) or b'IPC_EXEC_FAIL' in output):
-                    raise AssertionError(output[-5000:])
-                actual = resources(guest)
-                if actual != baseline:
-                    raise AssertionError(f'resource mismatch {actual}, expected {baseline}')
-                report['checks'].append({'round': round_number, 'nonce': nonce, 'resources': actual,
-                    'status': 'passed', 'scope': ['failed_exec_preserves_name_and_channel',
-                    'successful_exec_revokes_both_endpoints', 'blocked_peer_wakes',
-                    'old_name_removed', 'queued_unaccepted_connection_discarded',
-                    'same_pid_new_tokens_authenticated', 'child_exit_reclaims_everything']})
+                cases = {
+                    'parent': [
+                        b'IPC_EXEC_BLOCKED receive', b'IPC_EXEC_CHILD_PASS',
+                        b'IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected'],
+                    'lifecycle': [marker for event in ('revoke', 'close', 'exit', 'fault', 'cancel')
+                                  for marker in (
+                                      ('IPC_LIFECYCLE_BLOCKED ' + event + ' receive send').encode(),
+                                      ('IPC_LIFECYCLE_PASS ' + event +
+                                       ' blocked_both restart_authenticated stale_tokens_denied').encode())],
+                    'authority': [b'IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered'],
+                }
+                for mode, expected in cases.items():
+                    output = command(guest, 'exec-driver /bin/ipcexec.elf ' + mode + ' ' + nonce,
+                                     b'kind=exited code=', timeout=90)
+                    outcomes = re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', output)
+                    if (any(output.count(marker) != 1 for marker in expected) or outcomes != [b'0'] or
+                            b'IPC_EXEC_FAIL' in output):
+                        raise AssertionError(output[-8000:])
+                    actual = resources(guest)
+                    if actual != baseline:
+                        raise AssertionError(f'resource mismatch {actual}, expected {baseline}')
+                    report['checks'].append({'round': round_number, 'mode': mode, 'nonce': nonce,
+                        'resources': actual, 'status': 'passed',
+                        'markers': [marker.decode() for marker in expected]})
             verify_inputs()
             report['status'] = 'passed'
     except BaseException as error:

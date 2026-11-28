@@ -51,6 +51,8 @@ def main():
         "u32 task_index(process_record* task) {",
         "void mark_reap(process_record* task) {",
         "completion_record* completion_for(u64 parent, u64 pid) {",
+        "void ready_with(thread_record& thread, i64 result) {",
+        "void wake_ipc_waiters(u32 handle, i64 result, thread_wait_kind kind) {",
         "bool process_completion_claimed(u64 parent, u64 pid) {",
         "completion_record* next_process_completion(u64 parent, bool& has_children) {",
         "void wake_process_waiters(u64 parent) {",

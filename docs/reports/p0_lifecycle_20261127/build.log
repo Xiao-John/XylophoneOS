@@ -1,0 +1,2 @@
+ISO ${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/xos-install.iso sectors=446 boot_sectors=10 boot_bytes=5120 kernel_bytes=0
+Built xos-install.iso + real_mode.img | 74c2dc2b7d2a8c2a | kernel 845976 bytes

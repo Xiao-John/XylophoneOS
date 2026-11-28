@@ -1,0 +1,544 @@
+{
+  "status": "passed",
+  "runs": [
+    {
+      "mode": "sequential",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "fork",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "exact-any",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "two-any",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "last-child",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "fault-kill",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "exec",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "orphan",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "cancel",
+      "repeat": 0,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mode": "sequential",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "fork",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "exact-any",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "two-any",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "last-child",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "fault-kill",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "exec",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "orphan",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "cancel",
+      "repeat": 1,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "outcome": "killed"
+    },
+    {
+      "mode": "sequential",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "fork",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "exact-any",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "two-any",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "last-child",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "fault-kill",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "exec",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "orphan",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "exit_code": 0
+    },
+    {
+      "mode": "cancel",
+      "repeat": 2,
+      "resources_after": [
+        129806,
+        2,
+        0
+      ],
+      "outcome": "killed"
+    }
+  ],
+  "checks": [
+    "explicit flags and unchanged failure output",
+    "blocking/nohang/empty",
+    "building and fork publication",
+    "authenticated parent ownership",
+    "exact/any and two-any unique consumption",
+    "last-child competitor wake",
+    "fault/kill status identity",
+    "exec preserves existing children without PID cache",
+    "orphan and foreground cancellation lifecycle",
+    "exact resource recovery each run"
+  ],
+  "commands": [
+    "exec-driver /bin/wait_any sequential",
+    "exec-driver /bin/wait_any fork",
+    "exec-driver /bin/wait_any exact-any",
+    "exec-driver /bin/wait_any two-any",
+    "exec-driver /bin/wait_any last-child",
+    "exec-driver /bin/wait_any fault-kill",
+    "exec-driver /bin/wait_any exec",
+    "exec-driver /bin/wait_any orphan",
+    "exec-driver /bin/wait_any sequential",
+    "exec-driver /bin/wait_any fork",
+    "exec-driver /bin/wait_any exact-any",
+    "exec-driver /bin/wait_any two-any",
+    "exec-driver /bin/wait_any last-child",
+    "exec-driver /bin/wait_any fault-kill",
+    "exec-driver /bin/wait_any exec",
+    "exec-driver /bin/wait_any orphan",
+    "exec-driver /bin/wait_any sequential",
+    "exec-driver /bin/wait_any fork",
+    "exec-driver /bin/wait_any exact-any",
+    "exec-driver /bin/wait_any two-any",
+    "exec-driver /bin/wait_any last-child",
+    "exec-driver /bin/wait_any fault-kill",
+    "exec-driver /bin/wait_any exec",
+    "exec-driver /bin/wait_any orphan"
+  ],
+  "scope": "native sys20 + native worker core; existing newlib exec receiver",
+  "build_id": "74c2dc2b7d2a8c2a",
+  "source_sha256": "74c2dc2b7d2a8c2a68ef4da3be2575f1b2fac4e9cbb0d8472720307804167154",
+  "system_manifest_sha256": "30eca65c95f8bd18102aab3a07c5ef1ac5f4438e44dabfa0ab00fa3f0ab16b30",
+  "iso_sha256": "8ac9f8d8c0491600bca80dc4b2975b08e959cd66a066b14f669dfed997a29758",
+  "sdk_manifest_sha256": "91f293c02073356c31a67afdb7ef1e12e33af768b78c4ccc335b9077ddb2d023",
+  "tools": {
+    "x86_64-elf-g++": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "qemu-system-x86_64": {
+      "available": true,
+      "path": "/usr/bin/qemu-system-x86_64",
+      "sha256": "bea1a94ed5686c5cc8051175990519138a703982c7e5911a7dad64601633d1bf",
+      "version_exit_code": 0,
+      "version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)"
+    }
+  },
+  "sanitized_environment": [],
+  "link_inputs": {
+    "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libxos.a": "fda4655891b98b01e3475c637255c39424f1a8a028b3534fb1fed2a0414a9684",
+    "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libxos_loader.a": "40bf8e888cbd7c022c87f0afa230be94548fe637133ac25c3fbc321b8f574af0",
+    "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libc.a": "283fa07ad205c80af92e955a91da027435d8a8a90cb7e27933f57925cc5baa22",
+    "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libm.a": "4cfdd6324f6776d025923ee369fad51236a9ee5730c8143a6b3b03b963eefd80",
+    "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a": "1e19f0657fafd72f6c35a49b15d13c5772d49c829066c1f863518c29055c4f93",
+    "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/threading_core/libxos_thread_core.a": "ceb1b061f3b570beb9c8eca0bb9115ab53035291fd02fdb588f4abd916a3f0ca"
+  },
+  "sources": {
+    "tests/process_wait_any_guest.py": "489ada9d2e62648f8488ddd8a628b2a03c9a29145304ed7ca91642f017e74f79",
+    "src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+    "tests/fixtures/process_wait/probe.cpp": "2dcf8cc79414debf39c141db5d066360dc79c5d81ea184dd681cf16fef3578dd",
+    "tests/fixtures/process_wait/exec_receiver.cpp": "cd82236224e98617a83cc39098e9c0e7470d340332adcdd76769b00311f6277e"
+  },
+  "elfs": {
+    "wait_any": {
+      "sha256": "b809ae4b0d41eb7bafb0fbce47454994996792ba5b8507e06c4408d2c684dc66",
+      "commands": [
+        [
+          "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+          "-std=c++20",
+          "-ffreestanding",
+          "-nostdinc++",
+          "-fno-exceptions",
+          "-fno-rtti",
+          "-fno-stack-protector",
+          "-fno-threadsafe-statics",
+          "-fno-use-cxa-atexit",
+          "-fno-unwind-tables",
+          "-fno-asynchronous-unwind-tables",
+          "-fno-omit-frame-pointer",
+          "-fno-pic",
+          "-fno-pie",
+          "-g3",
+          "-gdwarf-4",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-Wconversion",
+          "-Wshadow",
+          "-m64",
+          "-march=x86-64",
+          "-mtune=generic",
+          "-mcmodel=small",
+          "-mno-red-zone",
+          "-mgeneral-regs-only",
+          "-fno-builtin",
+          "-nostdinc",
+          "-I",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_guest/include",
+          "-isystem",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/include",
+          "-isystem",
+          "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/include",
+          "-c",
+          "${XOS_SOURCE_ROOT}/tests/fixtures/process_wait/probe.cpp",
+          "-o",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_guest/wait_any.o"
+        ],
+        [
+          "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+          "-m64",
+          "-march=x86-64",
+          "-mtune=generic",
+          "-mcmodel=small",
+          "-mno-red-zone",
+          "-mgeneral-regs-only",
+          "-nostdlib",
+          "-static",
+          "-no-pie",
+          "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+          "-T",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/user.ld",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/crt0.o",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_guest/wait_any.o",
+          "-Wl,--start-group",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libxos.a",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libxos_loader.a",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libc.a",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libm.a",
+          "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/threading_core/libxos_thread_core.a",
+          "-Wl,--end-group",
+          "-o",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_guest/wait_any.elf"
+        ]
+      ],
+      "crt_sha256": "770eb79064957c889c63d0c92db0185e8e40a958a77150d38b9fb5f67eebd994",
+      "source_sha256": "2dcf8cc79414debf39c141db5d066360dc79c5d81ea184dd681cf16fef3578dd"
+    },
+    "wait_exec": {
+      "sha256": "1cc504fe741485b73edb4883773ffe486f5e8d3763df36a97a9987afef1c8532",
+      "commands": [
+        [
+          "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+          "-std=c++20",
+          "-ffreestanding",
+          "-nostdinc++",
+          "-fno-exceptions",
+          "-fno-rtti",
+          "-fno-stack-protector",
+          "-fno-threadsafe-statics",
+          "-fno-use-cxa-atexit",
+          "-fno-unwind-tables",
+          "-fno-asynchronous-unwind-tables",
+          "-fno-omit-frame-pointer",
+          "-fno-pic",
+          "-fno-pie",
+          "-g3",
+          "-gdwarf-4",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-Wconversion",
+          "-Wshadow",
+          "-m64",
+          "-march=x86-64",
+          "-mtune=generic",
+          "-mcmodel=small",
+          "-mno-red-zone",
+          "-mgeneral-regs-only",
+          "-fno-builtin",
+          "-nostdinc",
+          "-I",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_guest/include",
+          "-isystem",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/include",
+          "-isystem",
+          "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/include",
+          "-c",
+          "${XOS_SOURCE_ROOT}/tests/fixtures/process_wait/exec_receiver.cpp",
+          "-o",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_guest/wait_exec.o"
+        ],
+        [
+          "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+          "-m64",
+          "-march=x86-64",
+          "-mtune=generic",
+          "-mcmodel=small",
+          "-mno-red-zone",
+          "-mgeneral-regs-only",
+          "-nostdlib",
+          "-static",
+          "-no-pie",
+          "-Wl,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+          "-T",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/user.ld",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/crt0_posix.o",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_guest/wait_exec.o",
+          "-Wl,--start-group",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libxos.a",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libxos_loader.a",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libc.a",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/sdk/lib/libm.a",
+          "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/libgcc.a",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/threading_core/libxos_thread_core.a",
+          "-Wl,--end-group",
+          "-o",
+          "${XOS_SOURCE_ROOT}/build/p0_lifecycle_wait_guest/wait_exec.elf"
+        ]
+      ],
+      "crt_sha256": "8abde6410a6a39925bf8d6b6c28684f63077094e6936764be9e9e0eed49893cc",
+      "source_sha256": "cd82236224e98617a83cc39098e9c0e7470d340332adcdd76769b00311f6277e"
+    }
+  },
+  "work_disk_initial_sha256": "6659d754e793143e2e5c7cef686248cfd3c972542b3f296c29f0d842e4b07115",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_SOURCE_ROOT}/build/p0_lifecycle_system3/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_TMP}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "resource_baseline": [
+    129806,
+    2,
+    0
+  ],
+  "work_disk_final_sha256": "df1a06df8bd0a56ba8cb5222ad9cc7524ee3993ff451fdb9730ca0fe313f5179",
+  "serial_sha256": "ba3ecde9bd146a62efc3c15916223b5f40ad622175cbcc5fb9787f99751a9b9e"
+}

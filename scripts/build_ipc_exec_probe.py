@@ -5,14 +5,18 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 
 from toolchain import audit, tool
 from xos_app import tree_receipt
 
 ROOT = Path(__file__).resolve().parents[1]
-INPUTS = ('tests/fixtures/ipc_exec/ipc_exec_probe.cpp',
-          'src/shared/include/xos/process_abi.hpp', 'src/user/include/xos/sdk.hpp',
+SDK_HEADERS = ('src/shared/include/xos/process_abi.hpp', 'src/user/include/xos/sdk.hpp',
+               'src/shared/include/xos/thread_abi.hpp', 'src/user/include/xos/ipc_v1.hpp',
+               'src/shared/include/xos/ipc_v1_abi.hpp')
+INPUTS = ('tests/fixtures/ipc_exec/ipc_exec_probe.cpp', *SDK_HEADERS,
+          'src/user/include/xos/thread_core.hpp', 'src/user/arch/x86_64/thread_core.cpp',
           'scripts/build_ipc_exec_probe.py')
 
 
@@ -29,18 +33,25 @@ def main():
     out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
     versions = audit()
-    for name in INPUTS[1:3]:
+    for name in SDK_HEADERS:
         if sha(ROOT / name) != sha(sdk / 'include/xos' / Path(name).name):
             raise ValueError('SDK header differs from current source: ' + name)
     sources = {name: sha(ROOT / name) for name in INPUTS}
     sdk_hash = tree_receipt(sdk)[0]
+    # The mechanism-only worker profile is deliberately separate from libc.
+    # Compile the recorded native core against this SDK; never enable the
+    # single-thread application libc in a multithreaded probe.
+    include = out / 'include/xos'
+    include.mkdir(parents=True)
+    shutil.copyfile(ROOT / 'src/user/include/xos/thread_core.hpp', include / 'thread_core.hpp')
     binary = out / 'ipc_exec_probe.elf'
     command = [tool('g++'), '-std=c++20', '-Os', '-g', '-Wall', '-Wextra', '-Werror',
                '-ffreestanding', '-fno-exceptions', '-fno-rtti', '-fno-threadsafe-statics',
                '-fno-use-cxa-atexit', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables',
                '-fno-stack-protector', '-fno-pic', '-fno-pie', '-mno-red-zone', '-mgeneral-regs-only',
-               '-nostdinc++', '-ffunction-sections', '-fdata-sections', '-idirafter', str(sdk / 'include'),
-               str(ROOT / INPUTS[0]), '-nostdlib', '-static', '-no-pie',
+               '-nostdinc++', '-ffunction-sections', '-fdata-sections', '-I', str(include.parent),
+               '-idirafter', str(sdk / 'include'), str(ROOT / INPUTS[0]),
+               str(ROOT / 'src/user/arch/x86_64/thread_core.cpp'), '-nostdlib', '-static', '-no-pie',
                '-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096',
                '-T', str(sdk / 'user.ld'), str(sdk / 'crt0.o'), '-Wl,--start-group',
                str(sdk / 'lib/libxos.a'), str(sdk / 'lib/libxos_loader.a'), '-Wl,--end-group', '-o', str(binary)]

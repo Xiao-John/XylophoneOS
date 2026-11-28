@@ -49,6 +49,8 @@ namespace {
 #include "kernel_wait_records.inc"
 process_record tasks[8];
 thread_record threads[thread_max_total];
+endpoint_record endpoints[max_endpoints];
+u64 files_pid;
 process_record* current;
 thread_record* current_thread;
 cpu_accounting cpu_usage;
@@ -57,7 +59,8 @@ constexpr bool process_trace_enabled = false;
 stream_lease input_lease;
 u32 schedules;
 
-// No device grants, IPC sessions, or display clients are created by this test.
+// Device and display teardown are outside this process-wait test. The Files
+// reply wake path below uses the extracted production IPC wake implementation.
 void ipc_v1_revoke_process(u64) {}
 void device_revoke_process(u64) {}
 void release_pc_speaker(process_record*) {}
@@ -83,6 +86,8 @@ i64 wait_for(u64 child, u64 output, u64 flags = 0) {
 void reset() {
     for (auto& task : tasks) { task = {}; }
     for (auto& thread : threads) { thread = {}; }
+    for (auto& endpoint : endpoints) { endpoint = {}; }
+    files_pid = 0;
     for (auto& item : completions) { item = {}; }
     for (auto& pending : reap_pending) { pending = false; }
     schedules = 0;
@@ -138,6 +143,27 @@ int main() {
     const u64 second_output = process_user_begin + 2 * page_size;
     auto* first_status = reinterpret_cast<process_status*>(first_output);
     auto* second_status = reinterpret_cast<process_status*>(second_output);
+
+    reset();
+    files_pid = tasks[1].pid;
+    endpoints[0].used = true;
+    endpoints[0].session_response = true;
+    endpoints[0].sender_pid = files_pid;
+    endpoints[0].receiver_pid = tasks[0].pid;
+    endpoints[0].handle = 42;
+    interrupt_frame file_wait_frames[3]{};
+    for (u32 index = 0; index < 3; ++index) {
+        threads[index].kernel_rsp = reinterpret_cast<u64>(&file_wait_frames[index]);
+        threads[index].state = thread_state::blocked;
+        threads[index].wait_kind = index == 1 ? thread_wait_kind::ipc_send : thread_wait_kind::ipc_receive;
+        threads[index].wait_target = index == 2 ? 43 : 42;
+    }
+    finish_task(&tasks[1], process_outcome::exited, 0);
+    assert(threads[0].state == thread_state::ready && threads[0].wait_kind == thread_wait_kind::none);
+    assert(static_cast<i64>(file_wait_frames[0].rax) == pipe_error_broken);
+    assert(threads[1].state == thread_state::blocked && threads[2].state == thread_state::blocked);
+    assert(completions[0].ready && reap_pending[1]);
+    std::puts("PASS process exit: Files death wakes only its blocked reply receivers with broken");
 
     for (u64 competing_flags = 0; competing_flags <= 1; ++competing_flags) {
         reset();

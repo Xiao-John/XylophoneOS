@@ -1,0 +1,103 @@
+{
+  "status": "passed",
+  "base_commit": "daf2bd24ce92525ce61054ebe585ab0e88ed06e4",
+  "build_id": "74c2dc2b7d2a8c2a",
+  "source_sha256": "74c2dc2b7d2a8c2a68ef4da3be2575f1b2fac4e9cbb0d8472720307804167154",
+  "system_manifest_sha256": "30eca65c95f8bd18102aab3a07c5ef1ac5f4438e44dabfa0ab00fa3f0ab16b30",
+  "iso_sha256": "8ac9f8d8c0491600bca80dc4b2975b08e959cd66a066b14f669dfed997a29758",
+  "sdk_manifest_sha256": "91f293c02073356c31a67afdb7ef1e12e33af768b78c4ccc335b9077ddb2d023",
+  "environment": "XOS SDK Preview 2 Linux x86-64, regular Bubblewrap launcher, QEMU TCG",
+  "sdk_input_source_commit": "498a40ce85667a72b0c79f0ce1f5c11e7690122f",
+  "sdk_bundled_build_id": "152cd96f4d4e95ab",
+  "qualification": {
+    "ipc_rounds": 3,
+    "ipc_invocations": 9,
+    "ipc_cases": 21,
+    "strict_blocked_wakeups": 33,
+    "process_wait_guest_runs": 27,
+    "process_wait_groups": 10,
+    "process_wait_host_checks": 9,
+    "process_wait_asan_ubsan_checks": 9,
+    "resource_baseline": [
+      129806,
+      2,
+      0
+    ]
+  },
+  "not_run": [
+    "sys81 inheritance stress",
+    "full terminal/display/Interactium application suite",
+    "SMP",
+    "physical hardware",
+    "LeakSanitizer",
+    "whole process-tree quotas"
+  ],
+  "normalization": "Public copies replace SDK, checkout, original toolchain home and temporary directory paths. Text logs normalize CRLF and trailing terminal padding; original hashes retained per file.",
+  "files": {
+    "ipc_guest.json": {
+      "source": "build/p0_lifecycle_guest/report.json",
+      "original_sha256": "8a4d713336156374f6b3b4d5acdcefb427caef078d5c520855a76477db17f09a",
+      "public_sha256": "9171be823980e94133aab19da8e6042bc2c443ad3333567f0d0af2fad7ad38fb"
+    },
+    "ipc_serial.log": {
+      "source": "build/p0_lifecycle_guest/guest_serial.log",
+      "original_sha256": "bd2068780ebf5e7a6bb76924a0b2f01012bd5e00df43aec1eeaa81628733e067",
+      "public_sha256": "68433c4cbf9ca1a1e7da5d3ab5bc7e0880efbb9284d98b0e90082d47d5c853fb"
+    },
+    "ipc_qemu.log": {
+      "source": "build/p0_lifecycle_guest/guest_qemu.log",
+      "original_sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+      "public_sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5"
+    },
+    "wait_guest.json": {
+      "source": "build/p0_lifecycle_wait_guest/report.json",
+      "original_sha256": "8933a53a74c7e4574c3a889ac9a0961def81e3775008baca740c389a666c79d0",
+      "public_sha256": "6d4b324f990b218fd125af0205b8daa93c1813f35a441b11de6c8aac34f855d4"
+    },
+    "wait_serial.log": {
+      "source": "build/p0_lifecycle_wait_guest/serial.log",
+      "original_sha256": "ba3ecde9bd146a62efc3c15916223b5f40ad622175cbcc5fb9787f99751a9b9e",
+      "public_sha256": "a6ff2e31f6d81a12a4477c7bb930d6c6e243d92b278bce718829a97107676797"
+    },
+    "wait_host.json": {
+      "source": "build/p0_lifecycle_wait_host2/report.json",
+      "original_sha256": "50b1629703ed806c7042c2d389a2c55b0cae1a90eb6b34008d561f8cc282a827",
+      "public_sha256": "ec4f795bf64ed419779e33057af2aef73073594ee5ab9b012cf9619f898c7f25"
+    },
+    "wait_host.log": {
+      "source": "build/p0_lifecycle_wait_host2/host.log",
+      "original_sha256": "2d5adf2c0f18b8eb7be3b429c2bba0e7c3ed6aeb25a98c433b8f340414fad0bb",
+      "public_sha256": "2d5adf2c0f18b8eb7be3b429c2bba0e7c3ed6aeb25a98c433b8f340414fad0bb"
+    },
+    "wait_sanitized.json": {
+      "source": "build/p0_lifecycle_wait_sanitized/report.json",
+      "original_sha256": "9a9a61e9868ee365f23b786d62384b1dbdd4d18a2a222d2c02993f0331acaa16",
+      "public_sha256": "79f063223d8097cc8652f1f3dd36a54b63d847e85258f226b70538ef141efcb5"
+    },
+    "wait_sanitized.log": {
+      "source": "build/p0_lifecycle_wait_sanitized/host.log",
+      "original_sha256": "2d5adf2c0f18b8eb7be3b429c2bba0e7c3ed6aeb25a98c433b8f340414fad0bb",
+      "public_sha256": "2d5adf2c0f18b8eb7be3b429c2bba0e7c3ed6aeb25a98c433b8f340414fad0bb"
+    },
+    "fixture.json": {
+      "source": "build/p0_lifecycle_fixture3/receipt.json",
+      "original_sha256": "4c98dd54d7039fc7ff748804d25bf08c55ef84df5e0e8bdaec0f2b6e9abd1b28",
+      "public_sha256": "864b38887dcb45e45f64551c06b19466d3feffe6554d46cb1d85b09a72ce67ee"
+    },
+    "build.log": {
+      "source": "build/p0_lifecycle_logs/build3.log",
+      "original_sha256": "64e1774745fcf4027b7c32df293fb3c8170a59b0ec8b85a6fc9a3d05beecfc35",
+      "public_sha256": "32356a02c75570a0a644deab496a565606ce71830ea34ba86ccd0abf89342ec6"
+    },
+    "initial_fixture_compile_failure.log": {
+      "source": "build/p0_lifecycle_logs/fixture.log",
+      "original_sha256": "60274210bc5e83a47e67543d19fae064a04db964d4ac63d3b6ca3cf24f43f865",
+      "public_sha256": "b935639323c50fdbcc370b071d5be0718f772b67837f9ae31dd8bc793b7c60f7"
+    },
+    "initial_wait_host_compile_failure.log": {
+      "source": "build/p0_lifecycle_wait_host/compile.log",
+      "original_sha256": "bd3a9a806fecbaf185d877a127eddeb82d71f1cf7fa3305b7a86536067936937",
+      "public_sha256": "697ad7b138398836c6449722db3c87bcc36ed54f99f015b7f41090c38ec46103"
+    }
+  }
+}

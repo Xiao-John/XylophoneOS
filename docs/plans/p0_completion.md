@@ -47,9 +47,11 @@ with headers, SDK and affected tests.
 Each module records the source baseline, SDK/archive identities, exact commands,
 tested configuration, success/failure/not-run results and remaining scope in a
 new work log. Reports use a flat `manifest.json` with `version: 1` and relative
-file SHA-256 entries. Before a commit, run the public-path check against
-`origin/main` and verify every new evidence index. Public logs contain no local
-operator paths or private fixture keys.
+file SHA-256 entries. After staging, run
+`python3 tests/check_public_evidence_paths.py --index --base origin/main`
+against the actual index and verify every new evidence index. Rerun the check
+after any subsequent index change. Public logs contain no local operator paths
+or private fixture keys.
 
 Module PRs report dependencies and never claim that unmerged code is mainline.
 `docs/state.md` remains the integrator's merged/released milestone record. This

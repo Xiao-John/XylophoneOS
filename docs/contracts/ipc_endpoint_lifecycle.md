@@ -52,6 +52,40 @@ PID 不能占满 pair/name 池，不承诺整个进程树的预算、任意客�
 - 文件服务专用会话继续按现有 exec 规则重新生成不透明端点 token；已打开文件
   描述和 FD 继承由文件/装载契约定义。
 
+## 通用端点绝对期限等待
+
+sys85 扩展两个模式：`receive_until=5` 和 `send_until=6`，第三参数为绝对
+`CLOCK_MONOTONIC` 纳秒期限。SDK `ipc_wait_until(endpoint, receive|send, deadline)`
+选择这两个模式。只有既有 sys84–86 generic endpoint 可用，receive/send 分别
+要求调用者为内核认证的 receiver/sender；不会授予新通信权利或开放 Files 端点。
+
+| 条件 | 结果 |
+|---|---|
+| receive 已有消息，或 send 槽为空 | 0；就绪优先于已过期期限，但不消费/发送任何字节 |
+| 未就绪，期限为 0 或已到期 | `thread_error_timeout` (-13)，立即返回，队列保持 |
+| 未就绪，期限在未来 | 原子登记 blocked，ready/timeout/close 由同一内核等待生命周期裁决 |
+| 等待中 peer close/revoke/退出 | `ipc_error_broken` (-7)；已经完成的 timeout 不被再次改写 |
+| 已失效 token 或错误的主体/方向 | 既有 denied (-1)，不能据此回退到其他身份或权限 |
+| 未知 mode 或旧 mode 携带不允许的第三参数 | 既有 invalid (-2) |
+
+`UINT64_MAX` 表示无限等待；`UINT64_MAX-1` 仍是合法有限绝对期限，比较不通过
+加法或有符号转换计算。调用方从相对时长构造期限时必须拒绝溢出或显式饱和，
+不能把加法回绕当作较短等待。当前 tick 分辨率与 sys46 一致，不能提前超时，
+不承诺抢占或外部服务响应的实时上界。
+
+超时只结束等待，不撤回已发送的消息，也不能证明业务操作未发生。调用方必须
+保存请求标识与待收回复，或按自身协议废弃会话；有副作用的 RPC 不得因等待超时
+自动重放。返回 0 后仍应实际 send/recv 并重查状态，另一线程可能先消费就绪条件。
+
+mode 0–3 的行为与参数保留；mode 4 继续仅用于 Files，并保留其原有先检查期限
+的顺序。新 mode 在旧内核返回 invalid，调用方可以在明确能力协商后选择既有有界
+兼容策略，但不能把 denied/broken/timeout 解释成旧内核缺少能力。新模式和两个
+SDK manifest 同步，不新增 syscall 编号。
+
+`--suite deadline` 客体用活而不答复的独立服务检查有界等待、消息保持、真实
+阻塞就绪/关闭唤醒、过去/零期限与全宽期限；生产代码 host 提取在同一时间点
+分别先 close 和先 timeout，证明两种顺序都只完成一次。
+
 ## 文件回复等待
 
 sys85 的 `file_reply_until`（mode 4）接收端点 token 和非零绝对单调纳秒期限。

@@ -1,0 +1,8 @@
+In file included from ${XOS_SOURCE_ROOT}/tests/kernel_process_wait_race_test.cpp:84:
+${XOS_SOURCE_ROOT}/build/p0_deadline_host/kernel_wait_implementation.inc: In function ‘void xos::arch::{anonymous}::revoke_ipc_channel(xos::u32, xos::i64)’:
+${XOS_SOURCE_ROOT}/build/p0_deadline_host/kernel_wait_implementation.inc:372:25: error: too few arguments to function ‘void xos::arch::{anonymous}::wake_ipc_waiters(xos::u32, xos::i64, xos::thread_wait_kind)’
+  372 |         wake_ipc_waiters(endpoint.handle, wake_result);
+      |         ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+${XOS_SOURCE_ROOT}/build/p0_deadline_host/kernel_wait_implementation.inc:89:6: note: declared here
+   89 | void wake_ipc_waiters(u32 handle, i64 result, thread_wait_kind kind) {
+      |      ^~~~~~~~~~~~~~~~

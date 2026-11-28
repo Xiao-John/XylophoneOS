@@ -42,6 +42,12 @@ memory_result release_user_page(u64) { std::abort(); }
 namespace xos::platform {
 bool debug_write(const char*) { return true; }
 }
+#if XOS_IPC_DEADLINES
+namespace xos::clock {
+u64 host_now;
+u64 monotonic_ns() { return host_now; }
+}
+#endif
 namespace xos::arch {
 [[noreturn]] void halt() { std::abort(); }
 u64 execution_counter() { return 0; }
@@ -51,6 +57,10 @@ process_record tasks[8];
 thread_record threads[thread_max_total];
 endpoint_record endpoints[max_endpoints];
 u64 files_pid;
+#if XOS_IPC_DEADLINES
+ipc_connection_record ipc_connections[16];
+ipc_v1_call_record ipc_v1_calls[ipc_v1_max_pending_calls];
+#endif
 process_record* current;
 thread_record* current_thread;
 cpu_accounting cpu_usage;
@@ -70,6 +80,7 @@ void release_channels(u64) {}
 void display_release(u64) {}
 void* schedule(interrupt_frame* frame) { ++schedules; return frame; }
 void finish_task(process_record*, process_outcome, i64, u64 = 0, u64 = 0, u64 = 0);
+void wake_ipc_waiters(u32, i64, thread_wait_kind = thread_wait_kind::none);
 
 #include "kernel_wait_implementation.inc"
 
@@ -88,6 +99,11 @@ void reset() {
     for (auto& thread : threads) { thread = {}; }
     for (auto& endpoint : endpoints) { endpoint = {}; }
     files_pid = 0;
+#if XOS_IPC_DEADLINES
+    for (auto& connection : ipc_connections) connection = {};
+    for (auto& call : ipc_v1_calls) call = {};
+    clock::host_now = 100;
+#endif
     for (auto& item : completions) { item = {}; }
     for (auto& pending : reap_pending) { pending = false; }
     schedules = 0;
@@ -129,12 +145,98 @@ void second_child() {
     completions[1].parent = 1;
     completions[1].status.pid = 3;
 }
+#if XOS_IPC_DEADLINES
+i64 wait_ipc(interrupt_frame& frame, ipc_wait_mode mode, u64 deadline) {
+    current_thread->kernel_rsp = reinterpret_cast<u64>(&frame);
+    frame = {}; frame.rax = sys_ipc_wait; frame.rdi = 42;
+    frame.rsi = static_cast<u64>(mode); frame.rdx = deadline;
+    assert(ipc_wait_syscall(&frame) == &frame);
+    return static_cast<i64>(frame.rax);
+}
+void generic_endpoint(bool sending = false) {
+    reset();
+    endpoints[0].used = endpoints[0].generic = true;
+    endpoints[0].handle = endpoints[0].channel_id = 42;
+    endpoints[0].sender_pid = sending ? 1 : 2;
+    endpoints[0].receiver_pid = sending ? 2 : 1;
+    endpoints[0].pending = sending;
+}
+void deadline_tests() {
+    interrupt_frame frame{};
+    for (bool sending : {false, true}) {
+        const auto mode = sending ? ipc_wait_mode::send_until : ipc_wait_mode::receive_until;
+        for (bool close_first : {false, true}) {
+            generic_endpoint(sending);
+            assert(wait_ipc(frame, mode, 200) == 0 && current_thread->state == thread_state::blocked);
+            clock::host_now = 199; expire_waiters();
+            assert(current_thread->state == thread_state::blocked);
+            clock::host_now = 200;
+            if (close_first) revoke_ipc_channel(42, pipe_error_broken);
+            expire_waiters();
+            if (!close_first) {
+                assert(endpoints[0].used && endpoints[0].pending == sending);
+                revoke_ipc_channel(42, pipe_error_broken);
+            }
+            const i64 expected = close_first ? pipe_error_broken : thread_error_timeout;
+            assert(current_thread->state == thread_state::ready && static_cast<i64>(frame.rax) == expected);
+            expire_waiters(); revoke_ipc_channel(42, pipe_error_broken);
+            assert(static_cast<i64>(frame.rax) == expected && current_thread->wait_kind == thread_wait_kind::none);
+        }
+    }
+    std::puts("PASS IPC deadlines: exact deadline close/timeout both orders for send and receive complete once");
+
+    for (bool sending : {false, true}) {
+        const auto mode = sending ? ipc_wait_mode::send_until : ipc_wait_mode::receive_until;
+        for (u64 deadline : {u64{0}, u64{99}, u64{100}}) {
+            generic_endpoint(sending);
+            assert(wait_ipc(frame, mode, deadline) == thread_error_timeout && schedules == 0);
+            assert(endpoints[0].pending == sending);
+            endpoints[0].pending = !sending;
+            assert(wait_ipc(frame, mode, deadline) == 0 && schedules == 0);
+            assert(endpoints[0].pending == !sending);
+        }
+    }
+    std::puts("PASS IPC deadlines: zero and expired fast paths preserve queues and prefer readiness");
+
+    for (u64 deadline : {~u64{0} - 1, ~u64{0}}) {
+        generic_endpoint(true);
+        assert(wait_ipc(frame, ipc_wait_mode::send_until, deadline) == 0);
+        clock::host_now = ~u64{0} - 2; expire_waiters();
+        assert(current_thread->state == thread_state::blocked);
+        clock::host_now = deadline; expire_waiters();
+        if (deadline == ~u64{0}) {
+            assert(current_thread->state == thread_state::blocked);
+            revoke_ipc_channel(42, pipe_error_broken);
+            assert(static_cast<i64>(frame.rax) == pipe_error_broken);
+        } else assert(static_cast<i64>(frame.rax) == thread_error_timeout);
+    }
+    std::puts("PASS IPC deadlines: full-width absolute deadlines do not wrap and infinity stays blocked");
+
+    generic_endpoint();
+    assert(wait_ipc(frame, ipc_wait_mode::receive, 0) == 0);
+    clock::host_now = 1000; expire_waiters();
+    assert(current_thread->state == thread_state::blocked);
+    revoke_ipc_channel(42, pipe_error_broken);
+    assert(static_cast<i64>(frame.rax) == pipe_error_broken);
+    generic_endpoint(); endpoints[0].generic = false; endpoints[0].session_response = true;
+    endpoints[0].owner_pid = current->pid; endpoints[0].pending = true;
+    files_pid = 2; tasks[1].block_access = true;
+    current->recv_handle = current->session_response_handle = 42;
+    assert(wait_ipc(frame, ipc_wait_mode::file_reply_until, 100) == thread_error_timeout);
+    assert(endpoints[0].pending && schedules == 0);
+    assert(wait_ipc(frame, ipc_wait_mode::receive_until, 200) == process_error_denied);
+    std::puts("PASS IPC deadlines: legacy indefinite and Files-only deadline precedence stay unchanged");
+}
+#endif
 }
 }
 
 int main() {
     using namespace xos;
     using namespace xos::arch;
+#if XOS_IPC_DEADLINES
+    deadline_tests();
+#endif
     void* memory = mmap(reinterpret_cast<void*>(process_user_begin), 3 * page_size,
                         PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED_NOREPLACE,
                         -1, 0);

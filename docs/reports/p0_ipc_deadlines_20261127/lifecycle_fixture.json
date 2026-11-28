@@ -1,0 +1,113 @@
+{
+  "sources": {
+    "tests/fixtures/ipc_exec/ipc_exec_probe.cpp": "8011c3129f3712ef93c3c527bbfde79baac03cc8b8264ccd9fdc31d83fd4aebd",
+    "src/shared/include/xos/process_abi.hpp": "036ce95c5cf6160b08cc036e17dd5817993722437ecb982a77cc7c422e41b3a0",
+    "src/user/include/xos/sdk.hpp": "4c566f6e2565d41e98a8c240cbe9852e385d67284d9c94233ef608b15ee68b59",
+    "src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+    "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "tests/fixtures/ipc_common.hpp": "65faaa090a739587f02efcb8170df2810945855bbe23ecf4087d6d9db8248368",
+    "src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+    "src/user/arch/x86_64/thread_core.cpp": "25e43b0a323994e11c77cd1533f6144a3bc8e788b62499ade4331c1f1f3e0732",
+    "scripts/build_ipc_exec_probe.py": "e35cd6f5886751ad94ce8be62f4e2a827de086206fbc58f509883f101f14b7ce"
+  },
+  "sdk_tree_sha256": "6b8c2d644d208028d47c3e5b10efb34e1f9f95b2600d7c9786dfbdc7a7f20a1a",
+  "artifacts": {
+    "ipc_exec_probe.elf": "8da0ccddb1167fcca7d9ff062d2bc85e8ce6f28ff2428f426a0345f9f9347d39"
+  },
+  "toolchain": {
+    "gcc": "16.2.0",
+    "g++": "16.2.0",
+    "target": "x86_64-elf",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "executables": {
+      "gcc": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+      },
+      "g++": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+      },
+      "as": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+      },
+      "ld": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+      },
+      "objcopy": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+      },
+      "nm": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+      },
+      "ar": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+      },
+      "cc1": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+      },
+      "cc1plus": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+      },
+      "nasm": {
+        "path": "${XOS_TOOLCHAIN_HOME}/.linuxbrew/Cellar/nasm/3.02/bin/nasm",
+        "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+      }
+    }
+  },
+  "commands": [
+    [
+      "${XOS_SDK_ROOT}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-threadsafe-statics",
+      "-fno-use-cxa-atexit",
+      "-fno-unwind-tables",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-stack-protector",
+      "-fno-pic",
+      "-fno-pie",
+      "-mno-red-zone",
+      "-mgeneral-regs-only",
+      "-nostdinc++",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-I",
+      "${XOS_SOURCE_ROOT}/build/p0_deadline_lifecycle_fixture2/include",
+      "-idirafter",
+      "${XOS_SOURCE_ROOT}/build/p0_deadline_system2/sdk/include",
+      "${XOS_SOURCE_ROOT}/tests/fixtures/ipc_exec/ipc_exec_probe.cpp",
+      "${XOS_SOURCE_ROOT}/src/user/arch/x86_64/thread_core.cpp",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "${XOS_SOURCE_ROOT}/build/p0_deadline_system2/sdk/user.ld",
+      "${XOS_SOURCE_ROOT}/build/p0_deadline_system2/sdk/crt0.o",
+      "-Wl,--start-group",
+      "${XOS_SOURCE_ROOT}/build/p0_deadline_system2/sdk/lib/libxos.a",
+      "${XOS_SOURCE_ROOT}/build/p0_deadline_system2/sdk/lib/libxos_loader.a",
+      "-Wl,--end-group",
+      "-o",
+      "${XOS_SOURCE_ROOT}/build/p0_deadline_lifecycle_fixture2/ipc_exec_probe.elf"
+    ]
+  ],
+  "libc_linked": false
+}

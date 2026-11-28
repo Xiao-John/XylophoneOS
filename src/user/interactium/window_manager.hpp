@@ -75,8 +75,8 @@ struct surface_view {
     u32 stride = 0;
 };
 
-// The compositor stage currently produces an ordered list. Pixel blending and
-// Display Service submission are intentionally separate from window policy.
+// Composition and its stable z-order stay in user space. Region composition
+// redraws every layer intersecting damage; Display submission remains separate.
 class compositor {
     window_manager* manager_ = nullptr;
     composition_item items_[window_table_capacity]{};
@@ -88,6 +88,9 @@ public:
     bool compose(const class window_manager& manager, const struct surface_view* surfaces,
                  u32 surface_count, u32* destination, u32 width, u32 height,
                  u32 background);
+    bool compose_region(const class window_manager& manager, const struct surface_view* surfaces,
+                        u32 surface_count, u32* destination, u32 width, u32 height,
+                        u32 background, const dirty_rect& region);
     u32 count() const { return count_; }
     const composition_item* items() const { return items_; }
 };

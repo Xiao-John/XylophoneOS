@@ -207,6 +207,24 @@ create/delegate/map/unmap/close（delegate 保持同值句柄），supported mas
 每个op只在其服务/协议版本内解释，不与syscall共用“全球号表”。上述服务具体布局仍以
 共享头和专项契约为准；若新需求改变结构，必须独立评估版本/尺寸/向后兼容，不只抢新编号。
 
+## Mobius / Interactium copied multiwindow v1
+
+P1-G preserves existing user-space wire version 1, message types 1–14, 48-byte
+headers and at most 4096 copied bytes over sys84–86. Authenticated peer PID,
+session and owned window tokens delimit create/configure/focus/frame/input/close.
+Four sessions, eight window records per session and eight drawable surfaces
+**globally** are bounded. Multiple application surfaces are composed into the
+existing exclusive display-v1 scanout; `display_extensions.surface_count=1`
+continues to describe that final scanout, not the application count.
+
+The [multiwindow contract](mobius_multiwindow.md) defines private staging,
+derived damage, premultiplied pixels, press-owner input, resize frame retirement
+and owned close. `close_request` now destroys the caller-owned window instead
+of returning a false success; it does not terminate the app. No reserved field,
+wire operation or syscall is repurposed. Independent ordinary/threading SDK
+[guest qualifications](../reports/p1_g_multiwindow_20261128/README.md) preserve
+previous single-surface reports as separate evidence.
+
 ## P1-H / P1-K1 协作认领（2026-11-28）
 
 本节只协调下一实现的公共接口；`claimed` 不生成源码常量、能力位或资格。

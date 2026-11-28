@@ -21,7 +21,7 @@ struct surface_buffer {
 
 struct session_token { u64 value = 0; };
 
-// Policy shell for the future endpoint loop. It authenticates every operation
+// Policy shared by the deployed endpoint loop. It authenticates every operation
 // against an owner-bound session before forwarding it to the window model.
 class service {
     struct session { session_token token{}; u64 owner = 0; };
@@ -36,9 +36,12 @@ class service {
     u32 input_count_ = 0;
     u32 mouse_buttons_ = 0;
     bool damaged_ = false;
+    dirty_rect damage_{};
     // Input state the router keeps so recovered or redirected events stay
     // consistent with what each client window last observed.
     window_id pointer_target_{};
+    window_id pointer_capture_{};
+    bool pointer_suppressed_ = false;
     i32 last_pointer_x_ = -1000000;
     i32 last_pointer_y_ = -1000000;
     u32 last_modifiers_ = 0;
@@ -64,6 +67,7 @@ class service {
     window_id note_key_press(window_id target, u32 code);
     window_id take_press_target(u32 code);
     void send_pointer_leave(const display_event& source, window_id old_target);
+    void invalidate(const window_state& window);
 
 public:
     explicit service(surface_buffer* surfaces = nullptr) : compositor_(manager_), surfaces_(surfaces) {}
@@ -74,13 +78,19 @@ public:
     bool destroy_window(session_token token, window_id id);
     bool configure_window(session_token token, window_id id, const configure_payload& request);
     bool focus_window(session_token token, window_id id);
-    bool accept_frame(session_token token, window_id id, u64 frame_serial);
+    bool accept_frame(session_token token, window_id id, u64 frame_serial,
+                      const dirty_rect* damage = nullptr, u32 damage_count = 0);
     bool begin_frame(session_token token, window_id id);
     bool write_tile(session_token token, window_id id, const tile_payload& tile,
                     const u8* pixels, u32 length);
     bool queue_input(const display_event& event);
     bool take_input(session_token token, window_id target, input_payload& event);
-    bool take_damage() { const bool result = damaged_; damaged_ = false; return result; }
+    void invalidate(i64 x, i64 y, u32 width, u32 height);
+    bool take_damage(dirty_rect& region) {
+        if (!damaged_) return false;
+        region = damage_; damage_ = {}; damaged_ = false; return true;
+    }
+    bool take_damage() { dirty_rect region{}; return take_damage(region); }
     hit_result hit_test(i32 x, i32 y) const { return manager_.hit_test(x, y); }
     const window_state* window_at(u32 index) const { return manager_.at(index); }
     const window_state* get_window(window_id id) const { return manager_.get(id); }
@@ -90,6 +100,8 @@ public:
                                    width, height, background);
     }
     bool compose(u32* destination, u32 width, u32 height, u32 background);
+    bool compose_region(u32* destination, u32 width, u32 height, u32 background,
+                        const dirty_rect& region);
     u32 rebuild() { return compositor_.rebuild(); }
     const composition_item* composition() const { return compositor_.items(); }
 };

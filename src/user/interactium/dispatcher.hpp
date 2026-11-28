@@ -28,6 +28,8 @@ class protocol_dispatcher {
         u32 height = 0;
         u32 stride = 0;
         u64 bytes = 0;
+        dirty_rect changed{};
+        bool has_changes = false;
     };
 
     service* service_ = nullptr;

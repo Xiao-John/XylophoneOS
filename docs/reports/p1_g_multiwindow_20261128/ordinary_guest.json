@@ -1,0 +1,141 @@
+{
+  "checks": [
+    {
+      "case": "two_independent_pids_render",
+      "pids": [
+        12,
+        13
+      ],
+      "status": "passed",
+      "windows": [
+        1,
+        2
+      ]
+    },
+    {
+      "case": "foreign_tokens_alpha_resize_retirement_and_stale_tokens",
+      "checks": 11,
+      "status": "passed"
+    },
+    {
+      "case": "wrong-peer",
+      "status": "passed"
+    },
+    {
+      "case": "malformed",
+      "status": "passed"
+    },
+    {
+      "case": "focus_exclusive_keyboard_and_z_order",
+      "status": "passed"
+    },
+    {
+      "case": "copy_commit_and_cancel_front_visibility",
+      "status": "passed"
+    },
+    {
+      "case": "key_release_retains_press_owner_after_focus_change",
+      "status": "passed"
+    },
+    {
+      "case": "pointer_drag_capture_retains_press_owner",
+      "status": "passed"
+    },
+    {
+      "case": "resize_and_move_restore_old_extents",
+      "status": "passed"
+    },
+    {
+      "case": "fault_during_pending_frame_preserves_other_app_and_resources",
+      "status": "passed"
+    },
+    {
+      "case": "close_revokes_surface_and_restores_exact_resources",
+      "status": "passed"
+    },
+    {
+      "case": "service_death_wakes_client_and_revokes_session",
+      "status": "passed"
+    },
+    {
+      "case": "live_unresponsive_service_obeys_original_deadline",
+      "status": "passed"
+    },
+    {
+      "case": "fresh_service_epoch_two_clients_and_cleanup",
+      "status": "passed"
+    },
+    {
+      "case": "legacy_exclusive_display_compatibility",
+      "status": "passed"
+    }
+  ],
+  "client_sdk_profile": "ordinary_native_no_libc",
+  "final_resources": [
+    129789,
+    2,
+    0
+  ],
+  "fixture_receipt_sha256": "eddd996e9f2bca9eaa7b042feca4447a223d346fc294dc018e35bda17992f16c",
+  "initial_resources": [
+    129789,
+    2,
+    0
+  ],
+  "iso_sha256": "e4a3f04429b21ee88ba1e3be0b3c596bd11c511eee1ecbf55d6a8106160a1992",
+  "not_run": [
+    "Qt package rebuild",
+    "hardware GPU",
+    "SMP",
+    "long_duration_stress",
+    "glass_blur"
+  ],
+  "profile": "two independent ordinary SDK clients, current production Interactium service",
+  "publication": "derived summary: host command paths omitted; screenshot identities belong only to flat manifest",
+  "raw_local_report_sha256": "daa9b7d35495ed24572a7ce7c17cf63283990a96b91250699f350b1fbf1c7468",
+  "resource_fields": [
+    "free_pages",
+    "tasks",
+    "completions"
+  ],
+  "runner_sha256": "6fab3895aff8b848180f98551fc68783d4b52f90fc9550b3bc607947065cb694",
+  "screenshots": [
+    {
+      "file": "ordinary_two_independent_apps.png"
+    },
+    {
+      "file": "ordinary_left_focus_and_damage.png"
+    },
+    {
+      "file": "ordinary_pending_frame_hidden.png"
+    },
+    {
+      "file": "ordinary_cancel_keeps_front.png"
+    },
+    {
+      "file": "ordinary_committed_damage.png"
+    },
+    {
+      "file": "ordinary_resize_and_move.png"
+    },
+    {
+      "file": "ordinary_crash_preserves_other_app.png"
+    },
+    {
+      "file": "ordinary_closed_scene_restored.png"
+    },
+    {
+      "file": "ordinary_fresh_service_epoch.png"
+    }
+  ],
+  "sdk_tree_sha256": "274dd68ce8d19faa8d98dae05f6d60d6fe8476b897a0459c62f3f26238274d72",
+  "serial_log": "ordinary_serial.log.gz",
+  "service_resources": [
+    121712,
+    4,
+    2
+  ],
+  "status": "passed",
+  "system_build_id": "9143113dac0b4851",
+  "system_manifest_sha256": "3121f8ee73bf9898027237e1c0acae4662d570c60a2a01f947afd41926468640"
+}

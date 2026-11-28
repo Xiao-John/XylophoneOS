@@ -1,0 +1,69 @@
+{
+  "docs": {
+    "allocated_syscalls": 79,
+    "history_sources": 73,
+    "local_links": 2337,
+    "status": "passed"
+  },
+  "host": {
+    "additional_multiwindow_assertions": 106,
+    "address_sanitizer": true,
+    "leak_sanitizer": "unavailable_under_host_ptrace",
+    "status": "passed",
+    "suites": 4,
+    "undefined_behavior_sanitizer": true
+  },
+  "licenses": {
+    "active_open_items": 0,
+    "build_id": "9143113dac0b4851",
+    "materials": 10,
+    "scope": "registered materials and SDK copies",
+    "status": "passed"
+  },
+  "not_run": [
+    "Qt QPA package rebuild",
+    "C++ standard runtime GUI application",
+    "SMP",
+    "physical GPU hardware",
+    "glass blur",
+    "installed Mobius/ClarkE integration",
+    "long duration stress"
+  ],
+  "public_paths": {
+    "doubtful": 0,
+    "open": 0,
+    "scope": "staged difference against origin/main",
+    "status": "PUBLIC_READY",
+    "unverified": 0
+  },
+  "publication": "Derived public records omit host-local command inventories. Actual results and source/binary identities are retained. The flat root manifest alone hashes all public leaves.",
+  "report_manifests": {
+    "current_directory": "compliant",
+    "current_files": 32,
+    "repository_status": "failed",
+    "unrelated_existing_failures": [
+      "glibc_v2_cpython_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_current_release_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_daily_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_dash_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_gnu_make_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_release_upstream_source_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "mobius_qt_v2_replacement_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_reproducible_20261127: unsafe path or invalid hash in manifest"
+    ]
+  },
+  "source_recheck": {
+    "status": "passed",
+    "system": 2305,
+    "threading_sdk": 261
+  }
+}

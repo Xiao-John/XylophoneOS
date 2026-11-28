@@ -1,0 +1,62 @@
+{
+  "attempts": [
+    {
+      "attempt": "host initial hover regression",
+      "cause": "The old hover assertion sent buttons=1, which now correctly captures the press owner. Changed the hover fixture to buttons=0 and added independent capture/lost-owner tests.",
+      "status": "failed"
+    },
+    {
+      "attempt": "host LeakSanitizer",
+      "cause": "LSan cannot enumerate threads under this host ptrace. ASan and UBSan are enabled in the final runner; actual guest resource return is independently measured.",
+      "status": "unavailable"
+    },
+    {
+      "attempt": "system first candidate",
+      "build_id": "5897fe681715a297",
+      "cause": "Runner input changed after this candidate; no claim attached.",
+      "status": "built_not_qualified"
+    },
+    {
+      "attempt": "ordinary guest v2",
+      "build_id": "0affc99f69b3d827",
+      "cause": "READY was emitted by several writes; the runner parsed the prefix before PID/window fields arrived. It now waits for the complete line.",
+      "raw_report_sha256": "1fb4c3107368db00268afb6e7246b79077a7069c23d107d56ab224cb24354b11",
+      "status": "failed"
+    },
+    {
+      "attempt": "ordinary guest v3",
+      "build_id": "a2f70231a7cfaf58",
+      "cause": "Runner changed while the image was building. Source binding rejected it before guest launch. The restart command was corrected to restart only Interactium while the original display survived.",
+      "raw_report_sha256": "1b7938c64d25de05e5704ffd0a873cbbfc528c9b94f1c8db923e776f7e16bd56",
+      "status": "preflight_rejected"
+    },
+    {
+      "attempt": "ordinary guest v4",
+      "build_id": "cc5278f804072f0c",
+      "cause": "After a real application fault and exact resource return, the background pixel assertion sampled the cursor at (500,350). The screenshot confirmed the surviving application. Final sampling uses (520,370), outside the cursor and survivor.",
+      "raw_report_sha256": "380d6cf20adcc950909b2f55bf3770117a15cd960cef1576789b8268965de30e",
+      "status": "failed"
+    },
+    {
+      "attempt": "threading fixture first recipe",
+      "cause": "The native-only recipe requested crt0.o, which this SDK intentionally does not export. The final recipe uses its actual crt0_posix.o, own threaded libc/libm/libxos and POSIX main, plus a real pthread/TLS/errno/join test. No ordinary CRT was copied into this SDK.",
+      "raw_receipt_sha256": "e1c86bec5e1eb404f87d219a92f7f21214713e43fcc3c864740962b4fb990ca2",
+      "status": "link_failed"
+    },
+    {
+      "attempt": "final v5 ordinary",
+      "build_id": "9143113dac0b4851",
+      "checks": 15,
+      "report": "ordinary_guest.json",
+      "status": "passed"
+    },
+    {
+      "attempt": "final v5 threading",
+      "build_id": "9143113dac0b4851",
+      "checks": 16,
+      "report": "threading_guest.json",
+      "status": "passed"
+    }
+  ],
+  "raw_origins": "Digests identify local unpublished original reports, not public sibling leaves. Failed/unqualified candidates are not promoted by the final pass."
+}

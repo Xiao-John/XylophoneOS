@@ -499,20 +499,79 @@ INSIDE = {'prepare': inside_prepare, 'verify_system': inside_verify_system,
           'negative_gates': inside_negatives, 'freeze': inside_freeze}
 
 
+def read_run_report(path):
+    """Read the completed report envelope, separately from XPK wire metadata."""
+    with Path(path).open('rb') as stream:
+        data = stream.read(1024 * 1024 + 1)
+    require(len(data) <= 1024 * 1024, 'run report exceeds 1 MiB')
+
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            require(key not in result, 'duplicate run-report JSON key')
+            result[key] = value
+        return result
+
+    def invalid_number(_):
+        raise ValueError('non-integer run-report JSON number')
+
+    def walk(value, depth=0):
+        require(depth <= 16, 'run-report JSON nesting exceeds 16')
+        if isinstance(value, dict):
+            for key, item in value.items():
+                key.encode('utf-8', 'strict')
+                walk(item, depth + 1)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item, depth + 1)
+        elif isinstance(value, str):
+            value.encode('utf-8', 'strict')
+
+    try:
+        result = json.loads(data.decode('utf-8', 'strict'), object_pairs_hook=pairs,
+                            parse_float=invalid_number, parse_constant=invalid_number)
+        walk(result)
+    except (UnicodeError, RecursionError, ValueError) as error:
+        raise ValueError('invalid run-report JSON: ' + str(error)) from error
+    require(type(result) is dict and result.get('format') == 'xos_r1_repeat_v1',
+            'unexpected run-report format')
+    return result
+
+
 def compare(paths, output):
     require(len(paths) >= 2, 'at least two independent runs are required')
-    runs = [load_json(path / 'run.json') for path in paths]
+    runs = [read_run_report(path / 'run.json') for path in paths]
     require(len({item['run_id'] for item in runs}) == len(runs), 'duplicate run identity')
     require(len({path.resolve() for path in paths}) == len(paths), 'duplicate run directory')
     first = runs[0]
+    inventories = []
+    variable_assets = {'package_smoke_report.json', 'gnu_seed_smoke_report.json',
+                       'combined_smoke_report.json', 'pipeline_receipt.json', 'CHECKSUMS.sha256'}
     for path, run in zip(paths, runs):
         require(run['status'] == 'passed' and run['output_was_absent'], 'a run did not pass cleanly')
         require(sha_file(path / 'qualification.json') == run['qualification_sha256']
                 and load_json(path / 'qualification.json') == run['qualification'],
                 'qualification report changed after its run')
-        require(all(file_record(path / 'frozen' / name) == value
-                    for name, value in run['qualification']['frozen_assets'].items()),
+        assets = run['qualification']['frozen_assets']
+        require({item.name for item in (path / 'frozen').iterdir()} == set(assets),
+                'frozen directory inventory differs after its run')
+        require(set(assets) == set(first['qualification']['frozen_assets']),
+                'independent frozen inventory differs')
+        require(all((path / 'frozen' / name).is_file() and not (path / 'frozen' / name).is_symlink()
+                    and file_record(path / 'frozen' / name) == value
+                    for name, value in assets.items()),
                 'frozen result changed after its run')
+        require(all(value == first['qualification']['frozen_assets'][name]
+                    for name, value in assets.items() if name not in variable_assets),
+                'independent immutable frozen asset differs')
+        require(set(run['source_archives']) == {'runner.tar', 'system_source.tar'},
+                'source archive inventory differs')
+        for name, expected in run['source_archives'].items():
+            checked_file(path / name, expected)
+        inventories.append({'run_id': run['run_id'], 'files': assets,
+            'canonical_inventory_sha256': hashlib.sha256(canonical(assets)).hexdigest(),
+            'encoding': 'canonical JSON of original qualification.frozen_assets',
+            'exact_inventory_and_every_file_verified': True})
         for key in ('bundle', 'runner_commit', 'runner_sha256', 'lock_sha256', 'sdk_launcher_sha256',
                     'system_source_commit', 'source_archives', 'entry_gate', 'frozen_sdk_archive'):
             require(run[key] == first[key], 'independent run input differs: ' + key)
@@ -523,7 +582,13 @@ def compare(paths, output):
               'runner_commit': first['runner_commit'], 'bundle': first['bundle'],
               'sdk_bindings': first['qualification']['sdk_bindings'],
               'system_rebuild': first['qualification']['system_rebuild'],
-              'run_reports': [file_record(path / 'run.json') for path in paths], 'published': False}
+              'run_reports': [file_record(path / 'run.json') for path in paths],
+              'frozen_inventories': inventories,
+              'immutable_frozen_files_compared': len(set(first['qualification']['frozen_assets']) - variable_assets),
+              'verifier': {'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'],
+                    cwd=ROOT, text=True).strip(), 'script_sha256': sha_file(Path(__file__)),
+                    'scope': 'read_only_comparison_of_completed_runs'},
+              'published': False}
     require(not output.exists(), 'comparison output already exists')
     output.write_bytes(canonical(result))
     print(json.dumps(result, indent=2))

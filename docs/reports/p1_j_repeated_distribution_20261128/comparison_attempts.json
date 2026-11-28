@@ -1,0 +1,75 @@
+{
+  "individual_run_statuses_preserved": {
+    "5": "passed",
+    "6": "passed"
+  },
+  "initial_comparison_result": "failed while reading depth-nine completed reports with the XPK depth-eight parser",
+  "initial_orchestrator": {
+    "error": "CalledProcessError(1, ['${XOS_HOST_RUNTIME}', 'scripts/repeat_glibc_distribution.py', 'compare', '--runs', '${RUN_5}', '${RUN_6}', '--output', '${REPO}/build/p1_j_comparison.json'])",
+    "runner_commit": "dedf69415f1942bcf860b6ec7dd2e211869501e9",
+    "second_run_command": [
+      "${XOS_HOST_RUNTIME}",
+      "scripts/repeat_glibc_distribution.py",
+      "run",
+      "--bundle",
+      "${WORKSPACE_INPUT}",
+      "--frozen-sdk",
+      "build/p1_j_inputs/xylophoneos_revival_0.0.1-1024_sdk.tar.gz",
+      "--sdk-launcher",
+      "${WORKSPACE_INPUT}",
+      "--output",
+      "${RUN_6_ORIGINAL}"
+    ],
+    "source_directories": {
+      "5": "${RUN_5_ORIGINAL}",
+      "6": "${RUN_6_ORIGINAL}"
+    },
+    "status": "failed",
+    "steps": [
+      {
+        "finished_unix": 1795871547.8631103,
+        "name": "wait_existing_run_5",
+        "started_unix": 1795870747.6133235,
+        "status": "passed"
+      },
+      {
+        "finished_unix": 1795871565.496309,
+        "name": "retain_run_5",
+        "started_unix": 1795871547.864689,
+        "status": "passed"
+      },
+      {
+        "finished_unix": 1795872927.739042,
+        "name": "fresh_run_6",
+        "started_unix": 1795871565.513515,
+        "status": "passed"
+      },
+      {
+        "finished_unix": 1795872954.617886,
+        "name": "retain_run_6",
+        "started_unix": 1795872927.7453253,
+        "status": "passed"
+      },
+      {
+        "finished_unix": 1795872955.7964182,
+        "name": "exact_inventory_and_comparison",
+        "started_unix": 1795872954.6192584,
+        "status": "failed"
+      }
+    ]
+  },
+  "raw_initial_state": {
+    "raw_source": "build/p1_j_repeat_pair_orchestration.json",
+    "raw_unpublished_sha256": "a32fcfb625a21c7354cea8d4edfb520bc5326c7ee560711aba18ac91c17c4a82"
+  },
+  "raw_subsequent_comparison": {
+    "raw_source": "build/p1_j_comparison_v2.json",
+    "raw_unpublished_sha256": "4fddd4980d470b606962eb1b2ee41c5c4bf9b3283f4a0a3cfc5bc343a1b1578b"
+  },
+  "subsequent_comparison_status": "passed",
+  "subsequent_read_only_verifier": {
+    "commit": "2a64ff11e0d1dcbcdaaaafd9ecccecc780ea4f47",
+    "scope": "read_only_comparison_of_completed_runs",
+    "script_sha256": "147abb7c2910932f9f5d1fc08bccde72ea0b3d4a74f0fd1d6b9f425e06dcb979"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "runs": {
+    "5": {
+      "format": "xos_r1_repeat_guest_media_retirement_v1",
+      "records": [
+        {
+          "artifact": {
+            "bytes": 536870912,
+            "sha256": "8ad27148512cb2012d106b5d357e53c367c9600e1906977611a013dafc4c6841"
+          },
+          "last_consumer_report": "combined_guest/combined_report.json",
+          "path": "combined_guest/gnu_seed/work_disk.img",
+          "producer_report": "combined_guest/gnu_seed/report.json",
+          "status": "removed_after_complete_hash_verification"
+        },
+        {
+          "artifact": {
+            "bytes": 536870912,
+            "sha256": "9bf634c7df1caf4c5dd28926482db1ecd1ea1279833bacd46e01996eed540b6f"
+          },
+          "last_consumer_report": "preflight",
+          "path": "combined_guest/work.img",
+          "producer_report": "combined_guest/report.json",
+          "status": "removed_after_complete_hash_verification"
+        },
+        {
+          "artifact": {
+            "bytes": 536870912,
+            "sha256": "65ac08bfb827cd3a20d89c14496ed61238abfbe1a1ec7191eee65b67d39b47d7"
+          },
+          "last_consumer_report": "relink_guests/xypm/report.json",
+          "path": "combined_guest/after_installer.img",
+          "producer_report": "combined_guest/report.json",
+          "status": "removed_after_complete_hash_verification"
+        }
+      ]
+    },
+    "6": {
+      "format": "xos_r1_repeat_guest_media_retirement_v1",
+      "records": [
+        {
+          "artifact": {
+            "bytes": 536870912,
+            "sha256": "8ad27148512cb2012d106b5d357e53c367c9600e1906977611a013dafc4c6841"
+          },
+          "last_consumer_report": "combined_guest/combined_report.json",
+          "path": "combined_guest/gnu_seed/work_disk.img",
+          "producer_report": "combined_guest/gnu_seed/report.json",
+          "status": "removed_after_complete_hash_verification"
+        },
+        {
+          "artifact": {
+            "bytes": 536870912,
+            "sha256": "9bf634c7df1caf4c5dd28926482db1ecd1ea1279833bacd46e01996eed540b6f"
+          },
+          "last_consumer_report": "preflight",
+          "path": "combined_guest/work.img",
+          "producer_report": "combined_guest/report.json",
+          "status": "removed_after_complete_hash_verification"
+        },
+        {
+          "artifact": {
+            "bytes": 536870912,
+            "sha256": "65ac08bfb827cd3a20d89c14496ed61238abfbe1a1ec7191eee65b67d39b47d7"
+          },
+          "last_consumer_report": "relink_guests/xypm/report.json",
+          "path": "combined_guest/after_installer.img",
+          "producer_report": "combined_guest/report.json",
+          "status": "removed_after_complete_hash_verification"
+        }
+      ]
+    }
+  },
+  "scope": "temporary guest media; raw producer reports remain unchanged"
+}

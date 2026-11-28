@@ -1,0 +1,199 @@
+{
+  "ambiguous_path_review": {
+    "ambiguous_findings": 4,
+    "blocking_findings": 0,
+    "records": [
+      {
+        "evidence": "Actual guest GNU compiler diagnostics and serial output.",
+        "location": "guest_gnu.json.gz!gzip",
+        "status": "reviewed_guest_observation",
+        "unique_observed_paths": 7
+      },
+      {
+        "evidence": "Exact guest fixture and expectations in tests/glibc_release_daily_relink.py; original and replacement tool outputs match.",
+        "location": "guest_relinks.json",
+        "status": "reviewed_guest_observation",
+        "unique_observed_paths": 2
+      },
+      {
+        "evidence": "Actual guest GNU compiler diagnostics and serial output.",
+        "location": "run_5_gnu_serial.log.gz!gzip",
+        "status": "reviewed_guest_observation",
+        "unique_observed_paths": 7
+      },
+      {
+        "evidence": "Actual guest GNU compiler diagnostics and serial output.",
+        "location": "run_6_gnu_serial.log.gz!gzip",
+        "status": "reviewed_guest_observation",
+        "unique_observed_paths": 7
+      }
+    ],
+    "scope": "All ambiguous matches in these staged files were inspected; observed host receiver mktemp prefixes were separately abstracted. This is no exemption for arbitrary host temporary paths.",
+    "status": "reviewed"
+  },
+  "diff_check": {
+    "command": "git diff --cached --check",
+    "status": "passed"
+  },
+  "documentation": {
+    "allocated_syscalls": 79,
+    "history_sources": 73,
+    "local_links": 2344,
+    "status": "passed"
+  },
+  "flat_evidence_index": {
+    "checked": 33,
+    "data_revision": null,
+    "failures": [],
+    "index": "docs/reports/p1_j_repeated_distribution_20261128/manifest.json",
+    "matched": 33,
+    "revision": null,
+    "status": "PASS"
+  },
+  "global_report_check": {
+    "baseline": "Full materialized source docs checked before the new J evidence; earlier sparse-only diagnostics do not count as a global pass.",
+    "failures": [
+      "glibc_v2_cpython_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_current_release_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_daily_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_dash_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_gnu_make_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_release_upstream_source_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "mobius_qt_v2_replacement_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_reproducible_20261127: unsafe path or invalid hash in manifest"
+    ],
+    "inherited_failure_count": 17,
+    "inherited_failures_unchanged": true,
+    "new_directory_compliant": true,
+    "status": "failed"
+  },
+  "initial_export_path_scan": {
+    "corrected_before_final_scan": [
+      "abstract host Python runtime prefix",
+      "abstract observed host receiver mktemp segments",
+      "explicit exact-expandable guest source/output command templates"
+    ],
+    "finding_counts": {
+      "DOUBTFUL": 6,
+      "OPEN": 27
+    },
+    "raw_records_unchanged": true,
+    "status": "NOT_PUBLIC_READY"
+  },
+  "license_audit": {
+    "active_open": 0,
+    "exact_audit_git_files": 2547,
+    "materials": 10,
+    "scope": "Exact accepted native source and its actual built SDK; existing deferred/not-applicable items retained.",
+    "source_commit": "819ea63ae84b1e89862648af002c2a09d1936c02",
+    "status": "passed"
+  },
+  "logs": "validation.log",
+  "new_document_links": {
+    "failures": [],
+    "files": [
+      "docs/reports/p1_j_repeated_distribution_20261128/readme.md",
+      "docs/contracts/repeated_distribution.md",
+      "docs/work_log/245de5c3_p1_j_distribution_repetition.md"
+    ],
+    "local_links": 35,
+    "status": "passed"
+  },
+  "post_run_storage_fixture": {
+    "scope": "Synthetic host storage: independent raw metadata, same-file byte/mode hardlink gate, changed-byte and changed-mode copies, literal compiler-driver symlinks, final source removal after verification.",
+    "status": "passed"
+  },
+  "producer_host": {
+    "producer_commit": "dedf69415f1942bcf860b6ec7dd2e211869501e9",
+    "status": "passed",
+    "tests": 15
+  },
+  "raw_outputs_rewritten": false,
+  "reproduction_prerequisite": "Run and compare in a real host checkout with its Git common directory accessible; an SDK-isolated worktree mount alone cannot provide the recorded verifier Git identity.",
+  "scope": "Host and evidence validation; actual target qualification is in the two unchanged run reports.",
+  "staged_public_paths": {
+    "base": "6332527ab64e92371266363f41f3247717a3cac8",
+    "files_scanned": 39,
+    "files_selected": 39,
+    "findings": [
+      {
+        "category": "ambiguous_tmp",
+        "classification": "NEEDS_REVIEW",
+        "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+        "status": "DOUBTFUL"
+      },
+      {
+        "category": "ambiguous_tmp",
+        "classification": "NEEDS_REVIEW",
+        "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_relinks.json",
+        "status": "DOUBTFUL"
+      },
+      {
+        "category": "ambiguous_tmp",
+        "classification": "NEEDS_REVIEW",
+        "location": "docs/reports/p1_j_repeated_distribution_20261128/run_5_gnu_serial.log.gz!gzip",
+        "status": "DOUBTFUL"
+      },
+      {
+        "category": "ambiguous_tmp",
+        "classification": "NEEDS_REVIEW",
+        "location": "docs/reports/p1_j_repeated_distribution_20261128/run_6_gnu_serial.log.gz!gzip",
+        "status": "DOUBTFUL"
+      }
+    ],
+    "source": "index",
+    "status": "PUBLIC_READY"
+  },
+  "status": "new_j_evidence_passed",
+  "validation_commands": [
+    [
+      "python3",
+      "tests/repeat_glibc_distribution_host.py"
+    ],
+    [
+      "python3",
+      "tests/docs_consistency.py",
+      "--output-dir",
+      "build/p1_j_docs_final"
+    ],
+    [
+      "python3",
+      "tests/report_manifest_check.py"
+    ],
+    [
+      "python3",
+      "scripts/verify_evidence_index.py",
+      "docs/reports/p1_j_repeated_distribution_20261128/manifest.json"
+    ],
+    [
+      "python3",
+      "tests/check_public_evidence_paths.py",
+      "--index",
+      "--base",
+      "6332527ab64e92371266363f41f3247717a3cac8"
+    ],
+    [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ]
+  ],
+  "verifier_host": {
+    "invalid_envelope_subcases": 7,
+    "script_sha256": "147abb7c2910932f9f5d1fc08bccde72ea0b3d4a74f0fd1d6b9f425e06dcb979",
+    "status": "passed",
+    "tests": 21,
+    "tests_sha256": "f96302576b97bfd4969e845cd6bd2408b0cd898d01b5ec5b15a5281167255112",
+    "verifier_commit": "2a64ff11e0d1dcbcdaaaafd9ecccecc780ea4f47"
+  }
+}

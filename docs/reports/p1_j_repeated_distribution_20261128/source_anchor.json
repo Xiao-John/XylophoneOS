@@ -1,0 +1,19 @@
+{
+  "local_producer_commit": "dedf69415f1942bcf860b6ec7dd2e211869501e9",
+  "raw_run_source_fields_rewritten": false,
+  "remote_branch": "codex/p1-j-replay-source",
+  "remote_exact_tree_commit": "110cb65159af7b43220ed6a76d30a185dd014c77",
+  "remote_source_url": "https://github.com/Xiao-John/XylophoneOS/commit/110cb65159af7b43220ed6a76d30a185dd014c77",
+  "scope": "All tracked Git tree bytes are identical. The actual producer commit and original source archive identities remain unchanged; a Git archive from the remote commit can have different wrapper metadata and is not relabeled as the original archive.",
+  "status": "complete_git_tree_equality_verified",
+  "tree": "241ed633b8e40c013d093dbc52f1f8b3f18e48ce",
+  "verifier": {
+    "local_verifier_commit": "2a64ff11e0d1dcbcdaaaafd9ecccecc780ea4f47",
+    "remote_branch": "codex/p1-j-comparison-source",
+    "remote_exact_tree_commit": "9420458011f521c342a0f36c5152e8c96ad2a81a",
+    "remote_source_url": "https://github.com/Xiao-John/XylophoneOS/commit/9420458011f521c342a0f36c5152e8c96ad2a81a",
+    "scope": "Read-only comparison of the original completed runs. The verifier commit and script SHA-256 in the raw comparison remain unchanged.",
+    "status": "complete_git_tree_equality_verified",
+    "tree": "be7b30f79342b8073fe94c6283951866248dd924"
+  }
+}

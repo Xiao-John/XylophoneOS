@@ -1,0 +1,364 @@
+SOURCE build/p1_j_host.log
+...............
+----------------------------------------------------------------------
+Ran 15 tests in 0.011s
+
+OK
+
+SOURCE build/p1_j_verifier_host.log
+.....................
+----------------------------------------------------------------------
+Ran 21 tests in 0.081s
+
+OK
+
+SOURCE build/p1_j_retention_storage_host.log
+PASS host storage fixture: independent raw metadata retained; identical bytes linked; changed bytes copied; mode mismatch copied; literal symlinks preserved; source retired only after verification
+deduplicated_files 3
+
+SOURCE build/p1_j_license_full_exact_source.log
+PASS: 10 license materials | build 7c8c59058be0b5f1 | open license items: 0 -> none (register: licenses/open_items.json)
+
+SOURCE build/p1_j_export_repeat_evidence.log
+Exported 30 leaves; add readme/validation and then one flat manifest
+
+SOURCE build/p1_j_export_repeat_evidence_v2.log
+Exported 33 leaves; add readme/validation and then one flat manifest
+
+SOURCE build/p1_j_finalize_repeat_docs.log
+Wrote readme, contract and work log from the two passed compared records
+
+SOURCE build/p1_j_docs_final.log
+{"status": "passed", "local_links": 2344, "allocated_syscalls": 79, "history_sources": 73}
+
+SOURCE build/p1_j_evidence_final_initial.log
+{
+  "status": "PASS",
+  "index": "docs/reports/p1_j_repeated_distribution_20261128/manifest.json",
+  "revision": null,
+  "data_revision": null,
+  "checked": 33,
+  "matched": 33,
+  "failures": []
+}
+
+SOURCE build/p1_j_public_paths_initial.json
+{
+  "status": "NOT_PUBLIC_READY",
+  "source": "index",
+  "base": "6332527ab64e92371266363f41f3247717a3cac8",
+  "files_selected": 39,
+  "files_scanned": 39,
+  "findings": [
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/comparison_attempts.json",
+      "category": "codex_runtime",
+      "classification": "HOST_SPECIFIC_COMMAND",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "status": "OPEN"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_relinks.json",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/run_5_gnu_serial.log.gz!gzip",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/run_5_stage_logs.log.gz!gzip",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/run_6_gnu_serial.log.gz!gzip",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/run_6_stage_logs.log.gz!gzip",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    }
+  ]
+}
+
+SOURCE build/p1_j_public_paths_reviewed.json
+{
+  "status": "PUBLIC_READY",
+  "source": "index",
+  "base": "6332527ab64e92371266363f41f3247717a3cac8",
+  "files_selected": 39,
+  "files_scanned": 39,
+  "findings": [
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_gnu.json.gz!gzip",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/guest_relinks.json",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/run_5_gnu_serial.log.gz!gzip",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    },
+    {
+      "location": "docs/reports/p1_j_repeated_distribution_20261128/run_6_gnu_serial.log.gz!gzip",
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "status": "DOUBTFUL"
+    }
+  ]
+}
+
+SOURCE build/p1_j_public_path_review.json
+{
+  "status": "reviewed",
+  "blocking_findings": 0,
+  "ambiguous_findings": 4,
+  "scope": "All ambiguous matches in these staged files were inspected; observed host receiver mktemp prefixes were separately abstracted. This is no exemption for arbitrary host temporary paths.",
+  "records": [
+    {
+      "location": "guest_gnu.json.gz!gzip",
+      "status": "reviewed_guest_observation",
+      "unique_observed_paths": 7,
+      "evidence": "Actual guest GNU compiler diagnostics and serial output."
+    },
+    {
+      "location": "guest_relinks.json",
+      "status": "reviewed_guest_observation",
+      "unique_observed_paths": 2,
+      "evidence": "Exact guest fixture and expectations in tests/glibc_release_daily_relink.py; original and replacement tool outputs match."
+    },
+    {
+      "location": "run_5_gnu_serial.log.gz!gzip",
+      "status": "reviewed_guest_observation",
+      "unique_observed_paths": 7,
+      "evidence": "Actual guest GNU compiler diagnostics and serial output."
+    },
+    {
+      "location": "run_6_gnu_serial.log.gz!gzip",
+      "status": "reviewed_guest_observation",
+      "unique_observed_paths": 7,
+      "evidence": "Actual guest GNU compiler diagnostics and serial output."
+    }
+  ]
+}
+
+SOURCE build/p1_j_new_doc_links.json
+{
+  "status": "passed",
+  "local_links": 35,
+  "files": [
+    "docs/reports/p1_j_repeated_distribution_20261128/readme.md",
+    "docs/contracts/repeated_distribution.md",
+    "docs/work_log/245de5c3_p1_j_distribution_repetition.md"
+  ],
+  "failures": []
+}
+
+SOURCE build/p1_j_diff_check.log
+
+
+GLOBAL REPORT BASELINE COMPARISON
+{
+  "status": "failed",
+  "new_directory_compliant": true,
+  "inherited_failures_unchanged": true,
+  "inherited_failure_count": 17,
+  "failures": [
+    "glibc_v2_cpython_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+    "glibc_v2_current_release_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+    "glibc_v2_daily_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+    "glibc_v2_dash_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+    "glibc_v2_gnu_make_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+    "glibc_v2_release_upstream_source_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+    "mobius_qt_v2_replacement_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+    "mobius_widgets_v2_reproducible_20261127: unsafe path or invalid hash in manifest"
+  ],
+  "baseline": "Full materialized source docs checked before the new J evidence; earlier sparse-only diagnostics do not count as a global pass."
+}

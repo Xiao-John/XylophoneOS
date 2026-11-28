@@ -1,0 +1,38 @@
+{
+  "5": {
+    "cases": {
+      "missing_source": {
+        "error": "[Errno 2] No such file or directory: '${RUN}/absent_source.tar.gz'",
+        "status": "rejected"
+      },
+      "stale_sdk": {
+        "error": "the configured glibc SDK binding changed",
+        "status": "rejected"
+      },
+      "wrong_bundle_hash": {
+        "error": "input identity differs: glibc-2.44.tar.xz",
+        "status": "rejected"
+      }
+    },
+    "publication_absent_after_each_rejection": true,
+    "status": "passed"
+  },
+  "6": {
+    "cases": {
+      "missing_source": {
+        "error": "[Errno 2] No such file or directory: '${RUN}/absent_source.tar.gz'",
+        "status": "rejected"
+      },
+      "stale_sdk": {
+        "error": "the configured glibc SDK binding changed",
+        "status": "rejected"
+      },
+      "wrong_bundle_hash": {
+        "error": "input identity differs: glibc-2.44.tar.xz",
+        "status": "rejected"
+      }
+    },
+    "publication_absent_after_each_rejection": true,
+    "status": "passed"
+  }
+}

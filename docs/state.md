@@ -1,5 +1,31 @@
 # XOS 当前状态（全局快照）
 
+## 2026-11-28 · 三项 Issue 与 P1-B/E 已合入
+
+[#124](https://github.com/Xiao-John/XylophoneOS/issues/124)、
+[#125](https://github.com/Xiao-John/XylophoneOS/issues/125)、
+[#133](https://github.com/Xiao-John/XylophoneOS/issues/133) 的修复已分别随
+[#438](https://github.com/Xiao-John/XylophoneOS/pull/438)、
+[#441](https://github.com/Xiao-John/XylophoneOS/pull/441)、
+[#440](https://github.com/Xiao-John/XylophoneOS/pull/440)、
+[#439](https://github.com/Xiao-John/XylophoneOS/pull/439) 合入，三个 Issue 均已关闭。
+
+当前整合基线为 `6332527ab64e92371266363f41f3247717a3cac8`。P1-B 的六维
+进程树累计预算、资源归属和可观测 Files 不确定结果隔离已随
+[#443](https://github.com/Xiao-John/XylophoneOS/pull/443) 合入；27 项真实客体
+检查、46 项普通及 ASan/UBSan host 检查以及 E 基线上的 9 项集成客体检查均通过。
+P1-E 的应用私有数据授权与数据/安装 metadata 原子恢复已随
+[#442](https://github.com/Xiao-John/XylophoneOS/pull/442) 合入，14 次新 VM
+启动覆盖正常提交、确定拒绝、已提交/未提交的未知结果及冷启动恢复。
+
+P1-C 的持久 catalog 与后代撤销、P1-D 的官方认证分发和真实应用启动、
+P1-F 的完整 WebCore/Qt 页面及隔离生命周期仍在验收中，尚未关闭。执行环境
+回退后的未发布源码正从保留记录恢复到独立工作分支；缺失的构建产物和日志
+重新生成，旧摘要不能代替新验收。现有 P0 prerelease 保留其独立资格。
+
+[P1-B 记录](work_log/fe6b306b_p1_b_cumulative_process_budgets_and_observable_f.md) ·
+[P1-E 记录](work_log/4368aa56_p1e_application_persistence.md)
+
 ## 2026-11-28 · P0 发行闭环
 
 本轮新复跑的 L1/L2、R2/R3、N1–N4、打包 SDK pipe 与原生组合验收已经通过各自
@@ -20,8 +46,8 @@ SDK、源码和配置，不能将这些独立 profile 合称为默认安装组�
 [R1 最终发行证据](reports/p0_release_final_20261128/README.md) ·
 [glibc host SDK 使用说明](releases/glibc_host_sdk.md)
 
-进程树预算、持久代际、在线动态库装卸、额外 pipe、安装态网络组合、
-物理网卡/断电、完整 WebCore 和多窗口保持各自计划边界。旧稳定发行、Qt 独立
+该 P0 发行资格不自动覆盖后续进程树预算、持久代际、在线动态库装卸、额外 pipe、
+安装态网络组合、物理网卡/断电、完整 WebCore 和多窗口；P1 能力以本页对应条目为准。旧稳定发行、Qt 独立
 profile 和冻结 newlib 资料保留各自身份。
 
 ## 2026-11-28 · P1-A 只读观测与提案回放

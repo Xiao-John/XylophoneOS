@@ -29,7 +29,8 @@ bool normalize_name(const u8* input, u32 length, char (&name)[dns_name_limit + 1
 }
 
 void service_core::initialize(u64 controller, const stack_api& stack, const resolver_api& resolver,
-                              u32 configured_resolver) {
+                              u32 configured_resolver, const egress_policy& policy) {
+    policy_ = valid_egress_policy(policy) ? policy : egress_policy{};
     controller_ = controller; stack_ = stack; resolver_ = resolver;
     if (valid_static_resolver(configured_resolver) && resolver_.configure) {
         resolver_address_ = configured_resolver;
@@ -230,7 +231,9 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
         if (input.object || !input.port || (input.transport != protocol::tcp && input.transport != protocol::udp)) {
             output.result = invalid; return true;
         }
-        if (input.address != permitted_address) { output.result = denied; return true; }
+        if (!egress_permitted(policy_, input.address, input.transport, input.port)) {
+            output.result = denied; return true;
+        }
         u32 owned = 0, free = connection_limit;
         for (u32 i = 0; i < connection_limit; ++i) {
             if (!connections_[i].handle) free = i;

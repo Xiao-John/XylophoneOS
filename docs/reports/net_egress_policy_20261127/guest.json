@@ -1,0 +1,132 @@
+{
+  "status": "passed_subset",
+  "runner_sha256": "7130f649944d17c45f0a566471c5adb462cc4b8948e30665d67fc242a4ba9f0a",
+  "dash_shell": "not_run",
+  "build_id": "d190e3847fa425fd",
+  "system_manifest_sha256": "98d9ab289d21dfbb7f9d3a0ea3e07b3dce27052c20c8ef6e0bd3f1d88b595995",
+  "sdk_tree_sha256": "bedf4b636ca94cc8b6a16dddd87389d4839ae8d2c826341a7257b5b8fbb5a05e",
+  "network_profile": {
+    "egress": [
+      {
+        "cidr": "192.0.2.0/24",
+        "ports": [
+          41001,
+          41001
+        ],
+        "protocol": "udp"
+      }
+    ],
+    "pci_instance": 41,
+    "resolver": "10.0.2.2",
+    "revision": 2,
+    "source_sha256": "2c96ad1e9cdb1bccba2ad0eba9cfd6468ff86586d7a86c55b213af3c6c95ed1a"
+  },
+  "image_sha256": "0004bdf56d8c144fe9113ae8a41c0b8a12821f6826c7a85b9b03cc6b90fcb8ff",
+  "elf_sha256": "2ccea55868026d2fdfedfd825b8373162428755fc3368f0836bebd5c692bea9e",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/net_policy/system_control/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN_TMP}/xos_egress_guest__px14zlx/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "socket,id=xosnet,connect=127.0.0.1:41287",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
+    "-object",
+    "filter-dump,id=xos_capture,netdev=xosnet,file=${XOS_REPO}/build/net_policy/guest_control/network.pcap"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129787,
+    2,
+    0
+  ],
+  "resources_with_service": [
+    129615,
+    3,
+    1
+  ],
+  "resources_after": [
+    129787,
+    2,
+    0
+  ],
+  "nonce": "754a338b00baa0f15de277456195e7e0",
+  "denied_address": "198.51.100.1",
+  "transactions": [
+    {
+      "category": "allow",
+      "answer": "192.0.2.165",
+      "source_port": 49159,
+      "transaction_id": 64163,
+      "retries": 0,
+      "question_sha256": "22d57c5c3ea79db833a70b58d92ed63e4ade33e9505479ededdf5acb612d3bb4"
+    },
+    {
+      "category": "deny",
+      "answer": "198.51.100.1",
+      "source_port": 27676,
+      "transaction_id": 39404,
+      "retries": 0,
+      "question_sha256": "47cc5b729dfd0da68f4f29e1d09019cec5d9860314d2a50428cfa9adbeee5757"
+    },
+    {
+      "category": "allow",
+      "answer": "192.0.2.27",
+      "source_port": 40157,
+      "transaction_id": 14196,
+      "retries": 0,
+      "question_sha256": "22d57c5c3ea79db833a70b58d92ed63e4ade33e9505479ededdf5acb612d3bb4"
+    }
+  ],
+  "application_frames": [
+    {
+      "address": "192.0.2.165",
+      "port": 41001,
+      "nonce_sha256": "9803d312df960553613147366af932fed80002d914e77b60736b63e909569c0b"
+    },
+    {
+      "address": "192.0.2.27",
+      "port": 41001,
+      "nonce_sha256": "9803d312df960553613147366af932fed80002d914e77b60736b63e909569c0b"
+    }
+  ],
+  "challenges": [
+    "1d29e930c537a71099c1690adc31fe50af3e108cc3c9a688caa02b9db70812a0",
+    "8b87b2a4c1be2539e1cce79bfeaa63a02618dc3b3d8b65b31a724a14fc316d2e"
+  ],
+  "epochs": [
+    1,
+    2,
+    3
+  ],
+  "captured_dns_queries": 3,
+  "capture_sha256": "1c8e712b946e64f9f23794b55a8d9c5a808fa96566d714a2cca8e99cfc04daf0",
+  "serial_sha256": "75cf76c258741e6a1062a66f6d02b2729bb046dd83b6b10a78eabe528307ebbe"
+}

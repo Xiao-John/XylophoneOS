@@ -390,7 +390,7 @@ void network_control(net2::operation action, u64 peer = 0) {
         print(" udp_dropped="); decimal(info.udp_dropped); print("\n");
     } else { print("[net-revoke] pid="); decimal(peer); print(" result=0\n"); }
 }
-#ifdef XOS_NET_DNS_PROBE
+#if defined(XOS_NET_DNS_PROBE) || defined(XOS_NET_STATIC_INSTANCE)
 void configure_network_dns(const char* mode) {
     if (!network_service_pid || (!equal(mode, "on") && !equal(mode, "off"))) {
         print("net-dns: use on/off with an owned service\n"); return;
@@ -955,6 +955,8 @@ void execute(u32 argc, char** argv) {
 #ifdef XOS_NET_DNS_PROBE
     } else if (equal(argv[0], "net-dns-probe") && argc == 2) {
         start_network(number(argv[1]), "probe_dns");
+#endif
+#if defined(XOS_NET_DNS_PROBE) || defined(XOS_NET_STATIC_INSTANCE)
     } else if (equal(argv[0], "net-dns-configure") && argc == 2) {
         configure_network_dns(argv[1]);
 #endif

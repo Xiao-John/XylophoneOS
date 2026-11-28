@@ -1,5 +1,12 @@
 # GCC 16.2.0 port (E08-4/5)
 
+The separate glibc shared-runtime builder authenticates its locked GCC archive
+and signature with `shared_source_auth.json` and
+`scripts/verify_gcc_shared_source.py`. The current reviewed GNU keyring retains
+the previously pinned primary/signing identities. Historical whole-keyring
+bytes remain recorded; unknown keyrings and expired/revoked signature states
+are rejected. Verified immutable archive bytes are also used for extraction.
+
 Private build inputs for the XOS-hosted GCC Seed. The builder is
 `scripts/build_gcc.py`; it writes only under `.cache/xos_seed/gcc/` and requires an
 immutable SDK manifest hash. This is a preparation artifact until a real C Seed

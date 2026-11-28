@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "files": {
+    "binding.json": "36968f0040182f7971cd34dd37699d799c9f91875635c2a883e4ac7c6b2d63ce",
+    "checks.json": "9b7c5b12292534830f9c05ea77d3352e520324f3d6c10deb9383878bd9a22ee8",
+    "gpgv.log": "81f75ace9bf61ee7f64b835e518dc4cda053ee4814a28ead6f0ffac5a79edd95",
+    "gpgv.status": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4",
+    "legacy_refusal.log": "48defd641209ae071ba13c01dbbbad4481a1fc40e6186e8a3264c074338a60b5",
+    "rejected_keyring.json": "4bd258d80fa50992748ee5ece1d6edc5770a2ac9d3b7cd9fd4297cc79abbcbc3",
+    "rejected_signature.json": "e63fd0aa999e57877f6e00074e2e038e3b0886c7f7e565dbabc6a72c815009a6",
+    "verification.json": "480b3bf0cdca0617da411ed4562f7b0e94e8bc7cf88687d1f9a5205215810a7a"
+  }
+}

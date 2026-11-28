@@ -1,0 +1,17 @@
+{
+  "status": "source_authentication_passed",
+  "sdk_asset_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "legacy_builder_commit": "917a7ab",
+  "legacy_refusal_raw_sha256": "ee5d7d87a8bc40c9736318e1c308d884ed32a038c48a4a1b33ab4a584d34ea2a",
+  "legacy_refusal_export": "replace source/download absolute roots with XOS_SOURCE/XOS_INPUTS templates",
+  "not_run": [
+    "shared_gcc_target_guest_qualification",
+    "public_dynamic_application_startup"
+  ],
+  "inputs": {
+    "scripts/verify_gcc_shared_source.py": "a379381d12c0c4096605b0876a4145ae53c83bfeb67982a66a456acd5e8771a7",
+    "scripts/build_glibc_shared_gcc.py": "8b400cc9669b3d4c4b696a70f5c68832f2dff1cd2cd49a0b56aa14dfae23c0a9",
+    "tests/gcc_shared_source_auth.py": "469f54574b411e102d338d8b74211c4a98efb905d822db0c2f151884d30b7b1a",
+    "src/ports/gcc/shared_source_auth.json": "eb82f60da7498f6c599d7bea4bc71dfe86ebd9eba5c5944e78025a92eb5c6819"
+  }
+}

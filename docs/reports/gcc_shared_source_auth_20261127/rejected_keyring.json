@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "status": "rejected",
+  "component": "gcc",
+  "authentication_lock_sha256": "eb82f60da7498f6c599d7bea4bc71dfe86ebd9eba5c5944e78025a92eb5c6819",
+  "source_lock_sha256": "e4db97ce304c6d2bafc115bb0575d03b0fe8e09562d0f4871784111fd9a83353",
+  "verified_at": "2026-11-27T16:09:28.663852+00:00",
+  "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+  "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+  "keyring_sha256": "53b25c4d9e64c4320f730bf8444b0b32c857c4b16efeb7300ec6784f087d82c9",
+  "verifier": {
+    "name": "gpgv",
+    "sha256": "e82416f3ae002b63c0731f311519c55fc9e7d3c8bdadbd64239833298f09a2cf"
+  },
+  "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+  "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+  "previous_keyring_sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+  "error": "keyring SHA-256 differs from the reviewed GCC authentication lock"
+}

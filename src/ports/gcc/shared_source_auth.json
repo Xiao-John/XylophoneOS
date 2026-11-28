@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "component": "gcc",
+  "version": "16.2.0",
+  "archive_bytes": 107200820,
+  "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+  "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+  "signature_url": "https://ftp.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz.sig",
+  "keyring_url": "https://ftp.gnu.org/gnu/gnu-keyring.gpg",
+  "keyring_bytes": 3884405,
+  "keyring_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+  "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+  "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+  "reviewed_at": "2026-11-27",
+  "previous_keyring_sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+  "review": "The current official GNU keyring differs from the previously pinned whole-keyring bytes. gpgv accepts the unchanged locked GCC archive and signature using the same previously pinned primary and signing fingerprints, without expired or revoked status. The previous keyring remains identified for historical replay; it is not silently treated as the current keyring.",
+  "update_policy": "A keyring update requires reviewed source bytes, the existing signer identities, real gpgv status and revocation/expiry checks. Unknown keyrings, another signer, failed signatures and suppressed time checks are rejected."
+}

@@ -53,70 +53,70 @@
   "tools": {
     "gcc": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
       "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
       "version_exit_code": 0,
       "version": "x86_64-elf-gcc (GCC) 16.2.0"
     },
     "g++": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
       "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
       "version_exit_code": 0,
       "version": "x86_64-elf-g++ (GCC) 16.2.0"
     },
     "as": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
       "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
       "version_exit_code": 0,
       "version": "GNU assembler (GNU Binutils) 2.47.20260726"
     },
     "ld": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
       "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
       "version_exit_code": 0,
       "version": "GNU ld (GNU Binutils) 2.47.20260726"
     },
     "ar": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
       "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0",
       "version_exit_code": 0,
       "version": "GNU ar (GNU Binutils) 2.47.20260726"
     },
     "ranlib": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ranlib",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ranlib",
       "sha256": "7428cac88865cdb9aa5750f71c66babcddf2c16c925491818ca251becd974216",
       "version_exit_code": 0,
       "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
     },
     "nm": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
       "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f",
       "version_exit_code": 0,
       "version": "GNU nm (GNU Binutils) 2.47.20260726"
     },
     "objcopy": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
       "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab",
       "version_exit_code": 0,
       "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
     },
     "objdump": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objdump",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objdump",
       "sha256": "70fa553546f0d0e9500e07249c8138a171cfa2e8794873b6cc69514afb05657d",
       "version_exit_code": 0,
       "version": "GNU objdump (GNU Binutils) 2.47.20260726"
     },
     "readelf": {
       "available": true,
-      "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
       "sha256": "a6e0ff4b51a996352b63f45270e1381035acba1445da79e91c6efee837edac9d",
       "version_exit_code": 0,
       "version": "GNU readelf (GNU Binutils) 2.47.20260726"
@@ -137,7 +137,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0001-config-sub-xos.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0001-config-sub-xos.patch"
       ],
       "exit_code": 0,
       "log_sha256": "b6551048bb2810e42f14d90c81e35951e567f61615178703e48f3ac41bf6a2bf"
@@ -148,7 +148,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0002-xos-abi-note.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0002-xos-abi-note.patch"
       ],
       "exit_code": 0,
       "log_sha256": "81ae8607900a18b4167650db29b9207706e22aeb701d3eb21a496f28d317a987"
@@ -159,7 +159,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0003-xos-tls-init.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0003-xos-tls-init.patch"
       ],
       "exit_code": 0,
       "log_sha256": "524d59b8a851b03161c15c4c102d2801b8d2a76eeb0203bf7cdd145f45785593"
@@ -170,7 +170,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0004-sigset-error-pointer.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0004-sigset-error-pointer.patch"
       ],
       "exit_code": 0,
       "log_sha256": "56e013daebe400a09363e915c13ae705b5d1dd9290b24193c87cb52d1c2737dc"
@@ -181,7 +181,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0005-raise-hidden-alias.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0005-raise-hidden-alias.patch"
       ],
       "exit_code": 0,
       "log_sha256": "00e1e189b29d87b5f57b3d012fa5690f1ead103b837bf1a58b982891335a9df4"
@@ -192,7 +192,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0006-sigwait-failure.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0006-sigwait-failure.patch"
       ],
       "exit_code": 0,
       "log_sha256": "cc1ff215430721ab130f92a6e260313c459fa418101ea86a7ea09a3288b3f2db"
@@ -203,7 +203,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0007-arc4random-atomic-include.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0007-arc4random-atomic-include.patch"
       ],
       "exit_code": 0,
       "log_sha256": "a349982d9d60f757c4f449431ae5e40cc4fa3aca051dd9303dba7e84b88d3055"
@@ -214,7 +214,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0008-freopen-no-fd-path.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0008-freopen-no-fd-path.patch"
       ],
       "exit_code": 0,
       "log_sha256": "3186d41210a229afa2c2ffd20d8b39b45eae112e9bba08ef814c21579a84e763"
@@ -225,7 +225,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0009-dlerror-errno-include.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0009-dlerror-errno-include.patch"
       ],
       "exit_code": 0,
       "log_sha256": "93748a6cae4af7e91bc1c33ac496bc0d42681a31aba5dbb540cf64e868d47148"
@@ -236,7 +236,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0010-sem-init-private-only.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0010-sem-init-private-only.patch"
       ],
       "exit_code": 0,
       "log_sha256": "de0c79f4742e1c2fc21bd94664974e9c46f26ecd29fe73780e285cad918ea59b"
@@ -247,7 +247,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0011-nptl-explicit-includes.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0011-nptl-explicit-includes.patch"
       ],
       "exit_code": 0,
       "log_sha256": "1b5d09e497f4d5f96caa14a8734adf4cf74019559ea8f43c620a7955306daffa"
@@ -258,7 +258,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0012-socket-include-types.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0012-socket-include-types.patch"
       ],
       "exit_code": 0,
       "log_sha256": "4d44c2b33d6bf195cdf05e192ed1798d4332e7a336e0f597cad9ee90404744eb"
@@ -269,7 +269,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0013-thread-db-sigset-include.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0013-thread-db-sigset-include.patch"
       ],
       "exit_code": 0,
       "log_sha256": "db801f380c143b0225b41b2923fa4198a4bb4f3332d56c8467ac76af3ae48ff4"
@@ -280,7 +280,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0014-xos-reserved-dtv.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0014-xos-reserved-dtv.patch"
       ],
       "exit_code": 0,
       "log_sha256": "7d3cdd3c2953f3503047724e020f8fd55fa0ca6676a70c9a0583f261e887166c"
@@ -291,7 +291,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0015-xos-initial-thread-id.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0015-xos-initial-thread-id.patch"
       ],
       "exit_code": 0,
       "log_sha256": "e15a57b08f67674a21e1978811d96e3f9a17b2fb21a2f9e0dbc9f3f6ad6e1571"
@@ -302,7 +302,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0016-xos-initial-pthread-exit.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0016-xos-initial-pthread-exit.patch"
       ],
       "exit_code": 0,
       "log_sha256": "fad36533420aa135adceb91120a62bc33f10f9d2df4913c27eab6c8de63ba7fa"
@@ -313,7 +313,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0017-xos-shared-object-build.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0017-xos-shared-object-build.patch"
       ],
       "exit_code": 0,
       "log_sha256": "7e1e4bb41e686d452c1f6c0f212a394c9a418b2736ad8beefeb12866b4b374e6"
@@ -324,7 +324,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0018-xos-static-generated-headers.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0018-xos-static-generated-headers.patch"
       ],
       "exit_code": 0,
       "log_sha256": "7c58bb2402a900cc1fd3a903d3e14cae39bc3da3d5adf38aa6c787063ab6ac2c"
@@ -335,7 +335,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0019-generic-opendir-signature.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0019-generic-opendir-signature.patch"
       ],
       "exit_code": 0,
       "log_sha256": "e8789060713320b5aa26244260fb9703985ab6c7ea2ea3a35af7d0a8513f3a1f"
@@ -346,7 +346,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0020-generic-static-build-includes.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0020-generic-static-build-includes.patch"
       ],
       "exit_code": 0,
       "log_sha256": "80a8ad8617dbfe1081b1b745ae0a3f07c57761bb0d7e0995f478eac11a9064a2"
@@ -357,7 +357,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0021-xos-process-exit-barrier.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0021-xos-process-exit-barrier.patch"
       ],
       "exit_code": 0,
       "log_sha256": "7da2093321df042a38e38588f4d16ff8b3989c750032dfa490c8024ca89f3b80"
@@ -368,7 +368,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0022-xos-initial-errno.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0022-xos-initial-errno.patch"
       ],
       "exit_code": 0,
       "log_sha256": "721228601094a2279394c854be419816415274848a44c21656e2071bfbe08285"
@@ -379,7 +379,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0023-generic-open-variadic-signature.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0023-generic-open-variadic-signature.patch"
       ],
       "exit_code": 0,
       "log_sha256": "011ad158b9665cc7e4f9b0eb87efc38e749f8222c5ed381aa8f58581daa6026d"
@@ -390,7 +390,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0024-nptl-lowlevellock-hidden-declarations.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0024-nptl-lowlevellock-hidden-declarations.patch"
       ],
       "exit_code": 0,
       "log_sha256": "cb2108988828b96f9f1ede4de30641869d943222abc95a7ab25b8b76a74a94dd"
@@ -401,7 +401,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0025-strict-utf8-scalar-values.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0025-strict-utf8-scalar-values.patch"
       ],
       "exit_code": 0,
       "log_sha256": "e16c1589ec577b04b62fec2dd3cf73c2ba21fbf52a3bfc29d056f3325d667cf5"
@@ -412,7 +412,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0026-generic-execstack-hidden-declaration.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0026-generic-execstack-hidden-declaration.patch"
       ],
       "exit_code": 0,
       "log_sha256": "a0c43c41d61ca11a80082b945aa2163c1394c845215b097f55745751db710f1a"
@@ -423,7 +423,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0027-generic-fstatfs-hidden-definition.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0027-generic-fstatfs-hidden-definition.patch"
       ],
       "exit_code": 0,
       "log_sha256": "342b8af580919d4abe9d7de925ab80e05561a9b6dad06918b0326ab3267378b8"
@@ -434,7 +434,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0028-generic-ttyname-r-hidden-definition.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0028-generic-ttyname-r-hidden-definition.patch"
       ],
       "exit_code": 0,
       "log_sha256": "ea9af946cfcdc8070f9bf4b28fc11391b2be68aed481279e859fa3e7012698a8"
@@ -445,7 +445,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0029-generic-setsockopt-hidden-definition.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0029-generic-setsockopt-hidden-definition.patch"
       ],
       "exit_code": 0,
       "log_sha256": "965b6d76d7959a999ae94fc2d9739c0d444918a671c8682d21462e0ea4874caa"
@@ -456,7 +456,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0029-xos-rtld-pinned-load.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0029-xos-rtld-pinned-load.patch"
       ],
       "exit_code": 0,
       "log_sha256": "6e49f89ebafdc090bffafcf45cb7dc816d18cf73d1ec69b46206be10209e59ef"
@@ -467,7 +467,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0030-posix-fatal-include-errno.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0030-posix-fatal-include-errno.patch"
       ],
       "exit_code": 0,
       "log_sha256": "d4acb3cdf5e5e3fdd2210f35b4ce3248dd9d2fd5691b7c1b534a765e59f4198f"
@@ -478,7 +478,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0030-xos-rtld-native-heap.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0030-xos-rtld-native-heap.patch"
       ],
       "exit_code": 0,
       "log_sha256": "db703016d7fc6615c20b9ce546331edeac22c453f2d0c81afd959d7a11b4482e"
@@ -489,7 +489,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0031-pthread-self-native-tid.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0031-pthread-self-native-tid.patch"
       ],
       "exit_code": 0,
       "log_sha256": "3919d0a85e6d45a503f7a4cb428281ea17dce11ddae1325e03908d2499780d16"
@@ -500,7 +500,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0032-xos-rtld-initial-tp.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0032-xos-rtld-initial-tp.patch"
       ],
       "exit_code": 0,
       "log_sha256": "e15a57b08f67674a21e1978811d96e3f9a17b2fb21a2f9e0dbc9f3f6ad6e1571"
@@ -511,7 +511,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0033-xos-rtld-initial-tls.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0033-xos-rtld-initial-tls.patch"
       ],
       "exit_code": 0,
       "log_sha256": "8b7883ee627533295714ad4645b66fc3efaf8ef1e9fc7a6b5ac54dda3ade3ba9"
@@ -522,7 +522,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0034-xos-rtld-fixed-startup-policy.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0034-xos-rtld-fixed-startup-policy.patch"
       ],
       "exit_code": 0,
       "log_sha256": "284f2c27cf7b5dd86b7f9f06917c793abc900a3a6a43aa07224a5c0157bef039"
@@ -533,7 +533,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0035-xos-freeres-selected-subdirs.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0035-xos-freeres-selected-subdirs.patch"
       ],
       "exit_code": 0,
       "log_sha256": "bc844848328de0791dafba836ab685dcfea0387b108d188b123192b4124dd409"
@@ -544,7 +544,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0036-xos-shared-tilde-without-nss.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0036-xos-shared-tilde-without-nss.patch"
       ],
       "exit_code": 0,
       "log_sha256": "ad3b19f7773fa427c6ead62d2e6e6feb7554feb3ef6afcb4ad48d16eff1cdd58"
@@ -555,7 +555,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0037-xos-gcc-elf-extensions-on-verified-pins.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0037-xos-gcc-elf-extensions-on-verified-pins.patch"
       ],
       "exit_code": 0,
       "log_sha256": "a0a641f5f35d9226cec5ff753b50e066caf6e43f0783452e24e772898e96ce88"
@@ -566,7 +566,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0038-xos-public-dlfcn-fixed-closure.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0038-xos-public-dlfcn-fixed-closure.patch"
       ],
       "exit_code": 0,
       "log_sha256": "465091eb5dff31838aa4ed1d6c733fada62c5aedbd45dd07c5329fbe18ec4aaa"
@@ -577,7 +577,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0039-xos-fixed-closure-worker-dtv.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0039-xos-fixed-closure-worker-dtv.patch"
       ],
       "exit_code": 0,
       "log_sha256": "b4a65d7093560d1bd27e1d4c4958ad705d2767470b062e41efda5a28171b4352"
@@ -588,7 +588,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0040-xos-resolve-existing-unwinder.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0040-xos-resolve-existing-unwinder.patch"
       ],
       "exit_code": 0,
       "log_sha256": "6163e1d851e80a133e48206e39148d61fd29b562ff782ee73835835c6bb57795"
@@ -599,7 +599,7 @@
         "patch",
         "-p1",
         "-i",
-        "/work/worktrees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0041-xos-public-runtime-ready.patch"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-system-recovered-v1/source/src/ports/glibc/patches/0041-xos-public-runtime-ready.patch"
       ],
       "exit_code": 0,
       "log_sha256": "e35718b9baa1baecc4318291bbd314189d9f5a60fbe0c30b327da790e46b55ab"
@@ -607,8 +607,8 @@
     {
       "name": "native-compile-0",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -629,21 +629,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/0_terminal_support.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/0_terminal_support.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/ports/glibc/terminal_support.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/ports/glibc/terminal_support.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/0_terminal_support.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/0_terminal_support.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -651,8 +651,8 @@
     {
       "name": "native-compile-1",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -673,21 +673,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/1_terminal_client.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/1_terminal_client.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/sdk/terminal_client.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/sdk/terminal_client.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/1_terminal_client.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/1_terminal_client.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -695,8 +695,8 @@
     {
       "name": "native-compile-2",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -717,21 +717,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/2_syscall.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/2_syscall.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/arch/x86_64/syscall.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/arch/x86_64/syscall.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/2_syscall.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/2_syscall.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -739,8 +739,8 @@
     {
       "name": "native-compile-3",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -761,21 +761,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/3_elf.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/3_elf.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/elf.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/elf.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/3_elf.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/3_elf.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -783,8 +783,8 @@
     {
       "name": "native-compile-4",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -805,21 +805,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/4_wait_support.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/4_wait_support.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/ports/glibc/wait_support.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/ports/glibc/wait_support.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/4_wait_support.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/4_wait_support.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -827,8 +827,8 @@
     {
       "name": "native-compile-5",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -849,21 +849,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/5_spawn_support.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/5_spawn_support.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/ports/glibc/spawn_support.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/ports/glibc/spawn_support.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/5_spawn_support.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/5_spawn_support.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -871,8 +871,8 @@
     {
       "name": "native-compile-6",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -893,21 +893,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/6_load.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/6_load.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/load.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/load.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/6_load.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/6_load.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -915,8 +915,8 @@
     {
       "name": "native-compile-7",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -937,21 +937,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/7_file_client.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/7_file_client.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/sdk/file_client.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/sdk/file_client.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/7_file_client.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/7_file_client.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -959,8 +959,8 @@
     {
       "name": "native-compile-8",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -981,21 +981,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/8_text.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/8_text.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/sdk/text.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/sdk/text.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/8_text.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/8_text.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1003,8 +1003,8 @@
     {
       "name": "native-compile-9",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1025,21 +1025,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/9_tls.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/9_tls.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/arch/x86_64/tls.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/arch/x86_64/tls.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/9_tls.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/9_tls.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1047,8 +1047,8 @@
     {
       "name": "native-compile-10",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1069,21 +1069,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/10_launch_control.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/10_launch_control.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/sdk/launch_control.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/sdk/launch_control.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/10_launch_control.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/10_launch_control.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1091,8 +1091,8 @@
     {
       "name": "native-compile-11",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1113,21 +1113,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/11_identity.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/11_identity.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/identity.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/identity.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/11_identity.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/11_identity.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1135,8 +1135,8 @@
     {
       "name": "native-compile-12",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1157,21 +1157,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/12_generation.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/12_generation.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/generation.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/generation.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/12_generation.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/12_generation.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1179,8 +1179,8 @@
     {
       "name": "native-compile-13",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1201,21 +1201,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/13_elf.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/13_elf.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/elf.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/elf.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/13_elf.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/13_elf.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1223,8 +1223,8 @@
     {
       "name": "native-compile-14",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1245,21 +1245,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/14_closure.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/14_closure.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/closure.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/closure.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/14_closure.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/14_closure.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1267,8 +1267,8 @@
     {
       "name": "native-compile-15",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1289,21 +1289,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/15_authority.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/15_authority.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/authority.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/authority.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/15_authority.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/15_authority.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1311,8 +1311,8 @@
     {
       "name": "native-compile-16",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1333,21 +1333,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/16_startup.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/16_startup.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/startup.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/startup.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/16_startup.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/16_startup.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1355,8 +1355,8 @@
     {
       "name": "native-compile-17",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1377,21 +1377,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/17_spawn.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/17_spawn.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/spawn.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/spawn.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/17_spawn.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/17_spawn.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1399,8 +1399,8 @@
     {
       "name": "native-compile-18",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
-        "--sysroot=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "--sysroot=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot",
         "-std=gnu++20",
         "-O2",
         "-g",
@@ -1421,21 +1421,21 @@
         "-nostdinc",
         "-nostdinc++",
         "-I",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/include",
         "-isystem",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/sdk_snapshot/sysroot/usr/lib/compiler-include",
         "-Wall",
         "-Wextra",
         "-Werror",
         "-MMD",
         "-MF",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/18_rtld_control.o.d",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/18_rtld_control.o.d",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/rtld_control.cpp",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_inputs/src/user/loader/dynamic/rtld_control.cpp",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/18_rtld_control.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/18_rtld_control.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1443,28 +1443,28 @@
     {
       "name": "native-archive",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
         "rcsD",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/libxos_terminal_pic.a",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/0_terminal_support.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/1_terminal_client.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/2_syscall.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/3_elf.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/4_wait_support.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/5_spawn_support.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/6_load.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/7_file_client.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/8_text.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/9_tls.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/10_launch_control.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/11_identity.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/12_generation.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/13_elf.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/14_closure.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/15_authority.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/16_startup.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/17_spawn.o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/18_rtld_control.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/libxos_terminal_pic.a",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/0_terminal_support.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/1_terminal_client.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/2_syscall.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/3_elf.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/4_wait_support.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/5_spawn_support.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/6_load.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/7_file_client.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/8_text.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/9_tls.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/10_launch_control.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/11_identity.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/12_generation.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/13_elf.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/14_closure.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/15_authority.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/16_startup.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/17_spawn.o",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/18_rtld_control.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1472,11 +1472,11 @@
     {
       "name": "identity-rtld",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/rtld_identity.S",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/rtld_identity.S",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/rtld_identity.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/rtld_identity.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1484,11 +1484,11 @@
     {
       "name": "identity-libc",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
         "-c",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/libc_identity.S",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/libc_identity.S",
         "-o",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/native_pic/libc_identity.o"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/native_pic/libc_identity.o"
       ],
       "exit_code": 0,
       "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1497,7 +1497,7 @@
       "name": "build-triplet",
       "command": [
         "sh",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/glibc-2.44/scripts/config.guess"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/glibc-2.44/scripts/config.guess"
       ],
       "exit_code": 0,
       "log_sha256": "1c7da408e283702561a445e700b61c0f55a082230a3cfe323208841221274a6a"
@@ -1505,7 +1505,7 @@
     {
       "name": "configure",
       "command": [
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/glibc-2.44/configure",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/glibc-2.44/configure",
         "--build=x86_64-pc-linux-gnu",
         "--host=x86_64-unknown-xos",
         "--prefix=/usr",
@@ -1534,7 +1534,7 @@
     {
       "name": "gcc-build-triplet",
       "command": [
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc-16.2.0/config.guess"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc-16.2.0/config.guess"
       ],
       "exit_code": 0,
       "log_sha256": "1c7da408e283702561a445e700b61c0f55a082230a3cfe323208841221274a6a"
@@ -1542,7 +1542,7 @@
     {
       "name": "configure-pic-crt",
       "command": [
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc-16.2.0/libgcc/configure",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc-16.2.0/libgcc/configure",
         "--build=x86_64-pc-linux-gnu",
         "--host=x86_64-unknown-xos",
         "--enable-shared",
@@ -1555,7 +1555,7 @@
       "name": "crt-target-headers",
       "command": [
         "sh",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc-16.2.0/gcc/mkconfig.sh",
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc-16.2.0/gcc/mkconfig.sh",
         "tconfig.h"
       ],
       "exit_code": 0,
@@ -1564,7 +1564,7 @@
     {
       "name": "gcc-plugin",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
         "-print-file-name=plugin"
       ],
       "exit_code": 0,
@@ -1575,7 +1575,7 @@
       "command": [
         "/usr/bin/make",
         "-j2",
-        "gcc_objdir=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc",
+        "gcc_objdir=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc",
         "LIBGCC2_DEBUG_CFLAGS=-g0",
         "libgcc_tm.h"
       ],
@@ -1587,7 +1587,7 @@
       "command": [
         "/usr/bin/make",
         "-j2",
-        "gcc_objdir=/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc",
+        "gcc_objdir=${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/pic_crt/gcc",
         "LIBGCC2_DEBUG_CFLAGS=-g0",
         "crtbeginS.o",
         "crtendS.o"
@@ -1598,11 +1598,11 @@
     {
       "name": "inspect-libc.so",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
         "-hW",
         "-lW",
         "-dW",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/gnu/libc.so"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/gnu/libc.so"
       ],
       "exit_code": 0,
       "log_sha256": "21c12171e1da8a9008978497857263c077f63f43bf19a6b2211894ad51830e77"
@@ -1610,11 +1610,11 @@
     {
       "name": "inspect-ld.so",
       "command": [
-        "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
         "-hW",
         "-lW",
         "-dW",
-        "/work/worktrees/p1_d/build/p1d-runtime-recovered-v1/gnu/elf/ld.so"
+        "${XOS_SDK_WORKSPACE}${XOS_SDK_WORKSPACE}trees/p1_d/build/p1d-runtime-recovered-v1/gnu/elf/ld.so"
       ],
       "exit_code": 0,
       "log_sha256": "0dc9bb73d3304bc459481ea66aadb9060588238bb8acb4129773aca5dcd5cbaf"
@@ -2217,5 +2217,13 @@
     "pic_crt/target/libgcc/crtbeginS.o": "66fda995333df8d1df62f3aa3d7f1c59b166b720711ef2b95024d395d4713868",
     "pic_crt/target/libgcc/crtendS.o": "eb9e096ff419207d8fe8a843de4237bca2aeff31002b82f99dff800e8d915a29",
     "native_pic/libxos_terminal_pic.a": "21e01b55110202f12c374028526a3fcc113927ce6ed16cc797271efd7ac28f1c"
+  },
+  "public_projection": {
+    "raw_report_sha256": "a7a6360491bb8ebe13b85aab61be7d61d0cd26137d1f02f433d7ca908e8bd0dc",
+    "transform": "only source/workspace and SDK tool installation prefixes changed to explicit configurable XOS templates; all build results, hashes, commands and limits retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_WORKSPACE": "workspace as mounted inside the development SDK"
+    }
   }
 }

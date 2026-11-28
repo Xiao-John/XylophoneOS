@@ -363,7 +363,8 @@ i64 exchange(const descriptor& control, const message& outgoing, message& incomi
 }
 
 i64 record_child(u64 child, u64 absolute_deadline, descriptor& output,
-                 const artifact& initial, admission_check check, void* context) {
+                 const artifact& initial, admission_check check, void* context,
+                 bool extended_channels) {
     guard held;
     if (!held.acquired) return thread_error_busy;
     u64 now = 0;
@@ -385,10 +386,10 @@ i64 record_child(u64 child, u64 absolute_deadline, descriptor& output,
     error = new_nonce(0, 0, nonce);
     if (error) return error;
     const channel_create ready{channel_version, sizeof(channel_create), child, registry_pid, sizeof(message), 0};
-    const i64 ready_handle = sdk::channel_open(ready);
+    const i64 ready_handle = extended_channels ? sdk::channel_open_extended(ready) : sdk::channel_open(ready);
     if (ready_handle < 0) return ready_handle;
     const channel_create ack{channel_version, sizeof(channel_create), registry_pid, child, sizeof(message), 0};
-    const i64 ack_handle = sdk::channel_open(ack);
+    const i64 ack_handle = extended_channels ? sdk::channel_open_extended(ack) : sdk::channel_open(ack);
     if (ack_handle < 0) { (void)sdk::channel_close(static_cast<u32>(ready_handle)); return ack_handle; }
     error = clock_now(now);
     if (!error) error = finite_deadline(now, absolute_deadline);

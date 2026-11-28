@@ -66,3 +66,15 @@ depth_mode；扩展结构列出至多四个不同的通道 token。内核在替�
 实施时先在当前分支登记 ABI、再同步共享头、内核、SDK、两个 manifest 和定向客体
 探针；本地 claim 不是其他分支已同步。用户要求全部相关修改提交后才做客体验收。
 不得将通道实现或客户端 stub 冒称终端服务、模式恢复、W1 或 W2 完成。
+## Explicit six-channel creation for composed controllers
+
+`sys81` action 7 `create_extended` reuses the existing 32-byte version-1
+`channel_create`; `reserved` and argument 3 remain zero. It admits at most six
+owned one-way channels, subject to all existing controlled-PID checks, the
+global pool and cumulative IPC-object budgets. Legacy action 0 still admits
+at most four; fork-pair derivation still has its separate total of eight.
+The SDK exposes `channel_open_extended` as an explicit selection. Native
+dynamic terminal composition uses it for its READY/ACK pair after the actor
+control and application pairs. Ownership, close, process exit and explicit
+exec preservation are unchanged. See
+[the independent terminal controller contract](dynamic_terminal_controller.md).

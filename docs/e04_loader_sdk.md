@@ -582,3 +582,13 @@ open-description 的 poll；即时负快照必须在本次调用期间采样，�
 共享页生命周期、freshness、deadline 与回滚见
 [readiness page 契约](contracts/net_readiness_pages.md)。SDK manifest 单独记录
 接口可用性，目标资格仍由同版本镜像、SDK 和实际 peer 的专项证据确立。
+
+## Dynamic terminal composition
+
+The native SDK's explicit `channel_open_extended` selects sys81 action 7 and
+the six-channel owner bound; ordinary creation keeps four. Dynamic terminal
+startup can combine a fresh actor session with a v3 FD snapshot. Its later
+replacement authenticates and preserves the terminal pair and independent
+READY/ACK pair through the existing four-channel sys60 entry. The complete
+ownership, compatibility and qualification boundary is in
+[dynamic_terminal_controller.md](contracts/dynamic_terminal_controller.md).

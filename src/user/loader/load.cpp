@@ -169,6 +169,52 @@ bool legacy_stdio_snapshot(const spawn_options& options) {
     return true;
 }
 
+// A terminal replacement keeps its actor pair, and an explicitly composed
+// dynamic replacement also keeps its independent READY/ACK controller pair.
+// Authenticate roles against native metadata before creating the replacement;
+// copying an integer into the preservation array is never authority.
+i64 validate_terminal_exec(const spawn_options& options) {
+    const u32 count = options.exec_channel_count;
+    if ((count != 2 && count != 4) || !options.exec_channels ||
+        !options.exec_terminal_next_sequence ||
+        (options.exec_channels[0] != options.exec_terminal_send_handle &&
+         options.exec_channels[1] != options.exec_terminal_send_handle))
+        return process_error_invalid;
+    channel_info found[exec_preserve_channels_max]{};
+    for (u32 i = 0; i < count; ++i) {
+        if (!options.exec_channels[i]) return process_error_invalid;
+        for (u32 j = 0; j < i; ++j)
+            if (options.exec_channels[i] == options.exec_channels[j]) return process_error_invalid;
+    }
+    u32 seen = 0;
+    for (u32 ordinal = 0; ordinal < 32; ++ordinal) {
+        channel_info info{};
+        const i64 result = channel_get(ordinal, info);
+        if (result == thread_error_not_found) break;
+        if (result != 0) return result;
+        if (info.version != channel_version || info.size != sizeof(info)) return process_error_state;
+        for (u32 i = 0; i < count; ++i) {
+            if (info.handle != options.exec_channels[i]) continue;
+            if (seen & (1u << i)) return process_error_state;
+            found[i] = info; seen |= 1u << i;
+        }
+    }
+    if (seen != (1u << count) - 1) return process_error_denied;
+    const auto pair = [&](u32 first) {
+        return found[first].peer_pid && found[first].controller_pid &&
+            found[first].peer_pid == found[first + 1].peer_pid &&
+            found[first].controller_pid == found[first + 1].controller_pid &&
+            ((found[first].rights == channel_send && found[first + 1].rights == channel_receive) ||
+             (found[first].rights == channel_receive && found[first + 1].rights == channel_send));
+    };
+    if (!pair(0) || found[0].peer_pid == found[0].controller_pid) return process_error_denied;
+    const u32 send = found[0].rights == channel_send ? 0 : 1;
+    if (found[send].handle != options.exec_terminal_send_handle) return process_error_denied;
+    if (count == 4 && (!pair(2) || found[2].rights != channel_send ||
+                      found[2].peer_pid != found[2].controller_pid)) return process_error_denied;
+    return 0;
+}
+
 i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                  void* read_context, u32 argc, const char* const* argv,
                  bool close_file, u32 file_handle, const spawn_options* options = nullptr,
@@ -214,11 +260,10 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     const bool terminal_startup = options != nullptr && options->terminal_send_handle != nullptr;
     const bool terminal_exec = options != nullptr && options->exec_terminal_send_handle != 0;
-    if (terminal_exec && (!replacing || options->exec_channel_count != 2 ||
-        options->exec_terminal_next_sequence == 0 ||
-        (options->exec_channels[0] != options->exec_terminal_send_handle &&
-         options->exec_channels[1] != options->exec_terminal_send_handle))) {
-        return fail_before_create(process_error_invalid);
+    if (terminal_exec) {
+        if (!replacing) return fail_before_create(process_error_invalid);
+        const i64 admitted = validate_terminal_exec(*options);
+        if (admitted != 0) return fail_before_create(admitted);
     }
     if (terminal_startup) {
         if (replacing || options->prepare_child == nullptr) return fail_before_create(process_error_invalid);
@@ -569,6 +614,10 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             auto* extension = reinterpret_cast<startup_extension*>(page + startup_extension_offset);
             extension->flags |= startup_flag_terminal;
             extension->reserved = handle;
+            if (descriptor_startup) {
+                auto* state = reinterpret_cast<startup_terminal_exec_extension*>(page + startup_terminal_exec_offset);
+                *state = {startup_terminal_exec_magic, 1};
+            }
             for (u32 index = 0; result >= 0 && index < startup_page_count; ++index) {
                 mapping = {startup_address + u64{index} * 4096,
                            reinterpret_cast<u64>(page + index * 4096), 4096, map_read | map_write};

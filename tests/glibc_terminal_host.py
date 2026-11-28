@@ -13,8 +13,9 @@ CASES = ['basic', 'v3', 'lease', 'concurrent', 'invalid_v2', 'invalid_v3',
          'missing_flag', 'missing_object', 'zero_sequence', 'bad_peer', 'bad_rights',
          'bad_controller', 'duplicate_channels', 'wrong_sequence', 'reserved',
          'unknown_status', 'bad_mode', 'overread', 'zero_write', 'short_reply',
-         'service_death', 'timeout', 'interrupted', 'readiness',
-         'fork_ok', 'fork_terminal_timeout', 'fork_files_timeout']
+         'service_death', 'transport_send_wait', 'transport_send_race',
+         'transport_receive_race', 'reply_denied', 'timeout', 'interrupted', 'readiness',
+         'fork_ok', 'fork_terminal_timeout', 'fork_terminal_closed', 'fork_files_timeout']
 
 
 def compiled_sources():

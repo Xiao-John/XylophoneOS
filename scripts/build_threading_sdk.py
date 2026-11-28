@@ -16,7 +16,6 @@ from ipc_v1_manifest import ipc_v1_manifest_entry
 from ipc_endpoint_manifest import ipc_endpoint_manifest_entry
 from observation_manifest import observation_manifest_entry
 from interactium_manifest import interactium_manifest_entry
-from net_readiness_manifest import net_readiness_manifest_entry
 from device_manifest import device_manifest_entry
 from archive_provenance import capture_build, copy_archive_provenance
 from archive_member_map import verify_bundle
@@ -368,7 +367,6 @@ def main():
                'ipc_v1': ipc_v1_manifest_entry(),
                'ipc_endpoint': ipc_endpoint_manifest_entry(),
                'observation': observation_manifest_entry(),
-               'network_readiness': net_readiness_manifest_entry(),
                'device_authorization': device_manifest_entry(),
                'network_service': {'wire_version': 2, 'server_selection': 'verified_service_pid',
                                    'guest_qualification': 'not_run'},
@@ -388,7 +386,10 @@ def main():
                        'request_bytes': 144, 'batch_max': 16, 'native_references_max': 16,
                        'global_pipe_objects_max': 8, 'sdk_option_default': False, 'guest_qualification': 'not_run'},
                    'stream_lease': {'syscall': 80, 'status': 'claim_unsupported'},
-                   'channel': {'syscall': 81, 'status': 'implemented_unqualified'},
+                   'channel': {'syscall': 81, 'status': 'implemented_unqualified',
+                               'create_action': 0, 'create_owner_limit': 4,
+                               'extended_create_action': 7, 'extended_create_owner_limit': 6,
+                               'create_request_bytes': 32, 'fork_pair_owner_limit': 8},
                    'ipc_wait': {'syscall': 85, 'receive_until_mode': 5, 'send_until_mode': 6,
                                 'deadline': 'absolute_monotonic_ns', 'readiness_before_deadline': True,
                                 'guest_qualification': 'not_run'},

@@ -103,9 +103,10 @@ i64 syscall(u64 number, u64 a, u64 b, u64 c) {
     if (number == sys_sleep_until) { ++waits; if (event) event(); else clock_value = a; return 0; }
     if (number != sys_channel) { require(false, "unexpected syscall"); return -999; }
     const auto action = static_cast<channel_action>(a);
-    if (action == channel_action::create) {
+    if (action == channel_action::create || action == channel_action::create_extended) {
         ++create_calls;
-        if (create_calls == fail_create || open_count() == 4) return process_error_resources;
+        const u32 limit = action == channel_action::create_extended ? 6 : 4;
+        if (create_calls == fail_create || open_count() >= limit) return process_error_resources;
         const auto& request = *reinterpret_cast<const channel_create*>(b);
         require(request.capacity == 128 && request.version == 1, "channel shape");
         for (u32 i = 0; i < 32; ++i) if (!endpoints[i].open) {
@@ -165,6 +166,21 @@ int main(int argc, char** argv) {
         require(launch::record_child(first_child, clock_value + 100, output) == process_error_resources && !open_count() && output.magic == 777, "partial channel rollback");
         fail_create = 0; (void)record(); (void)record(201);
         require(launch::record_child(202, clock_value + 100, output) == process_error_resources && open_count() == 4, "per owner quota four");
+    } else if (!std::strcmp(name, "extended_registration")) {
+        (void)record(); (void)record(201);
+        launch::descriptor output{}; output.magic = 777;
+        fail_create = create_calls + 2;
+        require(launch::record_child(202, clock_value + 100, output, {}, nullptr, nullptr, true)
+                    == process_error_resources && open_count() == 4 && output.magic == 777,
+                "extended second endpoint failure rolls back first");
+        fail_create = 0;
+        require(!launch::record_child(202, clock_value + 100, output, {}, nullptr, nullptr, true)
+                    && open_count() == 6, "explicit third pair permitted");
+        require(launch::record_child(203, clock_value + 100, output, {}, nullptr, nullptr, true)
+                    == process_error_resources && open_count() == 6, "extended limit six");
+        require(launch::record_child(203, clock_value + 100, output) == process_error_resources
+                    && open_count() == 6, "ordinary create does not inherit extension");
+        require(!launch::close_control(202) && open_count() == 4, "extended pair cleanup");
     } else if (!std::strcmp(name, "fork_lock")) {
         policy rule{}; rule.fork_lock = true; (void)record(first_child, &rule);
         require(open_count() == 2 && !launch::poll(), "parent lock unchanged by fork");

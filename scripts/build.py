@@ -46,6 +46,8 @@ def main():
                         help="build a dedicated test supervisor; requires an isolated output directory")
     parser.add_argument("--ncurses-supervisor-probe", action="store_true",
                         help="build a dedicated ncurses test supervisor; requires an isolated output directory")
+    parser.add_argument("--dynamic-terminal-supervisor", type=Path,
+                        help="bind an independently built approved-root terminal test supervisor; isolated output only")
     parser.add_argument("--clock-irq-probe", action="store_true",
                         help="link a test-only generic clock/IRQ audit command, excluded from default images")
     parser.add_argument("--gpu-dma-page-limit", type=int, default=512,
@@ -96,6 +98,12 @@ def main():
         parser.error("invalid VirtIO-GPU diagnostic budget")
     gpu_config = {"dma_page_limit": args.gpu_dma_page_limit, "poll_limit": args.gpu_poll_limit}
     BUILD = args.output_dir.resolve()
+    if args.dynamic_terminal_supervisor and (BUILD == ROOT / "build" or
+            any(value for name, value in vars(args).items() if name.endswith('_probe')) or
+            args.pumpkin_anchored_probe or args.pumpkin_durable_probe or
+            args.pumpkin_user_login or args.files_private_client_probe or args.files_private_storage_probe or
+            args.net_dns_probe or args.net_static_profile or args.net_dhcp_profile or args.quiet_demos_on_launch):
+        parser.error("dynamic terminal supervisor requires its own isolated default mechanism profile")
     if args.net_dns_probe and (BUILD == ROOT / "build" or args.pumpkin_anchored_probe or
                                args.terminal_supervisor_probe or args.ncurses_supervisor_probe):
         parser.error("--net-dns-probe requires an isolated output and the Xsh supervisor")
@@ -207,6 +215,12 @@ def main():
             os.link(target, link)
     os.environ["COMPILER_PATH"] = str(target_tools)
     versions = audit()
+    terminal_binary = terminal_report = None
+    terminal_metadata = {}
+    if args.dynamic_terminal_supervisor:
+        from build_dynamic_terminal_supervisor import bind_supervisor, verify_native_payload
+        terminal_binary, terminal_binding, terminal_report = bind_supervisor(args.dynamic_terminal_supervisor, ROOT)
+        terminal_metadata = {"dynamic_terminal_probe": terminal_binding}
     if (TARGET["architecture"], TARGET["platform"], TARGET["firmware"]) != ("x86_64", "pc", "bios"):
         raise SystemExit("Only the x86_64 / PC / BIOS backend is implemented")
     sources = [ROOT / "Makefile", ROOT / "VERSION", ROOT / "LICENSE", ROOT / "NOTICE"]
@@ -250,7 +264,7 @@ def main():
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
                                       **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2}
                                          if args.pumpkin_user_login else {}),
-                                      **deployment, **desktop_metadata, **catalog_metadata, **launch_metadata,
+                                      **deployment, **desktop_metadata, **catalog_metadata, **launch_metadata, **terminal_metadata,
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
@@ -288,7 +302,12 @@ def main():
                                  pumpkin_launch_probe=launch_probe,
                                  pumpkin_launch_storage_lease=args.pumpkin_launch_storage_lease,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
-                                 net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile, net_dhcp_profile=net_dhcp_profile)
+                                 net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile, net_dhcp_profile=net_dhcp_profile,
+                                 dynamic_terminal_supervisor=terminal_binary)
+    if terminal_report is not None:
+        verify_native_payload(terminal_report, BUILD / "sdk")
+        if bind_supervisor(args.dynamic_terminal_supervisor, ROOT)[1] != terminal_metadata["dynamic_terminal_probe"]:
+            raise ValueError("terminal supervisor binding changed during system build")
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:
@@ -446,7 +465,7 @@ def main():
         **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
         **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2} if args.pumpkin_user_login else {}),
-        **deployment, **desktop_metadata, **catalog_metadata, **launch_metadata,
+        **deployment, **desktop_metadata, **catalog_metadata, **launch_metadata, **terminal_metadata,
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),

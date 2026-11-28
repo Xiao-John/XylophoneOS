@@ -1,0 +1,16 @@
+{
+  "original_record_sha256": "f560805ea1676994bcaa698fb659cc0376cf1a8d0dfed2edd3fb1f337016f50c",
+  "record": {
+    "status": "failed",
+    "scope": "build preparation only; no native build or guest started",
+    "capture": "tool-returned combined stdout/stderr copied from the original completed invocation; no rerun",
+    "tool_session_id": 78986,
+    "completion_chunk_id": "69ad29",
+    "exit_code": 1,
+    "command": "${XOS_HOST_SDK} --workdir ${XOS_SOURCE} bash -c 'python3 build/verify_terminal_runtime_reuse.py build/terminal_runtime_reuse_v8.json && python3 scripts/build.py --output-dir build/terminal_base_v13 > build/terminal_base_v13.log 2>&1 && python3 build/inspect_terminal_base.py build/terminal_base_v13 build/terminal_bindings_v13.json'",
+    "failure": "Git worktree metadata refers outside the SDK workdir mapping; git rev-parse HEAD failed before the chained build command",
+    "raw_captured_output_file": "build/terminal_prepare_v8_sdk_git_failed.log",
+    "raw_captured_output_sha256": "2af9dd058854ccdbf5a1a4cba2824fe76dec7498eb052c034b7885ffe3ba2616",
+    "later_action": "The complete readonly input/artifact verification and HEAD query ran on the host; the native build remained inside the SDK. The original failed invocation is not reclassified."
+  }
+}

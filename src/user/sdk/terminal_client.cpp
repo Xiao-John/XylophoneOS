@@ -91,7 +91,14 @@ i64 exchange(client& session, request& message, response& reply, u64 deadline_ns
     i64 result = sdk::channel_send_wait(session.send_handle, &message, sizeof(message), deadline_ns);
     if (result == 0)
         result = sdk::channel_receive_wait(session.receive_handle, &reply, sizeof(reply), deadline_ns);
-    if (result < 0) { close(session); return result; }
+    if (result < 0) {
+        close(session);
+        // This exchange was using a session pair, rather than discovering
+        // authority. Revocation invalidates its transport, including a close
+        // racing with wait/send/receive. A complete denied service reply is
+        // handled separately below and retains its original status.
+        return result == process_error_denied ? pipe_error_broken : result;
+    }
     if (result != static_cast<i64>(sizeof(reply)) || reply.version != version ||
         reply.size != sizeof(reply) || reply.sequence != message.sequence || reply.length > data_bytes ||
         reply.reserved != 0 || !known_error(reply.result)) {

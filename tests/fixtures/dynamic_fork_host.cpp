@@ -99,7 +99,8 @@ i64 admission(void*, u64 child, const launch::artifact&, const launch::artifact&
 }
 namespace xos::launch {
 i64 record_child(u64 child, u64 deadline, descriptor& output, const artifact& admitted_artifact,
-                 admission_check check, void* context) {
+                 admission_check check, void* context, bool extended_channels) {
+    model::need(!extended_channels, "ordinary-fork-retains-legacy-quota");
     ++model::record_calls;
     const auto admitted = check(context, child, {}, admitted_artifact, deadline);
     if (admitted) return admitted;

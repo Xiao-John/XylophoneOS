@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "${XOS_REPO}/tests/glibc_net2_socket_host.py", line 42, in <module>
+    main()
+  File "${XOS_REPO}/tests/glibc_net2_socket_host.py", line 30, in main
+    result = subprocess.run([str(binary)], check=True, capture_output=True, text=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_HOST_RUNTIME}/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['${XOS_RUN}']' died with <Signals.SIGABRT: 6>.

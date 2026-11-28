@@ -1,9 +1,5 @@
 # Net2 immediate readiness and socket extension revision 2
 
-> **Draft review status.** This tree provides implementation and test sources.
-> The complete qualification package is awaiting public disclosure authorization;
-> review of this draft does not establish target qualification.
-
 This contract extends the existing Net2 v2 envelope. It does not change syscall
 numbers, socket ownership, address grants, the original operation layouts or the
 first revision capability response. The network service remains a user process.

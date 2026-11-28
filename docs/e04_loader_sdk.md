@@ -575,9 +575,6 @@ HTTP库位于`src/ports/browser_http/transport.*`，通过原生TCP完成数字I
 
 ## Net2 socket extension revision 2
 
-本节为 draft 代码审阅入口；完整资格包尚待公开授权。目标资格以绑定实际
-输入和产物的独立报告为准。
-
 新 SDK 通过 capabilities request flags=1 显式询问 revision 2；flags=0 保持原
 revision 1。op19 将只读 readiness grant 委派给当前认证 session，op20 实施 TCP
 读方向关闭。对应 libc 支持非阻塞 connect、SO_ERROR、SHUT_RD/RDWR 与保留原

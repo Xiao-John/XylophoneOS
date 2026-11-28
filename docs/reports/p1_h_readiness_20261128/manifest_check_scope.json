@@ -1,0 +1,70 @@
+{
+  "module_report": "p1_h_readiness_20261128",
+  "module_status": "compliant",
+  "repository_status": "failed",
+  "repository_failure_count": 17,
+  "baseline_commit": "6332527ab64e92371266363f41f3247717a3cac8",
+  "unchanged_failure_directories": [
+    {
+      "report": "glibc_v2_cpython_material_delivery_20261127",
+      "baseline_tree": "9bd1a220b07b5f1305684436021b8c08e90724d4",
+      "head_tree": "9bd1a220b07b5f1305684436021b8c08e90724d4",
+      "unchanged": true
+    },
+    {
+      "report": "glibc_v2_current_release_20261127",
+      "baseline_tree": "b076d15e4686bb1cfdb9dfab4859421b164b55a8",
+      "head_tree": "b076d15e4686bb1cfdb9dfab4859421b164b55a8",
+      "unchanged": true
+    },
+    {
+      "report": "glibc_v2_daily_material_delivery_20261127",
+      "baseline_tree": "4d7895fbc82d85dfcc0281eb8da453abcad75ddc",
+      "head_tree": "4d7895fbc82d85dfcc0281eb8da453abcad75ddc",
+      "unchanged": true
+    },
+    {
+      "report": "glibc_v2_dash_material_delivery_20261127",
+      "baseline_tree": "20b9e6d16711b94b7cb20419bd367c5f89d35c1c",
+      "head_tree": "20b9e6d16711b94b7cb20419bd367c5f89d35c1c",
+      "unchanged": true
+    },
+    {
+      "report": "glibc_v2_gnu_make_material_delivery_20261127",
+      "baseline_tree": "8791a7dfb93cac9619728e4d633880132905841e",
+      "head_tree": "8791a7dfb93cac9619728e4d633880132905841e",
+      "unchanged": true
+    },
+    {
+      "report": "glibc_v2_release_upstream_source_20261127",
+      "baseline_tree": "7308755d9677e6ec9d7e076d8e523b90d44d3203",
+      "head_tree": "7308755d9677e6ec9d7e076d8e523b90d44d3203",
+      "unchanged": true
+    },
+    {
+      "report": "mobius_qt_v2_replacement_20261127",
+      "baseline_tree": "06728e0b969ac725a4f21e7c782572c2c27c44ce",
+      "head_tree": "06728e0b969ac725a4f21e7c782572c2c27c44ce",
+      "unchanged": true
+    },
+    {
+      "report": "mobius_widgets_v2_20261127",
+      "baseline_tree": "46a63f744f125c2707c5633740e71f7987dea06a",
+      "head_tree": "46a63f744f125c2707c5633740e71f7987dea06a",
+      "unchanged": true
+    },
+    {
+      "report": "mobius_widgets_v2_guest_20261127",
+      "baseline_tree": "c9854f41d9da057a876f62a3bf4077bf8cd7328d",
+      "head_tree": "c9854f41d9da057a876f62a3bf4077bf8cd7328d",
+      "unchanged": true
+    },
+    {
+      "report": "mobius_widgets_v2_reproducible_20261127",
+      "baseline_tree": "7bf247d608e1dca503fb36ca870065b03a34b14e",
+      "head_tree": "7bf247d608e1dca503fb36ca870065b03a34b14e",
+      "unchanged": true
+    }
+  ],
+  "scope": "Global checker explicitly lists this H report as compliant; unrelated earlier report formats remain failed."
+}

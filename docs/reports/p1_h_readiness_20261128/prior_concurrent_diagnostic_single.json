@@ -1,0 +1,16 @@
+{
+  "status": "diagnostic_passed",
+  "scope": "Only diagnostic; modified build-directory fixture, not strict system-source qualification",
+  "cases": [
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    }
+  ],
+  "elf_sha256": "4146b1333e1108706e1b2007065bfd06274693c3ac023d6f54acddefd700f55a",
+  "image_sha256": "ea049a5f41e1a15107f4e2c62814d5e059f50398b4b242ebec5e74d00e969ae1"
+}

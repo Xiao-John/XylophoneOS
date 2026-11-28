@@ -1,0 +1,286 @@
+{
+  "bootstrap.elf_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "bootstrap.elf_link.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "fixture_symbols_relocations.log": {
+    "sha256": "a5a101574e1c76f2ef47813bbdf7620d069579f1f9efea42730b37aed1c4fde7",
+    "text": "\nRelocation section '.rela.dyn' at offset 0x320 contains 2 entries:\n    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend\n0000000000001ff0  0000000400000010 R_X86_64_DTPMOD64      0000000000000000 fixture_tls@@FIXTURE_1 + 0\n0000000000001ff8  0000000400000011 R_X86_64_DTPOFF64      0000000000000000 fixture_tls@@FIXTURE_1 + 0\n\nRelocation section '.rela.plt' at offset 0x350 contains 1 entry:\n    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend\n0000000000001fe8  0000000100000007 R_X86_64_JUMP_SLOT     0000000000000000 __tls_get_addr + 0\n\nSymbol table '.dynsym' contains 5 entries:\n   Num:    Value          Size Type    Bind   Vis      Ndx Name\n     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND \n     1: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND __tls_get_addr\n     2: 0000000000000390    24 FUNC    GLOBAL DEFAULT   10 fixture_value@@FIXTURE_1\n     3: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  ABS FIXTURE_1\n     4: 0000000000000000     4 TLS     GLOBAL DEFAULT   13 fixture_tls@@FIXTURE_1\n\nSymbol table '.symtab' contains 10 entries:\n   Num:    Value          Size Type    Bind   Vis      Ndx Name\n     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND \n     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS dynamic_closure_object.cpp\n     2: 00000000000003a8   144 OBJECT  LOCAL  DEFAULT   11 _ZL12fixture_note\n     3: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS \n     4: 0000000000001e40     0 OBJECT  LOCAL  DEFAULT   14 _DYNAMIC\n     5: 0000000000001fd0     0 OBJECT  LOCAL  DEFAULT   15 _GLOBAL_OFFSET_TABLE_\n     6: 0000000000000390    24 FUNC    GLOBAL DEFAULT   10 fixture_value\n     7: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND __tls_get_addr\n     8: 0000000000000000     0 OBJECT  GLOBAL DEFAULT  ABS FIXTURE_1\n     9: 0000000000000000     4 TLS     GLOBAL DEFAULT   13 fixture_tls\n\nSymbol table '.dynsym' contains 3 entries:\n   Num:    Value          Size Type    Bind   Vis      Ndx Name\n     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND \n     1: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND fixture_value@FIXTURE_1 (2)\n     2: 00000000000003f0     3 FUNC    GLOBAL DEFAULT   11 __tls_get_addr\n\nSymbol table '.symtab' contains 12 entries:\n   Num:    Value          Size Type    Bind   Vis      Ndx Name\n     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND \n     1: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS dynamic_closure_object.cpp\n     2: 0000000000000234   144 OBJECT  LOCAL  DEFAULT    2 _ZL12fixture_note\n     3: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS \n     4: 0000000000001e70     0 OBJECT  LOCAL  DEFAULT   13 _DYNAMIC\n     5: 0000000000001fe0     0 OBJECT  LOCAL  DEFAULT   14 _GLOBAL_OFFSET_TABLE_\n     6: 00000000000003f0     3 FUNC    GLOBAL DEFAULT   11 __tls_get_addr\n     7: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND fixture_value@FIXTURE_1\n     8: 00000000000003f3     5 FUNC    GLOBAL DEFAULT   11 _start\n     9: 0000000000002000     0 NOTYPE  GLOBAL DEFAULT   14 __bss_start\n    10: 0000000000002000     0 NOTYPE  GLOBAL DEFAULT   14 _edata\n    11: 0000000000002000     0 NOTYPE  GLOBAL DEFAULT   14 _end\n"
+  },
+  "interpreter.so_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "interpreter.so_link.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "library.so_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "library.so_link.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "main.elf_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "main.elf_link.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "ordinary_absolute_deadline.log": {
+    "sha256": "071276bc5b590646f9e8cac088393b62412bf60f8f1f338bbdf6895bb03aa055",
+    "text": "PASS dynamic-closure host absolute_deadline\n"
+  },
+  "ordinary_acquire_pins.log": {
+    "sha256": "95063e42c1b9d0696fabc758f6cdfc3b86df15954aacea0a4a67f774caefd073",
+    "text": "PASS dynamic-closure host acquire_pins\n"
+  },
+  "ordinary_activation_rollback.log": {
+    "sha256": "c83b19758d4c40d690ea3411e2519fdc5b811fa1d16067ab0bcf17e2bd2fdf4f",
+    "text": "PASS dynamic-closure host activation_rollback\n"
+  },
+  "ordinary_bootstrap_capsule.log": {
+    "sha256": "7d11fbb0eb4fd097ee51aa82b40615a4b8c2ff6f99315044517cd3df3f5a87ee",
+    "text": "PASS dynamic-closure host bootstrap_capsule\n"
+  },
+  "ordinary_bootstrap_thread_arena.log": {
+    "sha256": "863dc83866adedba24203da3f27695811ecb29ac248afcac0f4cf472399ab9ee",
+    "text": "PASS dynamic-closure host bootstrap_thread_arena\n"
+  },
+  "ordinary_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "ordinary_configure_close_unknown.log": {
+    "sha256": "16a441d6dd8a3640f541042848552773c2ad1c00cc1d4b5a078a5dcede107c46",
+    "text": "PASS dynamic-closure host configure_close_unknown\n"
+  },
+  "ordinary_configure_open_unknown.log": {
+    "sha256": "3068068f193703383cb71e7598eb5c930f460db62646b5a1242010c2f3d3772e",
+    "text": "PASS dynamic-closure host configure_open_unknown\n"
+  },
+  "ordinary_digest_failure.log": {
+    "sha256": "59647c71ed767b2beda09861f697115e16d261cad9051a5214956d559e82ec2d",
+    "text": "PASS dynamic-closure host digest_failure\n"
+  },
+  "ordinary_elf_needed.log": {
+    "sha256": "5d797a015bb08f817b0b4c510f470b09d92e3b20a2c2c1a87666e76f07e35680",
+    "text": "PASS dynamic-closure host elf_needed\n"
+  },
+  "ordinary_elf_provider_version.log": {
+    "sha256": "075f21ef8c4e5f9306c14b0cd64915433567b7b574514cd961ca85da6d57370b",
+    "text": "PASS dynamic-closure host elf_provider_version\n"
+  },
+  "ordinary_elf_relocation.log": {
+    "sha256": "21e2d29f166f87e996d5b886f1b11dc76499f1763f5620cef337d970230f7002",
+    "text": "PASS dynamic-closure host elf_relocation\n"
+  },
+  "ordinary_elf_relro.log": {
+    "sha256": "1c5904fe90bb4c8a1b84f345d3499710fa500264d1d08de35dff0f72417b4be6",
+    "text": "PASS dynamic-closure host elf_relro\n"
+  },
+  "ordinary_elf_soname.log": {
+    "sha256": "63784e0e516a19ce42eef74041d86534fcceba42deae7199f2d99da9d00196a9",
+    "text": "PASS dynamic-closure host elf_soname\n"
+  },
+  "ordinary_elf_tls.log": {
+    "sha256": "aa0d8c8db001791e3d9c589977b8be3535d3bd022f29738bdc094c86277dd4f8",
+    "text": "PASS dynamic-closure host elf_tls\n"
+  },
+  "ordinary_elf_version.log": {
+    "sha256": "d01e597ceb6a5a84a9f3d2e6362164f5aab2d763221d6c5edd933498e507c215",
+    "text": "PASS dynamic-closure host elf_version\n"
+  },
+  "ordinary_elf_wx.log": {
+    "sha256": "8855ec1d6a3f14c26ace7fc567e37be99101f79b5c9c229b24ea62416d9c73a5",
+    "text": "PASS dynamic-closure host elf_wx\n"
+  },
+  "ordinary_failed_activation.log": {
+    "sha256": "ffa4b221eec1ac2c9da6007632ab0fded1b1ca9c6fcb5268e70c0f0ce819987d",
+    "text": "PASS dynamic-closure host failed_activation\n"
+  },
+  "ordinary_online_header.log": {
+    "sha256": "20c36716cff72370cbb3e5aa5d001d95ecb8bc2b799822ef9aa2f441cc327e14",
+    "text": "PASS dynamic-closure host online_header\n"
+  },
+  "ordinary_online_mapping_budget.log": {
+    "sha256": "74183fe703ab498940302d031d3df46b1a71298fa7c7198477d113307e1c0dc0",
+    "text": "PASS dynamic-closure host online_mapping_budget\n"
+  },
+  "ordinary_online_mapping_collision.log": {
+    "sha256": "b14128009829a523b6aed9e75c02fa031e7e98d70b5f1214eb8e03861530bf78",
+    "text": "PASS dynamic-closure host online_mapping_collision\n"
+  },
+  "ordinary_online_startup_edge.log": {
+    "sha256": "f084e905b081ccffb7e92b7cd5ef474550f26ddb95f530b4b474049fd5cb047d",
+    "text": "PASS dynamic-closure host online_startup_edge\n"
+  },
+  "ordinary_online_static_tls.log": {
+    "sha256": "0f7a4dab9e71e398928437c8cee6cc384cf6b4286cdca733d388dde423f012de",
+    "text": "TLS relocation 18: original GD online PASS; mutated digest PASS; startup PASS; online header rejection PASS\nPASS dynamic-closure host online_static_tls\n"
+  },
+  "ordinary_online_tlsdesc.log": {
+    "sha256": "9210cb9e6f49d64bb648c86dc3aeedc7ce0c93762625269dc7c3dd24f53e1103",
+    "text": "TLS relocation 36: original GD online PASS; mutated digest PASS; startup PASS; online header rejection PASS\nPASS dynamic-closure host online_tlsdesc\n"
+  },
+  "ordinary_policy_validation.log": {
+    "sha256": "5caf2821d610d3b58974fafcd44d35ab9d8ce2a84fd6b1df0acfb1baa5a63424",
+    "text": "PASS dynamic-closure host policy_validation\n"
+  },
+  "ordinary_read_unknown.log": {
+    "sha256": "fe866dfe1c8d228173f9bd32313af8ab9a886fd88917323835a83ee2df5ffbde",
+    "text": "PASS dynamic-closure host read_unknown\n"
+  },
+  "ordinary_release_unknown.log": {
+    "sha256": "6fc0f91eaab7aa53cd2e2ac31d9763f5a73655352c9c86e99caaa94ca40aa94e",
+    "text": "PASS dynamic-closure host release_unknown\n"
+  },
+  "ordinary_restore_and_heap.log": {
+    "sha256": "4c854d89fb56f4bf1ef2e0865a451ebdfb54011106fc3308c15e6343a9e1ce35",
+    "text": "PASS dynamic-closure host restore_and_heap\n"
+  },
+  "ordinary_revoke_active.log": {
+    "sha256": "bf4743ed9fc3322271fd59147d701d5935bdfa69781ac4354c967e6e69a6b9b7",
+    "text": "PASS dynamic-closure host revoke_active\n"
+  },
+  "ordinary_sdk_failure.log": {
+    "sha256": "1019caa496f8fb12b56ca4d5aeb6a4729cc00464f53f523dd5d856fd7dc8d881",
+    "text": "PASS dynamic-closure host sdk_failure\n"
+  },
+  "ordinary_wrong_sdk.log": {
+    "sha256": "11b5754152d23c4ff8fbc5070f0569020b056b2507f5fbcd3fcb8372ef530da9",
+    "text": "PASS dynamic-closure host wrong_sdk\n"
+  },
+  "sanitized_absolute_deadline.log": {
+    "sha256": "071276bc5b590646f9e8cac088393b62412bf60f8f1f338bbdf6895bb03aa055",
+    "text": "PASS dynamic-closure host absolute_deadline\n"
+  },
+  "sanitized_acquire_pins.log": {
+    "sha256": "95063e42c1b9d0696fabc758f6cdfc3b86df15954aacea0a4a67f774caefd073",
+    "text": "PASS dynamic-closure host acquire_pins\n"
+  },
+  "sanitized_activation_rollback.log": {
+    "sha256": "c83b19758d4c40d690ea3411e2519fdc5b811fa1d16067ab0bcf17e2bd2fdf4f",
+    "text": "PASS dynamic-closure host activation_rollback\n"
+  },
+  "sanitized_bootstrap_capsule.log": {
+    "sha256": "7d11fbb0eb4fd097ee51aa82b40615a4b8c2ff6f99315044517cd3df3f5a87ee",
+    "text": "PASS dynamic-closure host bootstrap_capsule\n"
+  },
+  "sanitized_bootstrap_thread_arena.log": {
+    "sha256": "863dc83866adedba24203da3f27695811ecb29ac248afcac0f4cf472399ab9ee",
+    "text": "PASS dynamic-closure host bootstrap_thread_arena\n"
+  },
+  "sanitized_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "sanitized_configure_close_unknown.log": {
+    "sha256": "16a441d6dd8a3640f541042848552773c2ad1c00cc1d4b5a078a5dcede107c46",
+    "text": "PASS dynamic-closure host configure_close_unknown\n"
+  },
+  "sanitized_configure_open_unknown.log": {
+    "sha256": "3068068f193703383cb71e7598eb5c930f460db62646b5a1242010c2f3d3772e",
+    "text": "PASS dynamic-closure host configure_open_unknown\n"
+  },
+  "sanitized_digest_failure.log": {
+    "sha256": "59647c71ed767b2beda09861f697115e16d261cad9051a5214956d559e82ec2d",
+    "text": "PASS dynamic-closure host digest_failure\n"
+  },
+  "sanitized_elf_needed.log": {
+    "sha256": "5d797a015bb08f817b0b4c510f470b09d92e3b20a2c2c1a87666e76f07e35680",
+    "text": "PASS dynamic-closure host elf_needed\n"
+  },
+  "sanitized_elf_provider_version.log": {
+    "sha256": "075f21ef8c4e5f9306c14b0cd64915433567b7b574514cd961ca85da6d57370b",
+    "text": "PASS dynamic-closure host elf_provider_version\n"
+  },
+  "sanitized_elf_relocation.log": {
+    "sha256": "21e2d29f166f87e996d5b886f1b11dc76499f1763f5620cef337d970230f7002",
+    "text": "PASS dynamic-closure host elf_relocation\n"
+  },
+  "sanitized_elf_relro.log": {
+    "sha256": "1c5904fe90bb4c8a1b84f345d3499710fa500264d1d08de35dff0f72417b4be6",
+    "text": "PASS dynamic-closure host elf_relro\n"
+  },
+  "sanitized_elf_soname.log": {
+    "sha256": "63784e0e516a19ce42eef74041d86534fcceba42deae7199f2d99da9d00196a9",
+    "text": "PASS dynamic-closure host elf_soname\n"
+  },
+  "sanitized_elf_tls.log": {
+    "sha256": "aa0d8c8db001791e3d9c589977b8be3535d3bd022f29738bdc094c86277dd4f8",
+    "text": "PASS dynamic-closure host elf_tls\n"
+  },
+  "sanitized_elf_version.log": {
+    "sha256": "d01e597ceb6a5a84a9f3d2e6362164f5aab2d763221d6c5edd933498e507c215",
+    "text": "PASS dynamic-closure host elf_version\n"
+  },
+  "sanitized_elf_wx.log": {
+    "sha256": "8855ec1d6a3f14c26ace7fc567e37be99101f79b5c9c229b24ea62416d9c73a5",
+    "text": "PASS dynamic-closure host elf_wx\n"
+  },
+  "sanitized_failed_activation.log": {
+    "sha256": "ffa4b221eec1ac2c9da6007632ab0fded1b1ca9c6fcb5268e70c0f0ce819987d",
+    "text": "PASS dynamic-closure host failed_activation\n"
+  },
+  "sanitized_online_header.log": {
+    "sha256": "20c36716cff72370cbb3e5aa5d001d95ecb8bc2b799822ef9aa2f441cc327e14",
+    "text": "PASS dynamic-closure host online_header\n"
+  },
+  "sanitized_online_mapping_budget.log": {
+    "sha256": "74183fe703ab498940302d031d3df46b1a71298fa7c7198477d113307e1c0dc0",
+    "text": "PASS dynamic-closure host online_mapping_budget\n"
+  },
+  "sanitized_online_mapping_collision.log": {
+    "sha256": "b14128009829a523b6aed9e75c02fa031e7e98d70b5f1214eb8e03861530bf78",
+    "text": "PASS dynamic-closure host online_mapping_collision\n"
+  },
+  "sanitized_online_startup_edge.log": {
+    "sha256": "f084e905b081ccffb7e92b7cd5ef474550f26ddb95f530b4b474049fd5cb047d",
+    "text": "PASS dynamic-closure host online_startup_edge\n"
+  },
+  "sanitized_online_static_tls.log": {
+    "sha256": "0f7a4dab9e71e398928437c8cee6cc384cf6b4286cdca733d388dde423f012de",
+    "text": "TLS relocation 18: original GD online PASS; mutated digest PASS; startup PASS; online header rejection PASS\nPASS dynamic-closure host online_static_tls\n"
+  },
+  "sanitized_online_tlsdesc.log": {
+    "sha256": "9210cb9e6f49d64bb648c86dc3aeedc7ce0c93762625269dc7c3dd24f53e1103",
+    "text": "TLS relocation 36: original GD online PASS; mutated digest PASS; startup PASS; online header rejection PASS\nPASS dynamic-closure host online_tlsdesc\n"
+  },
+  "sanitized_policy_validation.log": {
+    "sha256": "5caf2821d610d3b58974fafcd44d35ab9d8ce2a84fd6b1df0acfb1baa5a63424",
+    "text": "PASS dynamic-closure host policy_validation\n"
+  },
+  "sanitized_read_unknown.log": {
+    "sha256": "fe866dfe1c8d228173f9bd32313af8ab9a886fd88917323835a83ee2df5ffbde",
+    "text": "PASS dynamic-closure host read_unknown\n"
+  },
+  "sanitized_release_unknown.log": {
+    "sha256": "6fc0f91eaab7aa53cd2e2ac31d9763f5a73655352c9c86e99caaa94ca40aa94e",
+    "text": "PASS dynamic-closure host release_unknown\n"
+  },
+  "sanitized_restore_and_heap.log": {
+    "sha256": "4c854d89fb56f4bf1ef2e0865a451ebdfb54011106fc3308c15e6343a9e1ce35",
+    "text": "PASS dynamic-closure host restore_and_heap\n"
+  },
+  "sanitized_revoke_active.log": {
+    "sha256": "bf4743ed9fc3322271fd59147d701d5935bdfa69781ac4354c967e6e69a6b9b7",
+    "text": "PASS dynamic-closure host revoke_active\n"
+  },
+  "sanitized_sdk_failure.log": {
+    "sha256": "1019caa496f8fb12b56ca4d5aeb6a4729cc00464f53f523dd5d856fd7dc8d881",
+    "text": "PASS dynamic-closure host sdk_failure\n"
+  },
+  "sanitized_wrong_sdk.log": {
+    "sha256": "11b5754152d23c4ff8fbc5070f0569020b056b2507f5fbcd3fcb8372ef530da9",
+    "text": "PASS dynamic-closure host wrong_sdk\n"
+  }
+}

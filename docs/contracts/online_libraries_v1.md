@@ -4,7 +4,7 @@
 构建和标识的 profile 在启动后使用 `dlopen`、`dlmopen`、`dlclose`。
 默认 fixed-startup profile 保持显式拒绝；新增路径没有新的 syscall，也不
 赋予调用者从文件系统任意加载代码的权限。格式在
-[ABI registry](abi_registry.md) 的 P1-K3 认领中先行登记。
+[ABI registry](abi_registry.md) 的 P1-K3 分配中先行登记。
 
 ## 批准对象、编码和映射
 
@@ -107,3 +107,25 @@ runtime manifest 的 `public_runtime_built_not_run` 及其他构建 manifest 的
 当前边界包括 C online libraries、单核虚拟机、base 加一个受限 private
 namespace；不包含 C++ online DSO、任意系统库搜索、完整第二 libc、SMP、
 物理硬件或与其他尚未合并 P1 profile 的完整组合资格。
+
+## 2026-11-28 记录的目标资格
+
+[完整证据](../reports/p1_k3_online_libraries_20261128/README.md) 绑定冻结源码
+`86d39b31ade96ba7a609b9321e30ee63c0632441` 和 native system
+`94674a7e28151485`。重新构建的 runtime manifest 为
+`9c11b60d1c8b71471bb4a3ec7bd6546a6d1fd9d091497d34709327d52f89036d`，
+独立重编并匹配它的 unwinder manifest 为
+`83773c2bbb85f006f29562e76afaff1340a69a10dd76ee34823f0006590dd43d`。
+它们保留原有 built-not-run 状态，独立 guest 报告提供执行结论。
+
+七次冷启动的 16 项实际用例全部通过，每项都精确回到该次启动的
+129790 free pages / 2 tasks / 0 completions。覆盖依赖/引用、namespace、
+真实并发和已运行线程的动态 TLS、TLS 析构、最后 worker 的 GNU on_exit、
+卸载循环、不可变 pin、默认拒绝，以及缺失/替换/错误版本对象和两种被拒绝
+TLS relocation。Host 另有 6 组 mapping/worker 和 60 项 closure/verifier
+检查，分别使用普通构建与 ASan/UBSan；未运行 LeakSanitizer。
+
+该已执行 runtime 的 ABI domain 是 `xos-glibc-dynamic-capsule-v2`；这里的
+generation v2 是另一项记录格式版本。后来的主线 catalog authority 和
+capsule v3 需要匹配自己的构建与完整目标验收。源码集成、host 检查或相同
+接口布局不会自动把本报告扩大为那个新组合的 guest 资格。

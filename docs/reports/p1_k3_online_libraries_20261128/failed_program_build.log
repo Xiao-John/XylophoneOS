@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "${XOS_SOURCE}/scripts/build_dynamic_program.py", line 305, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_SOURCE}/scripts/build_dynamic_program.py", line 243, in main
+    run('link-main', [*link, '-pie', '-e', '_start', '--dynamic-linker', INTERPRETER, '-o', main_image,
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        *(['--export-dynamic'] if args.online_library_spec else []),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        gnu / 'csu/Scrt1.o', gnu / 'csu/crti.o', *crt_begin, output / 'main_identity.o',
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        output / 'main.o', *app_libraries, payload / 'libc.so.0.1', *crt_end, gnu / 'csu/crtn.o'])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_SOURCE}/scripts/build_dynamic_program.py", line 122, in run
+    raise RuntimeError(label + ' failed; see ' + str(output / (label + '.log')))
+RuntimeError: link-main failed; see ${XOS_SOURCE}/build/k3_program_v3/link-main.log

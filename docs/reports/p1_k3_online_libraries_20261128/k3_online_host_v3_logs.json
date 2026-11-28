@@ -1,0 +1,50 @@
+{
+  "mapping_fixed.log": {
+    "sha256": "e563a44f6e9aed7cc7444db72bec52360222c727562f8a8de38ddaded6eaa8ae",
+    "text": "K3_MAPPING_FIXED_DENIAL_PASS\n"
+  },
+  "mapping_fixed_asan_ubsan.log": {
+    "sha256": "e563a44f6e9aed7cc7444db72bec52360222c727562f8a8de38ddaded6eaa8ae",
+    "text": "K3_MAPPING_FIXED_DENIAL_PASS\n"
+  },
+  "mapping_fixed_asan_ubsan_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "mapping_fixed_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "mapping_online.log": {
+    "sha256": "fa85842ae406413b0165b4b06e8c15bb5a150039679f57bac11ec43810bc0e92",
+    "text": "K3_MAPPING_ONLINE_PASS approval retained_pin namespace gate recursion deadline poison close malformed_response\n"
+  },
+  "mapping_online_asan_ubsan.log": {
+    "sha256": "fa85842ae406413b0165b4b06e8c15bb5a150039679f57bac11ec43810bc0e92",
+    "text": "K3_MAPPING_ONLINE_PASS approval retained_pin namespace gate recursion deadline poison close malformed_response\n"
+  },
+  "mapping_online_asan_ubsan_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "mapping_online_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "worker_online.log": {
+    "sha256": "955876f4068b166ad5aaa054e42c8e25dc0d701775175a3d7759225880561c5a",
+    "text": "ONLINE_WORKER_TLS_PASS capacity rollback_prepare_alloc_callback_start retire_final_dtv dead_tcb last_preserved recycle_100\n"
+  },
+  "worker_online_asan_ubsan.log": {
+    "sha256": "955876f4068b166ad5aaa054e42c8e25dc0d701775175a3d7759225880561c5a",
+    "text": "ONLINE_WORKER_TLS_PASS capacity rollback_prepare_alloc_callback_start retire_final_dtv dead_tcb last_preserved recycle_100\n"
+  },
+  "worker_online_asan_ubsan_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  },
+  "worker_online_compile.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "text": ""
+  }
+}

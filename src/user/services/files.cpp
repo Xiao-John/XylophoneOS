@@ -7,6 +7,9 @@
 #include <stddef.h>
 #include "ff.h"
 #include "diskio.h"
+#if XOS_FILES_UNCERTAIN_PROBE
+#include "files_uncertain_probe.hpp"
+#endif
 #if XOS_FILES_PRIVATE_STORAGE_PROBE
 #include "files_private_storage.hpp"
 #endif
@@ -2276,6 +2279,9 @@ extern "C" int xos_user_main(const xos::startup_info*) {
             } else {
                 handle(in, out, session, index);
             }
+#if XOS_FILES_UNCERTAIN_PROBE
+            if (files_uncertain_probe::drop(index, session.pid, in, out)) continue;
+#endif
             (void)sdk::ipc_send(session.response_handle, &out, sizeof(out));
         }
 #if XOS_FILES_PRIVATE_CLIENT_PROBE

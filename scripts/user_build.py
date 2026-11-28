@@ -20,7 +20,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 pumpkin_anchored_probe=False, pumpkin_native_login=False, pumpkin_user_login=False,
                 pumpkin_user_resource=False, pumpkin_named_resource_store=False, pumpkin_provisioning_store=False,
                 quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
-                net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None):
+                net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None,
+                files_uncertain_probe=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -236,6 +237,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             installation_profile = net_dhcp_profile or net_static_profile
             if installation_profile:
                 extra_flags += (f"-DXOS_NET_STATIC_INSTANCE={installation_profile['pci_instance']}u",)
+        if name == "files" and files_uncertain_probe:
+            extra_flags += ("-DXOS_FILES_UNCERTAIN_PROBE=1",)
         if name == "files" and glibc_files_death_probe:
             extra_flags += ("-DXOS_GLIBC_FILES_DEATH_PROBE=1",)
         if name == "files":
@@ -363,6 +366,12 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                                  "deadline_max_ns": 30000000000, "guest_qualification": "not_run"},
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
         "vm_extensions": {"version": 1, "syscall": 67, "status": "implemented_unqualified"},
+        "process_budget": {"version": 1, "syscall": 87, "set_mode": 4, "query_mode": 5,
+                           "config_bytes": 64, "snapshot_bytes": 192,
+                           "dimensions": ["processes", "pages", "threads", "ipc_objects", "names", "pipes"],
+                           "scope": "inherited_cumulative_domains", "guest_qualification": "not_run"},
+        "dynamic_controller_observation": {"version": 1, "snapshot_bytes": 72,
+                                           "quarantine_reset": "process_lifetime", "automatic_replay": False},
         "thread_extensions": {"join_options": {"version": 1, "syscall": 44, "size": 32,
                                                 "third_argument": "options_pointer"},
                               "target_cpu_time": {"version": 1, "syscall": 41, "mode": 1, "size": 56},

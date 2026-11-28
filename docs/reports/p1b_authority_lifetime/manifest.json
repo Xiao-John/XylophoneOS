@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "files": {
+    "guest_serial.log": "c7a572c889af9596861f41e5baf538a6cdf8208b12f3af812754f145e47bbfad",
+    "host_results.json": "6c902f897f543186578c7a83c0b039a6e64a52c4e6f0d2ab80046416d3f4113f",
+    "integration_report.json": "5be6447d628ddf6d490bc03c7b294950fb8cb255b2c5eaa7718d68e4e14e0357",
+    "integration_serial.log": "72da6d14fe2489ebc40c87127c4e1af394a36b200967f17e76b8186faf519057",
+    "report.json": "5484c38e093f6a5b0348659aa5c63a5c023fc28f49db7dd93b214d11cf2756c0",
+    "source_receipt.json": "78534d0c82e319bad59a929e4033620463a5987be59224d02750dfabf0b0575d"
+  }
+}

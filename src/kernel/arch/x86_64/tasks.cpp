@@ -4,6 +4,7 @@
 #include <xos/display.hpp>
 #include <xos/thread_abi.hpp>
 #include <xos/observation_abi.hpp>
+#include <xos/process_budget_abi.hpp>
 #include "../../core/thread_lifecycle.hpp"
 #include "../../core/stream_lease.hpp"
 #include "../../core/vm_pin.hpp"
@@ -68,6 +69,7 @@ struct stdio_route { bool valid; bool console; bool writable; u8 pipe_index; };
 struct pipe_reference { bool used; u32 token; u8 pipe_index; bool writable; };
 struct pipe_object {
     bool used;
+    u64 owner_pid, budget_mask;
     u32 references;
     u32 reader_references;
     u32 writer_references;
@@ -121,6 +123,8 @@ struct process_record {
     pipe_reference pipe_references[process_max_pipe_refs];
     u32 pipe_reference_count;
     u32 user_pages;
+    u64 budget_mask, budget_domain_id;
+    u32 budget_reserved_pages;
     u32 completion_slot;
     u64 heap_break;
     bool threads_enabled;
@@ -208,7 +212,7 @@ struct thread_record : thread_lifetime {
 };
 
 enum class ipc_v1_call_state : u32 { free, queued, delivered, replied };
-struct ipc_v1_endpoint_record { bool used; bool closed; };
+struct ipc_v1_endpoint_record { bool used; bool closed; u64 owner_pid, budget_mask; };
 struct ipc_v1_handle_record {
     bool used;
     u32 endpoint_slot;
@@ -217,7 +221,7 @@ struct ipc_v1_handle_record {
     u64 holder_pid;
     u64 badge;
 };
-struct ipc_v1_notification_record { bool used; u64 pending_bits; };
+struct ipc_v1_notification_record { bool used; u64 pending_bits; u64 owner_pid, budget_mask; };
 struct ipc_v1_notification_handle_record {
     bool used; u32 object_slot; u32 rights; u64 value; u64 holder_pid; u64 badge;
 };
@@ -227,12 +231,14 @@ struct ipc_v1_wait_set_source_record {
 struct ipc_v1_wait_set_record {
     bool used; u32 next_source_id;
     ipc_v1_wait_set_source_record sources[ipc_v1_max_wait_set_sources];
+    u64 owner_pid, budget_mask;
 };
 struct ipc_v1_wait_set_handle_record {
     bool used; u32 object_slot; u32 rights; u64 value; u64 holder_pid; u64 badge;
 };
 struct ipc_v1_grant_record {
     bool used; u32 page_count; u64 length; u64 pages[ipc_v1_max_grant_pages];
+    u64 owner_pid, budget_mask;
 };
 struct ipc_v1_grant_handle_record {
     bool used; u32 object_slot; u32 rights; u64 value; u64 holder_pid;
@@ -666,6 +672,8 @@ bool user_range_ok(u64 address, u64 length, bool write) {
 }
 
 
+#include "process_budget_tasks.inc"
+
 bool rdrand_supported() {
     u32 eax = 1, ebx = 0, ecx = 0, edx = 0;
     __asm__ volatile("cpuid" : "+a"(eax), "=b"(ebx), "+c"(ecx), "=d"(edx) :: "memory");
@@ -828,7 +836,8 @@ process_record* prepare_task(const char* name) {
 
 bool add_user_page(process_record* task, u64 address, const u8* bytes, u32 size,
                    u32 offset, page_permissions permissions) {
-    if (task->user_pages == process_max_pages || offset > page_size || size > page_size - offset) {
+    if (task->user_pages == process_max_pages || offset > page_size || size > page_size - offset ||
+        !budget_admit(*task, {0, 1, 0, 0, 0, 0})) {
         return false;
     }
     u64 physical = 0;
@@ -942,6 +951,12 @@ process_record* create_files_service() {
     main_thread(task).stack_top = process_stack_top;
     task->stdio_mask = 0;
     for (auto& route : task->stdio) { route = stdio_route{}; }
+#if XOS_FILES_UNCERTAIN_PROBE
+    // Isolated qualification image only: expose the post-commit injection
+    // receipt without adding a production Files control/debug operation.
+    task->stdio_mask = 2;
+    task->stdio[1] = {true, true, true, 0};
+#endif
     task->block_access = true;
     task->state = task_state::fresh;
     format::text("[task] event=created pid="); format::decimal(task->pid);
@@ -1121,6 +1136,8 @@ bool create_generic_channel(u64 sender_pid, u64 receiver_pid, u64 owner_pid,
                             ipc_channel& sender_channel, ipc_channel& receiver_channel) {
     if (sender_pid == 0 || receiver_pid == 0 || sender_pid == receiver_pid ||
         next_endpoint_handle > 0xfffffffeull) return false;
+    const auto* budget_owner = task_by_pid(owner_pid);
+    if (!budget_owner || !budget_admit(*budget_owner, {0, 0, 0, 1, 0, 0})) return false;
     u32 free_count = 0, owned_count = 0;
     for (const auto& endpoint : endpoints) {
         if (!endpoint.used) ++free_count;
@@ -1903,7 +1920,8 @@ i64 set_heap_break(u64 requested) {
     if (new_end > old_end) {
         const u64 add_pages = (new_end - old_end) / page_size;
         if (current->user_pages > process_max_pages ||
-            add_pages > process_max_pages - current->user_pages) {
+            add_pages > process_max_pages - current->user_pages ||
+            !budget_admit(*current, {0, add_pages, 0, 0, 0, 0})) {
             return process_error_resources;
         }
         u64 address = old_end;
@@ -2037,6 +2055,7 @@ vm_step vm2_page_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
                 tx.staged[index]=0;
                 if (!exists && (tx.operation==2 || (tx.operation==3 && tx.protection!=0))) {
                     if (owner.user_pages>=process_max_pages || tx.staged_count>=process_max_pages-owner.user_pages ||
+                        !budget_admit(owner, {0, 1, 0, 0, 0, 0}) ||
                         (tx.fail_page>=0 && static_cast<i64>(tx.staged_count)==tx.fail_page) ||
                         allocate_user_page(&physical)!=memory_result::none) {
                         result=anonymous_vm::resources; return vm_step::failed;
@@ -2048,7 +2067,7 @@ vm_step vm2_page_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
                         (void)release_user_page(physical); vm_prune_empty_page_tables_in(owner.cr3,address);
                         result=anonymous_vm::resources; return vm_step::failed;
                     }
-                    tx.staged[index]=physical; ++tx.staged_count;
+                    tx.staged[index]=physical; ++tx.staged_count; ++owner.budget_reserved_pages;
                     if (tx.trace && !tx.staging_reported && tx.staged_count==64) {
                         format::text("[vm2-pages] staging\r\n"); tx.staging_reported=true;
                     }
@@ -2072,6 +2091,8 @@ vm_step vm2_page_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
                 (void)release_user_page(tx.staged[index]);
                 vm_prune_empty_page_tables_in(owner.cr3,tx.address+u64{index}*page_size);
                 tx.staged[index]=0;
+                if (!owner.budget_reserved_pages) halt();
+                --owner.budget_reserved_pages;
             }
         }
         if (tx.cursor==tx.prepared) { result=0; return vm_step::finished; }
@@ -2090,6 +2111,8 @@ vm_step vm2_page_step(void* opaque, vm_phase phase, u32 budget, i64& result) {
             if (tx.operation!=5 && tx.staged[index]) {
                 if (lookup!=memory_result::not_mapped || vm_install_page_in(owner.cr3,address,tx.staged[index],requested)!=memory_result::none) halt();
                 tx.staged[index]=0; ++owner.user_pages;
+                if (!owner.budget_reserved_pages) halt();
+                --owner.budget_reserved_pages;
             } else if (lookup==memory_result::none) {
                 if (tx.operation==4 || tx.operation==5) {
                     if (vm_remove_page_in(owner.cr3,address,&physical)!=memory_result::none ||
@@ -2323,7 +2346,8 @@ void* thread_syscall(interrupt_frame* frame) {
         for (u32 i = 0; i < thread_max_per_process; ++i) {
             if (threads[offset + i].state == thread_state::free) { target = &threads[offset + i]; break; }
         }
-        if (target == nullptr || next_tid == 0 || next_tid > 0x7fffffffffffffff) {
+        if (target == nullptr || next_tid == 0 || next_tid > 0x7fffffffffffffff ||
+            !budget_admit(*current, {0, 0, 1, 0, 0, 0})) {
             result = process_error_resources; break;
         }
         *target = thread_record{}; target->process = current; target->tid = next_tid++;
@@ -2680,6 +2704,8 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
                                      &child->user_pages,&tx.copy_cursor,work,&tx.fail_retain)
             : copy_user_pages_batch(tx.owner->cr3,child->cr3,process_max_pages,
                                     &child->user_pages,&tx.copy_cursor,work);
+        if (child->user_pages > tx.owner->user_pages) halt();
+        child->budget_reserved_pages = tx.owner->user_pages - child->user_pages;
 #if XOS_VM1_PROBE
         if(tx.fail_after>=0) { tx.fail_after=memory_self_test_remaining();memory_self_test_fail_after(-1); }
 #endif
@@ -2711,7 +2737,8 @@ vm_step fork_copy_step(void* opaque,vm_phase phase,u32 budget,i64& result) {
         if(release_user_pages_batch(child->cr3,&tx.release_cursor,&tx.released,work)!=memory_result::none) halt();
         if(tx.release_cursor!=(u64{1}<<47))return vm_step::again;
         if(tx.released!=child->user_pages)halt();
-        child->user_pages=0;tx.child=nullptr;tx.owner=nullptr;destroy_task(child);
+        child->user_pages=0;child->budget_reserved_pages=0;
+        tx.child=nullptr;tx.owner=nullptr;destroy_task(child);
         result=0;return vm_step::finished;
     }
     halt();
@@ -2740,9 +2767,12 @@ i64 prepare_fork(interrupt_frame* frame) {
     for(const auto& item:completions) if(!item.used) { free_completion=true;break; }
     for(const auto& endpoint:endpoints) if(!endpoint.used) ++free_endpoints;
     if(!free_completion || free_endpoints<2 || next_endpoint_handle>0xfffffffeull) return process_error_resources;
+    if (!budget_admit(*current, {1, current->user_pages, 1, 0, 0, 0})) return process_error_resources;
     process_record* child=prepare_task(current->name);
     if(!child)return process_error_resources;
     child->parent=current->pid;child->spawn_depth=current->spawn_depth;child->can_create=current->can_create;
+    child->budget_mask=current->budget_mask;
+    child->budget_reserved_pages=current->user_pages;
     child->cancel_parent=current->pid;
     child->fork_source=current->pid;child->fork_depth=current->fork_depth+1;child->fork_pending=true;
     child->heap_break=current->heap_break;child->entry=current->entry;
@@ -3480,6 +3510,8 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             result = static_cast<i64>(ipc_v1_error::address);
         } else if (current == nullptr || current->closing || current->continuation.active()) {
             result = static_cast<i64>(ipc_v1_error::state);
+        } else if (!budget_admit(*current, {0, (request.length + page_size - 1) / page_size, 0, 1, 0, 0})) {
+            result = static_cast<i64>(ipc_v1_error::resources);
         } else if (!ipc_v1_next_handle || ipc_v1_handle_count(current->pid) >= ipc_v1_max_handles_per_process) {
             result = static_cast<i64>(ipc_v1_error::resources);
         } else {
@@ -3498,6 +3530,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                 const u32 page_count = static_cast<u32>((request.length + page_size - 1) / page_size);
                 ipc_v1_grant_record grant{};
                 grant.used = true; grant.page_count = page_count; grant.length = request.length;
+                grant.owner_pid = current->pid; grant.budget_mask = current->budget_mask;
                 bool allocated = true;
                 u64 offset = 0;
                 for (u32 i = 0; i < page_count; ++i) {
@@ -3589,7 +3622,8 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             result = static_cast<i64>(ipc_v1_error::denied);
         } else if (current->closing || current->continuation.active()) { result = static_cast<i64>(ipc_v1_error::state); }
         else if (!ipc_v1_next_map_id || current->user_pages > process_max_pages ||
-                 rounded / page_size > process_max_pages - current->user_pages) {
+                 rounded / page_size > process_max_pages - current->user_pages ||
+                 !budget_admit(*current, {0, rounded / page_size, 0, 0, 0, 0})) {
             result = static_cast<i64>(ipc_v1_error::resources);
         } else {
             u32 map_slot = ipc_v1_max_grant_mappings_system;
@@ -3724,6 +3758,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                  request.rights == 0 || (request.rights & ~ipc_v1_right_all) != 0) {
             result = static_cast<i64>(ipc_v1_error::invalid_argument);
         } else if (current == nullptr || current->closing) { result = static_cast<i64>(ipc_v1_error::state); }
+        else if (!budget_admit(*current, {0, 0, 0, 1, 0, 0})) { result = static_cast<i64>(ipc_v1_error::resources); }
         else if (ipc_v1_handle_count(current->pid) >= ipc_v1_max_handles_per_process || !ipc_v1_next_handle) {
             result = static_cast<i64>(ipc_v1_error::resources);
         } else {
@@ -3733,7 +3768,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             }
             if (endpoint_slot == ipc_v1_max_endpoints_system) { result = static_cast<i64>(ipc_v1_error::resources); }
             else {
-                ipc_v1_endpoints[endpoint_slot] = {true, false};
+                ipc_v1_endpoints[endpoint_slot] = {true, false, current->pid, current->budget_mask};
                 const u32 handle_slot = ipc_v1_allocate_handle(endpoint_slot, current->pid, request.rights, 0);
                 if (handle_slot == ipc_v1_max_endpoints_system * ipc_v1_max_handles_per_process) {
                     ipc_v1_endpoints[endpoint_slot] = ipc_v1_endpoint_record{};
@@ -3808,6 +3843,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                  request.rights == 0 || (request.rights & ~rights_mask) != 0) {
             result = static_cast<i64>(ipc_v1_error::invalid_argument);
         } else if (current == nullptr || current->closing) { result = static_cast<i64>(ipc_v1_error::state); }
+        else if (!budget_admit(*current, {0, 0, 0, 1, 0, 0})) { result = static_cast<i64>(ipc_v1_error::resources); }
         else if (!notification) {
             u32 object_slot = ipc_v1_max_wait_sets_system;
             for (u32 i = 0; i < ipc_v1_max_wait_sets_system; ++i) {
@@ -3815,7 +3851,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             }
             if (object_slot == ipc_v1_max_wait_sets_system) { result = static_cast<i64>(ipc_v1_error::resources); }
             else {
-                ipc_v1_wait_sets[object_slot] = ipc_v1_wait_set_record{true, 1, {}};
+                ipc_v1_wait_sets[object_slot] = ipc_v1_wait_set_record{true, 1, {}, current->pid, current->budget_mask};
                 const u32 slot = ipc_v1_allocate_wait_set_handle(object_slot, current->pid, request.rights, 0);
                 if (slot == ipc_v1_max_wait_sets_system * ipc_v1_max_handles_per_process) {
                     ipc_v1_wait_sets[object_slot] = ipc_v1_wait_set_record{};
@@ -3833,7 +3869,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
             }
             if (object_slot == ipc_v1_max_notifications_system) { result = static_cast<i64>(ipc_v1_error::resources); }
             else {
-                ipc_v1_notifications[object_slot] = {true, 0};
+                ipc_v1_notifications[object_slot] = {true, 0, current->pid, current->budget_mask};
                 const u32 slot = ipc_v1_allocate_notification_handle(object_slot, current->pid, request.rights, 0);
                 if (slot == ipc_v1_max_notifications_system * ipc_v1_max_handles_per_process) {
                     ipc_v1_notifications[object_slot] = ipc_v1_notification_record{};
@@ -4626,7 +4662,7 @@ void* process_syscall(interrupt_frame* frame) {
             for (const auto& endpoint : endpoints) {
                 if (endpoint.used && endpoint.generic_channel && endpoint.owner_pid == current->pid) { ++owned; }
             }
-            if (owned >= 4) { result = process_error_resources; break; }
+            if (owned >= 4 || !budget_admit(*current, {0, 0, 0, 1, 0, 0})) { result = process_error_resources; break; }
             const u32 handle = endpoint_attach(receiver->pid, sender->pid, current->pid, request.capacity);
             if (handle == 0) { result = process_error_resources; break; }
             endpoint_for(handle)->generic_channel = true;
@@ -4667,7 +4703,8 @@ void* process_syscall(interrupt_frame* frame) {
                     (endpoint.receiver_pid == child->pid && endpoint.sender_pid == peer)) duplicate = true;
             }
             if (duplicate) { result = process_error_state; break; }
-            if (owned > 6 || free_count < 2 || next_endpoint_handle > 0xfffffffeull) {
+            if (owned > 6 || free_count < 2 || next_endpoint_handle > 0xfffffffeull ||
+                !budget_admit(*owner, {0, 0, 0, 2, 0, 0})) {
                 result = process_error_resources; break;
             }
             request.child_send = endpoint_attach(peer, child->pid, send->owner_pid, send->capacity);
@@ -4852,6 +4889,7 @@ void* process_syscall(interrupt_frame* frame) {
         process_record* stage = prepare_task(name);
         if (stage == nullptr) { result = process_error_resources; break; }
         stage->parent = current->pid;
+        stage->budget_mask = current->budget_mask;
         stage->cancel_parent = current->pid;
         stage->can_create = current->can_create;
         stage->replacement_pending = true;
@@ -5164,11 +5202,13 @@ void* process_syscall(interrupt_frame* frame) {
         completion_record* slot = nullptr;
         for (auto& item : completions) { if (!item.used) { slot = &item; break; } }
         if (slot == nullptr) { result = process_error_resources; break; }
+        if (!budget_admit(*current, {1, 0, 1, 0, 0, 0})) { result = process_error_resources; break; }
         char name[12] = "elf";
         if (third != 0) { copy_from_user(name, second, third); name[third] = '\0'; }
         process_record* task = prepare_task(name);
         if (task == nullptr) { result = process_error_resources; break; }
         task->parent = current->pid;
+        task->budget_mask = current->budget_mask;
         task->cancel_parent = current->pid;
         if (!inherit_stdio(task, current, static_cast<u32>(first))) {
             destroy_task(task); result = process_error_state; break;
@@ -5233,7 +5273,7 @@ void* process_syscall(interrupt_frame* frame) {
         // mode 0 clear, 1 set, 2 copy from caller, 3 query (result = 0/1).
         if (admission_guard.owner_pid != 0) { result = process_error_denied; break; }
         const auto mode = static_cast<process_authority_mode>(second);
-        if (second > static_cast<u64>(process_authority_mode::query)) {
+        if (second > static_cast<u64>(process_authority_mode::budget_query)) {
             result = process_error_invalid; break;
         }
         process_record* task = nullptr;
@@ -5244,6 +5284,12 @@ void* process_syscall(interrupt_frame* frame) {
         }
         if (task == nullptr) { result = process_error_denied; break; }
         const bool is_parent = task->parent == current->pid;
+        if (mode == process_authority_mode::budget_set) {
+            result = budget_set(*task, third); break;
+        }
+        if (mode == process_authority_mode::budget_query) {
+            result = budget_query(*task, third); break;
+        }
         if (mode == process_authority_mode::query) {
             // Self, parent, or supervisor may query.
             if (task != current && !is_parent && !current->supervisor) {
@@ -5380,7 +5426,8 @@ void* process_syscall(interrupt_frame* frame) {
     case sys_pipe_create: {
         if (!user_range_ok(first, sizeof(pipe_handles), true)) { break; }
         if (next_pipe_token + 1 > 0xffffffffull ||
-            current->pipe_reference_count > process_max_pipe_refs - 2) {
+            current->pipe_reference_count > process_max_pipe_refs - 2 ||
+            !budget_admit(*current, {0, 0, 0, 0, 0, 1})) {
             result = process_error_resources; break;
         }
         u32 pipe_index = process_max_pipes;
@@ -5401,6 +5448,8 @@ void* process_syscall(interrupt_frame* frame) {
         const u32 write_token = static_cast<u32>(next_pipe_token++);
         pipes[pipe_index] = pipe_object{};
         pipes[pipe_index].used = true;
+        pipes[pipe_index].owner_pid = current->pid;
+        pipes[pipe_index].budget_mask = current->budget_mask;
         pipes[pipe_index].references = 2;
         pipes[pipe_index].reader_references = 1;
         pipes[pipe_index].writer_references = 1;
@@ -5723,7 +5772,8 @@ void* process_syscall(interrupt_frame* frame) {
                 for (const auto& registration : ipc_names) {
                     if (registration.used && registration.owner_pid == current->pid) ++owned_count;
                 }
-                if (owned_count >= ipc_max_owned_names) { result = process_error_resources; break; }
+                if (owned_count >= ipc_max_owned_names ||
+                    !budget_admit(*current, {0, 0, 0, 0, 1, 0})) { result = process_error_resources; break; }
                 for (auto& slot : ipc_names) {
                     if (!slot.used) {
                         slot.used = true;

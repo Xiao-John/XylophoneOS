@@ -85,7 +85,10 @@ struct process_cpu_time {
     u64 thread_user_ns, thread_system_ns, elapsed_ns, resolution_ns;
 };
 static_assert(sizeof(process_cpu_time) == 72);
-enum class process_authority_mode : u64 { clear = 0, set = 1, copy_from_caller = 2, query = 3 };
+enum class process_authority_mode : u64 {
+    clear = 0, set = 1, copy_from_caller = 2, query = 3,
+    budget_set = 4, budget_query = 5
+};
 enum class irq_event_action : u64 { bind = 0, wait = 1, ack = 2, close = 3 };
 enum class pio_grant_action : u64 { grant = 0, revoke = 1, query = 2, controller = 3, recover = 4, release = 5, delegate = 6 };
 inline constexpr u64 pio_resource_com1 = 1;

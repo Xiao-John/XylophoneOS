@@ -2,12 +2,26 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #pragma once
 #include <xos/process_abi.hpp>
+#include <xos/process_budget_abi.hpp>
 #include <xos/observation_abi.hpp>
 #include <xos/file_abi.hpp>
 #include <xos/spawn.hpp>
 
 namespace xos::sdk {
 i64 syscall(u64 number, u64 first = 0, u64 second = 0, u64 third = 0);
+inline i64 set_process_budget(u64 pid, const process_budget_vector& limits) {
+    const process_budget_config request{process_budget_version, sizeof(process_budget_config), 0, limits};
+    return syscall(sys_process_authority, pid, static_cast<u64>(process_authority_mode::budget_set),
+                   reinterpret_cast<u64>(&request));
+}
+inline i64 query_process_budget(u64 pid, process_budget_snapshot& output, u64 domain_id = 0) {
+    process_budget_snapshot request{};
+    request.version = process_budget_version; request.size = sizeof(request); request.domain_id = domain_id;
+    const i64 result = syscall(sys_process_authority, pid,
+        static_cast<u64>(process_authority_mode::budget_query), reinterpret_cast<u64>(&request));
+    if (!result) output = request; // Preserve caller output on denial/format failure.
+    return result;
+}
 inline observe_native::result observe(const observe_native::request& request,
                                       observe_native::snapshot& output) {
     output = {};

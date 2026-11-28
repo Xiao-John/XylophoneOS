@@ -88,6 +88,13 @@ manifest 不构成锚。构建先比较 manifest 字节，再验证完整 glibc 
 与 GNU C SDK 的头文件或对象混链。编译产物仍标为 `built_not_run`；客体验收
 使用原始 ELF/系统/根的实际哈希另给结果。
 
+P1-B adds the versioned `inspect_controller` observation and a concrete
+same-process try-lock contract. Unknown OPEN ownership and retained CLOSE tokens
+remain observable without clearing quarantine. Real Files post-commit reply-loss
+and real competing-thread qualification are described in
+[process_tree_budget](process_tree_budget.md); the earlier modeled host cases
+remain host evidence. No transport operation is automatically replayed.
+
 入口按公开 startup v1/v2/v3 转发参数、环境、稳定 cwd 引用和普通
 console/pipe/Files 描述符；v3 同一 Files object 的别名保持同一 OFD。
 完整表先验证，再处理仅剩 CLOEXEC 的对象；未知 close 结果不重放。

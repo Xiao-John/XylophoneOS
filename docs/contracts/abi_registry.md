@@ -16,7 +16,7 @@
 | 82 | 82 | allocated | 受控设备 PIO；COM1 与 PC Speaker 资源见契约，未客体验收 |
 | 83 | 83 | allocated | 受控 IRQ 事件；实现未验 |
 | 84 | 86 | allocated | Interactium IPC channel readiness and service-name registration/connection |
-| 87 | 87 | allocated | SL1 创建能力：`sys_process_authority`（shell_launch 契约；并行占号 84 与 Interactium 撞号，按已合入登记改列 87） |
+| 87 | 87 | allocated | SL1 创建能力；P1-B 显式 modes 4/5 为版本 1 进程树累计预算和归因查询，见 [契约](process_tree_budget.md)。旧 modes 0–3 保持。 |
 | 88 | 88 | allocated | 通用 IPC v1；IP2/IP3 有既有客体记录，IP4 bulk 可调用但本组合 guest 未运行，IP5 性能资格独立 |
 | 89 | 89 | allocated | 自身进程/当前线程 CPU 时间；版本 1，已实现但未客体验收 |
 | 90 | 90 | allocated | `sys_observe` v1：自身/直接子进程、持有 IPC 端点的有界只读观测；[契约](native_observation.md)，资格见专项记录 |
@@ -30,6 +30,11 @@
 成功桩或能力声明，也不保证未来一个需求一定需要新syscall。128以上未分配，不暗示ABI只允许16位。
 
 ## syscall逐项登记
+
+sys87 modes 4/5 分别接收 `process_budget_config`（64 bytes）与
+`process_budget_snapshot`（192 bytes），共享定义 `process_budget_abi.hpp`。
+预算沿 fork/spawn/exec 保留所有祖先域；暂存页与仍有别名的资源也计费。
+版本、权限、错误、生命周期和六维范围见 [P1-B 契约](process_tree_budget.md)。
 
 sys51 显式 mode 1 为有界进程清理窗口，32 字节版本 1 请求，旧 mode 0 保持。
 独占退出责任、30 秒单调 deadline 上限及失败/回滚语义见

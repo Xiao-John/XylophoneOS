@@ -11,6 +11,15 @@ file::client files;
 closure preflight;
 u64 owner_pid = 0, policy_lock = 0;
 bool initialized = false, files_initialized = false, poisoned = false;
+controller_snapshot last_quarantine{};
+u64 operation_sequence = 0, operation_deadline = 0;
+u32 operation_token = 0;
+controller_operation operation_kind = controller_operation::none;
+
+void note_operation(controller_operation kind, u32 token, u64 deadline) {
+    if (operation_sequence != ~u64{0}) ++operation_sequence;
+    operation_kind = kind; operation_token = token; operation_deadline = deadline;
+}
 
 struct guard {
     bool acquired = false;
@@ -76,21 +85,39 @@ i64 deadline_now(u64 deadline, u64& now) {
 bool unknown_result(i64 result) {
     return result == file::transport_timeout || result == static_cast<i64>(file::status::io);
 }
+void quarantine(closure& value, i64 result, bool uncertain) {
+    value.quarantined = true;
+    if (!poisoned) {
+        last_quarantine = {};
+        last_quarantine.quarantine_owner_pid = sdk::pid();
+        last_quarantine.operation_sequence = operation_sequence;
+        last_quarantine.operation = operation_kind;
+        last_quarantine.token = operation_token;
+        last_quarantine.deadline = operation_deadline;
+        last_quarantine.native_error = result;
+        if (value.manifest_pin.handle) ++last_quarantine.retained_tokens;
+        for (const auto& pin : value.pins) if (pin.handle) ++last_quarantine.retained_tokens;
+        last_quarantine.flags = controller_quarantined | (uncertain ? controller_uncertain : 0u) |
+            (uncertain && operation_kind == controller_operation::open ? controller_unknown_open : 0u);
+    }
+    poisoned = true;
+}
 void record_error(closure& value, i64 result) {
     if (result && !value.native_error) value.native_error = result;
-    if (unknown_result(result)) { value.quarantined = true; poisoned = true; }
+    if (unknown_result(result)) quarantine(value, result, true);
 }
 i64 close_pin(pinned_object& pin, closure& value) {
     if (!pin.handle) return 0;
+    note_operation(controller_operation::close, pin.handle, value.deadline);
     if (!pin.client || !pin.client->set_deadline(value.deadline)) {
         record_error(value, process_error_invalid);
-        value.quarantined = true;
+        quarantine(value, process_error_invalid, false);
         return process_error_invalid;
     }
     const i64 result = pin.client->close(pin.handle);
     if (result) {
         record_error(value, result);
-        value.quarantined = true;
+        quarantine(value, result, unknown_result(result));
         // Even a definite close failure keeps the token. No automatic retry
         // may conflate a delayed reply with a later side effect.
         return result;
@@ -124,11 +151,13 @@ error open_pin(const char* path, pinned_object& pin, closure& value, u64 expecte
     pin.client = &files;
     pin.deadline = value.deadline;
     u32 version = 0;
+    note_operation(controller_operation::open, 0, value.deadline);
     i64 result = files.open(path, file::read_only | file::open_pin, pin.handle, pin.size, version);
     if (result) { pin.native_error = result; record_error(value, result); return error::io; }
     if (!pin.handle) { record_error(value, static_cast<i64>(file::status::io)); return error::io; }
     if (!pin.size || (expected_size && pin.size != expected_size)) return error::bounds;
     u32 size = 0, attributes = 0;
+    note_operation(controller_operation::metadata, pin.handle, value.deadline);
     result = files.fstat(pin.handle, size, attributes, pin.inode);
     if (result) { pin.native_error = result; record_error(value, result); return error::io; }
     if (!pin.inode || size != pin.size || (attributes & file::stat_is_directory)) return error::identity;
@@ -243,6 +272,7 @@ bool pin_read(void* context, u64 offset, u8* destination, u32 length) {
             while (pin.cache_length < wanted) {
                 const u32 remaining = wanted - pin.cache_length;
                 const u32 count = remaining < file::response_data_size ? remaining : file::response_data_size;
+                note_operation(controller_operation::read, pin.handle, pin.deadline);
                 const i64 received = pin.client->read_at(pin.handle, pin.cache + pin.cache_length,
                                                         count, u64{pin.cache_begin} + pin.cache_length);
                 if (received <= 0 || static_cast<u64>(received) > count) {
@@ -267,6 +297,19 @@ bool pin_read(void* context, u64 offset, u8* destination, u32 length) {
 }
 
 bool configured() { return __atomic_load_n(&initialized, __ATOMIC_ACQUIRE); }
+
+error inspect_controller(controller_snapshot& output) {
+    guard held;
+    if (!held.acquired) return error::state;
+    controller_snapshot result = last_quarantine;
+    result.version = controller_snapshot_version; result.size = sizeof(result);
+    result.owner_pid = owner_pid;
+    result.policy_sequence = initialized ? policy.sequence : 0;
+    if (initialized) result.flags |= controller_configured;
+    if (!poisoned) result.operation_sequence = operation_sequence;
+    output = result;
+    return error::none;
+}
 
 error configure(const launch_policy& supplied, u64 absolute_deadline) {
     guard held;

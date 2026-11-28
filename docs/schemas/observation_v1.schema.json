@@ -1,0 +1,557 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "XOS P1-A recorded observation v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "observation_id": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "pid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "pid",
+        "epoch"
+      ],
+      "additionalProperties": false
+    },
+    "caller_pid": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "logical_time_ns": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "valid_until_ns": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 18446744073709551615
+    },
+    "status": {
+      "enum": [
+        "invalid",
+        "ok",
+        "unauthorized",
+        "stale",
+        "revoked",
+        "deadline",
+        "quota",
+        "unavailable",
+        "unsupported"
+      ]
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "process"
+              },
+              "scope": {
+                "enum": [
+                  "self",
+                  "direct_child",
+                  "held_endpoint",
+                  "controller",
+                  "application",
+                  "service"
+                ]
+              },
+              "object_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "status": {
+                "const": "ok"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "parent_pid": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 18446744073709551615
+                  },
+                  "state": {
+                    "enum": [
+                      "building",
+                      "fresh",
+                      "ready",
+                      "running",
+                      "waiting",
+                      "dead"
+                    ]
+                  },
+                  "threads": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 64
+                  }
+                },
+                "required": [
+                  "parent_pid",
+                  "state",
+                  "threads"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "kind",
+              "scope",
+              "object_id",
+              "generation",
+              "status",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "service"
+              },
+              "scope": {
+                "enum": [
+                  "self",
+                  "direct_child",
+                  "held_endpoint",
+                  "controller",
+                  "application",
+                  "service"
+                ]
+              },
+              "object_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "status": {
+                "const": "ok"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "owner_pid": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551615
+                  },
+                  "interface_version": {
+                    "const": 1
+                  },
+                  "state": {
+                    "enum": [
+                      "available",
+                      "retired"
+                    ]
+                  }
+                },
+                "required": [
+                  "owner_pid",
+                  "interface_version",
+                  "state"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "kind",
+              "scope",
+              "object_id",
+              "generation",
+              "status",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "resource"
+              },
+              "scope": {
+                "enum": [
+                  "self",
+                  "direct_child",
+                  "held_endpoint",
+                  "controller",
+                  "application",
+                  "service"
+                ]
+              },
+              "object_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "status": {
+                "const": "ok"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "owner_pid": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551615
+                  },
+                  "endpoints_used": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4294967295
+                  },
+                  "endpoint_limit": {
+                    "const": 4
+                  },
+                  "names_used": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 4294967295
+                  },
+                  "name_limit": {
+                    "const": 2
+                  },
+                  "parent_pid": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 18446744073709551615
+                  }
+                },
+                "required": [
+                  "owner_pid",
+                  "endpoints_used",
+                  "endpoint_limit",
+                  "names_used",
+                  "name_limit",
+                  "parent_pid"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "kind",
+              "scope",
+              "object_id",
+              "generation",
+              "status",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "runtime"
+              },
+              "scope": {
+                "enum": [
+                  "self",
+                  "direct_child",
+                  "held_endpoint",
+                  "controller",
+                  "application",
+                  "service"
+                ]
+              },
+              "object_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "status": {
+                "const": "ok"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "controller_pid": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551615
+                  },
+                  "digest": {
+                    "type": "string",
+                    "minLength": 64,
+                    "maxLength": 64,
+                    "pattern": "(?!0{64})[0-9a-f]{64}"
+                  }
+                },
+                "required": [
+                  "controller_pid",
+                  "digest"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "kind",
+              "scope",
+              "object_id",
+              "generation",
+              "status",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "network"
+              },
+              "scope": {
+                "enum": [
+                  "self",
+                  "direct_child",
+                  "held_endpoint",
+                  "controller",
+                  "application",
+                  "service"
+                ]
+              },
+              "object_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "status": {
+                "const": "ok"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "service_pid": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551615
+                  },
+                  "mode": {
+                    "enum": [
+                      "disabled",
+                      "static_direct",
+                      "dhcp"
+                    ]
+                  },
+                  "state": {
+                    "enum": [
+                      "unconfigured",
+                      "ready",
+                      "retired"
+                    ]
+                  }
+                },
+                "required": [
+                  "service_pid",
+                  "mode",
+                  "state"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "kind",
+              "scope",
+              "object_id",
+              "generation",
+              "status",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "trust"
+              },
+              "scope": {
+                "enum": [
+                  "self",
+                  "direct_child",
+                  "held_endpoint",
+                  "controller",
+                  "application",
+                  "service"
+                ]
+              },
+              "object_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              },
+              "status": {
+                "const": "ok"
+              },
+              "data": {
+                "type": "object",
+                "properties": {
+                  "owner_pid": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 18446744073709551615
+                  },
+                  "digest": {
+                    "type": "string",
+                    "minLength": 64,
+                    "maxLength": 64,
+                    "pattern": "(?!0{64})[0-9a-f]{64}"
+                  },
+                  "selection": {
+                    "const": "loaded_snapshot"
+                  }
+                },
+                "required": [
+                  "owner_pid",
+                  "digest",
+                  "selection"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "kind",
+              "scope",
+              "object_id",
+              "generation",
+              "status",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "process",
+                  "service",
+                  "resource",
+                  "runtime",
+                  "network",
+                  "trust"
+                ]
+              },
+              "scope": {
+                "enum": [
+                  "self",
+                  "direct_child",
+                  "held_endpoint",
+                  "controller",
+                  "application",
+                  "service"
+                ]
+              },
+              "object_id": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 18446744073709551615
+              },
+              "generation": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 18446744073709551615
+              },
+              "status": {
+                "enum": [
+                  "invalid",
+                  "unauthorized",
+                  "stale",
+                  "revoked",
+                  "deadline",
+                  "quota",
+                  "unavailable",
+                  "unsupported"
+                ]
+              },
+              "data": {
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "kind",
+              "scope",
+              "object_id",
+              "generation",
+              "status",
+              "data"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "observation_id",
+    "source",
+    "caller_pid",
+    "logical_time_ns",
+    "valid_until_ns",
+    "status",
+    "records"
+  ],
+  "additionalProperties": false,
+  "description": "Bounded separately sampled records. A successful envelope does not imply every source is available or a global atomic snapshot. Failed records contain no data. Runtime identity is controller-scoped; loaded_snapshot identifies an owner-selected, successfully loaded and verified immutable trust snapshot; a configured pin alone cannot be an ok active-trust record. It does not attest TLS connectivity or replacement of existing stream anchors. Additional cross-field constraints are enforced by observation_replay.py. Self/direct_child refer to the authenticated provider source.pid, not the consuming caller_pid. Runtime/trust owner is likewise the provider. service.interface_version is this observation metadata revision, not the target service protocol."
+}

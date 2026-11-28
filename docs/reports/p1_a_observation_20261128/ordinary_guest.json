@@ -1,0 +1,267 @@
+{
+  "status": "passed",
+  "runs": [
+    {
+      "round": 0,
+      "case": "native",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 0,
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "authorized",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 6,
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "denials",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 4,
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "quota",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 4,
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "lifecycle",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 7,
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "deadline",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 2,
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "exec",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 0,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "native",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 0,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "authorized",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 6,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "denials",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 4,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "quota",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 4,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "lifecycle",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 7,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "deadline",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 2,
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "exec",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 0,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "native",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 0,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "authorized",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 6,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "denials",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 4,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "quota",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 4,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "lifecycle",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 7,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "deadline",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 2,
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "exec",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "observations": 0,
+      "status": "passed"
+    }
+  ],
+  "runner_sha256": "98f67f82577c9c03389b7a261331cded4dea439a881990f0165453e47dbbc729",
+  "network": "absent_typed_unavailable",
+  "not_run": [
+    "model_generation",
+    "autonomous_writes",
+    "installed_profile",
+    "fork_generation_guest",
+    "global_atomic_snapshot",
+    "runtime_ELF_load",
+    "trust_bundle_load"
+  ],
+  "system_build_id": "0036a7ffb163749b",
+  "iso_sha256": "3861432309eb49b4780c1f44d7e8c1af10a593a3b699b0709da4104567984312",
+  "system_manifest_sha256": "08a850ff3ff4d356fcbae1b4d1e38698208b777c76147a2dd9ca42cb85904bfd",
+  "fixture_receipt_sha256": "8bab93cf6f6de5bcca8d77a00918d8e5ac5914ebef1618a270f160f0c4292d7c",
+  "sdk_tree_sha256": "cac8b07387dae073d9cde8f1c58352e1c41187ff0ee7b1866ab3d7e972b6bb94",
+  "baseline": [
+    129793,
+    2,
+    0
+  ],
+  "public_export": "Derived report; host QEMU command and sibling-file hashes omitted. See provenance.",
+  "replay_count": 69,
+  "replay_status_counts": {
+    "accepted_proposal": 39,
+    "unavailable": 6,
+    "unauthorized": 6,
+    "stale": 9,
+    "quota": 6,
+    "revoked": 3
+  }
+}

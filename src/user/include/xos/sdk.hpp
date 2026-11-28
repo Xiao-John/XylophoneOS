@@ -2,11 +2,18 @@
 // Historical MIT base; XOS changes from 2026-10-24 are Apache-2.0.
 #pragma once
 #include <xos/process_abi.hpp>
+#include <xos/observation_abi.hpp>
 #include <xos/file_abi.hpp>
 #include <xos/spawn.hpp>
 
 namespace xos::sdk {
 i64 syscall(u64 number, u64 first = 0, u64 second = 0, u64 third = 0);
+inline observe_native::result observe(const observe_native::request& request,
+                                      observe_native::snapshot& output) {
+    output = {};
+    return static_cast<observe_native::result>(syscall(sys_observe,
+        reinterpret_cast<u64>(&request), reinterpret_cast<u64>(&output), 0));
+}
 // Runtime initialization only: caller owns and keeps the supplied TCB alive.
 inline i64 install_thread_pointer(u64 own_pid, void* pointer) {
     return syscall(sys_process_tls, own_pid, reinterpret_cast<u64>(pointer),

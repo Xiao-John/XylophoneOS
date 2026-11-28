@@ -1,0 +1,827 @@
+{
+  "status": "passed",
+  "scope": "offline evaluator and synthetic recorded pairs",
+  "guest": "not_run",
+  "source_sha256": {
+    "tests/observation_replay_test.py": "a43a13207fe61455e3eecb4b84d8ca364fe1c21a622a98d36e9ec4d782a6ba4c",
+    "scripts/observation_replay.py": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+    "docs/schemas/observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+    "docs/schemas/observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+    "docs/schemas/proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1",
+    "tests/fixtures/observation/deadline.json": "94b1068b11b83699c4b4fcd8ee3a3e11695dc9cebca1a198b2003888b0163c2d",
+    "tests/fixtures/observation/expected.json": "8353f84c1e5bd5b4bcf5228781818c8964d59974a2a99e9718000dd87d2ada5e",
+    "tests/fixtures/observation/quota.json": "a4d8c07c1ae98d4e305affd7efa84a9ba830fc76dc07d02294afa1aea277d615",
+    "tests/fixtures/observation/revoked_endpoint.json": "e149a6931488692684d0b83cd6071707434399855dcb932f99ddb712941d4bd0",
+    "tests/fixtures/observation/self_inspect.json": "b732593e4f701498a769fea20006960c1962e64ed279d4643e8360e4bb8b8f9a",
+    "tests/fixtures/observation/service_restart.json": "d91e4a70cbf5d2964a8b481e1f91344646d938cac0819a183cead758abf2479c",
+    "tests/fixtures/observation/unauthorized.json": "ffc869f5295edf3ddda2a0b6086b95b5775036e6d778353809a2301f693841be",
+    "tests/fixtures/observation/unavailable_network.json": "07284c6ddb789b8cb48b491bbd0bab4f43f7d52eb4d30b38da1d5a5044a4b48c",
+    "tests/fixtures/observation/unsupported_write.json": "157e5fca8ef5c1faa64a37a8c12823a97ef9b507ddff3b79d21bff7541f40542"
+  },
+  "checks": [
+    {
+      "name": "fixture self_inspect.json",
+      "status": "passed"
+    },
+    {
+      "name": "fixture self_inspect.json cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "fixture service_restart.json",
+      "status": "passed"
+    },
+    {
+      "name": "fixture service_restart.json cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "fixture unauthorized.json",
+      "status": "passed"
+    },
+    {
+      "name": "fixture unauthorized.json cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "fixture deadline.json",
+      "status": "passed"
+    },
+    {
+      "name": "fixture deadline.json cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "fixture quota.json",
+      "status": "passed"
+    },
+    {
+      "name": "fixture quota.json cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "fixture revoked_endpoint.json",
+      "status": "passed"
+    },
+    {
+      "name": "fixture revoked_endpoint.json cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "fixture unavailable_network.json",
+      "status": "passed"
+    },
+    {
+      "name": "fixture unavailable_network.json cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "fixture unsupported_write.json",
+      "status": "passed"
+    },
+    {
+      "name": "fixture unsupported_write.json cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "process inspect",
+      "status": "passed"
+    },
+    {
+      "name": "process inspect cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "process diagnose",
+      "status": "passed"
+    },
+    {
+      "name": "process diagnose cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "process refresh_observation",
+      "status": "passed"
+    },
+    {
+      "name": "process refresh_observation cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "service inspect",
+      "status": "passed"
+    },
+    {
+      "name": "service inspect cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "service diagnose",
+      "status": "passed"
+    },
+    {
+      "name": "service diagnose cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "service refresh_observation",
+      "status": "passed"
+    },
+    {
+      "name": "service refresh_observation cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "resource inspect",
+      "status": "passed"
+    },
+    {
+      "name": "resource inspect cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "resource diagnose",
+      "status": "passed"
+    },
+    {
+      "name": "resource diagnose cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "resource refresh_observation",
+      "status": "passed"
+    },
+    {
+      "name": "resource refresh_observation cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "runtime inspect",
+      "status": "passed"
+    },
+    {
+      "name": "runtime inspect cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "runtime diagnose",
+      "status": "passed"
+    },
+    {
+      "name": "runtime diagnose cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "runtime refresh_observation",
+      "status": "passed"
+    },
+    {
+      "name": "runtime refresh_observation cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "network inspect",
+      "status": "passed"
+    },
+    {
+      "name": "network inspect cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "network diagnose",
+      "status": "passed"
+    },
+    {
+      "name": "network diagnose cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "network refresh_observation",
+      "status": "passed"
+    },
+    {
+      "name": "network refresh_observation cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "trust inspect",
+      "status": "passed"
+    },
+    {
+      "name": "trust inspect cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "trust diagnose",
+      "status": "passed"
+    },
+    {
+      "name": "trust diagnose cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "trust refresh_observation",
+      "status": "passed"
+    },
+    {
+      "name": "trust refresh_observation cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "envelope invalid",
+      "status": "passed"
+    },
+    {
+      "name": "envelope invalid cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target invalid",
+      "status": "passed"
+    },
+    {
+      "name": "target invalid cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "envelope unauthorized",
+      "status": "passed"
+    },
+    {
+      "name": "envelope unauthorized cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target unauthorized",
+      "status": "passed"
+    },
+    {
+      "name": "target unauthorized cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "envelope stale",
+      "status": "passed"
+    },
+    {
+      "name": "envelope stale cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target stale",
+      "status": "passed"
+    },
+    {
+      "name": "target stale cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "envelope revoked",
+      "status": "passed"
+    },
+    {
+      "name": "envelope revoked cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target revoked",
+      "status": "passed"
+    },
+    {
+      "name": "target revoked cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "envelope deadline",
+      "status": "passed"
+    },
+    {
+      "name": "envelope deadline cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target deadline",
+      "status": "passed"
+    },
+    {
+      "name": "target deadline cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "envelope quota",
+      "status": "passed"
+    },
+    {
+      "name": "envelope quota cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target quota",
+      "status": "passed"
+    },
+    {
+      "name": "target quota cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "envelope unavailable",
+      "status": "passed"
+    },
+    {
+      "name": "envelope unavailable cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target unavailable",
+      "status": "passed"
+    },
+    {
+      "name": "target unavailable cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "envelope unsupported",
+      "status": "passed"
+    },
+    {
+      "name": "envelope unsupported cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target unsupported",
+      "status": "passed"
+    },
+    {
+      "name": "target unsupported cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "future schema_version",
+      "status": "passed"
+    },
+    {
+      "name": "future schema_version cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "future validator_version",
+      "status": "passed"
+    },
+    {
+      "name": "future validator_version cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "future policy_version",
+      "status": "passed"
+    },
+    {
+      "name": "future policy_version cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "future observation",
+      "status": "passed"
+    },
+    {
+      "name": "future observation cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "future proposal",
+      "status": "passed"
+    },
+    {
+      "name": "future proposal cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "source process replaced",
+      "status": "passed"
+    },
+    {
+      "name": "source process replaced cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "observation replaced",
+      "status": "passed"
+    },
+    {
+      "name": "observation replaced cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "target generation replaced",
+      "status": "passed"
+    },
+    {
+      "name": "target generation replaced cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "principal replaced",
+      "status": "passed"
+    },
+    {
+      "name": "principal replaced cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "read scope denied",
+      "status": "passed"
+    },
+    {
+      "name": "read scope denied cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "proposal policy denies",
+      "status": "passed"
+    },
+    {
+      "name": "proposal policy denies cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "record too old",
+      "status": "passed"
+    },
+    {
+      "name": "record too old cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "logical time rolled backwards",
+      "status": "passed"
+    },
+    {
+      "name": "logical time rolled backwards cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "proposal expired at exact deadline",
+      "status": "passed"
+    },
+    {
+      "name": "proposal expired at exact deadline cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "unobserved target remains unknown",
+      "status": "passed"
+    },
+    {
+      "name": "unobserved target remains unknown cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "unknown identity cannot certify absence",
+      "status": "passed"
+    },
+    {
+      "name": "unknown identity cannot certify absence cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "boolean ID",
+      "status": "passed"
+    },
+    {
+      "name": "boolean ID cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "zero successful generation",
+      "status": "passed"
+    },
+    {
+      "name": "zero successful generation cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "out of range integer",
+      "status": "passed"
+    },
+    {
+      "name": "out of range integer cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "negative integer",
+      "status": "passed"
+    },
+    {
+      "name": "negative integer cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "float integer",
+      "status": "passed"
+    },
+    {
+      "name": "float integer cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "wrong self principal",
+      "status": "passed"
+    },
+    {
+      "name": "wrong self principal cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "invalid cross-domain scope",
+      "status": "passed"
+    },
+    {
+      "name": "invalid cross-domain scope cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "resource over quota",
+      "status": "passed"
+    },
+    {
+      "name": "resource over quota cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "resource endpoint limit cannot be invented",
+      "status": "passed"
+    },
+    {
+      "name": "resource endpoint limit cannot be invented cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "resource name limit cannot be invented",
+      "status": "passed"
+    },
+    {
+      "name": "resource name limit cannot be invented cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "process thread limit",
+      "status": "passed"
+    },
+    {
+      "name": "process thread limit cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "service metadata revision cannot imply target ABI",
+      "status": "passed"
+    },
+    {
+      "name": "service metadata revision cannot imply target ABI cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "network owner mismatch",
+      "status": "passed"
+    },
+    {
+      "name": "network owner mismatch cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "disabled network cannot be ready",
+      "status": "passed"
+    },
+    {
+      "name": "disabled network cannot be ready cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "runtime controller mismatch",
+      "status": "passed"
+    },
+    {
+      "name": "runtime controller mismatch cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "trust owner mismatch",
+      "status": "passed"
+    },
+    {
+      "name": "trust owner mismatch cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "configured pin is not an active trust snapshot",
+      "status": "passed"
+    },
+    {
+      "name": "configured pin is not an active trust snapshot cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "unknown trust selection is rejected",
+      "status": "passed"
+    },
+    {
+      "name": "unknown trust selection is rejected cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "failed envelope cannot leak data",
+      "status": "passed"
+    },
+    {
+      "name": "failed envelope cannot leak data cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "failed item cannot leak data",
+      "status": "passed"
+    },
+    {
+      "name": "failed item cannot leak data cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "empty validity",
+      "status": "passed"
+    },
+    {
+      "name": "empty validity cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "unbounded validity",
+      "status": "passed"
+    },
+    {
+      "name": "unbounded validity cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "unexpected executor request",
+      "status": "passed"
+    },
+    {
+      "name": "unexpected executor request cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "overlong proposal action",
+      "status": "passed"
+    },
+    {
+      "name": "overlong proposal action cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "duplicate permitted actions",
+      "status": "passed"
+    },
+    {
+      "name": "duplicate permitted actions cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "malformed digest",
+      "status": "passed"
+    },
+    {
+      "name": "malformed digest cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "zero runtime digest",
+      "status": "passed"
+    },
+    {
+      "name": "zero runtime digest cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "zero trust digest",
+      "status": "passed"
+    },
+    {
+      "name": "zero trust digest cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "ambiguous target observations",
+      "status": "passed"
+    },
+    {
+      "name": "ambiguous target observations cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "observation item budget",
+      "status": "passed"
+    },
+    {
+      "name": "observation item budget cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "explicit direct child",
+      "status": "passed"
+    },
+    {
+      "name": "explicit direct child cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "direct child cannot rename parent",
+      "status": "passed"
+    },
+    {
+      "name": "direct child cannot rename parent cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "explicit direct child resource",
+      "status": "passed"
+    },
+    {
+      "name": "explicit direct child resource cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "direct child resource cannot rename parent",
+      "status": "passed"
+    },
+    {
+      "name": "direct child resource cannot rename parent cannot execute or retry",
+      "status": "passed"
+    },
+    {
+      "name": "duplicate key",
+      "status": "passed"
+    },
+    {
+      "name": "nested duplicate key",
+      "status": "passed"
+    },
+    {
+      "name": "nonfinite number",
+      "status": "passed"
+    },
+    {
+      "name": "infinity",
+      "status": "passed"
+    },
+    {
+      "name": "exponent number",
+      "status": "passed"
+    },
+    {
+      "name": "bad UTF-8",
+      "status": "passed"
+    },
+    {
+      "name": "nesting budget",
+      "status": "passed"
+    },
+    {
+      "name": "byte budget",
+      "status": "passed"
+    },
+    {
+      "name": "trailing object",
+      "status": "passed"
+    },
+    {
+      "name": "offline replay stable across processes cwd timezone and JSON formatting",
+      "status": "passed"
+    },
+    {
+      "name": "CLI and direct validation agree",
+      "status": "passed"
+    },
+    {
+      "name": "CLI invalid encoding is typed with exit 2",
+      "status": "passed"
+    },
+    {
+      "name": "CLI policy denial is typed with exit 1",
+      "status": "passed"
+    },
+    {
+      "name": "validation binds exact inputs",
+      "status": "passed"
+    },
+    {
+      "name": "validation binds exact implementation",
+      "status": "passed"
+    },
+    {
+      "name": "validation binds all three schemas",
+      "status": "passed"
+    },
+    {
+      "name": "test inputs remained unchanged",
+      "status": "passed"
+    }
+  ]
+}

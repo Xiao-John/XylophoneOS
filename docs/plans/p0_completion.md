@@ -166,3 +166,24 @@ is a versioned interface and a reproducible validation fixture. Model output
 is recorded as input to validation; it does not become an authorization token,
 a trusted kernel component, or an OS release dependency. Autonomous persistent
 writes require the separate budget, authorization and recovery work above.
+
+### P1-A delivery checkpoint: 2026-11-28 Asia/Shanghai
+
+The read-only observation/proposal boundary is implemented and qualified in
+the profiles recorded by the [P1-A delivery log](../work_log/63c043b9_p1_a_observation.md)
+and [qualification](../reports/p1_a_observation_20261128/qualification.json).
+It includes bounded scoped sys90 reads, authenticated user-space grants tied to
+PID/image generation, six typed source adapters, separate proposal schemas and
+deterministic offline evaluation. Ordinary native clients pass 21 guest cases;
+live static Net2 passes three rounds; real loaded-trust snapshots pass 45 guest
+checks; the affected IPC lifecycle suite passes four cases. All 102 actual
+observation/proposal recordings replay identically.
+
+Runtime observations describe a local volatile catalog. Trust observations
+describe the owner's selected, successfully loaded CA snapshot through an
+optional native TLS bridge, without changing existing streams. The default
+consumer is not an installed inventory daemon, and separately sampled records
+are not a global atomic snapshot. A proposal remains non-executable and all
+verdicts prohibit automatic retry. Persistent authority, tree budgets and
+recoverable writes remain P1-B and the relevant P1-C/E work. This checkpoint
+does not change the outstanding P0 acceptance or public-delivery requirements.

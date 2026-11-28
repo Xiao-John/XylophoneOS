@@ -1,0 +1,1187 @@
+{
+  "origin": "actual QEMU observations; explicit non-model inspect proposals",
+  "entries": [
+    {
+      "input": {
+        "logical_time_ns": 1430000000,
+        "observation": {
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "observation_id": 1,
+          "records": [],
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "status": "unavailable",
+          "valid_until_ns": 2430000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "self"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "process",
+              "object_id": 10
+            }
+          ],
+          "caller_pid": 10,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 10,
+          "expires_ns": 2430000000,
+          "observation_id": 1,
+          "proposal_id": 1,
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "target": {
+            "generation": 1,
+            "kind": "process",
+            "object_id": 10
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "9f98c554cdd59733bd0dcb281b8d415eca7a630ecd5ff1fb0e320b31f4d9c5b8",
+        "policy_version": 1,
+        "reason": "observation_outcome",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "unavailable",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1430000000,
+        "observation": {
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "observation_id": 2,
+          "records": [
+            {
+              "data": {
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "owner_pid": 10,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 7,
+              "kind": "trust",
+              "object_id": 7,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "status": "ok",
+          "valid_until_ns": 2430000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 7
+            }
+          ],
+          "caller_pid": 10,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 10,
+          "expires_ns": 2430000000,
+          "observation_id": 2,
+          "proposal_id": 2,
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "target": {
+            "generation": 7,
+            "kind": "trust",
+            "object_id": 7
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "0e915850668bd0f95cc025833ab9fae0b6ff61563777382fdd1dfbce44e9d64a",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1430000000,
+        "observation": {
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "observation_id": 3,
+          "records": [
+            {
+              "data": {
+                "digest": "a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a",
+                "owner_pid": 10,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 8,
+              "kind": "trust",
+              "object_id": 8,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "status": "ok",
+          "valid_until_ns": 2430000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 8
+            }
+          ],
+          "caller_pid": 10,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 10,
+          "expires_ns": 2430000000,
+          "observation_id": 3,
+          "proposal_id": 3,
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "target": {
+            "generation": 8,
+            "kind": "trust",
+            "object_id": 8
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "caf67d963f441a245b62116176af58a0d010351bbac572f539b9afcc950f2d32",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1430000000,
+        "observation": {
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "observation_id": 4,
+          "records": [
+            {
+              "data": {
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "owner_pid": 10,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 7,
+              "kind": "trust",
+              "object_id": 7,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "status": "ok",
+          "valid_until_ns": 2430000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 7
+            }
+          ],
+          "caller_pid": 10,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 10,
+          "expires_ns": 2430000000,
+          "observation_id": 4,
+          "proposal_id": 4,
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "target": {
+            "generation": 7,
+            "kind": "trust",
+            "object_id": 7
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "4d81eb73121068a0f26fdfce2942aeea772136e197febf5076a42f61a41d0b42",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1430000000,
+        "observation": {
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "observation_id": 5,
+          "records": [],
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "status": "unavailable",
+          "valid_until_ns": 2430000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "self"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "process",
+              "object_id": 10
+            }
+          ],
+          "caller_pid": 10,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 10,
+          "expires_ns": 2430000000,
+          "observation_id": 5,
+          "proposal_id": 5,
+          "schema_version": 1,
+          "source": {
+            "epoch": 3139464725126625509,
+            "pid": 10
+          },
+          "target": {
+            "generation": 1,
+            "kind": "process",
+            "object_id": 10
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "3b4f96fad5ab2f06dad2a5a404bee79bb0090a631735c362d1ec6d8b9fe04d3f",
+        "policy_version": 1,
+        "reason": "observation_outcome",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "unavailable",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1830000000,
+        "observation": {
+          "caller_pid": 11,
+          "logical_time_ns": 1830000000,
+          "observation_id": 1,
+          "records": [],
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "status": "unavailable",
+          "valid_until_ns": 2830000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "self"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "process",
+              "object_id": 11
+            }
+          ],
+          "caller_pid": 11,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 11,
+          "expires_ns": 2830000000,
+          "observation_id": 1,
+          "proposal_id": 6,
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "target": {
+            "generation": 1,
+            "kind": "process",
+            "object_id": 11
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "ac381709eb1dce4f036f72f9746414c36398aaabb414293a73ba6bd3f6082edd",
+        "policy_version": 1,
+        "reason": "observation_outcome",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "unavailable",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1830000000,
+        "observation": {
+          "caller_pid": 11,
+          "logical_time_ns": 1830000000,
+          "observation_id": 2,
+          "records": [
+            {
+              "data": {
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "owner_pid": 11,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 7,
+              "kind": "trust",
+              "object_id": 7,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "status": "ok",
+          "valid_until_ns": 2830000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 7
+            }
+          ],
+          "caller_pid": 11,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 11,
+          "expires_ns": 2830000000,
+          "observation_id": 2,
+          "proposal_id": 7,
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "target": {
+            "generation": 7,
+            "kind": "trust",
+            "object_id": 7
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "c5826b1408c87836b1a4e2a24e438ee5b325a04a8cfc0f5091b799761b13771f",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1830000000,
+        "observation": {
+          "caller_pid": 11,
+          "logical_time_ns": 1830000000,
+          "observation_id": 3,
+          "records": [
+            {
+              "data": {
+                "digest": "a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a",
+                "owner_pid": 11,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 8,
+              "kind": "trust",
+              "object_id": 8,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "status": "ok",
+          "valid_until_ns": 2830000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 8
+            }
+          ],
+          "caller_pid": 11,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 11,
+          "expires_ns": 2830000000,
+          "observation_id": 3,
+          "proposal_id": 8,
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "target": {
+            "generation": 8,
+            "kind": "trust",
+            "object_id": 8
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "ff5b57c7749a5b35678a79733100409890e4433879f56e1f96218e0157b759f6",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1830000000,
+        "observation": {
+          "caller_pid": 11,
+          "logical_time_ns": 1830000000,
+          "observation_id": 4,
+          "records": [
+            {
+              "data": {
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "owner_pid": 11,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 7,
+              "kind": "trust",
+              "object_id": 7,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "status": "ok",
+          "valid_until_ns": 2830000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 7
+            }
+          ],
+          "caller_pid": 11,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 11,
+          "expires_ns": 2830000000,
+          "observation_id": 4,
+          "proposal_id": 9,
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "target": {
+            "generation": 7,
+            "kind": "trust",
+            "object_id": 7
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "74f192700aa231bdeee379a14684f8f5eaf190e63af043193828f3c19f6d2684",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 1840000000,
+        "observation": {
+          "caller_pid": 11,
+          "logical_time_ns": 1840000000,
+          "observation_id": 5,
+          "records": [],
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "status": "unavailable",
+          "valid_until_ns": 2840000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "self"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "process",
+              "object_id": 11
+            }
+          ],
+          "caller_pid": 11,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 11,
+          "expires_ns": 2840000000,
+          "observation_id": 5,
+          "proposal_id": 10,
+          "schema_version": 1,
+          "source": {
+            "epoch": 4101567925948061253,
+            "pid": 11
+          },
+          "target": {
+            "generation": 1,
+            "kind": "process",
+            "object_id": 11
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "94969811c4f9757e3ce6f003d62c96bb11f7869b3e2df256448be0cdc774c938",
+        "policy_version": 1,
+        "reason": "observation_outcome",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "unavailable",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 2230000000,
+        "observation": {
+          "caller_pid": 12,
+          "logical_time_ns": 2230000000,
+          "observation_id": 1,
+          "records": [],
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "status": "unavailable",
+          "valid_until_ns": 3230000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "self"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "process",
+              "object_id": 12
+            }
+          ],
+          "caller_pid": 12,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 12,
+          "expires_ns": 3230000000,
+          "observation_id": 1,
+          "proposal_id": 11,
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "target": {
+            "generation": 1,
+            "kind": "process",
+            "object_id": 12
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "075d5bb184aaec1329292b77380f992091be0fcb0f0985b0f548e21e3286d7fc",
+        "policy_version": 1,
+        "reason": "observation_outcome",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "unavailable",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 2230000000,
+        "observation": {
+          "caller_pid": 12,
+          "logical_time_ns": 2230000000,
+          "observation_id": 2,
+          "records": [
+            {
+              "data": {
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "owner_pid": 12,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 7,
+              "kind": "trust",
+              "object_id": 7,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "status": "ok",
+          "valid_until_ns": 3230000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 7
+            }
+          ],
+          "caller_pid": 12,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 12,
+          "expires_ns": 3230000000,
+          "observation_id": 2,
+          "proposal_id": 12,
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "target": {
+            "generation": 7,
+            "kind": "trust",
+            "object_id": 7
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "94ae42fe16062c371b02bb0cb89bf6456dfca15932437d4e3a7326a25488b690",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 2230000000,
+        "observation": {
+          "caller_pid": 12,
+          "logical_time_ns": 2230000000,
+          "observation_id": 3,
+          "records": [
+            {
+              "data": {
+                "digest": "a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a",
+                "owner_pid": 12,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 8,
+              "kind": "trust",
+              "object_id": 8,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "status": "ok",
+          "valid_until_ns": 3230000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 8
+            }
+          ],
+          "caller_pid": 12,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 12,
+          "expires_ns": 3230000000,
+          "observation_id": 3,
+          "proposal_id": 13,
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "target": {
+            "generation": 8,
+            "kind": "trust",
+            "object_id": 8
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "4607ac735d899d54a5f85071b74316ce1792e4f64776e1107507b511494ae0b8",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 2240000000,
+        "observation": {
+          "caller_pid": 12,
+          "logical_time_ns": 2240000000,
+          "observation_id": 4,
+          "records": [
+            {
+              "data": {
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "owner_pid": 12,
+                "selection": "loaded_snapshot"
+              },
+              "generation": 7,
+              "kind": "trust",
+              "object_id": 7,
+              "scope": "application",
+              "status": "ok"
+            }
+          ],
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "status": "ok",
+          "valid_until_ns": 3240000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "application"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "trust",
+              "object_id": 7
+            }
+          ],
+          "caller_pid": 12,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 12,
+          "expires_ns": 3240000000,
+          "observation_id": 4,
+          "proposal_id": 14,
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "target": {
+            "generation": 7,
+            "kind": "trust",
+            "object_id": 7
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "3b6a754caf37aa0f45f27fc0c24d0d98d325dea1a55f3c7ad1bbe65b933c49f4",
+        "policy_version": 1,
+        "reason": "validated_recorded_proposal",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "accepted_proposal",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    },
+    {
+      "input": {
+        "logical_time_ns": 2240000000,
+        "observation": {
+          "caller_pid": 12,
+          "logical_time_ns": 2240000000,
+          "observation_id": 5,
+          "records": [],
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "status": "unavailable",
+          "valid_until_ns": 3240000000
+        },
+        "policy": {
+          "allowed_actions": [
+            "inspect"
+          ],
+          "allowed_scopes": [
+            "self"
+          ],
+          "allowed_targets": [
+            {
+              "kind": "process",
+              "object_id": 12
+            }
+          ],
+          "caller_pid": 12,
+          "max_observation_age_ns": 5000000000
+        },
+        "policy_version": 1,
+        "proposal": {
+          "action": "inspect",
+          "caller_pid": 12,
+          "expires_ns": 3240000000,
+          "observation_id": 5,
+          "proposal_id": 15,
+          "schema_version": 1,
+          "source": {
+            "epoch": 14120030461539834318,
+            "pid": 12
+          },
+          "target": {
+            "generation": 1,
+            "kind": "process",
+            "object_id": 12
+          }
+        },
+        "schema_version": 1,
+        "validator_version": 1
+      },
+      "result": {
+        "automatic_retry": false,
+        "execution_authority": false,
+        "input_sha256": "e1a6ec1dd17a6356cad505030fb9db6f96c56e2cae1d8075195426ff7d3bcd6c",
+        "policy_version": 1,
+        "reason": "observation_outcome",
+        "schema_sha256": {
+          "observation_replay_v1.schema.json": "48229d4a9ea24d98bb7204151e9d39d81765665d9054b63e84abf1c7d621e91d",
+          "observation_v1.schema.json": "b57103ea0f2f802c8f60147c678983af2c7a6d660e7c9f2ad3eaefeac4370741",
+          "proposal_v1.schema.json": "d16038d5045673c0bb565274ded709ed69ae8b691f9adb35ee073a39a8a60ab1"
+        },
+        "schema_version": 1,
+        "status": "unavailable",
+        "validator_sha256": "f48109cffe9666358ecf2dc5699a6cb154fe3814b11f61264a4f652c883e7efc",
+        "validator_version": 1
+      },
+      "repeat_identical": true
+    }
+  ]
+}

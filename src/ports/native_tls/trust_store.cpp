@@ -96,7 +96,7 @@ trust_store_result trust_store::load(const unsigned char* data, size_t size,
     // Transfer the fully parsed chain only after every entry has passed.
     anchors_ = candidate.value;
     mbedtls_x509_crt_init(&candidate.value);
-    generation_ = expected.generation;
+    pin_ = expected;
     count_ = count;
     return trust_store_result::ok;
 }

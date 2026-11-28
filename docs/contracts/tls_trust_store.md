@@ -66,6 +66,18 @@ an established connection. Existing streams are not retroactively revoked by a
 new CA generation; policy requiring immediate revocation must close those
 streams explicitly. Fatal TLS errors still discard verified peer state.
 
+`capture_pin(output)` clears its output and returns false until the object is
+ready. On success it copies the complete generation/digest identity committed
+by `load`; a rejected load cannot manufacture an active identity. The optional
+[`observation.hpp`](../../src/ports/native_tls/observation.hpp) bridge exposes
+that identity to the [P1-A observation service](observation_service.md) for the
+owner-selected store. The owner keeps the borrowed store alive and serializes
+selection changes, capture and destruction. This describes the selected loaded
+snapshot for new connections, not the anchors already copied into each stream.
+It adds no TLS dependency to the base observation SDK. The private C++ object
+layout now retains the verified digest, so rebuild the native TLS objects and
+their consumers together; there is no cross-version binary-layout guarantee.
+
 ## Provisioning and rollback
 
 1. Obtain CA source bytes through the deployment's trusted process and select

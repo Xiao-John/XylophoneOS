@@ -1,0 +1,32 @@
+{
+  "initial_observation_guest": {
+    "status": "failed",
+    "build_id": "c0640ebd7f7a7c2a",
+    "original_report_sha256": "5302c8a3c75db04e69ec5a3efb75ece5cb9e705132df0f7ea229414ca4afb98f",
+    "completed_cases_before_failure": [
+      "native",
+      "authorized",
+      "denials",
+      "quota",
+      "lifecycle",
+      "deadline"
+    ],
+    "recorded_replays_before_failure": 23,
+    "cause": "Runner matched OBS_FAIL as a substring of the expected OBS_FAILED_EXEC_RETAINED marker.",
+    "correction": "Match OBS_FAIL and OBS_NATIVE_FAIL with their trailing space; rerun on final source and media.",
+    "historical_result_unchanged": true
+  },
+  "initial_static_network_guest": {
+    "status": "failed",
+    "build_id": "01117394964236d7",
+    "original_report_sha256": "6c2c8bdf3ee8d18f2c96b5983e60f512c8d83f36f156a11cbf988e49f98ceb1d",
+    "cause": "The sealed static profile had already started Net2; the runner waited for a second manual-start announcement.",
+    "correction": "Bind the unique trusted supervisor boot announcement and ready marker; only start manually if none exists.",
+    "historical_result_unchanged": true
+  },
+  "trust_scope_review": {
+    "initial_design": "configured_pin without proof of loaded snapshot",
+    "qualification": "not accepted as active trust generation",
+    "correction": "Optional bridge reads a real ready trust_store; only loaded_snapshot is accepted."
+  }
+}

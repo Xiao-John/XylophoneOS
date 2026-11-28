@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "XOS P1-A offline validation replay v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "validator_version": {
+      "const": 1
+    },
+    "policy_version": {
+      "const": 1
+    },
+    "logical_time_ns": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 18446744073709551615
+    },
+    "policy": {
+      "type": "object",
+      "properties": {
+        "caller_pid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "allowed_actions": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "inspect",
+              "diagnose",
+              "refresh_observation"
+            ]
+          }
+        },
+        "allowed_scopes": {
+          "type": "array",
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "self",
+              "direct_child",
+              "held_endpoint",
+              "controller",
+              "application",
+              "service"
+            ]
+          }
+        },
+        "allowed_targets": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "process",
+                  "service",
+                  "resource",
+                  "runtime",
+                  "network",
+                  "trust"
+                ]
+              },
+              "object_id": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 18446744073709551615
+              }
+            },
+            "required": [
+              "kind",
+              "object_id"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "max_observation_age_ns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 30000000000
+        }
+      },
+      "required": [
+        "caller_pid",
+        "allowed_actions",
+        "allowed_scopes",
+        "allowed_targets",
+        "max_observation_age_ns"
+      ],
+      "additionalProperties": false
+    },
+    "observation": {
+      "$ref": "observation_v1.schema.json"
+    },
+    "proposal": {
+      "$ref": "proposal_v1.schema.json"
+    }
+  },
+  "required": [
+    "schema_version",
+    "validator_version",
+    "policy_version",
+    "logical_time_ns",
+    "policy",
+    "observation",
+    "proposal"
+  ],
+  "additionalProperties": false,
+  "description": "The policy and logical time are recorded evaluation inputs, never proof of current OS authority. No model inference, real-time clock or writing action runs. Same inputs and exact schema/validator bytes produce the same typed verdict. Input is at most 65536 UTF-8 bytes and 12 nested containers; duplicate keys, floats and nonfinite numbers are rejected."
+}

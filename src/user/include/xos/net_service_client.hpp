@@ -23,13 +23,16 @@ public:
             send_peer != expected_service_pid || receive_peer != expected_service_pid) {
             close(); return denied;
         }
+        peer_pid_ = expected_service_pid;
         return 0;
     }
     void close() {
         if (channel_.send) (void)sdk::ipc_channel_close(channel_.send);
         if (channel_.receive) (void)sdk::ipc_channel_close(channel_.receive);
-        channel_ = {}; next_sequence_ = 1;
+        channel_ = {}; next_sequence_ = 1; peer_pid_ = 0;
     }
+    // Read-only provenance of the current kernel-authenticated connection.
+    u64 authenticated_service_pid() const { return peer_pid_; }
     i64 request(message& input, message& reply) {
         reply = {};
         if (!channel_.send || !next_sequence_ || input.length > payload_bytes || input.reserved || input.result) return invalid;
@@ -234,5 +237,6 @@ private:
     }
     ipc_channel channel_{};
     u64 next_sequence_ = 1;
+    u64 peer_pid_ = 0;
 };
 }

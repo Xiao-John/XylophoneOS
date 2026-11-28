@@ -1,0 +1,577 @@
+{
+  "status": "passed",
+  "profile": "loaded_trust_snapshot",
+  "target": "glibc",
+  "scope": "real CA loads, optional bridge, production sources and JSON, offline replay",
+  "network": "disabled",
+  "qmp_enabled": false,
+  "runs": [
+    {
+      "round": 0,
+      "case": "loaded_trust_snapshot",
+      "status": "passed",
+      "output": "exec-driver /bin/trust.elf\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x000000000035d000\r\n[loader] started pid=10 file=/bin/trust.elf\n[process] event=wait_blocked parent=7 child=10\r\nOBS_TRUST_CHECK null_context_zeroed PASS\nOBS_TRUST_CHECK empty_store_zeroed PASS\nOBS_TRUST_CHECK empty_identity_zeroed PASS\nOBS_TRUST_CHECK wrong_digest_unavailable PASS\nOBS_TRUST_CHECK wrong_generation_unavailable PASS\nOBS_TRUST_CHECK malformed_der_unavailable PASS\nOBS_TRUST_CHECK verified_store_load PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK verified_pin_owned_copy PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK reload_preserves_loaded_identity PASS\nOBS_TRUST_CHECK replacement_store_load PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK selected_original PASS\nOBS_TRUST_ID generation=8 sha256=a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a\nOBS_TRUST_CHECK selected_replacement PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK authorized_rollback_selection PASS\nOBS_TRUST_CHECK detached_selection_unavailable PASS\nOBS_JSON {\"schema_version\":1,\"observation_id\":1,\"source\":{\"pid\":10,\"epoch\":3139464725126625509},\"caller_pid\":10,\"logical_time_ns\":1430000000,\"valid_until_ns\":2430000000,\"status\":\"unavailable\",\"records\":[]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":2,\"source\":{\"pid\":10,\"epoch\":3139464725126625509},\"caller_pid\":10,\"logical_time_ns\":1430000000,\"valid_until_ns\":2430000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":7,\"generation\":7,\"data\":{\"owner_pid\":10,\"digest\":\"6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":3,\"source\":{\"pid\":10,\"epoch\":3139464725126625509},\"caller_pid\":10,\"logical_time_ns\":1430000000,\"valid_until_ns\":2430000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":8,\"generation\":8,\"data\":{\"owner_pid\":10,\"digest\":\"a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":4,\"source\":{\"pid\":10,\"epoch\":3139464725126625509},\"caller_pid\":10,\"logical_time_ns\":1430000000,\"valid_until_ns\":2430000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":7,\"generation\":7,\"data\":{\"owner_pid\":10,\"digest\":\"6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":5,\"source\":{\"pid\":10,\"epoch\":3139464725126625509},\"caller_pid\":10,\"logical_time_ns\":1430000000,\"valid_until_ns\":2430000000,\"status\":\"unavailable\",\"records\":[]}\nOBS_TRUST_CHECK production_source_records PASS\nOBS_TRUST_PASS checks=15\n[task] event=reclaimed pid=10 pages=285\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+      "checks": [
+        {
+          "case": "null_context_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "empty_store_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "empty_identity_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "wrong_digest_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "wrong_generation_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "malformed_der_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "verified_store_load",
+          "status": "PASS"
+        },
+        {
+          "case": "verified_pin_owned_copy",
+          "status": "PASS"
+        },
+        {
+          "case": "reload_preserves_loaded_identity",
+          "status": "PASS"
+        },
+        {
+          "case": "replacement_store_load",
+          "status": "PASS"
+        },
+        {
+          "case": "selected_original",
+          "status": "PASS"
+        },
+        {
+          "case": "selected_replacement",
+          "status": "PASS"
+        },
+        {
+          "case": "authorized_rollback_selection",
+          "status": "PASS"
+        },
+        {
+          "case": "detached_selection_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "production_source_records",
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "schema_version": 1,
+          "observation_id": 1,
+          "source": {
+            "pid": 10,
+            "epoch": 3139464725126625509
+          },
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "valid_until_ns": 2430000000,
+          "status": "unavailable",
+          "records": []
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 2,
+          "source": {
+            "pid": 10,
+            "epoch": 3139464725126625509
+          },
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "valid_until_ns": 2430000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 7,
+              "generation": 7,
+              "data": {
+                "owner_pid": 10,
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 3,
+          "source": {
+            "pid": 10,
+            "epoch": 3139464725126625509
+          },
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "valid_until_ns": 2430000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 8,
+              "generation": 8,
+              "data": {
+                "owner_pid": 10,
+                "digest": "a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 4,
+          "source": {
+            "pid": 10,
+            "epoch": 3139464725126625509
+          },
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "valid_until_ns": 2430000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 7,
+              "generation": 7,
+              "data": {
+                "owner_pid": 10,
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 5,
+          "source": {
+            "pid": 10,
+            "epoch": 3139464725126625509
+          },
+          "caller_pid": 10,
+          "logical_time_ns": 1430000000,
+          "valid_until_ns": 2430000000,
+          "status": "unavailable",
+          "records": []
+        }
+      ],
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "loaded_trust_snapshot",
+      "status": "passed",
+      "output": "exec-driver /bin/trust.elf\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x000000000035d000\r\n[loader] started pid=11 file=/bin/trust.elf\n[process] event=wait_blocked parent=7 child=11\r\nOBS_TRUST_CHECK null_context_zeroed PASS\nOBS_TRUST_CHECK empty_store_zeroed PASS\nOBS_TRUST_CHECK empty_identity_zeroed PASS\nOBS_TRUST_CHECK wrong_digest_unavailable PASS\nOBS_TRUST_CHECK wrong_generation_unavailable PASS\nOBS_TRUST_CHECK malformed_der_unavailable PASS\nOBS_TRUST_CHECK verified_store_load PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK verified_pin_owned_copy PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK reload_preserves_loaded_identity PASS\nOBS_TRUST_CHECK replacement_store_load PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK selected_original PASS\nOBS_TRUST_ID generation=8 sha256=a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a\nOBS_TRUST_CHECK selected_replacement PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK authorized_rollback_selection PASS\nOBS_TRUST_CHECK detached_selection_unavailable PASS\nOBS_JSON {\"schema_version\":1,\"observation_id\":1,\"source\":{\"pid\":11,\"epoch\":4101567925948061253},\"caller_pid\":11,\"logical_time_ns\":1830000000,\"valid_until_ns\":2830000000,\"status\":\"unavailable\",\"records\":[]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":2,\"source\":{\"pid\":11,\"epoch\":4101567925948061253},\"caller_pid\":11,\"logical_time_ns\":1830000000,\"valid_until_ns\":2830000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":7,\"generation\":7,\"data\":{\"owner_pid\":11,\"digest\":\"6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":3,\"source\":{\"pid\":11,\"epoch\":4101567925948061253},\"caller_pid\":11,\"logical_time_ns\":1830000000,\"valid_until_ns\":2830000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":8,\"generation\":8,\"data\":{\"owner_pid\":11,\"digest\":\"a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":4,\"source\":{\"pid\":11,\"epoch\":4101567925948061253},\"caller_pid\":11,\"logical_time_ns\":1830000000,\"valid_until_ns\":2830000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":7,\"generation\":7,\"data\":{\"owner_pid\":11,\"digest\":\"6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":5,\"source\":{\"pid\":11,\"epoch\":4101567925948061253},\"caller_pid\":11,\"logical_time_ns\":1840000000,\"valid_until_ns\":2840000000,\"status\":\"unavailable\",\"records\":[]}\nOBS_TRUST_CHECK production_source_records PASS\nOBS_TRUST_PASS checks=15\n[task] event=reclaimed pid=11 pages=285\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+      "checks": [
+        {
+          "case": "null_context_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "empty_store_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "empty_identity_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "wrong_digest_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "wrong_generation_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "malformed_der_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "verified_store_load",
+          "status": "PASS"
+        },
+        {
+          "case": "verified_pin_owned_copy",
+          "status": "PASS"
+        },
+        {
+          "case": "reload_preserves_loaded_identity",
+          "status": "PASS"
+        },
+        {
+          "case": "replacement_store_load",
+          "status": "PASS"
+        },
+        {
+          "case": "selected_original",
+          "status": "PASS"
+        },
+        {
+          "case": "selected_replacement",
+          "status": "PASS"
+        },
+        {
+          "case": "authorized_rollback_selection",
+          "status": "PASS"
+        },
+        {
+          "case": "detached_selection_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "production_source_records",
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "schema_version": 1,
+          "observation_id": 1,
+          "source": {
+            "pid": 11,
+            "epoch": 4101567925948061253
+          },
+          "caller_pid": 11,
+          "logical_time_ns": 1830000000,
+          "valid_until_ns": 2830000000,
+          "status": "unavailable",
+          "records": []
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 2,
+          "source": {
+            "pid": 11,
+            "epoch": 4101567925948061253
+          },
+          "caller_pid": 11,
+          "logical_time_ns": 1830000000,
+          "valid_until_ns": 2830000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 7,
+              "generation": 7,
+              "data": {
+                "owner_pid": 11,
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 3,
+          "source": {
+            "pid": 11,
+            "epoch": 4101567925948061253
+          },
+          "caller_pid": 11,
+          "logical_time_ns": 1830000000,
+          "valid_until_ns": 2830000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 8,
+              "generation": 8,
+              "data": {
+                "owner_pid": 11,
+                "digest": "a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 4,
+          "source": {
+            "pid": 11,
+            "epoch": 4101567925948061253
+          },
+          "caller_pid": 11,
+          "logical_time_ns": 1830000000,
+          "valid_until_ns": 2830000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 7,
+              "generation": 7,
+              "data": {
+                "owner_pid": 11,
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 5,
+          "source": {
+            "pid": 11,
+            "epoch": 4101567925948061253
+          },
+          "caller_pid": 11,
+          "logical_time_ns": 1840000000,
+          "valid_until_ns": 2840000000,
+          "status": "unavailable",
+          "records": []
+        }
+      ],
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "loaded_trust_snapshot",
+      "status": "passed",
+      "output": "exec-driver /bin/trust.elf\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x000000000035d000\r\n[loader] started pid=12 file=/bin/trust.elf\n[process] event=wait_blocked parent=7 child=12\r\nOBS_TRUST_CHECK null_context_zeroed PASS\nOBS_TRUST_CHECK empty_store_zeroed PASS\nOBS_TRUST_CHECK empty_identity_zeroed PASS\nOBS_TRUST_CHECK wrong_digest_unavailable PASS\nOBS_TRUST_CHECK wrong_generation_unavailable PASS\nOBS_TRUST_CHECK malformed_der_unavailable PASS\nOBS_TRUST_CHECK verified_store_load PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK verified_pin_owned_copy PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK reload_preserves_loaded_identity PASS\nOBS_TRUST_CHECK replacement_store_load PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK selected_original PASS\nOBS_TRUST_ID generation=8 sha256=a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a\nOBS_TRUST_CHECK selected_replacement PASS\nOBS_TRUST_ID generation=7 sha256=6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\nOBS_TRUST_CHECK authorized_rollback_selection PASS\nOBS_TRUST_CHECK detached_selection_unavailable PASS\nOBS_JSON {\"schema_version\":1,\"observation_id\":1,\"source\":{\"pid\":12,\"epoch\":14120030461539834318},\"caller_pid\":12,\"logical_time_ns\":2230000000,\"valid_until_ns\":3230000000,\"status\":\"unavailable\",\"records\":[]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":2,\"source\":{\"pid\":12,\"epoch\":14120030461539834318},\"caller_pid\":12,\"logical_time_ns\":2230000000,\"valid_until_ns\":3230000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":7,\"generation\":7,\"data\":{\"owner_pid\":12,\"digest\":\"6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":3,\"source\":{\"pid\":12,\"epoch\":14120030461539834318},\"caller_pid\":12,\"logical_time_ns\":2230000000,\"valid_until_ns\":3230000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":8,\"generation\":8,\"data\":{\"owner_pid\":12,\"digest\":\"a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":4,\"source\":{\"pid\":12,\"epoch\":14120030461539834318},\"caller_pid\":12,\"logical_time_ns\":2240000000,\"valid_until_ns\":3240000000,\"status\":\"ok\",\"records\":[{\"kind\":\"trust\",\"scope\":\"application\",\"status\":\"ok\",\"object_id\":7,\"generation\":7,\"data\":{\"owner_pid\":12,\"digest\":\"6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd\",\"selection\":\"loaded_snapshot\"}}]}\nOBS_JSON {\"schema_version\":1,\"observation_id\":5,\"source\":{\"pid\":12,\"epoch\":14120030461539834318},\"caller_pid\":12,\"logical_time_ns\":2240000000,\"valid_until_ns\":3240000000,\"status\":\"unavailable\",\"records\":[]}\nOBS_TRUST_CHECK production_source_records PASS\nOBS_TRUST_PASS checks=15\n[task] event=reclaimed pid=12 pages=285\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+      "checks": [
+        {
+          "case": "null_context_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "empty_store_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "empty_identity_zeroed",
+          "status": "PASS"
+        },
+        {
+          "case": "wrong_digest_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "wrong_generation_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "malformed_der_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "verified_store_load",
+          "status": "PASS"
+        },
+        {
+          "case": "verified_pin_owned_copy",
+          "status": "PASS"
+        },
+        {
+          "case": "reload_preserves_loaded_identity",
+          "status": "PASS"
+        },
+        {
+          "case": "replacement_store_load",
+          "status": "PASS"
+        },
+        {
+          "case": "selected_original",
+          "status": "PASS"
+        },
+        {
+          "case": "selected_replacement",
+          "status": "PASS"
+        },
+        {
+          "case": "authorized_rollback_selection",
+          "status": "PASS"
+        },
+        {
+          "case": "detached_selection_unavailable",
+          "status": "PASS"
+        },
+        {
+          "case": "production_source_records",
+          "status": "PASS"
+        }
+      ],
+      "observations": [
+        {
+          "schema_version": 1,
+          "observation_id": 1,
+          "source": {
+            "pid": 12,
+            "epoch": 14120030461539834318
+          },
+          "caller_pid": 12,
+          "logical_time_ns": 2230000000,
+          "valid_until_ns": 3230000000,
+          "status": "unavailable",
+          "records": []
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 2,
+          "source": {
+            "pid": 12,
+            "epoch": 14120030461539834318
+          },
+          "caller_pid": 12,
+          "logical_time_ns": 2230000000,
+          "valid_until_ns": 3230000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 7,
+              "generation": 7,
+              "data": {
+                "owner_pid": 12,
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 3,
+          "source": {
+            "pid": 12,
+            "epoch": 14120030461539834318
+          },
+          "caller_pid": 12,
+          "logical_time_ns": 2230000000,
+          "valid_until_ns": 3230000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 8,
+              "generation": 8,
+              "data": {
+                "owner_pid": 12,
+                "digest": "a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 4,
+          "source": {
+            "pid": 12,
+            "epoch": 14120030461539834318
+          },
+          "caller_pid": 12,
+          "logical_time_ns": 2240000000,
+          "valid_until_ns": 3240000000,
+          "status": "ok",
+          "records": [
+            {
+              "kind": "trust",
+              "scope": "application",
+              "status": "ok",
+              "object_id": 7,
+              "generation": 7,
+              "data": {
+                "owner_pid": 12,
+                "digest": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+                "selection": "loaded_snapshot"
+              }
+            }
+          ]
+        },
+        {
+          "schema_version": 1,
+          "observation_id": 5,
+          "source": {
+            "pid": 12,
+            "epoch": 14120030461539834318
+          },
+          "caller_pid": 12,
+          "logical_time_ns": 2240000000,
+          "valid_until_ns": 3240000000,
+          "status": "unavailable",
+          "records": []
+        }
+      ],
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    }
+  ],
+  "runner_sha256": "3bafd919365085a6f243b5a3ca8146880351c354dd259e6cd670663dffd86321",
+  "not_run": [
+    "TLS_handshake",
+    "network_traffic",
+    "remote_IPC_authorization",
+    "model_generation",
+    "autonomous_writes",
+    "installed_profile"
+  ],
+  "system_build_id": "0036a7ffb163749b",
+  "iso_sha256": "3861432309eb49b4780c1f44d7e8c1af10a593a3b699b0709da4104567984312",
+  "system_manifest_sha256": "08a850ff3ff4d356fcbae1b4d1e38698208b777c76147a2dd9ca42cb85904bfd",
+  "fixture_receipt_sha256": "5e1dd80796cc3de5387b03bf9712b4fec167e04a908bc4f9a60c7f03cb9240a3",
+  "fixture_elf_sha256": "18b3baaaa56cc998cab42eba964ebf8be5569853f3cdff773f2ce60adfb2c7b8",
+  "fixture_pins": {
+    "7": "6ac357ad8ab1f15732e9972cd8837e801cbbc4025b79c3f1817b4496f481f6fd",
+    "8": "a64975eb40bc9314571f6cf0af7358b3b153a266842621486f68dceafa1e344a"
+  },
+  "glibc_sdk_manifest_sha256": "9bb39b94106b9604d58acc5dc4c78829439c4eba6f456e7afdd270c99a154e22",
+  "baseline": [
+    129793,
+    2,
+    0
+  ],
+  "public_export": "Derived report; host QEMU command and sibling-file hashes omitted. See provenance.",
+  "replay_count": 15,
+  "replay_status_counts": {
+    "unavailable": 6,
+    "accepted_proposal": 9
+  }
+}

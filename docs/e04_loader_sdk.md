@@ -34,6 +34,7 @@ controller 当前策略决定；执行字节须由加载器独立验证。SDK、
 | `sys_ipc_wait` | 85 |
 | `sys_ipc_name` | 86 |
 | `sys_process_cpu_time` | 89 |
+| `sys_observe` | 90 |
 | `clone_session` | 20 |
 | `anonymous` | 21 |
 | `anonymous_seal` | 22 |
@@ -305,6 +306,13 @@ user/system、当前线程 user/system、独立的 monotonic elapsed 及计数�
 ticks；`clock()` 只包含本进程 user+system；`sysconf(_SC_CLK_TCK)` 返回相同单位。
 线程 SDK 的 `CLOCK_PROCESS_CPUTIME_ID`/`CLOCK_THREAD_CPUTIME_ID` 使用同一查询。
 校准与暂停边界见[时间域契约](contracts/time_domains.md#cpu-执行时间-v1)。
+
+sys90 `sys_observe(&request,&snapshot,0)` 提供版本 1 的有界只读观测；请求 48
+字节、结果 120 字节，均为 8 字节对齐。process/resources 仅允许自身与直接
+子进程，service 仅允许经调用者已有 generic IPC 端点观测对端身份。无全局枚举
+或 supervisor 豁免。PID、镜像代次与绝对 monotonic deadline 校验不授予新的
+操作权限。具体字段、错误、撤销、exec/fork 与旧 SDK 兼容边界见
+[native 只读观测契约](contracts/native_observation.md)。
 
 sys82 `sys_pio_grant` 是开发中的固定设备 PIO 授权；COM1 交接/隔离及 PC Speaker
 端口范围、2.5 秒静音租约、主动 release 见[专项契约](contracts/pio_grant.md)。这两类

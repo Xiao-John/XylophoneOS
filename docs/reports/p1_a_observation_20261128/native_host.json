@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "scope": "extracted production sys90",
+  "guest": "not_run",
+  "source_sha256": "1cdd25b308a2b5892e7d850f8a281f879a6c14fe3b115ce0d5231844f32c7005",
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "returncode": 0,
+  "results": [
+    "PASS process scope: self/direct child only; supervisor cannot enumerate unrelated tasks",
+    "PASS generation preconditions follow authorization; stale image rejected without state",
+    "PASS scoped resource accounting; pair counted once, unrelated owner excluded",
+    "PASS held endpoint peer only; revoked/foreign handles disclose no peer; restart mismatches rejected",
+    "PASS version/size/reserved/kind and finite absolute deadline enforced before and after scan",
+    "PASS real syscall copy boundary: alignment, reserved argument, unwritable output, late copy deadline"
+  ]
+}

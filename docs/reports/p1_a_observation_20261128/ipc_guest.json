@@ -1,0 +1,93 @@
+{
+  "status": "passed",
+  "suite": "lifecycle",
+  "runner_sha256": "c964c7e9c15f6c81eb2a72d965743469903d16fb5b89791780e6de163e2bff78",
+  "checks": [
+    {
+      "round": 0,
+      "mode": "parent",
+      "nonce": "a2654015c317668e20cc84a040675176",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_EXEC_BLOCKED receive",
+        "IPC_EXEC_CHILD_PASS",
+        "IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected"
+      ]
+    },
+    {
+      "round": 0,
+      "mode": "lifecycle",
+      "nonce": "a2654015c317668e20cc84a040675176",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_LIFECYCLE_BLOCKED revoke receive send",
+        "IPC_LIFECYCLE_PASS revoke blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED close receive send",
+        "IPC_LIFECYCLE_PASS close blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED exit receive send",
+        "IPC_LIFECYCLE_PASS exit blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED fault receive send",
+        "IPC_LIFECYCLE_PASS fault blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED cancel receive send",
+        "IPC_LIFECYCLE_PASS cancel blocked_both restart_authenticated stale_tokens_denied"
+      ]
+    },
+    {
+      "round": 0,
+      "mode": "authority",
+      "nonce": "a2654015c317668e20cc84a040675176",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered"
+      ]
+    },
+    {
+      "round": 0,
+      "mode": "quota",
+      "nonce": "a2654015c317668e20cc84a040675176",
+      "resources": [
+        129793,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_QUOTA_PASS shared_owner_budget pending_and_accepted_counted blocked_counted failure_atomic peer_isolated recovered"
+      ]
+    }
+  ],
+  "not_run": [
+    "sys81_explicit_channel_inheritance_stress",
+    "terminal_display_interactium_regression"
+  ],
+  "build_id": "0036a7ffb163749b",
+  "image_sha256": "3861432309eb49b4780c1f44d7e8c1af10a593a3b699b0709da4104567984312",
+  "system_manifest_sha256": "08a850ff3ff4d356fcbae1b4d1e38698208b777c76147a2dd9ca42cb85904bfd",
+  "fixture_receipt_sha256": "9d634a7db3fdbefffdc90d4d27bf896cb0991c0b79b5675dfc13e0e797d7aece",
+  "sdk_tree_sha256": "cac8b07387dae073d9cde8f1c58352e1c41187ff0ee7b1866ab3d7e972b6bb94",
+  "artifacts": {
+    "ipc_exec_probe.elf": "921d45f08e9aee3fc8c81eb7b1c1b03da8535fd7f2cccd9bbd891dfcead53d2c"
+  },
+  "initial_disk_sha256": "6c03eee0741af69555796a31c96e2317ba2bdd658327a2f51486399c8f1c99b0",
+  "baseline": [
+    129793,
+    2,
+    0
+  ],
+  "public_export": "Derived report; host QEMU command and sibling-file hashes omitted. See provenance."
+}

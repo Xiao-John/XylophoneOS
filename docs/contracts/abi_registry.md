@@ -285,6 +285,24 @@ revision 1，也不扩展 P1-H 的 revision 2。旧服务 unsupported/未知结�
 client、SDK manifest 与实际生命周期证据；细节见
 [Net2 P1-F 认领](net_service_v2.md#p1-f-peer-policy-认领未实施资格)。
 
+## P1-C / P1-D catalog 与发行启动协作认领（2026-11-28）
+
+以下接口状态为 `claimed`，对应独立 C/D 工作分支；本登记不授予主分支实现、
+客体资格或发行资格，不新增 syscall，不占用 P1-H/K/F 的编号。
+
+| 接口 | 版本、布局及责任 | 准入、生命周期与兼容 |
+| --- | --- | --- |
+| Pumpkin PCQ1 启动只读查询 | C；magic `0x31514350`，version1，request40/reply784 字节；authority binding64、catalog728、root168 字节，最多4根 | 新连接核验两端 kernel peer、daemon PID、realm、sequence、绝对期限与保留字段；状态0/1/2为ok/denied/unavailable。每次 admission重新查询，交换至多5秒；无法确认时拒绝，关闭连接且不重放。查询不授予 publisher 角色。 |
+| 公共 GNU dynamic capsule v3 | C；显式版本3加入完整64字节 authority binding；固定160字节 prefix和旧保留字段约束不变 | native ABI身份使用 `xos-glibc-dynamic-capsule-v3` domain并绑定catalog头。bootstrap、rtld/libc、native archive及头必须匹配重建；不能以旧v2产物冒充v3。检查owner/current/target实际artifact；既已批准的grant-to-commit可以完成，无即时全树终止承诺。 |
+| PPR1 operation12 `publisher_checkpoint` | C基础、D调用；原request1592/reply1560字节及既有1–11编号保持 | 只读当前registrar或已被daemon明确委派的真实publisher session；不写revision。普通公开checkpoint不证明发布权限；未知结果不重放。 |
+| PPR1 operation13 `activate_generation` | C；沿用现有expected三epoch与index字段 | 仅真实registrar选择已批准且未撤销根；单次受保护CAS增加catalog epoch，不能增加新根或降低仓库checkpoint。失败/未知按既有PPR状态返回。 |
+| XYPMSUP1 publisher bootstrap | D，轻量共享头先随C foundation；magic `0x315055534d505958`，精确96字节；phase1/2/3/4为offer/broker/connected/delegated | 按真实kernel parent及broker对端绑定双向通道；reserved为零，长度和phase必须精确。名称和自报PID不授予角色；父ACK后仍须向实际daemon执行PPR12角色证明。拒绝、超时和失联关闭bootstrap，不自动提升权限。 |
+
+实现与定向证据分别由 C/D PR交付。C的后代授权验收使用真实公共GNU
+posix_spawn链及same-PID exec；当前shared GNU fork的ENOSYS边界与P1-K2
+组合计划保持独立，不能用本登记宣称fork已经可用。
+协调记录见 [b6c1097c](../work_log/b6c1097c_p1_cd_protocol_claims.md)。
+
 ## 分配流程
 
 1. 使用者先提供最小缺口/探针，说明是否能复用现有SDK/IPC；Qt具体边界见qt_platform.md。

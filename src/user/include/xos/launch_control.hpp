@@ -17,9 +17,11 @@ struct diagnostic {
 // callback permits only an all-zero artifact; an identity is not authority.
 using admission_check = i64 (*)(void* context, u64 child, const artifact& current,
                                 const artifact& requested, u64 absolute_deadline);
+// Only explicit terminal + launch-control composition selects the six-channel
+// mode. Ordinary registrations retain the legacy four-channel owner limit.
 i64 record_child(u64 child, u64 absolute_deadline, descriptor& output,
                  const artifact& initial = {}, admission_check check = nullptr,
-                 void* context = nullptr);
+                 void* context = nullptr, bool extended_channels = false);
 i64 await_ready(u64 child, diagnostic& output);
 i64 close_control(u64 child);
 i64 last_diagnostic(u64 child, diagnostic& output);

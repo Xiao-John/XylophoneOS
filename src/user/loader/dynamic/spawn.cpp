@@ -28,7 +28,7 @@ launch::artifact active_artifact{};
 bool active_ready;
 u64 fork_parent_pid, fork_registered_child;
 xos_fork_control_offer fork_offer{};
-bool replacing, registered, exec_pins_moved;
+bool replacing, registered, exec_pins_moved, terminal_controls;
 u64 prepared_child;
 
 struct guard {
@@ -80,7 +80,8 @@ i64 prepare(u64 child, void*) {
     launch::descriptor control = capsule.prefix.control;
     if (!replacing) {
         const i64 recorded = launch::record_child(child, selected.deadline, control,
-                                                  artifact(selected.ticket), admission);
+                                                  artifact(selected.ticket), admission,
+                                                  nullptr, terminal_controls);
         if (recorded != 0) return recorded;
         registered = true;
         capsule.prefix.control = control;
@@ -153,6 +154,7 @@ extern "C" bool xos_dynamic_spawn_hook(const char* path, xos::u32 argc, const ch
     }
     sdk::spawn_options options = input ? *input : sdk::spawn_options{};
     replacing = options.replace_image;
+    terminal_controls = options.terminal_send_handle != nullptr;
     registered = exec_pins_moved = false;
     prepared_child = 0;
     launch::descriptor pending{};

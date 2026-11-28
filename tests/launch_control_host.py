@@ -9,7 +9,7 @@ from pathlib import Path
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-CASES = ('registration', 'authentication', 'malformed_reserved', 'malformed_nonce', 'malformed_pid',
+CASES = ('registration', 'extended_registration', 'authentication', 'malformed_reserved', 'malformed_nonce', 'malformed_pid',
          'initial_timeout', 'callback_timeout', 'revocation', 'failure', 'stale_allow', 'stale_cancel',
          'backpressure', 'wait_pump', 'early_completion', 'fork_lock')
 

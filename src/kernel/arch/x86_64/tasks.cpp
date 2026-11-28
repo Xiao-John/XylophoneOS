@@ -4642,7 +4642,7 @@ void* process_syscall(interrupt_frame* frame) {
     }
     case sys_channel: {
         const auto action = static_cast<channel_action>(first);
-        if (action == channel_action::create) {
+        if (action == channel_action::create || action == channel_action::create_extended) {
             if (third != 0 || !user_range_ok(second, sizeof(channel_create), false)) { break; }
             channel_create request{};
             copy_from_user(&request, second, sizeof(request));
@@ -4662,7 +4662,8 @@ void* process_syscall(interrupt_frame* frame) {
             for (const auto& endpoint : endpoints) {
                 if (endpoint.used && endpoint.generic_channel && endpoint.owner_pid == current->pid) { ++owned; }
             }
-            if (owned >= 4 || !budget_admit(*current, {0, 0, 0, 1, 0, 0})) { result = process_error_resources; break; }
+            const u32 owner_limit = action == channel_action::create_extended ? 6 : 4;
+            if (owned >= owner_limit || !budget_admit(*current, {0, 0, 0, 1, 0, 0})) { result = process_error_resources; break; }
             const u32 handle = endpoint_attach(receiver->pid, sender->pid, current->pid, request.capacity);
             if (handle == 0) { result = process_error_resources; break; }
             endpoint_for(handle)->generic_channel = true;

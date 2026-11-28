@@ -23,7 +23,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
                 net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None,
                 files_uncertain_probe=False, pumpkin_catalog_fixture=False,
-                pumpkin_launch_probe=False, pumpkin_launch_storage_lease=False):
+                pumpkin_launch_probe=False, pumpkin_launch_storage_lease=False,
+                dynamic_terminal_supervisor=None):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -70,7 +71,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              "-I", str(root / "src/third_party/fatfs"),
              "-I", str(root / "src/user/include"),
              "-I", str(source.parent),
-             *extra, "-ffile-prefix-map=" + str(root) + "=.", "-c", str(source), "-o", str(obj)])
+             *extra, "-ffile-prefix-map=" + str(root) + "=.",
+             "-ffile-prefix-map=" + str(build) + "=./build", "-c", str(source), "-o", str(obj)])
         return str(obj)
 
     sdk_objects = [compile_source(root / name) for name in (
@@ -309,6 +311,11 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]
                if name in libc_programs else [str(archive)]),
              "-o", str(executable)])
+        if name == "supervisor" and dynamic_terminal_supervisor is not None:
+            # Explicit test profile only. The caller binds this ELF, its
+            # approved roots and every native compilation input before/after
+            # the build; default supervisor production remains unchanged.
+            shutil.copyfile(dynamic_terminal_supervisor, executable)
         image = build / f"user_{name}.image.elf"
         strip_all = name == "supervisor" and pumpkin_catalog_fixture
         run([tool("objcopy"), "--strip-all" if strip_all else "--strip-debug", str(executable), str(image)])
@@ -435,7 +442,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 "request_bytes": 144, "batch_max": 16, "native_references_max": 16,
                 "global_pipe_objects_max": 8, "sdk_option_default": False, "guest_qualification": "not_run"},
             "stream_lease": {"syscall": 80, "status": "claim_unsupported"},
-            "channel": {"syscall": 81, "status": "implemented_unqualified"},
+            "channel": {"syscall": 81, "status": "implemented_unqualified",
+                        "create_action": 0, "create_owner_limit": 4,
+                        "extended_create_action": 7, "extended_create_owner_limit": 6,
+                        "create_request_bytes": 32, "fork_pair_owner_limit": 8},
             "ipc_wait": {"syscall": 85, "receive_until_mode": 5, "send_until_mode": 6,
                          "deadline": "absolute_monotonic_ns", "readiness_before_deadline": True,
                          "guest_qualification": "not_run"},

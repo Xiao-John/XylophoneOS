@@ -65,6 +65,11 @@ inline i64 irq_event(irq_event_action action, u64 value, u64 argument = 0) {
 inline i64 channel_open(const channel_create& request) {
     return syscall(sys_channel, static_cast<u64>(channel_action::create), reinterpret_cast<u64>(&request));
 }
+// Explicit bounded composition: six owner channels instead of the legacy four.
+// Ownership, endpoint authority, budgets and the wire request are unchanged.
+inline i64 channel_open_extended(const channel_create& request) {
+    return syscall(sys_channel, static_cast<u64>(channel_action::create_extended), reinterpret_cast<u64>(&request));
+}
 inline i64 channel_get(u32 index, channel_info& info) {
     return syscall(sys_channel, static_cast<u64>(channel_action::enumerate), index, reinterpret_cast<u64>(&info));
 }

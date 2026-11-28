@@ -572,3 +572,12 @@ HTTP库位于`src/ports/browser_http/transport.*`，通过原生TCP完成数字I
 不确定操作、deadline、token、隔离原因与所属 PID；不能清除隔离或重放副作用。
 线程竞争返回即时 `error::state`，失败不覆盖观察输出。完整权限、计费单位、
 失败语义和验证范围见 [P1-B 契约](contracts/process_tree_budget.md)。
+## Dynamic terminal composition
+
+The native SDK's explicit `channel_open_extended` selects sys81 action 7 and
+the six-channel owner bound; ordinary creation keeps four. Dynamic terminal
+startup can combine a fresh actor session with a v3 FD snapshot. Its later
+replacement authenticates and preserves the terminal pair and independent
+READY/ACK pair through the existing four-channel sys60 entry. The complete
+ownership, compatibility and qualification boundary is in
+[dynamic_terminal_controller.md](contracts/dynamic_terminal_controller.md).

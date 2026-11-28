@@ -30,6 +30,7 @@ std::mutex mock_lock;
 std::condition_variable input_changed;
 xos::channel_info channels[3];
 unsigned channel_count = 2, channel_queries, channel_closes, sends, file_closes, file_sends;
+unsigned channel_waits, send_attempts, receive_attempts, closed_channels, discarded_replies;
 unsigned fork_aborts, fork_commits, fork_channel_waits;
 long now_ns = 1000;
 constexpr long fork_deadline = 5000001000L;
@@ -118,7 +119,12 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
             *reinterpret_cast<xos::channel_info*>(third) = channels[second]; return 0;
         }
         if (first == static_cast<xos_u64>(xos::channel_action::close)) {
-            assert(second == 10 || second == 11); ++channel_closes; return 0;
+            assert(second == 10 || second == 11);
+            ++channel_closes; closed_channels |= second == 10 ? 1U : 2U;
+            // A request accepted before transport loss may already have run.
+            // Closing its response endpoint discards that exchange's reply.
+            if (second == 11 && pending_reply) { ++discarded_replies; pending_reply = false; }
+            return 0;
         }
         if (first == static_cast<xos_u64>(xos::channel_action::fork_pair)) {
             auto& pair = *reinterpret_cast<xos::channel_fork_pair*>(second);
@@ -129,6 +135,7 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
         }
         if (first == static_cast<xos_u64>(xos::channel_action::wait)) {
             assert(second == 10 || second == 11);
+            ++channel_waits;
             if (third != xos::thread_deadline_infinite) {
                 assert(third == static_cast<xos_u64>(fork_deadline));
                 ++fork_channel_waits;
@@ -136,6 +143,14 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
                     now_ns = fork_deadline;
                     return xos::thread_error_timeout;
                 }
+                if (second == 11 && fail_once && is("fork_terminal_closed")) {
+                    assert(pending_reply && pending.operation ==
+                           static_cast<xos_u32>(xos::terminal::operation::fork_attach));
+                    fail_once = false; return -1;
+                }
+            }
+            if (second == 10 && fail_once && is("transport_send_wait")) {
+                fail_once = false; return -1;
             }
             if (second == 11 && fail_once && (is("service_death") || is("timeout"))) {
                 fail_once = false; return is("timeout") ? -13 : -1;
@@ -148,6 +163,10 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
         }
     }
     if (number == 4 && first == 10) {
+        ++send_attempts;
+        if (fail_once && is("transport_send_race")) {
+            fail_once = false; return -1;
+        }
         assert(!pending_reply && third == sizeof(pending));
         pending = *reinterpret_cast<const xos::terminal::request*>(second);
         assert(pending.version == 2 && pending.size == sizeof(pending));
@@ -155,7 +174,11 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
         ++sends; pending_reply = true; return 0;
     }
     if (number == 5 && first == 11) {
+        ++receive_attempts;
         assert(pending_reply && third == sizeof(xos::terminal::response));
+        if (fail_once && is("transport_receive_race")) {
+            fail_once = false; return -1;
+        }
         auto& reply = *reinterpret_cast<xos::terminal::response*>(second);
         reply = {}; reply.version = 2; reply.size = sizeof(reply); reply.sequence = pending.sequence;
         if (pending.operation == 10) { reply.length = sizeof(mode); std::memcpy(reply.data, &mode, sizeof(mode)); }
@@ -176,6 +199,7 @@ extern "C" long __xos_file_test_trap(xos_u64 number, xos_u64 first, xos_u64 seco
             if (is("bad_mode")) reply.data[0] = 1;
             if (is("overread")) { reply.result = 2; reply.length = 2; }
             if (is("zero_write")) reply.result = 0;
+            if (is("reply_denied")) { reply.result = -1; reply.length = 0; }
             if (is("interrupted")) { reply.result = -19; reply.length = 0; }
             if (is("short_reply")) return sizeof(reply) - 1;
         }
@@ -223,20 +247,63 @@ int main(int argc, char **argv) {
             const long expected = is("invalid_v2") || is("bad_controller") ? -EINVAL
                 : is("duplicate_channels") ? -EIO : -EACCES;
             assert(__xos_file_isatty(0) == expected && sends == 0 && file_sends == 0);
-        } else if (is("fork_ok") || is("fork_terminal_timeout") || is("fork_files_timeout")) {
+        } else if (is("fork_ok") || is("fork_terminal_timeout") ||
+                   is("fork_terminal_closed") || is("fork_files_timeout")) {
             assert(__xos_file_isatty(0) == 1);
+            fail_once = is("fork_terminal_closed");
             const long result = __xos_file_fork();
             assert(sends == 1 && fork_channel_waits == 2);
             if (is("fork_ok"))
                 assert(result == 78 && file_sends == 1 && fork_commits == 1 && fork_aborts == 0);
             else {
-                assert(result == -ETIMEDOUT && fork_commits == 0 && fork_aborts == 1);
-                assert(file_sends == (is("fork_terminal_timeout") ? 0U : 1U));
+                assert(result == (is("fork_terminal_closed") ? -EPIPE : -ETIMEDOUT)
+                       && fork_commits == 0 && fork_aborts == 1);
+                assert(file_sends == (is("fork_files_timeout") ? 1U : 0U));
             }
-            if (is("fork_terminal_timeout"))
+            if (is("fork_terminal_timeout") || is("fork_terminal_closed")) {
+                const unsigned previous_waits = channel_waits;
                 assert(channel_closes == 2 && __xos_file_write(1, "x", 1) == -EIO);
-            else
+                assert(sends == 1 && channel_waits == previous_waits && closed_channels == 3
+                       && discarded_replies == 1 && !pending_reply && fork_aborts == 1);
+            } else
                 assert(channel_closes == 0 && __xos_file_write(1, "x", 1) == 1);
+        } else if (is("service_death") || is("transport_send_wait") ||
+                   is("transport_send_race") || is("transport_receive_race")) {
+            assert(__xos_file_isatty(0) == 1);
+            const unsigned previous_queries = channel_queries;
+            fail_once = true;
+            char byte = '?';
+            assert(__xos_file_read(0, &byte, 1) == -EPIPE && byte == '?');
+            const unsigned accepted = is("service_death") || is("transport_receive_race") ? 1U : 0U;
+            assert(sends == accepted && channel_waits == accepted + 1
+                   && send_attempts == (is("transport_send_wait") ? 0U : 1U)
+                   && receive_attempts == (is("transport_receive_race") ? 1U : 0U));
+            assert(channel_closes == 2 && closed_channels == 3
+                   && discarded_replies == accepted && !pending_reply);
+            const unsigned previous_waits = channel_waits, previous_sends = send_attempts;
+            const unsigned previous_receives = receive_attempts;
+            // A later call cannot resend the uncertain request, consume its
+            // late reply or silently rediscover a different terminal pair.
+            assert(__xos_file_read(0, &byte, 1) == -EIO && byte == '?');
+            assert(__xos_file_write(1, "x", 1) == -EIO);
+            assert(channel_queries == previous_queries && channel_waits == previous_waits
+                   && send_attempts == previous_sends && receive_attempts == previous_receives);
+            for (int fd = 0; fd < 3; ++fd) assert(__xos_file_close(fd) == 0);
+            assert(channel_closes == 2);
+        } else if (is("reply_denied")) {
+            assert(__xos_file_isatty(0) == 1);
+            const unsigned previous_queries = channel_queries;
+            struct termios value{}, saved{};
+            std::memset(&value, 0xa5, sizeof(value)); saved = value;
+            fail_once = true;
+            assert(__xos_terminal_tcgetattr(0, &value) == -EACCES
+                   && !std::memcmp(&saved, &value, sizeof(value)));
+            assert(channel_closes == 0 && sends == 1 && next_sequence == 2);
+            assert(__xos_terminal_tcgetattr(0, &value) == 0 && value.c_cc[VMIN] == 1);
+            assert(channel_queries == previous_queries && sends == 2 && next_sequence == 3
+                   && receive_attempts == 2 && channel_closes == 0 && discarded_replies == 0);
+            for (int fd = 0; fd < 3; ++fd) assert(__xos_file_close(fd) == 0);
+            assert(channel_closes == 2 && closed_channels == 3);
         } else if (is("lease")) {
             assert(__xos_file_isatty(0) == 1); block_read = true;
             char byte = 0;
@@ -310,7 +377,7 @@ int main(int argc, char **argv) {
             if (is("zero_write")) result=__xos_file_write(1,"x",1);
             else if (is("overread")) { char byte='?'; result=__xos_file_read(0,&byte,1); assert(byte=='?'); }
             else { std::memset(&value,0xa5,sizeof(value)); saved=value; result=__xos_terminal_tcgetattr(0,&value); assert(!std::memcmp(&saved,&value,sizeof(value))); }
-            const long expected=is("interrupted")?-EINTR:is("timeout")?-ETIMEDOUT:is("service_death")?-EACCES:-EIO;
+            const long expected=is("interrupted")?-EINTR:is("timeout")?-ETIMEDOUT:-EIO;
             assert(result==expected);
             if (is("interrupted")) assert(channel_closes==0 && __xos_terminal_tcgetattr(0,&value)==0);
             else { const unsigned count=sends; assert(channel_closes==2 && __xos_file_write(1,"x",1)==-EIO && sends==count); }

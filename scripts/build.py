@@ -55,6 +55,8 @@ def main():
     parser.add_argument("--vm1-probe", action="store_true", help="enable isolated VM1 test-only syscall 67")
     parser.add_argument("--cow1-probe", action="store_true", help="enable isolated COW1 page-table self-check")
     parser.add_argument("--eager-fork", action="store_true", help="use the eager-copy fork control profile")
+    parser.add_argument("--files-uncertain-probe", action="store_true",
+                        help="test-only post-commit Files OPEN/CLOSE reply loss; isolated output required")
     parser.add_argument("--glibc-files-death-probe", action="store_true",
                         help="test-only files self-exit trigger; requires an isolated output directory")
     parser.add_argument("--files-private-storage-probe", action="store_true",
@@ -107,6 +109,8 @@ def main():
         raise SystemExit("output directory must be build/ or one of its subdirectories")
     if args.vm1_probe and BUILD == ROOT / "build":
         parser.error("VM1 probe requires an isolated build subdirectory")
+    if args.files_uncertain_probe and BUILD == ROOT / "build":
+        parser.error("Files uncertainty probe requires an isolated build subdirectory")
     if args.glibc_files_death_probe and BUILD == ROOT / "build":
         parser.error("glibc files death probe requires an isolated build subdirectory")
     private_profiles = (args.files_private_storage_probe, args.files_private_client_probe,
@@ -219,6 +223,7 @@ def main():
                                       "clock_irq_probe": args.clock_irq_probe, "vm1_probe": args.vm1_probe,
                                       "cow1_probe": args.cow1_probe, "cow_fork": not args.eager_fork,
                                       "glibc_files_death_probe": args.glibc_files_death_probe,
+                                      "files_uncertain_probe": args.files_uncertain_probe,
                                       "files_private_storage_probe": args.files_private_storage_probe,
                                       "files_private_client_probe": args.files_private_client_probe,
                                       "pumpkin_durable_probe": args.pumpkin_durable_probe,
@@ -238,7 +243,7 @@ def main():
     (BUILD / "build_info.inc").write_text(
         f'%define xos_build_id "{build_id}"\n%define xos_easter_eggs {eggs}\n')
     (BUILD / "build_info.hpp").write_text(
-        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n#define XOS_VM1_PROBE {int(args.vm1_probe)}\n#define XOS_COW1_PROBE {int(args.cow1_probe)}\n#define XOS_COW_FORK {int(not args.eager_fork)}\n')
+        f'#define XOS_BUILD_ID "{build_id}"\n#define XOS_EASTER_EGGS {eggs}\n#define XOS_CAPACITY_PROBE {int(args.capacity_probe)}\n#define XOS_CLOCK_IRQ_PROBE {int(args.clock_irq_probe)}\n#define XOS_VM1_PROBE {int(args.vm1_probe)}\n#define XOS_COW1_PROBE {int(args.cow1_probe)}\n#define XOS_COW_FORK {int(not args.eager_fork)}\n#define XOS_FILES_UNCERTAIN_PROBE {int(args.files_uncertain_probe)}\n')
     commands = []
 
     def run(command):
@@ -248,6 +253,7 @@ def main():
     user_artifacts = build_users(ROOT, BUILD, nasm, run, build_id, args.terminal_supervisor_probe,
                                  args.ncurses_supervisor_probe,
                                  glibc_files_death_probe=args.glibc_files_death_probe,
+                                 files_uncertain_probe=args.files_uncertain_probe,
                                  files_private_storage_probe=args.files_private_storage_probe,
                                  files_private_client_probe=args.files_private_client_probe,
                                  pumpkin_durable_probe=args.pumpkin_durable_probe,
@@ -411,6 +417,7 @@ def main():
         "capacity_probe": args.capacity_probe, "terminal_supervisor_probe": args.terminal_supervisor_probe,
         "ncurses_supervisor_probe": args.ncurses_supervisor_probe,
         "glibc_files_death_probe": args.glibc_files_death_probe,
+        "files_uncertain_probe": args.files_uncertain_probe,
         "files_private_storage_probe": args.files_private_storage_probe,
         "files_private_client_probe": args.files_private_client_probe,
         "pumpkin_durable_probe": args.pumpkin_durable_probe,

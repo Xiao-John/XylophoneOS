@@ -34,6 +34,22 @@ struct closure {
     bool live, quarantined;
 };
 bool pin_read(void* context, u64 offset, u8* destination, u32 length);
+enum class controller_operation : u32 { none, open, close, metadata, read };
+inline constexpr u32 controller_snapshot_version = 1;
+inline constexpr u32 controller_configured = 1, controller_quarantined = 2,
+    controller_uncertain = 4, controller_unknown_open = 8;
+struct controller_snapshot {
+    u32 version, size;
+    u64 owner_pid, policy_sequence, operation_sequence, quarantine_owner_pid, deadline;
+    i64 native_error;
+    u32 token, retained_tokens;
+    controller_operation operation;
+    u32 flags;
+};
+static_assert(sizeof(controller_snapshot) == 72);
+// Nonblocking, serialized with mutations. A competing same-process operation
+// returns state and leaves output unchanged. Inspection cannot clear quarantine.
+error inspect_controller(controller_snapshot& output);
 bool configured();
 error configure(const launch_policy& policy, u64 absolute_deadline);
 // Explicitly link and enable ordinary SDK inspection/spawn routes. Programs

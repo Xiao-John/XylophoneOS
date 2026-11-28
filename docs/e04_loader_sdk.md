@@ -549,3 +549,15 @@ HTTP库位于`src/ports/browser_http/transport.*`，通过原生TCP完成数字I
 `build_net_transport_probe.py`要求网络头与匹配SDK相同，使用原生crt0、libxos及标准
 整数/尺寸头链接，不链接libc。不能把该探针作为dash的exec替换目标；脚本走普通spawn。
 `net_transport_guest.py`补验新镜像/SDK的HTTP/UDP随机挑战，所有既有报告保留原资格。
+
+## P1-B 进程树额度与控制器观察
+
+导出 `<xos/process_budget_abi.hpp>`，通过 sys87 显式 modes 4/5 设置累计六维
+树预算和查询资源归因。父控制器可在 `spawn_options.prepare_child` 中安装子域，
+自身也可在产生后代前缩小预算。fork/spawn 保留全部祖先域，exec 保留同一域；
+异步准备和仍存活的跨进程对象别名都不提前归还额度。现有进程创建权限独立保持。
+
+`dynamic::inspect_controller` 返回版本 1/72-byte 的只读快照，公开首次 Files
+不确定操作、deadline、token、隔离原因与所属 PID；不能清除隔离或重放副作用。
+线程竞争返回即时 `error::state`，失败不覆盖观察输出。完整权限、计费单位、
+失败语义和验证范围见 [P1-B 契约](contracts/process_tree_budget.md)。

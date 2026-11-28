@@ -1,0 +1,581 @@
+{
+  "status": "passed",
+  "scope": "P1-B cumulative native budgets, actual Files post-commit uncertainty, and controller concurrency",
+  "system": {
+    "build_id": "aa92d5979cf58b82",
+    "manifest_sha256": "dce039ca3c884f65aa4f3b656610907d0d1a1084fdcd68669c40a0bbc9eadf6d",
+    "iso_sha256": "cdb78eea171070e2fd257b8b0c495d2f418bc53ab7988affe13c889ac5485ece",
+    "sdk_manifest_sha256": "0fc3a5eebe5aea16935af983228da828d249c0f22dbf6f6d6cc02a5a3501cf76",
+    "sdk_tree_sha256": "bcd9dec4dce4f5f6afc35f625d6759d0dc2e233531d3088bef1d26ab1b699afc"
+  },
+  "fixture": {
+    "elf_sha256": "30cd19a759831aad2e8d8c445d6f84e456c65312b93f77a53ee8b4308aac262e",
+    "receipt_sha256": "5411d26d12b52d959d63f3e2198a1cb9b4c2a8dc6a90c8dc74ca4a172121f4c7",
+    "libc_linked": false
+  },
+  "guest_cases": 27,
+  "repeats": 3,
+  "baseline": [
+    129790,
+    2,
+    0
+  ],
+  "runs": [
+    {
+      "round": 0,
+      "case": "family",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 0,
+      "case": "pages",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 0,
+      "case": "ipc",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 0,
+      "case": "alias",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 0,
+      "case": "exec",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 0,
+      "case": "fresh",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 0,
+      "case": "unknown_open",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 1,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 0,
+      "case": "unknown_close",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 3,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 0,
+      "case": "concurrent",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 1,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "family",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "pages",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "ipc",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "alias",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "exec",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "fresh",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "unknown_open",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 1,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "unknown_close",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 3,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 1,
+      "case": "concurrent",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 1,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "family",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "pages",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "ipc",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "alias",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "exec",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "fresh",
+      "status": "passed",
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "unknown_open",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 1,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "unknown_close",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 3,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    },
+    {
+      "round": 2,
+      "case": "concurrent",
+      "status": "passed",
+      "lost_reply_after_commit": true,
+      "request_id": 1,
+      "side_effect_attempts": 1,
+      "unrelated_owner_usable": true,
+      "resources": [
+        129790,
+        2,
+        0
+      ]
+    }
+  ],
+  "host": {
+    "status": "passed",
+    "results": [
+      {
+        "kind": "ordinary",
+        "case": "policy_validation",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "wrong_sdk",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "configure_close_unknown",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "configure_open_unknown",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "acquire_pins",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "activation_rollback",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "failed_activation",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "digest_failure",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "sdk_failure",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "release_unknown",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "read_unknown",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "absolute_deadline",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "restore_and_heap",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "revoke_active",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "elf_needed",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "elf_soname",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "elf_wx",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "elf_relro",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "elf_relocation",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "elf_tls",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "elf_version",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "bootstrap_thread_arena",
+        "returncode": 0
+      },
+      {
+        "kind": "ordinary",
+        "case": "bootstrap_capsule",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "policy_validation",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "wrong_sdk",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "configure_close_unknown",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "configure_open_unknown",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "acquire_pins",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "activation_rollback",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "failed_activation",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "digest_failure",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "sdk_failure",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "release_unknown",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "read_unknown",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "absolute_deadline",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "restore_and_heap",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "revoke_active",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "elf_needed",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "elf_soname",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "elf_wx",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "elf_relro",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "elf_relocation",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "elf_tls",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "elf_version",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "bootstrap_thread_arena",
+        "returncode": 0
+      },
+      {
+        "kind": "sanitized",
+        "case": "bootstrap_capsule",
+        "returncode": 0
+      }
+    ],
+    "scope": "production closure/verifiers; modeled Files OFDs",
+    "guest": "not_run",
+    "leak_sanitizer": "disabled by runner; no leak-detector claim",
+    "toolchain_metadata_transform": "private upstream toolchain build paths redacted"
+  },
+  "limits": [
+    "single-CPU serialized kernel",
+    "native libc-free fixture; no new glibc runtime qualification",
+    "CLOSE injection follows real cleanup of an invalid generation manifest",
+    "No arbitrary power-loss or physical-hardware qualification",
+    "Tree budget is explicit authority restriction, not a grant or reserved global capacity"
+  ],
+  "serial_transcript": {
+    "original_sha256": "acf7e2ae2e1498ee53607161f072415095cdfcd9777bdefc6afcf200d407f0f4",
+    "publication_transform": "CRLF and trailing whitespace normalized; no events removed"
+  }
+}

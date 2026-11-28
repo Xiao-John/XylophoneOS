@@ -1,0 +1,285 @@
+{
+  "status": "passed",
+  "scope": "production closure/verifiers; modeled Files OFDs",
+  "results": [
+    {
+      "kind": "ordinary",
+      "case": "policy_validation",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "wrong_sdk",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "configure_close_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "configure_open_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "acquire_pins",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "activation_rollback",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "failed_activation",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "digest_failure",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "sdk_failure",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "release_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "read_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "absolute_deadline",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "restore_and_heap",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "revoke_active",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_needed",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_soname",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_wx",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_relro",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_relocation",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_tls",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_version",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "bootstrap_thread_arena",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "bootstrap_capsule",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "policy_validation",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "wrong_sdk",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "configure_close_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "configure_open_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "acquire_pins",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "activation_rollback",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "failed_activation",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "digest_failure",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "sdk_failure",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "release_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "read_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "absolute_deadline",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "restore_and_heap",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "revoke_active",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_needed",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_soname",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_wx",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_relro",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_relocation",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_tls",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_version",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "bootstrap_thread_arena",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "bootstrap_capsule",
+      "returncode": 0
+    }
+  ],
+  "toolchain": {
+    "gcc": "16.2.0",
+    "g++": "16.2.0",
+    "target": "x86_64-elf",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "executables": {
+      "gcc": {
+        "path": "<toolchain_build_path>",
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+      },
+      "g++": {
+        "path": "<toolchain_build_path>",
+        "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+      },
+      "as": {
+        "path": "<toolchain_build_path>",
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+      },
+      "ld": {
+        "path": "<toolchain_build_path>",
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+      },
+      "objcopy": {
+        "path": "<toolchain_build_path>",
+        "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+      },
+      "nm": {
+        "path": "<toolchain_build_path>",
+        "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+      },
+      "ar": {
+        "path": "<toolchain_build_path>",
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+      },
+      "cc1": {
+        "path": "<toolchain_build_path>",
+        "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+      },
+      "cc1plus": {
+        "path": "<toolchain_build_path>",
+        "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+      },
+      "nasm": {
+        "path": "<toolchain_build_path>",
+        "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+      }
+    }
+  }
+}

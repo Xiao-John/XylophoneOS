@@ -805,7 +805,7 @@ __xos_file_exec_begin (struct xos_exec_descriptors *snapshot, xos_u64 deadline)
       terminal |= object->kind == kind_terminal;
       snapshot->items[snapshot->count++] = (struct xos_file_startup_descriptor) {
         (xos_u32) fd, (xos_u32) index, object->kind, object->handle,
-        object->flags & ~O_CLOEXEC, 0
+        object->flags & ~(unsigned int) O_CLOEXEC, 0
       };
     }
   for (int index = 0; error == 0 && index < object_limit; ++index)
@@ -816,7 +816,7 @@ __xos_file_exec_begin (struct xos_exec_descriptors *snapshot, xos_u64 deadline)
       if (snapshot->count == fd_limit) { error = -EMFILE; break; }
       snapshot->items[snapshot->count++] = (struct xos_file_startup_descriptor) {
         ~(xos_u32) 0, (xos_u32) index, object->kind, object->handle,
-        object->flags & ~O_CLOEXEC, 0
+        object->flags & ~(unsigned int) O_CLOEXEC, 0
       };
     }
   if (error == 0)

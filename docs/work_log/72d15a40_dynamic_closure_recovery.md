@@ -18,3 +18,15 @@ Preview 2 内严格 PIC freestanding 目标编译通过（GCC 16.2.0，Wall/Wext
 Werror/Wconversion/Wshadow）。本 checkpoint 的新增 orchestration host、
 sanitizer、公共 GNU native guest 资格仍为 **not_run**，后续补充实际结果。
 协议细节见 [闭包契约](../contracts/dynamic_closure.md)。
+
+## 公共 C++ 性能修复后的新 host 资格
+
+真实 libstdc++ 的 6349 个动态符号暴露单个 pin 缓存跨 symbol/string/version
+表交替读取的成本；公共 runtime agent 的 `7287757c` 将三个有界元数据表改为
+顺序预检。只增加局部 4 KiB buffer，不扩大绝对启动期限，不改变 pin ABI。
+导入为 `47e5ab91` 后，原有真实 ELF/闭包 host 21 例普通及 sanitizer 全部重新
+运行，**新的 42/42 通过**，包含七类重新批准摘要后的 ELF 语义负例。
+
+新报告在 [顺序预检资格](../reports/dynamic_closure_sequential_20261128/README.md)。
+旧报告继续只指向旧字节；新的 native SDK、GNU libc/libstdc++ 和 R2 guest
+仍须分别绑定新产物重建、运行，不能用这个 host 结论替代。

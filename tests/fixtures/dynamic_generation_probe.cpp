@@ -128,7 +128,9 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (error != dynamic::error::none || !state(dynamic::activation_max_generations, 5, 3))
         return fail("revoke_active", static_cast<i64>(error));
     error = dynamic::acquire(dynamic_run_main_paths[0], deadline(), retained);
-    if (error != dynamic::error::revoked || retained.live || retained.quarantined ||
+    // Revoking active clears the selected slot. Capture has no active state;
+    // an explicitly indexed attempt at a revoked root returns error::revoked.
+    if (error != dynamic::error::state || retained.live || retained.quarantined ||
         dynamic::admission(nullptr, sdk::pid(), empty, zero, deadline()) != process_error_denied)
         return fail("revoked_capture", static_cast<i64>(error));
     passed("active_revocation_blocks_capture");

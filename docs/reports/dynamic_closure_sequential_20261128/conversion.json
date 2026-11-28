@@ -1,0 +1,8 @@
+{
+  "source_commit": "47e5ab91",
+  "upstream_parser_commit": "7287757c",
+  "raw_report_sha256": "a383efc79aace910266bf477341025436b4a0a29aa5be5251132552ca565fec6",
+  "output": "report.json",
+  "rule": "known Preview 2 work, wrapper, dependency and prefix roots replaced by documented XOS templates; observations and source/artifact/tool hashes unchanged",
+  "exported_binding": "manifest.json:files[report.json]"
+}

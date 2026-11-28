@@ -16,7 +16,8 @@ from toolchain import audit, tool
 CASES = ('policy_validation', 'wrong_sdk', 'configure_close_unknown', 'configure_open_unknown', 'acquire_pins',
          'activation_rollback', 'failed_activation', 'digest_failure', 'sdk_failure',
          'release_unknown', 'read_unknown', 'absolute_deadline', 'restore_and_heap', 'revoke_active',
-         'elf_needed', 'elf_soname', 'elf_wx', 'elf_relro', 'elf_relocation', 'elf_tls', 'elf_version')
+         'elf_needed', 'elf_soname', 'elf_wx', 'elf_relro', 'elf_relocation', 'elf_tls', 'elf_version',
+         'bootstrap_thread_arena', 'bootstrap_capsule')
 
 
 def main():
@@ -30,6 +31,7 @@ def main():
              'src/user/loader/dynamic/identity.cpp', 'src/user/loader/dynamic/elf.cpp', 'src/user/loader/elf.cpp',
              'tests/fixtures/dynamic_closure_host.cpp')]
     tracked = [*paths, ROOT / 'tests/fixtures/dynamic_closure_object.cpp',
+               ROOT / 'src/user/loader/dynamic/startup.hpp',
                ROOT / 'tests/fixtures/dynamic_closure_bootstrap.ld',
                ROOT / 'tests/fixtures/dynamic_closure_versions.map', Path(__file__)]
     tracked += [p for folder in ('src/user/include/xos', 'src/shared/include/xos')

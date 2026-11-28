@@ -82,7 +82,7 @@ error validate_generation(const generation& value) {
         if (index == 0) {
             if (item.bias || item.span || item.needed_count) return error::role;
         } else {
-            constexpr u64 begin = 0x100000000000ULL, end = 0x1fff00000000ULL;
+            constexpr u64 begin = generation_mapping_begin, end = generation_mapping_end;
             if (item.bias < begin || item.bias >= end || item.bias % 8192 || !item.span || item.span % 4096
                 || item.span > end - item.bias || item.span > head.mapping_budget - mapped) return error::budget;
             mapped += item.span;

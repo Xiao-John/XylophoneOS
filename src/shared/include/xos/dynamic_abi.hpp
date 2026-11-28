@@ -32,6 +32,8 @@ inline constexpr u64 generation_mapping_limit = 128ULL * 1024 * 1024;
 inline constexpr u64 startup_deadline_limit_ns = 30000000000ULL;
 inline constexpr u64 startup_heap_base = 0x1fff00000000ULL;
 inline constexpr u64 startup_heap_bytes = 8ULL * 1024 * 1024;
+inline constexpr u64 generation_mapping_begin = 0x100000000000ULL;
+inline constexpr u64 generation_mapping_end = startup_heap_base;
 struct generation_header {
     u64 magic;
     u32 version, size;

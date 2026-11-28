@@ -90,6 +90,8 @@ def main():
     recipe_paths += [ROOT / 'src/ports/gcc/shared_source_auth.json', ROOT / 'src/ports/gcc/source_lock.json']
     recipe_inputs = {path: sha(path) for path in recipe_paths}
     port_inputs = {path: sha(path) for path in PORT.rglob('*') if path.is_file()}
+    startup_abi_inputs = {name: sha(ROOT / name) for name in (
+        'src/shared/include/xos/dynamic_startup_abi.h', 'src/shared/include/xos/dynamic_abi.hpp')}
     report = {'status': 'building', 'scope': 'private_fixed_startup_closure',
               'sdk_binding': binding, 'tools': tools, 'make': make,
               'sanitized_environment': removed, 'steps': [],
@@ -98,8 +100,11 @@ def main():
               'port_inputs': {str(path.relative_to(ROOT)): digest for path, digest in port_inputs.items()},
               'excluded_artifacts': ['sotruss-lib.so: audit is outside the fixed-closure profile']}
     if args.public_startup:
+        abi_inputs = {'domain': 'xos-glibc-dynamic-capsule-v2',
+                      'sdk_manifest_sha256': sdk_digest, 'startup_headers': startup_abi_inputs}
+        abi_bytes = json.dumps(abi_inputs, sort_keys=True, separators=(',', ':')).encode()
         report.update(scope='public_fixed_startup_closure', public_startup=True,
-            native_abi=hashlib.sha256(('xos-glibc-dynamic-v1:' + sdk_digest).encode()).hexdigest(),
+            native_abi=hashlib.sha256(abi_bytes).hexdigest(), native_abi_inputs=abi_inputs,
             expected_sdk_manifest_sha256=args.sdk_manifest_sha256,
             expected_sdk_tree_sha256=args.sdk_tree_sha256,
             sdk_snapshot='verified_before_and_after_full_copy')
@@ -306,6 +311,8 @@ def main():
             raise ValueError('recipe or native port changed during the build')
         if args.public_startup and any(sha(ROOT / name) != value for name, value in native_inputs.items()):
             raise ValueError('public native support inputs changed during build')
+        if any(sha(ROOT / name) != value for name, value in startup_abi_inputs.items()):
+            raise ValueError('startup ABI identity inputs changed during build')
         if any(sha(Path(tool['path'])) != tool['sha256'] for tool in tools.values()):
             raise ValueError('target tool changed during the build')
         for path, digest in ((args.glibc_archive, report['glibc_source_verification']['archive_sha256']),

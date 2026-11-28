@@ -121,3 +121,10 @@ fixture SHA 为
 文件的引用；结论与数值未改。后续 G3 unsigned-mask 修复若改变公共 GNU
 执行/identity/root 字节，须另验；完全相同也须给独立的字节对应记录，不
 改写本次 v3 资格。下一项接 R1 frozen1024 冷启动回滚 runner 与新 fixture。
+
+unsigned-mask 后续已建立独立映射：`b2a924c8` 真正编译 `bf8566e0` 修复后的
+C 源，替换 1654 成员中的一件、保留其余 1653，partial/full GNU link 后的
+安装 libc 与 C3 **逐字相同**。本工作区另核验该重建的 166 个输入和 5 个
+产物、Git 原始源/脚本、C3 全部对象和三个 generation，均对应已运行的
+准确 bytes。`source_byte_correspondence.json` 单独记录这一对应关系；旧
+guest report、source 身份与观察值未改，未把新编译伪写为新的 guest 运行。

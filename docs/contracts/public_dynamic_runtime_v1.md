@@ -43,6 +43,12 @@ readonly pin 读取；之后映射和转移仍使用这些开放描述，不能�
 bootstrap 自身继续受普通静态 ELF 装载器及 128 KiB 文件界限检查。控制器把
 已验证映射计划、固定批准根、选定 generation、已转移 pin 和启动控制描述
 写入只读 capsule；客体不能修改 capsule 后把新字节当成批准结果。
+capsule 的内部布局版本为 2，固定从 `0x71000000` 开始；它位于线程 stack/TLS
+保留区 `[0x70000000, 0x71000000)` 之后，并在初始进程栈之前。编译期检查
+同时排除静态 TLS、进程 heap、DSO 映射区和早期 GNU heap；动态闭包预检还
+拒绝 bootstrap 的 LOAD 覆盖 capsule 或线程区域。普通静态 ELF 的历史地址
+兼容性保持原定义。公共 native NOTE 的 ABI 摘要绑定 C SDK manifest 和上述
+启动 ABI 头文件内容，防止旧 capsule 与新地址的运行时混用。
 
 bootstrap 用同一开放描述映射 main 与 interpreter，准备 argv/env/auxv、
 GNU 初始栈及 Files 会话，再进入真正的 GNU `ld.so`。早期 heap 固定为 8 MiB，

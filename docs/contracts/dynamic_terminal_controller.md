@@ -144,6 +144,12 @@ report. This contract does not claim a normal shell terminal launch path,
 unapproved image loading, arbitrary channel counts or successful GNU worker
 creation in the C-only fixture.
 
+The [target report](../reports/p1_k2_terminal_controller_20261128/README.md)
+records seventeen checks passing in one complete run of source `6b513fff`
+and test system `31ae0eb6d1c5d02a`. This is the fixed public-startup capsule-v2
+GNU C composition; the separately named native descriptor startup is v3.
+Newer public-startup capsule profiles require their own matching qualification.
+
 ## Distinct owner lifetimes in qualification
 
 The fixture distinguishes termination of the actor service, termination of a

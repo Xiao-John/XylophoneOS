@@ -1,0 +1,19 @@
+{
+  "status": "verified_reproducible_source_cleanup",
+  "removed": "glibc-2.44",
+  "removed_bytes": 270037076,
+  "preserved_sha256": {
+    "gnu/libc.so": "9b980f10dc8adb0ba510decc9767b6e96fe48b05addf53e8543a2c88c033cb57",
+    "gnu/elf/ld.so": "2b214f49be29382fc77e45508271856daa2179bf7982cc3ba61b71ff4934a6ec",
+    "gnu/elf/xos_file_session.os": "faba08d82dc5e622149c76fdafc9489820fbc7e5438601bfce6286e82fb6d1aa",
+    "gnu/csu/Scrt1.o": "4a7fbf78218ed2b15a86cca4c38ff8abadb0a7312e28a1945456d8fccd119f97",
+    "gnu/csu/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+    "gnu/csu/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+    "pic_crt/target/libgcc/crtbeginS.o": "66fda995333df8d1df62f3aa3d7f1c59b166b720711ef2b95024d395d4713868",
+    "pic_crt/target/libgcc/crtendS.o": "eb9e096ff419207d8fe8a843de4237bca2aeff31002b82f99dff800e8d915a29",
+    "native_pic/libxos_terminal_pic.a": "21e01b55110202f12c374028526a3fcc113927ce6ed16cc797271efd7ac28f1c",
+    "manifest.json": "a7a6360491bb8ebe13b85aab61be7d61d0cd26137d1f02f433d7ca908e8bd0dc"
+  },
+  "authenticated_glibc_archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "scope": "unpacked locked glibc sources only; all gnu objects, final runtime outputs, native inputs, SDK snapshot and logs preserved"
+}

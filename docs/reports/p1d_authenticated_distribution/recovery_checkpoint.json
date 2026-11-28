@@ -1,0 +1,19 @@
+{
+  "status": "WIP_NOT_QUALIFIED",
+  "base_commit": "6332527ab64e92371266363f41f3247717a3cac8",
+  "host_authentication_cases": 30,
+  "host_authentication_sanitized_cases": 30,
+  "p3_regression_cases": 50,
+  "target_installer": "built; genuine publisher proof, metadata/generation verification and staging observed; protected publication still blocked",
+  "guest_blocker": {
+    "operation": 6,
+    "sequence": 4,
+    "guest_monotonic_ns": 33500000000,
+    "send_result": -1,
+    "peer_query_result": -1,
+    "try_send_result": -1,
+    "protected_revision_remaining": 1
+  },
+  "diagnostic_scope": "failed runs retained; backing30s expiry cause under investigation; no final or official guest pass claimed",
+  "missing_old_evidence": "not reconstructed; these are new post-recovery runs"
+}

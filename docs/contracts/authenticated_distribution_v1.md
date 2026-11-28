@@ -146,9 +146,12 @@ boots.
 The dedicated guest control bridge uses an existing kernel-authenticated
 sys84 pair for supervisor-to-proxy traffic. It verifies both peers and an
 explicit PPC1 HELLO/ACK, then unpublishes the rendezvous. Daemon-to-proxy
-storage traffic retains the existing sys81 pair. The supervisor must own
-exactly two sys81 endpoints before launch, leaving the existing two slots for
-the real loader READY/ACK exchange. Kernel quotas, production RPC deadlines,
+storage traffic retains the existing sys81 pair. The supervisor records the
+two actual successful endpoint creations; both participants validate the
+kernel-reported owner and opposite peer. Participant enumeration must show no
+additional legacy control channel: it does not enumerate channels where the
+supervisor is only the owner. The real loader must still complete its READY/ACK
+exchange using the remaining existing slots. Kernel quotas, production RPC deadlines,
 admission and runtime code are unchanged by this fixture arrangement.
 
 The COM1 developer authority used by these integration tests is explicitly

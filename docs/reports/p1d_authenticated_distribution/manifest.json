@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "files": {
+    "dead_channel_diagnostic_report.json": {
+      "sha256": "36ef647ce879e6ab63f1c70e4f449a3a55434027ccf8c3f0307bf8518dc64ed5",
+      "bytes": 86017
+    },
+    "dead_channel_diagnostic_scenario_32.json": {
+      "sha256": "3afb9be63511f0cf7cc2c82b188aca497a162851f52550ab9f7f0726e09f44cf",
+      "bytes": 730
+    },
+    "dead_channel_diagnostic_scenario_32_run_0.err": {
+      "sha256": "acc2da64799e757c3dab4d0bb7346b372b1ff9ba734eaaafe04c890d552eb48d",
+      "bytes": 182
+    },
+    "dead_channel_diagnostic_scenario_32_run_0.out": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "dead_channel_diagnostic_serial_base64.json": {
+      "sha256": "26ce3715dcfebedc6a14da5b30adbd035985854acf4505ee4d1f02cfc3b35375",
+      "bytes": 3675
+    },
+    "diagnostic_client_build_receipt.json": {
+      "sha256": "fe61083f0dfe85160077b74511a311e750b227f773f982c4c866a01fa78ad86e",
+      "bytes": 20980
+    },
+    "diagnostic_client_builder.py": {
+      "sha256": "3a6c9b1c1ea8a3429e476ccdca9abe36ee8326a21cf3933f6d5617fac6b80fa8",
+      "bytes": 2927
+    },
+    "diagnostic_client_source.json": {
+      "sha256": "480dd17bc1a5a29ab87bd6c4445a58754bfcf673afe3e90591d3eb1ec2f3e32e",
+      "bytes": 530
+    },
+    "diagnostic_provisioning_client.cpp": {
+      "sha256": "a651f64ae7f508146c4634c098dbb38bb943b8e42f03822d78cc9d037c8c79ff",
+      "bytes": 2382
+    },
+    "first_cas_failure_report.json": {
+      "sha256": "ca5e52d6ec30878974abb264ebc45750b840920f0abcd742971b39869d5a62be",
+      "bytes": 87278
+    },
+    "first_cas_failure_scenario_32.json": {
+      "sha256": "3caaeaea12f9108cb1796aa00504925c5f194b88c13a830359e7ea1d29543787",
+      "bytes": 623
+    },
+    "first_cas_failure_scenario_32_run_0.err": {
+      "sha256": "2930bc92fb2f74b84bdb169477a73c4a1a9b433469d84d857418cd67abe304ca",
+      "bytes": 76
+    },
+    "first_cas_failure_scenario_32_run_0.out": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "first_cas_failure_serial_base64.json": {
+      "sha256": "bce570fc6dcb0e2d893607acc2ed285274e0f5303f59a8e69a923369f18df46c",
+      "bytes": 3666
+    },
+    "host_authentication.json": {
+      "sha256": "8404284977fdb2e9cc45a2cfaf2e2e18bcbcd71ce4d0ef8b86f481ce8c803e22",
+      "bytes": 78125
+    },
+    "host_authentication_sanitized.json": {
+      "sha256": "b17e96eea539f1e1c880f481f1fc0faf48d1fa8839483c15f7d46ace220f2160",
+      "bytes": 78196
+    },
+    "host_openssl_snapshot.json": {
+      "sha256": "386555a8affdafa4998d2f163f7254aa1416b18a364d9dc2657a29699bf7d3a5",
+      "bytes": 14408
+    },
+    "logging_close_failure_report.json": {
+      "sha256": "d022565a24b9ae4236737c86dc03ec57c66eb1e18045389d2569b282f6d8fe2d",
+      "bytes": 85833
+    },
+    "logging_close_failure_scenario_32.json": {
+      "sha256": "4bc4201c3cd3032693ec084029260b008d3ebd576e6e8881deae7b1d8f134d91",
+      "bytes": 546
+    },
+    "logging_close_failure_scenario_32_run_0.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "logging_close_failure_scenario_32_run_0.out": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "logging_close_failure_serial_base64.json": {
+      "sha256": "0960a0770265d13a6038c85094b18b490a5aa9fd7aa5e7789372fb2736f90006",
+      "bytes": 3679
+    },
+    "p3_regression.log": {
+      "sha256": "10f2f14bb1d8e543a340d18fa78aa2906c697a9e9b71c21c840552567413d7a7",
+      "bytes": 4787
+    },
+    "package_cache_regression.log": {
+      "sha256": "a1451b9fb5e2a221785babe923490afbf24afab9dc7b63da594402fbb42ebfd1",
+      "bytes": 19
+    },
+    "recovery_checkpoint.json": {
+      "sha256": "e2be94d28f627f0ffabfee648c9795775d6019ac6d748fc8d22681fc917d8d9f",
+      "bytes": 788
+    },
+    "runtime_gcc_source_cleanup.json": {
+      "sha256": "714683704c50ac99c6560a305b61b78d08a40d10a8169afebf36fecb378ebf65",
+      "bytes": 1288
+    },
+    "runtime_glibc_source_cleanup.json": {
+      "sha256": "3a6b3d286472ecb336aaef593bdd74e1b52ae00e9a0d7fc7313f5e119a1e929f",
+      "bytes": 1348
+    },
+    "shared_runtime_manifest.json": {
+      "sha256": "a7a6360491bb8ebe13b85aab61be7d61d0cd26137d1f02f433d7ca908e8bd0dc",
+      "bytes": 123117
+    }
+  }
+}

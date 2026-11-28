@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Run real EVP signature and production metadata/freshness rejection cases."""
 import argparse
+import base64
 import copy
 import hashlib
 import json
@@ -105,7 +106,11 @@ def main():
                 'accepted sequence=' in result.stdout if expected is None else expected in result.stderr)
             report['cases'][name] = {'status': 'passed' if good else 'failed', 'exit_code': result.returncode,
                 'expected_error': expected, 'stdout': result.stdout, 'stderr': result.stderr,
-                'metadata_sha256': sha_file(release), 'signature_sha256': sha_file(signature)}
+                'metadata_sha256': sha_file(release), 'signature_sha256': sha_file(signature),
+                'vector': {'public_key_ed25519': argv[1], 'metadata_base64': base64.b64encode(body).decode('ascii'),
+                           'signature_hex': signature.read_bytes().hex(), 'trusted_unix_seconds': now,
+                           'previous_checkpoint': list(previous), 'bootstrap_epoch': epoch,
+                           'minimum_sequence': floor, 'maximum_validity_seconds': validity}}
             if not good:
                 raise RuntimeError('case failed: ' + name + '\n' + result.stdout + result.stderr)
 

@@ -1,0 +1,912 @@
+{
+  "binary_sha256": "a1472771b6cc73182da2645886fbf81b2ae3dd81000ca83a05adac9797b8011a",
+  "cases": {
+    "altered_bytes": {
+      "exit_code": 3,
+      "expected_error": "signature rejected",
+      "metadata_sha256": "bc7cc049cdb98afc3c59b6665493c03dd9f6e405f39d7000530ea0277d0b86e3",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: repository Ed25519 signature rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0KIA==",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "boolean_sequence": {
+      "exit_code": 3,
+      "expected_error": "invalid release sequence",
+      "metadata_sha256": "8faa75f5e4ac37e9c1a0f1f52e0bd455484613072228c731a88dca9762307915",
+      "signature_sha256": "6ef7c1659f8f19232d2b26522969fa1e495e05dddb7733558f83ab37266f46b6",
+      "status": "passed",
+      "stderr": "rejected: invalid release sequence\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IHRydWUsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "d4fcb84e51eabb740aa6067e009091491bcb8911daf7f55aa658a49c765c7524761df4ac44bc40c1f45323f4ba3f1c2e360fa58c151445a6d985da452ccfa800",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "bootstrap_floor": {
+      "exit_code": 3,
+      "expected_error": "predates bootstrap floor",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: repository sequence predates bootstrap floor\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 2,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "changed_signature": {
+      "exit_code": 3,
+      "expected_error": "signature rejected",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "d27970ab1ba89973dace0067c2654b9f7907d7393390ddb45eb289e38d92d271",
+      "status": "passed",
+      "stderr": "rejected: repository Ed25519 signature rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "12e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "clock_rollback": {
+      "exit_code": 3,
+      "expected_error": "clock moved backwards",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: trusted repository clock moved backwards\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          1,
+          1,
+          1600,
+          "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411"
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "downloaded_key": {
+      "exit_code": 3,
+      "expected_error": "unknown JSON field",
+      "metadata_sha256": "78d5da00d3e317f60a383d43268d20238821bd7dbfb0732596c44f9129bc9868",
+      "signature_sha256": "31ae2a96ba181c7f368717931f3d7a28a99c8f92522fe5caafbee52ce86feb22",
+      "status": "passed",
+      "stderr": "rejected: unknown JSON field\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInB1YmxpY19rZXlfZWQyNTUxOSI6ICIzZDYwNTZlODY1NmFhYjRmY2QyMDNmM2VkZTc0ZmMwODI4MDFkZGI3MTExYTI0YmViMWMxNmQ0NTk2MGY0ZWQzIiwKICAicmVwb3NpdG9yeV9pZCI6ICJ4b3MudGVzdC5kaXN0cmlidXRpb24ub25seSIsCiAgInNlcXVlbmNlIjogMSwKICAidGFyZ2V0X3Byb2ZpbGUiOiAieG9zLXg4Nl82NC1nbGliYy1wMS0yMDI2MTEyOC12MSIKfQo=",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "0c739a5c27b38464b85e2172edf51bcdb99fd154d2493117314ee9447ee7c6e350cb287d762428fcf7809eff7540fd8b883946260ecf5faa18384625867bdc0e",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "duplicate_field": {
+      "exit_code": 3,
+      "expected_error": "duplicate JSON",
+      "metadata_sha256": "60df761d2a339a9446d92bd26e231fa14f1c117a084b8bdc24bd03c7afa0fe9e",
+      "signature_sha256": "c4e4ceede0bc2108a580560026d6962935120d663981c9e2522abae0b5584f6f",
+      "status": "passed",
+      "stderr": "rejected: duplicate JSON key\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "6751a2c1e1e313211b2675f9612c412120d22a81baafde5e21e809e729f36117356e9964a843d3b817f2c3a5b4dbeb605edafaefefe2464e9f1ee79bbf85290e",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "empty_metadata": {
+      "exit_code": 3,
+      "expected_error": "invalid authenticated metadata size",
+      "metadata_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: invalid authenticated metadata size\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "epoch_rollback": {
+      "exit_code": 3,
+      "expected_error": "key epoch rollback rejected",
+      "metadata_sha256": "99e95c6109578970a57a0bd149c31e51fe2b595754a59cce2b4983b852ac245b",
+      "signature_sha256": "e81d1f9cad1480d6819cdd606a51424b89fbdc04c06782fba407d1c2b47a4c47",
+      "status": "passed",
+      "stderr": "rejected: repository key epoch rollback rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 2,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMiwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          3,
+          1,
+          1400,
+          "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411"
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "55af73c1cfe3fb3c29625e9a8eee211751ed4247b66535dbc8d469001347e80a9a458a4f201a522ebd80d2008c350dab4f00d6a3f8f850ee3732af76a5977601",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "equivocation": {
+      "exit_code": 3,
+      "expected_error": "sequence equivocation rejected",
+      "metadata_sha256": "8dd09107f07a5ec613cca56e5048df668bd5a854265225f69defd5cf90f473b1",
+      "signature_sha256": "9e8b1e03b5daa0324b59102f1b56c1c7680635ac3193ef09bb06dd47f960a688",
+      "status": "passed",
+      "stderr": "rejected: repository sequence equivocation rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMiwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          1,
+          1,
+          1400,
+          "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411"
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "c6b71df84c6ca167b7148f6dfb69c95cb7d5466a2e18a62ff860e39213f4c0be76311a5023e24b3fc02add8fba4a4b362ecc4580ad4fd1d4a25c4e57c20dea03",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "expiry_boundary": {
+      "exit_code": 3,
+      "expected_error": "expired or not yet valid",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: repository metadata is expired or not yet valid\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 2000
+      }
+    },
+    "fractional_sequence": {
+      "exit_code": 3,
+      "expected_error": "integer",
+      "metadata_sha256": "d60021086c2137613fbcbdb96471a4817893058d62afa2ee74421ae8643f3d0b",
+      "signature_sha256": "19e3b05fd341580bb0474fa6f14c989eca7a46103c73974355bf75b627d946f7",
+      "status": "passed",
+      "stderr": "rejected: non-integer JSON number\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEuNSwKICAidGFyZ2V0X3Byb2ZpbGUiOiAieG9zLXg4Nl82NC1nbGliYy1wMS0yMDI2MTEyOC12MSIKfQo=",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "d910d6f8a199ed7559ca81da5c6d6685124ba588ab266a867561a3a3ac83b401a440f5d95c1ab3642a380f8722233b5a3cebf1b1187a8aa3594035347b337a06",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "identical_verification": {
+      "exit_code": 0,
+      "expected_error": null,
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "",
+      "stdout": "accepted sequence=1 time=1500 metadata=7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411\n",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          1,
+          1,
+          1400,
+          "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411"
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "independent_epoch_rotation": {
+      "exit_code": 0,
+      "expected_error": null,
+      "metadata_sha256": "539dfa11521304edc3a74e6cafaffe500765c89e41b11e279afff7dc2dea2678",
+      "signature_sha256": "b7a7b9a4d7f0a5b0f7104065e055aa34a09b396aa9cf9a0fdc37927484d7f2bb",
+      "status": "passed",
+      "stderr": "",
+      "stdout": "accepted sequence=2 time=1500 metadata=539dfa11521304edc3a74e6cafaffe500765c89e41b11e279afff7dc2dea2678\n",
+      "vector": {
+        "bootstrap_epoch": 2,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMiwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDIsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          1,
+          1,
+          1400,
+          "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411"
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "0450c5064cff45d9303f9591b8b5147571e2127d237bb3d297dff4489a389569c2af380b572b3d681fcb170716a95a86dca7ee57df950caf12d70b8a24af8b01",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "invalid_digest": {
+      "exit_code": 3,
+      "expected_error": "invalid authenticated repository digest",
+      "metadata_sha256": "b06cd3332d0058d78b08b79aedb6b8a13448007d8b54aade8fcc6e09fc528e2e",
+      "signature_sha256": "fc4583f4dc4062f7f0983e4a715d5cb6a5736d6de7bf889ed13b3d31825dacfe",
+      "status": "passed",
+      "stderr": "rejected: invalid authenticated repository digest\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICJ6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6enp6IiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "416f97340e7106f3af41201a850973f7dedefe0fb7db4fb389bee8e001e5c1d151eb0e5802d80daa4d7b545a4e16c6ca8ac42375f544a12bf65f10a2f8631b09",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "long_validity": {
+      "exit_code": 3,
+      "expected_error": "validity interval rejected",
+      "metadata_sha256": "042cbff22d704fffe7719918b2f31b906ebc1cba67d371e460d5a1386679d5a0",
+      "signature_sha256": "84aebf633ba38b4f2f4238f4cf14d4f0fdb845695ef1bfebb86656a1b4aede4c",
+      "status": "passed",
+      "stderr": "rejected: repository validity interval rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMTAwMDAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "7af4084abc0430ff34845b307e13a094879e06864a67f53e24799591cbac4a0155c41e9930b750adfb062bbbb1da22d54a7144b08ac1cf95535027ab92746f0e",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "next_sequence": {
+      "exit_code": 0,
+      "expected_error": null,
+      "metadata_sha256": "205cce8eff8b31bd47c7809aa42383bfc32babe491911c7ab78102e5c96fbd62",
+      "signature_sha256": "ab2a277db68c30c0cbc8ac9c7ed62e86ccb8ed919693d5f80651fe481e4ef6f7",
+      "status": "passed",
+      "stderr": "",
+      "stdout": "accepted sequence=2 time=1500 metadata=205cce8eff8b31bd47c7809aa42383bfc32babe491911c7ab78102e5c96fbd62\n",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDIsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          1,
+          1,
+          1400,
+          "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411"
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "e8687184714baafa54f5f912c09728e3dd4cfd17fcd26e362b941e0f8a0d437caa34c54fc9a0beda5cc08a744ec5b3274528294b9e771a29f8112a96ca7caa06",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "no_trusted_clock": {
+      "exit_code": 3,
+      "expected_error": "trusted repository time is unavailable",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: trusted repository time is unavailable\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 0
+      }
+    },
+    "not_yet_valid": {
+      "exit_code": 3,
+      "expected_error": "expired or not yet valid",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: repository metadata is expired or not yet valid\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 999
+      }
+    },
+    "other_signer": {
+      "exit_code": 3,
+      "expected_error": "signature rejected",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "4f0fbba30e33c955454ae9cf120507630e237365eab3c5e5860136321d7c738e",
+      "status": "passed",
+      "stderr": "rejected: repository Ed25519 signature rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "5d27d95298c32323e324c714530b85cfc15fafc40322ddb892db5e8025a33f412da979eadd3390ae2904e8d981fe70cf85acb7eba367e5b4970c1d330e5e8402",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "oversized_metadata": {
+      "exit_code": 3,
+      "expected_error": "invalid authenticated metadata size",
+      "metadata_sha256": "4f4ead552223cb2905a4828972dfae7740586dabae603924a7810598256dbdd9",
+      "signature_sha256": "a6005e4d7977295b8110016a3ff86db03e7d7a1daca56d1a55a130baef40cedb",
+      "status": "passed",
+      "stderr": "rejected: invalid authenticated metadata size\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA=",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "b02debf844f53a40c186ce32adea341d2b78809336e491ee2b39cdca218e859779ba4caed9d3b5d96f2284ce0a99e8a872511c08749e8b912f1867c14f338409",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "reversed_validity": {
+      "exit_code": 3,
+      "expected_error": "validity interval rejected",
+      "metadata_sha256": "794ff53919e9a4bf6ce733bce38aa5c550e735fe086a51e3db4311bebb76b0e2",
+      "signature_sha256": "f27da8d16d7de30dd898e042a28825c2a1087875c88dd00fd253d9d9afe7fab9",
+      "status": "passed",
+      "stderr": "rejected: repository validity interval rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogOTk5LAogICJmb3JtYXRfdmVyc2lvbiI6IDEsCiAgImdlbmVyYXRpb25faWQiOiAxMTAxLAogICJnZW5lcmF0aW9uX3NoYTI1NiI6ICIzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzIiwKICAiaW5kZXhfc2hhMjU2IjogIjExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTEiLAogICJpc3N1ZWRfYXQiOiAxMDAwLAogICJrZXlfZXBvY2giOiAxLAogICJsb2NrX3NoYTI1NiI6ICIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyIiwKICAicmVwb3NpdG9yeV9pZCI6ICJ4b3MudGVzdC5kaXN0cmlidXRpb24ub25seSIsCiAgInNlcXVlbmNlIjogMSwKICAidGFyZ2V0X3Byb2ZpbGUiOiAieG9zLXg4Nl82NC1nbGliYy1wMS0yMDI2MTEyOC12MSIKfQo=",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "e311de57e0743968fccba37066d0b19e25679d8a11e58a95d544740aef018f1d089e3ace2a132c536897f0ff4a7d545d559244972c257d3f09b4b225daed1c05",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "sequence_rollback": {
+      "exit_code": 3,
+      "expected_error": "metadata rollback rejected",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: repository metadata rollback rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          1,
+          2,
+          1400,
+          "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411"
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "unbootstrapped_epoch": {
+      "exit_code": 3,
+      "expected_error": "key epoch is not bootstrapped",
+      "metadata_sha256": "99e95c6109578970a57a0bd149c31e51fe2b595754a59cce2b4983b852ac245b",
+      "signature_sha256": "e81d1f9cad1480d6819cdd606a51424b89fbdc04c06782fba407d1c2b47a4c47",
+      "status": "passed",
+      "stderr": "rejected: repository key epoch is not bootstrapped\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMiwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "55af73c1cfe3fb3c29625e9a8eee211751ed4247b66535dbc8d469001347e80a9a458a4f201a522ebd80d2008c350dab4f00d6a3f8f850ee3732af76a5977601",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "unconfigured_key": {
+      "exit_code": 3,
+      "expected_error": "bootstrap trust is not configured",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "rejected: repository bootstrap trust is not configured\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "0000000000000000000000000000000000000000000000000000000000000000",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "valid_initial": {
+      "exit_code": 0,
+      "expected_error": null,
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "e86feace29fb6e82e9007c101b2add2898ab9be63d76d57bd48ebc17bac41e62",
+      "status": "passed",
+      "stderr": "",
+      "stdout": "accepted sequence=1 time=1500 metadata=7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411\n",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "13e64ad25ff711192ad6b744c04d1c5b347964d1ea21461af54a872498195ad90a86387af5ec2a7f61282fce7624c9946fef9c71bc39284335c4158a63955403",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "wrong_profile": {
+      "exit_code": 3,
+      "expected_error": "release profile mismatch",
+      "metadata_sha256": "7d837c341bccaf8ace02340f50d0b633e84243d5f7254ba9c28eb65082db683f",
+      "signature_sha256": "b0a7a00ae5d564752f94d5e73f158c3aed5c2b257a8034750a452632ef01d4a0",
+      "status": "passed",
+      "stderr": "rejected: repository release profile mismatch\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy50ZXN0Lm90aGVyIgp9Cg==",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "50817a680d78539b0adb58dc51600101ea04fe531aa0a7a85a9b942f7caeee8888908c24c0b6f9ad9c84e2344bb7a56bbfdbf974018d9df25f02ef98dc4e2504",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "wrong_repository": {
+      "exit_code": 3,
+      "expected_error": "repository identity mismatch",
+      "metadata_sha256": "2978e96081ed672f1d6264833688802ebfc8bf39fd7da90ffe2034319d752a55",
+      "signature_sha256": "0d84ec2a7fabe5c3838dd925669231ccff5a4f155c82cfb72aba694a29d019c8",
+      "status": "passed",
+      "stderr": "rejected: repository identity mismatch\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QudW50cnVzdGVkIiwKICAic2VxdWVuY2UiOiAxLAogICJ0YXJnZXRfcHJvZmlsZSI6ICJ4b3MteDg2XzY0LWdsaWJjLXAxLTIwMjYxMTI4LXYxIgp9Cg==",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "237ae209fefc17303b4947171be164be303c06d95cb97d7675146905f066531527314d186c4e499d6d3ea2954abdf747c11a89c639841c79220416ada050620f",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "wrong_signature_domain": {
+      "exit_code": 3,
+      "expected_error": "signature rejected",
+      "metadata_sha256": "7eb6c8f8a556c2d651a56169ceb32ae2101e19307979c03dcb1a96a851028411",
+      "signature_sha256": "5bddf25cd4d2d60b10bdbced9cd7d6f23cbd7748cd303cb4208913ac86ba627a",
+      "status": "passed",
+      "stderr": "rejected: repository Ed25519 signature rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMTEwMSwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "b0d11dedceac70f64b91f9a81d6d8d70469336d85b661e329cc6a81d35142b7e60431118e8b84d5039eb773e186738a4e34e73429160a168780d487607edf504",
+        "trusted_unix_seconds": 1500
+      }
+    },
+    "zero_generation": {
+      "exit_code": 3,
+      "expected_error": "validity interval rejected",
+      "metadata_sha256": "412b112e4af17f568601d9d18705b70e8a85f737a6d86fd43adaf194d4712e7e",
+      "signature_sha256": "5fdd2fdb72f09ed92702564ee35764daef722e39dd01f0765322a55482a172a1",
+      "status": "passed",
+      "stderr": "rejected: repository validity interval rejected\n",
+      "stdout": "",
+      "vector": {
+        "bootstrap_epoch": 1,
+        "maximum_validity_seconds": 604800,
+        "metadata_base64": "ewogICJleHBpcmVzX2F0IjogMjAwMCwKICAiZm9ybWF0X3ZlcnNpb24iOiAxLAogICJnZW5lcmF0aW9uX2lkIjogMCwKICAiZ2VuZXJhdGlvbl9zaGEyNTYiOiAiMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMyIsCiAgImluZGV4X3NoYTI1NiI6ICIxMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExMTExIiwKICAiaXNzdWVkX2F0IjogMTAwMCwKICAia2V5X2Vwb2NoIjogMSwKICAibG9ja19zaGEyNTYiOiAiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMiIsCiAgInJlcG9zaXRvcnlfaWQiOiAieG9zLnRlc3QuZGlzdHJpYnV0aW9uLm9ubHkiLAogICJzZXF1ZW5jZSI6IDEsCiAgInRhcmdldF9wcm9maWxlIjogInhvcy14ODZfNjQtZ2xpYmMtcDEtMjAyNjExMjgtdjEiCn0K",
+        "minimum_sequence": 1,
+        "previous_checkpoint": [
+          0,
+          0,
+          0,
+          ""
+        ],
+        "public_key_ed25519": "dc6f7d2597901e975c314257bf0cb6982dfa24450c9f0f892ccedc101ede3a85",
+        "signature_hex": "da482fdc6144198d51b1dde1b3c6a06a0c5cba68dd52a58c589b3cf478c08750b5f847c8750d1f762d73cc7ddb7c3de71c6a6efa1fa7e779108b0f5d9948c306",
+        "trusted_unix_seconds": 1500
+      }
+    }
+  },
+  "compile_command": [
+    "/usr/bin/g++",
+    "-std=c++20",
+    "-O1",
+    "-g",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-misleading-indentation",
+    "-I",
+    "/work/worktrees/p1_d/src/user/programs",
+    "-I",
+    "/work/worktrees/p1_d/src/user/include",
+    "-I",
+    "/work/worktrees/p1_d/src/shared/include",
+    "-fsanitize=address,undefined",
+    "-fno-omit-frame-pointer",
+    "-I",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include",
+    "/work/worktrees/p1_d/tests/fixtures/xypm_distribution_auth.cpp",
+    "/work/worktrees/p1_d/src/user/programs/xypm_repository_auth.cpp",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/lib/libcrypto.so.3",
+    "-Wl,-rpath,/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/lib",
+    "-o",
+    "/work/worktrees/p1_d/build/p1d-auth-final-sanitized/auth_probe"
+  ],
+  "compiler_sha256": "b387d77828b16660cbd6d5b7e3351d9bd89cefe236e457b75de3e5a2b3255d6c",
+  "compiler_version": "g++ (Debian 16.2.0-5) 16.2.0",
+  "inputs": {
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/aes.h": "130e304c466bda5db6de2fdbca3a970905070ab935d702e61c8371334851ea27",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/asn1.h": "4fa5c0b192a3eb73927fbec13c8a399831afd09bf4c0b5f551f025c7c8044a02",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/asn1err.h": "9d60638b3d0c52170d390fe566c0b96a6381590590cc3dd71339eb85140fe1d6",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/asn1t.h": "b6e9322878b397af0704d856f822ccb7b77a2c221d0402a4086c315e240e1ed9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/async.h": "708d52ecd7bb5ca83d243ddecb132db0693b0809f65c093eabda549156934030",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/asyncerr.h": "eb6ea0f0389aa7846ea5b8f5b7b8d2a82a7b52e7dbfa105bc137e52be1399a69",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/bio.h": "c2aa5855e8b17a316d5ec8222db127816c601ce5f19ef239788ad4cc24a1ea53",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/bioerr.h": "fe1bf57251e4eaab30d2a6aa2048ee93deb1f0f15ef6634f61093b4d405586c6",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/blowfish.h": "97064924914f71425e48f5d53893abca0f07f329dde7a8b93b581dc9ee2e837a",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/bn.h": "da179e5d98e8351e3e29f148bd88b42cba84fe60c7927a584f213bf2d09c38ed",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/bnerr.h": "beeb78746fbcc2c09e1f833f4c2ea72e845e757390aad7dc8699f7787b580204",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/buffer.h": "c7b9803f89bb492176a1e2738999dad86195ab8048a26e8ec9ef6948b8882e8a",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/buffererr.h": "4dea6e8ec7f09bfbdaa85fa3e75572b95d2ea62a813e7420a04f5f56ee7ccdfd",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/byteorder.h": "f062018f5fbe9f8459967dffaaa8e27f34596fb0da21fc011d0d556384a0305c",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/camellia.h": "e03acf0f3406032e5322e4f3368e8e48e5b73e8846955c3bcb3a4f1cb54d2ebc",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cast.h": "4fafc375a53d88fe4c709d8ee5fb74dc0fcaf91915837c3c6b4df0d916b07f0a",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cmac.h": "048677b08aab6fd862d2b8b15556db8355d2142b93a9431ffba1d75a25912847",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cmp.h": "cc30886e10ef6c6e87ccd0ed8891e093f9622326869460f2c9feabdbe7960263",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cmp_util.h": "16c51c48c83c930b018ff711553e107f1870f1cedd32d94c06f15709b080c321",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cmperr.h": "220d1a903b66e25fa1de92f3ee8b3f5ef27de6dface0a4ea68e683a19e3549a7",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cms.h": "d8c581b225131e918d7f7022cae11d9857d3b7e66167869b78d3c1b1e248f79a",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cmserr.h": "1cfc091ae52fe85c79bccfe1cc2d0e2979afff511e6a91fd04142596a65ac31a",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/comp.h": "3f95492b4054a8064bc75f770766aa6c8c0866cbd267939460786e13092a053e",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/comperr.h": "03faa7ac9cf7ec99350a55758a685056dae8f75992887e0411c23b0d8c5d83b0",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/conf.h": "14c276c3b47e537d7efc1150bc4bf9054c85a1eba6f60bd7b237885327f071fa",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/conf_api.h": "38dce9e9e0a438fcaf1d173c26e61c821bfd3756e221e3be76cf010580ac52f7",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/conferr.h": "ea9346e399d5dd1fbcca4f34078e1acb5039333602ecaf72faa04e32cdd55484",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/configuration.h": "77a77ad46a82d8a44b9da69d561036ec7ad01a599e9a08e403cc2835c7fd8c83",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/conftypes.h": "496997cc0f4c32b840677eeefd3ecb488453254be6e228b8cd34d4a4061a9e28",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/core.h": "4d4e63e2e01d06530515adbbe3c93601c5f0f5e1a96754d34d3470bccfcbdbc3",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/core_dispatch.h": "877d786bd366e80baa763d2c6c0b94e1d91c92cb0b6fa26d4004e6b0c3e6dd81",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/core_names.h": "2906aff65facff4fa4fac15ddb616811492ef8561c3297fe3d587782f3e6755f",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/core_object.h": "e8fa8c62ad1367bd325d59d721214d1a7afd5423205134152f60cc39a8590c8a",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/crmf.h": "6c2c4de95fa8e59c0b7bef929eb190aa2cb27bccdd1fe2de35fbed095791628f",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/crmferr.h": "9f2ff7a468b5048d543fef0324b39abdea63fa07bc915f62ff42a1937d7258c2",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/crypto.h": "345267a63492320c5c23550bf10b6b94744c6250bcbb17a87954e324c7a51faf",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cryptoerr.h": "c457c0591449551657a69ff9727784a79cc1afd899ac733c682c1a41fefdaa19",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cryptoerr_legacy.h": "985664cb71a62441b2822028340bb4ad5e3f98d6c74ba4c1bc7c997e188b97d3",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ct.h": "bafa52d57bb3da74016273aca034fdf1f402b935430cbc0943a7526bd7939d0a",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/cterr.h": "26d971ab2166ba4473864506dcd933290fa6c321956ef46220eb61fb33a04c89",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/decoder.h": "72dbf52e4dc4efbfaddbf31ab6f2bec3e9a5c22eed865d057b960a014a4b9ec8",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/decodererr.h": "c6818c667bdf8c37c5423580e0551359c69efc884198d28675db23e9fc70946e",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/des.h": "420afefcf27f28046912c5f156bc9e93d71a2c8a47bf0f605695a13f391cd5f9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/dh.h": "25080c32c48d5a88053c4b83c326e8f024b68249a0ef65d3c45af4f9aab6e0c6",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/dherr.h": "70f9e260865a9aae4c5f9a72d42d878e4dc216c906709245a8da2cceb79c3a14",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/dsa.h": "dac47d9779f83eb4e5a4f57c234e6eb25277cea68001384360e16c8859c38338",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/dsaerr.h": "b8fb8dae664d18298ae4b0c5444378e3f5c5d095256acb50764230159b1a15d6",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/dtls1.h": "3477022a712ecbb2bfb61b297c57026f1c354d52c638dfb22292183bd68d2e8f",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/e_os2.h": "d7300e16ec04f764e8fd45ae5288c37ab5af09dd1ea204d17c54c0155c69921c",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/e_ostime.h": "0528cffa1548778b3ad52d4abb527e5f31590fb1bab4b0f55aad391efd79fd68",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ebcdic.h": "f50d3c91cb24772cf3155fe6464d811219b8f7c65ea3d4f974f58c03c3f27ab5",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ec.h": "2cc0edb6a18c4c1199bfce6799ca56362a6c27d41dfdfee62177a3d53a8c9a65",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ecdh.h": "5b99fdd1dfea38640ed8a506fb9b66db381cc26a1254448a81cc6b161e41850f",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ecdsa.h": "5b99fdd1dfea38640ed8a506fb9b66db381cc26a1254448a81cc6b161e41850f",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ecerr.h": "c072432649cd1e4bd1eb8c1f636bc2b57045d6f620d69d61c85f589d1c6b63e3",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/encoder.h": "73459b25f863cf9bbb3de66f04ffe7ddaf9450f3c26afb1d5827325fa0a89fd9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/encodererr.h": "d010ca78b1df89c7fe3410d2aa5674179bf6750a445382ab8a0314c20a5b9799",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/engine.h": "185311cc9702aa00fcafefad6f83ca1f597659d5075b66100c61053e1be5f47d",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/engineerr.h": "2732c698916f320ba12ba690a80c1ef0651112015c5eac6141b1c3c315d1f5fc",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/err.h": "0d673984ff62d55d1fb4534d8136b7325e5264efeeb0b911cc94a4922681e080",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ess.h": "4e2de254dfe25ef69976e53a276681ffca2354b307a8674ef7028bdd515cfe2a",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/esserr.h": "9ab984787cce1224e1426be57987e7726d8c5d38651dd96802a7d433c5288ae4",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/evp.h": "41b42c68adfd98b9d8a80fb2d78bbdaf1094f43dd02be045c7d8605edf36a706",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/evperr.h": "ee0a462f1985667434a2b8a91d5df67ce2ee74e4ad9246f660dece5fafcf4474",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/fips_names.h": "95f0ddd1271d1bb609acbe42924e903a2dda8e224cced9eb56f5680a6ae75a8e",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/fipskey.h": "befe18822e90eb0a6d61008d274381052ad2221980dfdcd9a629de0c38bc50be",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/hmac.h": "9caf0b993c6ae2b3c75b9b585c8539dd358ca5f4edc42447295f87fc504eb1b9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/hpke.h": "58f81dab37eddc03b86db9dd640980fca872ddf19f4477482826a64f20454cb9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/http.h": "1f8d65d9633d54a74e8477396f2e3d34f5cdafc753fa8d56a5ee31753f5b734f",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/httperr.h": "56b740a25198f30d19c8ed57b36679bbb32f8f2d97291155d4b3091c347ae423",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/idea.h": "d114cb69e2e820008c508b7ad9002586806d82e3006e88162bd4a7c2dcd1e801",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/indicator.h": "4be987d4fe4a4b39feac27c2ee85000e1b6ca7188d8ca9f75689a8205c2b4563",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/kdf.h": "a4a7c722598b9b5b5fa6e4d659a7c8cf659c5db60c7396ed021d434c45e552c6",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/kdferr.h": "cbf4bd667f0a53459163f546920c2c98ce6d10b0db99176c779d8bf32f04e8b7",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/lhash.h": "ba50a0dc4caa9662e138f913566c44454a68f6e59c405c761c1f387f58855af4",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/macros.h": "dc27bc9e94abbb9e49bbcb604da5c061a65145586ac388c3fb4fc311daaccf96",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/md2.h": "a8eb0a1cdd0ced053d0f5dc5d1f63fe67f96a83c1cc37b6bf7adde85a567a631",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/md4.h": "75d0ff7b22daa2ab31a0cd03ce9ca10cef64f431d32c49def33d0f0164e36f0d",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/md5.h": "e22e567d09253eebf2c17f620783808f407bc7b969aa90bf3b44ac9001f6d329",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/mdc2.h": "740c2361d9b0ab5330ae0054e368f573416c401cb3855b72323967b29232421f",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ml_kem.h": "58ecec9d4d95ab5172290a4c5725b7b6940149ecdbff5a33b93cc67ede1b25f7",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/modes.h": "8ea97ace0601cdce6a12d0e1e92aefec062c299d0fcb5ff6477e3d752a9b9763",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/obj_mac.h": "d51cb3f619888a0485ba46ad886f76ac605ce78a3cfbc080460947ab2dbb3a02",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/objects.h": "b6227db488aa39ed20a29e67d48fe8fefb2f649a1afcc3149cba22ac26510057",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/objectserr.h": "fc14e6c9e71fb550363394f912cb72e6078dd11e300bdddfdd17ec118c88dc4b",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ocsp.h": "f853c0679f955a3140f1cb3d9175ef768bd26c951c029cbf9336a5c1b4e01275",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ocsperr.h": "51b319980fb406b70ff0aee9c145c260553f4ff6516305b9c2864643096cc30c",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/opensslconf.h": "7f4b522c049d0bd0d651e6f6ebe71d6df0c37231a94e32524da3f4642ebda3be",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/opensslv.h": "e0225cd1a79c26b6e1caa2a31493b37ecad53e6088a26c30c7fdaf376191cb80",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ossl_typ.h": "8d430751bbcd1d9695f3dd85b16958fd6255dfbf55775207923f67cba1754548",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/param_build.h": "f078c5549e172b49da9993ef68c7b7fedafd66b05255c9bf8a37154f0a40bdb7",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/params.h": "b76d73449d8d44d14a7da9918caf3d1feee85b384e2d62ace73a8a1126152702",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/pem.h": "9098124ff7a21c8f1db5ddead59b1cf092f88c9f44bf88dacd3c8de9c67ade76",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/pem2.h": "5bd104c872bbfee2d16f5af88c01b0aeee9f177ecc88c0dd237c9c9948eeedc6",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/pemerr.h": "18c1dbdde2452416b1d49c7512b7c4b8bf26ac7b83f5c0ee5e27e9bec454d2fb",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/pkcs12.h": "96ec6d9eb6df21c2403359c145ede06881fbb4eefb4ad66f3bab220d8f9fbd6e",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/pkcs12err.h": "fbf4142e0ee58b6c6841890d873f07ba0362e21ad74702d70552122e01c096e9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/pkcs7.h": "667c662d2efd30e5a69e61d8129770425479dae87c5cb28b0c0624ad7fff3b4d",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/pkcs7err.h": "717e017e7d0981928b33820660e19d5c264a06a5e824b94194036a8be92be07c",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/prov_ssl.h": "23b96759ae94e17c7c0e7ee32a531676be2a276a6d9802828e80268e20f224fd",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/proverr.h": "3aaec27b2bf592b5861a3524b6f03a541d7de34e6dfcbcabc2b6bc40221bc743",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/provider.h": "dac4bfad226a8e5513cecf472e41e0b7ed93c95374a0ec3fd56f7b046e0aeff1",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/quic.h": "a80af6c42394132eaad8de7177c6b0b3f747711730e8dd687acdc34284b3c2f8",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/rand.h": "cb240ffedfd9516ec7a8cd0796951d46a4707c0460f940371620c83f7bafd037",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/randerr.h": "a6acbb47da2f26fe5e572f232eb9d9ebcd65bb7c01d5984ab26229e5bf0bd45e",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/rc2.h": "b86a429de0c73aca6e0504b8833c1dcd9e8c7cdf65c2b31b38d0d0c7b19cc5e9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/rc4.h": "1bb4fa9d14861cdcf0a721d8d1026be80ce019da459ffdd8b5c1d12365110e78",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/rc5.h": "dd71ab468383a2a8ca4ff34f9273b481c1ed518c380da6d1ab82e9ca6b7edbd9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ripemd.h": "4457b36942bc0e298c993b48468ef8f3f00331a9d67bd0b894dd5bc5f58ab35d",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/rsa.h": "2c9780f9b4b35c3f14271962938e16b8505e9f5d38566c104bce9a82be23a0e1",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/rsaerr.h": "b4f87b5dddc672b81de0dfd7f3c4e6409887bd08b286c99ded8f1255e5836804",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/safestack.h": "0468b87ce8ea20069f621cc4dfc25fe6788408d5f46ce3baec738c89b64c2591",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/seed.h": "75a00b017f40beba051fdaad04876e18d3c80d1b1f1c21d78fafc69ae8e3b034",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/self_test.h": "4bb6ecb6d55e5e1bee6ef79c24bc8691174ad1b5c160f7d3daea150c140d3abb",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/sha.h": "7e006accd6565cc97dee672c097acc5e38482be7cd4fa1e0c316bf466425b895",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/srp.h": "8cc97f89d07e2ec543571253fcaa4229671cd71c0e2fba2993a1b73e7ebdbcc3",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/srtp.h": "6efa8edb1f040ba35cb05a671efc74c1494b9d4badc32d47cd5bb99e1a9cda38",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ssl.h": "e266392cd0466714c81fd7190a5117928d4c57d835f4fbe2f88b60ba006b51fa",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ssl2.h": "d33dc2afbcdee20f20ffcdd5cda6777c5e49a7cc37d513e4618b71a99129af20",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ssl3.h": "f98e0eb1702bf99614e92e2d09f1af5b59309e156441e40ab711df7d661536aa",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/sslerr.h": "7a9dab7a198ea5c17fe5cf8e1905a54ae88c0044a86c1accf1e7cc9e7de374e2",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/sslerr_legacy.h": "988c235994713d83d73ee904804f7edb4f6e321b4ab94c5aa5a9a0c7134fb499",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/stack.h": "c81fbb17b5476dca609b96eb11372d1d246a49096838c2cf7e81ad6b25f69316",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/store.h": "0fd665a474792f49055d7bd6e2bebed1449fb2dfd21ac042aa2cbc4cb6c8c66e",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/storeerr.h": "e13ecdf3c46b4dde5d857f8a7a3e2c0a444e309aa05d789bf99d73ecefab87aa",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/symhacks.h": "2b54552189bfbf4204c28c6a421b21702a3cd3dba37570dbcdadb7ee648f155b",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/thread.h": "583716b74d6aa0596c1d1b06cb16f657d4d9fb9c13cf30505ec0327046af6baf",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/tls1.h": "f075f51b48cdc3503e40b8f81fb2b760ba2d4f315d2844759d9089ffb10613dc",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/trace.h": "5b7f86a453e6b404ff019e23e84de856c2a25b8243d4bfb92c92471a3735e332",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ts.h": "3de4eecd9a731d9a05a1b7baab18cb1c62f59f8a9f9e5ed049525a8ada9207b8",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/tserr.h": "27e66bf494926dea06d8c3800823f2485cf1a7f8f41f5628ff4a443f9bcceb87",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/txt_db.h": "cbd03be764d6d12e12895703756fbe5f2b7611d4cd55d343837d48e8e6e60523",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/types.h": "de5422d2e621df11c17ab18473ea4f2368ecc64b1e45311c4890cc62b31f81c5",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/ui.h": "cef3b9a240669810f11ea82ff463cebf620ee8c1ea55d8908d6aa9925b7f8d17",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/uierr.h": "a21be118ee97343a03dc28256370839e5751c82a2a7bcb4c60fcbd97a9e2bef5",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/whrlpool.h": "d38ef40783400956d571e442d4f459e9c611239d719eb128e19bc64982d01922",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/x509.h": "4221e65e6a73feaed17d839bd5e91f2db2e2d53cec06ab57715c344f326d67c0",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/x509_acert.h": "a08785cee009620996a2a6cfefb970a9df36c2b1d35e51eded97ad5c62700330",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/x509_vfy.h": "be68c37fdfeb10ea258609eba9f750478e61a7b9b3017d82a8d3a8dd278175c8",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/x509err.h": "be93ee6c9d58aadb5f836d5e293ec93c94ffc603c46a1d8d1c8b31cf83959fb9",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/x509v3.h": "9dcdd51c9ca9d8ff6fb6d82293f29472897d2155007b395a843d042a85ba3aca",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/include/openssl/x509v3err.h": "b9be8b0429bfaefb973531e81d598e40779b3788e129c4cc9e33651d2308b990",
+    "/work/worktrees/p1_d/build/host-openssl-3.5.9-snapshot/lib/libcrypto.so.3": "a4e00ad0bb09d820ba5c41672567e965d4ca03153f7842751ef243355a569805",
+    "/work/worktrees/p1_d/src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "/work/worktrees/p1_d/src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+    "/work/worktrees/p1_d/src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+    "/work/worktrees/p1_d/src/user/programs/xypm_native.hpp": "cff80bf2a143ed7d040b8fb3ccf71dbdf666489774537bf36eea0adb02265438",
+    "/work/worktrees/p1_d/src/user/programs/xypm_repository.hpp": "ab4b1610ba7d35b2bd44e31b728edebf1b6167846d14deef6b2d05b8cafb5b5e",
+    "/work/worktrees/p1_d/src/user/programs/xypm_repository_auth.cpp": "3787141088bd61c62f25a36f3530df4138e77d12c2b624ef1b1e4b3db7a921bb",
+    "/work/worktrees/p1_d/src/user/programs/xypm_repository_auth.hpp": "8a81f913464c541de1450b6de88a2751c7854796b4babc7ca6b7fc122999e085",
+    "/work/worktrees/p1_d/tests/fixtures/xypm_distribution_auth.cpp": "c39d64bc97728fa7d4379c70ac137ab0c6c68e35addd054f767c836406a5c9b1",
+    "/work/worktrees/p1_d/tests/xypm_distribution_auth.py": "65f1077c9562766a2e5d7d17496cb63b02f963f70e3bc90b2d100df5c1df0c94"
+  },
+  "sanitized": true,
+  "scope": "real host EVP and production bounded parser/freshness; no guest claim",
+  "signer_openssl_version": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)",
+  "status": "passed",
+  "verifier_openssl_version": "OpenSSL 3.5.9 29 Sep 2026"
+}

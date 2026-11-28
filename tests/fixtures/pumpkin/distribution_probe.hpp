@@ -19,6 +19,10 @@ struct distribution_logs {
         return true;
     }
     bool close() {
+        // Closing inherited logging references is a new bounded Files
+        // operation after spawn. Do not reuse the pre-spawn open deadline,
+        // and never retry an unconfirmed close.
+        if (!files.set_deadline(storage::exchange_deadline())) return false;
         bool accepted = true;
         for (auto& handle : handles) {
             if (handle) {
@@ -145,7 +149,7 @@ bool distribution_selected(daemon& server, u64 sequence, u64 generation, u32 cou
     return true;
 }
 
-u32 distribution_owned_channels() {
+u32 distribution_visible_owned_channels() {
     u32 owned = 0;
     for (u32 i = 0; i < 32; ++i) {
         channel_info info{};
@@ -157,7 +161,8 @@ u32 distribution_owned_channels() {
     return ~u32{0};
 }
 void distribution_diagnostic(distribution_logs& logs, const execution::launch_diagnostic& diagnostic,
-                             i64 result, const process_stats& statistics, u32 channels) {
+                             i64 result, const process_stats& statistics, u32 channels,
+                             const anchor_guest::pair& backing) {
     char text[256]{}; u32 length = 0;
     const auto append = [&](const char* value) { while (*value && length + 1 < sizeof(text)) text[length++] = *value++; };
     const auto number = [&](i64 value) {
@@ -170,8 +175,11 @@ void distribution_diagnostic(distribution_logs& logs, const execution::launch_di
     append(" code="); number(diagnostic.code); append(" result="); number(result);
     append(" elf="); number(static_cast<i64>(diagnostic.format_error));
     append(" tasks="); number(statistics.tasks); append(" completions="); number(statistics.completions);
-    append(" free_pages="); number(statistics.free_pages); append(" legacy_owned="); number(channels); append("\n");
-    (void)logs.files.write(logs.handles[1], text, length);
+    append(" free_pages="); number(statistics.free_pages); append(" legacy_visible_owned="); number(channels);
+    append(" created_backing_send="); number(backing.transmit);
+    append(" created_backing_receive="); number(backing.receive); append("\n");
+    if (logs.files.set_deadline(storage::exchange_deadline()))
+        (void)logs.files.write(logs.handles[1], text, length);
 }
 
 bool distribution_launch(daemon& server) {
@@ -194,21 +202,24 @@ bool distribution_launch(daemon& server) {
         return sdk::syscall(sys_process_authority, child, static_cast<u64>(process_authority_mode::copy_from_caller));
     };
     if (!logs.open("/dist/application.out", "/dist/application.err", options)) { distribution_failure = 65; return false; }
-    const auto channels = distribution_owned_channels();
+    const auto channels = distribution_visible_owned_channels();
+    const bool backing_created = server.backing_channels.transmit && server.backing_channels.receive &&
+        server.backing_channels.transmit != server.backing_channels.receive;
     const auto statistics = sdk::stats();
     execution::launch_diagnostic diagnostic{}; execution::image_receipt receipt{};
     const char* arguments[]{executable};
     i64 child = process_error_resources;
-    // The supervisor owns only the daemon->proxy storage pair. The control
-    // bootstrap is an authenticated sys84 pair, leaving two sys81 slots for
-    // the real loader READY/ACK handshake. No resource limit is enlarged.
-    if (channels == 2)
+    // Enumeration shows participants, not owner-only channels. The actual
+    // daemon->proxy create_pair results are retained and each peer validates
+    // its owner/opposite peer. No legacy control pair is additionally visible;
+    // the real loader still must complete its own READY/ACK exchange.
+    if (channels == 0 && backing_created)
         child = execution::spawn_file_diagnosed_receipt(executable, 1, arguments, options, diagnostic, receipt);
-    distribution_diagnostic(logs, diagnostic, child, statistics, channels);
+    distribution_diagnostic(logs, diagnostic, child, statistics, channels, server.backing_channels);
     const bool closed = logs.close();
     if (child <= 0 || !closed) {
         if (child > 0) { (void)sdk::syscall(10, static_cast<u64>(child)); process_status ignored{}; (void)sdk::wait(child, ignored); }
-        distribution_failure = channels != 2 ? 69 : static_cast<u8>(210 + (-child & 31)); return false;
+        distribution_failure = channels != 0 || !backing_created ? 69 : static_cast<u8>(210 + (-child & 31)); return false;
     }
     process_status result{};
     if (sdk::wait(static_cast<u64>(child), result) || result.outcome != process_outcome::exited || result.code) {

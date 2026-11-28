@@ -105,7 +105,8 @@ def main():
               'snapshot_inputs': snapshot, 'command': command,
               'scope': 'dedicated developer authority guest; runtime and limits unchanged',
               'control_transport': {'supervisor_proxy': 'authenticated sys84 pair with PPC1 HELLO/ACK',
-                                    'daemon_proxy': 'existing sys81 pair', 'supervisor_sys81_owned_before_launch': 2},
+                                    'daemon_proxy': 'two retained successful sys81 create results; both peers authenticate owner',
+                                    'supervisor_participant_enumeration_owned_before_launch': 0},
               'stripping': 'dedicated supervisor symbols only; exact entry and PT_LOAD byte equality asserted'}
     receipt = output / 'report.json'
     try:

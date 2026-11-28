@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import struct
 import subprocess
@@ -290,7 +291,9 @@ def main():
         diagnostics = evidence['diagnostics']
         revision = 2 if scenario in (35, 36) else 1
         assert diagnostics['application.out']['text'] == f'P1D_EXTERNAL_APPLICATION revision={revision} libc=GNU\n'
-        assert 'legacy_owned=2\n' in diagnostics['application.err']['text']
+        assert 'legacy_visible_owned=0 ' in diagnostics['application.err']['text']
+        pair = re.search(r'created_backing_send=(\d+) created_backing_receive=(\d+)\n', diagnostics['application.err']['text'])
+        assert pair and int(pair[1]) > 0 and int(pair[2]) > 0 and pair[1] != pair[2]
         if scenario in (32, 35):
             assert f'Authenticated generation installed: {1100 + revision} sequence={revision}' in diagnostics['run_0.out']['text']
         elif scenario == 33:

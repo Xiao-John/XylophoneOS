@@ -95,10 +95,10 @@ def write_egress_header(rules, directory):
         "static_assert(valid_egress_policy(installed_egress_policy));\n}\n")
 
 
-def configuration(root, dns_probe=False, static_profile=None):
+def configuration(root, dns_probe=False, static_profile=None, dhcp_profile=None):
     archive = os.environ.get("XOS_LWIP_SOURCE_ARCHIVE")
     if not archive:
-        if dns_probe or static_profile:
+        if dns_probe or static_profile or dhcp_profile:
             raise SystemExit("The resolver requires XOS_LWIP_SOURCE_ARCHIVE")
         return {"enabled": False, "wire_version": 2, "guest_qualification": "not_run"}
     lock = json.loads((root / "src/ports/lwip/source_lock.json").read_text())
@@ -108,7 +108,8 @@ def configuration(root, dns_probe=False, static_profile=None):
     return {"enabled": True, "wire_version": 2, "lwip_version": lock["version"],
             "archive_sha256": digest, "patches": source_patches(root),
             "guest_qualification": "not_run", **({"dns_probe": True} if dns_probe else {}),
-            **({"static_profile": static_profile} if static_profile else {})}
+            **({"static_profile": static_profile} if static_profile else {}),
+            **({"dhcp_profile": dhcp_profile} if dhcp_profile else {})}
 
 
 def source_patches(root):
@@ -178,16 +179,21 @@ def prepare_source(root, archive, output, *, patch_tool="patch", environment=Non
     return source
 
 
-def build(root, output, sdk, run, tool, isa_flags, dns_probe=False, static_profile=None):
-    config = configuration(root, dns_probe, static_profile)
+def build(root, output, sdk, run, tool, isa_flags, dns_probe=False, static_profile=None, dhcp_profile=None):
+    config = configuration(root, dns_probe, static_profile, dhcp_profile)
     if not config["enabled"]:
         return [], (), config
     work = output / "net_lwip"
     source = prepare_source(root, os.environ["XOS_LWIP_SOURCE_ARCHIVE"], work / "source")
     policy_flags = ()
-    if static_profile and "egress" in static_profile:
-        write_egress_header(static_profile["egress"], work / "include")
+    profile = dhcp_profile or static_profile
+    if profile and "egress" in profile:
+        write_egress_header(profile["egress"], work / "include")
         policy_flags = ("-DXOS_NET_EGRESS_PROFILE=1", "-I", str(work / "include"))
+    if dhcp_profile:
+        from dhcp_profile import write_dhcp_header
+        write_dhcp_header(dhcp_profile, work / "include")
+        policy_flags += ("-DXOS_NET_DHCP_PROFILE=1",)
     include_flags = ("-I", str(root / "src/user/network/include"),
                      "-I", str(root / "src/ports/lwip/include"), "-I", str(source / "src/include"),
                      *policy_flags,
@@ -199,9 +205,11 @@ def build(root, output, sdk, run, tool, isa_flags, dns_probe=False, static_profi
              *isa_flags, "-I", str(sdk / "include"), *include_flags,
              "-ffile-prefix-map=" + str(root) + "=."]
     sources = [source / "src/core" / name for name in core_sources]
-    if dns_probe or static_profile:
+    if dns_probe or static_profile or dhcp_profile:
         sources.append(source / "src/core/dns.c")
     sources += [source / "src/core/ipv4" / name for name in ipv4_sources]
+    if dhcp_profile:
+        sources += [source / "src/core/ipv4" / name for name in ("dhcp.c", "acd.c")]
     sources += [source / "src/netif/ethernet.c"]
     objects = []
     for item in sources:

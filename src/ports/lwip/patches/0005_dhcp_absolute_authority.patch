@@ -1,0 +1,161 @@
+--- a/src/core/ipv4/dhcp.c
++++ b/src/core/ipv4/dhcp.c
+@@ -114,7 +114,8 @@
+  */
+ #ifndef DHCP_DEFINE_CUSTOM_TIMEOUTS
+ #define SET_TIMEOUT_FROM_OFFERED(result, offered, min, max) do { \
+-  u32_t timeout = (offered + DHCP_COARSE_TIMER_SECS / 2) / DHCP_COARSE_TIMER_SECS;  \
++  u32_t timeout = (offered / DHCP_COARSE_TIMER_SECS) + \
++    ((offered % DHCP_COARSE_TIMER_SECS) + DHCP_COARSE_TIMER_SECS / 2) / DHCP_COARSE_TIMER_SECS; \
+   if (timeout > max) {    \
+     timeout = max;        \
+   }                       \
+@@ -151,7 +152,11 @@
+ 
+ /** DHCP_OPTION_MAX_MSG_SIZE is set to the MTU
+  * MTU is checked to be big enough in dhcp_start */
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++#define DHCP_MAX_MSG_LEN(netif)        576
++#else
+ #define DHCP_MAX_MSG_LEN(netif)        (netif->mtu)
++#endif
+ #define DHCP_MAX_MSG_LEN_MIN_REQUIRED  576
+ /** Minimum length for reply before packet is parsed */
+ #define DHCP_MIN_REPLY_LEN             44
+@@ -210,7 +215,7 @@
+   DHCP_OPTION_SUBNET_MASK,
+   DHCP_OPTION_ROUTER,
+   DHCP_OPTION_BROADCAST
+-#if LWIP_DHCP_PROVIDE_DNS_SERVERS
++#if LWIP_DHCP_PROVIDE_DNS_SERVERS || defined(XOS_LWIP_DHCP_AUTHORITY)
+   , DHCP_OPTION_DNS_SERVER
+ #endif /* LWIP_DHCP_PROVIDE_DNS_SERVERS */
+ #if LWIP_DHCP_GET_NTP_SRV
+@@ -267,6 +272,13 @@
+ #endif /* LWIP_NETIF_HOSTNAME */
+ /* always add the DHCP options trailer to end and pad */
+ static void dhcp_option_trailer(u16_t options_out_len, u8_t *options, struct pbuf *p_out);
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++/* XOS changes: policy, absolute lease authorization and publication. */
++extern int xos_lwip_dhcp_reply(struct netif *, struct pbuf *, const ip_addr_t *, u16_t);
++extern int xos_lwip_dhcp_bind(struct netif *);
++extern int xos_lwip_dhcp_acd(struct netif *, int);
++extern int xos_lwip_dhcp_xid(u32_t *);
++#endif
+ 
+ /** Ensure DHCP PCB is allocated and bound */
+ static err_t
+@@ -352,6 +364,11 @@
+   LWIP_ASSERT("DHCP should be enabled at this point, but it is not!",
+               (dhcp != NULL) && (dhcp->state != DHCP_STATE_OFF));
+ 
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++  if (xos_lwip_dhcp_acd(netif, (int)state) != ERR_OK) {
++    return;
++  }
++#endif
+   switch (state) {
+     case ACD_IP_OK:
+       dhcp_bind(netif);
+@@ -509,6 +526,7 @@
+ void
+ dhcp_coarse_tmr(void)
+ {
++#ifndef XOS_LWIP_DHCP_AUTHORITY
+   struct netif *netif;
+   LWIP_DEBUGF(DHCP_DEBUG | LWIP_DBG_TRACE, ("dhcp_coarse_tmr()\n"));
+   /* iterate through all network interfaces */
+@@ -535,6 +553,7 @@
+       }
+     }
+   }
++#endif
+ }
+ 
+ /**
+@@ -595,6 +614,12 @@
+       dhcp_release_and_stop(netif);
+       dhcp_start(netif);
+     }
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++  } else if (dhcp->state == DHCP_STATE_RENEWING) {
++    dhcp_renew(netif);
++  } else if (dhcp->state == DHCP_STATE_REBINDING) {
++    dhcp_rebind(netif);
++#endif
+   } else if (dhcp->state == DHCP_STATE_REBOOTING) {
+     if (dhcp->tries < REBOOT_TRIES) {
+       dhcp_reboot(netif);
+@@ -674,6 +699,11 @@
+   ip4_addr_t ntp_server_addrs[LWIP_DHCP_MAX_NTP_SERVERS];
+ #endif
+ 
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++  /* A validated rebinding ACK may select another admitted issuer. */
++  ip_addr_set_ip4_u32(&dhcp->server_ip_addr,
++      lwip_htonl(dhcp_get_option_value(dhcp, DHCP_OPTION_IDX_SERVER_ID)));
++#endif
+   /* clear options we might not get from the ACK */
+   ip4_addr_set_zero(&dhcp->offered_sn_mask);
+   ip4_addr_set_zero(&dhcp->offered_gw_addr);
+@@ -701,7 +731,8 @@
+     dhcp->offered_t2_rebind = dhcp_get_option_value(dhcp, DHCP_OPTION_IDX_T2);
+   } else {
+     /* calculate safe periods for rebinding (offered_t0_lease * 0.875 -> 87.5%)*/
+-    dhcp->offered_t2_rebind = (dhcp->offered_t0_lease * 7U) / 8U;
++    dhcp->offered_t2_rebind = (dhcp->offered_t0_lease / 8U) * 7U +
++        ((dhcp->offered_t0_lease % 8U) * 7U) / 8U;
+   }
+ 
+   /* (y)our internet address */
+@@ -1089,6 +1120,11 @@
+   LWIP_ERROR("dhcp_bind: dhcp != NULL", (dhcp != NULL), return;);
+   LWIP_DEBUGF(DHCP_DEBUG | LWIP_DBG_TRACE, ("dhcp_bind(netif=%p) %c%c%"U16_F"\n", (void *)netif, netif->name[0], netif->name[1], (u16_t)netif->num));
+ 
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++  if (xos_lwip_dhcp_bind(netif) != ERR_OK) {
++    return;
++  }
++#endif
+   /* reset time used of lease */
+   dhcp->lease_used = 0;
+ 
+@@ -1810,6 +1846,12 @@
+                 ("transaction id mismatch reply_msg->xid(%"X32_F")!=dhcp->xid(%"X32_F")\n", lwip_ntohl(reply_msg->xid), dhcp->xid));
+     goto free_pbuf_and_return;
+   }
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++  /* Strict port validation precedes all upstream option/interface mutation. */
++  if (xos_lwip_dhcp_reply(netif, p, addr, port) != ERR_OK) {
++    goto free_pbuf_and_return;
++  }
++#endif
+   /* option fields could be unfold? */
+   if (dhcp_parse_reply(p, dhcp) != ERR_OK) {
+     LWIP_DEBUGF(DHCP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_LEVEL_SERIOUS,
+@@ -1918,7 +1960,12 @@
+   if ((message_type != DHCP_REQUEST) || (dhcp->state == DHCP_STATE_REBOOTING)) {
+     /* reuse transaction identifier in retransmissions */
+     if (dhcp->tries == 0) {
+-#if DHCP_CREATE_RAND_XID && defined(LWIP_RAND)
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++      if (xos_lwip_dhcp_xid(&xid) != ERR_OK) {
++        pbuf_free(p_out);
++        return NULL;
++      }
++#elif DHCP_CREATE_RAND_XID && defined(LWIP_RAND)
+       xid = LWIP_RAND();
+ #else /* DHCP_CREATE_RAND_XID && defined(LWIP_RAND) */
+       xid++;
+@@ -1996,4 +2043,11 @@
+   return 0;
+ }
+ 
++#ifdef XOS_LWIP_DHCP_AUTHORITY
++err_t dhcp_xos_rebind(struct netif *netif)
++{
++  return dhcp_rebind(netif);
++}
++#endif
++
+ #endif /* LWIP_IPV4 && LWIP_DHCP */

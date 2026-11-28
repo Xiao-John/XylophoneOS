@@ -38,6 +38,22 @@ void service_core::initialize(u64 controller, const stack_api& stack, const reso
         mode_ = network_mode::static_direct;
     }
 }
+void service_core::enable_dhcp() {
+    mode_ = network_mode::dhcp;
+    address_ = mask_ = gateway_ = resolver_address_ = 0;
+    if (resolver_.configure) resolver_.configure(resolver_.context, 0);
+}
+bool service_core::publish_dhcp(u32 address, u32 mask, u32 gateway, u32 resolver) {
+    if (mode_ != network_mode::dhcp || config_epoch_ == ~u64{0}) return false;
+    if (address ? !valid_lease_configuration(address, mask, gateway, resolver) : (mask || gateway || resolver)) return false;
+    // Controller owns a separate slot; every application transport/generation,
+    // socket and DNS ticket belongs to the retiring configuration epoch.
+    for (u32 slot = 0; slot < client_sessions; ++slot) detach(slot);
+    address_ = address; mask_ = mask; gateway_ = gateway; resolver_address_ = resolver;
+    ++config_epoch_;
+    if (resolver_.configure) resolver_.configure(resolver_.context, resolver);
+    return true;
+}
 u32 service_core::session_count() const {
     u32 count = 0; for (const auto& item : sessions_) if (item.peer) ++count; return count;
 }
@@ -115,6 +131,7 @@ bool service_core::resolve(u32 slot, const message& input, u64 now, message& out
         for (const auto& item : tickets_) if (item.id) ++count;
         if (input.action == operation::configure) {
             if (sessions_[slot].peer != controller_) { output.result = denied; return true; }
+            if (mode_ == network_mode::dhcp) { output.result = unsupported; return true; }
             if (input.length != sizeof(config_request)) { output.result = invalid; return true; }
             config_request requested{};
             __builtin_memcpy(&requested, input.data, sizeof(requested));
@@ -129,9 +146,9 @@ bool service_core::resolve(u32 slot, const message& input, u64 now, message& out
             mode_ = requested.mode;
             ++config_epoch_;
         }
-        const config_snapshot snapshot{configuration_revision, mode_, config_epoch_, resolve_in_a, static_address,
-                                       static_mask, permitted_address,
-                                       mode_ == network_mode::static_direct ? resolver_address_ : 0, count, 0};
+        const config_snapshot snapshot{configuration_revision, mode_, config_epoch_, resolve_in_a, address_,
+                                       mask_, gateway_,
+                                       mode_ != network_mode::disabled ? resolver_address_ : 0, count, 0};
         __builtin_memcpy(output.data, &snapshot, sizeof(snapshot));
         output.length = sizeof(snapshot);
         return true;
@@ -139,7 +156,7 @@ bool service_core::resolve(u32 slot, const message& input, u64 now, message& out
     if (slot >= client_sessions) { output.result = denied; return true; }
     auto& item = tickets_[slot];
     if (input.action == operation::resolve_start) {
-        if (mode_ == network_mode::disabled) { output.result = closed; return true; }
+        if (mode_ == network_mode::disabled || !resolver_address_) { output.result = closed; return true; }
         char name[dns_name_limit + 1]{};
         if (input.object || !normalize_name(input.data, input.length, name)) { output.result = invalid; return true; }
         if (item.id || !next_ticket_) { output.result = resources; return true; }
@@ -223,6 +240,16 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
             (stack_.shutdown_write ? capability_shutdown_write : 0), 0};
         __builtin_memcpy(output.data, &capabilities, sizeof(capabilities));
         output.length = sizeof(capabilities);
+        return true;
+    }
+    if (input.action == operation::lease_status) {
+        if (input.object) { output.result = invalid; return true; }
+        lease_snapshot value{};
+        output.result = stack_.lease_status ? stack_.lease_status(stack_.context, value) : unsupported;
+        if (!output.result) {
+            value.epoch = config_epoch_;
+            __builtin_memcpy(output.data, &value, sizeof(value)); output.length = sizeof(value);
+        }
         return true;
     }
     if (input.action >= operation::configuration && input.action <= operation::resolve_cancel)

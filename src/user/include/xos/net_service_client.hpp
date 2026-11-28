@@ -53,6 +53,7 @@ public:
             }
             if (sent) {
                 const i64 received = sdk::ipc_recv(channel_.receive, &reply, sizeof(reply));
+                if (received == -1 || received == ipc_error_broken) { reply = {}; close(); return closed; }
                 if (received != -3) {
                     const i64 finished = sdk::syscall(sys_clock_monotonic);
                     if (finished < 0 || static_cast<u64>(finished) >= input.deadline) {
@@ -78,6 +79,14 @@ public:
     i64 configuration(u64 deadline, config_snapshot& snapshot) {
         message input{}, reply{};
         input.action = operation::configuration; input.deadline = deadline;
+        const i64 result = request(input, reply);
+        snapshot = {};
+        if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+        return result;
+    }
+    i64 lease_status(u64 deadline, lease_snapshot& snapshot) {
+        message input{}, reply{};
+        input.action = operation::lease_status; input.deadline = deadline;
         const i64 result = request(input, reply);
         snapshot = {};
         if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
@@ -194,9 +203,25 @@ private:
             __builtin_memcpy(&config, reply.data, sizeof(config));
             return config.revision == configuration_revision && config.epoch && !config.reserved &&
                 config.capabilities == resolve_in_a && config.tickets <= client_sessions &&
-                config.address == static_address && config.mask == static_mask && config.gateway == permitted_address &&
-                ((config.mode == network_mode::disabled && !config.resolver) ||
-                 (config.mode == network_mode::static_direct && valid_static_resolver(config.resolver)));
+                ((config.mode == network_mode::dhcp &&
+                  (config.address ? valid_lease_configuration(config.address, config.mask, config.gateway, config.resolver) :
+                   (!config.mask && !config.gateway && !config.resolver))) ||
+                 (config.address == static_address && config.mask == static_mask && config.gateway == permitted_address &&
+                  ((config.mode == network_mode::disabled && !config.resolver) ||
+                   (config.mode == network_mode::static_direct && valid_static_resolver(config.resolver)))));
+        }
+        case operation::lease_status: {
+            if (reply.result || reply.length != sizeof(lease_snapshot) || reply.flags) return false;
+            lease_snapshot value{};
+            __builtin_memcpy(&value, reply.data, sizeof(value));
+            if (value.revision != lease_revision || !value.epoch || value.reserved || value.reserved_tail ||
+                value.state > 8 || value.reason > 7) return false;
+            if (!value.address) return value.state != 4 && value.state != 5 && value.state != 6 &&
+                !value.request_sent && !value.t1 && !value.t2 && !value.expires && !value.server &&
+                !value.mask && !value.gateway && !value.resolver;
+            return value.state >= 3 && value.state <= 6 && unicast_ipv4(value.server) &&
+                valid_lease_configuration(value.address, value.mask, value.gateway, value.resolver) &&
+                value.request_sent < value.t1 && value.t1 < value.t2 && value.t2 < value.expires;
         }
         case operation::resolve_result: {
             if (reply.result || reply.length != sizeof(resolve_reply) || reply.flags) return false;

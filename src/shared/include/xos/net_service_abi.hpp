@@ -21,7 +21,7 @@ enum class operation : u32 {
     information = 1, open = 2, status = 3, send = 4, receive = 5,
     close = 6, cancel = 7, revoke_peer = 8, stop = 9,
     configuration = 10, configure = 11, resolve_start = 12, resolve_result = 13, resolve_cancel = 14,
-    capabilities = 15, readiness = 16, shutdown_write = 17
+    capabilities = 15, readiness = 16, shutdown_write = 17, lease_status = 18
 };
 inline constexpr i64 invalid = -201, denied = -202, resources = -203, would_block = -204;
 inline constexpr i64 timeout = -205, closed = -206, io = -207, unsupported = -208;
@@ -29,7 +29,26 @@ inline constexpr i64 buffer_too_small = -209, reset = -210;
 inline constexpr i64 name_not_found = -211, name_no_data = -212, dns_failure = -213;
 inline constexpr i64 dns_refused = -214, dns_truncated = -215, config_changed = -216, dns_expired = -217;
 inline constexpr u32 configuration_revision = 1, resolve_in_a = 1, dns_name_limit = 253;
-enum class network_mode : u32 { disabled = 0, static_direct = 1 };
+enum class network_mode : u32 { disabled = 0, static_direct = 1, dhcp = 2 };
+inline constexpr bool unicast_ipv4(u32 address) {
+    const u32 first = address >> 24;
+    return first && first != 127 && first < 224;
+}
+inline constexpr bool valid_lease_configuration(u32 address, u32 mask, u32 gateway, u32 resolver) {
+    const u32 inverse = ~mask, host = address & inverse;
+    return mask && inverse >= 3 && !(inverse & (inverse + 1)) && unicast_ipv4(address) &&
+        host && host != inverse &&
+        (!gateway || (unicast_ipv4(gateway) && (gateway & mask) == (address & mask) &&
+                       (gateway & inverse) && (gateway & inverse) != inverse && gateway != address)) &&
+        (!resolver || (unicast_ipv4(resolver) && resolver != address));
+}
+inline constexpr u32 lease_revision = 1;
+struct lease_snapshot {
+    u32 revision, state, reason, reserved;
+    u64 epoch, request_sent, t1, t2, expires;
+    u32 server, address, mask, gateway, resolver, accepted, rejected, conflicts;
+    u64 reserved_tail;
+};
 inline constexpr u32 connecting = 1, connected = 2, eof = 4, failed = 8;
 inline constexpr u32 socket_extension_revision = 1;
 inline constexpr u32 capability_readiness = 1, capability_shutdown_write = 2;
@@ -76,5 +95,7 @@ static_assert(sizeof(config_snapshot) == 48 && __builtin_offsetof(config_snapsho
 static_assert(sizeof(config_request) == 16 && __builtin_offsetof(config_request, expected_epoch) == 8);
 static_assert(sizeof(resolve_reply) == 24 && __builtin_offsetof(resolve_reply, address) == 16);
 static_assert(sizeof(capability_snapshot) == 16);
+static_assert(sizeof(lease_snapshot) == 96 && __builtin_offsetof(lease_snapshot, epoch) == 16 &&
+              __builtin_offsetof(lease_snapshot, server) == 56);
 static_assert(sizeof(readiness_snapshot) == 32 && __builtin_offsetof(readiness_snapshot, error) == 24);
 }

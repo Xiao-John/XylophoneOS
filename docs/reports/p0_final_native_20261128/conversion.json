@@ -1,0 +1,31 @@
+{
+  "templates": {
+    "XOS_EXECUTION_SOURCE": "Complete same-revision source export with independent test build output and no overlays.",
+    "XOS_FINAL_NATIVE_SOURCE": "Immutable complete final source at the stated Git revision; actual native build lives in its build directory.",
+    "XOS_GUEST_TEMP": "Ephemeral FAT disk used only by the corresponding serial guest.",
+    "XOS_PREVIEW2_HOMEBREW": "Preview 2 packaged tool dependencies.",
+    "XOS_PREVIEW2_PREFIX": "Preview 2 cross-tool wrappers."
+  },
+  "transform": [
+    "Sort JSON keys and template environment paths, preserving all source and artifact identities and observed values.",
+    "Normalize transcript CR/LF to LF, strip trailing whitespace, and prepend an explicit derived-transcript notice.",
+    "Wrap the native system manifest with its original unpublished byte identity."
+  ],
+  "unpublished_raw_sha256": {
+    "controller_build.json": "49349cfdaed275e7c72557c8267a6f8a26e1e71f838a061e0dbe3c48f8eeafdf",
+    "controller_guest.json": "b4d66eb9981a0a38701672adb6456de5790a761a8a1c89b4c34eb005c1ca21db",
+    "controller_serial.log": "80fd411a0ae61dad94131ba0fedcb7a36f6ab595ae6cee30b73d2c9be63e33c7",
+    "ipc_deadline_build.json": "95186697ba23f03b2fce58cd5ab4e5d69a7626e4646eb81fea3474bdcc1374e6",
+    "ipc_deadline_guest.json": "ee9e39d870c547f4dd8cbaee657c28db22165d15404e2f23e92e029fe4a6cb0b",
+    "ipc_deadline_serial.log": "3ee3e15eb29005ed99f2f46fc28ff27ab3cc976ea901b81451126d7bce9cf784",
+    "ipc_lifecycle_build.json": "685867b64cdae2a55d152045f1ffc834883649d6ffab308c0a6bfef19d201898",
+    "ipc_lifecycle_guest.json": "2779306b13a648443d83b48197c18c5522fe64b10f5578bfbd9d6eb05bd13ab8",
+    "ipc_lifecycle_serial.log": "8b40dcfb927411c0ce4de49311aa7daa2f36ca4f7ab9245055b55ad3d1ea43bc",
+    "static_stdio_build.json": "0e50172a8fda2a1554047e9d0a719f415e59df1c5199657568e63b236acdf462",
+    "static_stdio_guest.json": "e17571366300eddaf9d47d77f01c14833e3de41c1900496b3629cd5b340070a5",
+    "static_stdio_round_0.log": "be85c4e8bd7f579073de68fb1652411cb2b5a41221eab9af795125e6f96ebb98",
+    "static_stdio_round_1.log": "0ac9c74a2fa007c7fc31c418e352d39c74a59b94e344feca053fc46edd93849c",
+    "static_stdio_round_2.log": "6e779022a7d2a6e55bd11635707bbdcf92bd871c9bc64c9c9de00a82c91f9b7f",
+    "static_stdio_serial.log": "9109b5ee0d45011a2977d09d0bb063b91c470daa9a214396fd9947f846d2b3a4"
+  }
+}

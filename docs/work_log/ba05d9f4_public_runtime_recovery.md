@@ -80,3 +80,28 @@ qualification. It isolates the concrete regression before the next unified
 native/C SDK rebuild, which also includes the separately tested ordinary
 static-stdio compatibility correction. The complete eight-case runtime
 matrix and independent R2 transitions remain required on those final bytes.
+
+## Final public ordinary runtime qualification
+
+The complete frozen source `299ea47cc991fb781e8671c41213a02c169f4130`
+subsequently produced native system `faad61f4f20be0f7`, C SDK v4, public
+GNU runtime v5, shared GCC v4, fresh C/C++/thread applications and an
+approved-root production launcher. All eight ordinary public cases passed
+in one complete round, using the newly built final static dash for shell
+entry. This includes constructor completion before READY, real threads
+inside the main executable's constructor, application/DSO TLS and teardown,
+cross-DSO exceptions, ordinary posix_spawn with FD aliases/shared cursors,
+CLOEXEC, failed exec cancellation and successful same-PID replacement.
+
+Every case restored the observed resource baseline of 129678/3/1 exactly.
+All 3341 input bindings were verified before/after execution and at export.
+The [final report](../reports/public_runtime_entry_final_20261128/README.md)
+contains the actual eight results, native/C SDK anchors, generated roots,
+public GNU/shared GCC/application/launcher receipts and serial evidence.
+The earlier failure stays separately identified. Build receipts remain
+unaltered `built_not_run`; execution qualification lives in the new report.
+
+This completes the runtime's bounded public startup, ordinary spawn and
+same-PID exec execution gate. R2's final three-round generation test and
+R1's final SDK packaging, candidate and detached-receiver gates remain
+independently owned evidence; this report does not substitute for them.

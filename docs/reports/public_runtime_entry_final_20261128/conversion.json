@@ -1,0 +1,19 @@
+{
+  "rule": "known environment roots replaced by explicit replay templates; observations and source/artifact/tool hashes unchanged",
+  "raw_reports": {
+    "guest.json": "d07d5530a88db74968ab32cb6aad136bac76916381966cca9c0ce84c53a17e4f",
+    "runtime_build.json": "aad6aac205fc33e42d30a3fb056b2a0a22b466e6f2ff2a50eddb13fe936df26a",
+    "shared_gcc_build.json": "6af8660e9b6be368e244940f1b9e2a71ed15243d94f20d8a9976f70e6afb6ca8",
+    "launcher_build.json": "dc5793b6777ba9985423e2c7a41f330118e240c4af0ec3cc21538fc259f129a0",
+    "p0c_build.json": "80dfc342a96db3e312b5885ce5416ca4541d3e2a6c1b028c4dd5d554bc2f1312",
+    "p0cpp_build.json": "ec650fae8c404a908f0d416b0036cbe90a50c24ed6b5dcc45ac7c93f0637e565",
+    "p0thread_build.json": "e901119feefc7bc18995ce5322ebf35f218c05ed8d1f8f834c73df54f49e3405",
+    "historical_guest_1.json": "ac2a8b8a5d41e1e0b32dd808ac3a0f91c4ac2867e4610560b39fe1179a8ac7f6"
+  },
+  "guest_command_roots": {
+    "XOS_GUEST_TESTS": "/tests",
+    "XOS_GUEST_APPS": "/apps"
+  },
+  "exporter_sha256": "848e9517045cbeba794d5d21e4e0820391666bb97aee0f32e94c8d2a56ad267e",
+  "leaf_bindings": "manifest.json files"
+}

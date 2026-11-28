@@ -20,7 +20,7 @@ def sha(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('guest-dir', 'runtime-build', 'gcc-shared-build', 'launcher-build',
-                 'workspace', 'preview-prefix', 'preview-cellar', 'preview-temp', 'output'):
+                 'workspace', 'preview-prefix', 'preview-cellar', 'preview-tools', 'preview-temp', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--stage', type=Path, action='append', required=True)
     parser.add_argument('--source-rebuild', type=Path)
@@ -78,6 +78,7 @@ def main():
     mappings = [('XOS_ROOT', ROOT), ('XOS_WORKSPACE', args.workspace),
                 ('XOS_PREVIEW2_CELLAR', args.preview_cellar),
                 ('XOS_PREVIEW2_BREW', args.preview_prefix),
+                ('XOS_PREVIEW2_TOOLS', args.preview_tools),
                 ('XOS_PREVIEW2_TEMP', args.preview_temp)]
     for name, path in raw.items():
         content = json.loads(path.read_bytes())
@@ -181,6 +182,7 @@ The flat root manifest covers all exported leaves and git authenticates it.
 environment-path substitution. `${{XOS_WORKSPACE}}` is the explicitly selected
 development workspace; `${{XOS_ROOT}}` is this checkout. The Preview2 prefix,
 Cellar and temporary-root templates identify that pinned SDK environment.
+The Preview2 tools template identifies its selected compiler-wrapper root.
 Within the recorded guest shell commands, `${{XOS_GUEST_TESTS}}` means `/tests`
 and `${{XOS_GUEST_APPS}}` means `/apps`; those templates are never applied to
 host source paths or artifact identities. Serial output preserves guest paths.

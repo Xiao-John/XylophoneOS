@@ -45,7 +45,7 @@ void window_manager::refocus_top() {
 window_id window_manager::create(u64 owner, const create_window_payload& request) {
     if (owner == 0 || request.width == 0 || request.height == 0 ||
         request.width > 800 || request.height > 600 ||
-        request.role > window_role::overlay || request.reserved != 0) return {};
+        request.role > window_role::overlay || request.title_length != 0 || request.reserved != 0) return {};
     // Each session gets its own window quota; table slots are shared.
     if (owner_window_count(windows_, window_table_capacity, owner) >= max_windows_per_session)
         return {};
@@ -81,7 +81,8 @@ bool window_manager::destroy(window_id id, u64 owner) {
 bool window_manager::configure(window_id id, u64 owner, const configure_payload& request) {
     auto* window = find_mut(id);
     if (!window || window->owner != owner || request.width == 0 || request.height == 0 ||
-        request.width > 800 || request.height > 600 || request.reserved != 0) return false;
+        request.width > 800 || request.height > 600 || request.reserved != 0 ||
+        (request.flags & ~u32(flag_visible)) != 0) return false;
     window->x = request.x;
     window->y = request.y;
     window->width = request.width;
@@ -166,9 +167,22 @@ u32 compositor::rebuild() {
 bool compositor::compose(const window_manager& manager, const surface_view* surfaces,
                          u32 surface_count, u32* destination, u32 width, u32 height,
                          u32 background) {
+    return compose_region(manager, surfaces, surface_count, destination, width, height,
+                          background, {0, 0, width, height});
+}
+
+bool compositor::compose_region(const window_manager& manager, const surface_view* surfaces,
+                                u32 surface_count, u32* destination, u32 width, u32 height,
+                                u32 background, const dirty_rect& region) {
     if (!destination || width == 0 || height == 0 || width > 800 || height > 600 ||
-        width > 0xffffffffu / height) return false;
-    for (u64 i = 0; i < u64(width) * height; ++i) destination[i] = background & 0x00ffffffu;
+        width > 0xffffffffu / height || region.width == 0 || region.height == 0 ||
+        region.x >= width || region.y >= height || region.width > width - region.x ||
+        region.height > height - region.y) return false;
+    const i64 region_right = i64(region.x) + region.width;
+    const i64 region_bottom = i64(region.y) + region.height;
+    for (u32 y = region.y; y < region.y + region.height; ++y)
+        for (u32 x = region.x; x < region.x + region.width; ++x)
+            destination[u64(y) * width + x] = background & 0x00ffffffu;
     rebuild();
     for (u32 layer = 0; layer < count_; ++layer) {
         const auto* window = manager.get(items_[layer].id);
@@ -178,14 +192,15 @@ bool compositor::compose(const window_manager& manager, const surface_view* surf
             if (surfaces[i].id == window->id) { surface = &surfaces[i]; break; }
         }
         if (!surface || !surface->pixels || surface->width != window->width ||
-            surface->height != window->height || surface->stride < surface->width * 4u) return false;
+            surface->height != window->height || surface->stride < surface->width * 4u ||
+            surface->stride % 4u != 0) return false;
 
-        const i64 left = window->x < 0 ? 0 : window->x;
-        const i64 top = window->y < 0 ? 0 : window->y;
-        const i64 right = static_cast<i64>(window->x) + window->width > width
-                              ? width : static_cast<i64>(window->x) + window->width;
-        const i64 bottom = static_cast<i64>(window->y) + window->height > height
-                               ? height : static_cast<i64>(window->y) + window->height;
+        const i64 left = window->x < i64(region.x) ? region.x : window->x;
+        const i64 top = window->y < i64(region.y) ? region.y : window->y;
+        const i64 right = static_cast<i64>(window->x) + window->width > region_right
+                              ? region_right : static_cast<i64>(window->x) + window->width;
+        const i64 bottom = static_cast<i64>(window->y) + window->height > region_bottom
+                               ? region_bottom : static_cast<i64>(window->y) + window->height;
         for (i64 y = top; y < bottom; ++y) {
             const u64 source_row = u64(y - window->y) * (surface->stride / 4u);
             const u64 destination_row = u64(y) * width;

@@ -1,0 +1,77 @@
+{
+  "projected_reports": {
+    "source_compatibility.json": {
+      "raw_source": "build/p1f-integration-source.json",
+      "raw_sha256": "e0dde511e3d98b5a0020912e5f1d90ba446883e475231e340458e287417621d6",
+      "raw_bytes": 27898,
+      "public_sha256": "5aa1ce335d8e6b3072e636612aa5f87ac5698b6ada7b582d005695e322d74886"
+    },
+    "execution_receipt.json": {
+      "raw_source": "build/p1f-main-launch-v3/receipt.json",
+      "raw_sha256": "3e415f2aa070c1522608591fc00da3ee034318ddbabd8a5617b1f503fcc7f0e6",
+      "raw_bytes": 346658,
+      "public_sha256": "30cdb6d8e98b6ece88014b144def6a095fe8a65a636894d547185d81590049ee"
+    },
+    "native_system.json": {
+      "raw_source": "build/p1f-main-launch-v3/native/manifest.json",
+      "raw_sha256": "54780a207073b26b5138b4d5a5694a2d0a8f103e5e1340ef06b87feba3997e6d",
+      "raw_bytes": 536887,
+      "public_sha256": "ba8f8bc1a4a067e0626cc71692de5b929f5e413be72e328ad1c67c1bea4bb439"
+    },
+    "guest.json": {
+      "raw_source": "build/p1f-main-launch-v3/guest/report.json",
+      "raw_sha256": "5c9e2dcaec921814b226d36419d9499cb5f96c34e214511e56310b44aaace1ce",
+      "raw_bytes": 5884,
+      "public_sha256": "c500675be7c1c887cc3b6bcc7df8f443e0c0136482eb48b1800bf5c464900809"
+    },
+    "frozen_child_build.json": {
+      "raw_source": "${XOS_FROZEN_LAUNCH}/build/clarke-launch-child.elf.build/manifest.json",
+      "raw_sha256": "04f7f4724ef50fab1abfef46c0bbe841eef4ef900f8455f3a83aa22a6409c2c7",
+      "raw_bytes": 5227,
+      "public_sha256": "e0819c1a5dcf2f3235cc886234dae80778fc7fd58ee294c42d9e33a77429a7ee"
+    },
+    "frozen_child_strip.json": {
+      "raw_source": "${XOS_FROZEN_LAUNCH}/build/clarke-launch-strip-receipt.json",
+      "raw_sha256": "110975cbd21fa35b0c9c4dea6e1bf90799913d81d56421c984a76c2e74611201",
+      "raw_bytes": 2739,
+      "public_sha256": "f6a45635ab70099c57559bb0515f3d84e34953fde15ab800540478a8c064f8db"
+    }
+  },
+  "serial": "lossless base64 with independent original length and digest; wrapper bytes are separately indexed",
+  "raw_build_log": {
+    "bytes": 202,
+    "sha256": "e7c34f29ee85e7f67cd2fc06389836cda30c563aace6e82a0e6324e7c612dde7"
+  },
+  "raw_guest_launcher_log": {
+    "bytes": 7,
+    "sha256": "2700165975f68815c97d605c56eca8e90d497ade1264b6282401d13fee99ac27"
+  },
+  "orchestrator_sha256": "8e45eceb3ec840502861c1f6fa1bd2a1816f013b1337817850edb34b5f9bbe83",
+  "command": {
+    "build": [
+      "/usr/bin/python3",
+      "scripts/build.py",
+      "--output-dir",
+      "${XOS_NATIVE_ACCEPTANCE_TMP}/source/build/native",
+      "--quiet-demos-on-launch",
+      "--clarke-launch-probe",
+      "${XOS_SDK_WORKSPACE}/worktrees/p1_f_launch/build/clarke-launch-child-stripped.elf"
+    ],
+    "guest": [
+      "/usr/bin/python3",
+      "tests/clarke_launch_guest.py",
+      "--system",
+      "${XOS_NATIVE_ACCEPTANCE_TMP}/source/build/native",
+      "--probe",
+      "${XOS_SDK_WORKSPACE}/worktrees/p1_f_launch/build/clarke-launch-child-stripped.elf",
+      "--output",
+      "${XOS_NATIVE_ACCEPTANCE_TMP}/guest"
+    ]
+  },
+  "selected_environment": {
+    "XOS_LWIP_SOURCE_ARCHIVE": "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f_downloads/lwip-2.2.1.tar.xz",
+    "XOS_QMP_TRANSPORT": "pipe"
+  },
+  "source_snapshot": "exact copies of selected tracked source/config/license/recipe/test files in one-invocation tmpfs; the unchanged builder writes only beneath that snapshot build/; final ELF/ISO/provenance/log files copied with before/after digests; reproducible object files and SDK archives not copied",
+  "raw_reports_and_frozen_inputs_unchanged": true
+}

@@ -10,6 +10,7 @@ xos::i64 clock_value = 100;
 xos::u64 authenticated_peer = 42;
 bool mismatched_receive_peer = false, no_reply = false, malformed = false;
 bool old_server = false;
+bool policy_denied = false;
 unsigned snapshot_mutation = 0;
 xos::i64 transport_error = 0;
 unsigned send_count, close_count;
@@ -82,6 +83,28 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
             if (snapshot_mutation == 14) value.start_failures = 2;
             response.length = sizeof(value); std::memcpy(response.data, &value, sizeof(value));
         }
+        if (last_request.action == operation::peer_policy) {
+            assert(last_request.length == sizeof(peer_policy_request));
+            peer_policy_request requested{}; std::memcpy(&requested,last_request.data,sizeof(requested));
+            assert(requested.revision == peer_policy_revision && requested.size == sizeof(requested) && !requested.reserved);
+            assert(requested.action == peer_policy_action::query || requested.action == peer_policy_action::release_retired);
+            assert((requested.action == peer_policy_action::query) == (last_request.object == 0));
+            if (old_server) response.result = unsupported;
+            else if (policy_denied) response.result = denied;
+            else {
+                peer_policy_snapshot value{peer_policy_revision,sizeof(peer_policy_snapshot),1,revoked_peer_limit};
+                if (snapshot_mutation == 1) value.revision = 2;
+                if (snapshot_mutation == 2) value.size = sizeof(value)-1;
+                if (snapshot_mutation == 3) value.occupied = revoked_peer_limit+1;
+                if (snapshot_mutation == 4) value.capacity = revoked_peer_limit+1;
+                response.length=sizeof(value); std::memcpy(response.data,&value,sizeof(value));
+                if (snapshot_mutation == 5) --response.length;
+                if (snapshot_mutation == 6) response.flags = 1;
+                if (snapshot_mutation == 7) response.result = 1;
+                if (snapshot_mutation == 8) ++response.object;
+                if (snapshot_mutation == 9) response.result = denied; // Error payload is invalid.
+            }
+        }
         return header_bytes + response.length;
     }
     assert(false); return -1;
@@ -132,6 +155,23 @@ int main() {
     assert(!client.lease_status(request.deadline, lease) && lease.epoch == 2);
     for (snapshot_mutation = 1; snapshot_mutation <= 14; ++snapshot_mutation) {
         assert(client.lease_status(request.deadline, lease) == io && !lease.epoch);
+        assert(!client.connect(42));
+    }
+    snapshot_mutation = 0;
+    peer_policy_snapshot policy{};
+    assert(client.peer_policy(peer_policy_action::query,0,request.deadline,policy) == 0 &&
+           policy.occupied == 1 && policy.capacity == revoked_peer_limit);
+    assert(client.peer_policy(peer_policy_action::release_retired,101,request.deadline,policy) == 0);
+    old_server = true;
+    assert(client.peer_policy(peer_policy_action::query,0,request.deadline,policy) == unsupported && !policy.revision);
+    old_server = false; policy_denied = true;
+    assert(client.peer_policy(peer_policy_action::release_retired,101,request.deadline,policy) == denied && !policy.revision);
+    policy_denied = false;
+    assert(client.capabilities(request.deadline,capabilities) == 0); // Denial did not grant or corrupt a connection.
+    for (snapshot_mutation = 1; snapshot_mutation <= 9; ++snapshot_mutation) {
+        const auto sent_before = send_count;
+        assert(client.peer_policy(peer_policy_action::query,0,request.deadline,policy) == io && !policy.revision);
+        assert(send_count == sent_before + 1); // Never replay an invalid/uncertain response.
         assert(!client.connect(42));
     }
     snapshot_mutation = 0;

@@ -1,0 +1,228 @@
+{
+  "after_service": [
+    129677,
+    3,
+    1
+  ],
+  "before_service": [
+    129677,
+    3,
+    1
+  ],
+  "cases": [
+    {
+      "application_request": true,
+      "bytes": 32,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "elapsed_ns": 1360000000,
+      "guest_realtime": 1795865768,
+      "host_realtime_window": [
+        1795865762,
+        1795865769
+      ],
+      "nonce_sha256": "9715527a1bc7dad844e95368acdd5a2f887b10b536334cb45da0c305eb8dcb20",
+      "peer_chain_sha256": "2b2f2a95201ea00d8833e18d59e41da05d81ce9606e6a76100f7c0fc3017f7e8",
+      "peer_close_notify": true,
+      "result": 0,
+      "scenario": "valid",
+      "sni": "tls.xos.test",
+      "status": 200,
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": true,
+      "bytes": 32,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "elapsed_ns": 1130000000,
+      "guest_realtime": 1795865774,
+      "host_realtime_window": [
+        1795865769,
+        1795865775
+      ],
+      "nonce_sha256": "2113c858b857119e2d75b25c94a8bdbabce0a4039aae93c71ad7f49f19708d59",
+      "peer_chain_sha256": "2b2f2a95201ea00d8833e18d59e41da05d81ce9606e6a76100f7c0fc3017f7e8",
+      "result": 0,
+      "scenario": "server-close",
+      "sni": "tls.xos.test",
+      "status": 200,
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": true,
+      "bytes": 0,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "elapsed_ns": 3000000000,
+      "guest_realtime": 1795865781,
+      "host_realtime_window": [
+        1795865775,
+        1795865783
+      ],
+      "nonce_sha256": "f87bb5a488a1316edf5d5c9e71e7b57202910f81bb729007f4dc9e5cf6c436d9",
+      "peer_chain_sha256": "2b2f2a95201ea00d8833e18d59e41da05d81ce9606e6a76100f7c0fc3017f7e8",
+      "result": -205,
+      "scenario": "stall",
+      "sni": "tls.xos.test",
+      "status": 0,
+      "version": "TLSv1.3",
+      "withheld_close_notify": true
+    },
+    {
+      "abrupt_transport_eof": true,
+      "application_request": true,
+      "bytes": 0,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "elapsed_ns": 1220000000,
+      "guest_realtime": 1795865787,
+      "host_realtime_window": [
+        1795865783,
+        1795865789
+      ],
+      "nonce_sha256": "e9eb2dee5ce6c893194d8811bb42bc0a9ab2322b23d1710fe85a00f64a9d7736",
+      "peer_chain_sha256": "2b2f2a95201ea00d8833e18d59e41da05d81ce9606e6a76100f7c0fc3017f7e8",
+      "result": -207,
+      "scenario": "truncated",
+      "sni": "tls.xos.test",
+      "status": 0,
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": true,
+      "bytes": 0,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "elapsed_ns": 1280000000,
+      "extra_application_bytes": 1,
+      "guest_realtime": 1795865793,
+      "host_realtime_window": [
+        1795865789,
+        1795865795
+      ],
+      "nonce_sha256": "3695cfd222d9a07b1194c2d5faec1b5fc79e82ae1d624241cb0ddf3a4dbae6fc",
+      "peer_chain_sha256": "2b2f2a95201ea00d8833e18d59e41da05d81ce9606e6a76100f7c0fc3017f7e8",
+      "result": -207,
+      "scenario": "extra",
+      "sni": "tls.xos.test",
+      "status": 0,
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": false,
+      "bytes": 0,
+      "elapsed_ns": 680000000,
+      "guest_realtime": 1795865798,
+      "handshake_alert": "SSLV3_ALERT_BAD_CERTIFICATE",
+      "host_realtime_window": [
+        1795865795,
+        1795865801
+      ],
+      "nonce_sha256": "f62782b36afeea07fa8ce69b5f2e66d6bfea48c2fcd9b094a642953b2ea8de59",
+      "peer_chain_sha256": "1b30888062afd427a4398c6af796872afd9a3f3a5d816defa8404265d92c0bde",
+      "result": -202,
+      "scenario": "wrong-host",
+      "sni": "tls.xos.test",
+      "status": 0
+    },
+    {
+      "application_request": false,
+      "bytes": 0,
+      "elapsed_ns": 800000000,
+      "guest_realtime": 1795865804,
+      "handshake_alert": "TLSV1_ALERT_UNKNOWN_CA",
+      "host_realtime_window": [
+        1795865801,
+        1795865808
+      ],
+      "nonce_sha256": "fa70c1d0b97b9119cddc79e5c119a4feb1b888f69350cd8fb2829582f773da0c",
+      "peer_chain_sha256": "1bf4b8675e3cf8a4c4e4fb4ce7af7b477c29bb7c57b58fdd1f6d57b658895518",
+      "result": -202,
+      "scenario": "unknown-ca",
+      "sni": "tls.xos.test",
+      "status": 0
+    },
+    {
+      "application_request": false,
+      "bytes": 0,
+      "elapsed_ns": 630000000,
+      "guest_realtime": 1795865809,
+      "handshake_alert": "SSLV3_ALERT_CERTIFICATE_EXPIRED",
+      "host_realtime_window": [
+        1795865808,
+        1795865813
+      ],
+      "nonce_sha256": "95cba7c62239c7793fc8de485e4f5fd4d61b7ac223c519c6e410c3b079d58afa",
+      "peer_chain_sha256": "488df676c244e3ac936158096d6a279f0c8146d602181764c1e615b80c0116eb",
+      "result": -202,
+      "scenario": "expired",
+      "sni": "tls.xos.test",
+      "status": 0
+    },
+    {
+      "application_request": true,
+      "bytes": 32,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "elapsed_ns": 1150000000,
+      "guest_realtime": 1795865814,
+      "host_realtime_window": [
+        1795865813,
+        1795865819
+      ],
+      "nonce_sha256": "c8c0eecbf1825bf3fc43c82d6c29761904287fe250d79e91d86364c20dd2a43f",
+      "peer_chain_sha256": "2b2f2a95201ea00d8833e18d59e41da05d81ce9606e6a76100f7c0fc3017f7e8",
+      "peer_close_notify": true,
+      "result": 0,
+      "scenario": "valid",
+      "sni": "tls.xos.test",
+      "status": 200,
+      "version": "TLSv1.3"
+    }
+  ],
+  "device_initialization": {
+    "cold": [
+      129678,
+      3,
+      1
+    ],
+    "initialized": [
+      129677,
+      3,
+      1
+    ],
+    "kernel_observer_pages": 1,
+    "scope": "cached kernel PCI reset-status observer page table, per boot; no HTTPS process ran",
+    "second_plain_cycle": [
+      129677,
+      3,
+      1
+    ]
+  },
+  "device_lifetime_sources": {
+    "src/kernel/arch/x86_64/paging.cpp": "36635656edea97e17cb314ba71202e868d6c86fd208a55a9affd8f069732541a",
+    "src/kernel/platform/pc/pci.cpp": "f6e8735b732afea67c486a0e033c68220d3bf9f8887875e26da4585df7793f2e"
+  },
+  "elf_sha256": "b46bbe9381e6d73e6809a84b7b190fda54a85d4cd94f93aa0b80b06a8ce05d22",
+  "exchange_baseline": [
+    129506,
+    4,
+    2
+  ],
+  "image_sha256": "d132e8334b66136d7b49479c848c20096e225fc56e0508353cea9b279e6b43bc",
+  "policy": {
+    "ca_sha256": "1d3f4c8e7fc8098d4661b4646f435eb6beae6afccef5342d5b96d0489d71995f",
+    "host": "tls.xos.test",
+    "ipv4_address": "10.0.2.2",
+    "minimum_tls": "1.2",
+    "origin": "https://tls.xos.test:9443",
+    "port": 9443,
+    "require_close_notify": true,
+    "verify_chain": true,
+    "verify_hostname": true
+  },
+  "probe_manifest_sha256": "d42649e8ff5f9466460a41b7ba8fe40b36dc7cee36f05b5850d774d829a9c167",
+  "runner_sha256": "d7b3dc709453fac7b0c165dfe04899ed9f413135c4048cf99d9e35938ad576ed",
+  "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+  "status": "passed",
+  "system_manifest_sha256": "1ad679a0a3926de8b2d862aca78c4732c0110b791fb1dcfdc4cacf7964c42c9b"
+}

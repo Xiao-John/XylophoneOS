@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "full": {
+    "bytes": 781832,
+    "sha256": "56c4339651a35f4db89544bbf52bcaa5c489da3aa5d55ba08f495ef58efe4b7f"
+  },
+  "embedded": {
+    "bytes": 115360,
+    "sha256": "9f8382494d26d69a799e2c12fadfcbc2c33b861d1b32ab0390291e6c8fd13301"
+  },
+  "entry_and_loads": {
+    "entry": 1073741824,
+    "loads": [
+      {
+        "flags": 5,
+        "vaddr": 1073741824,
+        "paddr": 1073741824,
+        "filesz": 86177,
+        "memsz": 86177,
+        "alignment": 4096,
+        "mapped_bytes_sha256": "52cd9eea9726fc3fa3e36cdff1e91e1315e690066d7c33f8e9fe453e6bdbbb75"
+      },
+      {
+        "flags": 4,
+        "vaddr": 1073831936,
+        "paddr": 1073831936,
+        "filesz": 16812,
+        "memsz": 16812,
+        "alignment": 4096,
+        "mapped_bytes_sha256": "b66183e79bae82ac2e4b82f3c25dc1044fb6afafa936998c862841c79e152c27"
+      },
+      {
+        "flags": 6,
+        "vaddr": 1073852416,
+        "paddr": 1073852416,
+        "filesz": 104,
+        "memsz": 290604,
+        "alignment": 4096,
+        "mapped_bytes_sha256": "1cca5ddb4d2f21cc8871ea8c1d7348182f8eaaffdd28b462f4754727af794633"
+      }
+    ]
+  },
+  "image_read_limit_bytes": 131072,
+  "entry_and_each_complete_PT_LOAD_equal": true,
+  "scope": "new native supervisor only; the frozen GNU child has separate section-table-header differences recorded in frozen_child_strip.json",
+  "builder_sha256": "36125734e504d38d8c63d670164338191eddb09d68e33997708e3ecc78fb93cf",
+  "native_manifest_sha256": "54780a207073b26b5138b4d5a5694a2d0a8f103e5e1340ef06b87feba3997e6d"
+}

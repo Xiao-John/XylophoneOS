@@ -1,0 +1,24 @@
+--- a/Source/cmake/OptionsJSCOnly.cmake
++++ b/Source/cmake/OptionsJSCOnly.cmake
+@@ -151,6 +151,7 @@
+     set(ENABLE_API_TESTS OFF)
+     set(ENABLE_LAYOUT_TESTS OFF)
+     set(WebCore_LIBRARY_TYPE STATIC)
++    SET_AND_EXPOSE_TO_BUILD(USE_THEME_ADWAITA TRUE)
+     if (NOT USE_SKIA OR USE_SKIA_ENCODERS)
+         message(FATAL_ERROR "Use CPU Skia with the software WebCore target")
+     endif ()
+--- a/Source/WebCore/PlatformJSCOnly.cmake
++++ b/Source/WebCore/PlatformJSCOnly.cmake
+@@ -23,6 +23,11 @@
+         SK_DISABLE_LEGACY_INIT_DECODERS SK_DISABLE_LEGACY_PNG_WRITEBUFFER SK_DISABLE_TRACING SK_DISABLE_WEBGL_INTERFACE)
+     target_link_libraries(Skia::Skia INTERFACE Freetype::Freetype PNG::PNG JPEG::JPEG)
+     include(platform/Skia.cmake)
++    include(platform/Adwaita.cmake)
++    list(APPEND WebCore_SOURCES
++        platform/generic/KeyedDecoderGeneric.cpp
++        platform/generic/KeyedEncoderGeneric.cpp
++        platform/generic/ScrollbarsControllerGeneric.cpp)
+     include(platform/OpenSSL.cmake)
+     include(platform/ImageDecoders.cmake)
+     list(APPEND WebCore_LIBRARIES OpenSSL::Crypto)

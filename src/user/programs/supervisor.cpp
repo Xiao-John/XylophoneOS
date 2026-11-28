@@ -18,6 +18,14 @@
 #include <xos/net_service_client.hpp>
 #include "fault_bundle.hpp"
 #include "../services/shell_terminal.hpp"
+#if XOS_CLARKE_FULL_PAGE
+#include "clarke_session.hpp"
+#include "clarke_binding.hpp"
+#endif
+#if XOS_CLARKE_LAUNCH_PROBE
+#include "../../../tests/fixtures/webkit/launch_probe.hpp"
+#include "clarke_launch_binding.hpp"
+#endif
 #if XOS_FILES_PRIVATE_CLIENT_PROBE
 #include "../services/files_private_broker.hpp"
 #endif
@@ -648,7 +656,14 @@ bool builtin_named(const char* name) {
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
         "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
         "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run",
-        "tone", "melody", "audio", "display-start", "interactium-start", "net-start", "net-stop", "net-probe", "net-info", "net-revoke"};
+        "tone", "melody", "audio", "display-start", "interactium-start", "net-start", "net-stop", "net-probe", "net-info", "net-revoke",
+#if XOS_CLARKE_FULL_PAGE
+        "clarke", "clarke-check",
+#endif
+#if XOS_CLARKE_LAUNCH_PROBE
+        "clarke-start-test",
+#endif
+    };
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
     return false;
 }
@@ -919,6 +934,24 @@ void execute(u32 argc, char** argv) {
               "Display   display-start | interactium-start | exec gfxdemo [check|fault|hold|stop]\n"
               "Debug     diag <program> [args] | trace on/off | ps | kill <pid> | stats | images | primtest | elftest | filetest\n"
               "Search    /usr/bin:/bin:/; paths containing '/' are used directly\n");
+#if XOS_CLARKE_FULL_PAGE
+    } else if (equal(argv[0], "clarke") || equal(argv[0], "clarke-check")) {
+        if (argc != 2) { print("Usage: clarke <URL>\n"); }
+        else if (!network_service_pid) { print("clarke: start the owned network service first\n"); }
+        else {
+            // One trusted controller session; large protocol buffers live in
+            // static storage, outside Xsh's small bootstrap stack.
+            static clarke::session browser(clarke_installed);
+            (void)browser.run(network_service_pid, argv[1], equal(argv[0], "clarke-check"));
+        }
+#endif
+#if XOS_CLARKE_LAUNCH_PROBE
+    } else if (equal(argv[0], "clarke-start-test")) {
+        if (argc != 2 || (!equal(argv[1], "start") && !equal(argv[1], "double-abort"))) {
+            print("Usage: clarke-start-test start|double-abort\n");
+        } else if (!network_service_pid) { print("clarke: start the owned network service first\n"); }
+        else (void)clarke::launch_probe(network_service_pid, clarke_launch_receipt, equal(argv[1], "double-abort"));
+#endif
     } else if (equal(argv[0], "trace")) {
         if (argc == 1) { print(verbose_trace ? "xsh: trace on\n" : "xsh: trace off\n"); }
         else if (argc == 2 && (equal(argv[1], "on") || equal(argv[1], "off"))) {

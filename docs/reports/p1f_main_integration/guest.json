@@ -1,0 +1,399 @@
+{
+  "after_service": [
+    129672,
+    3,
+    1
+  ],
+  "before_service": [
+    129672,
+    3,
+    1
+  ],
+  "cases": [
+    {
+      "fields": [
+        -2,
+        13,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 0
+    },
+    {
+      "fields": [
+        -2,
+        14,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 1
+    },
+    {
+      "fields": [
+        -2,
+        15,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 2
+    },
+    {
+      "fields": [
+        -2,
+        16,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 3
+    },
+    {
+      "fields": [
+        -2,
+        17,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 4
+    },
+    {
+      "fields": [
+        -2,
+        18,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 5
+    },
+    {
+      "fields": [
+        -2,
+        19,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 6
+    },
+    {
+      "fields": [
+        -2,
+        20,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 7
+    },
+    {
+      "fields": [
+        -2,
+        21,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 8
+    },
+    {
+      "fields": [
+        -2,
+        22,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 9
+    },
+    {
+      "fields": [
+        -2,
+        23,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 10
+    },
+    {
+      "fields": [
+        -2,
+        24,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 11
+    },
+    {
+      "fields": [
+        -2,
+        25,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 12
+    },
+    {
+      "fields": [
+        -2,
+        26,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 13
+    },
+    {
+      "fields": [
+        -2,
+        27,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 14
+    },
+    {
+      "fields": [
+        -2,
+        28,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 15
+    },
+    {
+      "fields": [
+        -2,
+        29,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 16
+    },
+    {
+      "fields": [
+        -2,
+        30,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 17
+    },
+    {
+      "fields": [
+        -2,
+        31,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 18
+    },
+    {
+      "fields": [
+        -2,
+        32,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 19
+    },
+    {
+      "fields": [
+        -1,
+        33,
+        0,
+        1,
+        1,
+        -1,
+        -6,
+        0,
+        1,
+        1
+      ],
+      "mode": "double_abort",
+      "result": "PASS"
+    }
+  ],
+  "device_initialization": {
+    "cold": [
+      129673,
+      3,
+      1
+    ],
+    "initialized": [
+      129672,
+      3,
+      1
+    ],
+    "kernel_observer_pages": 1,
+    "scope": "one cached kernel PCI reset-status observer page table, per boot; no ClarkE process ran",
+    "second_plain_cycle": [
+      129672,
+      3,
+      1
+    ]
+  },
+  "iso_sha256": "0814136dffa91539b55ab8ad159ea061174d0996a4d04b066fdb05c09ca27001",
+  "never_started_marker_absent": true,
+  "probe_sha256": "a8fe1fc3cf5f3c0396ab63d7b5c9c6c34364858fe520f746b7c325dcc3a3660b",
+  "runner_sha256": "d75d0b48cb757e383b9eb3e12122207d410fc1d28db95c3b26c1ca9d4095809f",
+  "service_pid": 12,
+  "sources": {
+    "src/kernel/arch/x86_64/paging.cpp": "36635656edea97e17cb314ba71202e868d6c86fd208a55a9affd8f069732541a",
+    "src/kernel/platform/pc/pci.cpp": "f6e8735b732afea67c486a0e033c68220d3bf9f8887875e26da4585df7793f2e",
+    "src/shared/include/xos/net_service_abi.hpp": "27aaa881a5098121d24e86aca2f9c032153fc6a9f3f74c2e39551a1b1c19af54",
+    "src/user/include/xos/execution.hpp": "8464072884551029449d08a5079ede61a1ebfdb0e40d5028dcf5f9dd1e94d90f",
+    "src/user/include/xos/net_service_client.hpp": "a4b4201388c7f85932c284bf0b050f74d53b648ad3dce613cdf142f29aeec0f4",
+    "src/user/loader/load.cpp": "a371595cf995e6123235471dfde5e59fa2a48220ff3ec79b564f7232f4505afe",
+    "src/user/network/service_core.cpp": "e1f5c291c4347bdff5753000e3cd22d484dedc21bd46bb5b0c09a3d289b40e9c",
+    "tests/fixtures/webkit/launch_probe.hpp": "c0f32e775d6699c37dbe7ac04f54d20dd0ce0956ccbae5af6dbd6f502c93d0a2"
+  },
+  "status": "passed",
+  "system_manifest_sha256": "54780a207073b26b5138b4d5a5694a2d0a8f103e5e1340ef06b87feba3997e6d",
+  "public_projection": {
+    "raw_source": "build/p1f-main-launch-v3/guest/report.json",
+    "raw_sha256": "5c9e2dcaec921814b226d36419d9499cb5f96c34e214511e56310b44aaace1ce",
+    "raw_bytes": 5884,
+    "transform": "JSON presentation and configurable SDK/workspace/temporary-build installation prefixes only; no result, limit, artifact digest or source digest changed",
+    "raw_unchanged": true,
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the SDK",
+      "XOS_NATIVE_ACCEPTANCE_TMP": "one-invocation temporary source/build/guest root"
+    }
+  }
+}

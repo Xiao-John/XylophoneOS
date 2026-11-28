@@ -103,6 +103,17 @@ public:
         if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
         return result;
     }
+    i64 peer_policy(peer_policy_action action, u64 retired_pid, u64 deadline, peer_policy_snapshot& snapshot) {
+        message input{}, reply{};
+        const peer_policy_request requested{peer_policy_revision, sizeof(peer_policy_request), action, 0};
+        input.action = operation::peer_policy; input.object = retired_pid;
+        input.deadline = deadline; input.length = sizeof(requested);
+        __builtin_memcpy(input.data, &requested, sizeof(requested));
+        const i64 result = request(input, reply);
+        snapshot = {};
+        if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+        return result;
+    }
     i64 readiness(u64 handle, u64 deadline, readiness_snapshot& snapshot) {
         message input{}, reply{};
         input.action = operation::readiness; input.object = handle; input.deadline = deadline;
@@ -161,6 +172,13 @@ private:
             return !reply.flags;
         }
         switch (input.action) {
+        case operation::peer_policy: {
+            if (reply.result || reply.length != sizeof(peer_policy_snapshot) || reply.flags) return false;
+            peer_policy_snapshot snapshot{};
+            __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+            return snapshot.revision == peer_policy_revision && snapshot.size == sizeof(snapshot) &&
+                snapshot.capacity == revoked_peer_limit && snapshot.occupied <= snapshot.capacity;
+        }
         case operation::information:
             return !reply.result && reply.length == sizeof(information) && !reply.flags;
         case operation::open:

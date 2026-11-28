@@ -1,0 +1,57 @@
+{
+  "format_version": 1,
+  "files": {
+    "README.md": {
+      "bytes": 4550,
+      "sha256": "eb20a378592411cf3b3664acb51b5530a8472517ff1915082fe2751b32984351"
+    },
+    "conversion.json": {
+      "bytes": 3562,
+      "sha256": "6cb6733667cd0c92f5ad4739f59eac7bb7583e21c91ebd78602fb083f45c7463"
+    },
+    "diff_gate.json": {
+      "bytes": 1666,
+      "sha256": "fcec012fe7bbe3a4b7a05dde05482c0e3bfc101bff09f6f7a01ef26e4820836a"
+    },
+    "execution_receipt.json": {
+      "bytes": 347732,
+      "sha256": "30cdb6d8e98b6ece88014b144def6a095fe8a65a636894d547185d81590049ee"
+    },
+    "frozen_child_build.json": {
+      "bytes": 6227,
+      "sha256": "e0819c1a5dcf2f3235cc886234dae80778fc7fd58ee294c42d9e33a77429a7ee"
+    },
+    "frozen_child_strip.json": {
+      "bytes": 3453,
+      "sha256": "f6a45635ab70099c57559bb0515f3d84e34953fde15ab800540478a8c064f8db"
+    },
+    "guest.json": {
+      "bytes": 6581,
+      "sha256": "c500675be7c1c887cc3b6bcc7df8f443e0c0136482eb48b1800bf5c464900809"
+    },
+    "native_system.json": {
+      "bytes": 547317,
+      "sha256": "ba8f8bc1a4a067e0626cc71692de5b929f5e413be72e328ad1c67c1bea4bb439"
+    },
+    "preflight_attempts.json": {
+      "bytes": 2970,
+      "sha256": "3568181658b7f64d6a17d4a0d161abf84ba22be9c5130cf7714a3e97049a2c52"
+    },
+    "report.json": {
+      "bytes": 4087,
+      "sha256": "4eb988f231b6dafd6d2f09fbb206fd279415624cdd9600034097674317a0e366"
+    },
+    "serial.json": {
+      "bytes": 25642,
+      "sha256": "28e190550d54e6a3400e22fb73cfa47e71e4929a2c3f45c40f6339a51f316e43"
+    },
+    "source_compatibility.json": {
+      "bytes": 28587,
+      "sha256": "5aa1ce335d8e6b3072e636612aa5f87ac5698b6ada7b582d005695e322d74886"
+    },
+    "supervisor_strip.json": {
+      "bytes": 1560,
+      "sha256": "3bf32465f3b33dfb6407dda93bd0de0ddfa7193c61afe76790e78970d757af49"
+    }
+  }
+}

@@ -175,7 +175,9 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                  execution::launch_diagnostic* diagnostic = nullptr,
                  verified_image_snapshot* snapshot = nullptr,
                  i64 (*pinned_prepare)(u64, void*) = nullptr, void* pinned_context = nullptr,
-                 bool allow_legacy_stdio = true) {
+                 bool allow_legacy_stdio = true,
+                 execution::launch_abort_outcome* abort_outcome = nullptr) {
+    if (abort_outcome != nullptr) *abort_outcome = {};
     if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::none, 0, elf::error::none}; }
     if (argc == 0 || argc > process_max_args || argv == nullptr ||
         read_exact == nullptr || name == nullptr) {
@@ -327,6 +329,10 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     const usize name_size = length(name);
     const u64 name_length = name_size > 11 ? 11 : name_size;
     const i64 child = syscall(replacing ? sys_process_exec_prepare : sys_process_create, options == nullptr ? 7u : 0u, reinterpret_cast<u64>(name), name_length);
+    if (child > 0 && abort_outcome != nullptr) {
+        abort_outcome->pid = static_cast<u64>(child);
+        abort_outcome->never_started = 1;
+    }
     if (child < 0) {
         if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::create, child, elf::error::none}; }
         if (close_file) { (void)file_client.close(file_handle); }
@@ -578,6 +584,12 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     }
     if (result >= 0) {
         process_entry entry{plan.entry, startup_address - 16, startup_address};
+#ifdef XOS_LOADER_TEST_BAD_START_ENTRY
+        // Isolated qualification build only: exercise the real kernel start
+        // rejection after the controller's successful prepare callback.
+        if (abort_outcome != nullptr && !replacing && options != nullptr && options->prepare_child != nullptr)
+            entry.entry = 0;
+#endif
         process_exec_channel_entry extended{};
         u64 commit_flags = replacing ? options->exec_depth_mode : 0;
         const void* entry_pointer = &entry;
@@ -590,8 +602,7 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         }
         result = syscall(replacing ? sys_process_exec_commit : sys_process_start, static_cast<u64>(child),
                          reinterpret_cast<u64>(entry_pointer), commit_flags);
-        if (result < 0) {
-        }
+        if (result >= 0 && abort_outcome != nullptr) abort_outcome->never_started = 0;
         if (result < 0 && diagnostic != nullptr) {
             *diagnostic = {execution::launch_stage::start, result, elf::error::none};
         }
@@ -600,7 +611,11 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         if (diagnostic != nullptr && diagnostic->stage == execution::launch_stage::none) {
             *diagnostic = {execution::launch_stage::map, result, elf::error::none};
         }
-        (void)syscall(sys_process_abort, static_cast<u64>(child));
+        const i64 aborted = syscall(sys_process_abort, static_cast<u64>(child));
+        if (abort_outcome != nullptr) {
+            abort_outcome->abort_attempted = 1;
+            abort_outcome->abort_result = aborted;
+        }
         return result;
     }
     return child;
@@ -648,17 +663,20 @@ i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const s
 i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* argv,
                               const spawn_options& options,
                               execution::launch_diagnostic& diagnostic, execution::image_receipt* receipt,
-                              const execution::image_receipt* expected = nullptr) {
+                              const execution::image_receipt* expected = nullptr,
+                              execution::launch_abort_outcome* abort_outcome = nullptr) {
+    if (abort_outcome != nullptr) *abort_outcome = {};
     diagnostic = {execution::launch_stage::none, 0, elf::error::none};
     if (receipt != nullptr) {
         for (u32 i = 0; i < sizeof(receipt->digest); ++i) receipt->digest[i] = 0;
         receipt->size = 0;
     }
     i64 dynamic_result = 0;
-    if (xos_dynamic_spawn_hook != nullptr &&
+    if (abort_outcome == nullptr && xos_dynamic_spawn_hook != nullptr &&
         xos_dynamic_spawn_hook(path, argc, argv, &options, &diagnostic, receipt, expected, &dynamic_result))
         return dynamic_result;
-    if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
+    if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr ||
+        (abort_outcome != nullptr && options.replace_image)) {
         diagnostic = {execution::launch_stage::prepare, process_error_invalid, elf::error::none};
         return process_error_invalid;
     }
@@ -715,9 +733,10 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
     // A verified snapshot and the original pin name the same bytes. Map
     // them directly, still holding the pin through completion of all copies.
     const i64 child = captured == nullptr
-        ? spawn_reader(path, size, file_read, &source, argc, argv, true, handle, &options, &diagnostic)
+        ? spawn_reader(path, size, file_read, &source, argc, argv, true, handle, &options, &diagnostic,
+                       nullptr, nullptr, nullptr, true, abort_outcome)
         : spawn_reader(path, size, buffer_read, captured, argc, argv, true, handle,
-                       &options, &diagnostic, &snapshot);
+                       &options, &diagnostic, &snapshot, nullptr, nullptr, true, abort_outcome);
     if (child < 0 && receipt != nullptr) {
         for (u32 i = 0; i < sizeof(receipt->digest); ++i) receipt->digest[i] = 0;
         receipt->size = 0;
@@ -799,5 +818,12 @@ i64 spawn_verified_file(const char* path, u32 argc, const char* const* argv,
     launch_diagnostic diagnostic{};
     image_receipt observed{};
     return sdk::spawn_file_diagnosed_impl(path, argc, argv, options, diagnostic, &observed, &expected);
+}
+i64 spawn_verified_static_file(const char* path, u32 argc, const char* const* argv,
+                               const sdk::spawn_options& options, const image_receipt& expected,
+                               launch_abort_outcome& outcome) {
+    launch_diagnostic diagnostic{};
+    image_receipt observed{};
+    return sdk::spawn_file_diagnosed_impl(path, argc, argv, options, diagnostic, &observed, &expected, &outcome);
 }
 }

@@ -1,0 +1,89 @@
+{
+  "archive_format": "regular",
+  "archive_sha256": "72e9fd7cd166bc4eb1d48acebd47af66b733d6e22ef71eea998a25f6869a4541",
+  "archiver_mode": "qcD",
+  "code_sections_identical_after_relocation_link": true,
+  "derivation": {
+    "kind": "public_projection",
+    "omitted": "host output paths and full tool commands",
+    "original_report_sha256": "11551ea982c9838a93956215aed5aaa521e880648826f09862bd3254fcca51cf"
+  },
+  "linked_sha256": "65bf01896d5a1a7baad9d34cf1da450ceaaa66d9656844c52f45824da01c5922",
+  "linker_options": [
+    "-r",
+    "--whole-archive",
+    "--no-whole-archive"
+  ],
+  "nonempty_executable_sections": {
+    ".text._Z16set_point_lengthILb0EEbP7SkPointfffPf": {
+      "bytes": 168,
+      "sha256": "9ea06d575219d61fec3cd5a336a86dc2760ee548624e0ced21b52efff568195b"
+    },
+    ".text._ZN11SkPointPriv13SetLengthFastEP7SkPointf": {
+      "bytes": 167,
+      "sha256": "d4e2c8bd1656e455be30d2c6d3eca11cc6c6367541e1469d6000d0f6ca312bcd"
+    },
+    ".text._ZN11SkPointPriv24DistanceToLineBetweenSqdERK7SkPointS2_S2_PNS_4SideE": {
+      "bytes": 143,
+      "sha256": "3d1aa3221349c258841adc7e2e63636469dc82497925a31f73019a165e40d696"
+    },
+    ".text._ZN11SkPointPriv31DistanceToLineSegmentBetweenSqdERK7SkPointS2_S2_": {
+      "bytes": 202,
+      "sha256": "ea9692ecceca94c1abe61e4d33e3886534bc0bdf83199299be493343d072ecc8"
+    },
+    ".text._ZN7SkPoint12setNormalizeEff": {
+      "bytes": 19,
+      "sha256": "f82a3ef70d8f3693ddaf16f0fc88ad38e2a5ed385e76b68498710a3e3980eb7c"
+    },
+    ".text._ZN7SkPoint6LengthEff": {
+      "bytes": 67,
+      "sha256": "47057ac501e86583752c195163140669eeaf5ee38715bd2e4ca45cb7e27fee55"
+    },
+    ".text._ZN7SkPoint9NormalizeEPS_": {
+      "bytes": 51,
+      "sha256": "4e03c7949382557dde0442d66836ddad4b99e16686bacdf9f519a0e39c445197"
+    },
+    ".text._ZN7SkPoint9normalizeEv": {
+      "bytes": 28,
+      "sha256": "733c940c1fc2e4c1217e221d6c546a4c77c7ce4b4a22ca25644507d1f3145daf"
+    },
+    ".text._ZN7SkPoint9setLengthEf": {
+      "bytes": 23,
+      "sha256": "37eb3aa7c77e4a8f90d052ff325c5062fcfec9c22f1676579c1f05e5aa4ca664"
+    },
+    ".text._ZN7SkPoint9setLengthEfff": {
+      "bytes": 16,
+      "sha256": "fd22365e45cd9704d02b73feeae9db0e54890dfd647d061f4a5e3f515aeb8b41"
+    },
+    ".text._ZNK7SkPoint5scaleEfPS_": {
+      "bytes": 22,
+      "sha256": "6f37260b42da463cb585fc9d86e5447724a89682cc419eb961c20cda025a75ed"
+    }
+  },
+  "original_objects_removed_before_link": true,
+  "source_object_sha256": "e07163323da6dcf820409c535ec6a97c3849339c99d792a55d570a9130b859bf",
+  "source_unit": "SkPoint.cpp",
+  "status": "regular_archive_linked_after_private_objects_removed",
+  "steps": [
+    {
+      "returncode": 0,
+      "tool": "x86_64-elf-ar"
+    },
+    {
+      "returncode": 0,
+      "tool": "x86_64-elf-ranlib"
+    },
+    {
+      "returncode": 0,
+      "tool": "x86_64-elf-ar"
+    },
+    {
+      "returncode": 0,
+      "tool": "x86_64-elf-ld"
+    },
+    {
+      "returncode": 0,
+      "tool": "x86_64-elf-readelf"
+    }
+  ]
+}

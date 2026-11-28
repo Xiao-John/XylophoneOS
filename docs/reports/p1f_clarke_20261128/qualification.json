@@ -1,0 +1,109 @@
+{
+  "browser_lifecycle_guest": "not_run",
+  "font_backend_guest": {
+    "cases": 2,
+    "empty_font_directory_exit": 5,
+    "glyph": 848,
+    "ink_pixels": 107,
+    "resource_baseline": [
+      129678,
+      3,
+      1
+    ],
+    "resources_identical_after_both_cases": true,
+    "status": "passed_subset"
+  },
+  "full_page_guest": "not_run",
+  "http_framing_host": {
+    "ASAN_OPTIONS": "detect_leaks=0",
+    "compiler": "SDK /usr/bin/g++",
+    "leak_sanitizer": "disabled in traced SDK; not qualified",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "status": "passed"
+  },
+  "https_guest": {
+    "full_browser_viewport": "not_run",
+    "scenarios": 9,
+    "scope": "actual production OpenSSL fetcher over native net2; controlled TLS1.3 endpoint",
+    "status": "passed"
+  },
+  "launch_abort_guest": "passed",
+  "net_client_host": {
+    "policy_reply_mutations": 9,
+    "status": "passed"
+  },
+  "net_service_host": {
+    "production_loop_scenarios": 2,
+    "real_lwip_scenarios": 33,
+    "status": "passed"
+  },
+  "qpa_reply_host": {
+    "asan_ubsan_cases": 32,
+    "full_qt_plugin": "not_built_by_this_host_gate",
+    "guest": "not_run",
+    "leak_sanitizer": "not_qualified",
+    "ordinary_cases": 32,
+    "status": "passed_subset"
+  },
+  "qt_viewport_guest": "not_run",
+  "sdk": {
+    "p1f-c-sdk": {
+      "manifest_sha256": "92c8885e8c13b37ae5192a39890f34a7a755dab78334ecce0661fbb003aa89cc",
+      "status": "static_sdk_built"
+    },
+    "p1f-cxx-sdk": {
+      "manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+      "status": "static_sdk_built"
+    },
+    "p1f-font-backend": {
+      "manifest_sha256": "8e0eb1207b69e9dfc406b8209a7bb55a0d9533c71c8a1974c6e5e8a06327b8f9",
+      "status": "target_skia_fontconfig_linked"
+    },
+    "p1f-fontconfig": {
+      "manifest_sha256": "7e8ff325d8497b07146024b23b90340f0a731862429fbeda5f05ced367369793",
+      "status": "target_fontconfig_linked"
+    },
+    "p1f-fonts": {
+      "manifest_sha256": "76a7cd7cbdfa1d7239d44f1c568fe060592b337cb7b11e9e103b85d19b2e1e47",
+      "status": "target_font_stack_linked"
+    },
+    "p1f-icu": {
+      "manifest_sha256": "88cbc515074a5bbb7352705cee745fc922ce39da9103b2eb75060d8c04af98bf",
+      "status": "static_icu_built"
+    },
+    "p1f-openssl": {
+      "manifest_sha256": "2fe74a7144b9286a8fd3dd5f6f22b8fb33d52c7a8b6b9f835ec403de27d32266",
+      "status": "static_sdk_and_probe_linked"
+    },
+    "p1f-raster": {
+      "manifest_sha256": "6b84f3cf153107391e842abc8058615ae460e2499a84a56264818932b538966b",
+      "status": "target_skia_raster_linked"
+    },
+    "p1f-sqlite": {
+      "manifest_sha256": "65afc1fb45f1d781dc2f7f66fae3989357e5daf5ef7ef1e64d51a2b2e2194a33",
+      "status": "static_sqlite_built"
+    },
+    "p1f-webp": {
+      "manifest_sha256": "acddc8668d1d1d08c56ab1c33137a7a5529c7fd9aab950c01fb775fd573cc24e",
+      "status": "static_webp_installed"
+    },
+    "p1f-xml": {
+      "manifest_sha256": "aba773ffd2e29fa4d59d50f49e5819c16dbaf0720b4f7d298de17d92095e59ae",
+      "status": "target_libxml2_linked"
+    },
+    "profile": {
+      "guest_qualification": "only the explicitly reported downstream guest cases",
+      "id": "xos-x86_64-glibc-p1-20261128-v1",
+      "sha256": "736d3353d9aad14d019dbc678b77dbb8f6fe8585bed84b71e1f858566a7a3f9f"
+    }
+  },
+  "status": "partial_qualification_in_progress",
+  "temporary_archive_probe": {
+    "scope": "real nonempty target SkPoint object; removed before ld -r; executable sections preserved exactly",
+    "status": "passed"
+  },
+  "webcore_build": "running; full page link not yet complete"
+}

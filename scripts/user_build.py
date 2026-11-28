@@ -23,7 +23,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
                 net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None,
                 files_uncertain_probe=False, pumpkin_catalog_fixture=False,
-                pumpkin_launch_probe=False, pumpkin_launch_storage_lease=False):
+                pumpkin_launch_probe=False, pumpkin_launch_storage_lease=False,
+                clarke_bundle=False, clarke_launch_probe=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -168,7 +169,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     if archive.exists():
         archive.unlink()
     run([tool("ar"), "rcsD", str(archive), *sdk_objects])
-    loader_objects = [compile_source(root / "src/user/loader" / name)
+    loader_objects = [compile_source(root / "src/user/loader" / name,
+                      ("-DXOS_LOADER_TEST_BAD_START_ENTRY=1",) if clarke_launch_probe and name == "load.cpp" else ())
                       for name in ("elf.cpp", "load.cpp", "elf_cases.cpp", "command.cpp",
                                    "glibc_d1/image_mapping.cpp", "glibc_d1/entry_stack.cpp",
                                    "glibc_d1/interpreter_entry.cpp", "dynamic/identity.cpp",
@@ -236,6 +238,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             # Keep the embedded supervisor compact after the bundle installer
             # additions.
             extra_flags += ("-Os", *private_client_flags, *durable_flags)
+            if clarke_bundle:
+                extra_flags += ("-DXOS_CLARKE_FULL_PAGE=1", "-I", str(build))
+            if clarke_launch_probe:
+                extra_flags += ("-DXOS_CLARKE_LAUNCH_PROBE=1", "-I", str(build))
             if quiet_demos_on_launch:
                 extra_flags += ("-DXOS_QUIET_DEMOS_ON_LAUNCH=1",)
             if net_dns_probe:
@@ -310,28 +316,32 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                if name in libc_programs else [str(archive)]),
              "-o", str(executable)])
         image = build / f"user_{name}.image.elf"
+        # The bootstrap image bound is unchanged. Isolated catalog/browser
+        # profiles retain the complete diagnostic ELF, omit symbol tables from
+        # the embedded image and prove its entry and all mapped bytes identical.
         strip_all = name == "supervisor" and pumpkin_catalog_fixture
+        strip_all = strip_all or (name == "supervisor" and (clarke_bundle or clarke_launch_probe))
         run([tool("objcopy"), "--strip-all" if strip_all else "--strip-debug", str(executable), str(image)])
         if strip_all:
             def loadable(path):
                 raw = path.read_bytes()
                 if raw[:7] != b"\x7fELF\x02\x01\x01":
-                    raise SystemExit("catalog fixture is not ELF64 little-endian")
+                    raise SystemExit("isolated supervisor fixture is not ELF64 little-endian")
                 entry, phoff = struct.unpack_from("<QQ", raw, 24)
                 stride, count = struct.unpack_from("<HH", raw, 54)
                 if stride != 56 or phoff + stride * count > len(raw):
-                    raise SystemExit("catalog fixture has invalid program headers")
+                    raise SystemExit("isolated supervisor fixture has invalid program headers")
                 loads = []
                 for index in range(count):
                     kind, flags, offset, address, physical, size, memory, alignment = struct.unpack_from(
                         "<IIQQQQQQ", raw, phoff + index * stride)
                     if kind == 1:
                         if offset + size > len(raw):
-                            raise SystemExit("catalog fixture has invalid load bytes")
+                            raise SystemExit("isolated supervisor fixture has invalid load bytes")
                         loads.append((flags, address, physical, size, memory, alignment, raw[offset:offset + size]))
                 return entry, loads
             if loadable(executable) != loadable(image):
-                raise SystemExit("catalog symbol stripping changed an entry or load segment")
+                raise SystemExit("isolated supervisor symbol stripping changed an entry or load segment")
         data = image.read_bytes()
         if name not in disk_programs and len(data) > 131072:
             raise SystemExit(f"User ELF {name} exceeds image read limit")

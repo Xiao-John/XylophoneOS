@@ -20,6 +20,8 @@
 #include <qpa/qwindowsysteminterface.h>
 #include <private/qfreetypefontdatabase_p.h>
 #include "qeventdispatcher_xos_p.h"
+#include "frame_receipt.hpp"
+#include "interactium_reply.hpp"
 #include <xos/interactium_abi.hpp>
 #include <xos/process_abi.hpp>
 #include <xos/sdk.hpp>
@@ -112,6 +114,9 @@ Key mapKey(xos::u32 code, xos::u32 mods) {
     if(code==0x149) return {Qt::Key_PageUp,{}};
     if(code==0x151) return {Qt::Key_PageDown,{}};
     if(code==0x153) return {Qt::Key_Delete,{}};
+    if(code>=0x3b && code<=0x44) return {Qt::Key_F1+int(code-0x3b),{}};
+    if(code==0x57) return {Qt::Key_F11,{}};
+    if(code==0x58) return {Qt::Key_F12,{}};
     if(code>=sizeof(normal)-1) return {};
     const char n=normal[code];
     if(!n) return {};
@@ -138,7 +143,7 @@ class interactium_connection {
                       const void* payload, xos::u32 payload_length,
                       const xos::u8* data, xos::u32 data_length,
                       xos::interactium::wire_header& reply, xos::u8* reply_payload,
-                      xos::u32& reply_length, bool hello = false) {
+                      xos::u32 reply_capacity, xos::u32& reply_length, bool hello = false) {
         using namespace xos;
         using namespace xos::interactium;
         const u64 total = sizeof(wire_header) + u64(payload_length) + data_length;
@@ -160,17 +165,8 @@ class interactium_connection {
             sdk::ipc_wait(channel_.receive, ipc_wait_mode::receive) != 0) return process_error_state;
         alignas(8) u8 response[process_pipe_bytes]{};
         const i64 received = sdk::ipc_recv(channel_.receive, response, sizeof(response));
-        if (received < static_cast<i64>(sizeof(wire_header))) return process_error_state;
-        for (u32 i = 0; i < sizeof(reply); ++i)
-            reinterpret_cast<u8*>(&reply)[i] = response[i];
-        if (reply.version != protocol_version || reply.size != static_cast<u32>(received) ||
-            reply.sequence != header.sequence || reply.payload_length !=
-                static_cast<u32>(received) - sizeof(wire_header) || reply.session !=
-                (hello ? reply.session : session_) || reply_payload == nullptr ||
-            reply.payload_length > process_pipe_bytes - sizeof(wire_header)) return process_error_invalid;
-        reply_length = reply.payload_length;
-        for (u32 i = 0; i < reply_length; ++i) reply_payload[i] = response[sizeof(wire_header) + i];
-        return 0;
+        return xos::qt::decode_interactium_reply(response, received, header, reply,
+                                                reply_payload, reply_capacity, reply_length);
     }
 
     xos::i64 status_call(xos::interactium::message_type type, xos::u64 object,
@@ -181,7 +177,7 @@ class interactium_connection {
         u8 body[sizeof(input_payload)]{};
         u32 body_length = 0;
         const i64 rc = exchange(type, object, payload, length, nullptr, 0,
-                                reply, body, body_length);
+                                reply, body, sizeof(body), body_length);
         if (rc != 0) return rc;
         if (reply.type != message_type::ack || body_length != sizeof(status_payload))
             return process_error_invalid;
@@ -205,7 +201,7 @@ public:
         u8 body[sizeof(hello_reply_payload)]{};
         u32 body_length = 0;
         const i64 rc = exchange(message_type::hello, 0, &hello, sizeof(hello), nullptr, 0,
-                                reply, body, body_length, true);
+                                reply, body, sizeof(body), body_length, true);
         if (rc != 0 || reply.type != message_type::hello_reply ||
             body_length != sizeof(hello_reply_payload)) return process_error_state;
         hello_reply_payload hello_reply{};
@@ -229,7 +225,7 @@ public:
                                            u32(geometry.height()), window_role::normal, 0, 0};
         wire_header reply{}; u8 body[sizeof(status_payload)]{}; u32 length = 0;
         const i64 rc = exchange(message_type::create_window, 0, &create, sizeof(create), nullptr, 0,
-                                reply, body, length);
+                                reply, body, sizeof(body), length);
         if (rc != 0 || reply.type != message_type::ack || length != sizeof(status_payload))
             return process_error_state;
         status_payload status{};
@@ -258,7 +254,7 @@ public:
         using namespace xos::interactium;
         wire_header reply{}; u8 body[sizeof(status_payload)]{}; u32 reply_length = 0;
         const i64 rc = exchange(message_type::write_tile, id, &tile, sizeof(tile), pixels, length,
-                                reply, body, reply_length);
+                                reply, body, sizeof(body), reply_length);
         if (rc != 0 || reply.type != message_type::ack || reply_length != sizeof(status_payload))
             return process_error_state;
         status_payload status{};
@@ -274,7 +270,7 @@ public:
         using namespace xos::interactium;
         wire_header reply{}; u8 body[sizeof(input_payload)]{}; u32 length = 0;
         const i64 rc = exchange(message_type::input, id, nullptr, 0, nullptr, 0,
-                                reply, body, length);
+                                reply, body, sizeof(body), length);
         if (rc != 0) return rc;
         if (reply.type == message_type::ack && length == sizeof(status_payload)) {
             status_payload status{};
@@ -457,6 +453,13 @@ public:
         }
         return client_->commit_frame(id_,serial);
     }
+    xos::qt::frame_commit_receipt last_frame() const { return last_frame_; }
+    void record_frame(xos::i64 result) {
+        last_frame_.serial = frame_serial_;
+        last_frame_.result = result;
+    }
+private:
+    xos::qt::frame_commit_receipt last_frame_{1, sizeof(xos::qt::frame_commit_receipt), 0, xos::process_error_state};
 };
 class backing_store final : public QPlatformBackingStore {
     QImage image;
@@ -479,6 +482,7 @@ public:
         const QRegion clipped=region.intersected(image.rect());
         const auto begin=xos::thread::clock();
         const auto rc=platform->flush(image,clipped);
+        platform->record_frame(rc);
         if(rc) { qWarning("XOS QPA: Interactium frame commit failed (%lld)",(long long)rc); QCoreApplication::exit(72); return; }
         std::printf("[qpa-frame] rects=%d stride=%d ns=%llu\n",clipped.rectCount(),image.bytesPerLine(),
             (unsigned long long)(xos::thread::clock()-begin));
@@ -506,6 +510,11 @@ public:
     QAbstractEventDispatcher *createEventDispatcher() const override { return new gui_dispatcher; }
     QPlatformFontDatabase *fontDatabase() const override { return &fonts; }
 };
+}
+extern "C" bool xos_qpa_frame_receipt(const QWindow* requested, xos::qt::frame_commit_receipt* result) {
+    if(!requested || !result || !requested->handle() || QThread::currentThread()!=requested->thread()) return false;
+    *result=static_cast<const ::window*>(requested->handle())->last_frame();
+    return true;
 }
 extern "C" void xos_qpa_pause_input(unsigned milliseconds) {
     pauseUntil.store(xos::thread::clock()+xos::u64(milliseconds)*1000000);

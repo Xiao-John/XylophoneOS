@@ -1,0 +1,105 @@
+{
+  "clarke-launch-child.elf": {
+    "sha256": "77c6b22de0db1828566334e884507016d7ceb4cb324866e901e200af7edf9221",
+    "bytes": 2851888,
+    "entry": 1073742144,
+    "load_segments": [
+      {
+        "offset": 0,
+        "flags": 5,
+        "vaddr": 1073741824,
+        "paddr": 1073741824,
+        "filesz": 416118,
+        "memsz": 416118,
+        "align": 4096,
+        "sha256": "3c5b2bd15198c9690ec687514cab4474e08a73fa90606b0461ca53dfe24685ea"
+      },
+      {
+        "offset": 417792,
+        "flags": 4,
+        "vaddr": 1074159616,
+        "paddr": 1074159616,
+        "filesz": 174853,
+        "memsz": 174853,
+        "align": 4096,
+        "sha256": "dcd6c40f2048aa7bc4f9a74d75ce8960a5fb6fc2a0404ebb3aff5d0dd8fec719"
+      },
+      {
+        "offset": 593920,
+        "flags": 6,
+        "vaddr": 1074335744,
+        "paddr": 1074335744,
+        "filesz": 14080,
+        "memsz": 35000,
+        "align": 4096,
+        "sha256": "8a990754ce6ddfa04dc60f00420afe6037939ff40d0658075baa95530e120af1"
+      }
+    ]
+  },
+  "clarke-launch-child-stripped.elf": {
+    "sha256": "a8fe1fc3cf5f3c0396ab63d7b5c9c6c34364858fe520f746b7c325dcc3a3660b",
+    "bytes": 609008,
+    "entry": 1073742144,
+    "load_segments": [
+      {
+        "offset": 0,
+        "flags": 5,
+        "vaddr": 1073741824,
+        "paddr": 1073741824,
+        "filesz": 416118,
+        "memsz": 416118,
+        "align": 4096,
+        "sha256": "2f9cd0f1b920a38f456abe4ef49c7cea8610056f8bbf2545ac4e96c75dfeb32b"
+      },
+      {
+        "offset": 417792,
+        "flags": 4,
+        "vaddr": 1074159616,
+        "paddr": 1074159616,
+        "filesz": 174853,
+        "memsz": 174853,
+        "align": 4096,
+        "sha256": "dcd6c40f2048aa7bc4f9a74d75ce8960a5fb6fc2a0404ebb3aff5d0dd8fec719"
+      },
+      {
+        "offset": 593920,
+        "flags": 6,
+        "vaddr": 1074335744,
+        "paddr": 1074335744,
+        "filesz": 14080,
+        "memsz": 35000,
+        "align": 4096,
+        "sha256": "8a990754ce6ddfa04dc60f00420afe6037939ff40d0658075baa95530e120af1"
+      }
+    ]
+  },
+  "status": "passed",
+  "load_byte_changes": [
+    {
+      "file_offset": 40,
+      "old": 48,
+      "new": 112
+    },
+    {
+      "file_offset": 41,
+      "old": 126,
+      "new": 71
+    },
+    {
+      "file_offset": 42,
+      "old": 43,
+      "new": 9
+    },
+    {
+      "file_offset": 60,
+      "old": 24,
+      "new": 14
+    },
+    {
+      "file_offset": 62,
+      "old": 23,
+      "new": 13
+    }
+  ],
+  "scope": "Entry, every PT_LOAD mapping field, executable code and data unchanged. First PT_LOAD includes ELF header; only e_shoff/e_shnum/e_shstrndx changed when strip-all removed nonload debug/symbol sections. Original and stripped ELF hashes separately retained."
+}

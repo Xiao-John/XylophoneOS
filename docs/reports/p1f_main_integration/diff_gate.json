@@ -1,0 +1,28 @@
+{
+  "full_whitespace_check_exit": 2,
+  "full_check_findings": "six unchanged incoming raw serial logs retain CRLF and prompt whitespace; all exact checkpoint6 blobs",
+  "frozen_serial_sha256": {
+    "docs/reports/p1f_clarke_20261128/font_backend_serial.log": "148524a2fffd3e3e149e04ae37b062b570d4d181f9adcb4a731535b5c50cb671",
+    "docs/reports/p1f_clarke_20261128/https_initial_failed_serial.log": "22ca57c4a30bbd00b92f88ac1508221f0eb3510a592f3b52c5bc219ea07f3677",
+    "docs/reports/p1f_clarke_20261128/https_serial.log": "ee3d8a94937f8a27aeafe96b186eee2c12bea7bf1f46f0e38c4bab5b8f9383be",
+    "docs/reports/p1f_clarke_20261128/launch_cold_failed_serial.log": "f5a6c57f27dda8bc3bc1ddb59392d0dff8fb4e1b9267a4279ca80f565c24531b",
+    "docs/reports/p1f_clarke_20261128/launch_device_isolation_serial.log": "609d87a41cde7a33d92161372e05b9b51e81ca15fd132be99df40afa992bc3ed",
+    "docs/reports/p1f_clarke_20261128/launch_serial.log": "b8e92d5889d09bbdf475928521e9cf15231dbc3445247678431d67d277a2d842"
+  },
+  "source_and_new_evidence_check_exit": 0,
+  "source_and_new_evidence_command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    ":(exclude)docs/reports/p1f_clarke_20261128/font_backend_serial.log",
+    ":(exclude)docs/reports/p1f_clarke_20261128/https_initial_failed_serial.log",
+    ":(exclude)docs/reports/p1f_clarke_20261128/https_serial.log",
+    ":(exclude)docs/reports/p1f_clarke_20261128/launch_cold_failed_serial.log",
+    ":(exclude)docs/reports/p1f_clarke_20261128/launch_device_isolation_serial.log",
+    ":(exclude)docs/reports/p1f_clarke_20261128/launch_serial.log"
+  ],
+  "public_index_check_excludes_nothing": true
+}

@@ -1,0 +1,97 @@
+{
+  "format": "xos-p1f-main-launch-integration-v1",
+  "status": "passed",
+  "main_parent": "93758f59488c32161cc15b909513a91106408cf1",
+  "f_parent": "a3874f94616f6ffbed368d39d9e6bb21ebb9ee9d",
+  "merge_base": "6332527ab64e92371266363f41f3247717a3cac8",
+  "source_tree_before_gate_evidence": "8d107bf92105f46b9b3d5514cf92a36707361376",
+  "textual_conflicts": [
+    "scripts/build.py",
+    "scripts/user_build.py"
+  ],
+  "incoming_f_paths": 95,
+  "incoming_f_paths_exact": 88,
+  "shared_paths_integrated": 7,
+  "main_other_paths_unchanged": true,
+  "native": {
+    "build_id": "7117377f147d895c",
+    "manifest_sha256": "54780a207073b26b5138b4d5a5694a2d0a8f103e5e1340ef06b87feba3997e6d",
+    "iso_sha256": "0814136dffa91539b55ab8ad159ea061174d0996a4d04b066fdb05c09ca27001",
+    "loader_flag": "XOS_LOADER_TEST_BAD_START_ENTRY=1",
+    "supervisor_embedded_bytes": 115360
+  },
+  "frozen_child": {
+    "bytes": 609008,
+    "sha256": "a8fe1fc3cf5f3c0396ab63d7b5c9c6c34364858fe520f746b7c325dcc3a3660b",
+    "rebuilt": false,
+    "producer_build_manifest_sha256": "04f7f4724ef50fab1abfef46c0bbe841eef4ef900f8455f3a83aa22a6409c2c7",
+    "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+    "old_native_manifest_sha256": "1ad679a0a3926de8b2d862aca78c4732c0110b791fb1dcfdc4cacf7964c42c9b",
+    "old_guest_report_sha256": "5bc63e5cbec6d96004f05311be324ed71cd54caebb4f0415b7c39d2936724637"
+  },
+  "guest": {
+    "boots": 1,
+    "confirmed_start_failure_abort_release_cases": 20,
+    "double_abort_retained_denial_cases": 1,
+    "cases": 21,
+    "all_passed": true,
+    "child_started_marker_absent": true,
+    "raw_report_sha256": "5c9e2dcaec921814b226d36419d9499cb5f96c34e214511e56310b44aaace1ce",
+    "runner_sha256": "d75d0b48cb757e383b9eb3e12122207d410fc1d28db95c3b26c1ca9d4095809f"
+  },
+  "resources": {
+    "meaning": [
+      "free pages",
+      "live tasks",
+      "completion records"
+    ],
+    "device_initialization": {
+      "cold": [
+        129673,
+        3,
+        1
+      ],
+      "initialized": [
+        129672,
+        3,
+        1
+      ],
+      "kernel_observer_pages": 1,
+      "scope": "one cached kernel PCI reset-status observer page table, per boot; no ClarkE process ran",
+      "second_plain_cycle": [
+        129672,
+        3,
+        1
+      ]
+    },
+    "before_service": [
+      129672,
+      3,
+      1
+    ],
+    "after_service": [
+      129672,
+      3,
+      1
+    ],
+    "all_case_resources_restored": true
+  },
+  "frozen_input_count": 10,
+  "frozen_inputs_unchanged": true,
+  "source_snapshot_files": 2726,
+  "source_snapshot_unchanged": true,
+  "network_profile": "net-start 41 with default 10.0.2.15/24, gateway 10.0.2.2, resolver and secondary resolver zero; no static/DHCP/DNS-probe flags",
+  "qualification_scope": "Original failure-cleanup scenarios on an integrated native loader retaining K5 and selecting its legacy-default transfer_independent_pipes=false. This is not full ClarkE browser, optional pipe-transfer, I1 DNS failover, or new GNU SDK qualification.",
+  "normal_image_boundary": "BAD_START_ENTRY is selected only by the isolated clarke-launch-probe recipe; later normal/full-browser qualification must use a separate clarke-bundle image without that flag.",
+  "source_boundary": "The old child producer, SDK, runtime and historical reports keep their own source identities; only the new native test image is built from this integrated source tree.",
+  "independent_review": {
+    "scope": "C owner read-only profile wiring and strip proof review; no edits or repeated tests",
+    "result": "no concrete blocker",
+    "observations": [
+      "catalog/launch/300-second lease and ClarkE metadata all enter source identity and final manifest",
+      "explicit launch/lease still requires provisioning plus isolated output; ClarkE rejects anchored supervisor",
+      "original C strip selector remains exactly once so the D recipe stays applicable",
+      "all selected strip-all profiles retain the entry and complete PT_LOAD properties/bytes identity check and unchanged 128 KiB bound"
+    ]
+  }
+}

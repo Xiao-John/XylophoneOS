@@ -1,0 +1,38 @@
+{
+  "scope": "two preserved orchestration failures before any target compile or VM; neither is counted as one of the 21 target scenarios",
+  "attempts": [
+    {
+      "attempt": 1,
+      "phase": "host orchestration preflight",
+      "target_compilation_started": false,
+      "target_guest_started": false,
+      "reason": "SDK workspace mount cannot resolve host Git worktree metadata",
+      "launcher_log": {
+        "bytes": 875,
+        "sha256": "83f36c864817be41980345e807fb19e8336475e1e0cf209054aafe037a679e2f",
+        "public_text": "fatal: not a git repository: (null)\nTraceback (most recent call last):\n  File \"${XOS_SDK_WORKSPACE}/worktrees/p1_f_integration/build/run_f_launch_integration.py\", line 49, in <module>\n    paths = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\\0')\n            ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/lib/python3.14/subprocess.py\", line 473, in check_output\n    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,\n           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n               **kwargs).stdout\n               ^^^^^^^^^\n  File \"/usr/lib/python3.14/subprocess.py\", line 578, in run\n    raise CalledProcessError(retcode, process.args,\n                             output=stdout, stderr=stderr)\nsubprocess.CalledProcessError: Command '['git', 'ls-files', '-z']' returned non-zero exit status 128.\n"
+      }
+    },
+    {
+      "attempt": 2,
+      "phase": "host orchestration preflight",
+      "target_compilation_started": false,
+      "target_guest_started": false,
+      "reason": "build.py rejects an output directory outside its own source build/",
+      "launcher_log": {
+        "bytes": 666,
+        "sha256": "8b0ad5cb60357479a8a699252becaa3c67f2e215118772503fd1b008fe6bba26",
+        "public_text": "Traceback (most recent call last):\n  File \"${XOS_SDK_WORKSPACE}/worktrees/p1_f_integration/build/run_f_launch_integration.py\", line 82, in <module>\n    result.check_returncode()\n    ~~~~~~~~~~~~~~~~~~~~~~~^^\n  File \"/usr/lib/python3.14/subprocess.py\", line 509, in check_returncode\n    raise CalledProcessError(self.returncode, self.args, self.stdout,\n                             self.stderr)\nsubprocess.CalledProcessError: Command '['/usr/bin/python3', 'scripts/build.py', '--output-dir', '${XOS_NATIVE_ACCEPTANCE_TMP}/native', '--quiet-demos-on-launch', '--clarke-launch-probe', '${XOS_SDK_WORKSPACE}/worktrees/p1_f_launch/build/clarke-launch-child-stripped.elf']' returned non-zero exit status 1.\n"
+      },
+      "build_log": {
+        "bytes": 61,
+        "sha256": "2d4b706d0b61f7ff48a327c1fbb6057a6cad435d1059c220c678986a2b881a4f",
+        "public_text": "output directory must be build/ or one of its subdirectories\n"
+      },
+      "raw_receipt": {
+        "bytes": 313674,
+        "sha256": "3db52e4df42fca8e8af8e0558f2ced2e9dc9f827ee547766a9bbcec6368b3467"
+      }
+    }
+  ]
+}

@@ -53,7 +53,7 @@ private:
         i64 result;
         u32 address;
     } tickets_[net2::client_sessions]{};
-    u64 revoked_[16]{}, controller_ = 0, next_handle_ = 1, next_generation_ = 1;
+    u64 revoked_[net2::revoked_peer_limit]{}, controller_ = 0, next_handle_ = 1, next_generation_ = 1;
     stack_api stack_{};
     resolver_api resolver_{};
     egress_policy policy_{};

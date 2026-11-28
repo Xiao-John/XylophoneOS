@@ -1,0 +1,153 @@
+{
+  "status": "static_program_linked",
+  "diagnostic": false,
+  "language": "c",
+  "builder_sha256": "5c63b120681020ad392909c4c8886fba800488afe8ed5d7ba5d550e24862d201",
+  "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+  "compiler": {
+    "available": true,
+    "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+    "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+    "version_exit_code": 0,
+    "version": "x86_64-elf-gcc (GCC) 16.2.0"
+  },
+  "sanitized_environment": [],
+  "sources": {
+    "${XOS_SDK_WORKSPACE}/worktrees/p1_f_launch/tests/fixtures/webkit/launch_child.c": "6042bd4b45341e610d9401686e4ebbf21942269b21a9e07e0e51e8a69e299bdd"
+  },
+  "steps": [
+    {
+      "name": "compile-0",
+      "command": [
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot",
+        "-B/work/worktrees/p1_f_launch/build/clarke-launch-child.elf.build/tools/",
+        "-O2",
+        "-g",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-omit-frame-pointer",
+        "-ftls-model=local-exec",
+        "-nostdinc",
+        "-std=gnu11",
+        "-fno-builtin",
+        "-isystem",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/include",
+        "-isystem",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/compiler-include",
+        "-c",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f_launch/tests/fixtures/webkit/launch_child.c",
+        "-o",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f_launch/build/clarke-launch-child.elf.build/program_0.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "link",
+      "command": [
+        "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot",
+        "-B/work/worktrees/p1_f_launch/build/clarke-launch-child.elf.build/tools/",
+        "-static",
+        "-no-pie",
+        "-nostdlib",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-T",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/user.ld",
+        "-o",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f_launch/build/clarke-launch-child.elf.build/program.elf",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/xos_start.o",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/crti.o",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/crtbegin.o",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/xos_start_c.o",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f_launch/build/clarke-launch-child.elf.build/program_0.o",
+        "-Wl,--start-group",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/libc.a",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/libm.a",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/libxos_terminal.a",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/libgcc.a",
+        "-Wl,--end-group",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/crtend.o",
+        "${XOS_SDK_WORKSPACE}/worktrees/p1_f/build/p1f-cxx-sdk/sysroot/usr/lib/crtn.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "74aec4c09c679cc80f052018bd46886ba3798103f4006f007fd4c9840417b0ca"
+    }
+  ],
+  "guest_qualification": "not_run",
+  "profile_binding": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-p1-20261128-v1",
+    "profile_sha256": "736d3353d9aad14d019dbc678b77dbb8f6fe8585bed84b71e1f858566a7a3f9f",
+    "sdk_tree_sha256": "ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254",
+    "guest_qualification": "not_run"
+  },
+  "binutils": {
+    "as": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+      "version_exit_code": 0,
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_HOME}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 416118,
+      "memory_size": 416118,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1074159616,
+      "file_size": 174853,
+      "memory_size": 174853,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1074335744,
+      "file_size": 14080,
+      "memory_size": 35000,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 1074349768,
+      "file_size": 56,
+      "memory_size": 80,
+      "alignment": 8
+    }
+  ],
+  "elf_sha256": "77c6b22de0db1828566334e884507016d7ceb4cb324866e901e200af7edf9221",
+  "public_projection": {
+    "raw_source": "${XOS_FROZEN_LAUNCH}/build/clarke-launch-child.elf.build/manifest.json",
+    "raw_sha256": "04f7f4724ef50fab1abfef46c0bbe841eef4ef900f8455f3a83aa22a6409c2c7",
+    "raw_bytes": 5227,
+    "transform": "JSON presentation and configurable SDK/workspace/temporary-build installation prefixes only; no result, limit, artifact digest or source digest changed",
+    "raw_unchanged": true,
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the SDK",
+      "XOS_NATIVE_ACCEPTANCE_TMP": "one-invocation temporary source/build/guest root"
+    }
+  }
+}

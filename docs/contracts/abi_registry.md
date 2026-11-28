@@ -200,6 +200,8 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 | net2 服务协议 | v2 64字节header，1024字节payload，operations1–9，原生TCP/UDP连接与认证多会话 | 网络用户态线。[v2 契约](net_service_v2.md)与[多应用复验](../work_log/69b0e274_network_guest_readiness_and_window.md)登记已验范围。v1 诊断显式隔离，沿用既有 syscall |
 | net2 N4 预览扩展 | v2 可选 operations10–14，配置快照 48 字节、写配置 16 字节、直接 A 结果 24 字节，错误 -211 至 -217 | 仅显式构建并经受信 controller 启用。客户端先询问 configuration，旧镜像可返回 unsupported。保留 operations1–9。[N4 线格式](network_n4_v1_proposal.md#21-n4-静态解析预览线格式) |
 | net2 TCP 扩展 | v2 可选 operations15–17：capabilities 16 字节、readiness 32 字节、shutdown_write 空负载 | [TCP readiness 和半关闭](net_service_v2.md#tcp-readiness-和写半关闭扩展)。先查询 capability，旧服务 unsupported 保留原阻塞传输；不改变地址授权，不包含事件订阅 |
+| net2 retired-peer policy | v2 可选 operation21，独立 revision1 request/snapshot 各 16 字节；query 与 release_retired | 仅认证 bootstrap controller；旧服务拒绝未知操作。成功 wait 或明确 never-started + abort0 后才释放原有 16 项撤销表；普通 broker/renderer 无权释放。[ClarkE 生命周期](clarke_renderer_lifecycle.md)；恢复中的客体验收尚未完成 |
+| ClarkE verified static launch outcome | 独立 version1 32 字节输出，PID、never_started、abort_attempted、原始 abort_result | 新静态 verified 入口，不改变 spawn_options、动态 hook 或已有入口；失败返回本身不证明子进程已销毁。[契约](clarke_renderer_lifecycle.md#explicit-loader-abort-result) |
 
 2026-11-12 用户授权将本轮实现交付与 guest 资格分开：sys88 actions 19–23 沿用 PR #112 公开 grant
 create/delegate/map/unmap/close（delegate 保持同值句柄），supported mask `0x1f` 表示可调用机制；SDK manifest

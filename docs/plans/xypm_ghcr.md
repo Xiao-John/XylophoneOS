@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 # xypm GitHub Container Registry 接入
 
-基线 `3028573c852d4db7e200df3c1a5348a3780ce745`。本页是待实施计划，不是已验能力。
+最初设计基于 `3028573c852d4db7e200df3c1a5348a3780ce745`。下文记录设计与现有入口。
 GitHub Packages 不提供 XPK 原生格式；首批使用公开 GHCR OCI 制品承载现有 XPK，
 不将 OCI 层当成可执行的容器映像，也不改变 XPK v1 的安装或恢复规则。
 
@@ -30,7 +30,7 @@ GitHub Packages 不提供 XPK 原生格式；首批使用公开 GHCR OCI 制品�
 唯一的 XPK 层。清单的 `artifactType` 和层的 `mediaType` 均为
 `application/vnd.xos.xpk.v1`，config 使用 OCI empty descriptor。只允许 GHCR blob
 跳转至 `pkg-containers.githubusercontent.com`，不转发 bearer token。输出完整通过
-XPK profile 校验后才可见，可继续交给现有离线事务。客体网络客户端仍按上面的阶段推进。
+XPK profile 校验后才可见，可继续交给现有离线事务。客体使用下文的原生入口。
 
 规范依据：[OCI manifest](https://github.com/opencontainers/image-spec/blob/main/manifest.md)
 与 [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)。
@@ -62,3 +62,5 @@ exec-file /usr/bin/xypm info PACKAGE_ID
 相同 profile 的 glibc xypm、下载器和独立 CA pin。测试在一张临时 FAT 盘执行下载、
 安装及数据库回读。无安装参数的探测模式只验证真实 GHCR 上的非 XPK 拒绝路径，
 有 `--download-sha256` 时只验证下载并从客体盘导出核对。测试端口构建只针对受控服务。
+
+[真实公开 GHCR 客体验收记录](../reports/xypm_ghcr_guest_20261128/README.md)。

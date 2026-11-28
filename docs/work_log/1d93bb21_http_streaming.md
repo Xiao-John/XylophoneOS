@@ -80,3 +80,10 @@ SHA-256 是 `f4d782a09dc40be788e44f9152a78ab28b13fa4f3cca9af2f5da90fe47e1ffbd`�
 执行入口为 `tests/package_ghcr_guest.py`，记录在
 `build/xypm_ghcr_public_guest/report.json` 和 `build/xypm_ghcr_public_guest/db.json`。
 该验收使用显式授权的 IPv4 路由和钉住摘要的 CA 快照。
+
+## 主线兼容性回放
+
+以 `main` 的 `c2947d28` 为基线，保留认证发行命令并重新构建系统和 glibc xypm。
+在新镜像 `faa268574f3d5577` 再次从真实公开 GHCR 下载、校验、安装并回读数据库。
+构建绑定、客体摘录、停机数据库和宿主回归见
+[公开 GHCR 客体验收](../reports/xypm_ghcr_guest_20261128/README.md)。

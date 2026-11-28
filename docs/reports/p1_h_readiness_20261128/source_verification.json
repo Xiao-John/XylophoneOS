@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "status": "upstream_signature_verified",
+  "verified_at": "2026-11-28T12:17:35.147619+00:00",
+  "lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+  "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+  "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+  "verifier": {
+    "name": "gpgv",
+    "sha256": "e82416f3ae002b63c0731f311519c55fc9e7d3c8bdadbd64239833298f09a2cf"
+  },
+  "trust_record": {
+    "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+    "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+    "key_file": "keys/release_2_44.asc",
+    "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+    "signature_file": "keys/glibc_2_44.tar.xz.sig",
+    "reviewed_at": "2026-11-25",
+    "identity_sources": [
+      {
+        "url": "https://ftp.gnu.org/gnu/gnu-keyring.gpg",
+        "sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+        "scope": "independent primary and signing-subkey identity; this older keyring has expired bindings and is rejected for verification"
+      },
+      {
+        "url": "https://github.com/gentoo/gentoo/blob/446726169ce086d8c0c50ffbee0919351ee8969d/sec-keys/openpgp-keys-glibc/Manifest",
+        "key_url": "https://distfiles.gentoo.org/distfiles/04/openpgp-keys-glibc-20251014.asc",
+        "key_sha256": "6c619706aaa8a63323b262e987606a409df4365f6397169dc1d6840dcbdd1532",
+        "key_sha512": "86e87c9ec00e9d5f3e66f6633352f2bd0e36197e2ab700494f3cb8fb707ecb6266a122a6907d50866c43a19d1aa864b456d530b009e13e06bef0e3fcee1ae630",
+        "scope": "Gentoo glibc release-key package independently binds the same key and maintainer URL; key is valid through 2027-02-10"
+      },
+      {
+        "url": "https://www.akhuettel.de/key-atwork.txt",
+        "sha256": "f3d47929494e7633ba29ea6f6382149221f6d660c1b141b26d3d891ed135e05b",
+        "scope": "maintainer current key, export-minimal public-key material; same primary and release signing subkey, current bindings valid through 2028-11-14"
+      },
+      {
+        "url": "https://keys.openpgp.org/vks/v1/by-fingerprint/35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+        "sha256": "d7e68060504a40a55f0f60bc5ee9e5721955aaae2787987c5cbc15a05737b207",
+        "scope": "independent update/revocation observation on review date; matching current primary and signing-subkey expiration"
+      }
+    ],
+    "update_policy": "Re-check primary identity, current self-signatures and revocation sources when updating the port or publishing a release. Never suppress expired/revoked-key errors or substitute a clock to obtain success."
+  },
+  "gpgv_exit": 0,
+  "signature": {
+    "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+    "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+    "signature_timestamp": 1784937664,
+    "hash_algorithm": 8
+  },
+  "evidence": {
+    "gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+    "gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+    "release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af"
+  }
+}

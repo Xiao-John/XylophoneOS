@@ -1,0 +1,140 @@
+{
+  "status": "static_program_linked",
+  "diagnostic": false,
+  "language": "c",
+  "builder_sha256": "5c63b120681020ad392909c4c8886fba800488afe8ed5d7ba5d550e24862d201",
+  "sdk_manifest_sha256": "dbefe9b2af61e0b3d3815368ffe209561f8cae6f9fc649651b2e85424d7ff453",
+  "compiler": {
+    "available": true,
+    "path": "${XOS_HOST_TOOLS}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+    "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+    "version_exit_code": 0,
+    "version": "x86_64-elf-gcc (GCC) 16.2.0"
+  },
+  "sanitized_environment": [],
+  "sources": {
+    "${XOS_REPO}/build/p1h_close_diagnostic.c": "c9265315d2578e414c123bcdc30def8f3d479841cff51afa8b159a1a61bcc1b1"
+  },
+  "steps": [
+    {
+      "name": "compile-0",
+      "command": [
+        "${XOS_HOST_TOOLS}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot",
+        "-B${XOS_REPO}/build/p1h_close_diagnostic_v2/probe.elf.build/tools/",
+        "-O2",
+        "-g",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-omit-frame-pointer",
+        "-ftls-model=local-exec",
+        "-nostdinc",
+        "-std=gnu11",
+        "-fno-builtin",
+        "-isystem",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/include",
+        "-isystem",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/compiler-include",
+        "-c",
+        "${XOS_REPO}/build/p1h_close_diagnostic.c",
+        "-o",
+        "${XOS_REPO}/build/p1h_close_diagnostic_v2/probe.elf.build/program_0.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "link",
+      "command": [
+        "${XOS_HOST_TOOLS}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot",
+        "-B${XOS_REPO}/build/p1h_close_diagnostic_v2/probe.elf.build/tools/",
+        "-static",
+        "-no-pie",
+        "-nostdlib",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-T",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/user.ld",
+        "-o",
+        "${XOS_REPO}/build/p1h_close_diagnostic_v2/probe.elf.build/program.elf",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/xos_start.o",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/crti.o",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/crtbegin.o",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/xos_start_c.o",
+        "${XOS_REPO}/build/p1h_close_diagnostic_v2/probe.elf.build/program_0.o",
+        "-Wl,--start-group",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/libc.a",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/libm.a",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/libxos_terminal.a",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/libgcc.a",
+        "-Wl,--end-group",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/crtend.o",
+        "${XOS_REPO}/build/p1h_glibc_sdk_v6/sysroot/usr/lib/crtn.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "0b75570757bd768c110bd15562004d21723d9b783ff91c9324506bfeee92fced"
+    }
+  ],
+  "guest_qualification": "not_run",
+  "profile_binding": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-p1h-readiness-v6",
+    "profile_sha256": "635c7d2343e4eac83996d421aede34641304c0b9e3f9ff59b3b8e8c1d7f5fcfc",
+    "sdk_tree_sha256": "003fb466a50a5ea8d67f02df925b60c62b1c3040c8ba37aab3e0b4f82b904506",
+    "guest_qualification": "not_run"
+  },
+  "binutils": {
+    "as": {
+      "available": true,
+      "path": "${XOS_HOST_TOOLS}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+      "version_exit_code": 0,
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_HOST_TOOLS}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 444454,
+      "memory_size": 444454,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1074188288,
+      "file_size": 179325,
+      "memory_size": 179325,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1074368512,
+      "file_size": 14048,
+      "memory_size": 41608,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 1074382504,
+      "file_size": 56,
+      "memory_size": 80,
+      "alignment": 8
+    }
+  ],
+  "elf_sha256": "4146b1333e1108706e1b2007065bfd06274693c3ac023d6f54acddefd700f55a"
+}

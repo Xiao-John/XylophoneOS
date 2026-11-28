@@ -1,0 +1,113 @@
+{
+  "status": "failed",
+  "runner_sha256": "dc36b5c33b871dc1585a067485c260e98d29dbc33e3752971f2ab03e30cd16b2",
+  "services": [],
+  "cases": [
+    {
+      "name": "no_service",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "capacity",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "pipe_poll",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    }
+  ],
+  "deadline_profile": "absolute_ipc_wait",
+  "zero_timeout_connected_socket": "grant_level_snapshot_fresh_negative_or_eagain",
+  "posix_complete_poll": false,
+  "profile": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-p1h-readiness",
+    "profile_sha256": "6f5573dd960b133b664fdd71ac08e9481f28f8465437215a90d32dc065df5079",
+    "sdk_tree_sha256": "d72bab0f4cd02d179744cade800cdec2696bbae93d4d00983710ef30f14875c1",
+    "guest_qualification": "not_run"
+  },
+  "profile_sha256": "6f5573dd960b133b664fdd71ac08e9481f28f8465437215a90d32dc065df5079",
+  "sdk_manifest_sha256": "998dd065fd213e9a5d3fe2a5978faa4c1930f99806ad4fbb1958d9782c3a2edb",
+  "system_manifest_sha256": "76ff9b10e381a7035039f34adb5e2970e824e09085e403d26e420dabcce8ea8c",
+  "wire_layout_inputs": {
+    "tests/fixtures/glibc_net2/wire_layout.cpp": "98ae7334237b08e82b57836aa4a8308cf0df93eb2f37757ccc0a4cfda987882a",
+    "src/ports/glibc/sysdeps/xos/xos_net2_wire.h": "c9b8e504ec6373baa042529cb9a2bc813367d91057f889f0800e43bc9ba45ba8",
+    "src/shared/include/xos/net_service_abi.hpp": "712815a645c326428f84a911a2cc98093544562d0fc7cd88a285b4d8bb820476"
+  },
+  "elf_sha256": "b2c181ce93ea11f642f726bc4b7614d12e1f53e164a74b5240eb0613d15266eb",
+  "net_lwip_inputs_sha256": "c1d636f8a9868e3a6ac3f78d81058bf33b81aacc1816f02c3fc26dff567ff39d",
+  "network_profile": {
+    "pci_instance": 41,
+    "resolver": "10.0.2.3",
+    "revision": 1,
+    "source_sha256": "a0c43a919230b0c1dea5a32e6b6af11a91ebce45375c0d1744f1b4336097177d"
+  },
+  "elf_manifest_sha256": "626dbce829ab7eb0ea80719a9df4860ad6360ebc01ddf9a242398265b30ffa88",
+  "image_sha256": "8e33e507767bb138757132ff896e1f210ffe02f50ebd60d1b15ab060c1fe2903",
+  "stalled_peer": {
+    "elf_sha256": "972a212ddd448badd588cf7ef427ccb5a9be87d0037267c33dd8f2d171606b90",
+    "source_sha256": "5719935c26e1000021ece5ae1b3da708e90c270d5921b4dbbe0d4a2dc06367b7",
+    "purpose": "test-only authenticated IPC peer; no actual network service qualification"
+  },
+  "page_probe": {
+    "elf_sha256": "b9ea95b11e9c6f31ab24604109751d35d53fb3cbc40315b5f52f422529e40ede",
+    "source_sha256": "76782251f050d39db6049bf1a6e18808187b9bd34ac44f1d874002c38f2cc039"
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/p1h_system_v2/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline_without_service": [
+    129769,
+    2,
+    0
+  ],
+  "serial_sha256": "37ea3ed1e2722c31983aaa70da888c8ef70b4762e8e79806bb0aa8d1a6f75be3",
+  "error": "stalled live peer broke caller deadline or late-reply recovery"
+}

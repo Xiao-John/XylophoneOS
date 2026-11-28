@@ -1,0 +1,228 @@
+{
+  "status": "failed",
+  "runner_sha256": "2be450943c3742571040c337de308c549b03a991130251f08c1ae97ee040ccbc",
+  "services": [
+    {
+      "pid": 17,
+      "baseline": [
+        129596,
+        3,
+        1
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "no_service",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "capacity",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "pipe_poll",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "live_peer_stalled_reply",
+      "poll_timeout_ms": 40,
+      "actual_elapsed_ns": 40000000,
+      "peer_delay_ms": 1000,
+      "capability_requests": 1,
+      "readiness_requests": 1,
+      "late_reply_recovered": true,
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "wrong_pid",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "denied",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_ownership_and_detach",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_delegate_quota_recovery",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_foreign_denial_and_owner_exit",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "refused",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "da2eda59301c568bff4533f14e9432c1",
+      "reply_hex": "4eef46da828c72b1f8e3baa35dc5b6698b9ef0689dc42152446312acb23ab27f",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "376e3d57478aa5d019d16c8b23ff1041",
+      "reply_hex": "82956687af9db1bb998372513a41b08bcf1100960e549a73c38caa5083493ce1",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "half_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "56e0db230567b2c2a20fc0e138eaaa4a",
+      "reply_hex": "dff5cdbc37c4b0b7816648a9f74f6d68cc09b42c4669f0a2cfd615a6db02af78",
+      "peer_eof_before_response": true,
+      "readiness_timeout_ms": 30
+    },
+    {
+      "name": "nonblocking_refused",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    }
+  ],
+  "deadline_profile": "absolute_ipc_wait",
+  "zero_timeout_connected_socket": "grant_level_snapshot_fresh_negative_or_eagain",
+  "posix_complete_poll": false,
+  "profile": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-p1h-readiness-v4",
+    "profile_sha256": "da88ce9535a64d441415bc4e96405828aeb7f790a08be3a6bd0995e06a42e7e2",
+    "sdk_tree_sha256": "b53290aa2c9f7e92d5924d7affb5ececf0a2d62355af193300598b94d92efbc3",
+    "guest_qualification": "not_run"
+  },
+  "profile_sha256": "da88ce9535a64d441415bc4e96405828aeb7f790a08be3a6bd0995e06a42e7e2",
+  "sdk_manifest_sha256": "8d20c6bc92be92fa7e39c98755732db66c43ef73794ed1a92cb843a01ea3b1ce",
+  "system_manifest_sha256": "e8dff95b575ed6a8afb8ef065a75cf343a413b1eedab631da6fcbe4a306c3c74",
+  "wire_layout_inputs": {
+    "tests/fixtures/glibc_net2/wire_layout.cpp": "98ae7334237b08e82b57836aa4a8308cf0df93eb2f37757ccc0a4cfda987882a",
+    "src/ports/glibc/sysdeps/xos/xos_net2_wire.h": "c9b8e504ec6373baa042529cb9a2bc813367d91057f889f0800e43bc9ba45ba8",
+    "src/shared/include/xos/net_service_abi.hpp": "712815a645c326428f84a911a2cc98093544562d0fc7cd88a285b4d8bb820476"
+  },
+  "elf_sha256": "ec396fd5bf71b6d031b4f9d4276c68ee7db90b33b62f05863c64b75e6fe3aa47",
+  "net_lwip_inputs_sha256": "c1d636f8a9868e3a6ac3f78d81058bf33b81aacc1816f02c3fc26dff567ff39d",
+  "network_profile": {
+    "pci_instance": 41,
+    "resolver": "10.0.2.3",
+    "revision": 1,
+    "source_sha256": "a0c43a919230b0c1dea5a32e6b6af11a91ebce45375c0d1744f1b4336097177d"
+  },
+  "elf_manifest_sha256": "4f20fcf6691e6bd210e4361358452861398767b23ece1585e7b723f931009807",
+  "image_sha256": "2395fda34ee15db7820dc526f79d5838908bebce06260e98688d432c29978876",
+  "stalled_peer": {
+    "elf_sha256": "841439b07090b0be381f3f76bea02fd8ad784090ebb4cf6d0ba3e0085e8702c9",
+    "source_sha256": "5719935c26e1000021ece5ae1b3da708e90c270d5921b4dbbe0d4a2dc06367b7",
+    "purpose": "test-only authenticated IPC peer; no actual network service qualification"
+  },
+  "page_probe": {
+    "elf_sha256": "9d7ed84612df1778f84ae8b5657d4b570b020f02f8e784bdbc5e703c9332591b",
+    "source_sha256": "3edc85b802978f0a0be6e340adbe93088afa1eb6a207f8aa5f9f1effada023a8"
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/p1h_system_v6/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline_without_service": [
+    129769,
+    2,
+    0
+  ],
+  "serial_sha256": "20d3a34babb9d2bcc373e3bb9aa1ce1f370d7c085882b8b4205c9af2a882cd2b",
+  "error": "exec-file /bin/glibc_net2.elf nonblocking 45609 c294a13c4bd308bb94db124deb2110da failed: b'exec-file /bin/glibc_net2.elf nonblocking 45609 c294a13c4bd308bb94db124deb2110da\\n[process] event=started pid=29 parent=7\\r\\n[process] pid=29 address_space=0x0000000000561000\\r\\n[loader] started pid=29 file=/bin/glibc_net2.elf\\n[process] event=wait_blocked parent=7 child=29\\r\\nGLIBC_NET2_FAIL line=240 errno=128\\n[task] event=reclaimed pid=29 pages=243\\r\\n[wait] pid=29 kind=exited code=1\\nxsh> '"
+}

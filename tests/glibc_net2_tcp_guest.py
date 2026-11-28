@@ -11,6 +11,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
@@ -19,6 +20,7 @@ from build_glibc_sdk import inputs as sdk_inputs, sha
 from glibc_g1_probe import tool_identity
 from glibc_static_guest import system_sources
 from make_work_disk import create_fat32
+from net_readiness_window_peer import readiness_window_peer
 from process_smoke import command, resources
 from task_smoke import pump, send_bytes
 from work_disk import transfer
@@ -56,6 +58,43 @@ def serve(server, nonce, challenge, half_close=False):
         require(connection.recv(1) == b'', 'peer did not see final client close')
 
 
+def shutdown_owner_peer(server, nonce, challenge):
+    connection, _ = server.accept()
+    with connection:
+        connection.settimeout(25)
+        receive_exact(connection, nonce)
+        connection.sendall(challenge)
+        receive_exact(connection, b'ok')
+        require(connection.recv(1) == b'', 'authorized shutdown owner omitted FIN')
+
+
+def extended_peer(server, mode, nonce, challenge):
+    if mode == 'deferred_release':
+        for _ in range(2):
+            connection, _ = server.accept()
+            with connection:
+                connection.settimeout(25)
+                require(connection.recv(1) == b'', 'deferred release peer received unexpected payload')
+        return
+    connection, _ = server.accept()
+    with connection:
+        connection.settimeout(25)
+        if mode == 'concurrent_close':
+            time.sleep(0.2)
+            try:
+                connection.sendall(b'late-original-socket')
+                connection.recv(1)
+            except (ConnectionResetError, BrokenPipeError):
+                pass
+            return
+        receive_exact(connection, nonce)
+        connection.sendall(challenge)
+        if mode == 'read_close':
+            require(connection.recv(1) == b'', 'read shutdown destroyed the write half')
+        else:
+            require(connection.recv(1) == b'', 'nonblocking peer did not observe client FIN')
+
+
 def baseline_restored(guest, baseline):
     for _ in range(20):
         actual = resources(guest)
@@ -74,7 +113,7 @@ def run_case(guest, report, baseline, mode, port, nonce=b'', challenge=b''):
     exits = re.findall(rb'\[wait\] pid=\d+ kind=(\w+) code=(-?\d+)', output)
     require(exits == [(b'exited', b'0')] and output.splitlines().count(marker) == 1,
             f'{invocation} failed: {output!r}')
-    if nonce:
+    if nonce and mode in ('stream', 'legacy_wait', 'half_close'):
         challenge_line = b'GLIBC_NET2_STREAM nonce=' + nonce + b' data=' + challenge.hex().encode()
         require(output.splitlines().count(challenge_line) == 1, 'guest received different bytes')
     baseline_restored(guest, baseline)
@@ -90,13 +129,15 @@ def start_service(guest):
     return int(match[1])
 
 
-def run_guest(image, program, stalled_peer, out, report, legacy_kernel=False):
+def run_guest(image, program, stalled_peer, page_probe, out, report, legacy_kernel=False):
     with tempfile.TemporaryDirectory(prefix='xos_glibc_net2_') as folder:
         disk, readback = Path(folder) / 'work.img', Path(folder) / 'readback.elf'
         create_fat32(disk, 512)
         transfer(disk, 'mkdir', '/bin')
+        transfer(disk, 'mkdir', '/tmp')
         transfer(disk, 'import', APP, program)
         transfer(disk, 'import', '/bin/net2_stall.elf', stalled_peer)
+        transfer(disk, 'import', '/bin/net2_page.elf', page_probe)
         transfer(disk, 'export', APP, readback)
         require(sha(readback) == report['elf_sha256'], 'ELF changed on FAT disk')
         guest = Guest(image, 'net2', iso=True, network=True, work_disk=disk, qmp_enabled=False, log_dir=out)
@@ -118,6 +159,7 @@ def run_guest(image, program, stalled_peer, out, report, legacy_kernel=False):
             report['baseline_without_service'] = quiet
             run_case(guest, report, quiet, 'no_service', 9)
             run_case(guest, report, quiet, 'capacity', 9)
+            if not legacy_kernel: run_case(guest, report, quiet, 'pipe_poll', 9)
             if not legacy_kernel:
                 begin = len(guest.output)
                 launched = command(guest, 'spawn-file /bin/net2_stall.elf', b'[loader] started pid=', timeout=20)
@@ -150,6 +192,50 @@ def run_guest(image, program, stalled_peer, out, report, legacy_kernel=False):
                 if cycle == 0:
                     run_case(guest, report, baseline, 'wrong_pid', 9)
                     run_case(guest, report, baseline, 'denied', 9)
+                    detached = command(guest, f'exec-file /bin/net2_page.elf {pid} detach', b'kind=exited code=', timeout=15)
+                    require(b'NET_READINESS_PAGE_PASS' in detached and b'kind=exited code=0' in detached, 'grant page target ownership/detach failed')
+                    baseline_restored(guest, baseline)
+                    report['cases'].append({'name': 'read_only_page_ownership_and_detach', 'baseline_after': baseline})
+                    quota = command(guest, f'exec-file /bin/net2_page.elf {pid} quota', b'kind=exited code=', timeout=15)
+                    require(b'NET_READINESS_PAGE_PASS' in quota and b'kind=exited code=0' in quota,
+                            'grant page target quota recovery failed')
+                    baseline_restored(guest, baseline)
+                    report['cases'].append({'name': 'read_only_page_delegate_quota_recovery', 'baseline_after': baseline})
+                    first = len(guest.output)
+                    holder = command(guest, f'spawn-file /bin/net2_page.elf {pid} hold', b'[loader] started pid=', timeout=15)
+                    holder_pid = int(re.search(rb'\[loader\] started pid=(\d+)', holder)[1])
+                    guest.expect(b'NET_READINESS_PAGE_HOLD grant=', start=first, timeout=15)
+                    guest.expect(b'\n', start=guest.output.index(b'NET_READINESS_PAGE_HOLD grant=', first), timeout=10)
+                    grant = int(re.search(rb'NET_READINESS_PAGE_HOLD grant=(\d+)\n', guest.output[first:])[1])
+                    foreign = command(guest, f'exec-file /bin/net2_page.elf {grant} foreign', b'kind=exited code=', timeout=15)
+                    require(b'NET_READINESS_FOREIGN_PASS' in foreign and b'kind=exited code=0' in foreign,
+                            'foreign process obtained readiness mapping')
+                    command(guest, f'wait {holder_pid}', b'kind=exited code=0', timeout=10)
+                    require(b'NET_READINESS_OWNER_EXIT_PASS' in guest.output[first:], 'grant owner exit did not run')
+                    baseline_restored(guest, baseline)
+                    report['cases'].append({'name': 'read_only_page_foreign_denial_and_owner_exit', 'baseline_after': baseline})
+                    nonce, challenge = secrets.token_hex(16).encode(), secrets.token_bytes(32)
+                    with socket.socket() as server, ThreadPoolExecutor(max_workers=1) as peer:
+                        server.bind(('127.0.0.1', 0)); server.settimeout(25); server.listen(1)
+                        pending = peer.submit(shutdown_owner_peer, server, nonce, challenge)
+                        first = len(guest.output)
+                        owner = command(guest, f'spawn-file /bin/net2_page.elf {pid} socket_owner {server.getsockname()[1]} {nonce.decode()}',
+                                        b'[loader] started pid=', timeout=15)
+                        owner_pid = int(re.search(rb'\[loader\] started pid=(\d+)', owner)[1])
+                        guest.expect(b'NET_SHUTDOWN_OWNER handle=', start=first, timeout=15)
+                        guest.expect(b'\n', start=guest.output.index(b'NET_SHUTDOWN_OWNER handle=', first), timeout=10)
+                        handle = int(re.search(rb'NET_SHUTDOWN_OWNER handle=(\d+)\n', guest.output[first:])[1])
+                        foreign = command(guest, f'exec-file /bin/net2_page.elf {pid} socket_foreign {handle}',
+                                          b'kind=exited code=0', timeout=15)
+                        require(b'NET_SHUTDOWN_FOREIGN_PASS' in foreign, 'foreign shutdown/UDP negative cases failed')
+                        command(guest, f'wait {owner_pid}', b'kind=exited code=0', timeout=15)
+                        require(b'NET_SHUTDOWN_OWNER_PASS' in guest.output[first:] and
+                                b'NET_SHUTDOWN_DATA data=' + challenge.hex().encode() in guest.output[first:],
+                                'foreign attempt affected the owned real TCP exchange')
+                        pending.result()
+                    baseline_restored(guest, baseline)
+                    report['cases'].append({'name': 'shutdown_owner_foreign_and_UDP_rejection',
+                        'nonce': nonce.decode(), 'reply_hex': challenge.hex(), 'baseline_after': baseline})
                     with socket.socket() as refused:
                         refused.bind(('127.0.0.1', 0))
                         run_case(guest, report, baseline, 'refused', refused.getsockname()[1])
@@ -174,12 +260,98 @@ def run_guest(image, program, stalled_peer, out, report, legacy_kernel=False):
                         pending.result()
                     report['cases'][-1].update(nonce=nonce.decode(), reply_hex=challenge.hex(),
                                               peer_eof_before_response=True, readiness_timeout_ms=30)
+                if not legacy_kernel and cycle == 0:
+                    with socket.socket() as refused:
+                        refused.bind(('127.0.0.1', 0))
+                        run_case(guest, report, baseline, 'nonblocking_refused', refused.getsockname()[1])
+                    close_round = 0
+                    for mode in ('nonblocking', 'read_close', *(('concurrent_close',) * 20), 'deferred_release'):
+                        case_begin = len(guest.output)
+                        nonce, challenge = secrets.token_hex(16).encode(), secrets.token_bytes(32)
+                        with socket.socket() as server, ThreadPoolExecutor(max_workers=1) as peer:
+                            server.bind(('127.0.0.1', 0)); server.settimeout(25); server.listen(1)
+                            pending = peer.submit(extended_peer, server, mode, nonce, challenge)
+                            run_case(guest, report, baseline, mode, server.getsockname()[1],
+                                     nonce if mode not in ('concurrent_close', 'deferred_release') else b'', challenge)
+                            pending.result()
+                        if mode == 'concurrent_close':
+                            close_round += 1
+                            case_output = bytes(guest.output)[case_begin:]
+                            require(b'GLIBC_NET2_POLL_PENDING threads=2 blocked=1' in case_output,
+                                    'concurrent close lacked an actual pending poll observation')
+                            require(b'GLIBC_NET2_CLOSE_IDENTITY' in case_output,
+                                    'original description identity was not retained')
+                            observed = re.search(rb'GLIBC_NET2_CLOSE_RESULT result=(-?\d+) error=(\d+) revents=(\d+) elapsed_ns=(\d+)', case_output)
+                            require(observed and int(observed[1]) == 1 and int(observed[3]) == 32,
+                                    'concurrent close returned a stale event or transient lock error')
+                            report['cases'][-1].update(round=close_round, poll_result=int(observed[1]),
+                                errno=int(observed[2]), revents=int(observed[3]), elapsed_ns=int(observed[4]))
+                        report['cases'][-1].update(real_peer=True)
+                if not legacy_kernel and cycle == 1:
+                    begin = len(guest.output)
+                    spawned = command(guest, f'spawn-file /bin/net2_page.elf {pid} service_exit', b'[loader] started pid=', timeout=15)
+                    page_pid = int(re.search(rb'\[loader\] started pid=(\d+)', spawned)[1])
+                    guest.expect(b'NET_READINESS_PAGE_WAITING_FOR_SERVICE_EXIT', start=begin, timeout=15)
                 stopped = command(guest, 'net-stop', b'kind=exited code=0', timeout=60)
                 require(b'[net] close=0' in stopped, 'network service did not reset and close')
+                if not legacy_kernel and cycle == 1:
+                    page_wait = command(guest, f'wait {page_pid}', b'[wait]', timeout=15)
+                    require(b'kind=exited code=0' in page_wait and b'NET_READINESS_PAGE_PASS' in bytes(guest.output)[begin:], 'grant mapping did not survive service exit safely')
+                    report['cases'].append({'name': 'read_only_page_service_exit', 'baseline_after': quiet})
                 baseline_restored(guest, quiet)
         finally:
             guest.close()
             report['serial_sha256'] = sha(out / 'net2_serial.log')
+
+
+def run_window_guest(image, program, out, report):
+    peer = readiness_window_peer()
+    guest = None
+    capture = out / 'readiness_window.pcap'
+    nonce, challenge = secrets.token_hex(16), secrets.token_bytes(32)
+    port, evidence = peer.begin(nonce, challenge)
+    report['window_peer'] = evidence
+    try:
+        with tempfile.TemporaryDirectory(prefix='xos_glibc_readiness_') as folder:
+            disk = Path(folder) / 'work.img'
+            create_fat32(disk, 512)
+            transfer(disk, 'mkdir', '/bin')
+            transfer(disk, 'import', APP, program)
+            guest = Guest(image, 'readiness_window', iso=True, network=True, work_disk=disk,
+                          network_peer_port=peer.port, network_capture=capture, qmp_enabled=False, log_dir=out)
+            guest.expect(b'xos64> ', timeout=60)
+            send_bytes(guest, b'run\r')
+            guest.expect_supervisor(trace=True, timeout=60)
+            command(guest, 'demo quiet', b'demo tasks')
+            command(guest, 'audio stop', b'audio: service stopped')
+            command(guest, 'net-stop', b'kind=exited code=0', timeout=60)
+            command(guest, 'net-probe 41', b'NET_USER_DRIVER_PASS', timeout=60)
+            baseline = resources(guest)
+            start_service(guest)
+            begin = len(guest.output)
+            launched = command(guest, f'spawn-file {APP} window {port} {nonce}', b'[loader] started pid=', timeout=20)
+            pid = int(re.search(rb'\[loader\] started pid=(\d+)', launched)[1])
+            guest.expect(b'GLIBC_NET2_CONNECT_PENDING', start=begin, timeout=20)
+            peer.release_handshake(port)
+            guest.expect(b'GLIBC_NET2_WINDOW_BLOCKED queued=', start=begin, timeout=20)
+            guest.expect(b'\n', start=guest.output.index(b'GLIBC_NET2_WINDOW_BLOCKED queued=', begin), timeout=5)
+            queued = int(re.search(rb'GLIBC_NET2_WINDOW_BLOCKED queued=(\d+)\n', guest.output[begin:])[1])
+            peer.release_window(port, queued)
+            completed = command(guest, f'wait {pid}', b'kind=exited code=', timeout=20)
+            require(b'kind=exited code=0' in completed and b'GLIBC_NET2_PASS window' in guest.output[begin:],
+                    'controlled readiness peer probe failed')
+            peer.finish(port, timeout=15)
+            command(guest, 'net-stop', b'kind=exited code=0', timeout=60)
+            baseline_restored(guest, baseline)
+            report['cases'].append({'name': 'controlled_pending_connect_and_window_recovery',
+                                    'baseline_after': baseline, 'queued_bytes': queued})
+    finally:
+        peer.close()
+        if guest is not None:
+            guest.close()
+    require(not peer.error, 'controlled readiness packet peer failed: ' + str(peer.error))
+    report['window_capture_sha256'] = sha(capture)
+    report['window_serial_sha256'] = sha(out / 'readiness_window_serial.log')
 
 
 def main():
@@ -193,7 +365,7 @@ def main():
     out.mkdir(parents=True, exist_ok=False)
     report = {'status': 'failed', 'runner_sha256': sha(Path(__file__)), 'services': [], 'cases': [],
               'deadline_profile': 'legacy_kernel_fail_closed' if args.legacy_kernel else 'absolute_ipc_wait',
-              'zero_timeout_connected_socket': 'unsupported', 'posix_complete_poll': False}
+              'zero_timeout_connected_socket': 'grant_level_snapshot_fresh_negative_or_eagain', 'posix_complete_poll': False}
     try:
         sdk_manifest, sdk_hash = metadata_snapshot(sdk / 'manifest.json')
         system_manifest, system_hash = metadata_snapshot(system / 'manifest.json')
@@ -245,7 +417,20 @@ def main():
         report['stalled_peer'] = {'elf_sha256': sha(stalled_peer),
             'source_sha256': sha(FIXTURES / 'stall_service.cpp'),
             'purpose': 'test-only authenticated IPC peer; no actual network service qualification'}
-        run_guest(image, program, stalled_peer, out, report, args.legacy_kernel)
+        page_probe = out / 'net2_page.elf'
+        page_source = ROOT / 'tests/fixtures/network/readiness_page_probe.cpp'
+        subprocess.run([target['path'], '-std=c++17', '-Os', '-Wall', '-Wextra', '-Werror',
+                        '-ffreestanding', '-fno-exceptions', '-fno-rtti', '-fno-stack-protector',
+                        '-fno-pie', '-fno-pic', '-mno-red-zone', '-mgeneral-regs-only', '-nostdinc++',
+                        '-ffunction-sections', '-fdata-sections', '-I', native_sdk / 'include',
+                        page_source, '-nostdlib', '-static', '-no-pie',
+                        '-Wl,--gc-sections,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096',
+                        '-T', native_sdk / 'user.ld', native_sdk / 'crt0.o', native_sdk / 'lib/libxos.a',
+                        '-o', page_probe], check=True)
+        report['page_probe'] = {'elf_sha256': sha(page_probe), 'source_sha256': sha(page_source)}
+        run_guest(image, program, stalled_peer, page_probe, out, report, args.legacy_kernel)
+        if not args.legacy_kernel:
+            run_window_guest(image, program, out, report)
         require(metadata_snapshot(profile)[1] == profile_hash and verify_profile(profile_document, 'glibc', sdk) == binding,
                 'profile or SDK changed during qualification')
         require(sha(image) == report['image_sha256'] and sha(program) == report['elf_sha256']

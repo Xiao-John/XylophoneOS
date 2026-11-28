@@ -222,7 +222,7 @@ class TcpWindowPeer:
         if payload:
             index = (sequence - (flow['client_isn'] + 1)) & MASK
             end = index + len(payload)
-            expected = flow['nonce'] * (1 + flow['count'] // 32)
+            expected = (flow['nonce'] * ((32 + flow['count'] + 31) // 32))[:32 + flow['count']]
             if end > len(expected) or payload != expected[index:end]:
                 raise ValueError('TCP request data mismatch')
             if flow['mode'] == 'queued' and flow['challenge_sent'] and not flow['released'] and end > 32:

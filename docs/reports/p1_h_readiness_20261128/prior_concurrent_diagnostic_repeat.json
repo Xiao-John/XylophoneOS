@@ -1,0 +1,49 @@
+{
+  "status": "diagnostic_failed",
+  "scope": "Only diagnostic; modified build-directory fixture, not strict system-source qualification",
+  "cases": [
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    }
+  ],
+  "elf_sha256": "4146b1333e1108706e1b2007065bfd06274693c3ac023d6f54acddefd700f55a",
+  "image_sha256": "ea049a5f41e1a15107f4e2c62814d5e059f50398b4b242ebec5e74d00e969ae1",
+  "error": "exec-file /bin/glibc_net2.elf concurrent_close 54397 failed: b'exec-file /bin/glibc_net2.elf concurrent_close 54397\\n[process] event=started pid=16 parent=7\\r\\n[process] pid=16 address_space=0x0000000000373000\\r\\n[loader] started pid=16 file=/bin/glibc_net2.elf\\n[process] event=wait_blocked parent=7 child=16\\r\\nGLIBC_NET2_POLL_PENDING threads=2 blocked=1\\nGLIBC_NET2_CLOSE_DIAGNOSTIC result=-1 error=11 revents=0 elapsed_ns=20000000\\nGLIBC_NET2_FAIL line=395 errno=0\\n[task] event=reclaimed pid=16 pages=243\\r\\n[wait] pid=16 kind=exited code=1\\nxsh> '"
+}

@@ -1,0 +1,628 @@
+{
+  "status": "passed_subset",
+  "runner_sha256": "ada0aacbac54266d5b29aef0d01b8e490a45b8d4ac3185841d55ea8a6241e167",
+  "services": [
+    {
+      "pid": 17,
+      "baseline": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "pid": 54,
+      "baseline": [
+        129596,
+        3,
+        1
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "no_service",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "capacity",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "pipe_poll",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "live_peer_stalled_reply",
+      "poll_timeout_ms": 40,
+      "actual_elapsed_ns": 40000000,
+      "peer_delay_ms": 1000,
+      "capability_requests": 1,
+      "readiness_requests": 1,
+      "late_reply_recovered": true,
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "wrong_pid",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "denied",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_ownership_and_detach",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_delegate_quota_recovery",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_foreign_denial_and_owner_exit",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "shutdown_owner_foreign_and_UDP_rejection",
+      "nonce": "7415ad4e91f106d4e00d975c78811214",
+      "reply_hex": "27492ccd7005814ca4a1953cc975a39e99f0361abc16d5024cad84c4a1690346",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "refused",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "883dbb9f069e1359a909ea8a1b889e82",
+      "reply_hex": "086bda6183158996979b6b13bfa0aa0c4f09c1bf3f8c9b7894eac9a5398f3d32",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "a974f7dbd2288e6a0a0a9702aa00426e",
+      "reply_hex": "873043b2a2b6040800fcdb105a9664633ad617064d1c673abbce3998aab36e0c",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "half_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "d84d6ae329a2815c83c7b74e412b7f77",
+      "reply_hex": "07f0df1c428986279a45175507d1ae378ec8507ae6d8df7774c6fb2bbd4c616d",
+      "peer_eof_before_response": true,
+      "readiness_timeout_ms": 30
+    },
+    {
+      "name": "nonblocking_refused",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "nonblocking",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "real_peer": true
+    },
+    {
+      "name": "read_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 1,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 2,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 30000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 3,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 4,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 30000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 5,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 6,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 7,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 8,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 9,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 10,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 30000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 11,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 30000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 12,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 30000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 13,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 14,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 15,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 30000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 16,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 17,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 18,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 30000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 19,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "round": 20,
+      "poll_result": 1,
+      "errno": 0,
+      "revents": 32,
+      "elapsed_ns": 20000000,
+      "real_peer": true
+    },
+    {
+      "name": "deferred_release",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "real_peer": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "401349f9d10b8b75eb02defba37b5814",
+      "reply_hex": "eec90c9af30cb83bae0aab0199e9288d9c0ffd1f46caa6b638b8b39ec886103e",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "837276a2d652fa550a93cf2250fb44f2",
+      "reply_hex": "fe306b9eef33c57c90ce89600e584538dd683076490751aedd57b80e44679103",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "half_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "0d2cc2a058ee5e1b21b7ca0703038a12",
+      "reply_hex": "637448811ac5b51a94455c62aecc91101716db090c6c1efd03a84b2b6f841cb5",
+      "peer_eof_before_response": true,
+      "readiness_timeout_ms": 30
+    },
+    {
+      "name": "read_only_page_service_exit",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "controlled_pending_connect_and_window_recovery",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ],
+      "queued_bytes": 5840
+    }
+  ],
+  "deadline_profile": "absolute_ipc_wait",
+  "zero_timeout_connected_socket": "grant_level_snapshot_fresh_negative_or_eagain",
+  "posix_complete_poll": false,
+  "profile": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-p1h-readiness-v7",
+    "profile_sha256": "41e2430fb71a40c7e369da3cf4ec4e63f05fd21175a30550a3036c7f56b9ffd6",
+    "sdk_tree_sha256": "002f7b684bd7337a0d90a971ff21c0bab3654fe08fedbc0dcd544bd6b241e096",
+    "guest_qualification": "not_run"
+  },
+  "profile_sha256": "41e2430fb71a40c7e369da3cf4ec4e63f05fd21175a30550a3036c7f56b9ffd6",
+  "sdk_manifest_sha256": "05496c985c757c8ce81d1c74d7116c9ca996351db62598addad6ef7c40a0daa3",
+  "system_manifest_sha256": "e92b5c736f1c1b1ad43065857938a67ac1fa880b7ebaf7a294cdd5c8ba20f86d",
+  "wire_layout_inputs": {
+    "tests/fixtures/glibc_net2/wire_layout.cpp": "98ae7334237b08e82b57836aa4a8308cf0df93eb2f37757ccc0a4cfda987882a",
+    "src/ports/glibc/sysdeps/xos/xos_net2_wire.h": "c9b8e504ec6373baa042529cb9a2bc813367d91057f889f0800e43bc9ba45ba8",
+    "src/shared/include/xos/net_service_abi.hpp": "712815a645c326428f84a911a2cc98093544562d0fc7cd88a285b4d8bb820476"
+  },
+  "elf_sha256": "b36b9929fa99731f63d9704da3a0e7c80079f5019022579a6fb816c7d11c4f72",
+  "net_lwip_inputs_sha256": "c1d636f8a9868e3a6ac3f78d81058bf33b81aacc1816f02c3fc26dff567ff39d",
+  "network_profile": {
+    "pci_instance": 41,
+    "resolver": "10.0.2.3",
+    "revision": 1,
+    "source_sha256": "a0c43a919230b0c1dea5a32e6b6af11a91ebce45375c0d1744f1b4336097177d"
+  },
+  "elf_manifest_sha256": "9354eecd50c581ef5fe92c6f8e16b1235bb4f2f496cc785e343a704aa5a123c4",
+  "image_sha256": "a9577afc2b4c2b9ddb2eec576bbea0c9ffa9e1af9d5e531a6d6a6496e7205258",
+  "stalled_peer": {
+    "elf_sha256": "6968cc4f4fde8b8138c70fab7c2d235c103c8692a0c5212b772832fe5b68de35",
+    "source_sha256": "5719935c26e1000021ece5ae1b3da708e90c270d5921b4dbbe0d4a2dc06367b7",
+    "purpose": "test-only authenticated IPC peer; no actual network service qualification"
+  },
+  "page_probe": {
+    "elf_sha256": "51b62b0dfd8d2e1da747f5dbbc1093ee21fbbe61c5bad00ae4aed81dfbdacf21",
+    "source_sha256": "24e0cacbece9dcaa36dc24e5f061e1fd4f27647ad9e5350609a54882bf6d6f5e"
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/p1h_system_v13/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN}.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline_without_service": [
+    129769,
+    2,
+    0
+  ],
+  "serial_sha256": "71ab18c68bee6b1b1c2cc83655037bd3b72af9d01ce3e72b65763947932d2403",
+  "window_peer": {
+    "mode": "queued",
+    "shell": "glibc",
+    "nonce": "ec57a1b4d2e353911b458078092524ac",
+    "peer_port": 41000,
+    "challenge_sha256": "ac9adda9dcd7ed03eb04aa9e0ee12c2ac59731a3d4dd5cda2f062f716a6867d5",
+    "zero_window_probe_frames": 0,
+    "fin_count": 1,
+    "purpose": "nonblocking connect, arrival, consumed level, zero-window recovery",
+    "client_initial_sequence": 6509,
+    "peer_initial_sequence": 1400390402,
+    "pending_syn_observed": true,
+    "window_barrier": {
+      "advertised_window": 0,
+      "accepted_bytes": 5840,
+      "queued_data_bytes_received": 0
+    },
+    "queued_tx_bytes_verified": 5840,
+    "request_sha256": "87c21d58189c11541584eb1cdfd5042ebdf927bf888afdaa6c376259812ffabe",
+    "status": "passed"
+  },
+  "window_capture_sha256": "6f27b2d6911d415032afccae21591a5887d86a1a0793d85d8448ec47118eac8e",
+  "window_serial_sha256": "1e8ce25ab5e14e71cdd6be76246cbcefbe2cb391ba0504fe8e16bb57c215a2cc"
+}

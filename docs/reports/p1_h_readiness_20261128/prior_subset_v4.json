@@ -1,0 +1,347 @@
+{
+  "status": "passed_subset",
+  "runner_sha256": "2be450943c3742571040c337de308c549b03a991130251f08c1ae97ee040ccbc",
+  "services": [
+    {
+      "pid": 17,
+      "baseline": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "pid": 33,
+      "baseline": [
+        129596,
+        3,
+        1
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "name": "no_service",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "capacity",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "pipe_poll",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "live_peer_stalled_reply",
+      "poll_timeout_ms": 40,
+      "actual_elapsed_ns": 40000000,
+      "peer_delay_ms": 1000,
+      "capability_requests": 1,
+      "readiness_requests": 1,
+      "late_reply_recovered": true,
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "wrong_pid",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "denied",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_ownership_and_detach",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_delegate_quota_recovery",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "read_only_page_foreign_denial_and_owner_exit",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "refused",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "4283330d789cbfe3167c8757c24c7e5a",
+      "reply_hex": "7a8aa938238998a6ec50a6f13f68ba9713b74114f8f6256398120702612ee777",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "f1e84b30fa1ac2350ea2b4012589d342",
+      "reply_hex": "77b23b5eeafa79ad1482def950018b3a7a9d50ca945d2af85fe2698b9f000d81",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "half_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "bd7e852fcc7fae587c726c48c90d504f",
+      "reply_hex": "11667e68bcc0e8b19c8bb02648a7cc6376df101d98d60a7031a6490c53385f51",
+      "peer_eof_before_response": true,
+      "readiness_timeout_ms": 30
+    },
+    {
+      "name": "nonblocking_refused",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "nonblocking",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "real_peer": true
+    },
+    {
+      "name": "read_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "real_peer": true
+    },
+    {
+      "name": "concurrent_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "real_peer": true
+    },
+    {
+      "name": "deferred_release",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "real_peer": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "729076ecd507dbd21e2e383714951516",
+      "reply_hex": "a511ad64f0d8df33924cdde01600ae70ece2fb18d96bbe20608f62169bf83a8a",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "stream",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "0314e1873c1147a7ede7d33188352d28",
+      "reply_hex": "d4a92a9161f9d904ca16e5d8124c147baeb54d8c6981c50c8af3f8d4b8351317",
+      "tail_bytes": 1537,
+      "peer_eof": true
+    },
+    {
+      "name": "half_close",
+      "baseline_after": [
+        129596,
+        3,
+        1
+      ],
+      "nonce": "216b16347329386aa854af12e6407192",
+      "reply_hex": "25d81ba82be292f91f255fee7e87e7a235884072ab5704c3c57000f1dcbc0c13",
+      "peer_eof_before_response": true,
+      "readiness_timeout_ms": 30
+    },
+    {
+      "name": "read_only_page_service_exit",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "name": "controlled_pending_connect_and_window_recovery",
+      "baseline_after": [
+        129769,
+        2,
+        0
+      ],
+      "queued_bytes": 5840
+    }
+  ],
+  "deadline_profile": "absolute_ipc_wait",
+  "zero_timeout_connected_socket": "grant_level_snapshot_fresh_negative_or_eagain",
+  "posix_complete_poll": false,
+  "profile": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-p1h-readiness-v4",
+    "profile_sha256": "da88ce9535a64d441415bc4e96405828aeb7f790a08be3a6bd0995e06a42e7e2",
+    "sdk_tree_sha256": "b53290aa2c9f7e92d5924d7affb5ececf0a2d62355af193300598b94d92efbc3",
+    "guest_qualification": "not_run"
+  },
+  "profile_sha256": "da88ce9535a64d441415bc4e96405828aeb7f790a08be3a6bd0995e06a42e7e2",
+  "sdk_manifest_sha256": "8d20c6bc92be92fa7e39c98755732db66c43ef73794ed1a92cb843a01ea3b1ce",
+  "system_manifest_sha256": "e4305afde8dab74fac417adf8c56c9f53660e214eb529917b538c4485ab928d2",
+  "wire_layout_inputs": {
+    "tests/fixtures/glibc_net2/wire_layout.cpp": "98ae7334237b08e82b57836aa4a8308cf0df93eb2f37757ccc0a4cfda987882a",
+    "src/ports/glibc/sysdeps/xos/xos_net2_wire.h": "c9b8e504ec6373baa042529cb9a2bc813367d91057f889f0800e43bc9ba45ba8",
+    "src/shared/include/xos/net_service_abi.hpp": "712815a645c326428f84a911a2cc98093544562d0fc7cd88a285b4d8bb820476"
+  },
+  "elf_sha256": "ec396fd5bf71b6d031b4f9d4276c68ee7db90b33b62f05863c64b75e6fe3aa47",
+  "net_lwip_inputs_sha256": "c1d636f8a9868e3a6ac3f78d81058bf33b81aacc1816f02c3fc26dff567ff39d",
+  "network_profile": {
+    "pci_instance": 41,
+    "resolver": "10.0.2.3",
+    "revision": 1,
+    "source_sha256": "a0c43a919230b0c1dea5a32e6b6af11a91ebce45375c0d1744f1b4336097177d"
+  },
+  "elf_manifest_sha256": "971a098f604e1acba9c6cc74ac66436224b3cda4e40b8a01304980903c09c235",
+  "image_sha256": "68353080aad37a7121a11c205b36d459ef86c3f9f3a1d3a77b4a83963422d0b0",
+  "stalled_peer": {
+    "elf_sha256": "1fd6f561ffcd04514ce2d16b9f282c76aa5251fe800bac37256fe2745510c2b4",
+    "source_sha256": "5719935c26e1000021ece5ae1b3da708e90c270d5921b4dbbe0d4a2dc06367b7",
+    "purpose": "test-only authenticated IPC peer; no actual network service qualification"
+  },
+  "page_probe": {
+    "elf_sha256": "f48e471872a14332892e747df0136b94c3397893a9c96e7b3bb8e415a2774985",
+    "source_sha256": "3edc85b802978f0a0be6e340adbe93088afa1eb6a207f8aa5f9f1effada023a8"
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/p1h_system_v8/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline_without_service": [
+    129769,
+    2,
+    0
+  ],
+  "serial_sha256": "7d1be5d92f9a2531cbee76ef99e9330e1e56b6233c7922cf946cdfc2af42aa1a",
+  "window_peer": {
+    "mode": "queued",
+    "shell": "glibc",
+    "nonce": "ab2697fcbebf0a92322fb723a71c901f",
+    "peer_port": 41000,
+    "challenge_sha256": "696ab885b9bcefa1ec8afd64fb8356c160098fd8897714ad737ab701a03e84d5",
+    "zero_window_probe_frames": 0,
+    "fin_count": 1,
+    "purpose": "nonblocking connect, arrival, consumed level, zero-window recovery",
+    "client_initial_sequence": 6509,
+    "peer_initial_sequence": 3830546259,
+    "pending_syn_observed": true,
+    "window_barrier": {
+      "advertised_window": 0,
+      "accepted_bytes": 5840,
+      "queued_data_bytes_received": 0
+    },
+    "queued_tx_bytes_verified": 5840,
+    "request_sha256": "7ef15bff8422c40800ac506aba0da024459ec5f20a3dda46234454d086e7dd99",
+    "status": "passed"
+  },
+  "window_capture_sha256": "738b269934db1e1769f4d868e364156717ad9a422354117a4eaaf3f56368af89",
+  "window_serial_sha256": "1a897adedb4e0d804e2467688b492b86edb55db7c5711a5640a628272a761c3a"
+}

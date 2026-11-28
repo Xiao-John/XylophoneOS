@@ -361,11 +361,15 @@ unsupported。SDK 第三个 `include_grant_release` 参数默认 false；Net2 �
 owner/holder 先释放或退出及原预算归属，资源逐次精确恢复。Net2 producer/libc
 consumer 的组合资格由 P1-H 独立报告，不从这份原生机制证据推导。
 
-## P1-K3 online library profile 认领（2026-11-28）
+## P1-K3 online library profile 分配与受限资格（2026-11-28）
 
-本节状态为 `claimed`，先协调格式和权限边界，不能作为 dlopen/dlmopen/dlclose
-已经可用的声明。现有 fixed-startup profile 的显式拒绝保持，只有独立构建、
-独立身份并完成真实目标资格的新 profile 才可以打开下述路径；没有新增 syscall。
+本节状态为 `allocated`，仅独立构建、独立身份的 online profile 完成了
+[记录的真实目标资格](../reports/p1_k3_online_libraries_20261128/README.md)：
+native system `94674a7e28151485`、冻结源码 `86d39b31`、匹配的 GNU runtime
+和 unwinder，在七次冷启动中通过 16 项用例。该组合使用 v2 capsule domain；
+不能把它重新绑定为后来的默认主线 v3 capsule 资格。现有 fixed-startup
+profile 的显式拒绝保持，下述格式没有新增 syscall，详细边界见
+[online_libraries_v1.md](online_libraries_v1.md)。
 
 | 格式 / 接口 | 认领与兼容 |
 | --- | --- |

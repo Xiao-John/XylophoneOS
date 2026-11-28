@@ -17,7 +17,9 @@ CASES = ('policy_validation', 'wrong_sdk', 'configure_close_unknown', 'configure
          'activation_rollback', 'failed_activation', 'digest_failure', 'sdk_failure',
          'release_unknown', 'read_unknown', 'absolute_deadline', 'restore_and_heap', 'revoke_active',
          'elf_needed', 'elf_soname', 'elf_wx', 'elf_relro', 'elf_relocation', 'elf_tls', 'elf_version',
-         'bootstrap_thread_arena', 'bootstrap_capsule')
+         'bootstrap_thread_arena', 'bootstrap_capsule', 'online_header', 'online_startup_edge',
+         'online_mapping_budget', 'online_mapping_collision', 'online_static_tls',
+         'online_tlsdesc', 'elf_provider_version')
 
 
 def main():

@@ -1,0 +1,649 @@
+{
+  "status": "passed",
+  "scope": "production closure/verifiers; modeled Files OFDs",
+  "guest": "not_run",
+  "sources": {
+    "src/user/loader/dynamic/closure.cpp": "60e702f072cec5d5943d9a229f8cf6e4dc2d526aa4083c0d1b2790fe2ea2c55c",
+    "src/user/loader/dynamic/generation.cpp": "e35bdb1be080e403e1b362acbc57c66da6ad01398c8201c858964736f71efbee",
+    "src/user/loader/dynamic/identity.cpp": "1da4640550eee5f3766bfc01ff6f3d7cbf6d3e00c9b4c91e8fc1c5a141c365c1",
+    "src/user/loader/dynamic/elf.cpp": "2085c444ede175841482dd8cc014b4b8c2c210d3dbc8e8dd5c5d6c0263aeb21c",
+    "src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "tests/fixtures/dynamic_closure_host.cpp": "091f74abbb60fdc79e946dade04a67aa55924130fba673483b904434354afed8",
+    "tests/fixtures/dynamic_closure_object.cpp": "516489690421a603eb2e921c385e12c716f9a1f67e201dab6b8edbe32ee58aaa",
+    "src/user/loader/dynamic/startup.hpp": "0eecfdff04f4df98f21663222ecd3972575de1220a8dee55ccfe7aaeee20af67",
+    "tests/fixtures/dynamic_closure_bootstrap.ld": "9be5df3c2b0dbf60ecaa3cb07604cf911fc0997da3df21be3dec3d98498521b2",
+    "tests/fixtures/dynamic_closure_versions.map": "b6600e5f1a58c43dd4801435583ac677961bb813e79ee26709fc2b217b36f14f",
+    "tests/dynamic_closure_host.py": "c4646a7f897a2cb38ac7d39c0a9ae526398cbf837854db8aa8a1c56dcc561b20",
+    "src/user/include/xos/observation_sources.hpp": "4fc7b534f1ba5ae8a69ac68cbd67ec8b530cd05cd4147fe8a9850243c60c640e",
+    "src/user/include/xos/net_client.hpp": "b4024b191e578f9af9820ed5b09622b4ba137c949026465ebd6134e63a8b7b62",
+    "src/user/include/xos/net_service_client.hpp": "64abc994ef3998106428f466ee5c64b034aaae4f4dc989b6cb9edc37a224e7a8",
+    "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+    "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+    "src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+    "src/user/include/xos/file_client.hpp": "e7cda26359bf88b784fd40aa544f3a51c1c4d0677b6db2499c9804bd1cfe978b",
+    "src/user/include/xos/file_ui.hpp": "b078a633cb47dd6537ae4bc945a766750e0467b860bfaa677275d5d92758123c",
+    "src/user/include/xos/thread_core.hpp": "2268ae6fb2040932bff73af0755096c4d8c9aebc342c17391bcadc6b874d69df",
+    "src/user/include/xos/observation.hpp": "8ecfa7e00e32e85a5079f75ec34910e1504ab07289fbfbc2be7e06645652ece3",
+    "src/user/include/xos/sdk.hpp": "bc031082e1e44cc90dc8c61badeea6e562664fcaa87ab76beafc38ca72d04221",
+    "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+    "src/user/include/xos/execution.hpp": "1da5993a6ee873e56ae7533aa85221ac5c27d6c86c1ccc69719b3e702c000a08",
+    "src/user/include/xos/audio_client.hpp": "75b4ef444194a38a9f64889b49c849ad399870129c81b2971ae27f8bfbd38746",
+    "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+    "src/user/include/xos/elf.hpp": "c93092a90a6bd6295ddb4f3352cc47d597cb0c4d71047870399db3585dfd9f28",
+    "src/user/include/xos/terminal_client.hpp": "3ef1d2d4e763a510f32457dd2eccb37cabe1ea7df5f3ba2cc50814cbf6ea56fb",
+    "src/user/include/xos/dynamic_elf.hpp": "ae7155bf1d8709b3d02646742813b6d9149176bb0558dc3e2893c3a56a19015a",
+    "src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e",
+    "src/user/include/xos/terminal_control.hpp": "b2f803aa503e91c6c35ab174b0f7e6638c0edcec32375d33dd98b404fa00f78e",
+    "src/user/include/xos/dynamic.hpp": "269c57f63a62c6d4bd4f36386d17200137af65815fa3f5d989546f335583313c",
+    "src/user/include/xos/spawn.hpp": "67ff2bdddd735b8751962cb8808be9804f883b5e3d692bfa59ee2dd01c53d6d3",
+    "src/user/include/xos/dynamic_launch.hpp": "6f9f9acefbef580f5629b4d63cad296842d87fc009dd7bd8d9360dbd5e419593",
+    "src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+    "src/user/include/xos/device.hpp": "a51d315ee644b727da7db66bb3111c3553a85e6fb8c0e8b6870dc70b07c08e5d",
+    "src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+    "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+    "src/user/include/xos/launch_control.hpp": "36496f2565236ede0294504124e242d7bd7d46c761443bb91bc7acb95c1be419",
+    "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+    "src/user/include/xos/net_transport.hpp": "6f5e7a5ba2cca4ebcec93a43f170adc8e93c385c25098377b259a7d0ac100674",
+    "src/shared/include/xos/process_abi.hpp": "727a831e40dd2f764ee8daaa33f89355ce5bf4d1c7cc82c8a80ab10d38000082",
+    "src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+    "src/shared/include/xos/device_abi.hpp": "cdece558f19833d44f5d372a674d430e869c8a9d8fdfb8d1a81e49581a10fa11",
+    "src/shared/include/xos/observation_abi.hpp": "4dbdb29840a515da2e792d30b3d28264e384992fa8841c839277131d69f1920e",
+    "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+    "src/shared/include/xos/net_abi.hpp": "14e0baf22c2de09588c8924b07a05a7b6095fc4db0b9d408405efbaa18cd819e",
+    "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+    "src/shared/include/xos/thread_abi.hpp": "a98a3da040d157a5455c1d0ddb2b701fb4faf3f1d17a68d06b18af5e3fa4dddb",
+    "src/shared/include/xos/dynamic_abi.hpp": "01db9fe156a0276bd479a5b48b309933a78669a66b0d8d4f5e9949e8f0ada1d8",
+    "src/shared/include/xos/audio_abi.hpp": "6b9e27332b5163d2eceb9e364581a80f74be098c8b47711f7b577f7e9b4b901d",
+    "src/shared/include/xos/file_abi.hpp": "9e6e6585dd8dee2e9b2db8d10fac7aeeffb693b41f8f4702d119bbfee3e5c4aa",
+    "src/shared/include/xos/process_budget_abi.hpp": "f675a96babf6c081c19e2138864b59b933726fda04e3c5a2302c63373b8bd3b1",
+    "src/shared/include/xos/observation_service_abi.hpp": "0c832f6eba5fed6871bbc3e652cda743ef5548f1a0aadaa77c1b58e00bb09fed",
+    "src/shared/include/xos/dynamic_startup_abi.h": "749b84b10fcfa2c951b1f590747f2625158b339c3255a3123415b097a437b463",
+    "src/shared/include/xos/net_service_abi.hpp": "8365d89889c7d8bc32318dc56c85fb6ce012aee703e779a3dc37d8a16987091f",
+    "src/shared/include/xos/launch_control_abi.h": "b8e32d0971b10d35efe7c5f857f076fb1ed6f6782b2e6b1ff3ae4201a1ae371d",
+    "src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622"
+  },
+  "toolchain": {
+    "gcc": "16.2.0",
+    "g++": "16.2.0",
+    "target": "x86_64-elf",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "executables": {
+      "gcc": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+      },
+      "g++": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+      },
+      "as": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+      },
+      "ld": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+      },
+      "objcopy": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+      },
+      "nm": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+      },
+      "ar": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+      },
+      "cc1": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+      },
+      "cc1plus": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+      },
+      "nasm": {
+        "path": "${XOS_PRODUCER_TOOLCHAIN}/Cellar/nasm/3.02/bin/nasm",
+        "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+      }
+    }
+  },
+  "commands": [
+    [
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-unwind-tables",
+      "-mno-red-zone",
+      "-nostdinc++",
+      "-DFIXTURE_ROLE=1",
+      "-I",
+      "${XOS_SOURCE}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE}/src/user/include",
+      "${XOS_SOURCE}/tests/fixtures/dynamic_closure_object.cpp",
+      "-c",
+      "-fno-pic",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/bootstrap.elf.o"
+    ],
+    [
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-ld",
+      "--hash-style=both",
+      "--build-id=none",
+      "-z",
+      "noexecstack",
+      "-z",
+      "relro",
+      "-z",
+      "now",
+      "-z",
+      "max-page-size=4096",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/bootstrap.elf.o",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/bootstrap.elf",
+      "-static",
+      "-T",
+      "${XOS_SOURCE}/tests/fixtures/dynamic_closure_bootstrap.ld"
+    ],
+    [
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-unwind-tables",
+      "-mno-red-zone",
+      "-nostdinc++",
+      "-DFIXTURE_ROLE=2",
+      "-I",
+      "${XOS_SOURCE}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE}/src/user/include",
+      "${XOS_SOURCE}/tests/fixtures/dynamic_closure_object.cpp",
+      "-c",
+      "-fPIC",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/interpreter.so.o"
+    ],
+    [
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-ld",
+      "--hash-style=both",
+      "--build-id=none",
+      "-z",
+      "noexecstack",
+      "-z",
+      "relro",
+      "-z",
+      "now",
+      "-z",
+      "max-page-size=4096",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/interpreter.so.o",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/interpreter.so",
+      "-shared",
+      "-soname",
+      "ld_xos_x86_64.so.1",
+      "-e",
+      "_start"
+    ],
+    [
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-unwind-tables",
+      "-mno-red-zone",
+      "-nostdinc++",
+      "-DFIXTURE_ROLE=4",
+      "-I",
+      "${XOS_SOURCE}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE}/src/user/include",
+      "${XOS_SOURCE}/tests/fixtures/dynamic_closure_object.cpp",
+      "-c",
+      "-fPIC",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/library.so.o"
+    ],
+    [
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-ld",
+      "--hash-style=both",
+      "--build-id=none",
+      "-z",
+      "noexecstack",
+      "-z",
+      "relro",
+      "-z",
+      "now",
+      "-z",
+      "max-page-size=4096",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/library.so.o",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/library.so",
+      "-shared",
+      "-soname",
+      "libstdc++.so.6",
+      "--version-script",
+      "${XOS_SOURCE}/tests/fixtures/dynamic_closure_versions.map"
+    ],
+    [
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-unwind-tables",
+      "-mno-red-zone",
+      "-nostdinc++",
+      "-DFIXTURE_ROLE=3",
+      "-I",
+      "${XOS_SOURCE}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE}/src/user/include",
+      "${XOS_SOURCE}/tests/fixtures/dynamic_closure_object.cpp",
+      "-c",
+      "-fPIC",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/main.elf.o"
+    ],
+    [
+      "${XOS_TOOLCHAIN}/bin/x86_64-elf-ld",
+      "--hash-style=both",
+      "--build-id=none",
+      "-z",
+      "noexecstack",
+      "-z",
+      "relro",
+      "-z",
+      "now",
+      "-z",
+      "max-page-size=4096",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/main.elf.o",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/main.elf",
+      "-pie",
+      "-e",
+      "_start",
+      "--dynamic-linker",
+      "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/library.so"
+    ],
+    [
+      "g++",
+      "-std=c++20",
+      "-O1",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wconversion",
+      "-Wshadow",
+      "-I",
+      "${XOS_SOURCE}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE}/src/user/include",
+      "${XOS_SOURCE}/src/user/loader/dynamic/closure.cpp",
+      "${XOS_SOURCE}/src/user/loader/dynamic/generation.cpp",
+      "${XOS_SOURCE}/src/user/loader/dynamic/identity.cpp",
+      "${XOS_SOURCE}/src/user/loader/dynamic/elf.cpp",
+      "${XOS_SOURCE}/src/user/loader/elf.cpp",
+      "${XOS_SOURCE}/tests/fixtures/dynamic_closure_host.cpp",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/ordinary"
+    ],
+    [
+      "g++",
+      "-std=c++20",
+      "-O1",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wconversion",
+      "-Wshadow",
+      "-I",
+      "${XOS_SOURCE}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE}/src/user/include",
+      "${XOS_SOURCE}/src/user/loader/dynamic/closure.cpp",
+      "${XOS_SOURCE}/src/user/loader/dynamic/generation.cpp",
+      "${XOS_SOURCE}/src/user/loader/dynamic/identity.cpp",
+      "${XOS_SOURCE}/src/user/loader/dynamic/elf.cpp",
+      "${XOS_SOURCE}/src/user/loader/elf.cpp",
+      "${XOS_SOURCE}/tests/fixtures/dynamic_closure_host.cpp",
+      "-o",
+      "${XOS_SOURCE}/build/dynamic_closure_tls_v1/sanitized",
+      "-fsanitize=address,undefined",
+      "-fno-omit-frame-pointer"
+    ]
+  ],
+  "results": [
+    {
+      "kind": "ordinary",
+      "case": "policy_validation",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "wrong_sdk",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "configure_close_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "configure_open_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "acquire_pins",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "activation_rollback",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "failed_activation",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "digest_failure",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "sdk_failure",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "release_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "read_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "absolute_deadline",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "restore_and_heap",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "revoke_active",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_needed",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_soname",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_wx",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_relro",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_relocation",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_tls",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_version",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "bootstrap_thread_arena",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "bootstrap_capsule",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "online_header",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "online_startup_edge",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "online_mapping_budget",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "online_mapping_collision",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "online_static_tls",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "online_tlsdesc",
+      "returncode": 0
+    },
+    {
+      "kind": "ordinary",
+      "case": "elf_provider_version",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "policy_validation",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "wrong_sdk",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "configure_close_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "configure_open_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "acquire_pins",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "activation_rollback",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "failed_activation",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "digest_failure",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "sdk_failure",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "release_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "read_unknown",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "absolute_deadline",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "restore_and_heap",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "revoke_active",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_needed",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_soname",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_wx",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_relro",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_relocation",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_tls",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_version",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "bootstrap_thread_arena",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "bootstrap_capsule",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "online_header",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "online_startup_edge",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "online_mapping_budget",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "online_mapping_collision",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "online_static_tls",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "online_tlsdesc",
+      "returncode": 0
+    },
+    {
+      "kind": "sanitized",
+      "case": "elf_provider_version",
+      "returncode": 0
+    }
+  ],
+  "fixtures": {
+    "bootstrap.elf": "9aa61fe3c5c334649b3dd20aa8f6996c349f757e9133b317d785f6973ce403ab",
+    "interpreter.so": "37570dd5003f10e9bc645e38a3b8789ff495c449fbde1346863d7e3a4644f805",
+    "library.so": "d73a18cd029cebfd00ce1980c26f829a01d697bf33262d50962870bc158f5ce0",
+    "main.elf": "f990e4a18b4584e01a6bd0d9dd20ea35b690fcff714abfc3d040707b17796cff"
+  }
+}

@@ -17,7 +17,7 @@
 #define XOS_D1_STARTUP_BEGIN 0x7fffc000ULL
 #define XOS_D1_STACK_TOP 0x80000000ULL
 #define XOS_D1_ENTRY_MAGIC 0x3152544e45444f58ULL
-#define XOS_D1_ENTRY_VERSION 3
+#define XOS_D1_ENTRY_VERSION 4
 
 struct __attribute__ ((aligned (16))) xos_d1_entry_stack
 {

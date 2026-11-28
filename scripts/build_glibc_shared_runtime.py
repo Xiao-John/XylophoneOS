@@ -74,9 +74,13 @@ def main():
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--jobs', type=int, choices=(1, 2), default=2)
     parser.add_argument('--public-startup', action='store_true')
+    parser.add_argument('--online-libraries', action='store_true',
+                        help='explicit bounded approved online-library profile')
     parser.add_argument('--sdk-manifest-sha256')
     parser.add_argument('--sdk-tree-sha256')
     args = parser.parse_args()
+    if args.online_libraries and not args.public_startup:
+        parser.error('online libraries require the public startup profile')
     output = args.output.absolute()
     if output.exists() or output.is_symlink():
         parser.error('output must be a new private directory')
@@ -130,6 +134,8 @@ def main():
     if args.public_startup:
         abi_inputs = {'domain': 'xos-glibc-dynamic-capsule-v3',
                       'sdk_manifest_sha256': sdk_digest, 'startup_headers': startup_abi_inputs}
+        if args.online_libraries:
+            abi_inputs['online_profile'] = 'approved-generation-v2-eager-local-two-namespaces-v1'
         abi_bytes = json.dumps(abi_inputs, sort_keys=True, separators=(',', ':')).encode()
         report.update(scope='public_fixed_startup_closure', public_startup=True,
             process_composition={'fork': 'single_thread_fresh_parent_controller_offer_v1',
@@ -142,6 +148,9 @@ def main():
             expected_sdk_manifest_sha256=args.sdk_manifest_sha256,
             expected_sdk_tree_sha256=args.sdk_tree_sha256,
             sdk_snapshot='verified_before_and_after_full_copy')
+        if args.online_libraries:
+            report.update(scope='public_approved_online_closure', online_libraries=True,
+                online_profile=abi_inputs['online_profile'])
 
     def save():
         (output / 'manifest.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -267,6 +276,8 @@ def main():
                 object_paths['src/user/sdk/launch_control.cpp'],
                 object_paths['src/user/arch/x86_64/syscall.cpp'])))
             public_flags = 'CPPFLAGS-config += -DXOS_PUBLIC_DYNAMIC_STARTUP\n'
+            if args.online_libraries:
+                public_flags += 'CPPFLAGS-config += -DXOS_ONLINE_CLOSURE\n'
 
         build = output / 'gnu'
         build.mkdir()

@@ -1,0 +1,145 @@
+{
+  "rule": "explicit environment-path templates only; raw identities and all observations retained",
+  "raw_reports": {
+    "guest.json": {
+      "sha256": "e264e65709b0782a8185c317c946fb7a2ead6623e3fffe5af02d75adb305524b",
+      "bytes": 98680
+    },
+    "guest_evidence_manifest.json": {
+      "sha256": "22c67b8298266e98a3298cbfdc8d161dacd730a43fa17d816cb81779c077af40",
+      "bytes": 1084888
+    },
+    "k3_guest_v1.json": {
+      "sha256": "fdb266a27a20e5730453e767b549d3b95b0c659fe9a9a85bdfe4d8116ad8b764",
+      "bytes": 59574
+    },
+    "k3_guest_v1_evidence_manifest.json": {
+      "sha256": "8e22ef16966bdc7201b6140b43134781481efca75df0a0433583d991a034718c",
+      "bytes": 129
+    },
+    "k3_guest_v2.json": {
+      "sha256": "a34d957f13c6e4b8cebb1156778e6bdff4faa1116454191f1b898ded1d7f4034",
+      "bytes": 62342
+    },
+    "k3_guest_v2_evidence_manifest.json": {
+      "sha256": "936844f0f30cea320c730f4e265177209195e0fb487115993b816882bbcc6edf",
+      "bytes": 327
+    },
+    "k3_guest_diag_v4.json": {
+      "sha256": "2d55e03acb985e80bb4131a2a5e7f4d52764e52da1fade161c6a75bd2fb58017",
+      "bytes": 85258
+    },
+    "k3_guest_diag_v4_evidence_manifest.json": {
+      "sha256": "57ee22e2acb11168e706082f6b35c21137645e96056dc9513e2937fcaa1ed6a5",
+      "bytes": 357796
+    },
+    "k3_online_host_v3.json": {
+      "sha256": "b15dda20b8915404d4a1c08bd68ce46ecc64b42212c90296bb2e97c5c8115f71",
+      "bytes": 15175
+    },
+    "dynamic_closure_tls_v1.json": {
+      "sha256": "6685722ba877b2166a19bfe4c69e760662c5f36b0bf8b04748754864eb709b48",
+      "bytes": 20712
+    },
+    "failed_program_build.json": {
+      "sha256": "9791242c73dac0673915950c90c5fa485a7fc12d4bae8e33249769412c3680dd",
+      "bytes": 17059
+    },
+    "historical_preservation.json": {
+      "sha256": "94d0ab07ea82d0882c45725db35f5c6f6763f174ace1b6fc09d52c4d1f9ab67a",
+      "bytes": 17254
+    },
+    "composition.json": {
+      "sha256": "289cb1e0175c6bf5d2dfbd02b4ff140fa6b8e42e6097ffcb79c481d299a54537",
+      "bytes": 8935
+    }
+  },
+  "serial": {
+    "final": {
+      "missing_object/missing_object_serial.log": {
+        "export": "final_missing_object_missing_object_serial.log.gz",
+        "raw_sha256": "6af95efa013ae1668f05719b8bd2ab0a85294e46406e5ee12a7834a0707dca31",
+        "raw_bytes": 3468
+      },
+      "new_object/new_object_serial.log": {
+        "export": "final_new_object_new_object_serial.log.gz",
+        "raw_sha256": "3e39066a3688429826bce10e21e75ecf39c0f3411fe943d8f311a0e9dae9af9d",
+        "raw_bytes": 3341
+      },
+      "online/online_serial.log": {
+        "export": "final_online_online_serial.log.gz",
+        "raw_sha256": "e464fb573500d081d5446e6810cfe2311229a940976fc962cd146d0db1c782d5",
+        "raw_bytes": 9419
+      },
+      "startup_only/startup_only_serial.log": {
+        "export": "final_startup_only_startup_only_serial.log.gz",
+        "raw_sha256": "95564ed1a91082aac025503669ed11c082110db646408375875c43c9020170a8",
+        "raw_bytes": 3515
+      },
+      "static_tls/static_tls_serial.log": {
+        "export": "final_static_tls_static_tls_serial.log.gz",
+        "raw_sha256": "efca2703f9e1e1370e5d1398eb6bc3634ecbeaee03908b61cacb15f2d2f0dddd",
+        "raw_bytes": 3419
+      },
+      "tlsdesc/tlsdesc_serial.log": {
+        "export": "final_tlsdesc_tlsdesc_serial.log.gz",
+        "raw_sha256": "d9cfc20938fe34843ae58c974ca7fee50eaf08ced2db2de1bd468c417274e369",
+        "raw_bytes": 3542
+      },
+      "wrong_version/wrong_version_serial.log": {
+        "export": "final_wrong_version_wrong_version_serial.log.gz",
+        "raw_sha256": "d8ecde4ca73096cebff34ad6746250e9abc9dd56311f8921afa7c48b8dfc3a3b",
+        "raw_bytes": 3320
+      }
+    },
+    "k3_guest_v1": {},
+    "k3_guest_v2": {
+      "online/online_serial.log": {
+        "export": "k3_guest_v2_online_online_serial.log.gz",
+        "raw_sha256": "98fc20c37b9e8695adf8cea215ee9f294b602ebb4f47ac5456b0aeb0cf6797b3",
+        "raw_bytes": 3653
+      }
+    },
+    "k3_guest_diag_v4": {
+      "missing_object/missing_object_serial.log": {
+        "export": "k3_guest_diag_v4_missing_object_missing_object_serial.log.gz",
+        "raw_sha256": "23652013fc7ab98e7f5a907330f35197a198a9fbd120f5ff151519b0d421c3f2",
+        "raw_bytes": 3549
+      },
+      "new_object/new_object_serial.log": {
+        "export": "k3_guest_diag_v4_new_object_new_object_serial.log.gz",
+        "raw_sha256": "713b424652f76b1d1915bbb218a740c466c2e04cca71f25314f98d59e9f5e6d4",
+        "raw_bytes": 3498
+      },
+      "online/online_serial.log": {
+        "export": "k3_guest_diag_v4_online_online_serial.log.gz",
+        "raw_sha256": "6d5c2474230fd0bf9c395d7fd693ce8f6217d5a2aa2347533b06b542a83fdb6d",
+        "raw_bytes": 9645
+      },
+      "startup_only/startup_only_serial.log": {
+        "export": "k3_guest_diag_v4_startup_only_startup_only_serial.log.gz",
+        "raw_sha256": "2bb12d6bde613cb3894dac0074c1dfebc61cb721d949bd415b9e89aa2104ddc7",
+        "raw_bytes": 3742
+      },
+      "wrong_version/wrong_version_serial.log": {
+        "export": "k3_guest_diag_v4_wrong_version_wrong_version_serial.log.gz",
+        "raw_sha256": "85bd60b9c85407db225c4b829d9bb88ba7e2b9b2db00007e9386526f56213597",
+        "raw_bytes": 3338
+      }
+    }
+  },
+  "exporter_sha256": "aa5fa9490391389688b4e6c3a868f5d8ac347666d56023b829b8000e3709b196",
+  "source_template": "${XOS_SOURCE}",
+  "historical_policy": "failed attempts remain failed; retained evidence manifests were checked before copying the report/log subset; old source bindings are not reinterpreted against the final source",
+  "supplemental_evidence": {
+    "failed_program_link_main.log": {
+      "source": "${XOS_SOURCE}/build/k3_program_v3/link-main.log",
+      "raw_sha256": "37374aa5550c4183bbd0863f3a5fc36d050fd0940f21330dc95e7e678693c566",
+      "raw_bytes": 194,
+      "public_sha256": "e092af70e03398c83c788c2e98d439a5bcbb72f34cd18cb4350d56ecd950b31a",
+      "conversion": "same strict explicit environment-root substitution as the original export",
+      "prior_export_manifest_sha256": "879d935d29f26774f1cb12cae9eeff289f5360f1990a0047d153dcf4f468a3d6",
+      "prior_export_preserved_in_git_commit": "333fa3df4e4585bd686de1f844905378b92a04b7"
+    }
+  }
+}

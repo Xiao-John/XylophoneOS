@@ -1,0 +1,58 @@
+--- a/elf/dl-tls.c
++++ b/elf/dl-tls.c
+@@ -831,15 +831,9 @@
+ rtld_hidden_def (_dl_allocate_tls)
+ 
+ 
+-void
+-_dl_deallocate_tls (void *tcb, bool dealloc_tcb)
+-{
+-  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
+-    _dl_debug_printf ("tls: deallocate TCB 0x%lx (dealloc_tcb=%d)\n",
+-		      (unsigned long int) tcb, dealloc_tcb);
+-
+-  dtv_t *dtv = GET_DTV (tcb);
+-
++static void
++deallocate_dtv (dtv_t *dtv, void *tcb)
++{
+   /* We need to free the memory allocated for non-static TLS.  */
+   for (size_t cnt = 0; cnt < dtv[-1].counter; ++cnt)
+     {
+@@ -856,10 +850,36 @@
+   if (dtv != GL(dl_initial_dtv))
+     free (dtv - 1);
+ 
++}
++
++void
++_dl_deallocate_tls (void *tcb, bool dealloc_tcb)
++{
++  if (__glibc_unlikely (GLRO (dl_debug_mask) & DL_DEBUG_TLS))
++    _dl_debug_printf ("tls: deallocate TCB 0x%lx (dealloc_tcb=%d)\n",
++                      (unsigned long int) tcb, dealloc_tcb);
++
++  deallocate_dtv (GET_DTV (tcb), tcb);
+   if (dealloc_tcb)
+     free (*tcb_to_pointer_to_free_location (tcb));
+ }
+ rtld_hidden_def (_dl_deallocate_tls)
++
++#if defined XOS_GLIBC_TLS && defined SHARED && defined XOS_ONLINE_CLOSURE
++void __xos_dl_release_worker_dtv (void *);
++
++/* The worker published its final, expandable heap DTV after all TLS
++   destructors.  Native thread reaping may already have unmapped its TCB;
++   this entry point must never read that storage.  A live non-leaving libc
++   thread drains the bounded retirement table and may safely use malloc. */
++void
++__xos_dl_release_worker_dtv (void *data)
++{
++  dtv_t *dtv = data;
++  assert (dtv != NULL && dtv != GL(dl_initial_dtv));
++  deallocate_dtv (dtv, NULL);
++}
++#endif
+ 
+ 
+ #ifdef SHARED

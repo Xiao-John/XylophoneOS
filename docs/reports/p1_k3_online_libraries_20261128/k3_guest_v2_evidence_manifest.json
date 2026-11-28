@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "files": {
+    "online/online_qemu.log": "089d8c4f3a77f26543896696b493b289389f6d55ad31804989c459ad66bb2466",
+    "online/online_serial.log": "98fc20c37b9e8695adf8cea215ee9f294b602ebb4f47ac5456b0aeb0cf6797b3",
+    "report.json": "a34d957f13c6e4b8cebb1156778e6bdff4faa1116454191f1b898ded1d7f4034"
+  }
+}

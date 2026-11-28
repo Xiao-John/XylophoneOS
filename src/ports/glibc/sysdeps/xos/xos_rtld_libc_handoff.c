@@ -33,7 +33,18 @@ __xos_rtld_handoff_libc_files (struct link_map *libc_map,
 
   xos_file_startup_receiver adopt = DL_SYMBOL_ADDRESS (libc_map, symbol);
   const long result = adopt (images->files, deadline);
-  return (int) -result;
+  if (result != 0)
+    return (int) -result;
+  if (images->plan->online_mask != 0)
+    {
+      static const char online[] = "__xos_file_online_exchange";
+      symbol = _dl_lookup_direct (libc_map, online, _dl_new_hash (online),
+                                  version, _dl_elf_hash (version));
+      if (symbol == NULL || ELFW (ST_TYPE) (symbol->st_info) != STT_FUNC)
+        return ENOEXEC;
+      return __xos_rtld_enable_online (DL_SYMBOL_ADDRESS (libc_map, symbol));
+    }
+  return 0;
 }
 
 void

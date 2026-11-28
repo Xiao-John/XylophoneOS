@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <errno.h>
+#include <dlfcn.h>
 #include "xos_rtld_mapping.h"
 #include "xos_rtld_heap.h"
 #include "xos_file_trap.h"
@@ -7,12 +8,34 @@
 enum { pinned_close = 8, pinned_read_at = 30, max_program_headers = 64 };
 enum { available, leased, closed };
 static struct xos_rtld_images *active;
+enum { online_namespace_stride = 32 };
+#define ONLINE_NAMESPACE_BIAS 0x010000000000ULL
+
+static xos_u64
+current_tid (void)
+{
+  struct {
+    xos_u32 version, size;
+    xos_u64 reserved, pid, tid, stack_bottom, stack_top, thread_pointer;
+  } info = { 0 };
+  _Static_assert (sizeof (info) == 56, "sys_thread_info ABI");
+  return file_trap (41, (xos_u64) &info, 0, 0) == 0 ? info.tid : 0;
+}
 
 static int
 phase_error (const struct xos_rtld_images *images)
 {
   if (images == 0)
     return ENOTSUP;
+  if (images->online_exchange != 0)
+    {
+      if (images->owner_pid != (xos_u64) file_trap (6, 0, 0, 0)
+          || __atomic_load_n (&images->online_owner, __ATOMIC_ACQUIRE) != current_tid ()
+          || images->online_depth == 0)
+        return EPERM;
+      const long now = file_trap (46, 0, 0, 0);
+      return now < 0 ? EIO : (xos_u64) now >= images->online_deadline ? ETIMEDOUT : 0;
+    }
   if (images->files->phase != xos_file_session_active)
     return EIO;
   if (images->plan->count == 0)
@@ -21,6 +44,99 @@ phase_error (const struct xos_rtld_images *images)
   if (now < 0)
     return EIO;
   return (xos_u64) now >= images->plan->deadline_ns ? ETIMEDOUT : 0;
+}
+
+int
+__xos_rtld_enable_online (long (*exchange) (const struct xos_file_request *,
+                                           struct xos_file_response *, xos_u64))
+{
+#ifndef XOS_ONLINE_CLOSURE
+  (void) exchange;
+  return ENOTSUP;
+#else
+  if (active == 0 || active->plan->online_mask == 0 || exchange == 0
+      || active->online_exchange != 0
+      || active->owner_pid != (xos_u64) file_trap (6, 0, 0, 0))
+    return EINVAL;
+  active->online_exchange = exchange;
+  return 0;
+#endif
+}
+
+int
+__xos_rtld_online_begin (const char *name, long ns, int mode, int closing)
+{
+#ifndef XOS_ONLINE_CLOSURE
+  (void) name; (void) ns; (void) mode; (void) closing;
+  return ENOTSUP;
+#else
+  if (active == 0 || active->online_exchange == 0)
+    return ENOTSUP;
+  if (active->owner_pid != (xos_u64) file_trap (6, 0, 0, 0))
+    return EPERM;
+  if (closing != 0 && closing != 1)
+    return EINVAL;
+  if (!closing)
+    {
+      /* Eager, local loading bounds the admitted operation. There is one
+         base namespace and at most one private namespace; no path lookup,
+         lazy loader mutation, GLOBAL, DEEPBIND or NODELETE extension. */
+      if (ns < -1 || ns > 1 || (mode & (RTLD_LAZY | RTLD_NOW)) != RTLD_NOW
+          || (mode & ~(RTLD_NOW | RTLD_NOLOAD)) != 0)
+        return ENOTSUP;
+      if (!xos_rtld_soname_length (name))
+        return EINVAL;
+      int found = 0;
+      for (xos_u32 i = 0; i < active->plan->count; ++i)
+        if (xos_rtld_same_soname (active->plan->pins[i].soname, name))
+          {
+            if (!(active->plan->online_mask & (1u << i)))
+              return EPERM;
+            if (ns != 0 && !(active->plan->isolated_mask & (1u << i)))
+              return ENOTSUP;
+            found = 1;
+            break;
+          }
+      if (!found)
+        return ENOENT;
+    }
+  const xos_u64 tid = current_tid ();
+  const long now = file_trap (46, 0, 0, 0);
+  if (tid == 0 || now < 0 || (xos_u64) now > __INT64_MAX__ - 5000000000ULL)
+    return EIO;
+  xos_u64 expected = 0;
+  if (__atomic_compare_exchange_n (&active->online_owner, &expected, tid, 0,
+                                    __ATOMIC_ACQUIRE, __ATOMIC_RELAXED))
+    {
+      active->online_depth = 1;
+      active->online_deadline = (xos_u64) now + 5000000000ULL;
+      return 0;
+    }
+  if (expected != tid)
+    return EBUSY;
+  if ((xos_u64) now >= active->online_deadline)
+    return ETIMEDOUT;
+  if (active->online_depth >= 8)
+    return ELOOP;
+  ++active->online_depth;
+  return 0;
+#endif
+}
+
+void
+__xos_rtld_online_end (void)
+{
+#ifdef XOS_ONLINE_CLOSURE
+  if (active == 0 || active->online_exchange == 0
+      || __atomic_load_n (&active->online_owner, __ATOMIC_RELAXED) != current_tid ()
+      || active->online_depth == 0)
+    return;
+  if (--active->online_depth == 0)
+    {
+      active->online_deadline = 0;
+      __atomic_store_n (&active->online_owner, 0, __ATOMIC_RELEASE);
+    }
+#endif
 }
 
 int
@@ -41,7 +157,16 @@ __xos_rtld_attach_images (struct xos_rtld_images *images)
       || handles[0] == 0 || handles[1] == 0 || handles[0] == handles[1]
       || handles[0] != images->files->send_handle || handles[1] != images->files->receive_handle)
     return EIO;
-  for (xos_u32 i = 0; i < images->plan->count; ++i)
+  #ifndef XOS_ONLINE_CLOSURE
+  if (images->plan->online_mask != 0)
+    return ENOTSUP;
+  #endif
+  images->retained_plan = *images->plan;
+  images->plan = &images->retained_plan;
+  images->owner_pid = pid;
+  images->online_owner = images->online_deadline = images->online_depth = 0;
+  images->online_exchange = 0;
+  for (xos_u32 i = 0; i < 2 * XOS_RTLD_MAX_PINS; ++i)
     images->leases[i] = (struct xos_rtld_lease) { 0, available, 0 };
   active = images;
   return 0;
@@ -73,9 +198,11 @@ __xos_rtld_attach_entry_images (void **stack, struct xos_rtld_images *images,
 static int
 find_lease (int fd)
 {
-  for (xos_u32 i = 0; i < active->plan->count; ++i)
-    if (active->plan->pins[i].fd == fd && active->leases[i].phase == leased)
-      return i;
+  for (xos_u32 ns = 0; ns < 2; ++ns)
+    for (xos_u32 i = 0; i < active->plan->count; ++i)
+      if (active->plan->pins[i].fd + (int) ns * online_namespace_stride == fd
+          && active->leases[ns * XOS_RTLD_MAX_PINS + i].phase == leased)
+        return ns * XOS_RTLD_MAX_PINS + i;
   return -1;
 }
 
@@ -89,20 +216,30 @@ pin_request (const struct xos_rtld_pin *pin, unsigned int operation,
   request->offset = offset;
   request->length = count;
   request->flags = request->reserved = request->name_length = 0;
-  return __xos_file_session_call_until (active->files, request, &active->response,
-                                        active->plan->deadline_ns);
+  return active->online_exchange != 0
+    ? active->online_exchange (request, &active->response, active->online_deadline)
+    : __xos_file_session_call_until (active->files, request, &active->response,
+                                      active->plan->deadline_ns);
 }
 
 static int
 close_lease (unsigned int index)
 {
   struct xos_rtld_lease *lease = &active->leases[index];
+  const unsigned int pin_index = index % XOS_RTLD_MAX_PINS;
+  if (active->online_exchange != 0 && (active->plan->online_mask & (1u << pin_index)))
+    {
+      /* This closes GNU's temporary descriptor. The bounded approval pin
+         remains owned until process exit, including a later reload. */
+      *lease = (struct xos_rtld_lease) { 0, available, 0 };
+      return 0;
+    }
   if (lease->phase == closed)
     return lease->close_error;
   lease->phase = closed;
   /* Upstream may try a second close while unwinding. Never replay the
      first close if its delivery or response was uncertain. */
-  lease->close_error = pin_request (&active->plan->pins[index], pinned_close, 0, 0);
+  lease->close_error = pin_request (&active->plan->pins[pin_index], pinned_close, 0, 0);
   return lease->close_error;
 }
 
@@ -114,31 +251,48 @@ __xos_rtld_finish_images (struct xos_rtld_images *images)
   int first_error = phase_error (images);
   for (xos_u32 i = 0; i < images->plan->count; ++i)
     {
+      if (images->plan->online_mask & (1u << i))
+        continue;
       const int error = close_lease (i);
       if (first_error == 0 && error != 0)
         first_error = -error;
     }
-  active = 0;
+  if (images->plan->online_mask == 0 || first_error != 0)
+    active = 0;
   return first_error;
 }
 
 int
 __xos_rtld_open_pin (const char *name)
 {
+  return __xos_rtld_open_pin_namespace (name, 0);
+}
+
+int
+__xos_rtld_open_pin_namespace (const char *name, long ns)
+{
   const int error = phase_error (active);
   if (error != 0)
     return -error;
   if (!xos_rtld_soname_length (name))
     return -EINVAL;
+  if (ns < 0 || ns > 1 || (ns != 0 && active->online_exchange == 0))
+    return -ENOTSUP;
   for (xos_u32 i = 0; i < active->plan->count; ++i)
     {
       const struct xos_rtld_pin *pin = &active->plan->pins[i];
       if (xos_rtld_same_soname (pin->soname, name))
         {
-          if (active->leases[i].phase != available)
+          if (active->online_exchange != 0
+              && !(active->plan->online_mask & (1u << i)))
+            return -EPERM;
+          if (ns != 0 && !(active->plan->isolated_mask & (1u << i)))
+            return -ENOTSUP;
+          const xos_u32 lease_index = (xos_u32) ns * XOS_RTLD_MAX_PINS + i;
+          if (active->leases[lease_index].phase != available)
             return -EALREADY;
-          active->leases[i].phase = leased;
-          return pin->fd;
+          active->leases[lease_index].phase = leased;
+          return pin->fd + (int) ns * online_namespace_stride;
         }
     }
   return -ENOENT;
@@ -164,7 +318,7 @@ read_pin (const struct xos_rtld_pin *pin, xos_u64 offset, void *buffer, xos_u32 
       const long result = pin_request (pin, pinned_read_at, offset + done, part);
       if (result != 0)
         return result;
-      if (response->length == 0)
+      if (response->length == 0 || response->length > part)
         return -EIO; /* EOF inside the pinned instance's confirmed extent. */
       for (xos_u32 i = 0; i < response->length; ++i)
         destination[done + i] = response->data[i];
@@ -201,7 +355,7 @@ __xos_rtld_pread_pin (int fd, void *buffer, xos_u32 count, xos_i64 offset)
     return -EBADF;
   if (offset < 0)
     return -EINVAL;
-  return read_pin (&active->plan->pins[index], offset, buffer, count);
+  return read_pin (&active->plan->pins[index % XOS_RTLD_MAX_PINS], offset, buffer, count);
 }
 
 long
@@ -214,7 +368,7 @@ __xos_rtld_read_pin (int fd, void *buffer, xos_u32 count)
   if (index < 0)
     return -EBADF;
   struct xos_rtld_lease *lease = &active->leases[index];
-  const long got = read_pin (&active->plan->pins[index], lease->cursor, buffer, count);
+  const long got = read_pin (&active->plan->pins[index % XOS_RTLD_MAX_PINS], lease->cursor, buffer, count);
   if (got > 0)
     lease->cursor += got;
   return got;
@@ -239,7 +393,7 @@ __xos_rtld_stat_pin (int fd)
   if (error != 0)
     return -error;
   const int index = find_lease (fd);
-  return index < 0 ? -EBADF : stat_pin (&active->plan->pins[index]);
+  return index < 0 ? -EBADF : stat_pin (&active->plan->pins[index % XOS_RTLD_MAX_PINS]);
 }
 
 int
@@ -288,7 +442,10 @@ __xos_rtld_map_fd (int fd, const Elf64_Ehdr *expected, xos_u64 expected_phdr,
   const int index = find_lease (fd);
   if (index < 0)
     return EBADF;
-  const struct xos_rtld_pin *pin = &active->plan->pins[index];
+  struct xos_rtld_pin namespace_pin = active->plan->pins[index % XOS_RTLD_MAX_PINS];
+  if (index >= XOS_RTLD_MAX_PINS)
+    namespace_pin.bias += ONLINE_NAMESPACE_BIAS;
+  const struct xos_rtld_pin *pin = &namespace_pin;
   if (expected == 0 || compare == 0 || output == 0 || output->allocation.bytes != 0
       || output->allocation.start != 0)
     return EINVAL;

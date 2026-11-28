@@ -1,0 +1,2 @@
+${XOS_PRODUCER_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_SOURCE}/build/k3_program_v3/main.o: in function `main':
+main.c:(.text.startup+0x61f): undefined reference to `atexit'

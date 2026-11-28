@@ -4,6 +4,9 @@
 #include <shlib-compat.h>
 #include "xos_thread_identity.h"
 #include "xos_thread_extensions.h"
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+# include "xos_thread_tls.h"
+#endif
 
 int
 __pthread_tryjoin_np (pthread_t thread, void **value)
@@ -16,6 +19,9 @@ __pthread_tryjoin_np (pthread_t thread, void **value)
   if (status != 0)
     return xos_thread_lifecycle_error (status);
   if (value != NULL) *value = (void *) result;
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+  __xos_thread_tls_drain ();
+#endif
   return 0;
 }
 versioned_symbol (libc, __pthread_tryjoin_np, pthread_tryjoin_np, GLIBC_2_34);

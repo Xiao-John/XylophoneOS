@@ -25,6 +25,8 @@ inline constexpr char interpreter_path[] = "/usr/lib/xos/glibc_dynamic_v1/ld_xos
 
 inline constexpr u64 generation_magic = 0x314e4547534f5858ULL;
 inline constexpr u32 generation_version = 1;
+inline constexpr u32 generation_online_version = 2;
+inline constexpr u64 online_namespace_bias = 0x010000000000ULL;
 inline constexpr u32 generation_max_objects = 12, activation_max_generations = 4;
 inline constexpr u64 generation_file_limit = 16ULL * 1024 * 1024;
 inline constexpr u64 generation_bytes_limit = 64ULL * 1024 * 1024;
@@ -38,7 +40,8 @@ struct generation_header {
     u64 magic;
     u32 version, size;
     u64 id;
-    u32 object_count, reserved0;
+    u32 object_count;
+    union { u32 reserved0; u32 online_mask; }; // v1 zero; v2 explicit online roots.
     u8 sdk_sha256[32], toolchain_abi[32];
     u64 total_file_bytes, mapping_budget, startup_budget_ns, reserved1;
 };

@@ -7,10 +7,14 @@ libc {
   }
   GLIBC_PRIVATE {
     __xos_file_adopt_startup;
+    __xos_file_online_exchange;
   }
 }
 ld {
   GLIBC_PRIVATE {
     __xos_dl_init_reserved_worker_tls;
+    __xos_dl_release_worker_dtv;
+    __xos_rtld_online_begin;
+    __xos_rtld_online_end;
   }
 }

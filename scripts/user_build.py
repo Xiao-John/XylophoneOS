@@ -36,7 +36,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     shutil.copyfile(newlib / "lib/libm.a", sdk / "lib/libm.a")
     shutil.copyfile(root / "src/third_party/newlib/COPYING.NEWLIB", sdk / "COPYING.NEWLIB")
     for folder in ("src/shared/include/xos", "src/user/include/xos"):
-        for header in sorted((root / folder).glob("*.hpp")):
+        for header in sorted(p for p in (root / folder).iterdir() if p.suffix in (".h", ".hpp")):
             if header.name == "thread_core.hpp":
                 continue  # T0 mechanism API is not part of the legacy libc SDK.
             shutil.copyfile(header, sdk / "include/xos" / header.name)
@@ -70,7 +70,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         return str(obj)
 
     sdk_objects = [compile_source(root / name) for name in (
-        "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/sdk/terminal_client.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
+        "src/user/sdk/text.cpp", "src/user/sdk/file_client.cpp", "src/user/sdk/terminal_client.cpp",
+        "src/user/sdk/launch_control.cpp", "src/user/arch/x86_64/syscall.cpp", "src/shared/runtime/memory.cpp")]
     sdk_objects.extend(compile_source(source, ("-w", "-ffunction-sections", "-fdata-sections")
                                       if source.name == "newlib_syscalls.cpp" else ("-w",))
                        for source in sorted((root / "src/user/libc").glob("*.cpp")))

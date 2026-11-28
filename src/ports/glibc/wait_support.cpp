@@ -13,8 +13,7 @@ extern "C" long __xos_wait_child(pid_t pid, int* status, int options) {
     const bool nonblocking = (options & WNOHANG) != 0;
     const bool any = pid == -1;
     process_status waited{};
-    const i64 result = sdk::syscall(sys_process_wait, any ? 0 : static_cast<u64>(pid),
-        reinterpret_cast<u64>(&waited),
+    const i64 result = sdk::wait_flags(any ? 0 : static_cast<u64>(pid), waited,
         (nonblocking ? process_wait_nonblocking : 0) | (any ? process_wait_any : 0));
     if (result == process_error_denied) { return -ECHILD; }
     if (result == process_error_would_block && nonblocking) { return 0; }

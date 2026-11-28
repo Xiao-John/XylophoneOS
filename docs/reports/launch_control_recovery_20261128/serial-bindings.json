@@ -1,0 +1,16 @@
+[
+  {
+    "file": "guest-serial.log",
+    "raw_sha256": "782d597682e6aa9ca1de376c555ffdf5aa147696071fec7be989e66cc635abf6",
+    "transform": "LF line endings; trailing whitespace removed; final LF",
+    "exported_binding": "manifest.json:files[guest-serial.log]",
+    "source_commit": "6c1ded23"
+  },
+  {
+    "file": "failed-v2-guest-serial.log",
+    "raw_sha256": "2829fb4fab2d63ef23fb28925a98d16ad842d9d7ca559c4578ce25374bdbfe0c",
+    "transform": "LF line endings; trailing whitespace removed; final LF",
+    "exported_binding": "manifest.json:files[failed-v2-guest-serial.log]",
+    "source_commit": "6c1ded23"
+  }
+]

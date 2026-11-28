@@ -201,6 +201,9 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
         return error;
     };
     const bool replacing = options != nullptr && options->replace_image;
+    if (replacing && options->transfer_independent_pipes) {
+        return fail_before_create(process_error_invalid);
+    }
     bool descriptor_startup = replacing || (options != nullptr && options->descriptor_count != 0);
     if (options != nullptr && (options->exec_channel_count > exec_preserve_channels_max ||
         (options->exec_channel_count != 0 && (!replacing || options->exec_channels == nullptr)))) {
@@ -377,6 +380,8 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             auto* descriptors = reinterpret_cast<startup_descriptor*>(page + descriptor_extension->descriptors - startup_address);
             u32 transferred[32]{};
             u32 object_routes[32]{};
+            u32 object_pipes[32]{};
+            process_pipe_transfer pipe_transfer{1, sizeof(process_pipe_transfer), 0, 0, {}};
             u32 used_routes = 0;
             for (u32 i = 0; result >= 0 && i < options->descriptor_count; ++i) {
                 auto& descriptor = descriptors[i];
@@ -398,16 +403,19 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                 }
                 if (result < 0) break;
                 if (descriptor.kind == 1 || descriptor.kind == 3 || descriptor.kind == 4) {
-                    // Ordinary spawn transfers a pipe into a fixed child route,
-                    // not into the child's private pipe-token table. The v3 FD
-                    // snapshot must name that child route, including every
-                    // extra-FD alias of the same open description. Exec keeps
-                    // its existing native handles and never enters this block.
+                    // Fixed stdio routes keep the legacy representation.
+                    // Explicitly enabled independent objects instead enter
+                    // the child's private token table in one atomic batch.
+                    // Every alias uses the same chosen representation. Exec
+                    // retains its native handles and never enters this block.
                     if (object_routes[descriptor.object]) {
                         descriptor.kind = static_cast<u32>(startup_fd_kind::kernel);
                         descriptor.handle = object_routes[descriptor.object] - 1;
                         continue;
                     }
+                    // Independent aliases are granted once per open object,
+                    // then all aliases use that one child-owned native token.
+                    if (object_pipes[descriptor.object]) continue;
                     const bool readable = descriptor.kind == 3 ||
                         (descriptor.kind == 1 && descriptor.handle == 0);
                     if ((descriptor.kind == 1 && descriptor.handle > 2) ||
@@ -441,6 +449,15 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                         }
                     }
                     if (result < 0) break;
+                    if (route == 3 && descriptor.kind != 1 && options->transfer_independent_pipes) {
+                        if (pipe_transfer.count == process_max_pipe_refs) {
+                            result = process_error_resources;
+                            break;
+                        }
+                        pipe_transfer.entries[pipe_transfer.count].source = descriptor.handle;
+                        object_pipes[descriptor.object] = ++pipe_transfer.count;
+                        continue;
+                    }
                     if (route == 3) { result = process_error_invalid; break; }
                     descriptor.kind = static_cast<u32>(startup_fd_kind::kernel);
                     descriptor.handle = route;
@@ -459,6 +476,16 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
             for (u32 fd = 0; result >= 0 && fd < 3; ++fd) {
                 if (!(used_routes & (1u << fd)))
                     result = syscall(sys_process_stdio, static_cast<u64>(child), fd, process_stdio_close);
+            }
+            if (result >= 0 && pipe_transfer.count != 0) {
+                result = transfer_pipes(static_cast<u64>(child), pipe_transfer);
+                if (result == 0) {
+                    for (u32 i = 0; i < options->descriptor_count; ++i) {
+                        auto& descriptor = descriptors[i];
+                        const u32 pipe = object_pipes[descriptor.object];
+                        if (pipe) descriptor.handle = pipe_transfer.entries[pipe - 1].target;
+                    }
+                }
             }
         }
         if (result >= 0 && options->delegate_spawn_depth != 0) {

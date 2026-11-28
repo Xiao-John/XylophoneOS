@@ -263,7 +263,7 @@ EALREADY，跨 PID 返回 EPERM，仍登记但已到期限返回 ETIMEDOUT。seq
 
 | 接口 | 角色与文件范围 | 语义和兼容 |
 | --- | --- | --- |
-| sys34 `sys_process_stdio` arg2=`1ull << 63` 独立 pipe 批量 transfer | P1-K5；kernel pipe/process、`process_abi.hpp`、native loader/SDK 和匹配 glibc spawn | claimed；arg1 只能是调用者拥有的 building child，排除 fork/replacement pending；arg3 指版本 1、144 字节请求，四个 u32 header（version,size,count,reserved）后接 16 项 {u32 source,target}。输入 target 与未用项皆零，source 为 caller 持有且去重的 private pipe token；整批验证和输出准备成功后一次增加 child 引用并返回 target。旧 stdio mode0–2 不变，旧内核拒绝新模式。 |
+| sys34 `sys_process_stdio` arg2=`1ull << 63` 独立 pipe 批量 transfer | P1-K5；kernel pipe/process、`process_abi.hpp`、native loader/SDK 和匹配 glibc spawn | allocated；[independent_pipe_transfer](independent_pipe_transfer.md) 已有 native 与静态 GNU 的独立客体资格，共享动态组合另验。arg1 只能是调用者拥有的 building child，排除 fork/replacement pending；arg3 指版本 1、144 字节请求，四个 u32 header（version,size,count,reserved）后接 16 项 {u32 source,target}。输入 target 与未用项皆零，source 为 caller 持有且去重的 private pipe token；整批验证和输出准备成功后一次增加 child 引用并返回 target。旧 stdio mode0–2 不变，旧内核拒绝新模式。 |
 | `xos_fork_control_offer` wire v1（128 字节） | P1-K2 fork/controller 线；native loader control、glibc process adapter | claimed；复用现有受保护 launch channel 容量，独立 magic/type，不改既有 READY/ACK message 布局。header u64 magic、u32 version,size；五个 u64 controller_pid,child_pid,generation,nonce,deadline；两个 u32 ready_handle,ack_handle；40 字节 launch artifact；三个 u64 reserved。fork child 必须核内核认证对端、同 artifact/代次和绝对期限后才接受新 controller 并发 READY。 |
 
 pipe transfer 不复制对象或扩充 authority；token 仍由 PID membership 限权，同一对象

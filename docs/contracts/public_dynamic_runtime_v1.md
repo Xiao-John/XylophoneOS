@@ -65,7 +65,9 @@ READY，构造函数中创建线程也不会提前发布启动成功。错误路
 使用普通动态 SDK 路由。FD 快照保留相同开放描述的别名和共享游标，过滤
 `FD_CLOEXEC`，继承 cwd 和环境；父进程的 FD 表不会因 spawn 清理而改变。
 kernel console、已路由到 stdio 的 pipe，以及普通 Files 描述可进入 v1–v3
-启动布局。socket 和未路由 pipe 不能被伪装成其他描述符。
+启动布局。socket 不能被伪装成其他描述符。独立 pipe 的显式批量授权见
+[independent_pipe_transfer.md](independent_pipe_transfer.md)；它需要匹配的新
+kernel、SDK 和支持 archive，旧 profile 保留下面的 route-only 边界。
 
 普通 v3 spawn 的 pipe token 属于父进程；`sys_process_stdio` 只把它转成
 子进程的固定 kernel route，不能把父 token 原样交给子进程读取。loader
@@ -76,7 +78,9 @@ kernel console、已路由到 stdio 的 pipe，以及普通 Files 描述可进�
 已关闭，loader 可借用空闲的同方向传输 route；它不会把已关闭的 stdio
 重新加入子 FD 表。该传输机制只有一个读取 route 和两个写入 route，最多
 32 个 FD 是快照及别名数量上限，不表示可继承 32 个独立 pipe 对象；未路由
-pipe 继续在 glibc bridge 明确返回 `ENOTSUP`。同 PID `execve` 保留既有
+pipe 在旧 glibc bridge 明确返回 `ENOTSUP`。新 SDK 的 GNU bridge 显式开启
+sys34 v1 批量传输，保留原生方向并按对象共用一个 child token；默认 native
+option 仍关闭，未显式开启的 caller 继续拒绝未路由 pipe。同 PID `execve` 保留既有
 token，不能套用普通 spawn 的 route 转换。旧静态 v1/v2 降级的准入条件也
 保持不变。
 

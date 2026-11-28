@@ -73,6 +73,10 @@ extern "C" int __xos_spawn_path(pid_t* output, const char* path, char* const arg
     if (locked < 0) { return static_cast<int>(-locked); }
 
     sdk::spawn_options options{};
+    // The caller's inherited FD snapshot is the explicit authority to grant
+    // those pipe descriptions to this child. The matching SDK records sys34
+    // batch transfer; older route-only SDK callers keep their default false.
+    options.transfer_independent_pipes = true;
     options.environment = envp;
     options.environment_count = env_count;
     options.prepare_child = prepare_child;
@@ -84,14 +88,6 @@ extern "C" int __xos_spawn_path(pid_t* output, const char* path, char* const arg
     for (u32 i = 0; i < snapshot.count && !unsupported; ++i) {
         const auto& source = snapshot.items[i];
         if (source.fd == 0xffffffffu) continue;
-        if (source.kind == xos_file_kind_pipe_read || source.kind == xos_file_kind_pipe_write) {
-            bool routed = false;
-            for (u32 j = 0; j < snapshot.count; ++j) {
-                const auto& route = snapshot.items[j];
-                routed = routed || (route.fd < 3 && route.handle == source.handle && route.kind == source.kind);
-            }
-            if (!routed) { unsupported = ENOTSUP; break; }
-        }
         if (source.fd < 3 && source.kind != xos_file_kind_file) {
             if (source.flags & O_NONBLOCK || ((source.fd == 0) !=
                 (source.kind == xos_file_kind_pipe_read || (source.kind == xos_file_kind_kernel && source.handle == 0)))) {

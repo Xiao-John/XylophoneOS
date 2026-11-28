@@ -22,7 +22,7 @@ from xypm_sdk_profile import inspect_sdk
 
 CASES = ('routed_read_write_alias_flags_cloexec_eof_before_exit',
          'kernel_extra_alias_after_original_stdio_close',
-         'unrouted_pipe_explicit_rejection_parent_preserved', 'closed_reader_epipe')
+         'independent_pipe_transfer_parent_preserved', 'closed_reader_epipe')
 
 
 def main():
@@ -99,7 +99,7 @@ def main():
                     output.count(b'SPAWN_PIPE_OK cases=4') != 1 or b'SPAWN_PIPE_FAIL' in output or actual != baseline):
                 raise AssertionError({'output': output[-6000:].decode(errors='replace'), 'resources': actual})
             report['checks'].append({'round': number, 'status': 'passed', 'cases': list(CASES),
-                                     'child_executions': 4, 'resources': actual})
+                                     'child_executions': 5, 'resources': actual})
         guest.close(); guest = None
         verify()
         report.update(status='passed', input_count=len(report['inputs']))

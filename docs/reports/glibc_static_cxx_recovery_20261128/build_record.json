@@ -1,0 +1,568 @@
+{
+  "builder_inputs": {
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "NOTICE": "dd2d47bae96472ce65252423f76ec3b868e83b4a03b34753f77f74f7a3c3f62e",
+    "docs/reports/glibc_stock_fork_sdk_20261126/build_glibc_cxx.sh": "17c6b6d752ff29648d8d0bc3aa5bd7f6954587cd9989849d121cca09e689ab07",
+    "docs/reports/glibc_stock_fork_sdk_20261126/build_unwinder.sh": "7523d49784ee221a787847e3d8f0c1d16194400b7057f1cbf6e17696c2c81e6d",
+    "scripts/archive_member_map.py": "3aa4fa8fb9ba9fdaebeb130e38db949e5ca1a6fbaeadcadc48ed0c2dba2b3360",
+    "scripts/build_glibc_static_cxx.py": "72fb2fa58601096c4c81acf1fdc253c269e122ce44c0efffd1a74521f8523302",
+    "scripts/glibc_g1_deps.py": "4b02e7b8bea7d69fe85ebe13f8627d261a64b5e7ffbd075221aa797094795f35",
+    "scripts/glibc_g1_probe.py": "0e508036b6e4098faa290c4e41c32b651aea54167fbf5d3b4c9283732fabc451",
+    "scripts/verify_gcc_shared_source.py": "a379381d12c0c4096605b0876a4145ae53c83bfeb67982a66a456acd5e8771a7",
+    "scripts/verify_glibc_source.py": "4ed80115e3fdf6e54bb53d418ec36d29313f426d1c79775309dbfc813bc19e9f",
+    "scripts/xos_app.py": "cd991783ea7cebe5531e0b9ae712620cce5b37bbb393d19e11aa4af146f35c4b",
+    "scripts/xypm_format.py": "661d1919f42e06f5ac942b5dfbcacdc4f1dffac16e0c3ee701e8c9e742bc808c",
+    "scripts/xypm_sdk_profile.py": "58ba003d4d44837949c370e4693e3834540296722c35180b98fe3deb1858ae32",
+    "src/ports/gcc/shared_source_auth.json": "eb82f60da7498f6c599d7bea4bc71dfe86ebd9eba5c5944e78025a92eb5c6819",
+    "src/ports/gcc/source_lock.json": "e4db97ce304c6d2bafc115bb0575d03b0fe8e09562d0f4871784111fd9a83353"
+  },
+  "c_sdk_binding": {
+    "archive_members": {
+      "usr/lib/libc.a": 1687,
+      "usr/lib/libgcc.a": 147,
+      "usr/lib/libm.a": 831,
+      "usr/lib/libxos_terminal.a": 10
+    },
+    "compiler": {
+      "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "target": "x86_64-elf",
+      "version": "16.2.0"
+    },
+    "cxx_runtime": null,
+    "format_version": 1,
+    "libc_version": "2.44",
+    "link_artifacts": {
+      "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+      "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+      "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+      "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+      "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+      "usr/lib/libc.a": "a46fe9a59912f1a1e27267e8e9c6c64d8561ee9f795cd3561070918526e10f8a",
+      "usr/lib/libgcc.a": "1e19f0657fafd72f6c35a49b15d13c5772d49c829066c1f863518c29055c4f93",
+      "usr/lib/libm.a": "eea27838cdb70f113fed481e0597af000737917294b3c1266217031139455d61",
+      "usr/lib/libxos_terminal.a": "55adfec2c6f7b5c7b2e1c09d8cdf542a9bd65d0ed08dd15ac19d53fac9c53e89",
+      "usr/lib/xos_start.o": "b305c2f61399b5491cdf3948ea06fe10163164e2a3d1e42a3419945273617124",
+      "usr/lib/xos_start_c.o": "0c433341a1b388340bff8e63173cae6aa611983f6f9b14a026372882239ee510",
+      "usr/lib/xos_stdio_receiver.o": "31acf8d554bff7e5daeb4c1e4fac48413d22991f3d93122e0984043a0a941305"
+    },
+    "runtime_family": "glibc",
+    "runtime_model": "threaded",
+    "sdk_manifest_sha256": "7ce5dff65e5c8b7c85fcaa730bb67a2e57a913e512e521349e2f559b8c690bc9",
+    "sdk_tree_sha256": "43d40911b9498895dbe67daf46e1ec9e35752b699fc1c9ff948774305d03c88f",
+    "source_authentication": {
+      "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+      "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+      "report_sha256": "b0044c6d06be58bb076d443dce3447ff0c5301ee3eaa6108ea1ffff3d7c5c913",
+      "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+      "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+      "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+      "status": "upstream_signature_verified",
+      "verification_files": {
+        "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+        "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+        "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af",
+        "source_verification/report.json": "b0044c6d06be58bb076d443dce3447ff0c5301ee3eaa6108ea1ffff3d7c5c913"
+      }
+    }
+  },
+  "gcc_authentication": {
+    "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+    "authentication_lock_sha256": "eb82f60da7498f6c599d7bea4bc71dfe86ebd9eba5c5944e78025a92eb5c6819",
+    "component": "gcc",
+    "evidence": {
+      "gpgv.log": "81f75ace9bf61ee7f64b835e518dc4cda053ee4814a28ead6f0ffac5a79edd95",
+      "gpgv.status": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4"
+    },
+    "gpgv_exit": 0,
+    "keyring_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+    "previous_keyring_sha256": "8013de59880f7a59f53b6bd207f4d2a408d67b84a82fa9cba1dbbf443428e2db",
+    "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+    "schema": 1,
+    "signature": {
+      "hash_algorithm": 8,
+      "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+      "signature_timestamp": 1786091352,
+      "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641"
+    },
+    "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+    "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+    "source_lock_sha256": "e4db97ce304c6d2bafc115bb0575d03b0fe8e09562d0f4871784111fd9a83353",
+    "status": "upstream_signature_verified",
+    "verified_at": "2026-11-28T00:55:18.326065+00:00",
+    "verifier": {
+      "name": "gpgv",
+      "sha256": "e82416f3ae002b63c0731f311519c55fc9e7d3c8bdadbd64239833298f09a2cf"
+    }
+  },
+  "guest_qualification": "not_run",
+  "sanitized_environment": [],
+  "sdk_binding": {
+    "archive_members": {
+      "usr/lib/libc.a": 1687,
+      "usr/lib/libgcc.a": 147,
+      "usr/lib/libm.a": 831,
+      "usr/lib/libstdc++.a": 199,
+      "usr/lib/libsupc++.a": 65,
+      "usr/lib/libxos_terminal.a": 10
+    },
+    "compiler": {
+      "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "gxx_sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "target": "x86_64-elf",
+      "version": "16.2.0"
+    },
+    "cxx_runtime": {
+      "gcc_version": "16.2.0",
+      "include_directories": [
+        "usr/include/c++/16.2.0",
+        "usr/include/c++/16.2.0/x86_64-unknown-xos",
+        "usr/include/c++/16.2.0/backward"
+      ],
+      "locale_model": "generic",
+      "source_authentication": {
+        "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+        "key_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+        "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+        "report_sha256": "0ff36248691f49fca1abb57d312d6098cce5a6462c1b00b054057600e222aa2e",
+        "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+        "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+        "source_lock_sha256": "d43c0bd20209831ad936520999a106661ecca7911b9d80068007e65efae89026",
+        "status": "upstream_signature_verified",
+        "verification_files": {
+          "gcc_source_verification/gpgv.log": "81f75ace9bf61ee7f64b835e518dc4cda053ee4814a28ead6f0ffac5a79edd95",
+          "gcc_source_verification/gpgv.status": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4",
+          "gcc_source_verification/release_key.gpg": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+          "gcc_source_verification/report.json": "0ff36248691f49fca1abb57d312d6098cce5a6462c1b00b054057600e222aa2e"
+        }
+      },
+      "target": "x86_64-unknown-xos",
+      "thread_model": "posix",
+      "unwinder": {
+        "frame_registry": "pthread_mutex",
+        "replaced_members": {
+          "emutls.o": "0aa7c2fb60441b44b066add1ec2cb951b69ba2364b4a4e6f0d5c2d74f4e447d8",
+          "unwind-c.o": "c2100138cc1c381a8d5f12e15ee8ab91a5dec3248a977b8640bf9f6939659a29",
+          "unwind-dw2-fde.o": "a253c3c958eac1e479cb8e3f7051bd9761f54080c2d7e9bfeb49e09790923b92",
+          "unwind-dw2.o": "2737dccaa009f5a49286f038c3fdaa491039137a459a392b2265e48b7e7ff08d",
+          "unwind-sjlj.o": "a2bff809d228057b7c3e9b98276a95610839edb93eb3d662756cc403d2372173"
+        },
+        "thread_model": "posix"
+      }
+    },
+    "format_version": 1,
+    "libc_version": "2.44",
+    "link_artifacts": {
+      "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+      "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+      "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+      "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+      "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+      "usr/lib/libc.a": "a46fe9a59912f1a1e27267e8e9c6c64d8561ee9f795cd3561070918526e10f8a",
+      "usr/lib/libgcc.a": "88beb76641fdae379002b70e5bbb59fb1da96ae476c5d2bc703f738cdc4924c0",
+      "usr/lib/libm.a": "eea27838cdb70f113fed481e0597af000737917294b3c1266217031139455d61",
+      "usr/lib/libstdc++.a": "724fd65e073d97ccb5b9504450d6423d2bc994a0db8159fbf2f5f336cd79a586",
+      "usr/lib/libsupc++.a": "4b3a93ffcf7ac5d8ba33472556ae615c911d536d1056bc1258cb8444ff5e1fe8",
+      "usr/lib/libxos_terminal.a": "55adfec2c6f7b5c7b2e1c09d8cdf542a9bd65d0ed08dd15ac19d53fac9c53e89",
+      "usr/lib/xos_start.o": "b305c2f61399b5491cdf3948ea06fe10163164e2a3d1e42a3419945273617124",
+      "usr/lib/xos_start_c.o": "0c433341a1b388340bff8e63173cae6aa611983f6f9b14a026372882239ee510",
+      "usr/lib/xos_stdio_receiver.o": "31acf8d554bff7e5daeb4c1e4fac48413d22991f3d93122e0984043a0a941305"
+    },
+    "runtime_family": "glibc",
+    "runtime_model": "threaded",
+    "sdk_manifest_sha256": "e9301911262b8ad67d7046f076636653667b0fda58b3b49f62fbfaffb31fa7db",
+    "sdk_tree_sha256": "32b7bec6fc9e85ce2997cd3659fac0c2ecbf05ba7a84a099d9efbb637f760548",
+    "source_authentication": {
+      "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+      "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+      "report_sha256": "b0044c6d06be58bb076d443dce3447ff0c5301ee3eaa6108ea1ffff3d7c5c913",
+      "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+      "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+      "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+      "status": "upstream_signature_verified",
+      "verification_files": {
+        "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+        "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+        "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af",
+        "source_verification/report.json": "b0044c6d06be58bb076d443dce3447ff0c5301ee3eaa6108ea1ffff3d7c5c913"
+      }
+    }
+  },
+  "sdk_manifest_sha256": "e9301911262b8ad67d7046f076636653667b0fda58b3b49f62fbfaffb31fa7db",
+  "source_locks": {
+    "authentication_lock_sha256": "eb82f60da7498f6c599d7bea4bc71dfe86ebd9eba5c5944e78025a92eb5c6819",
+    "source_lock_sha256": "e4db97ce304c6d2bafc115bb0575d03b0fe8e09562d0f4871784111fd9a83353"
+  },
+  "status": "static_cxx_sdk_built",
+  "steps": [
+    {
+      "argv": [
+        "sh",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/config.guess"
+      ],
+      "log_sha256": "1c7da408e283702561a445e700b61c0f55a082230a3cfe323208841221274a6a",
+      "name": "build-triplet",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "sh",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/config.sub",
+        "x86_64-unknown-xos"
+      ],
+      "log_sha256": "34a92f8fb8f5e034a5f6c89d9f1bc7e5158539467e3897b1f5ff72c5d7f6a8bc",
+      "name": "target-triplet",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/tools/ccc",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/std/xos_link_test.c",
+        "-o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/std/xos_link_test"
+      ],
+      "log_sha256": "02112ea361252a92c5331922b075f0261a7e7af09c5e8c89958e4960d58a64bb",
+      "name": "configure-link-probe",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libstdc++-v3/configure",
+        "--build=x86_64-pc-linux-gnu",
+        "--host=x86_64-unknown-xos",
+        "--prefix=/usr",
+        "--with-gxx-include-dir=/usr/include/c++/16.2.0",
+        "--disable-multilib",
+        "--disable-shared",
+        "--disable-nls",
+        "--disable-libstdcxx-pch",
+        "--enable-libstdcxx-threads=yes",
+        "--enable-clocale=generic",
+        "--disable-libstdcxx-backtrace",
+        "--disable-libstdcxx-filesystem-ts"
+      ],
+      "log_sha256": "837c6b1f9d7a5c76170624b58ba699613832faf217a158555674ae584df6aace",
+      "name": "cxx-configure",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/usr/bin/make",
+        "-j2"
+      ],
+      "log_sha256": "7a4e611d51b7d9de950486767128247d23f586a08071474fb4c6734367c65a47",
+      "name": "cxx-make",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/usr/bin/make",
+        "-j1",
+        "install",
+        "DESTDIR=${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/cxx-export"
+      ],
+      "log_sha256": "18b0bca7f57718c79555347d15f81cf176faab77ac30bf294302e57a428d68d1",
+      "name": "cxx-install",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc/configure",
+        "--build=x86_64-pc-linux-gnu",
+        "--host=x86_64-elf",
+        "--disable-shared",
+        "--disable-gcov"
+      ],
+      "log_sha256": "649154f0afa635c4a81be022fc1286d421bf0cf89eb265c43d2481550bc3052f",
+      "name": "unwinder-configure",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "-print-file-name=plugin"
+      ],
+      "log_sha256": "2b508c0dc69e75a27fb89958291751619dd07949d4ba8c8a3ddd26868a2c2149",
+      "name": "compiler-plugin",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "-B${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/tools/",
+        "-O2",
+        "-g0",
+        "-fexceptions",
+        "-fbuilding-libgcc",
+        "-fno-stack-protector",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-pic",
+        "-DIN_GCC",
+        "-DIN_LIBGCC2",
+        "-DHAVE_CC_TLS",
+        "-DHAVE_GAS_HIDDEN",
+        "-DGTHREAD_USE_WEAK=0",
+        "-nostdinc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind",
+        "-I${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/plugin/include",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/lib/compiler-include",
+        "-MD",
+        "-MF",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/emutls.d",
+        "-c",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc/emutls.c",
+        "-o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/emutls.o"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "unwinder-emutls",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "-B${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/tools/",
+        "-O2",
+        "-g0",
+        "-fexceptions",
+        "-fbuilding-libgcc",
+        "-fno-stack-protector",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-pic",
+        "-DIN_GCC",
+        "-DIN_LIBGCC2",
+        "-DHAVE_CC_TLS",
+        "-DHAVE_GAS_HIDDEN",
+        "-DGTHREAD_USE_WEAK=0",
+        "-nostdinc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind",
+        "-I${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/plugin/include",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/lib/compiler-include",
+        "-MD",
+        "-MF",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-c.d",
+        "-c",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc/unwind-c.c",
+        "-o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-c.o"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "unwinder-unwind-c",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "-B${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/tools/",
+        "-O2",
+        "-g0",
+        "-fexceptions",
+        "-fbuilding-libgcc",
+        "-fno-stack-protector",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-pic",
+        "-DIN_GCC",
+        "-DIN_LIBGCC2",
+        "-DHAVE_CC_TLS",
+        "-DHAVE_GAS_HIDDEN",
+        "-DGTHREAD_USE_WEAK=0",
+        "-nostdinc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind",
+        "-I${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/plugin/include",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/lib/compiler-include",
+        "-MD",
+        "-MF",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-dw2-fde.d",
+        "-c",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc/unwind-dw2-fde.c",
+        "-o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-dw2-fde.o"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "unwinder-unwind-dw2-fde",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "-B${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/tools/",
+        "-O2",
+        "-g0",
+        "-fexceptions",
+        "-fbuilding-libgcc",
+        "-fno-stack-protector",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-pic",
+        "-DIN_GCC",
+        "-DIN_LIBGCC2",
+        "-DHAVE_CC_TLS",
+        "-DHAVE_GAS_HIDDEN",
+        "-DGTHREAD_USE_WEAK=0",
+        "-nostdinc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind",
+        "-I${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/plugin/include",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/lib/compiler-include",
+        "-MD",
+        "-MF",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-dw2.d",
+        "-c",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc/unwind-dw2.c",
+        "-o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-dw2.o"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "unwinder-unwind-dw2",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "-B${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/tools/",
+        "-O2",
+        "-g0",
+        "-fexceptions",
+        "-fbuilding-libgcc",
+        "-fno-stack-protector",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-pic",
+        "-DIN_GCC",
+        "-DIN_LIBGCC2",
+        "-DHAVE_CC_TLS",
+        "-DHAVE_GAS_HIDDEN",
+        "-DGTHREAD_USE_WEAK=0",
+        "-nostdinc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind",
+        "-I${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/plugin/include",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc",
+        "-I${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/include",
+        "-isystem",
+        "${XOS_SDK_BUILDS}/glibc_recovery_base/sysroot/usr/lib/compiler-include",
+        "-MD",
+        "-MF",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-sjlj.d",
+        "-c",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/gcc-16.2.0/libgcc/unwind-sjlj.c",
+        "-o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-sjlj.o"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "unwinder-unwind-sjlj",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "rcsD",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1/sysroot/usr/lib/libgcc.a",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/emutls.o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-c.o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-dw2-fde.o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-dw2.o",
+        "${XOS_SDK_BUILDS}/static_cxx_recovery_v1${XOS_WORKSPACE}/unwind/unwind-sjlj.o"
+      ],
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "compose-unwinder",
+      "returncode": 0
+    }
+  ],
+  "tools": {
+    "ar": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+      "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0",
+      "version": "GNU ar (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "as": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "g++": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0",
+      "version_exit_code": 0
+    },
+    "gcc": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0",
+      "version_exit_code": 0
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "nm": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+      "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f",
+      "version": "GNU nm (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "objdump": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objdump",
+      "sha256": "70fa553546f0d0e9500e07249c8138a171cfa2e8794873b6cc69514afb05657d",
+      "version": "GNU objdump (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "ranlib": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ranlib",
+      "sha256": "7428cac88865cdb9aa5750f71c66babcddf2c16c925491818ca251becd974216",
+      "version": "GNU ranlib (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "readelf": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "sha256": "a6e0ff4b51a996352b63f45270e1381035acba1445da79e91c6efee837edac9d",
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "strip": {
+      "available": true,
+      "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-strip",
+      "sha256": "ab170d35685c5a114c19cfb866b3547c359da12735be8ae803d93e382925da1a",
+      "version": "GNU strip (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    }
+  }
+}

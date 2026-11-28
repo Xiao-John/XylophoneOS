@@ -1,0 +1,96 @@
+{
+  "cxx-build": {
+    "backend_sha256": "5c63b120681020ad392909c4c8886fba800488afe8ed5d7ba5d550e24862d201",
+    "binutils": {
+      "as": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+      "ld": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+    },
+    "builder_sha256": "cd991783ea7cebe5531e0b9ae712620cce5b37bbb393d19e11aa4af146f35c4b",
+    "compiler": {
+      "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "elf_check": {
+      "format": "static_elf64",
+      "load_and_main_stack_pages": 232,
+      "load_segments": 3,
+      "machine": "x86_64",
+      "static_tls": true
+    },
+    "format_version": 1,
+    "inputs": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "src/main.cpp": "ec381f375325a5f1d6faba2c328ae7caa470804e55cda813c446069e22559b18",
+      "src/xos_stack_bounds.cpp": "af13b958043e3b1fccec59a1b9e4796c6127d3d806d1f64dd1c1fe19eb122b03",
+      "src/xos_stack_bounds.hpp": "265d42ea59bed1c1a947d40e2568fee3fd1b544ea82b2ad1bf0690115f7581b6",
+      "xos_app.json": "be57b64baa8da541a89a1a5cd7996f46265015cccb842da723f77201e3f10730"
+    },
+    "output": "build/unified_cxx.elf",
+    "output_sha256": "f6deae465a6b4347c9306a25d47ee2dfebb604eb718f406963a2cdf522059aaa",
+    "profile_sha256": "28d21470263e1a30c0558055f403763002edbc2750e54e0b39d1778372122811",
+    "project_id": "unified.unified_cxx",
+    "runtime_family": "glibc",
+    "sdk_manifest_sha256": "e9301911262b8ad67d7046f076636653667b0fda58b3b49f62fbfaffb31fa7db",
+    "sdk_tree_sha256": "32b7bec6fc9e85ce2997cd3659fac0c2ecbf05ba7a84a099d9efbb637f760548",
+    "status": "cross_built_guest_not_run",
+    "target_profile": "xos-x86_64-glibc-static-cxx-recovery"
+  },
+  "cxx-check": {
+    "elf": "build/unified_cxx.elf",
+    "id": "unified.unified_cxx",
+    "status": "checked_guest_not_run"
+  },
+  "cxx-package": {
+    "files": 15,
+    "package": "${XOS_CONSUMER}/cxx.xpk",
+    "sha256": "f8a66340ab930fd6b1e7ff240c7601d837c4cea0bdbb3f9365c981536884c8de",
+    "status": "packed_guest_not_run",
+    "target_profile": "xos-x86_64-glibc-static-cxx-recovery"
+  },
+  "path-build": {
+    "backend_sha256": "5c63b120681020ad392909c4c8886fba800488afe8ed5d7ba5d550e24862d201",
+    "binutils": {
+      "as": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+      "ld": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+    },
+    "builder_sha256": "cd991783ea7cebe5531e0b9ae712620cce5b37bbb393d19e11aa4af146f35c4b",
+    "compiler": {
+      "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "elf_check": {
+      "format": "static_elf64",
+      "load_and_main_stack_pages": 191,
+      "load_segments": 3,
+      "machine": "x86_64",
+      "static_tls": true
+    },
+    "format_version": 1,
+    "inputs": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "src/main.c": "469d595e1293f1b0c14d12163edbc13d8a4d156c9d2b7af6f8605c5bc541f7c1",
+      "xos_app.json": "467a4fba7f609817de7e7a337cc87a6bbd45ac8eb3fb7be7371f940bbe1579da"
+    },
+    "output": "build/g3_cwd.elf",
+    "output_sha256": "ce2ca24ed31965718c30ffb416cabab19b7b5055f3d6ab11cbdc6d65d05dd200",
+    "profile_sha256": "28d21470263e1a30c0558055f403763002edbc2750e54e0b39d1778372122811",
+    "project_id": "unified.g3_cwd",
+    "runtime_family": "glibc",
+    "sdk_manifest_sha256": "e9301911262b8ad67d7046f076636653667b0fda58b3b49f62fbfaffb31fa7db",
+    "sdk_tree_sha256": "32b7bec6fc9e85ce2997cd3659fac0c2ecbf05ba7a84a099d9efbb637f760548",
+    "status": "cross_built_guest_not_run",
+    "target_profile": "xos-x86_64-glibc-static-cxx-recovery"
+  },
+  "path-check": {
+    "elf": "build/g3_cwd.elf",
+    "id": "unified.g3_cwd",
+    "status": "checked_guest_not_run"
+  },
+  "path-package": {
+    "files": 11,
+    "package": "${XOS_CONSUMER}/path.xpk",
+    "sha256": "443078cc0f3393a0fa94554baec3b0c93c446800449904bf21fc4ad5cc80e557",
+    "status": "packed_guest_not_run",
+    "target_profile": "xos-x86_64-glibc-static-cxx-recovery"
+  }
+}

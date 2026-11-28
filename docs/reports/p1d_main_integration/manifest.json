@@ -1,0 +1,37 @@
+{
+  "format_version": 1,
+  "files": {
+    "README.md": {
+      "sha256": "b1b312c07fc3f52ffa6d1118d6dddc2eb485a6f80c0e1a0d78f4665f4f61ee35",
+      "bytes": 2763
+    },
+    "conversion.json": {
+      "sha256": "6d902407f5ff31a8a85b00e7ec6c0b8d148fa46d69e5d68a8326171b86693c38",
+      "bytes": 2556
+    },
+    "guest.json": {
+      "sha256": "d93c4bc603881af3e301bb973a30a72243718987ade158b4e9485cca4f063933",
+      "bytes": 54856
+    },
+    "report.json": {
+      "sha256": "fc998f4cdaa1df131d3f8eaa41c046c6f55ca6b083424451594055b6b4085d5f",
+      "bytes": 3958
+    },
+    "serial.json": {
+      "sha256": "05e31bd370466952a7fa293425143c4d43e9d4a9cdcda4a6ffb98a0a9cbc17fe",
+      "bytes": 11669
+    },
+    "source_compatibility.json": {
+      "sha256": "605080ff21bc29ca8b58eb15490f2145afaad0f26f0e05737db755247ffa305e",
+      "bytes": 54533
+    },
+    "system_build.json": {
+      "sha256": "831abd0122f8f040d25d10cb91b0d0aec89745c020d21fec812f881cc55abfe0",
+      "bytes": 609699
+    },
+    "system_recipe.json": {
+      "sha256": "1ff0377dcabe1db96a5fb7909adddeafe415f81013ce5798dc162bdc8a798f9e",
+      "bytes": 612015
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "status": "observed_not_promoted",
+  "original_sha256": "0846157e122b9cc25bd221588a6f288bf5194cc841b9b2ad42be8d72b4c2e4d9",
+  "stripped_sha256": "017052e197a6b803c72656b1a1adc91ec2c650d1410204f694dc5d48bb27a274",
+  "complete_program_headers_equal": true,
+  "entry_equal": true,
+  "all_loadable_bytes_except_section_table_header_metadata_equal": true,
+  "actual_changed_offsets": [
+    40,
+    41,
+    42,
+    60,
+    62
+  ],
+  "section_table_header_before": {
+    "offset": 9821552,
+    "count": 24,
+    "string_index": 23
+  },
+  "section_table_header_after": {
+    "offset": 5483640,
+    "count": 16,
+    "string_index": 15
+  },
+  "segments": [
+    {
+      "ordinal": 0,
+      "bytes": 3313402,
+      "changes": [
+        40,
+        41,
+        42,
+        60,
+        62
+      ]
+    },
+    {
+      "ordinal": 1,
+      "bytes": 1538963,
+      "changes": []
+    },
+    {
+      "ordinal": 2,
+      "bytes": 21632,
+      "changes": []
+    }
+  ],
+  "public_projection": {
+    "raw_report_sha256": "7afb923a297e96481fa9c3df186a45f75e4235947e8ccc24cdda2acca7a1a21a",
+    "raw_bytes": 950,
+    "raw_source": "build/p1d-installer-strip-analysis.json",
+    "transform": "JSON presentation and source/workspace or SDK installation prefixes only; all observed status, results, bytes digests, bounds and commands retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "development SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the development SDK"
+    },
+    "raw_report_unchanged": true
+  }
+}

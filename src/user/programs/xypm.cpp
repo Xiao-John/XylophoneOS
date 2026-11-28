@@ -12,6 +12,11 @@
 #include "xypm_native.hpp"
 #include "xypm_journal.hpp"
 #include "xypm_repository_io.hpp"
+#ifdef XYP_AUTHENTICATED_DISTRIBUTION
+#include "xypm_provisioning_client.hpp"
+#include "xypm_repository_trust.hpp"
+#include "xypm_repository_sdk.hpp"
+#endif
 #ifdef XYP_GLIBC_RUNTIME
 extern "C" xos::i64 xypm_acquire_maintenance() {
     xos::file::client files;
@@ -279,8 +284,21 @@ int repository_command(const char* action, const char* directory, const char* lo
 }
 }
 int main(int argc,char** argv) {
+#ifdef XYP_AUTHENTICATED_DISTRIBUTION
+    if (argc==6 && (!std::strcmp(argv[1],"repo-verify-authenticated") ||
+                   !std::strcmp(argv[1],"repo-install-generation")) && !std::strcmp(argv[4],"--controller"))
+        return xypm_distribution::command(argv[2],argv[3],argv[5],
+            !std::strcmp(argv[1],"repo-install-generation"),xypm_bootstrap,xypm_sdk_identity,
+            canonical_component_path);
+    if (argc==2&&!std::strcmp(argv[1],"--version")) {
+        std::puts("xypm 0.5.0 (authenticated approved generation distribution)");return 0;
+    }
+#endif
     if (argc==2&&!std::strcmp(argv[1],"--version")) {std::puts("xypm 0.4.0 (P3 offline repositories)");return 0;}
     if (argc==1 || (argc==2&&!std::strcmp(argv[1],"--help"))) {
+#ifdef XYP_AUTHENTICATED_DISTRIBUTION
+        std::puts("xypm repo-verify-authenticated|repo-install-generation <absolute-repository-dir> <absolute-lock.json> --controller <authenticated-parent-service>");
+#endif
         std::puts("xypm list | info <package-id> | verify <package.xpk> [sha256]\nxypm plan install|upgrade <package.xpk> | remove <package-id>\nxypm install|upgrade|ensure <package.xpk> [--sha256 <digest>] | remove <package-id> | recover (maintenance only)\nxypm repo-verify|repo-plan <absolute-repository-dir> <absolute-lock.json> [--lock-sha256 <digest>]\nxypm repo-install|repo-upgrade <absolute-repository-dir> <absolute-lock.json> <package-id> [--lock-sha256 <digest>] (maintenance only)");return 0;
     }
     if ((argc==4||argc==6) && (!std::strcmp(argv[1],"repo-verify")||!std::strcmp(argv[1],"repo-plan")) &&

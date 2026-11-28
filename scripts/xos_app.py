@@ -110,7 +110,7 @@ def output_for(project, value):
     return project / relative
 
 
-def build_glibc(project, value, sdk, profile, bound, inputs, output):
+def build_glibc(project, value, sdk, profile, bound, inputs, output, archives=(), gc_sections=False):
     with tempfile.TemporaryDirectory(prefix='glibc_app_', dir=output.parent) as folder:
         work = Path(folder)
         source_root = work / 'project'
@@ -134,6 +134,12 @@ def build_glibc(project, value, sdk, profile, bound, inputs, output):
             cmd.append('--stdio-transfer')
         for source in value['sources']:
             cmd += ['--source', str(source_root / source)]
+        for archive in archives:
+            require(archive in inputs, 'link archive is not a recorded project input')
+            confined(project, archive)
+            cmd += ['--link-archive', str(source_root / archive)]
+        if gc_sections:
+            cmd.append('--gc-sections')
         result = subprocess.run(cmd, cwd=source_root)
         build_dir = work / 'application.elf.build'
         if result.returncode:
@@ -156,6 +162,8 @@ def build_glibc(project, value, sdk, profile, bound, inputs, output):
                    'compiler': {name: backend['compiler'][name] for name in ('version', 'sha256')},
                    'binutils': {name: tool['sha256'] for name, tool in backend['binutils'].items()},
                    'inputs': inputs, 'output': output.relative_to(project).as_posix(),
+                   'link_archives': {name: inputs[name] for name in archives},
+                   'gc_sections': gc_sections,
                    'output_sha256': backend['elf_sha256'], 'elf_check': inspect_elf(linked),
                    'status': 'cross_built_guest_not_run'}
         require(inputs == input_receipt(project, value), 'project inputs changed during build')
@@ -168,7 +176,7 @@ def build_glibc(project, value, sdk, profile, bound, inputs, output):
     return receipt
 
 
-def build(project, sdk, profile):
+def build(project, sdk, profile, archives=(), gc_sections=False):
     project, value = project_load(project)
     require(value['target_profile'] == profile['id'],
             'project target_profile mismatch: project has %r, profile is %r; '
@@ -180,7 +188,9 @@ def build(project, sdk, profile):
     sdk = Path(sdk).resolve(strict=True)
     inputs = input_receipt(project, value)
     if profile.get('runtime_family') == 'glibc':
-        return build_glibc(project, value, sdk, profile, bound, inputs, output_for(project, value))
+        return build_glibc(project, value, sdk, profile, bound, inputs, output_for(project, value),
+                           archives, gc_sections)
+    require(not archives and not gc_sections, 'explicit archive options require the glibc backend')
     compiler = os.environ.get('XOS_CC' if value['language'] == 'c' else 'XOS_CXX',
                               'x86_64-elf-gcc' if value['language'] == 'c' else 'x86_64-elf-g++')
     for variable in ('CPATH', 'C_INCLUDE_PATH', 'CPLUS_INCLUDE_PATH', 'OBJC_INCLUDE_PATH', 'LIBRARY_PATH', 'COMPILER_PATH', 'GCC_EXEC_PREFIX'):

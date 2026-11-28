@@ -1,0 +1,59 @@
+{
+  "projected_reports": {
+    "source_compatibility.json": {
+      "raw_source": "build/p1d-integration-source-compatibility.json",
+      "raw_sha256": "d7c406e5d875be5e4bacbcce149989f3b6516fc66bd70a1df0698fa128deccae",
+      "public_sha256": "605080ff21bc29ca8b58eb15490f2145afaad0f26f0e05737db755247ffa305e"
+    },
+    "system_recipe.json": {
+      "raw_source": "build/p1d-main-system-v1/report.json",
+      "raw_sha256": "996fbdf3d0b48b9d15f16124a01fd967c3e3eb933a98ae3eba0100b151c42b79",
+      "public_sha256": "1ff0377dcabe1db96a5fb7909adddeafe415f81013ce5798dc162bdc8a798f9e"
+    },
+    "system_build.json": {
+      "raw_source": "build/p1d-main-system-v1/source/build/system/manifest.json",
+      "raw_sha256": "df2ab408cee5781923be51888a792dcb1a20a31f53506355397a64200cebde62",
+      "public_sha256": "831abd0122f8f040d25d10cb91b0d0aec89745c020d21fec812f881cc55abfe0"
+    },
+    "guest.json": {
+      "raw_source": "build/p1d-main-official-guest-v1/report.json",
+      "raw_sha256": "8a218056a8315ce0a1f6d07636316f0b6cd11bfc5dda566f1544b140d45c6bd1",
+      "public_sha256": "d93c4bc603881af3e301bb973a30a72243718987ade158b4e9485cca4f063933"
+    }
+  },
+  "serial": "base64 encodes the untouched serial bytes; original lengths and SHA-256 values are recorded separately from JSON wrapper hashes",
+  "frozen_before_after_inputs": 100,
+  "all_frozen_inputs_unchanged": true,
+  "old_evidence_files_verified": 68,
+  "build_log_sha256": "9d3e1baa7f5098d63b710b08020f011339743ec1284c7ce0ee80f11c56017912",
+  "build_launcher_log_sha256": "4730105b0083bbc64de681b057c0a580687ad1e7a903f0d92dc398c84b6aa725",
+  "guest_launcher_log_sha256": "0f5b098064d89978f57f9258afe7d4dbd64784a808405774dc776abfa8378dc4",
+  "command": [
+    "XOS_QMP_TRANSPORT=pipe",
+    "python3",
+    "tests/xypm_distribution_guest.py",
+    "--system-build",
+    "build/p1d-main-system-v1/source/build/system",
+    "--system-source",
+    "build/p1d-main-system-v1/source",
+    "--sdk",
+    "${XOS_STATIC_SDK}",
+    "--profile",
+    "${XOS_PROFILE}",
+    "--xypm-build",
+    "${XOS_FROZEN_D}/.cache/xos_seed/xypm/df6857205c780165f789",
+    "--v1-distribution",
+    "${XOS_FROZEN_D}/build/p1d-distribution-v1",
+    "--v2-distribution",
+    "${XOS_FROZEN_D}/build/p1d-distribution-v2",
+    "--trust",
+    "config/package/official_repository_trust_v1.json",
+    "--v1-signature",
+    "${XOS_FROZEN_D}/build/p1d-official-signature-v1",
+    "--v2-signature",
+    "${XOS_FROZEN_D}/build/p1d-official-signature-v2",
+    "--official",
+    "--output",
+    "build/p1d-main-official-guest-v1"
+  ]
+}

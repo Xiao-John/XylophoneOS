@@ -1,0 +1,9 @@
+{
+  "format_version": 1,
+  "repository_id": "xos.official",
+  "target_profile": "xos-x86_64-glibc-p1-20261128-v1",
+  "key_epoch": 1,
+  "minimum_sequence": 1,
+  "maximum_validity_seconds": 604800,
+  "public_key_ed25519": "5b7bc2a84175ac5c729013ec1bc7345b559aa42658fc65c093bc22e258292df5"
+}

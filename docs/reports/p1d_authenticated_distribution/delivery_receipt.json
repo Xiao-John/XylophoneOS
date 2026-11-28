@@ -1,0 +1,28 @@
+{
+  "archive_public_path_gate": "delivery_public_path_gate.json",
+  "bundle_manifest_sha256": "d6f780d92d52ee18c0f33a8984e21da99956445618dea3a056e78c07266240e7",
+  "bytes": 5701429,
+  "checksums_sha256": "0cf8bb48f1d824be1fe43c1d042a3181c6b125e2111f734dbfdfadee956665c5",
+  "distribution_source_files": 23,
+  "embedded_evidence_files": 66,
+  "embedded_evidence_manifest_sha256": "d98cb62f73c8a0776c36139075d74f09643c5301a6266f40bdc219c5f510d22d",
+  "filename": "p1d-official-distribution-kit-v2.tar.gz",
+  "members": 507,
+  "metadata_validity": {
+    "asia_shanghai_end_exclusive": "2026-11-29T19:55:31+08:00",
+    "expires_at": 1795953331,
+    "issued_at": 1795866871,
+    "sdk_expires_with_metadata": false,
+    "utc_end_exclusive": "2026-11-29T11:55:31Z"
+  },
+  "official_installer_package_sha256": "6e2be19d6bb1cc01c680f12a86ffbd1bd3720199c1eb69e01740d9957aa0d033",
+  "official_raw_report_sha256": "473ddf90189da7eac691003f5d69d737d533c7845541dee287ca9a3df1b23c65",
+  "private_material_included": false,
+  "runtime_input_checks": 471,
+  "runtime_source_inputs": 392,
+  "runtime_unique_source_files": 392,
+  "scope": "bounded developer acceptance kit; exactly qualified official artifacts and public source/receipts; original debug-path ELF, private signing keys, test private keys, private storage and VM disks excluded; public test keys are included for replay",
+  "sha256": "31db15ce0320405657fa75deadf33b2f1aa247ff2da7a2abbd8c070d0a86f0e5",
+  "status": "archive_reopened_and_all_members_verified",
+  "test_raw_report_sha256": "7a51d09b84295ae5c09d6ee2bea5e34c197487a1c3d6948d4b48f53bbe17b9a8"
+}

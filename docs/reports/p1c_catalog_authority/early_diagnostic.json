@@ -1,0 +1,100 @@
+{
+  "diagnosis": "Fixture incorrectly equated visible sys81 endpoint enumeration with all owner-attributed endpoints. kernel channel_action::enumerate exposes only current sender/receiver participation; the supervisor-owned daemon/proxy pair has neither current peer. The asserted two count must instead be recorded from successful creates and peer authentication; visible supervisor-owned endpoints must be zero.",
+  "driver_raw_sha256": "6a186ec280aa470bcff496f82026c9a955e503bc66770856dbe5755f36d90d3f",
+  "fix_scope": "Only test observation and retained create handles; kernel limits, production runtime, SDK and authority are unchanged.",
+  "format": "xos-p1c-early-diagnostic-v1",
+  "initial_guest": {
+    "error": "AssertionError: initial: native supervisor failed, finish=15",
+    "events": [
+      {
+        "read_revision": null
+      },
+      {
+        "candidate_revision": 1,
+        "reply": "committed",
+        "selected_revision": 1
+      },
+      {
+        "read_revision": 1
+      },
+      {
+        "candidate_revision": 2,
+        "reply": "committed",
+        "selected_revision": 2
+      }
+    ],
+    "fault": "none",
+    "finish_code": 15,
+    "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "scenario": 20,
+    "status": "failed"
+  },
+  "later_fork_diagnostic": {
+    "decoded_exit": 5,
+    "descendants": {
+      "error": "AssertionError: gnu_live_revoke: native supervisor failed, finish=186",
+      "events": [
+        {
+          "read_revision": 2
+        }
+      ],
+      "fault": "none",
+      "finish_code": 186,
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "scenario": 24,
+      "status": "failed"
+    },
+    "disassembly_conversion": "Public copy replaces the private runtime root with a portable placeholder and trims line-end whitespace; original bytes remain bound by disassembly_raw_sha256.",
+    "disassembly_raw_sha256": "c69a782aad8a9a82bc5f4bc7d9c95b2e6498c47b1f89e8446a3579e63807c4e5",
+    "fork_elf_sha256": "9b980f10dc8adb0ba510decc9767b6e96fe48b05addf53e8543a2c88c033cb57",
+    "fork_source_sha256": "3b06b6a3b8f526c7032d367530ce9677828da1516f283981a3395b3a5ef15b43",
+    "fork_symbol": "fork@@GLIBC_2.44 / __fork",
+    "fork_symbol_address": "0xd7ec0",
+    "initial": {
+      "authority_revision": 2,
+      "events": [
+        {
+          "read_revision": null
+        },
+        {
+          "candidate_revision": 1,
+          "reply": "committed",
+          "selected_revision": 1
+        },
+        {
+          "read_revision": 1
+        },
+        {
+          "candidate_revision": 2,
+          "reply": "committed",
+          "selected_revision": 2
+        }
+      ],
+      "fault": "none",
+      "finish_code": 1,
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "scenario": 20,
+      "status": "passed"
+    },
+    "interpretation": "Actual parent completed same-PID exec and its first positive leaf spawn, then the first fork call returned failure. The frozen shared libc fork symbol is an ENOSYS stub. No root revocation had occurred.",
+    "never_qualification": true,
+    "raw_sha256": {
+      "gnu_live_revoke_serial.log": "4aacffef3e9d29e0f9bded8ec12e70bc2da2c27fdcaf10016cb0a7dd81059e6e",
+      "initial_serial.log": "6ba7e9569be53a44db3be71d479c7b34d76814f93b60383f00260a4b1f6a9a8d",
+      "report.json": "df6ed26985757aa831bb287016704bfbcae5d5e375d8dd5bdccc43ff963da326"
+    },
+    "scope_resolution": "P1-C real descendants use posix_spawn; shared fork and fork-to-exec remain separate P1-K2. No runtime or fork ABI was changed.",
+    "status": "failed",
+    "system_build_id": "e107c7ee421ea761"
+  },
+  "log_raw_sha256": {
+    "initial_qemu.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "initial_serial.log": "133d46ba1b02d0598ee861d584fc8ab2fb551c52f5265ea4cb1356844282f08b",
+    "report.json": "12c7a23f789d8d145baefe8ced20bed5f9cdd8607d19789fe041e41925d4928f"
+  },
+  "never_qualification": true,
+  "producer": "tests/pumpkin_catalog_guest.py boot helper and explicit two-case driver",
+  "status": "failed",
+  "system_build_id": "61b8260da6d12357",
+  "system_manifest_sha256": "70d278a3ce70cfdb2dccaf4c5c5c802102e607ba34652727afc0c458322c5fa4"
+}

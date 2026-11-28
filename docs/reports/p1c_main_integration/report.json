@@ -1,0 +1,33 @@
+{
+  "automatic_merges": [
+    "docs/contracts/abi_registry.md",
+    "scripts/user_build.py"
+  ],
+  "c_parent": "dea4d6b0cbdee6cc696e15647e9a39100766b7fc",
+  "checks": {
+    "abi_table": "passed",
+    "authority_host_results": 18,
+    "closure_host_results": 46,
+    "provisioning_runs": 2,
+    "real_guest_boots": 2,
+    "registry_allocations": 79
+  },
+  "exclusions": [
+    "new K1 shared sleep API in the old libc",
+    "shared GNU fork",
+    "physical arbitrary power loss",
+    "the complete 23-boot matrix on this new image"
+  ],
+  "format": "xos-p1c-main-integration-summary-v1",
+  "frozen_abi_headers_unchanged": true,
+  "frozen_runtime_manifest_sha256": "a7a6360491bb8ebe13b85aab61be7d61d0cd26137d1f02f433d7ca908e8bd0dc",
+  "main_parent": "3cbb2f35bb4bdc4aabca6cff4e4fa56e74b5ac17",
+  "merge_base": "6332527ab64e92371266363f41f3247717a3cac8",
+  "original_23_boot_qualification_unchanged": true,
+  "scope": "Exact frozen GNU runtime/application bundles on an integrated native system, with actual three-generation revocation",
+  "semantic_resolution": "Preserved all G/H/K/F allocations and claims; documented C implementation while retaining the separate D qualification boundary",
+  "status": "passed",
+  "system_build_id": "608aad6ff2fa8b5b",
+  "system_manifest_sha256": "42ea150c37d8840e5ca42cc8e4bc63b16a7dc33d298c3e1a2c0ac3635275bceb",
+  "textual_conflicts": []
+}

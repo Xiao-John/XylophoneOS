@@ -44,15 +44,20 @@ class deployment_profile:
     socket_path: Path
     named_resources: bool
     sha256: str
+    provisioning: bool = False
 
 
 def load_profile(path, expected_sha256):
     if expected_sha256 is None:
         raise ValueError("Supply the trusted deployment profile digest")
     value, actual = metadata_snapshot(path, expected_sha256)
-    if (value.keys() != {"format", "realm", "system_manifest_sha256", "operator_uid", "provider_uid",
-                        "provider_socket", "named_resources"} or value["format"] != "xos-pumpkin-local-provider-v1"
-            or type(value["named_resources"]) is not bool):
+    fields = {"format", "realm", "system_manifest_sha256", "operator_uid", "provider_uid",
+              "provider_socket", "named_resources"}
+    provisioning = value.get("format") == "xos-pumpkin-local-provider-v2"
+    if (value.keys() != fields | ({"provisioning"} if provisioning else set()) or
+            value["format"] not in ("xos-pumpkin-local-provider-v1", "xos-pumpkin-local-provider-v2") or
+            type(value["named_resources"]) is not bool or
+            (provisioning and (value["provisioning"] is not True or value["named_resources"] is not False))):
         raise ValueError("Invalid Pumpkin deployment profile")
     operator_uid, provider_uid = value["operator_uid"], value["provider_uid"]
     if (any(type(uid) is not int or not 0 < uid < 2**32 - 1 for uid in (operator_uid, provider_uid))
@@ -64,7 +69,8 @@ def load_profile(path, expected_sha256):
         raise ValueError("Use a canonical absolute local provider socket path")
     return deployment_profile(deployment_realm(value["realm"]),
                               digest_value(value["system_manifest_sha256"], "deployment system manifest"),
-                              operator_uid, provider_uid, Path(address), value["named_resources"], actual)
+                              operator_uid, provider_uid, Path(address), value["named_resources"], actual,
+                              provisioning)
 
 
 def require_uid(expected):
@@ -85,7 +91,8 @@ def encode_mark(mark):
 def decode_mark(data, profile):
     if data == empty:
         return None
-    mark = generation_mark(*mark_wire.unpack(data), named_resources=profile.named_resources)
+    mark = generation_mark(*mark_wire.unpack(data), named_resources=profile.named_resources,
+                           provisioning=profile.provisioning)
     if mark.realm != profile.realm:
         raise generation_error("The provider mark is outside the installation realm")
     return mark
@@ -114,6 +121,7 @@ class provider_client:
         self.profile = profile
         self.binding = bytes.fromhex(profile.sha256)
         self.named_resources = profile.named_resources
+        self.provisioning = profile.provisioning
 
     def exchange(self, operation, expected=None, candidate=None):
         with socket.socket(socket.AF_UNIX) as connection:
@@ -205,7 +213,8 @@ def main():
     try:
         profile = load_profile(args.profile, args.profile_sha256)
         require_uid(profile.provider_uid)
-        authority = generation_authority(args.root, profile.realm, named_resources=profile.named_resources)
+        authority = generation_authority(args.root, profile.realm, named_resources=profile.named_resources,
+                                         provisioning=profile.provisioning)
         if args.operation == "provision":
             authority.provision()
         else:

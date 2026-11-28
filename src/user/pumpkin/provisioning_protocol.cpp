@@ -16,7 +16,11 @@ status invoke(provisioning_store& store, service_core& core, const connection_id
         has_bytes(app.data + app.data_length, application_data_bytes - app.data_length)) { return status::invalid; }
     if (op != provisioning_operation::stage_catalog && !zero(request.candidate)) { return status::invalid; }
     if (op != provisioning_operation::delegate_publisher && !zero(request.publisher)) { return status::invalid; }
-    if (op == provisioning_operation::checkpoint) {
+    if (op == provisioning_operation::checkpoint || op == provisioning_operation::publisher_checkpoint) {
+        if (op == provisioning_operation::publisher_checkpoint &&
+            role != provisioning_role::registrar && role != provisioning_role::catalog_publisher) {
+            return status::denied;
+        }
         if (!zero(app) || !zero(request.session) || !zero(request.expected)) { return status::invalid; }
         return store.checkpoint(reply.candidate.checkpoint, reply.candidate.catalog);
     }
@@ -78,11 +82,15 @@ status invoke(provisioning_store& store, service_core& core, const connection_id
         return store.inspect_application(app.application, reply.app);
     }
     case provisioning_operation::revoke_generation:
+    case provisioning_operation::activate_generation:
     case provisioning_operation::admit_generation: {
         auto canonical = application_input{}; canonical.application = app.application;
         if (__builtin_memcmp(&canonical, &app, sizeof(app)) || app.application >= catalog_root_limit) { return status::invalid; }
         if (op == provisioning_operation::revoke_generation) {
             return store.revoke_generation(request.expected, static_cast<u32>(app.application));
+        }
+        if (op == provisioning_operation::activate_generation) {
+            return store.activate_generation(request.expected, static_cast<u32>(app.application));
         }
         if (request.expected != store.version()) { return status::conflict; }
         const auto result = store.checkpoint(reply.candidate.checkpoint, reply.candidate.catalog);
@@ -101,7 +109,7 @@ bool dispatch_provisioning(provisioning_store& store, service_core& core, const 
     if (request.magic != provisioning_magic || request.version != provisioning_protocol_version || request.reserved ||
         !request.sequence || request.sequence != last_sequence + 1 || request.deadline <= now ||
         request.deadline - now > max_request_ns || request.operation < provisioning_operation::checkpoint ||
-        request.operation > provisioning_operation::install_application) { return false; }
+        request.operation > provisioning_operation::activate_generation) { return false; }
     last_sequence = request.sequence;
     reply.operation = request.operation; reply.sequence = request.sequence;
     reply.result = invoke(store, core, connection, role, request, now, entropy, reply, admission);

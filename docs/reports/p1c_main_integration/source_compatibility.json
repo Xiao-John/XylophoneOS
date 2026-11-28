@@ -1,0 +1,141 @@
+{
+  "automatically_merged_files": {
+    "docs/contracts/abi_registry.md": {
+      "incoming_sha256": "b7a2eef41f8407a77b1042ff510736e0e077b594a4d93fd1e046ab89e4052b85",
+      "integrated_sha256": "3c82500077942c1b7b9d3ba044b368a3b16a435b73d3215dd25efcc7df3ddfe3",
+      "main_sha256": "cd210e01c4a7d4596f25a18bd9b718837fb2860134a6da516475b76a73ac0478"
+    },
+    "scripts/user_build.py": {
+      "incoming_sha256": "3e05530899554aa97a958f939ecb18b24c6000577f4c0eb97d158bb31e9c3e97",
+      "integrated_sha256": "5b823ee68c17085f496cf8edf61484182d14ee0f3cc411d7c2463af76fa39af1",
+      "main_sha256": "210d1f5c68590ed6397ab93e15ea46d94ce0d8d8758bd42601e80f69b3075fc3"
+    }
+  },
+  "c_parent": "dea4d6b0cbdee6cc696e15647e9a39100766b7fc",
+  "c_production_source_preserved": {
+    "scripts/build.py": "c0436fd338ec7859e80ce62e6f76c76eb677695f07bde0b69dbbf4a554986044",
+    "scripts/build_glibc_shared_runtime.py": "e962e6d2703d69cc47f9f8be5aeb4b863621f45cda0b51de31e37a21098695a5",
+    "scripts/build_glibc_terminal_support.py": "98a1fed42118f05b6086f33614cb8b02fecbda9fa52f5175d7c512bdc92fecc5",
+    "scripts/pumpkin_catalog_fixture.py": "99e729dc90cfce003e6114016a0645014ce08b76e0a71d06bdcd55e1ce36a299",
+    "scripts/pumpkin_generation_provider.py": "90446e0da60ef38216d0e280a494a6a683c95ed43e95ed7aa3d248452564b212",
+    "scripts/pumpkin_user_login.py": "c628d659531796638d844ea61cdd88b66fb468ee8aafb6d0c9c32adac125aaa5",
+    "src/shared/include/xos/catalog_abi.hpp": "334e1473a39983a0f2d5cc521d5ce5d01dddaf1e26e0e4473dd440dafd3221b4",
+    "src/shared/include/xos/dynamic_startup_abi.h": "a3f1bd01da4ba1f7513fe867a1353397f16d77aa45b260ced4309b763a3b3a31",
+    "src/user/include/xos/distribution_startup.hpp": "b1053206fdddb8a030ddfb1927fc894d733541f750fe33de92a52aa143745910",
+    "src/user/include/xos/dynamic_launch.hpp": "242e1cd16e5ac81bd9702ee0f43c97bf1ba764eedc332dacdeb08cdd257e6976",
+    "src/user/loader/dynamic/authority.cpp": "8330714df3184a00a88c6425f8991531673c70236a4adc994de01bc0bc7fa3b1",
+    "src/user/loader/dynamic/authority.hpp": "4048eb3878bfdd5b32e9f64cbc3d51ffb575b7b5dfff5fdd1496ac1fd893ae78",
+    "src/user/loader/dynamic/closure.cpp": "eccac399f9cf6bcfeac38566adb6cc8203276fbdd4e015e6098fcb0d19b4f5be",
+    "src/user/loader/dynamic/spawn.cpp": "f415ab137ba86b51e624136c1b1bd420e0d51ec8c606dfcd07d7ccd39100d4c9",
+    "src/user/loader/dynamic/startup.cpp": "f52c0ffc8f6887b3299b5c8f2be77576d9ef9d563ed95dfa0221530f49a5b926",
+    "src/user/loader/dynamic/startup.hpp": "b5dce3a2cba9e67b6f57bc2af6e2bc289096bad47ebf2be30a1882f723b06a5e",
+    "src/user/programs/supervisor.cpp": "109c38c3825d7442d10fa10078ae79dcd3b97ce5e48d11f5ee6a9f6655da14fd",
+    "src/user/pumpkin/generation_guest.hpp": "43cee2d57c42fd860b591c012917fedcd1ee562d79a18079bad133ab88e60e53",
+    "src/user/pumpkin/generation_proxy.cpp": "75c3bc8c60cd0af1c216177f79b6664003bbbcbdc6bbf58a31869293cb42db8b",
+    "src/user/pumpkin/native_ipc.cpp": "9d202009fa71a6f051973d78b93419ff9e4b42efb50eb1d677895c1a9767ce7c",
+    "src/user/pumpkin/provisioning_protocol.cpp": "cb46115ea994158518f07568702457c53a9ee2e4c834bf8c4845c12b8aff50c2",
+    "src/user/pumpkin/provisioning_protocol.hpp": "e8a6a987dc831d0c97a4776d76dd7800a786fb117895d1b4a8b2e89f6b91bfab",
+    "src/user/pumpkin/provisioning_store.cpp": "05764a9a1bc9daa7c3ca32be14b6d959ac62b54944b5ad33e68fe150ea48f35c",
+    "src/user/pumpkin/provisioning_store.hpp": "8c27184f9797c7d0af0c4efbd35aa3307becbe19111d5eab125827c54c7ebec4",
+    "src/user/pumpkin/provisioning_types.hpp": "6a504fe88734bf8025483340979dfa6ecbc568377a5c87e9e6046d60de78cf8b",
+    "src/user/services/files.cpp": "2e134a0f61e71a08dea8a7d7efaf4101789e6fd1e84f6004e989504429fcc653",
+    "src/user/services/files_private_broker.hpp": "9de4b909481c8706ef845974b4f56eca38683c4ceb95b6ab7403d8440703da79"
+  },
+  "current_native_input_count": 157,
+  "format": "xos-p1c-main-source-compatibility-v1",
+  "frozen_runtime_manifest_sha256": "a7a6360491bb8ebe13b85aab61be7d61d0cd26137d1f02f433d7ca908e8bd0dc",
+  "frozen_runtime_native_abi": "9dafe8ee0e45fbc1ccb00ee2362d1be5db38584553efcb8ae7a50d699cd4c849",
+  "identity_headers_unchanged": {
+    "src/shared/include/xos/catalog_abi.hpp": "334e1473a39983a0f2d5cc521d5ce5d01dddaf1e26e0e4473dd440dafd3221b4",
+    "src/shared/include/xos/dynamic_abi.hpp": "96a8c327fc64c406757e5d3aeb5ccd95e9cdd20d1d9a167728d58ef570a9217e",
+    "src/shared/include/xos/dynamic_startup_abi.h": "a3f1bd01da4ba1f7513fe867a1353397f16d77aa45b260ced4309b763a3b3a31"
+  },
+  "interpretation": "Existing frozen GNU runtime and C application bundles are executed on a new integrated native image. Seven recorded build inputs differ; this does not rebuild or qualify new K1 shared-libc APIs. Existing pipe and process ABI layouts used by the frozen bundles remain unchanged.",
+  "main_parent": "3cbb2f35bb4bdc4aabca6cff4e4fa56e74b5ac17",
+  "main_source_preserved": {
+    "scripts/build_glibc_sdk.py": "125d9823dd43cb77820087b8cfb0504a1114c9de80bd47a926c2632dac763000",
+    "scripts/build_mobius_multiwindow_probe.py": "8bbfdb8324bc1171a729d5ab4c1df68efc1ab7fd5a21084988c0f2fcec54f383",
+    "scripts/build_pipe_status_probe.py": "6b62948f8b2a30ecd3241dc214a87e8826e0180e3543f720eae250e99ea8ca83",
+    "scripts/build_threading_sdk.py": "e94b5bd2577368c6c4aed2bc47ecc0d3f386573b021d664f0ecd03e80ace6fef",
+    "scripts/interactium_manifest.py": "2cd37d100136ad8b0265a2c1ba71686a28413dba5f30204db689e3368d36e57a",
+    "src/kernel/arch/x86_64/tasks.cpp": "63b32ce4937405e826114ce0c9f7338d21c271765d94b66213613701deb9e149",
+    "src/ports/glibc/sysdeps/xos/Makefile": "801b62e61326f20daa126eff71444733c69493b71cf4923a3cf59acd61c0bf30",
+    "src/ports/glibc/sysdeps/xos/Versions": "20c6bf35f938cff5ab73cfbd57362b579c5b55d37f327579eb9cf759986e96eb",
+    "src/ports/glibc/sysdeps/xos/_Fork.c": "9ac5a262aa4062eb7afb785dc5c6bb1b0ef98bd097c9145a467c7708536ae3c4",
+    "src/ports/glibc/sysdeps/xos/clock_nanosleep.c": "d752f12d4f81c9538fa67ea22239d6b17cd1b6cb3f2c6b0b2fa12551b639f2b8",
+    "src/ports/glibc/sysdeps/xos/xos/sleep.h": "558757516e66410c7beb64fcc0c4d6b2fb6b70e826787447d12cad78fbbaf771",
+    "src/ports/glibc/sysdeps/xos/xos_sleep.c": "d0a77af775fd881d58ac4cf7ef6e76302211b30ed56db8e4a5844c1a70165437",
+    "src/ports/glibc/sysdeps/xos/xos_sleep.h": "93171e6a95fa28014f977751baebe8bd97cd8c9c8ea74a08c8c0bb8c872f4d6c",
+    "src/shared/include/xos/process_abi.hpp": "727a831e40dd2f764ee8daaa33f89355ce5bf4d1c7cc82c8a80ab10d38000082",
+    "src/user/include/xos/interactium_client.hpp": "f1b10da554098c55a583fbdbdca48691f9170ea9ca07f9ecf426af2688876340",
+    "src/user/include/xos/sdk.hpp": "bc031082e1e44cc90dc8c61badeea6e562664fcaa87ab76beafc38ca72d04221",
+    "src/user/interactium/dispatcher.cpp": "989db4b30a289e7b954debbced3063dcd41b64197eb8b3115d7f3946f8c7cd31",
+    "src/user/interactium/dispatcher.hpp": "773dcdb37a4c7fd5990026c13b59601522f768ac44764b709faf25feb92056f0",
+    "src/user/interactium/service.cpp": "d326d1e91791477d498fdddbf0cb0ffa3eff46addc27c73f4bd80b222c111035",
+    "src/user/interactium/service.hpp": "eefb19300c92cab285cb4668c36a0d94ee5f4853e1f10e7b44249b5b9c5143fb",
+    "src/user/interactium/service_loop.cpp": "0a9d3f148dd980df2256048025dde725e54d1744068e35e1b9d51f0b85f17de4",
+    "src/user/interactium/window_manager.cpp": "7079d3a1f9c7bb891c1a9a215dcc2f0435f8ff930d575419af7e08565b20466c",
+    "src/user/interactium/window_manager.hpp": "aabd10618fd882960375d8941649d465a0be680aab1237bd5320359e41a9ed66",
+    "src/user/programs/interactium_service.cpp": "744177a1203e93c3cdc55df9a6eb51e44ff884578c0bdf9a21e7ad767268fb2d"
+  },
+  "merge_base": "6332527ab64e92371266363f41f3247717a3cac8",
+  "new_native_inputs": {
+    "src/ports/glibc/sysdeps/xos/xos/sleep.h": "558757516e66410c7beb64fcc0c4d6b2fb6b70e826787447d12cad78fbbaf771",
+    "src/ports/glibc/sysdeps/xos/xos_sleep.h": "93171e6a95fa28014f977751baebe8bd97cd8c9c8ea74a08c8c0bb8c872f4d6c",
+    "src/user/include/xos/interactium_client.hpp": "f1b10da554098c55a583fbdbdca48691f9170ea9ca07f9ecf426af2688876340"
+  },
+  "new_port_inputs": {
+    "src/ports/glibc/sysdeps/xos/xos/sleep.h": "558757516e66410c7beb64fcc0c4d6b2fb6b70e826787447d12cad78fbbaf771",
+    "src/ports/glibc/sysdeps/xos/xos_sleep.c": "d0a77af775fd881d58ac4cf7ef6e76302211b30ed56db8e4a5844c1a70165437",
+    "src/ports/glibc/sysdeps/xos/xos_sleep.h": "93171e6a95fa28014f977751baebe8bd97cd8c9c8ea74a08c8c0bb8c872f4d6c"
+  },
+  "source_comparison": {
+    "native_inputs": {
+      "changed": {
+        "src/shared/include/xos/process_abi.hpp": {
+          "frozen_sha256": "710a7aba0cc8026c62cf1860e1cb6a6ac1cdb92ff461d7fb67e268df30f0f6b1",
+          "integrated_sha256": "727a831e40dd2f764ee8daaa33f89355ce5bf4d1c7cc82c8a80ab10d38000082"
+        },
+        "src/user/include/xos/sdk.hpp": {
+          "frozen_sha256": "a43e3b16c2e69361e1e3d0b7d463bace9ca11b2532dd8f3bf37984d21869061b",
+          "integrated_sha256": "bc031082e1e44cc90dc8c61badeea6e562664fcaa87ab76beafc38ca72d04221"
+        }
+      },
+      "recorded_count": 154,
+      "unchanged": 152
+    },
+    "port_inputs": {
+      "changed": {
+        "src/ports/glibc/sysdeps/xos/Makefile": {
+          "frozen_sha256": "1d20c46714c311f49849cfd9a709b98bcf0573ba3ae4e903af8c550e7b5b8a80",
+          "integrated_sha256": "801b62e61326f20daa126eff71444733c69493b71cf4923a3cf59acd61c0bf30"
+        },
+        "src/ports/glibc/sysdeps/xos/Versions": {
+          "frozen_sha256": "629721db240894c7364af6aa915279bf90f88107147b56e1bcc60fd8e8adc6aa",
+          "integrated_sha256": "20c6bf35f938cff5ab73cfbd57362b579c5b55d37f327579eb9cf759986e96eb"
+        },
+        "src/ports/glibc/sysdeps/xos/_Fork.c": {
+          "frozen_sha256": "7d397ae674b61e28961a264dec36d690afc1d210771fcb3edb2bce535ce91d5d",
+          "integrated_sha256": "9ac5a262aa4062eb7afb785dc5c6bb1b0ef98bd097c9145a467c7708536ae3c4"
+        },
+        "src/ports/glibc/sysdeps/xos/clock_nanosleep.c": {
+          "frozen_sha256": "24f45f9742606e66cf9061cc277c513824429bdb9fae32d1cad267f21465264f",
+          "integrated_sha256": "d752f12d4f81c9538fa67ea22239d6b17cd1b6cb3f2c6b0b2fa12551b639f2b8"
+        }
+      },
+      "recorded_count": 303,
+      "unchanged": 299
+    },
+    "recipe_inputs": {
+      "changed": {
+        "scripts/build_glibc_sdk.py": {
+          "frozen_sha256": "05f87ebcb79b04818e6c2c94addd5a01addaa1660ca5e837f66a467578ca1272",
+          "integrated_sha256": "125d9823dd43cb77820087b8cfb0504a1114c9de80bd47a926c2632dac763000"
+        }
+      },
+      "recorded_count": 14,
+      "unchanged": 13
+    }
+  },
+  "textual_conflicts": []
+}

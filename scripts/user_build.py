@@ -22,7 +22,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 pumpkin_user_resource=False, pumpkin_named_resource_store=False, pumpkin_provisioning_store=False,
                 quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
                 net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None,
-                files_uncertain_probe=False):
+                files_uncertain_probe=False, pumpkin_catalog_fixture=False,
+                pumpkin_launch_probe=False, pumpkin_launch_storage_lease=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -113,6 +114,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         login_flags += ("-DXOS_PUMPKIN_NAMED_RESOURCE_STORE=1",)
     if pumpkin_provisioning_store:
         login_flags += ("-DXOS_PUMPKIN_PROVISIONING_STORE=1",)
+    if pumpkin_catalog_fixture:
+        login_flags += ("-DXOS_PUMPKIN_CATALOG_PROBE=1", "-I", str(build))
+    if pumpkin_catalog_fixture or pumpkin_launch_probe:
+        login_flags += ("-DXOS_PUMPKIN_LAUNCH_PROBE=1",)
     provisioning_flags = ("-DXOS_PUMPKIN_PROVISIONING_STORE=1",) if pumpkin_provisioning_store else ()
     durable_flags += login_flags
     private_storage_flags = (("-DXOS_FILES_PRIVATE_STORAGE_PROBE=1", *private_client_flags)
@@ -168,7 +173,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                                    "glibc_d1/image_mapping.cpp", "glibc_d1/entry_stack.cpp",
                                    "glibc_d1/interpreter_entry.cpp", "dynamic/identity.cpp",
                                    "dynamic/generation.cpp", "dynamic/elf.cpp", "dynamic/closure.cpp",
-                                   "dynamic/startup.cpp", "dynamic/spawn.cpp")]
+                                   "dynamic/startup.cpp", "dynamic/authority.cpp", "dynamic/spawn.cpp")]
     loader_objects.append(compile_source(root / "src/user/arch/x86_64/tls.cpp"))
     loader_archive = sdk / "lib/libxos_loader.a"
     run([tool("ar"), "rcsD", str(loader_archive), *loader_objects])
@@ -246,6 +251,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             extra_flags += private_storage_flags
             if pumpkin_mobius:
                 extra_flags += ("-DXOS_FILES_PRIVATE_DESKTOP_LEASE=1",)
+            if pumpkin_launch_storage_lease:
+                extra_flags += ("-DXOS_FILES_PRIVATE_LAUNCH_LEASE=1",)
         if name in ("pumpkin_durable", "p2_auth_probe", "p2_anchor_proxy", "pumpkin_holder", "p2_sealed"):
             extra_flags += ("-Os", *durable_flags)
         if name == "net_service":
@@ -297,12 +304,34 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
              *(private_broker_objects if name == "files" else []),
              *([compile_source(root / "src/user/pumpkin/account_store.cpp")] if name == "p2_store_probe" else []),
              *extra_objects,
+             *([str(loader_archive)] if name == "supervisor" and pumpkin_catalog_fixture else []),
              *(["-Wl,--start-group", str(archive), str(loader_archive), "-L", str(sdk / "lib"),
                 "-lc", "-lm", "-lgcc", "-Wl,--end-group"]
                if name in libc_programs else [str(archive)]),
              "-o", str(executable)])
         image = build / f"user_{name}.image.elf"
-        run([tool("objcopy"), "--strip-debug", str(executable), str(image)])
+        strip_all = name == "supervisor" and pumpkin_catalog_fixture
+        run([tool("objcopy"), "--strip-all" if strip_all else "--strip-debug", str(executable), str(image)])
+        if strip_all:
+            def loadable(path):
+                raw = path.read_bytes()
+                if raw[:7] != b"\x7fELF\x02\x01\x01":
+                    raise SystemExit("catalog fixture is not ELF64 little-endian")
+                entry, phoff = struct.unpack_from("<QQ", raw, 24)
+                stride, count = struct.unpack_from("<HH", raw, 54)
+                if stride != 56 or phoff + stride * count > len(raw):
+                    raise SystemExit("catalog fixture has invalid program headers")
+                loads = []
+                for index in range(count):
+                    kind, flags, offset, address, physical, size, memory, alignment = struct.unpack_from(
+                        "<IIQQQQQQ", raw, phoff + index * stride)
+                    if kind == 1:
+                        if offset + size > len(raw):
+                            raise SystemExit("catalog fixture has invalid load bytes")
+                        loads.append((flags, address, physical, size, memory, alignment, raw[offset:offset + size]))
+                return entry, loads
+            if loadable(executable) != loadable(image):
+                raise SystemExit("catalog symbol stripping changed an entry or load segment")
         data = image.read_bytes()
         if name not in disk_programs and len(data) > 131072:
             raise SystemExit(f"User ELF {name} exceeds image read limit")

@@ -245,5 +245,6 @@ int main() {
     std::puts("PASS boot-pair and actual target-parent checks with endpoint cleanup");
     test_lease_duration(lease_profile::short_operation, 30'000'000'000ull);
     test_lease_duration(lease_profile::desktop, 31ull * 60 * 1'000'000'000);
-    std::puts("PASS short and desktop deadlines remain bounded and revoke with the controller");
+    test_lease_duration(lease_profile::launch_acceptance, 300'000'000'000ull);
+    std::puts("PASS short, desktop and explicit launch deadlines remain bounded and revoke with the controller");
 }

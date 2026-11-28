@@ -1,0 +1,47 @@
+{
+  "InRelease_sha256": "a3f87f9fcf0fc02378a695c2e42476e476774c775b9a322c1fbff8479df757fd",
+  "Packages_sha256": "82a296a45697a25b388f0bd540fbfc4cbf3947f2a945ea6327630dfe658443b2",
+  "format": "p1-host-tools-source-v1",
+  "gpgv_log": "gpgv: Signature made Sat Nov 28 08:16:22 2026 UTC\ngpgv:                using RSA key 4CB50190207B4758A3F73A796ED0E7B82643E131\ngpgv: Good signature from \"Debian Archive Automatic Signing Key (12/bookworm) <ftpmaster@debian.org>\"\ngpgv: Signature made Sat Nov 28 08:16:24 2026 UTC\ngpgv:                using RSA key B8E5F13176D2A7A75220028078DBA3BC47EF2265\ngpgv: Good signature from \"Debian Archive Automatic Signing Key (13/trixie) <ftpmaster@debian.org>\"\n",
+  "packages": {
+    "busybox-static": {
+      "Architecture": "amd64",
+      "Built-Using": "glibc (= 2.43-7)",
+      "Filename": "pool/main/b/busybox/busybox-static_1.38.0-3+b2_amd64.deb",
+      "Package": "busybox-static",
+      "SHA256": "94e9fa763c47f0b3c0d44080e68ca16d23e4e72d74d95d7d3d51d5702b182789",
+      "Size": "970624",
+      "Source": "busybox (1:1.38.0-3)",
+      "Version": "1:1.38.0-3+b2"
+    },
+    "linux-base-7.3.6+deb14-amd64": {
+      "Architecture": "amd64",
+      "Filename": "pool/main/l/linux/linux-base-7.3.6+deb14-amd64_7.3.6-1_amd64.deb",
+      "Package": "linux-base-7.3.6+deb14-amd64",
+      "SHA256": "8d7fd26568dfd67e70e6f0e952dd4e3d28f67b4577a655deec243c0950630740",
+      "Size": "520404",
+      "Source": "linux",
+      "Version": "7.3.6-1"
+    },
+    "linux-binary-7.3.6+deb14-amd64": {
+      "Architecture": "amd64",
+      "Built-Using": "linux (= 7.3.6-1)",
+      "Filename": "pool/main/l/linux-signed-amd64/linux-binary-7.3.6+deb14-amd64_7.3.6-1_amd64.deb",
+      "Package": "linux-binary-7.3.6+deb14-amd64",
+      "SHA256": "d4d8182a859800dcda987aedb4dfb00af83c2dfaf8893c59a736c66b24c4780a",
+      "Size": "14451524",
+      "Source": "linux-signed-amd64 (7.3.6+1)",
+      "Version": "7.3.6-1"
+    },
+    "linux-modules-7.3.6+deb14-amd64": {
+      "Architecture": "amd64",
+      "Filename": "pool/main/l/linux/linux-modules-7.3.6+deb14-amd64_7.3.6-1_amd64.deb",
+      "Package": "linux-modules-7.3.6+deb14-amd64",
+      "SHA256": "6b0ff8fecd09a53abcb46b7b6ae056d734ae6f91095929b8ee5fb07169010b3c",
+      "Size": "103550412",
+      "Source": "linux",
+      "Version": "7.3.6-1"
+    }
+  },
+  "selection": "Only four packages supplying the actual VM kernel, modules and static busybox; other host-tool downloads were not needed for this provider test."
+}

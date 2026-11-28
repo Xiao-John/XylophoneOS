@@ -88,14 +88,18 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
 #else
 #if XOS_PUMPKIN_PROVISIONING_STORE
     if ((mode < scenario::cycle || mode > scenario::stale) &&
-        (mode < scenario::provisioning_update || mode > scenario::provisioning_new)) return false;
+        (mode < scenario::provisioning_update || mode > scenario::provisioning_new)
+#if XOS_PUMPKIN_CATALOG_PROBE
+        && (mode < scenario::catalog_initial || mode > scenario::catalog_all_revoked)
+#endif
+        ) return false;
 #elif XOS_PUMPKIN_NAMED_RESOURCE_STORE
     if ((mode < scenario::cycle || mode > scenario::stale) && mode != scenario::named_empty) return false;
 #else
     if (mode < scenario::cycle || mode > scenario::stale) return false;
 #endif
 #endif
-    if (sdk::channel_send_wait(supervisor.transmit, &response.result, sizeof(response.result), deadline()) != 0) {
+    if (control_send_wait(supervisor.transmit, &response.result, sizeof(response.result), deadline()) != 0) {
         return false;
     }
 #if XOS_PUMPKIN_USER_LOGIN
@@ -103,7 +107,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     account_prompt.op = mode;
     if (!serial_exchange(uart, account_prompt, selected_account) ||
         !user_login::selected_account(selected_account, mode) ||
-        sdk::channel_send_wait(supervisor.transmit, &selected_account, sizeof(selected_account), deadline()) != 0) {
+        control_send_wait(supervisor.transmit, &selected_account, sizeof(selected_account), deadline()) != 0) {
         return false;
     }
 #endif
@@ -112,18 +116,24 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
         named_operator::packet prompt{};
         prompt.op = named_mode;
         if (!serial_exchange(uart, prompt, selected) || !named_operator::selection(selected, named_mode) ||
-            sdk::channel_send_wait(supervisor.transmit, &selected, sizeof(selected), deadline()) != 0) { return false; }
+            control_send_wait(supervisor.transmit, &selected, sizeof(selected), deadline()) != 0) { return false; }
     }
 #endif
     bind_proxy owner{};
-    if (sdk::channel_receive_wait(supervisor.receive, &owner, sizeof(owner), deadline()) != sizeof(owner)) {
+    if (control_receive_wait(supervisor.receive, &owner, sizeof(owner), deadline()) != sizeof(owner)) {
         return false;
     }
     pair service{};
     if (owner.daemon == 0 || !find_pair(controller, owner.daemon, service)) return false;
 
     u64 sequence = 0;
-    const u64 end = deadline(23'000'000'000 + (desktop ? connection_lifetime_ns : 0));
+    const u64 end = deadline(
+#if XOS_PUMPKIN_CATALOG_PROBE
+        90'000'000'000
+#else
+        23'000'000'000
+#endif
+        + (desktop ? connection_lifetime_ns : 0));
     if (end == 0) return false;
     for (;;) {
         supervisor_result finish{};
@@ -137,7 +147,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
                 if (mode != scenario::user_enroll || destination_reserved || credential_exchanged ||
                     !user_login::enrollment_ready(reservation) || !serial_exchange(uart, reservation, ack) ||
                     !user_login::enrollment_ready(ack) ||
-                    sdk::channel_send_wait(supervisor.transmit, &ack, sizeof(ack), deadline()) != 0) { return false; }
+                    control_send_wait(supervisor.transmit, &ack, sizeof(ack), deadline()) != 0) { return false; }
                 destination_reserved = true;
                 continue;
             }
@@ -148,7 +158,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
                 if (mode != scenario::user_desktop_admin || !credential_slots_cleared || desktop_revocation_requested ||
                     !user_login::header(request, mode, ++desktop_admin_sequence) || request.revoke ||
                     !serial_exchange(uart, request, reply) ||
-                    sdk::channel_send_wait(supervisor.transmit, &reply, sizeof(reply), deadline()) != 0) return false;
+                    control_send_wait(supervisor.transmit, &reply, sizeof(reply), deadline()) != 0) return false;
                 desktop_revocation_requested = reply.revoke == 1;
                 continue;
             }
@@ -172,7 +182,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
                 if (credential_slots_cleared || !user_login::header(credentials, operation, 2) ||
                     !user_login::same_identity(credentials.identity, credential_owner) ||
                     has_bytes(credentials.key.bytes, secret_bytes) ||
-                    sdk::channel_send_wait(supervisor.transmit, &credentials, sizeof(credentials), deadline()) != 0) return false;
+                    control_send_wait(supervisor.transmit, &credentials, sizeof(credentials), deadline()) != 0) return false;
                 credential_slots_cleared = true;
                 continue;
             }
@@ -181,7 +191,7 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
             user_login::packet reply{};
             if (!serial_exchange(uart, credentials, reply) || !user_login::same_identity(reply.identity, credentials.identity) ||
                 has_bytes(reply.key.bytes, secret_bytes) != submitting ||
-                sdk::channel_send_wait(supervisor.transmit, &reply, sizeof(reply), deadline()) != 0) return false;
+                control_send_wait(supervisor.transmit, &reply, sizeof(reply), deadline()) != 0) return false;
             credential_owner = credentials.identity;
             credential_exchanged = true;
             continue;
@@ -195,6 +205,9 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
 #endif
         bool valid = finish.pass <= 1;
         bool completed = finish.pass == 1;
+#if XOS_PUMPKIN_CATALOG_PROBE
+        valid = finish.pass <= 244;
+#endif
 #if XOS_PUMPKIN_USER_LOGIN
 #if XOS_PUMPKIN_MOBIUS
         if (finish.pass == user_login::desktop_revoked && desktop_revocation_requested) {
@@ -264,8 +277,17 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     const i64 controller = sdk::pio_grant(pio_grant_action::controller, 0, pio_resource_com1);
     pair supervisor{};
     user::uart::driver uart;
-    if (controller <= 0 || !find_pair(controller, controller, supervisor) || uart.start() != 0) return 1;
+    if (controller <= 0 ||
+#if XOS_PUMPKIN_LAUNCH_PROBE
+        !connect_control(static_cast<u64>(controller), supervisor) ||
+#else
+        !find_pair(controller, controller, supervisor) ||
+#endif
+        uart.start() != 0) return 1;
     const bool completed = relay(uart, static_cast<u64>(controller), supervisor);
     const auto closed = uart.close();
+#if XOS_PUMPKIN_LAUNCH_PROBE
+    close_control(supervisor);
+#endif
     return completed && closed == 0 ? 0 : 2;
 }

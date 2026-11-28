@@ -17,6 +17,7 @@ struct startup_capsule {
     generation selected;
     startup_image images[generation_max_objects];
     startup_pin pins[generation_max_objects];
+    catalog::authority authority;
 };
 inline constexpr u32 capsule_pages = (sizeof(startup_capsule) + 4095) / 4096;
 inline constexpr u64 capsule_end = XOS_DYNAMIC_STARTUP_ADDRESS + capsule_pages * 4096;

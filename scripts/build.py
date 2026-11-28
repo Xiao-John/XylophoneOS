@@ -69,6 +69,12 @@ def main():
                         help="headless developer test with an exclusive COM1 generation proxy")
     parser.add_argument("--pumpkin-provisioning-store", action="store_true",
                         help="explicit v2 private-region application/catalog transaction profile")
+    parser.add_argument("--pumpkin-catalog-fixture", type=Path,
+                        help="explicit two-generation catalog test fixture; requires provisioning")
+    parser.add_argument("--pumpkin-launch-probe", action="store_true",
+                        help="isolated provisioning launch fixture with authenticated sys84 control")
+    parser.add_argument("--pumpkin-launch-storage-lease", action="store_true",
+                        help="explicit 300-second backing lease for the isolated provisioning launch fixture")
     parser.add_argument("--pumpkin-native-login", action="store_true",
                         help="exercise trusted credential delivery in the anchored developer profile")
     parser.add_argument("--pumpkin-user-login", action="store_true",
@@ -118,14 +124,23 @@ def main():
     if args.pumpkin_provisioning_store and (not args.pumpkin_anchored_probe or
                                           args.pumpkin_named_resource_store or args.pumpkin_native_login):
         parser.error("provisioning requires its dedicated anchored profile")
+    if args.pumpkin_catalog_fixture is not None and not args.pumpkin_provisioning_store:
+        parser.error("catalog fixture requires the dedicated provisioning profile")
+    launch_probe = args.pumpkin_launch_probe or args.pumpkin_catalog_fixture is not None
+    if (args.pumpkin_launch_probe or args.pumpkin_launch_storage_lease) and (
+            not args.pumpkin_provisioning_store or not launch_probe or BUILD == ROOT / "build"):
+        parser.error("launch probe/lease requires provisioning and an isolated explicit launch fixture")
+    launch_metadata = ({"pumpkin_launch_probe": True} if launch_probe else {})
+    if args.pumpkin_launch_storage_lease:
+        launch_metadata["pumpkin_launch_storage_lease"] = {"profile": "launch_acceptance", "duration_ns": 300_000_000_000}
     if args.pumpkin_native_login and not args.pumpkin_anchored_probe:
         parser.error("native Pumpkin login requires the anchored developer profile")
     if args.pumpkin_user_login and not args.pumpkin_native_login:
         parser.error("operator login requires the native Pumpkin developer profile")
     deployment = {}
     if args.pumpkin_deployment_realm is not None:
-        if not args.pumpkin_user_login:
-            parser.error("a Pumpkin deployment realm requires the private operator login profile")
+        if not (args.pumpkin_user_login or args.pumpkin_provisioning_store):
+            parser.error("a Pumpkin deployment realm requires the private operator login or provisioning profile")
         from pumpkin_generation_provider import deployment_realm
 
         try:
@@ -165,6 +180,10 @@ def main():
     if not nasm:
         raise SystemExit("NASM not found; install it or set NASM=/path/to/nasm")
     BUILD.mkdir(parents=True, exist_ok=True)
+    catalog_metadata = {}
+    if args.pumpkin_catalog_fixture is not None:
+        from pumpkin_catalog_fixture import emit
+        catalog_metadata = emit(args.pumpkin_catalog_fixture, BUILD / "pumpkin_catalog_fixture.hpp")
     # Bind the relocated cross compiler to the exact selected target tools.
     # This environment belongs only to this build process, not native host tests.
     target_tools = BUILD / "target_tools"
@@ -231,7 +250,7 @@ def main():
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
                                       **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2}
                                          if args.pumpkin_user_login else {}),
-                                      **deployment, **desktop_metadata,
+                                      **deployment, **desktop_metadata, **catalog_metadata, **launch_metadata,
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
@@ -265,6 +284,9 @@ def main():
                                  pumpkin_user_resource=args.pumpkin_user_resource,
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
                                  pumpkin_provisioning_store=args.pumpkin_provisioning_store,
+                                 pumpkin_catalog_fixture=bool(catalog_metadata),
+                                 pumpkin_launch_probe=launch_probe,
+                                 pumpkin_launch_storage_lease=args.pumpkin_launch_storage_lease,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
                                  net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile, net_dhcp_profile=net_dhcp_profile)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
@@ -424,7 +446,7 @@ def main():
         **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
         **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2} if args.pumpkin_user_login else {}),
-        **deployment, **desktop_metadata,
+        **deployment, **desktop_metadata, **catalog_metadata, **launch_metadata,
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),

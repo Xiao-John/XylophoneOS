@@ -191,7 +191,9 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 | startup/exec | startup1/2/3、.xos.exec/v3身份标记；试行 startup2 flag bit16 与 reserved 承载 terminal send handle，仅限只读 `.xos.tty` v1 opt-in | loader/SDK负责人，升级须说明旧二进制准入/拒绝与迁移；glibc 终端接收 v2/v3 的受限客体资格见 [e6b8c410](../work_log/e6b8c410_glibc_terminal.md)，出站继承单独推进 |
 | glibc terminal | 既有 startup kind5 正式命名为 terminal；CRT capability bit1；libc 本地 TCGETS/TCSETS/TCSETSW/TCSETSF=0x5401–0x5404，FIONCLEX/FIOCLEX=0x5450/0x5451 | [glibc_terminal_v1](glibc_terminal_v1.md)；复用 native terminal v2，glibc termios 逐字段转换，实际资格按独立工作日志 |
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |
-| dynamic identity / generation | ELF note `XOS\0`/`0x584f5301`，identity v1 128字节；generation v1 header128/object512，最多12对象 | [准入组件](dynamic_admission_v1.md)；独立文件格式，不新增 syscall 或修改 startup；公开动态启动、持久激活与 ready 仍待闭环 |
+| dynamic identity / generation | ELF note `XOS\0`/`0x584f5301`，identity v1 128字节；generation v1 header128/object512，最多12对象 | [准入组件](dynamic_admission_v1.md)；[公共 GNU 启动](public_dynamic_runtime_v1.md)；文件格式独立于 syscall，具体组合按对应产物验收 |
+| Pumpkin catalog / dynamic capsule | capsule v3 增加64字节 authority binding；PCQ1/version1 request40/reply784；PPR1保留1592/1560字节，新增op12/13 | [持久 catalog authority](pumpkin_catalog_authority.md)；旧操作编号不变，旧动态组合须重建并核对 native ABI；不新增 syscall |
+| xypm publisher bootstrap | XYPMSUP1 magic，96字节消息，offer/broker/connected/delegated四阶段 | 冻结 distribution_startup.hpp 先随C foundation交付；真实parent/broker核验与PPR12 role proof不可省略，D发行实现另行验收 |
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |
 | net 服务协议 | v1 information/transmit/receive/stop，raw Ethernet 1514 字节 | 用户态 VirtIO-net。[纵切契约](net_user_driver.md)记录 ARP、IRQ 与 reset 的限定客体验收 |
@@ -316,8 +318,11 @@ client、SDK manifest 与实际生命周期证据；细节见
 
 ## P1-C / P1-D catalog 与发行启动协作认领（2026-11-28）
 
-以下接口状态为 `claimed`，对应独立 C/D 工作分支；本登记不授予主分支实现、
-客体资格或发行资格，不新增 syscall，不占用 P1-H/K/F 的编号。
+本节保留原 C/D 协作布局。C 的 PCQ1、capsule v3 与 PPR12/13 已随实现进入
+上方服务命名空间，限定资格见 [catalog 契约](pumpkin_catalog_authority.md) 与
+[23 场实际 guest 记录](../reports/p1c_catalog_authority/guest_report.json)。
+XYPMSUP1 的冻结共享头先随 C 交付；D 的发行控制器与正式签名安装资格仍须
+由独立 D PR 交付。没有新增 syscall，也不占用 P1-H/K/F 的编号。
 
 | 接口 | 版本、布局及责任 | 准入、生命周期与兼容 |
 | --- | --- | --- |
@@ -327,7 +332,7 @@ client、SDK manifest 与实际生命周期证据；细节见
 | PPR1 operation13 `activate_generation` | C；沿用现有expected三epoch与index字段 | 仅真实registrar选择已批准且未撤销根；单次受保护CAS增加catalog epoch，不能增加新根或降低仓库checkpoint。失败/未知按既有PPR状态返回。 |
 | XYPMSUP1 publisher bootstrap | D，轻量共享头先随C foundation；magic `0x315055534d505958`，精确96字节；phase1/2/3/4为offer/broker/connected/delegated | 按真实kernel parent及broker对端绑定双向通道；reserved为零，长度和phase必须精确。名称和自报PID不授予角色；父ACK后仍须向实际daemon执行PPR12角色证明。拒绝、超时和失联关闭bootstrap，不自动提升权限。 |
 
-实现与定向证据分别由 C/D PR交付。C的后代授权验收使用真实公共GNU
+C 的实现与定向证据随本次交付，D 的发行验收独立。C的后代授权验收使用真实公共GNU
 posix_spawn链及same-PID exec；当前shared GNU fork的ENOSYS边界与P1-K2
 组合计划保持独立，不能用本登记宣称fork已经可用。
 协调记录见 [b6c1097c](../work_log/b6c1097c_p1_cd_protocol_claims.md)。

@@ -161,6 +161,8 @@ def exchange(guest, pid, scenario, certificates):
     case = scenario.removeprefix('store-')
     name = OTHER_NAME if case == "wrong-name" else HOSTNAME
     certificate = case if case in {"expired", "unknown-ca"} else 'second' if case in ('second', 'updated') else "valid"
+    streamed = case in ("stream", "stream-truncated")
+    body_size = 2 * 1024 * 1024 + 7 if streamed else 32
     rejected = case in CERT_DENIALS or case == 'removed'
     nonce = secrets.token_hex(16)
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -181,13 +183,13 @@ def exchange(guest, pid, scenario, certificates):
         listener.listen(1)
         listener.settimeout(35)
         expected = (f"GET /{nonce} HTTP/1.1\r\nHost: {name}:{port}\r\n"
-                    "Connection: close\r\n\r\n").encode()
+                    "Connection: close\r\n" + ("Accept-Encoding: identity\r\n" if streamed else "") + "\r\n").encode()
 
         def serve():
             try:
                 connection, _ = listener.accept()
                 with connection:
-                    connection.settimeout(25)
+                    connection.settimeout(185 if streamed else 25)
                     try:
                         tls = context.wrap_socket(connection, server_side=True)
                     except ssl.SSLError as err:
@@ -205,16 +207,24 @@ def exchange(guest, pid, scenario, certificates):
                         server["application_request"] = bool(request)
                         if request != expected:
                             raise AssertionError("Unexpected decrypted HTTP request")
-                        header = b"HTTP/1.1 200 OK\r\nContent-Length: 32\r\nConnection: close\r\n\r\n"
-                        body = nonce.encode()
+                        header = f"HTTP/1.1 200 OK\r\nContent-Length: {body_size}\r\nConnection: close\r\n\r\n".encode()
+                        body = (nonce.encode() * ((body_size + 31) // 32))[:body_size]
+                        if case == "stream-truncated":
+                            body = body[:-1]
                         tls.sendall(header[:13])
                         tls.sendall(header[13:] + body[:11])
                         tls.sendall(body[11:])
                         if case == "truncated":
                             tls.shutdown(socket.SHUT_WR)
                         else:
-                            tls.unwrap().close()
-                            server["client_close_notify"] = True
+                            try:
+                                tls.unwrap().close()
+                            except (ssl.SSLEOFError, ConnectionResetError):
+                                if case != "stream-truncated":
+                                    raise
+                                server["client_close_notify"] = False
+                            else:
+                                server["client_close_notify"] = True
             except Exception as err:
                 server["error"] = str(err)
 
@@ -222,7 +232,7 @@ def exchange(guest, pid, scenario, certificates):
         worker.start()
         before = int(time.time())
         output = command(guest, f"exec-file /bin/tls.elf {pid} {port} {scenario} {nonce}",
-                         b"kind=exited code=", timeout=40)
+                         b"kind=exited code=", timeout=195 if streamed else 40)
         after = int(time.time())
         worker.join(timeout=5)
         if worker.is_alive():
@@ -241,6 +251,13 @@ def exchange(guest, pid, scenario, certificates):
             raise AssertionError(f"{scenario}: missing authenticated certificate refusal")
         if peer_leaf:
             raise AssertionError(f"{scenario}: rejected certificate was exposed as verified")
+    elif streamed:
+        required = (b"NATIVE_TLS_REJECT scenario=stream-truncated" if case == "stream-truncated"
+                    else f"NATIVE_TLS_HTTPS status=200 bytes={body_size} close_notify=verified".encode())
+        if required not in output or server.get("version") != "TLSv1.3" or not server["application_request"]:
+            raise AssertionError(f"{scenario}: streamed HTTPS result differs from peer")
+        if case == "stream" and not server.get("client_close_notify"):
+            raise AssertionError("Peer did not receive the streamed client's close_notify")
     else:
         required = (b"NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified" if case != "truncated"
                     else b"NATIVE_TLS_REJECT scenario=truncated")
@@ -318,7 +335,7 @@ def test(system, probe, certificates, output):
             pid = start_network(guest)
             baseline = resources(guest)
             for scenario in ("valid", "wrong-name", "unknown-ca", "missing-intermediate",
-                             "expired", "truncated", "valid"):
+                             "expired", "truncated", "valid", "stream", "stream-truncated"):
                 report["checks"].append(exchange(guest, pid, scenario, certificates))
                 check_resources(guest, baseline)
             report["resources_after_every_exchange"] = list(baseline)

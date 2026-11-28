@@ -14,6 +14,59 @@ xos::i64 abandon(xos::net2::client& client, xos::u64 handle, xos::u64 deadline, 
     return result;
 }
 }
+xos::i64 read_streamed_response(response_reader read, void* read_context,
+                                 response_sink sink, void* sink_context,
+                                 unsigned char* header_buffer, size_t header_capacity,
+                                 size_t body_limit, response& result) {
+    using namespace xos;
+    result = {};
+    if (!read || !sink || !header_buffer || header_capacity < max_headers) return net2::invalid;
+    auto* headers = header_buffer;
+    size_t used = 0, scan = 3;
+    response parsed{};
+    for (;;) {
+        if (used == max_headers) return net2::resources;
+        const u32 capacity = static_cast<u32>(max_headers - used < net2::payload_bytes ?
+                                              max_headers - used : net2::payload_bytes);
+        const i64 count = read(read_context, headers + used, capacity);
+        if (count < 0) return count;
+        if (static_cast<u64>(count) > capacity) return net2::io;
+        if (!count) return net2::io;
+        used += static_cast<size_t>(count);
+        for (; scan < used; ++scan) {
+            if (headers[scan-3] != '\r' || headers[scan-2] != '\n' ||
+                headers[scan-1] != '\r' || headers[scan] != '\n') continue;
+            const size_t end = scan + 1;
+            const error checked = parse_response_bounded(headers, end, false, body_limit, parsed);
+            if (checked != error::ok && checked != error::need_more) return parser_error(checked);
+            const size_t initial = used - end;
+            if (initial > parsed.body_length) return net2::invalid;
+            if (initial) {
+                const i64 written = sink(sink_context, headers + end, static_cast<u32>(initial));
+                if (written < 0) return written;
+                if (static_cast<size_t>(written) != initial) return net2::io;
+            }
+            size_t remaining = parsed.body_length - initial;
+            unsigned char buffer[net2::payload_bytes];
+            while (remaining) {
+                const u32 want = static_cast<u32>(remaining < sizeof buffer ? remaining : sizeof buffer);
+                const i64 n = read(read_context, buffer, want);
+                if (n < 0) return n;
+                if (!n || static_cast<u64>(n) > want) return net2::io;
+                const i64 written = sink(sink_context, buffer, static_cast<u32>(n));
+                if (written < 0) return written;
+                if (written != n) return net2::io;
+                remaining -= static_cast<size_t>(n);
+            }
+            unsigned char extra;
+            const i64 tail = read(read_context, &extra, 1);
+            if (tail < 0) return tail;
+            if (tail) return net2::invalid;
+            result = parsed;
+            return 0;
+        }
+    }
+}
 xos::i64 read_framed_response(response_reader read, void* context,
                               unsigned char* buffer, size_t capacity, response& result) {
     using namespace xos;

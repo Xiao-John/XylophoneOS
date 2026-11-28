@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include "http.hpp"
+#include "transport.hpp"
 #include "../native_tls/stream.hpp"
 
 namespace browser_http {
@@ -19,4 +20,9 @@ struct https_route {
 // the verified wire bytes in buffer, including the header and body spans.
 xos::i64 fetch_https(const https_route& route, const url& target, unsigned char* buffer,
                      size_t capacity, xos::u64 deadline, response& result);
+// Sink output is provisional until the TLS stream has closed successfully.
+xos::i64 fetch_https_stream(const https_route& route, const url& target,
+                            response_sink sink, void* sink_context, unsigned char* header_buffer,
+                            size_t header_capacity, size_t body_limit,
+                            xos::u64 deadline, response& result);
 }

@@ -31,6 +31,9 @@ error get_request(const url& input, char* out, size_t capacity, size_t& size);
 // Content-Length framing only; transfer/content encodings are explicitly refused.
 // EOF before declared completion is an error. Extra/pipelined bytes are refused.
 error parse_response(const unsigned char* data, size_t size, bool eof, response& out);
+// Header parser for streaming consumers: body_limit bounds Content-Length.
+error parse_response_bounded(const unsigned char* data, size_t size, bool eof,
+                             size_t body_limit, response& out);
 bool is_redirect(unsigned status);
 // At most five redirects; caller persists count and must enforce total deadline.
 error redirect(const url& base, const response& value, unsigned& count, url& out);

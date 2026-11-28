@@ -53,11 +53,14 @@ error visit(const generation& value, u32 index, u8 (&color)[generation_max_objec
 
 error validate_generation(const generation& value) {
     const auto& head = value.header;
-    if (head.magic != generation_magic || head.version != generation_version
+    const bool online = head.version == generation_online_version;
+    if (head.magic != generation_magic || (!online && head.version != generation_version)
         || head.object_count < 3 || head.object_count > generation_max_objects || !head.id
         || head.size != sizeof(head) + head.object_count * sizeof(generation_object)
-        || head.reserved0 || head.reserved1 || zero(head.sdk_sha256, 32)
+        || (!online && head.reserved0) || head.reserved1 || zero(head.sdk_sha256, 32)
         || zero(head.toolchain_abi, 32)) return error::header;
+    if (online && (!head.online_mask || (head.online_mask & 7u)
+        || (head.online_mask >> head.object_count))) return error::header;
     if (!head.total_file_bytes || head.total_file_bytes > generation_bytes_limit
         || !head.mapping_budget || head.mapping_budget > generation_mapping_limit
         || !head.startup_budget_ns || head.startup_budget_ns > startup_deadline_limit_ns) return error::budget;
@@ -86,6 +89,18 @@ error validate_generation(const generation& value) {
             if (item.bias < begin || item.bias >= end || item.bias % 8192 || !item.span || item.span % 4096
                 || item.span > end - item.bias || item.span > head.mapping_budget - mapped) return error::budget;
             mapped += item.span;
+            if (online && (head.online_mask & (1u << index))) {
+                if (online_namespace_bias > end - item.bias - item.span
+                    || item.span > head.mapping_budget - mapped) return error::budget;
+                mapped += item.span;
+                for (u32 other = 1; other < head.object_count; ++other) {
+                    const auto& candidate = value.objects[other];
+                    if (candidate.bias <= ~u64{0} - candidate.span
+                        && item.bias + online_namespace_bias < candidate.bias + candidate.span
+                        && candidate.bias < item.bias + online_namespace_bias + item.span)
+                        return error::budget;
+                }
+            }
         }
         u32 edges = 0;
         for (u32 edge = 0; edge < item.needed_count; ++edge) {
@@ -93,6 +108,8 @@ error validate_generation(const generation& value) {
             if (!other || other == 2 || other >= head.object_count || other == index || (edges & (1u << other)))
                 return error::dependency;
             edges |= 1u << other;
+            if (online && !(head.online_mask & (1u << index))
+                && (head.online_mask & (1u << other))) return error::dependency;
         }
         for (u32 previous = 0; previous < index; ++previous) {
             const auto& other = value.objects[previous];
@@ -106,6 +123,12 @@ error validate_generation(const generation& value) {
     u8 color[generation_max_objects]{};
     error result = visit(value, 1, color, 0);
     if (result == error::none) result = visit(value, 2, color, 0);
+    if (result == error::none && online)
+        for (u32 i = 3; i < head.object_count; ++i)
+            if (head.online_mask & (1u << i)) {
+                result = visit(value, i, color, 0);
+                if (result != error::none) break;
+            }
     if (result != error::none) return result;
     for (u32 i = 1; i < head.object_count; ++i) if (color[i] != 2) return error::dependency;
     return error::none;

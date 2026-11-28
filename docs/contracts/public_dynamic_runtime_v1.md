@@ -131,15 +131,18 @@ runtime/source、C++ 依赖、程序 stage、批准 launcher 和 shell 工具，
 
 ## 当前范围和下一阶段
 
-运行期 `dlopen`、`dlmopen`、`dlclose` 明确执行固定启动闭包政策：包括
+默认 profile 的运行期 `dlopen`、`dlmopen`、`dlclose` 明确执行固定启动闭包政策：包括
 `dlopen(NULL)`、已经加载的库和新 namespace，均返回 profile 错误并提供
-可读取、可清除的 `dlerror`。当前实现没有隐含开放在线插件装载的入口。
+可读取、可清除的 `dlerror`。显式构建的独立 online profile 及其 generation
+v2、namespace、pin 和动态 TLS 边界见
+[online_libraries_v1.md](online_libraries_v1.md)，不能用它扩大默认 profile。
 
 批准目录是每个控制器内有界、易失的状态，支持完整预检后激活、批准回滚、
 expected sequence 和撤销。失败保留旧 active；已经捕获的 pin 不会被换成
 另一份文件。只读 capsule 继承的是启动时政策快照，不是跨进程实时撤销协议。
 
 持久全局目录、断电恢复、跨后代撤销广播、动态 fork→exec 的父控制权迁移、
-在线库装卸，以及 terminal actor 的完整动态 exec 组合仍需独立 P1 契约和
-资格。普通 console/pipe/Files stdio 与 terminal actor 是不同启动协议，
+超出 online profile 已声明范围的在线装卸及组合，以及 terminal actor 的
+完整动态 exec 组合仍需独立 P1 契约和资格。普通 console/pipe/Files stdio
+与 terminal actor 是不同启动协议，
 不能把前者的成功报告扩张为后者已通过。

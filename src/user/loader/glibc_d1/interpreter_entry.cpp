@@ -48,6 +48,10 @@ void copy_pin_plan(xos_rtld_pin_plan& output, const xos_rtld_pin_plan* source) {
     output.reserved = 0;
     output.deadline_ns = source == nullptr ? 0 : source->deadline_ns;
     output.count = source == nullptr ? 0 : source->count;
+    output.online_version = source == nullptr ? 0 : source->online_version;
+    output.online_mask = source == nullptr ? 0 : source->online_mask;
+    output.isolated_mask = source == nullptr ? 0 : source->isolated_mask;
+    output.online_reserved = 0;
     if (source == nullptr) { return; }
     // No libc memory implementation is available before the interpreter's
     // CPU and runtime initialization. Copy only the verified live entries.

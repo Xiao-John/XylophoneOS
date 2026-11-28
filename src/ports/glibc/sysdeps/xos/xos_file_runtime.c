@@ -1431,6 +1431,18 @@ __xos_file_exchange (const struct xos_file_request *input, struct xos_file_respo
   return exchange_until (input, output, ~(xos_u64) 0);
 }
 
+/* GNU rtld uses the same adopted, serialized Files session as libc. Keep
+   GNU errno values and the caller's one absolute deadline; never reopen
+   a poisoned session or replay an uncertain mutation. */
+long
+__xos_file_online_exchange (const struct xos_file_request *input,
+                            struct xos_file_response *output, xos_u64 deadline)
+{
+  if (deadline == 0 || deadline > LONG_MAX)
+    return -EINVAL;
+  return exchange_until (input, output, deadline);
+}
+
 static long
 native_exchange_result (long result)
 {

@@ -95,6 +95,34 @@ extern "C" [[noreturn]] void __xos_glibc_start(const startup_info* startup, void
         for (u32 j = 0; j < sizeof(pin.soname); ++j) pin.soname[j] = object.soname[j];
         ++pins.count;
     }
+    if (capsule->selected.header.version == generation_online_version) {
+        pins.online_version = 1;
+        pins.online_mask = capsule->selected.header.online_mask >> 3;
+        pins.isolated_mask = pins.online_mask;
+        // A private namespace cannot introduce a second libc or native TLS
+        // runtime. Classify only the same immutable, already verified pins.
+        for (u32 i = 3; i < capsule->selected.header.object_count; ++i) {
+            if (!(pins.isolated_mask & (1u << (i - 3)))) continue;
+            const auto& headers_i = capsule->images[i];
+            source input{&files, capsule->pins[i].handle, capsule->selected.objects[i].file_bytes};
+            for (u32 ph = 0; ph < headers_i.phnum; ++ph) {
+                u32 type = 0;
+                if (!positioned(&input, headers_i.phoff + u64(ph) * 56,
+                                reinterpret_cast<u8*>(&type), sizeof(type)))
+                    fail(process_error_state, XOS_LAUNCH_PHASE_PREPARE, "online pin metadata");
+                if (type == 7) pins.isolated_mask &= ~(1u << (i - 3));
+            }
+        }
+        for (u32 pass = 0; pass < pins.count; ++pass)
+            for (u32 i = 3; i < capsule->selected.header.object_count; ++i) {
+                const auto& object = capsule->selected.objects[i];
+                for (u32 edge = 0; edge < object.needed_count; ++edge) {
+                    const u32 other = object.needed[edge];
+                    if (other < 3 || !(pins.isolated_mask & (1u << (other - 3))))
+                        pins.isolated_mask &= ~(1u << (i - 3));
+                }
+            }
+    }
     // This arena is disjoint from the manifest's object placement range.
     const xos_rtld_heap_plan heap{startup_heap_base, startup_heap_bytes, pins.deadline_ns};
     auto* frame = reinterpret_cast<xos_d1_entry_handoff*>(XOS_D1_STACK_ENTRY_MIN);

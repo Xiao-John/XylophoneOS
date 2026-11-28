@@ -90,12 +90,17 @@ def elf_metadata(path):
             'programs': programs}
 
 
-def generation_record(generation_id, sdk_sha256, abi, entries):
+def generation_record(generation_id, sdk_sha256, abi, entries, *, online_sonames=()):
     """entries are explicit (local ELF path, absolute guest path) in role order."""
     if not 4 <= len(entries) <= 12 or not 0 < generation_id < 2**64:
         raise ValueError('generation size or identity out of range')
     objects = [elf_metadata(path) for path, _ in entries]
     names = {obj['soname']: i for i, obj in enumerate(objects) if obj['soname']}
+    if len(set(online_sonames)) != len(online_sonames) or any(name not in names for name in online_sonames):
+        raise ValueError('online objects must name distinct approved libraries')
+    online_mask = sum(1 << names[name] for name in online_sonames)
+    if online_mask & 7:
+        raise ValueError('only library objects can be online roots')
     records, total, mapped = [], 0, 0
     for index, ((_, path), obj) in enumerate(zip(entries, objects)):
         role = index + 1 if index < 3 else 4
@@ -119,9 +124,11 @@ def generation_record(generation_id, sdk_sha256, abi, entries):
             obj['soname'].encode(), path.encode(), bytes(56)))
         total += obj['size']
         mapped += span
+        if online_mask & (1 << index):
+            mapped += span
     if total > 64 * 1024 * 1024 or mapped > 128 * 1024 * 1024:
         raise ValueError('closure exceeds the native aggregate bound')
-    header = struct.pack('<QIIQII32s32sQQQQ', 0x314e4547534f5858, 1, 128 + len(records) * 512,
-        generation_id, len(records), 0, bytes.fromhex(sdk_sha256), bytes.fromhex(abi), total, mapped,
+    header = struct.pack('<QIIQII32s32sQQQQ', 0x314e4547534f5858, 2 if online_mask else 1, 128 + len(records) * 512,
+        generation_id, len(records), online_mask, bytes.fromhex(sdk_sha256), bytes.fromhex(abi), total, mapped,
         30_000_000_000, 0)
     return header + b''.join(records), objects

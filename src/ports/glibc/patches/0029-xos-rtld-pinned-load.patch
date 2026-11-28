@@ -217,17 +217,25 @@
 
  struct link_map *
  _dl_lookup_map (Lmid_t nsid, const char *name)
-@@ -1995,6 +2009,28 @@
+@@ -1995,6 +2009,36 @@
    /* Will be true if we found a DSO which is of the other ELF class.  */
    bool found_other_class = false;
 
 +#ifdef XOS_RTLD_CLOSED_DEPENDENCIES
 +  /* The startup plan has already authenticated the complete dependency
 +     closure. Resolve only its exact SONAMEs, without reopening paths.  */
++#ifdef XOS_ONLINE_CLOSURE
++  if (nsid < LM_ID_BASE || nsid > 1 || trace_mode || GLRO (dl_naudit) != 0
++      || (mode & (__RTLD_OPENEXEC | __RTLD_AUDIT)) != 0)
++    _dl_signal_error (ENOTSUP, name, NULL, N_("unsupported XOS linker mode"));
++  /* Retained pins enforce the gate, deadline and isolated closure. */
++  fd = dl_load_open_namespace (name, O_RDONLY | O_CLOEXEC, nsid);
++#else
 +  if (nsid != LM_ID_BASE || trace_mode || GLRO (dl_naudit) != 0
 +      || (mode & (__RTLD_DLOPEN | __RTLD_OPENEXEC | __RTLD_AUDIT)) != 0)
 +    _dl_signal_error (ENOTSUP, name, NULL, N_("unsupported XOS linker mode"));
 +  fd = dl_load_open (name, O_RDONLY | O_CLOEXEC);
++#endif
 +  if (fd != -1)
 +    {
 +      realname = __strdup (name);

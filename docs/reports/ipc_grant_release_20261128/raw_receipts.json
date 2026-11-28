@@ -1,0 +1,44 @@
+{
+  "diagnostic_v1.json": {
+    "source_sha256": "0edc3e1ef0d2f7091e92f0b6818a0bb9f374639a4d5fceccafe9280a688f3baa"
+  },
+  "diagnostic_v1_serial.log.gz": {
+    "source_sha256": "cde76629098ac23e9e216d437a8fd230a68142a4e67f45f7a07737080f083e9f"
+  },
+  "diagnostic_v2.json": {
+    "source_sha256": "a742b303d0b36f85dba6f9dc0e3c044431844f6f1a3820ec2d8c12e4244c0238"
+  },
+  "diagnostic_v2_serial.log.gz": {
+    "source_sha256": "aa4361b30cdcaddaa6617d9fb17a73330cdc1ba5a3068f374f37e35adf1c5bed"
+  },
+  "diagnostic_v3.json": {
+    "source_sha256": "948924b03c150b344a2dd12cfddde65d7ed1c52be4aa04ed9353b71609186c16"
+  },
+  "diagnostic_v3_serial.log.gz": {
+    "source_sha256": "b6bbfec8b6cd67129410e08a2a496fc5e709b9f241d49405bcaf25c00172f118"
+  },
+  "guest.json": {
+    "source_sha256": "3b06ba8716664213e466a59d61cade810cae3c4f8390e42b47e2a19e6e345dc6"
+  },
+  "guest_serial.log.gz": {
+    "source_sha256": "5c1c43b36905e022b48ef412892ff2d85cf982c04d3adad9aac1cdb26dfb559c"
+  },
+  "preflight_host.log": {
+    "source_sha256": "f5c977b7a7be1c657f33c19ce3cc3d0223aa628dc6e86c3b88a86a718725e6fc"
+  },
+  "prior_failure.json": {
+    "source_sha256": "35b9be6e5fd60e749939d243d24d9cd94069d87b8116a33f2ad56ac0c60c693d"
+  },
+  "prior_failure_serial.log.gz": {
+    "source_sha256": "d5d115d54d5beb12aa8a25fda367b3fe5d4a34781f496b37fa81b735da4f55f0"
+  },
+  "query_compat_environment_failure.log": {
+    "source_sha256": "836b1b996d3c2963d4a5648873dd225d593e3dfb442c27578b125c9a2cb63d7b"
+  },
+  "query_compat_host.log": {
+    "source_sha256": "6e08fb6bd017646280268b9d074959042ca4cbf90cac09a5c9b3abbf0c1f194b"
+  },
+  "system.json": {
+    "source_sha256": "e8dff95b575ed6a8afb8ef065a75cf343a413b1eedab631da6fcbe4a306c3c74"
+  }
+}

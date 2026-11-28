@@ -1,0 +1,139 @@
+{
+  "build_id": "4739c522efb8898b",
+  "cases": [
+    {
+      "iteration": 0,
+      "name": "features",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "quota",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "fragments",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    },
+    {
+      "iteration": 0,
+      "name": "pinned",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ]
+    }
+  ],
+  "compile_command": [
+    "${XOS_HOST_SDK}/bin/x86_64-elf-g++",
+    "-std=c++17",
+    "-Os",
+    "-g",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-ffreestanding",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-fno-stack-protector",
+    "-fno-pie",
+    "-fno-pic",
+    "-mno-red-zone",
+    "-mgeneral-regs-only",
+    "-nostdinc++",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-I",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/include",
+    "-I",
+    "${XOS_REPO}/src/user/include",
+    "${XOS_REPO}/tests/fixtures/ipc_v1_grant/release_probe.cpp",
+    "-nostdlib",
+    "-static",
+    "-no-pie",
+    "-Wl,--gc-sections,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+    "-T",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/user.ld",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/crt0.o",
+    "-Wl,--start-group",
+    "${XOS_REPO}/build/p1h_system_v5/threading_core/libxos_thread_core.a",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/lib/libxos.a",
+    "${XOS_REPO}/build/p1h_system_v5/sdk/lib/libxos_loader.a",
+    "-Wl,--end-group",
+    "-o",
+    "${XOS_REPO}/build/p1_grant_release_guest_v1/grant_release.elf"
+  ],
+  "elf_sha256": "e04b6a49c31d84287fe770b4d05b1f7af8f07ec112d0b6c41fdd47c64fdd6b67",
+  "error": "grant target failed: exec-driver /bin/grant_release.elf foreign\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x0000000000373000\r\n[loader] started pid=15 file=/bin/grant_release.elf\n[process] event=wait_blocked parent=7 child=15\r\n[process] event=started pid=16 parent=15\r\n[process] pid=16 address_space=0x000000000055a000\r\nGRANT_RELEASE_CHILD pid=16\n[process] event=wait_blocked parent=15 child=16\r\nGRANT_RELEASE_FAIL usage result=0\n[task] event=reclaimed pid=16 pages=96\r\nGRANT_RELEASE_FAIL foreign-child result=0\n[task] event=reclaimed pid=15 pages=96\r\n[wait] pid=15 kind=exited code=92\nxsh> ",
+  "image_sha256": "e02b800384cd74fe80a3ba25a80f2758612232170d0340048e7b303d39588472",
+  "not_covered": [
+    "multicore shootdown",
+    "allocation fault injection",
+    "VM-continuation target race"
+  ],
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/p1h_system_v5/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129769,
+    2,
+    0
+  ],
+  "runner_sha256": "4f17364d44fb7739b879900a8ee63a919a1d373c2332ccd5e00f1c13cd245f8c",
+  "scope": "native SDK without libc; actual sys88 action24 and sys87 budget accounting",
+  "sdk_tree_sha256": "8e0dbb77c23e42bed610733143c62304d50a0d29da538db40f109483cc9c80ae",
+  "serial_sha256": "d5d115d54d5beb12aa8a25fda367b3fe5d4a34781f496b37fa81b735da4f55f0",
+  "source_sha256": "ac67a0a51f99bb67aa3bc5d71bcd0874eb2147c2db6f5045aaac608b22177aeb",
+  "status": "failed",
+  "system_manifest_sha256": "e930e4573726ee69f43d254f2848be02c9896a5d1127b03da6f1a801debdef9c",
+  "thread_core_sha256": "bdca110c6490393dfdf3e850fcafb72fcb4e5c1cf57faf3c620b0f93ec261052",
+  "thread_header_sha256": "2268ae6fb2040932bff73af0755096c4d8c9aebc342c17391bcadc6b874d69df"
+}

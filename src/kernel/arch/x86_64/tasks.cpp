@@ -2923,10 +2923,10 @@ bool ipc_v1_grant_overlap(u64 pid, u64 begin, u64 end) {
     return false;
 }
 
-i64 ipc_v1_grant_close_status(u32 slot) {
+i64 ipc_v1_grant_preflight(u32 slot, u64 holder) {
     bool continuing = false;
     for (const auto& mapping : ipc_v1_grant_mappings) {
-        if (!mapping.used || mapping.grant_slot != slot) continue;
+        if (!mapping.used || mapping.grant_slot != slot || (holder && mapping.holder_pid != holder)) continue;
         auto* owner = task_by_pid(mapping.holder_pid);
         if (owner && pinned_range(owner, mapping.address,
                 mapping.address + u64{mapping.page_count} * page_size)) {
@@ -2935,6 +2935,7 @@ i64 ipc_v1_grant_close_status(u32 slot) {
         continuing = continuing || (owner && owner->continuation.active());
     }
     for (auto& owner : tasks) {
+        if (holder && owner.pid != holder) continue;
         ipc_v1_close_regions = vm1_probe_regions[static_cast<u32>(&owner - tasks)];
         for (const auto& mapping : ipc_v1_grant_mappings) {
             if (mapping.used && mapping.grant_slot == slot && mapping.holder_pid == owner.pid &&
@@ -2945,6 +2946,8 @@ i64 ipc_v1_grant_close_status(u32 slot) {
     }
     return continuing ? static_cast<i64>(ipc_v1_error::state) : 0;
 }
+i64 ipc_v1_grant_close_status(u32 slot) { return ipc_v1_grant_preflight(slot, 0); }
+i64 ipc_v1_grant_release_status(u32 slot, u64 holder) { return ipc_v1_grant_preflight(slot, holder); }
 
 void ipc_v1_remove_grant_mapping(u32 mapping_slot) {
     if (mapping_slot >= ipc_v1_max_grant_mappings_system || !ipc_v1_grant_mappings[mapping_slot].used) { return; }
@@ -3461,7 +3464,7 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
     const u64 action = frame->rdi, address = frame->rsi, flags = frame->rdx;
     i64 result = static_cast<i64>(ipc_v1_error::invalid_argument);
     const u64 allowed_flags = action == static_cast<u64>(ipc_v1_action::query_features)
-        ? ipc_v1_query_flag_direct_switch_count : 0;
+        ? ipc_v1_query_flag_direct_switch_count | ipc_v1_query_flag_grant_release : 0;
     if ((flags & ~allowed_flags) != 0) { frame->rax = static_cast<u64>(result); return frame; }
     if (action == static_cast<u64>(ipc_v1_action::query_features)) {
         if (!user_range_ok(address, sizeof(ipc_v1_feature_query), false) ||
@@ -3479,8 +3482,9 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
                  query.direct_switch_count != 0 || query.reserved != 0) {
             result = static_cast<i64>(ipc_v1_error::invalid_argument);
         } else {
-            query.known_features = ipc_v1_feature_known_mask;
-            query.supported_features = ipc_v1_feature_supported_mask;
+            query.known_features = flags & ipc_v1_query_flag_grant_release
+                ? ipc_v1_feature_known_mask : ipc_v1_feature_legacy_mask;
+            query.supported_features = ipc_v1_feature_supported_mask & query.known_features;
             query.max_message_bytes = ipc_v1_max_message_bytes;
             query.max_handles_per_process = ipc_v1_max_handles_per_process;
             query.max_endpoints_system = ipc_v1_max_endpoints_system;
@@ -3726,7 +3730,9 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
         }
         frame->rax = static_cast<u64>(result); return frame;
     }
-    if (action == static_cast<u64>(ipc_v1_action::grant_close)) {
+    if (action == static_cast<u64>(ipc_v1_action::grant_close) ||
+        action == static_cast<u64>(ipc_v1_action::grant_release)) {
+        const bool release = action == static_cast<u64>(ipc_v1_action::grant_release);
         ipc_v1_object_close request{};
         if ((address & 7u) != 0 || !user_range_ok(address, sizeof(request), false)) {
             frame->rax = static_cast<u64>(ipc_v1_error::address); return frame;
@@ -3737,11 +3743,25 @@ void* ipc_v1_syscall(interrupt_frame* frame) {
         else if (!ipc_v1_header_valid(request.header, sizeof(request)) || request.reserved[0] || request.reserved[1]) {
             result = static_cast<i64>(ipc_v1_error::invalid_argument);
         } else if (!handle) { result = static_cast<i64>(ipc_v1_error::invalid_handle); }
-        else if (!(handle->rights & static_cast<u32>(ipc_v1_grant_right::manage))) { result = static_cast<i64>(ipc_v1_error::denied); }
+        else if (!release && !(handle->rights & static_cast<u32>(ipc_v1_grant_right::manage))) { result = static_cast<i64>(ipc_v1_error::denied); }
         else {
             const u32 slot = handle->object_slot;
-            result = ipc_v1_grant_close_status(slot);
-            if (result == 0) ipc_v1_destroy_grant(slot);
+            result = release ? ipc_v1_grant_release_status(slot, current->pid) : ipc_v1_grant_close_status(slot);
+            if (result == 0 && !release) ipc_v1_destroy_grant(slot);
+            else if (result == 0) {
+                // Preflight the complete holder-local reservation mutation
+                // before dropping any page or handle. Other holders retain
+                // mappings, pins, authority and the original budget owner.
+                for (u32 index = 0; index < ipc_v1_max_grant_mappings_system; ++index)
+                    if (ipc_v1_grant_mappings[index].used && ipc_v1_grant_mappings[index].grant_slot == slot &&
+                        ipc_v1_grant_mappings[index].holder_pid == current->pid)
+                        ipc_v1_remove_grant_mapping(index);
+                *handle = {};
+                bool remains = false;
+                for (const auto& other : ipc_v1_grant_handles)
+                    remains = remains || (other.used && other.object_slot == slot);
+                if (!remains) ipc_v1_destroy_grant(slot);
+            }
         }
         frame->rax = static_cast<u64>(result); return frame;
     }

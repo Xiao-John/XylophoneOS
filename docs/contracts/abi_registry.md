@@ -337,10 +337,10 @@ posix_spawn链及same-PID exec；当前shared GNU fork的ENOSYS边界与P1-K2
 组合计划保持独立，不能用本登记宣称fork已经可用。
 协调记录见 [b6c1097c](../work_log/b6c1097c_p1_cd_protocol_claims.md)。
 
-## P1-H grant holder release 认领（2026-11-28）
+## P1-H grant holder release 分配（2026-11-28）
 
 sys88 `ipc_v1_action` **24** `grant_release` 和 feature **bit 5**（mask `0x20`）
-由 P1-H 认领，状态 `claimed`。现有 action 23 `grant_close` 的 manage 权限与
+由 P1-H 负责，状态 `allocated`。现有 action 23 `grant_close` 的 manage 权限与
 全局 revoke 语义保持；不得用全局销毁模拟非管理 holder 的引用释放。
 
 action 24 使用既有 40-byte `ipc_v1_object_close` 请求：version 1、size 40、
@@ -356,8 +356,10 @@ known/supported mask `0x1f`，flags 2/3 才返回 `0x3f`，原 bit 0 的 direct-
 counter 语义不变。旧内核拒绝 flag 2 为 invalid_argument，对未知 action 返回
 unsupported。SDK 第三个 `include_grant_release` 参数默认 false；Net2 使用
 显式 `(false, true)` 查询，只有 bulk_grant 与 grant_release 都可用才发布页能力。
-匹配 kernel/shared ABI/SDK/libc 后需要真实 quota、foreign handle、拒绝输出、
-失败原子性及 service/client 任一先退出的 guest 证据。本认领不宣称该实现已通过。
+通用机制的[契约](ipc_grant_release.md)与[实际客体证据](../reports/ipc_grant_release_20261128/README.md)
+记录九组场景三轮：quota、foreign handle、请求形状、pin/region 失败原子性、
+owner/holder 先释放或退出及原预算归属，资源逐次精确恢复。Net2 producer/libc
+consumer 的组合资格由 P1-H 独立报告，不从这份原生机制证据推导。
 
 ## P1-K3 online library profile 认领（2026-11-28）
 

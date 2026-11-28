@@ -27,7 +27,10 @@ def main():
         "thread_record& main_thread(process_record* process) {",
         "process_record* task_by_pid(u64 pid) {",
         "bool pinned_range(process_record* process, u64 begin, u64 end) {",
+        "i64 ipc_v1_grant_preflight(u32 slot, u64 holder) {",
         "i64 ipc_v1_grant_close_status(u32 slot) {",
+        "i64 ipc_v1_grant_release_status(u32 slot, u64 holder) {",
+        "bool fork_admission_open(const process_record& process) {",
         "i64 prepare_fork(interrupt_frame* frame) {",
     ))
     with tempfile.TemporaryDirectory(prefix="xos_grant_lifecycle_") as temporary:

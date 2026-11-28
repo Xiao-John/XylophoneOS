@@ -13,6 +13,7 @@ def ipc_v1_manifest_entry():
             "notification_v1",
             "wait_set_v1",
             "bulk_grant_v1",
+            "grant_release_v1",
         ],
         "guest_qualification": {
             "endpoint_call_v1": "previously_qualified",
@@ -20,5 +21,6 @@ def ipc_v1_manifest_entry():
             "notification_v1": "previously_qualified",
             "wait_set_v1": "previously_qualified",
             "bulk_grant_v1": "not_run",
+            "grant_release_v1": "not_run",
         },
     }

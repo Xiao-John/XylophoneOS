@@ -104,19 +104,26 @@ bool symbols(reader& r,const dynamic_info& d) {
           || !r.memory(d.gnu_hash+16+8*bloom+4*n+4*(count-base-1),h,4) || !(value(h,4)&1)))return false;
     }
     if(d.versions && !r.segment(d.versions,2*count,map_read))return false;
+    // Validate the entire string table once in file order. ELF permits names
+    // to share suffixes, so any in-range index is terminated within 4096 bytes
+    // when every table string has this bound. Alternating dynsym, dynstr and
+    // versym for every C++ symbol otherwise thrashes a bounded file-pin cache
+    // and spends the startup deadline on redundant Files RPCs.
+    u32 string_length=0;
+    for(u64 at=0;at<d.string_bytes;) {
+        u8 block[4096];
+        const u64 remaining=d.string_bytes-at;
+        const u32 amount=remaining<sizeof(block)?static_cast<u32>(remaining):sizeof(block);
+        if(!r.memory(d.strings+at,block,amount) || (!at && block[0]))return false;
+        for(u32 i=0;i<amount;++i) {
+            if(!block[i])string_length=0;
+            else if(++string_length>=4096)return false;
+        }
+        at+=amount;
+    }
+    if(string_length)return false;
     for(u64 i=0;i<count;++i) {
         u8 s[24];if(!r.memory(d.symbols+i*24,s,24) || value(s,4)>=d.string_bytes)return false;
-        // Symbol names can be long C++ manglings. Bound the scan by the actual
-        // string table rather than truncating a valid GNU symbol to 128 bytes.
-        u64 name=value(s,4);bool terminated=false;
-        for(u32 scanned=0;!terminated && scanned<4096;) {
-            u8 block[64];
-            const u64 available=d.string_bytes-name;
-            const u32 amount=available<sizeof(block)?static_cast<u32>(available):sizeof(block);
-            if(!amount || !r.memory(d.strings+name,block,amount))return false;
-            for(u32 n=0;n<amount;++n)terminated=terminated || block[n]==0;
-            name+=amount;scanned+=amount;
-        } if(!terminated)return false;
         const u32 kind=s[4]&15,bind=s[4]>>4;const u64 shndx=value(s+6,2),address=value(s+8,8),bytes=value(s+16,8);
         if((kind>6 && kind!=10) || (bind>2 && bind!=10) || (s[5]&~3u))return false;
         if(shndx && shndx!=0xfff1) {
@@ -124,7 +131,9 @@ bool symbols(reader& r,const dynamic_info& d) {
             if(kind==6) { if(!r.image.tls_align || !range(address,bytes,r.image.tls_bytes))return false; }
             else if(!r.mapped(address,bytes,map_read))return false;
         }
-        if(d.versions) {
+    }
+    if(d.versions) {
+        for(u64 i=0;i<count;++i) {
             u8 v[2];if(!r.memory(d.versions+i*2,v,2))return false;const u16 index=static_cast<u16>(value(v,2)&0x7fff);
             bool known=index<=1;for(u32 j=0;j<r.image.version_count;++j)known=known || r.image.versions[j].index==index;
             if(!known)return false;

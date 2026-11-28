@@ -46,6 +46,8 @@ extern "C" void run_admission_cases() {
     ++wrong.identity.version;
     admission_check("unknown_identity_version", inspect_identity(read, &input, input.size, wrong.identity) == error::identity);
     copy(changed, fixture_bytes, sizeof(changed)); changed[7] = 3;
+    admission_check("gnu_osabi_with_native_identity", inspect_changed() == error::none);
+    copy(changed, fixture_bytes, sizeof(changed)); changed[7] = 9;
     admission_check("foreign_elf_abi", inspect_changed() == error::header);
     copy(changed, fixture_bytes, sizeof(changed)); changed[16] = 2;
     admission_check("wrong_elf_role", inspect_changed() == error::role);

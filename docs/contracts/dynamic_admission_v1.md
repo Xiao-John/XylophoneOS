@@ -25,8 +25,10 @@ SDK 摘要和完整对象摘要保存在外部 generation 中；对象自身的 
 
 ## 2. ELF 身份载体
 
-采用 ELF64 little-endian x86-64，ELFOSABI 必须为 0，ABI version/padding 为 0。
-ELFOSABI 检查本身不是 XOS 身份；身份还须存在且与已批准 generation 完全相等。
+采用 ELF64 little-endian x86-64，ELFOSABI 为 0 或 3，ABI version/padding 为 0。
+GNU ld 对含 IFUNC/GNU-unique 的对象使用 3；这不单独授予 Linux 或其他 ELF
+执行资格。两种载体都必须含完整只读 XOS note，且与已批准 generation 的身份
+逐字相等。缺失或不匹配的原生身份始终拒绝。
 
 身份放在 `PT_NOTE` 中，name 为四字节 `XOS\0`，type 为 `0x584f5301`，
 descriptor 为下表的 128 字节。note 只有读取权限，descriptor 必须被同坐标的

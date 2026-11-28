@@ -1,0 +1,896 @@
+{
+  "abi": {
+    "current": {
+      "anonymous": 21,
+      "anonymous_seal": 22,
+      "clone_session": 20,
+      "cwd_get": 27,
+      "cwd_set": 26,
+      "maintenance_acquire": 23,
+      "maintenance_release": 24,
+      "read_at": 30,
+      "remove_directory": 32,
+      "resolve_path": 28,
+      "sys_channel": 81,
+      "sys_clock_realtime": 64,
+      "sys_display": 65,
+      "sys_display_present": 66,
+      "sys_ipc_endpoint": 84,
+      "sys_ipc_name": 86,
+      "sys_ipc_wait": 85,
+      "sys_irq_event": 83,
+      "sys_pio_grant": 82,
+      "sys_pipe_wait": 54,
+      "sys_process_cpu_time": 89,
+      "sys_process_guard": 62,
+      "sys_random_bytes": 63,
+      "sys_stream_lease": 80,
+      "truncate": 25,
+      "write_at": 31
+    },
+    "historical_reports": "not_modified",
+    "status": "passed"
+  },
+  "attempts": [
+    {
+      "reason": "An initial fixture command selected an output outside its producer build directory. The script rejected it; the corrected commands used fresh allowed output directories.",
+      "result": "failed_before_guest"
+    },
+    {
+      "reason": "The first candidate exposed a stale zlib-lock digest after the source URL repair. PR 423 corrected the registry, and this candidate was rebuilt and rerun.",
+      "result": "failed_before_promotion"
+    }
+  ],
+  "environment": {
+    "base_archive_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+    "base_release": "xos-sdk-preview-2",
+    "launcher_mode": "ordinary",
+    "qemu_transport": "pipe",
+    "sanitizers": "AddressSanitizer and UndefinedBehaviorSanitizer ran in the process boundary suite; LeakSanitizer was disabled.",
+    "supplement": "Signed Debian trixie Clang/LLDB 19.1.7 packages supplied second-ISA compile and symbolic-debug checks; original SDK was not modified."
+  },
+  "kind": "minimized_fresh_integration_result",
+  "licensing": {
+    "materials": 10,
+    "open_items": [],
+    "report_sha256": "6f77c40f1f83a052b8c81f556272b4f0c7b8c5b389151e4038921a79db843f36",
+    "scope": "registered_materials_and_sdk_copies",
+    "status": "passed"
+  },
+  "native": {
+    "deadline": {
+      "baseline": [
+        129793,
+        2,
+        0
+      ],
+      "build_id": "7c8c59058be0b5f1",
+      "checks": [
+        {
+          "mode": "parent",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "mode": "parent",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "mode": "parent",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        }
+      ],
+      "fixture_receipt_sha256": "43c1641c36dbbd0ed303533a946a135d3d5920d462aa894cf58bea397a22a84c",
+      "image_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+      "not_run": [
+        "sys81_explicit_channel_inheritance_stress",
+        "terminal_display_interactium_regression"
+      ],
+      "original_report_sha256": "afa3bd5ec2344c60db673fe09cea0aecc2543b2c507f915110bd65f4f6e76dff",
+      "runner_sha256": "c964c7e9c15f6c81eb2a72d965743469903d16fb5b89791780e6de163e2bff78",
+      "sdk_tree_sha256": "2d6c17574fb7afaee0e4296f5ee21e8eba57613891e5ffda072e507dec616215",
+      "status": "passed",
+      "system_manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596"
+    },
+    "ipc": {
+      "baseline": [
+        129793,
+        2,
+        0
+      ],
+      "build_id": "7c8c59058be0b5f1",
+      "checks": [
+        {
+          "mode": "parent",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "mode": "lifecycle",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "mode": "authority",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "mode": "quota",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "mode": "parent",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "mode": "lifecycle",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "mode": "authority",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "mode": "quota",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "mode": "parent",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "mode": "lifecycle",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "mode": "authority",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "mode": "quota",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        }
+      ],
+      "fixture_receipt_sha256": "fd9adaeaeaa70b79d444f4391cf06e695cbc2ec8822a0d36fac5a248cc0296e6",
+      "image_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+      "not_run": [
+        "sys81_explicit_channel_inheritance_stress",
+        "terminal_display_interactium_regression"
+      ],
+      "original_report_sha256": "9507366fbe0f27bc1a43137a53cad11d91b0c3e305be4da23678c76a0c4569fc",
+      "runner_sha256": "c964c7e9c15f6c81eb2a72d965743469903d16fb5b89791780e6de163e2bff78",
+      "sdk_tree_sha256": "2d6c17574fb7afaee0e4296f5ee21e8eba57613891e5ffda072e507dec616215",
+      "status": "passed",
+      "system_manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596"
+    },
+    "launch": {
+      "baseline": [
+        129793,
+        2,
+        0
+      ],
+      "fixture_receipt_sha256": "d4e9a64d6de509ed16b035b05bf7155e595a7f9e009646c9979cafa143b0d3e7",
+      "iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+      "original_report_sha256": "4d10a865355b6a6421ac25cfe9dc0e58767e4627558389c8efcfc0454d2046c9",
+      "runner_sha256": "c3cc3d9a791ed90ef60119f7c4796c7caef9c98b7850dac7dcf5888cbe3738ce",
+      "runs": [
+        {
+          "case": "success",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "cancel",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "entry-failure",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "entry-revoke",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "prepare-revoke",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "timeout",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "early-exit",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "malformed",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "multiple",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "stale-allow",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "stale-cancel",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "case": "success",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "cancel",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "entry-failure",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "entry-revoke",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "prepare-revoke",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "timeout",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "early-exit",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "malformed",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "multiple",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "stale-allow",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "stale-cancel",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "case": "success",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "cancel",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "entry-failure",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "entry-revoke",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "prepare-revoke",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "timeout",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "early-exit",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "malformed",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "multiple",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "stale-allow",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        },
+        {
+          "case": "stale-cancel",
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        }
+      ],
+      "sdk_tree_sha256": "2d6c17574fb7afaee0e4296f5ee21e8eba57613891e5ffda072e507dec616215",
+      "status": "passed",
+      "system_build_id": "7c8c59058be0b5f1",
+      "system_manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596"
+    },
+    "stdio": {
+      "baseline": [
+        129793,
+        2,
+        0
+      ],
+      "fixture_receipt_sha256": "e31d0365cbc9411a2fdb0bf685d1a453ad015f63cbc35d4dba9ca5c6b0d2b835",
+      "image_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+      "installed_artifacts": {
+        "bad_marker.elf": "c60f86989b396015ae707e279e312fe4f4f6290a09cb01d0a79d58316ff54385",
+        "raw_stdio.elf": "dec9344353d5d681d69e18a512f1c87005a178be3ddc9880214d3ccf2c91f61b",
+        "static_stdio_probe.elf": "d21081bd21499518f59fac492782e2f5eb613073b2dc5d99b585ced6074609ac",
+        "v3_stdio.elf": "01539322692e230961789cf15a24229635c2fb07a7c0d348bfc5a1753499b03b"
+      },
+      "loader_source_sha256": "7b9bc97c98fd7cdf66fd94d24f5c01137327efa70d3549270d03ca8f43644888",
+      "original_report_sha256": "d0df2e850a3c7a7b85bf43eda1a150988d4d31c0d49ce27b632e32b92f3a617a",
+      "preserved_file_sha256": "1cd263f1102656dd6b6cf1d626d1a96f9eba0406af3cb2a52560d473d4801052",
+      "runner_sources": {
+        "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+        "scripts/sdk_receipt.py": "902e3351a5ca7e3fcb99c5f5827ebb983cf65f593fcec52b55a3868388e67bbd",
+        "scripts/work_disk.py": "9ad9180df909cabfc4e3820089680ca03e1df1ebe2c2da66dada214c76c7fe28",
+        "tests/boot_smoke.py": "651b1226c871ec310bcf0c39107713f450c26962ce3ae28400639f4adf2aff63",
+        "tests/process_smoke.py": "38e41d54222a2734b32000f30fe1677d10056454362f6d47e3b6259861721ee6",
+        "tests/shell_launch_support.py": "6a4b7d2555db36025633008fdb50ce66a0c323804985b7a37b36858edc5b7544",
+        "tests/static_stdio_compat_guest.py": "3202408395a8ab9cfed8d49a3cc774fafdd0dd64a93972851ed9afe7a1fc61f9",
+        "tests/task_smoke.py": "38ff9083d0afa4f9a77778a1bf8a689bbdba1b4307bb3d25fe9403f580a3d824"
+      },
+      "runs": [
+        {
+          "cases": [
+            "raw_kernel_stdio",
+            "v3_keeps_descriptor_startup",
+            "raw_closed_stdin",
+            "raw_pipe_alias",
+            "extra_fd_rejected",
+            "status_flags_rejected",
+            "route_mismatch_rejected",
+            "duplicate_fd_rejected",
+            "alias_conflict_rejected",
+            "replacement_still_requires_v3",
+            "malformed_optin_rejected",
+            "files_stdio_rejected",
+            "legacy_files_transfer_rejected",
+            "cleanup_record_rejected",
+            "pinned_bootstrap_no_downgrade"
+          ],
+          "native_target_executions": 4,
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 0,
+          "status": "passed"
+        },
+        {
+          "cases": [
+            "raw_kernel_stdio",
+            "v3_keeps_descriptor_startup",
+            "raw_closed_stdin",
+            "raw_pipe_alias",
+            "extra_fd_rejected",
+            "status_flags_rejected",
+            "route_mismatch_rejected",
+            "duplicate_fd_rejected",
+            "alias_conflict_rejected",
+            "replacement_still_requires_v3",
+            "malformed_optin_rejected",
+            "files_stdio_rejected",
+            "legacy_files_transfer_rejected",
+            "cleanup_record_rejected",
+            "pinned_bootstrap_no_downgrade"
+          ],
+          "native_target_executions": 4,
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 1,
+          "status": "passed"
+        },
+        {
+          "cases": [
+            "raw_kernel_stdio",
+            "v3_keeps_descriptor_startup",
+            "raw_closed_stdin",
+            "raw_pipe_alias",
+            "extra_fd_rejected",
+            "status_flags_rejected",
+            "route_mismatch_rejected",
+            "duplicate_fd_rejected",
+            "alias_conflict_rejected",
+            "replacement_still_requires_v3",
+            "malformed_optin_rejected",
+            "files_stdio_rejected",
+            "legacy_files_transfer_rejected",
+            "cleanup_record_rejected",
+            "pinned_bootstrap_no_downgrade"
+          ],
+          "native_target_executions": 4,
+          "resources": [
+            129793,
+            2,
+            0
+          ],
+          "round": 2,
+          "status": "passed"
+        }
+      ],
+      "status": "passed",
+      "system_build_id": "7c8c59058be0b5f1",
+      "system_manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596"
+    }
+  },
+  "not_run": [
+    "LeakSanitizer",
+    "optional offline network-namespace mode",
+    "physical hardware",
+    "process-tree cumulative budgets",
+    "persistent/global generation provisioning",
+    "connected-socket poll(0)",
+    "concurrent close/revoke while a real guest blocks in poll",
+    "installed DHCP combined with dynamic GNU applications"
+  ],
+  "ordinary_check_count": 79,
+  "ordinary_smoke": [
+    {
+      "checks": [
+        "boot_and_build_identity",
+        "serial_commands_editing_cr_lf_and_bounds",
+        "bios_keyboard_command",
+        "clear_command",
+        "halt_reaches_cpu_hlt",
+        "corrupt_stage_rejected"
+      ],
+      "original_report_sha256": "ee68cb648995706bc45219fd4c0cf09f856205452133ad6944035e7e60ce4e05",
+      "status": "passed",
+      "suite": "smoke"
+    },
+    {
+      "checks": [
+        "elf_static_rx_r_rw_no_implicit_runtime_or_simd",
+        "bios_to_cpp_long_mode_bss_data_boot_info",
+        "idt_exception_gates_and_double_fault_ist",
+        "debug_console_memory_report",
+        "easter_egg_banner_and_guo_commands",
+        "e820_physical_page_allocator_bounds_and_double_free",
+        "virtual_map_write_unmap_roundtrip",
+        "live_page_tables_null_guard_and_w_x",
+        "debug_console_halt_reaches_cpu_hlt",
+        "page_fault_panic_reports_rip_and_cr2",
+        "general_protection_panic_with_error_code",
+        "invalid_opcode_panic",
+        "divide_error_panic",
+        "double_fault_panic_on_ist",
+        "unsupported_cpu_rejected_before_kernel",
+        "normalized_boot_info_failure_boundaries",
+        "all_common_cpp_compiles_for_second_isa",
+        "lldb_source_breakpoint_arguments_and_symbolic_stack"
+      ],
+      "original_report_sha256": "81d816938e9b032987fefac6d575462555fb1174ea702a0290d1299812b45d71",
+      "status": "passed",
+      "suite": "kernel_smoke"
+    },
+    {
+      "checks": [
+        "ring3_tasks_and_timer_started",
+        "timer_preemption_keeps_heartbeat_alive",
+        "ipc_bounds_and_user_pointer_rejected",
+        "ipc_message_delivered_between_tasks",
+        "invalid_ipc_handle_and_missing_right_rejected",
+        "user_exit_removed_from_run_queue",
+        "dead_tasks_reclaimed",
+        "user_fault_isolated_to_probe",
+        "supervisor_terminal_lists_live_tasks",
+        "supervisor_kill_reclaims_target",
+        "killed_task_removed_from_tasklist",
+        "per_task_address_spaces_observed"
+      ],
+      "original_report_sha256": "4524d3caf2edf802e9f3c8e68289fdc92143bcf5312de7de37690a6c05beb119",
+      "status": "passed",
+      "suite": "task_smoke"
+    },
+    {
+      "checks": [
+        "elf_boundary_cases_truncations_and_mutations_under_sanitizers",
+        "loader_and_sdk_common_code_second_isa_compile",
+        "gcc_cpp_sdk_programs_and_guest_image_catalog",
+        "elf_segments_bss_data_argv_handles_exit_and_single_consumption",
+        "blocking_wait_and_signed_exit_code_with_preemption",
+        "inherited_stdin_stdout_and_nonblocking_read",
+        "guest_loader_rejects_malformed_interp_overflow_and_24_boundaries",
+        "kernel_builder_bounds_permissions_stale_handles_and_capacity_rollback",
+        "private_memory_readonly_nx_and_enabled_fpu_status",
+        "live_loaded_elf_permissions_stack_guard_and_kernel_isolation",
+        "background_spawn_supervisor_kill_and_distinct_killed_status",
+        "foreground_infinite_loop_escape_recovers_terminal",
+        "ten_repeated_load_wait_exit_cycles_exact_resource_stability"
+      ],
+      "original_report_sha256": "efa956238dfbc68632d56bf3806185fa2ab0c4743d6f0d7e425ed8309d64eb71",
+      "status": "passed",
+      "suite": "process_smoke"
+    },
+    {
+      "checks": [
+        "file_service_boot_and_list",
+        "short_read_eof_independent_handles_replace_and_invalid_reject",
+        "editor_accepts_blank_lines_and_consecutive_spaces",
+        "editor_roundtrip_preserves_exact_text",
+        "editor_modifies_existing_file",
+        "file_errors_are_real_and_named",
+        "remove_updates_namespace",
+        "loader_reads_complete_file_snapshot_before_loading"
+      ],
+      "original_report_sha256": "ffcbe44d4a2544f34b7fcde0dc5e163efaa2233458a96cecff7cf7ba8d845de4",
+      "status": "passed",
+      "suite": "file_smoke"
+    },
+    {
+      "checks": [
+        "first_boot_create_overwrite_delete_sync",
+        "second_boot_verifies_content_and_deletion",
+        "second_boot_executes_persisted_elf",
+        "expanded_namespace_saves_fifth_file"
+      ],
+      "original_report_sha256": "67f54317602fe668bb286a3c103a58e55aaeb7c8111e2f6097bbab03a5707bf7",
+      "status": "passed",
+      "suite": "persist_smoke"
+    },
+    {
+      "checks": [
+        "full_media_save_failure_preserves_old_file"
+      ],
+      "original_report_sha256": "6e0211d0da91ac812f978737604b2653f6998e4c072a7ca2a0e90667c9e493ad",
+      "status": "passed",
+      "suite": "full_disk_smoke"
+    },
+    {
+      "checks": [
+        "libc_program_is_in_image_catalog",
+        "newlib_printf_malloc_string_and_exit",
+        "libc_heap_and_stdio_are_reusable_across_runs"
+      ],
+      "original_report_sha256": "a68eb195966dc28a8c55793de0450cc0030806b46335a60c01d2843c428d7a9a",
+      "status": "passed",
+      "suite": "libc_smoke"
+    },
+    {
+      "checks": [
+        "512mib_large_elf_paths_stream_sync_resource_reclaim",
+        "512mib_malformed_large_elf_rejected_without_resources",
+        "512mib_reboot_preserves_large_file_and_elf",
+        "2048mib_large_elf_paths_stream_sync_resource_reclaim",
+        "2048mib_malformed_large_elf_rejected_without_resources",
+        "independent_live_sessions_cannot_steal_staging_or_responses",
+        "killed_client_open_and_staging_reclaimed_on_slot_reuse",
+        "256mib_page_cap_and_page_tables_reclaimed",
+        "2048mib_reboot_preserves_large_file_and_elf"
+      ],
+      "original_report_sha256": "16a7768eaa897aae8b1f1fc83942f66e783d8501fe03661281cd2ac30331fad2",
+      "status": "passed",
+      "suite": "e08_storage_smoke"
+    },
+    {
+      "checks": [
+        "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_0",
+        "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_1",
+        "real_driver_files_heap_env_spawn_pipe_redirect_reclaim_2",
+        "default_spawn_authority_denied_without_resource_leak",
+        "disk_export_confirms_source_child_output_and_stdout_redirect"
+      ],
+      "original_report_sha256": "6cdb66ef851ab590d7fd5a2da3210412f40db5823eff93a81beed6c523ae7509",
+      "status": "passed",
+      "suite": "runtime_smoke"
+    }
+  ],
+  "schema": 1,
+  "scope_note": "Network, public GNU runtime, frozen SDK rollback and distribution receivers retain their own exact source/artifact results. This native integration report does not replace or relabel them.",
+  "source": {
+    "mapping": "Every system source file was compared by SHA-256 to the public commit; documentation-only history differs.",
+    "producer_revision": "3964200d524fd39f3a95c166800832623c5f3591",
+    "public_equivalent_inputs_commit": "819ea63ae84b1e89862648af002c2a09d1936c02",
+    "source_sha256": "7c8c59058be0b5f1ab85450ad69a0c1409fb04f0f3af2b234a6eca645dcb2260",
+    "verified_system_source_files": 2211
+  },
+  "status": "passed",
+  "system": {
+    "build_id": "7c8c59058be0b5f1",
+    "configuration": {
+      "quiet_demos_on_launch": true
+    },
+    "iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+    "manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596",
+    "sdk_manifest_sha256": "032dd506421d616365e68ff1e5fb880b9491c22acb169e88dedab6f3c05996c1"
+  }
+}

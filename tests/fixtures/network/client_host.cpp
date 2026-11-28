@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+#include <initializer_list>
 
 namespace {
 xos::i64 clock_value = 100;
@@ -10,6 +11,7 @@ xos::u64 authenticated_peer = 42;
 bool mismatched_receive_peer = false, no_reply = false, malformed = false;
 bool old_server = false;
 unsigned snapshot_mutation = 0;
+xos::i64 transport_error = 0;
 unsigned send_count, close_count;
 xos::net2::message last_request;
 }
@@ -36,6 +38,7 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
     if (number == 5) {
         assert(first == 12 && third == sizeof(message));
         if (no_reply) return -3;
+        if (transport_error) return transport_error;
         auto& response = *reinterpret_cast<message*>(second); response = {};
         response.version = version; response.action = last_request.action;
         response.sequence = last_request.sequence + (malformed ? 1 : 0); response.object = last_request.object;
@@ -59,6 +62,25 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
             if (snapshot_mutation == 7) snapshot.error = reset;
             if (snapshot_mutation == 8) snapshot.events |= ready_write_closed;
             response.length = sizeof(snapshot); std::memcpy(response.data, &snapshot, sizeof(snapshot));
+        }
+        if (last_request.action == operation::lease_status) {
+            lease_snapshot value{lease_revision, 4, 0, 0, 2, 1, 10, 20, 30,
+                permitted_address, static_address, static_mask, permitted_address, permitted_address, 2, 0, 0, 1, 0};
+            if (snapshot_mutation == 1) value.revision = 2;
+            if (snapshot_mutation == 2) value.epoch = 0;
+            if (snapshot_mutation == 3) value.state = 9;
+            if (snapshot_mutation == 4) value.reason = 8;
+            if (snapshot_mutation == 5) value.reserved = 1;
+            if (snapshot_mutation == 6) value.address = 0;
+            if (snapshot_mutation == 7) value.t1 = value.t2;
+            if (snapshot_mutation == 8) value.mask = 0xffff00ff;
+            if (snapshot_mutation == 9) value.server = 0x7f000001;
+            if (snapshot_mutation == 10) value.gateway = value.address;
+            if (snapshot_mutation == 11) value.resolver = 0xffffffff;
+            if (snapshot_mutation == 12) value.state = 1;
+            if (snapshot_mutation == 13) value.start_attempts = 0;
+            if (snapshot_mutation == 14) value.start_failures = 2;
+            response.length = sizeof(value); std::memcpy(response.data, &value, sizeof(value));
         }
         return header_bytes + response.length;
     }
@@ -106,6 +128,18 @@ int main() {
     snapshot_mutation = 1;
     assert(client.capabilities(request.deadline, capabilities) == io && !capabilities.revision);
     snapshot_mutation = 0; assert(!client.connect(42));
+    lease_snapshot lease{};
+    assert(!client.lease_status(request.deadline, lease) && lease.epoch == 2);
+    for (snapshot_mutation = 1; snapshot_mutation <= 14; ++snapshot_mutation) {
+        assert(client.lease_status(request.deadline, lease) == io && !lease.epoch);
+        assert(!client.connect(42));
+    }
+    snapshot_mutation = 0;
+    for (const i64 error : {i64(-1), i64(ipc_error_broken)}) {
+        const auto sent_before = send_count; transport_error = error;
+        assert(client.lease_status(request.deadline, lease) == closed && !lease.epoch && send_count == sent_before + 1);
+        transport_error = 0; assert(!client.connect(42));
+    }
     clock_value = -1; assert(client.request(request, reply) == io);
     std::puts("PASS N2 SDK: pinned peers, exact responses, pre-send deadlines, no replay after delivery, reconnect sequence, clock failure");
 }

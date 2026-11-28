@@ -47,7 +47,7 @@ struct lease_snapshot {
     u32 revision, state, reason, reserved;
     u64 epoch, request_sent, t1, t2, expires;
     u32 server, address, mask, gateway, resolver, accepted, rejected, conflicts;
-    u64 reserved_tail;
+    u32 start_attempts, start_failures;
 };
 inline constexpr u32 connecting = 1, connected = 2, eof = 4, failed = 8;
 inline constexpr u32 socket_extension_revision = 1;

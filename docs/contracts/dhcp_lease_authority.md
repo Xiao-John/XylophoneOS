@@ -4,6 +4,8 @@
 它不发送 DHCP、实现 ACD 或管理 socket。接入使用已锁定的 lwIP 2.2.1
 `dhcp.c` / `acd.c`；主服务仍须证明真实收发、地址冲突检测、epoch 撤销及资源恢复。
 本模块的 host 与目标对象编译资格不等于 DHCP 客体资格。
+生产接入的安装配置、lwIP hooks、只读 ABI 和 epoch 退役顺序另见
+[DHCP 服务 profile](dhcp_service_profile.md)；本页保留 helper 的独立边界。
 
 ## 1. 可信配置与回复范围
 

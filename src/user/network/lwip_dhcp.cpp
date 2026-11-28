@@ -52,10 +52,37 @@ i64 lwip_stack::start_dhcp(const dhcp::policy& policy, u64 budget,
     dhcp_policy_ = policy; acquisition_budget_ = budget; publish_ = publisher; publisher_ = context;
     if (!restart_clock(static_cast<u64>(clock), true)) return net2::invalid;
     dhcp_enabled_ = true;
+    return start_dhcp_client(static_cast<u64>(clock));
+}
+void lwip_stack::stop_dhcp_client() {
+    start_retry_at_ = 0;
+    dhcp_release_and_stop(&interface_);
+    // If the shared DHCP UDP PCB allocation failed, upstream returns with its
+    // client OFF but its ACD node already linked. OFF's stop is a no-op, so
+    // detach that node explicitly before reuse or freeing the client.
+    auto* client = client_of(&interface_);
+    if (client) for (auto* item = interface_.acd_list; item; item = item->next) {
+        if (item == &client->acd) { acd_remove(&interface_, item); break; }
+    }
+    etharp_cleanup_netif(&interface_);
+}
+i64 lwip_stack::start_dhcp_client(u64 now) {
+    start_retry_at_ = 0;
+    increment(start_attempts_);
     const auto result = dhcp_start(&interface_);
-    // Allocation/backpressure retries are bounded by the same acquisition clock.
-    if (result != ERR_OK && result != ERR_MEM) { failure_ = net2::io; return failure_; }
-    return failure_;
+    if (result == ERR_OK) return failure_;
+    increment(start_failures_);
+    stop_dhcp_client();
+    if (failure_) return failure_;
+    if (result != ERR_MEM) { failure_ = net2::io; return failure_; }
+    // dhcp_start cannot run after client/UDP PCB allocation failure. Retry
+    // only from the outer loop, twice per second within the original deadline.
+    // DISCOVER frame pressure uses upstream fine-timer retransmission.
+    if (now < acquisition_deadline_) {
+        const u64 remaining = acquisition_deadline_ - now;
+        start_retry_at_ = now + (remaining < 500'000'000ull ? remaining : 500'000'000ull);
+    }
+    return 0;
 }
 void lwip_stack::retire_dhcp() {
     gate_open_ = false;
@@ -100,16 +127,13 @@ i64 lwip_stack::advance_dhcp() {
     if (stop_pending_) {
         stop_pending_ = false;
         // Executed outside UDP, ARP and TCP callbacks: never free an active PCB.
-        dhcp_release_and_stop(&interface_);
-        etharp_cleanup_netif(&interface_);
+        stop_dhcp_client();
     }
     if (restart_pending_) {
         restart_pending_ = false;
-        if (restart_clock(now, !acquisition_deadline_)) {
-            const auto result = dhcp_start(&interface_);
-            if (result != ERR_OK && result != ERR_MEM) failure_ = net2::io;
-        }
+        if (restart_clock(now, !acquisition_deadline_)) (void)start_dhcp_client(now);
     }
+    if (start_retry_at_ && now >= start_retry_at_ && !failure_) (void)start_dhcp_client(now);
     auto* client = client_of(&interface_);
     if (client && (renew_pending_ || rebind_pending_)) {
         const bool rebind = rebind_pending_;
@@ -269,6 +293,7 @@ i64 lwip_stack::lease_status(net2::lease_snapshot& output) {
     output.state = static_cast<u32>(lease_.current_state());
     output.reason = static_cast<u32>(last_reason_);
     output.accepted = accepted_; output.rejected = rejected_; output.conflicts = conflicts_;
+    output.start_attempts = start_attempts_; output.start_failures = start_failures_;
     if (lease_.usable(static_cast<u64>(clock))) {
         const auto& value = lease_.current();
         output.request_sent = value.request_sent; output.t1 = value.t1;

@@ -214,7 +214,7 @@ private:
             if (reply.result || reply.length != sizeof(lease_snapshot) || reply.flags) return false;
             lease_snapshot value{};
             __builtin_memcpy(&value, reply.data, sizeof(value));
-            if (value.revision != lease_revision || !value.epoch || value.reserved || value.reserved_tail ||
+            if (value.revision != lease_revision || !value.epoch || value.reserved || !value.start_attempts || value.start_failures > value.start_attempts ||
                 value.state > 8 || value.reason > 7) return false;
             if (!value.address) return value.state != 4 && value.state != 5 && value.state != 6 &&
                 !value.request_sent && !value.t1 && !value.t2 && !value.expires && !value.server &&

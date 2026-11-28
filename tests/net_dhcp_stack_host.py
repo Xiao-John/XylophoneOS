@@ -50,7 +50,7 @@ def main():
     for name, digest in hashes.items():
         if hashlib.sha256((ROOT / name).read_bytes()).hexdigest() != digest:
             raise RuntimeError('source changed while qualifying: ' + name)
-    receipt = {'guest_qualification': 'not_run', 'scenarios': cases, 'sanitizers': ['address', 'undefined'] if args.sanitize else [], 'inputs': hashes}
+    receipt = {'guest_qualification': 'not_run', 'scenarios': cases, 'sanitizers': ['address', 'undefined'] if args.sanitize else [], 'inputs': hashes, 'asan_options': os.environ.get('ASAN_OPTIONS', '')}
     (out / 'result.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
     print('DHCP_PRODUCTION_SCENARIOS_PASSED=' + str(len(cases)))
 

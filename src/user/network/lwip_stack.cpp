@@ -107,7 +107,7 @@ void lwip_stack::shutdown() {
         gate_open_ = false;
         (void)lease_.invalidate(dhcp::reason::stopped);
         dhcp_enabled_ = false;
-        dhcp_release_and_stop(&interface_); dhcp_cleanup(&interface_);
+        stop_dhcp_client(); dhcp_cleanup(&interface_);
         etharp_cleanup_netif(&interface_);
 #endif
 #ifdef XOS_LWIP_DNS_LIFETIME

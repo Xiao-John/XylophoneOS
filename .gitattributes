@@ -41,3 +41,6 @@ src/ports/aurora_browser/patches/*.patch whitespace=-blank-at-eol,-space-before-
 
 # Diagnostic unified diffs retain the required leading space on blank context.
 docs/reports/ssg_p3c_engine_neutral_20261031/*.patch whitespace=-blank-at-eol,-space-before-tab
+
+# DHCP unified patch keeps the required prefix on empty upstream context.
+src/ports/lwip/patches/0005_dhcp_absolute_authority.patch whitespace=-blank-at-eol

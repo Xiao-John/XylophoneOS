@@ -73,3 +73,10 @@ xsh> net_ping
 - 轮询 `net` 服务：`receive` 无包时返回 BUSY；探针以 25 ms 截止重试，吞吐/延迟未优化。
 - `net_ping` 需以 bare command 启动（有 spawn/IPC 权限）；通过 `exec-file` 启动的程序仍需
   满足 SL3 授权契约。
+
+## 原生服务 DHCP 安装 profile
+
+独立的原生 Net2 服务可用 `--net-dhcp-profile` 启用锁定 lwIP DHCP/ACD，
+其第五个 patch 在 profile 宏下连接严格回复校验和绝对租约授权。上述 XPK
+`liblwip.a` / `net_ping` 配方仍按其原有静态配置构建。新增原生服务的安装
+边界与资格记录入口见 [DHCP 服务契约](../../../docs/contracts/dhcp_service_profile.md)。

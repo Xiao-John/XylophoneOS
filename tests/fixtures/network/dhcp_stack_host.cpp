@@ -35,7 +35,7 @@ struct peer {
     std::deque<bytes> input;
     std::vector<bytes> requests;
     std::vector<u64> request_times;
-    bytes last_request;
+    bytes last_request, last_discover;
     u64 now=second;
     u32 random=0x9712ab41, issuer=server1, offered=address1, lease=40, t1=16,t2=28;
     u32 declines=0, discovers=0, app_frames=0, probes=0;
@@ -87,7 +87,7 @@ struct peer {
         expect(length>=241,"DHCP request body");u8 type=0;
         for(u32 i=240;i<length;) {u8 code=p[i++];if(code==255)break;if(!code)continue;u8 n=p[i++];if(code==53&&n==1)type=p[i];i+=n;}
         bytes request(p,p+length);
-        if(type==1) {++discovers;if(offer)udp(issuer,67,68,reply(request,2));}
+        if(type==1) {last_discover=request;++discovers;if(offer)udp(issuer,67,68,reply(request,2));}
         else if(type==3) {last_request=request;requests.push_back(request);request_times.push_back(now);if(ack)answer();}
         else if(type==4) ++declines;
     }
@@ -101,23 +101,42 @@ struct peer {
 };
 struct environment {
     peer wire;lwip_stack stack;service_core core;u32 publications=0;
-    environment() {
+    udp_pcb* blockers[12]{};
+    environment(bool initially_blocked=false, bool udp_pressure=false) {
+        wire.blocked=initially_blocked;
         expect(!stack.initialize(wire.io(),mac.data()),"stack initialize");
         core.initialize(100,stack.api(),stack.dns_api());core.enable_dhcp();
+        if(udp_pressure) for(auto& item:blockers) {item=udp_new();expect(item!=nullptr,"occupy real UDP PCB pool");}
         const dhcp::policy policy{0x0a000200,0xffffff00,address1,address2,{server1,server2},2,{server1,0},1,{server1,server2},2,0xfffffffe};
         expect(!stack.start_dhcp(policy,60*second,[](void* context,u32 ip,u32 mask,u32 gateway,u32 dns) {
             auto& self=*static_cast<environment*>(context);++self.publications;return self.core.publish_dhcp(ip,mask,gateway,dns);
         },this),"start DHCP");
     }
-    ~environment(){core.shutdown();stack.shutdown();}
+    void release_pressure(){for(auto& item:blockers) if(item){udp_remove(item);item=nullptr;}}
+    ~environment(){release_pressure();core.shutdown();stack.shutdown();}
     void poll(){expect(!stack.poll(),"production poll");}
     void until(u64 target){while(wire.now<target){wire.now=std::min<u64>(target,wire.now+100'000'000ull);poll();}}
     lease_snapshot snapshot(){lease_snapshot out{};expect(!stack.lease_status(out),"lease status");return out;}
     void bound(){poll();until(11*second);expect(snapshot().address==wire.offered,"ACD published lease");}
 };
 void run(const std::string& scenario) {
-    environment e;
-    if(scenario=="no_static_fallback") {
+    environment e(scenario=="initial_discover_backpressure" || scenario=="initial_discover_budget",
+                  scenario=="initial_udp_pcb_pressure" || scenario=="initial_udp_pcb_budget");
+    if(scenario=="initial_discover_backpressure" || scenario=="initial_udp_pcb_pressure") {
+        const bool allocation=scenario=="initial_udp_pcb_pressure";
+        expect(e.snapshot().start_attempts==1 && e.snapshot().start_failures==u32(allocation),"startup pressure classified correctly");
+        e.until(1'400'000'000ull);expect(e.snapshot().start_attempts==1,"no busy restart loop");
+        e.wire.blocked=false;e.release_pressure();e.until(14*second);
+        expect(e.snapshot().address==address1 && e.snapshot().start_attempts==(allocation?2u:1u) &&
+               e.snapshot().start_failures==u32(allocation),"bounded startup retry recovers");
+    } else if(scenario=="initial_discover_budget" || scenario=="initial_udp_pcb_budget") {
+        const bool allocation=scenario=="initial_udp_pcb_budget";
+        e.until(62*second);auto value=e.snapshot();
+        expect(!value.address && value.reason==6 && value.start_attempts<=120 &&
+               value.start_failures==(allocation?value.start_attempts:0u),"permanent pressure consumes original budget only");
+        e.wire.blocked=false;e.release_pressure();e.until(80*second);
+        expect(e.snapshot().start_attempts==value.start_attempts && !e.snapshot().address,"no retry after absolute acquisition timeout");
+    } else if(scenario=="no_static_fallback") {
         e.wire.input.clear();e.wire.offer=false;e.until(62*second);const auto value=e.snapshot();
         expect(!value.address && value.reason==6 && !e.publications,"acquisition timeout without fallback");
         const auto count=e.wire.discovers;e.until(80*second);expect(count==e.wire.discovers,"absolute retry budget");
@@ -136,11 +155,18 @@ void run(const std::string& scenario) {
     } else if(scenario=="untransmitted_request") {
         e.wire.blocked=true;e.poll();expect(e.wire.requests.empty(),"blocked REQUEST has no TX authority");
         // A forged ACK with the OFFER XID still has no successful request anchor.
-        bytes fake(240);w32(fake.data()+4,0);e.wire.last_request=fake;
+        e.wire.last_request=e.wire.last_discover;e.wire.answer();e.poll();
+        expect(e.snapshot().rejected==1,"ACK without real REQUEST transmission rejected");
         e.until(62*second);expect(!e.snapshot().address,"no bind without a transmitted request");
     } else {
         e.bound();auto initial=e.snapshot();const auto epoch=e.publications;
-        if(scenario=="renew") {
+        if(scenario=="arp_deferred_request_anchor") {
+            e.wire.arp=false;e.wire.ack=false;e.until(initial.t1+2*second);
+            expect(e.wire.requests.size()==1,"ARP queuing did not count as REQUEST transmit");
+            e.wire.arp_reply(server1,address1);e.poll();const auto transmitted=e.wire.now;
+            e.until(transmitted+second);e.wire.answer();e.poll();
+            expect(e.snapshot().request_sent==transmitted,"only resolved link_output starts renewal clock");
+        } else if(scenario=="renew") {
             e.until(initial.t1+second);auto value=e.snapshot();
             expect(value.address==address1 && value.expires>initial.expires && e.publications==epoch,"unchanged renewal retains epoch");
             expect(r32(e.wire.requests.front().data()+4)!=r32(e.wire.requests.back().data()+4),"renewal uses fresh XID");
@@ -174,7 +200,7 @@ void run(const std::string& scenario) {
 }
 }
 int main(int argc,char** argv) {
-    const char* cases[]={"renew","expire","nak_config_change","rebind_new_issuer","malformed_reply","acd_conflict","conflict_backoff_recover","request_tx_anchor","queued_arp_retirement","no_static_fallback","untransmitted_request","max_finite_lease","clock_regression"};
+    const char* cases[]={"renew","expire","nak_config_change","rebind_new_issuer","malformed_reply","acd_conflict","conflict_backoff_recover","request_tx_anchor","queued_arp_retirement","no_static_fallback","untransmitted_request","max_finite_lease","arp_deferred_request_anchor","initial_discover_backpressure","initial_discover_budget","initial_udp_pcb_pressure","initial_udp_pcb_budget","clock_regression"};
     if(argc==2 && std::string(argv[1])=="--list") {for(auto value:cases)std::puts(value);return 0;}
     expect(argc==2,"one scenario");run(argv[1]);std::printf("DHCP_PRODUCTION_PASS %s\n",argv[1]);
 }

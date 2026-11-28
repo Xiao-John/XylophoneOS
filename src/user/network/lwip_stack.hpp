@@ -62,10 +62,14 @@ private:
     void* publisher_ = nullptr;
     u64 acquisition_budget_ = 0, acquisition_deadline_ = 0, candidate_generation_ = 0;
     u32 last_xid_ = 0, accepted_ = 0, rejected_ = 0, conflicts_ = 0;
+    u32 start_attempts_ = 0, start_failures_ = 0;
+    u64 start_retry_at_ = 0;
     dhcp::reason last_reason_ = dhcp::reason::none;
     bool dhcp_enabled_ = false, published_ = false, gate_open_ = false;
     bool stop_pending_ = false, restart_pending_ = false, renew_pending_ = false, rebind_pending_ = false;
     bool retire_pending_ = false;
+    i64 start_dhcp_client(u64 now);
+    void stop_dhcp_client();
     void observe_dhcp(u64 now);
     void retire_dhcp();
     bool restart_clock(u64 now, bool new_budget);

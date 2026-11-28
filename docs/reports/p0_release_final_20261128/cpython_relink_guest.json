@@ -1,0 +1,72 @@
+{
+  "build_id": "7c8c59058be0b5f1",
+  "cpython_xpk_sha256": "1b2bb536dc3ca5b49f2541422fb106386ceb0d08090dd440fa52e4a063f26d58",
+  "library_sha256": {
+    "usr/lib/python3.14/os.py": "976bdb3e24925f2fb3ce43a4d788de6dcbb88a7cc8604c60ae690fbdd6507546",
+    "usr/lib/python314.zip": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79"
+  },
+  "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+  "original": {
+    "cases": {
+      "absent_file": {
+        "exit": 2,
+        "exit_markers": 0,
+        "output": "can't open file"
+      },
+      "compression": {
+        "exit": 0,
+        "exit_markers": 0,
+        "output": "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc"
+      },
+      "version": {
+        "exit": 0,
+        "exit_markers": 0,
+        "output": "Python 3.14.9"
+      }
+    },
+    "resources": [
+      129793,
+      2,
+      0
+    ]
+  },
+  "original_sha256": "fddd323bbebaa1c64f43c9065595370330491c7ec548675d04c5a77d0aed5555",
+  "output_sha256": {
+    "${XOS_WORK_ROOT}/py3a2/payload.gz": "7669dbc7421ceb264e5b497eddd62eb505d2bb49e5b94239d199860b7492ae5b",
+    "${XOS_WORK_ROOT}/py3a2/payload.zip": "af3faeea5ce0ba620ed2656f1d469be0747f288387208df904fa6e93761453ea"
+  },
+  "probe_sha256": "40e01975035b186018427e191827175518357841b7e4e10ddeb63a7cb70933ca",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+  "replacement": {
+    "cases": {
+      "absent_file": {
+        "exit": 2,
+        "exit_markers": 1,
+        "output": "can't open file"
+      },
+      "compression": {
+        "exit": 0,
+        "exit_markers": 1,
+        "output": "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc"
+      },
+      "version": {
+        "exit": 0,
+        "exit_markers": 1,
+        "output": "Python 3.14.9"
+      }
+    },
+    "resources": [
+      129793,
+      2,
+      0
+    ]
+  },
+  "replacement_sha256": "b206a4307c6864d18d7d4c3ef79dec1f014bec80c31527fc89078065a07ff441",
+  "runner_sha256": "1f1f6fc12beb221f8ce940b2c748c98bbcf965960945d5ca4af81918c70a2aad",
+  "serial_sha256": {
+    "original": "d78f362c7acdd689ac716b94ee8ba62e286982126924461e81cebdb1967922be",
+    "replacement": "99df26df1aad96e70f2d486ccdddb347299cf5ff1a54570280fb881522f1582e"
+  },
+  "status": "passed_subset"
+}

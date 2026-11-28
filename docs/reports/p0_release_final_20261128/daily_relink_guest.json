@@ -1,0 +1,63 @@
+{
+  "build_id": "7c8c59058be0b5f1",
+  "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+  "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+  "original": {
+    "exit_markers": 0,
+    "outputs": {
+      "basename": "data",
+      "cat": "first\nsecond",
+      "cp": "",
+      "dirname": "/tmp/daily-relink",
+      "head": "first",
+      "ls": "data\nmoved\ntee",
+      "mkdir": "",
+      "mv": "",
+      "rm": "",
+      "rmdir": "",
+      "tail": "second",
+      "tee": "first\nsecond",
+      "wc": "2 /tmp/daily-relink/tee"
+    },
+    "resources": [
+      129793,
+      2,
+      0
+    ]
+  },
+  "package_receipt_sha256": "d4005f8f3864f0c2317ce5104342fd5a4f938f2c72e150c8917db19aa341fc7d",
+  "package_sha256": "3ac7ecceb7d34a8805d06904fc591b86570df96520c266862048f907c8436d91",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "release_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+  "replacement": {
+    "exit_markers": 13,
+    "outputs": {
+      "basename": "data",
+      "cat": "first\nsecond",
+      "cp": "",
+      "dirname": "/tmp/daily-relink",
+      "head": "first",
+      "ls": "data\nmoved\ntee",
+      "mkdir": "",
+      "mv": "",
+      "rm": "",
+      "rmdir": "",
+      "tail": "second",
+      "tee": "first\nsecond",
+      "wc": "2 /tmp/daily-relink/tee"
+    },
+    "resources": [
+      129793,
+      2,
+      0
+    ]
+  },
+  "replacement_sha256": "add7f9849792e84abb70db7eb9078c4ae6725938772ef24e053c598a7d87fb2d",
+  "serial_sha256": {
+    "installer": "5bef8dbec6afd7a47c06641cf4b8f3141ce36e403c47e030d0d644bd3f1ad0ea",
+    "original": "8e91d95992b1c2f451d3e3e3e5417ca480d667a5cc4021278fb50102d46afa45",
+    "replacement": "bc87a7646cce91cdd8e0d07884df372d1573728fccc593dfb97d869837b52ad7"
+  },
+  "status": "passed_subset",
+  "test_sha256": "1e69d820805470a2d2739d32bb89b72d92d448f9d2c07dc4569d2b6d18dbdca2"
+}

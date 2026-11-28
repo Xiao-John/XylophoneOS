@@ -1,0 +1,281 @@
+{
+  "built_in_original_sdk_environment": true,
+  "c_sdk_manifest_sha256": "9bb39b94106b9604d58acc5dc4c78829439c4eba6f456e7afdd270c99a154e22",
+  "c_sdk_status": "static_sdk_built",
+  "c_sdk_steps": [
+    {
+      "exit_code": 0,
+      "name": "patch-0001-config-sub-xos"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0002-xos-abi-note"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0003-xos-tls-init"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0004-sigset-error-pointer"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0005-raise-hidden-alias"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0006-sigwait-failure"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0007-arc4random-atomic-include"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0008-freopen-no-fd-path"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0009-dlerror-errno-include"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0010-sem-init-private-only"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0011-nptl-explicit-includes"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0012-socket-include-types"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0013-thread-db-sigset-include"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0014-xos-reserved-dtv"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0015-xos-initial-thread-id"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0016-xos-initial-pthread-exit"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0017-xos-shared-object-build"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0018-xos-static-generated-headers"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0019-generic-opendir-signature"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0020-generic-static-build-includes"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0021-xos-process-exit-barrier"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0022-xos-initial-errno"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0023-generic-open-variadic-signature"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0024-nptl-lowlevellock-hidden-declarations"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0025-strict-utf8-scalar-values"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0026-generic-execstack-hidden-declaration"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0027-generic-fstatfs-hidden-definition"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0028-generic-ttyname-r-hidden-definition"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0029-generic-setsockopt-hidden-definition"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0029-xos-rtld-pinned-load"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0030-posix-fatal-include-errno"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0030-xos-rtld-native-heap"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0031-pthread-self-native-tid"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0032-xos-rtld-initial-tp"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0033-xos-rtld-initial-tls"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0034-xos-rtld-fixed-startup-policy"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0035-xos-freeres-selected-subdirs"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0036-xos-shared-tilde-without-nss"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0037-xos-gcc-elf-extensions-on-verified-pins"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0038-xos-public-dlfcn-fixed-closure"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0039-xos-fixed-closure-worker-dtv"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0040-xos-resolve-existing-unwinder"
+    },
+    {
+      "exit_code": 0,
+      "name": "patch-0041-xos-public-runtime-ready"
+    },
+    {
+      "exit_code": 0,
+      "name": "configure"
+    },
+    {
+      "exit_code": 0,
+      "name": "make-lib"
+    },
+    {
+      "exit_code": 0,
+      "name": "install-headers"
+    },
+    {
+      "exit_code": 0,
+      "name": "install-lib"
+    },
+    {
+      "exit_code": 0,
+      "name": "crt-xos_start"
+    },
+    {
+      "exit_code": 0,
+      "name": "crt-xos_start_c"
+    },
+    {
+      "exit_code": 0,
+      "name": "crt-xos_stdio_receiver"
+    },
+    {
+      "exit_code": 0,
+      "name": "terminal-support"
+    }
+  ],
+  "c_sdk_tree_sha256": "081ca8515881a8d608a64e5bb72f2b3df56a3a48f6247a02a66d7d2e83bfee37",
+  "cxx_build_record_sha256": "a8569e6a6f20462b7565e4f8f029a565f02adac5cd04b85d9a06a068b924e9e6",
+  "cxx_sdk_status": "static_cxx_sdk_built",
+  "cxx_sdk_steps": [
+    {
+      "exit_code": 0,
+      "name": "build-triplet"
+    },
+    {
+      "exit_code": 0,
+      "name": "target-triplet"
+    },
+    {
+      "exit_code": 0,
+      "name": "configure-link-probe"
+    },
+    {
+      "exit_code": 0,
+      "name": "cxx-configure"
+    },
+    {
+      "exit_code": 0,
+      "name": "cxx-make"
+    },
+    {
+      "exit_code": 0,
+      "name": "cxx-install"
+    },
+    {
+      "exit_code": 0,
+      "name": "unwinder-configure"
+    },
+    {
+      "exit_code": 0,
+      "name": "compiler-plugin"
+    },
+    {
+      "exit_code": 0,
+      "name": "unwinder-emutls"
+    },
+    {
+      "exit_code": 0,
+      "name": "unwinder-unwind-c"
+    },
+    {
+      "exit_code": 0,
+      "name": "unwinder-unwind-dw2-fde"
+    },
+    {
+      "exit_code": 0,
+      "name": "unwinder-unwind-dw2"
+    },
+    {
+      "exit_code": 0,
+      "name": "unwinder-unwind-sjlj"
+    },
+    {
+      "exit_code": 0,
+      "name": "compose-unwinder"
+    }
+  ],
+  "final_kit_tree_sha256": "672bb1543fe545a2c48371f27e84ff262671a57ccd1e93f8bdec087529559152",
+  "final_profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+  "final_sdk_manifest_sha256": "56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703",
+  "final_sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab",
+  "gcc_source_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+  "glibc_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "original_sdk_archive_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "profile_id": "xos-x86_64-glibc-p0-20261128",
+  "sdk_mutated_after_packaging": false
+}

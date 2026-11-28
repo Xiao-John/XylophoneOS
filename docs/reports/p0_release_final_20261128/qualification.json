@@ -1,0 +1,68 @@
+{
+  "component_source_files": 140,
+  "detached_receiver_groups": 5,
+  "freeze_status": "assembled_static_distribution",
+  "frozen_file_count": 20,
+  "kind": "fresh_p0_r1_static_distribution_qualification",
+  "kit_tree_sha256": "672bb1543fe545a2c48371f27e84ff262671a57ccd1e93f8bdec087529559152",
+  "license_register_status_counts": {
+    "deferred": 1,
+    "not_applicable": 7,
+    "open": 0
+  },
+  "license_scope": "registered_materials_and_sdk_copies",
+  "native_gnu_cases": 20,
+  "not_run_or_not_asserted": [
+    "physical_power_loss",
+    "torn_sectors",
+    "network_namespace_isolation_on_this_host",
+    "arbitrary_dynamic_library_loading",
+    "full_POSIX",
+    "unpackaged_CPython_extensions",
+    "GUI_assets"
+  ],
+  "ordinary_checks": 79,
+  "package_checks": [
+    "installer_idempotent_package_setup_and_python_smoke",
+    "cold_ordinary_python_and_native_ownership",
+    "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+  ],
+  "profile_id": "xos-x86_64-glibc-p0-20261128",
+  "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+  "public_system_source_mapping": {
+    "commit": "819ea63ae84b1e89862648af002c2a09d1936c02",
+    "evidence": "../p0_integration_final_20261128/qualification.json",
+    "matching_source_entries": 2211,
+    "scope": "recorded system build inputs, not an assertion that both Git histories are identical"
+  },
+  "registered_license_materials": 10,
+  "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+  "relink_guest_groups": {
+    "cpython": "passed_subset",
+    "daily": "passed_subset",
+    "dash": "passed_subset",
+    "make": "passed_subset",
+    "xypm": "passed_subset"
+  },
+  "relinked_static_programs": 17,
+  "rollback": {
+    "cold_boot_count": 4,
+    "ordinary_program_executions": 6,
+    "source_disks_preserved": true,
+    "status": "passed"
+  },
+  "rollback_guard_count": 15,
+  "scope": "The R1 media and kit are one exact profile. A new independently built host SDK retains its own profile and qualification; default XPK profiles are not interchangeable.",
+  "sdk_manifest_sha256": "56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703",
+  "sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab",
+  "source_commit": "3964200d524fd39f3a95c166800832623c5f3591",
+  "status": "qualification_passed_public_asset_upload_pending",
+  "system_build_id": "7c8c59058be0b5f1",
+  "system_manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596",
+  "unchanged_original_asset_count": 15,
+  "upgrade": {
+    "cold_verified_files": 58,
+    "interruption_checkpoint": 123,
+    "status": "passed_subset"
+  }
+}

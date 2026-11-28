@@ -1,0 +1,50 @@
+{
+  "after_cold_boot": {
+    "db_sha256": "453db775f4a79aa7e93a470a7d0b002ae738682a167b96986fd77eb96ee6ae14",
+    "index_sha256": "adecb039a0467c394c075d34c211a6485fbc75ba19d70c6e1015e2d5631701dd",
+    "packages": {
+      "files": 58,
+      "status": "verified"
+    },
+    "user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e"
+  },
+  "fault_elf_sha256": "22269df768bd0bd4ea6fbcedf9827c1d3ee92dc094624ab097be1e8a4b137d6e",
+  "installed": {
+    "db_sha256": "0235b44b8b764e0ab785346b5da1a54637f33f77278250e006f6fddfc4b7849d",
+    "index_sha256": "87a4a432540b5814683f4cf0d25a45483e2d4541af4d07bdd23e8e23557bf9d0",
+    "packages": {
+      "files": 57,
+      "status": "verified"
+    },
+    "user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e"
+  },
+  "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+  "interrupted": {
+    "checkpoint": 123,
+    "disk_sha256": "5c459b3e68883632324756c9f46765e53f2fc9db24c56d0c33aa155329b5accf"
+  },
+  "not_run": [
+    "physical_power_loss",
+    "sector_tearing"
+  ],
+  "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+  "original_disk_sha256": "c2289ab88c37e0e4e3262a2a2d2f643b75b437370903340d6c336012e3168a9a",
+  "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+  "recovered": {
+    "db_sha256": "0235b44b8b764e0ab785346b5da1a54637f33f77278250e006f6fddfc4b7849d",
+    "index_sha256": "87a4a432540b5814683f4cf0d25a45483e2d4541af4d07bdd23e8e23557bf9d0",
+    "packages": {
+      "files": 57,
+      "status": "verified"
+    },
+    "user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e"
+  },
+  "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+  "runner_sha256": "185ca137ddf36f66795fc7fcad92de342dcb5f33d85d8bd878da4b4bb387513a",
+  "status": "passed_subset",
+  "upgrade_package": {
+    "files": 17,
+    "id": "python_idna",
+    "sha256": "c4a8bb305995cce7078a11e6dafb497bb1dc18234e465c05e6d54cdc62fe8eb9"
+  }
+}

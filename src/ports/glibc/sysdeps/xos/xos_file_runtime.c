@@ -29,6 +29,7 @@ struct fd_slot { int object; unsigned int close_on_exec; };
 struct open_object { unsigned int kind, handle, flags, references; };
 static struct fd_slot descriptors[fd_limit];
 static struct open_object objects[object_limit];
+static xos_u32 poll_releases[object_limit];
 static xos_u32 session_lock, spawn_cwd_lock;
 static int initialized, initialization_error;
 static struct xos_file_session session;
@@ -375,6 +376,26 @@ initialize (void)
 #endif
 }
 
+/* A queued release owns a counted reference, so its object cannot be reused
+   until drained under session_lock. Poll never performs the last remote close. */
+static void
+drain_poll_releases (int allow_io)
+{
+  for (int index = 0; index < object_limit; ++index)
+    {
+      xos_u32 count = __atomic_exchange_n (&poll_releases[index], 0, __ATOMIC_ACQUIRE);
+      if (!count) continue;
+      struct open_object *object = &objects[index];
+      if (object->references > count) object->references -= count;
+      else if (object->references == count && (allow_io || object->kind == kind_socket))
+        {
+          object->references = 1;
+          (void) close_object_until (index, ~(xos_u64) 0);
+        }
+      else (void) __atomic_fetch_add (&poll_releases[index], count, __ATOMIC_RELEASE);
+    }
+}
+
 static int
 begin (void)
 {
@@ -382,6 +403,7 @@ begin (void)
   if (result != 0) return result;
   result = initialize ();
   if (result != 0) unlock_session ();
+  else drain_poll_releases (1);
   return result;
 }
 
@@ -499,8 +521,12 @@ free_object (int minimum)
 long
 __xos_file_socket (int close_on_exec)
 {
+  int error = lock_session ();
+  if (error) return error;
+  drain_poll_releases (0);
+  unlock_session ();
   __xos_net2_reap ();
-  int error = begin ();
+  error = begin ();
   if (error) return error;
   int fd = free_descriptor (0), index = free_object (0);
   long result = -EMFILE;
@@ -1221,6 +1247,47 @@ __xos_file_lease_acquire (int fd, int access, struct xos_file_lease *lease)
     }
   unlock_session ();
   return result;
+}
+
+long
+__xos_file_poll_lease_acquire (int fd, struct xos_file_lease *lease)
+{
+  if (!lease) return -EFAULT;
+  *lease = (struct xos_file_lease) { .object = -1 };
+  if (fd < 0 || fd >= fd_limit) return -EBADF;
+  if (__atomic_exchange_n (&session_lock, 1, __ATOMIC_ACQUIRE) != 0) return -EAGAIN;
+  long result = !initialized ? -EOPNOTSUPP : initialization_error;
+  if (!result)
+    {
+      drain_poll_releases (0);
+      int index = object_for (fd);
+      if (index < 0) result = -EBADF;
+      else
+        {
+          struct open_object *object = &objects[index];
+          if (object->references == ~(unsigned int) 0) result = -EOVERFLOW;
+          else
+            {
+              ++object->references;
+              *lease = (struct xos_file_lease) { index, object->kind, object->handle, object->flags };
+            }
+        }
+    }
+  unlock_session ();
+  return result;
+}
+
+void
+__xos_file_poll_lease_release (struct xos_file_lease *lease)
+{
+  if (!lease || lease->object < 0 || lease->object >= object_limit) return;
+  (void) __atomic_fetch_add (&poll_releases[lease->object], 1, __ATOMIC_RELEASE);
+  lease->object = -1;
+  if (__atomic_exchange_n (&session_lock, 1, __ATOMIC_ACQUIRE) == 0)
+    {
+      drain_poll_releases (0);
+      unlock_session ();
+    }
 }
 
 long

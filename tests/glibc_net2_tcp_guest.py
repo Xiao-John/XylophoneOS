@@ -40,11 +40,16 @@ def receive_exact(connection, expected):
     require(bytes(received) == expected, 'peer received different bytes')
 
 
-def serve(server, nonce, challenge):
+def serve(server, nonce, challenge, half_close=False):
     connection, _ = server.accept()
     with connection:
         connection.settimeout(25)
         receive_exact(connection, nonce)
+        if half_close:
+            require(connection.recv(1) == b'', 'peer did not see SHUT_WR before response')
+            connection.sendall(challenge)
+            connection.shutdown(socket.SHUT_WR)
+            return
         connection.sendall(challenge)
         connection.shutdown(socket.SHUT_WR)
         receive_exact(connection, (nonce * 49)[:1537])
@@ -85,12 +90,13 @@ def start_service(guest):
     return int(match[1])
 
 
-def run_guest(image, program, out, report):
+def run_guest(image, program, stalled_peer, out, report, legacy_kernel=False):
     with tempfile.TemporaryDirectory(prefix='xos_glibc_net2_') as folder:
         disk, readback = Path(folder) / 'work.img', Path(folder) / 'readback.elf'
         create_fat32(disk, 512)
         transfer(disk, 'mkdir', '/bin')
         transfer(disk, 'import', APP, program)
+        transfer(disk, 'import', '/bin/net2_stall.elf', stalled_peer)
         transfer(disk, 'export', APP, readback)
         require(sha(readback) == report['elf_sha256'], 'ELF changed on FAT disk')
         guest = Guest(image, 'net2', iso=True, network=True, work_disk=disk, qmp_enabled=False, log_dir=out)
@@ -112,6 +118,28 @@ def run_guest(image, program, out, report):
             report['baseline_without_service'] = quiet
             run_case(guest, report, quiet, 'no_service', 9)
             run_case(guest, report, quiet, 'capacity', 9)
+            if not legacy_kernel:
+                begin = len(guest.output)
+                launched = command(guest, 'spawn-file /bin/net2_stall.elf', b'[loader] started pid=', timeout=20)
+                matched = re.search(rb'\[loader\] started pid=(\d+)', launched)
+                require(matched, 'stalled peer PID missing')
+                stalled_pid = int(matched[1])
+                guest.expect(b'NET2_STALL_READY', start=begin, timeout=20)
+                completed = command(guest, f'exec-file {APP} stall 9 {stalled_pid}', b'kind=exited code=', timeout=20)
+                require(b'GLIBC_NET2_PASS stall' in completed and b'kind=exited code=0' in completed,
+                        'stalled live peer broke caller deadline or late-reply recovery')
+                elapsed = re.search(rb'GLIBC_NET2_POLL_TIMEOUT elapsed_ns=(\d+)', completed)
+                require(elapsed and 40000000 <= int(elapsed[1]) < 700000000, 'poll timeout was silently extended')
+                waited = command(guest, f'wait {stalled_pid}', b'[wait]', timeout=20)
+                require(f'[wait] pid={stalled_pid} kind=exited code=0'.encode() in waited,
+                        'stalled peer did not consume exactly one capability/readiness request')
+                require(b'NET2_STALL_SERVICE_PASS capabilities=1 readiness=1' in bytes(guest.output)[begin:],
+                        'read-only query was replayed or connection could not close after late reply')
+                baseline_restored(guest, quiet)
+                report['cases'].append({'name': 'live_peer_stalled_reply', 'poll_timeout_ms': 40,
+                    'actual_elapsed_ns': int(elapsed[1]), 'peer_delay_ms': 1000,
+                    'capability_requests': 1, 'readiness_requests': 1, 'late_reply_recovered': True,
+                    'baseline_after': quiet})
             seen = []
             for cycle in range(2):
                 pid = start_service(guest)
@@ -132,10 +160,20 @@ def run_guest(image, program, out, report):
                         server.settimeout(25)
                         server.listen(1)
                         pending = peer.submit(serve, server, nonce, challenge)
-                        run_case(guest, report, baseline, 'stream', server.getsockname()[1], nonce, challenge)
+                        run_case(guest, report, baseline, 'legacy_wait' if legacy_kernel else 'stream',
+                                 server.getsockname()[1], nonce, challenge)
                         pending.result()
                     report['cases'][-1].update(nonce=nonce.decode(), reply_hex=challenge.hex(),
                                               tail_bytes=1537, peer_eof=True)
+                if not legacy_kernel:
+                    nonce, challenge = secrets.token_hex(16).encode(), secrets.token_bytes(32)
+                    with socket.socket() as server, ThreadPoolExecutor(max_workers=1) as peer:
+                        server.bind(('127.0.0.1', 0)); server.settimeout(25); server.listen(1)
+                        pending = peer.submit(serve, server, nonce, challenge, True)
+                        run_case(guest, report, baseline, 'half_close', server.getsockname()[1], nonce, challenge)
+                        pending.result()
+                    report['cases'][-1].update(nonce=nonce.decode(), reply_hex=challenge.hex(),
+                                              peer_eof_before_response=True, readiness_timeout_ms=30)
                 stopped = command(guest, 'net-stop', b'kind=exited code=0', timeout=60)
                 require(b'[net] close=0' in stopped, 'network service did not reset and close')
                 baseline_restored(guest, quiet)
@@ -148,10 +186,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ('system', 'sdk', 'profile', 'output'):
         parser.add_argument('--' + key, type=Path, required=True)
+    parser.add_argument('--legacy-kernel', action='store_true',
+                        help='require deadline modes to fail closed while old blocking TCP stays usable')
     args = parser.parse_args()
     system, sdk, profile, out = (path.resolve() for path in (args.system, args.sdk, args.profile, args.output))
     out.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'failed', 'runner_sha256': sha(Path(__file__)), 'services': [], 'cases': []}
+    report = {'status': 'failed', 'runner_sha256': sha(Path(__file__)), 'services': [], 'cases': [],
+              'deadline_profile': 'legacy_kernel_fail_closed' if args.legacy_kernel else 'absolute_ipc_wait',
+              'zero_timeout_connected_socket': 'unsupported', 'posix_complete_poll': False}
     try:
         sdk_manifest, sdk_hash = metadata_snapshot(sdk / 'manifest.json')
         system_manifest, system_hash = metadata_snapshot(system / 'manifest.json')
@@ -166,8 +208,8 @@ def main():
         net_profile = net_inputs.get('static_profile', {})
         require(net_profile.get('pci_instance') == 41, 'system lacks configured QEMU NIC launch binding')
         stubs = set(sdk_manifest['stub_functions'])
-        require(not {'socket', 'connect', 'send', 'recv'} & stubs, 'TCP implementation missing')
-        require({'bind', 'listen', 'accept', 'poll', 'shutdown', 'setsockopt'} <= stubs,
+        require(not {'socket', 'connect', 'send', 'recv', 'poll', 'shutdown'} & stubs, 'TCP implementation missing')
+        require({'bind', 'listen', 'accept', 'setsockopt'} <= stubs,
                 'unqualified operations changed')
         target = tool_identity('x86_64-elf-g++')
         require(target.get('available') and target['sha256'] == sdk_manifest['tools']['x86_64-elf-g++']['sha256'],
@@ -190,7 +232,20 @@ def main():
                       elf_manifest_sha256=sha(out / 'net2.elf.build/manifest.json'))
         image = system / 'xos-install.iso'
         report['image_sha256'] = sha(image)
-        run_guest(image, program, out, report)
+        stalled_peer = out / 'net2_stall.elf'
+        native_sdk = system / 'sdk'
+        subprocess.run([target['path'], '-std=c++17', '-Os', '-Wall', '-Wextra', '-Werror',
+                        '-ffreestanding', '-fno-exceptions', '-fno-rtti', '-fno-stack-protector',
+                        '-fno-pie', '-fno-pic', '-mno-red-zone', '-mgeneral-regs-only', '-nostdinc++',
+                        '-ffunction-sections', '-fdata-sections', '-I', native_sdk / 'include',
+                        FIXTURES / 'stall_service.cpp', '-nostdlib', '-static', '-no-pie',
+                        '-Wl,--gc-sections,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096',
+                        '-T', native_sdk / 'user.ld', native_sdk / 'crt0.o', native_sdk / 'lib/libxos.a',
+                        '-o', stalled_peer], check=True)
+        report['stalled_peer'] = {'elf_sha256': sha(stalled_peer),
+            'source_sha256': sha(FIXTURES / 'stall_service.cpp'),
+            'purpose': 'test-only authenticated IPC peer; no actual network service qualification'}
+        run_guest(image, program, stalled_peer, out, report, args.legacy_kernel)
         require(metadata_snapshot(profile)[1] == profile_hash and verify_profile(profile_document, 'glibc', sdk) == binding,
                 'profile or SDK changed during qualification')
         require(sha(image) == report['image_sha256'] and sha(program) == report['elf_sha256']

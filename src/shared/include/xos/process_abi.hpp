@@ -154,6 +154,16 @@ inline constexpr u32 process_max_exec_arg_bytes = 4096;
 inline constexpr u64 exec_image_abi_magic = 0x3349424143455858ull;
 inline constexpr u32 process_max_spawn_depth = 3;
 inline constexpr u32 process_max_pipe_refs = 16, process_max_pipes = 8;
+// sys34 arg2 explicitly selects atomic private pipe-reference transfer to an
+// owned ordinary building child. Legacy stdio routing arg2=0..2 is unchanged.
+inline constexpr u64 process_pipe_transfer_mode = u64{1} << 63;
+struct process_pipe_transfer_entry { u32 source, target; };
+struct process_pipe_transfer {
+    u32 version, size, count, reserved;
+    process_pipe_transfer_entry entries[process_max_pipe_refs];
+};
+static_assert(sizeof(process_pipe_transfer_entry) == 8);
+static_assert(sizeof(process_pipe_transfer) == 144);
 inline constexpr u32 process_pipe_bytes = 4096;
 inline constexpr u32 process_pipe_token_min = 65536;
 inline constexpr u64 process_stdio_close = ~u64{0};

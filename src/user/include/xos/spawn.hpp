@@ -73,6 +73,10 @@ struct spawn_options {
     // Optional output filled by prepare_child: application-side send handle.
     // The loader maps the startup pages only after that callback succeeds.
     const u32* terminal_send_handle = nullptr;
+    // Explicitly grant each unrouted inherited pipe open description to the
+    // owned building child. Default false retains the legacy route-only rule.
+    // The native limit is 16 references, including fixed stdio routes.
+    bool transfer_independent_pipes = false;
 };
 i64 spawn_file_options(const char* path, u32 argc, const char* const* argv,
                        const spawn_options& options);

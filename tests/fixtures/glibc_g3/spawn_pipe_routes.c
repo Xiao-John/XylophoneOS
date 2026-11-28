@@ -48,6 +48,16 @@ static int child(const char *mode)
 {
     CHECK(fcntl(9, F_GETFD) == -1 && errno == EBADF);
     CHECK(fcntl(20, F_GETFD) == -1 && errno == EBADF);
+    if (!strcmp(mode, "independent")) {
+        struct stat info;
+        CHECK(fstat(3, &info) == 0 && S_ISFIFO(info.st_mode));
+        CHECK(fstat(4, &info) == 0 && S_ISFIFO(info.st_mode));
+        char byte;
+        CHECK(read(3, &byte, 1) == 1 && byte == 'P');
+        CHECK(write(4, "Q", 1) == 1);
+        CHECK(close(3) == 0 && close(4) == 0);
+        return 0;
+    }
     if (!strcmp(mode, "kernel-extra-read")) {
         CHECK(fcntl(0, F_GETFD) == -1 && errno == EBADF);
         CHECK(fcntl(8, F_GETFL) == O_RDONLY);
@@ -163,12 +173,14 @@ int main(int argc, char **argv)
     puts("SPAWN_PIPE_PASS kernel_extra_alias_after_original_stdio_close");
 
     CHECK(pipe(input) == 0);
+    CHECK(input[0] == 3 && input[1] == 4);
     pid = -777;
-    CHECK(spawn(&pid, "aliases") == ENOTSUP && pid == -777);
-    CHECK(write(input[1], "P", 1) == 1 && close(input[1]) == 0);
-    CHECK(read(input[0], bytes, 1) == 1 && bytes[0] == 'P');
+    CHECK(write(input[1], "P", 1) == 1);
+    CHECK(spawn(&pid, "independent") == 0 && pid > 0 && finish(pid) == 0);
+    CHECK(close(input[1]) == 0);
+    CHECK(read(input[0], bytes, 1) == 1 && bytes[0] == 'Q');
     CHECK(read(input[0], bytes, 1) == 0 && close(input[0]) == 0);
-    puts("SPAWN_PIPE_PASS unrouted_pipe_explicit_rejection_parent_preserved");
+    puts("SPAWN_PIPE_PASS independent_pipe_transfer_parent_preserved");
 
     CHECK(pipe2(output, O_CLOEXEC) == 0 && dup2(output[1], 1) == 1);
     CHECK(spawn(&pid, "broken") == 0);

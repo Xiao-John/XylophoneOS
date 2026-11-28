@@ -189,4 +189,8 @@ inline process_stats stats() {
     (void)syscall(sys_process_stats, reinterpret_cast<u64>(&result));
     return result;
 }
+inline i64 transfer_pipes(u64 child, process_pipe_transfer& request) {
+    return syscall(sys_process_stdio, child, process_pipe_transfer_mode,
+                   reinterpret_cast<u64>(&request));
+}
 }

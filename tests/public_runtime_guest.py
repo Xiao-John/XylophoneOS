@@ -219,7 +219,7 @@ def main():
             definitions.append(('c-pipe', 'dynamic-run ' + str(slots['p0pipe']) + ' /apps/p0pipe/main', (
                 'SPAWN_PIPE_PASS routed_read_write_alias_flags_cloexec_eof_before_exit',
                 'SPAWN_PIPE_PASS kernel_extra_alias_after_original_stdio_close',
-                'SPAWN_PIPE_PASS unrouted_pipe_explicit_rejection_parent_preserved',
+                'SPAWN_PIPE_PASS independent_pipe_transfer_parent_preserved',
                 'SPAWN_PIPE_PASS closed_reader_epipe', 'SPAWN_PIPE_OK cases=4')))
         for name, program, markers in (
                 ('cpp', 'p0cpp', ('D2_SHARED_CXX_OK throw=DSO catch=PIE rtti=shared unwind=complete',

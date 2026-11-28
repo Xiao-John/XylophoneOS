@@ -5512,6 +5512,64 @@ void* process_syscall(interrupt_frame* frame) {
         break;
     }
     case sys_process_stdio: {
+        if (second == process_pipe_transfer_mode) {
+            process_record* child = owned_process(first);
+            if (child == nullptr) { result = process_error_denied; break; }
+            if (child->state != task_state::building || child->replacement_pending || child->fork_pending) {
+                result = process_error_state; break;
+            }
+            if (!user_range_ok(third, sizeof(process_pipe_transfer), false)) { break; }
+            process_pipe_transfer request{};
+            copy_from_user(&request, third, sizeof(request));
+            if (request.version != 1 || request.size != sizeof(request) || request.reserved != 0 ||
+                request.count == 0 || request.count > process_max_pipe_refs) { break; }
+            const pipe_reference* sources[process_max_pipe_refs]{};
+            pipe_reference* destinations[process_max_pipe_refs]{};
+            result = 0;
+            for (u32 index = 0; index < process_max_pipe_refs; ++index) {
+                const auto& entry = request.entries[index];
+                if (entry.target != 0 || (index >= request.count && entry.source != 0)) {
+                    result = process_error_invalid; break;
+                }
+                if (index >= request.count) continue;
+                for (u32 prior = 0; prior < index; ++prior) {
+                    if (request.entries[prior].source == entry.source) result = process_error_invalid;
+                }
+                if (result != 0) break;
+                sources[index] = pipe_reference_for(current, entry.source);
+                if (sources[index] == nullptr) { result = process_error_denied; break; }
+                if (pipe_reference_for(child, entry.source) != nullptr) {
+                    result = process_error_state; break;
+                }
+                if (sources[index]->pipe_index >= process_max_pipes ||
+                    !pipes[sources[index]->pipe_index].used) { result = process_error_state; break; }
+            }
+            if (result != 0) break;
+            if (child->pipe_reference_count > process_max_pipe_refs - request.count) {
+                result = process_error_resources; break;
+            }
+            u32 available = 0;
+            for (auto& reference : child->pipe_references) {
+                if (!reference.used && available < request.count) destinations[available++] = &reference;
+            }
+            if (available != request.count) { result = process_error_resources; break; }
+            // All authority/capacity checks and fallible COW output preparation
+            // precede mutation. The current syscall section cannot be preempted.
+            if (!user_range_ok(third, sizeof(request), true)) { result = process_error_invalid; break; }
+            commit_user_output();
+            for (u32 index = 0; index < request.count; ++index) {
+                const auto& source = *sources[index];
+                *destinations[index] = source;
+                pipe_retain(source.pipe_index, source.writable);
+                ++child->pipe_reference_count;
+                request.entries[index].target = source.token;
+            }
+            // Existing object owner/budget_mask stays charged until its last
+            // reference. Copying a reference does not create another object.
+            copy_to_user(third, &request, sizeof(request));
+            result = 0;
+            break;
+        }
         // PID zero is a read-only query of this process's fixed kernel route.
         if (first == 0) {
             if (second > 2 || third != 0) { break; }

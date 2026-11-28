@@ -1,26 +1,19 @@
 /* SPDX-License-Identifier: Apache-2.0
-   XOS elapsed-time waits use the existing monotonic sleep-until mechanism.
+   XOS elapsed-time waits use the existing monotonic wait-word mechanism.
    The upstream nanosleep wrapper translates this function's error number. */
 #include <errno.h>
 #include <limits.h>
 #include <time.h>
 #include <shlib-compat.h>
 #include "xos_clock.h"
-
-static int
-sleep_until (unsigned long deadline)
-{
-  long status = __xos_clock_trap (47, deadline);
-  return status == 0 ? 0 : status == -18 ? ENOTSUP : EIO;
-}
+#include "xos_sleep.h"
 
 int
 __clock_nanosleep (clockid_t clock_id, int flags, const struct timespec *request,
                    struct timespec *remaining)
 {
-  /* There are no signal interruptions in this XOS profile. Do not invent
-     EINTR or write a remainder on success or a parameter/native error. */
-  (void) remaining;
+  /* Interruption is explicit and scoped to a captured active-wait ticket.
+     Signals and pthread cancellation remain unsupported. */
   if (request == NULL)
     return EFAULT;
   if (flags != 0 && flags != TIMER_ABSTIME)
@@ -62,7 +55,7 @@ __clock_nanosleep (clockid_t clock_id, int flags, const struct timespec *request
           unsigned long delta = value - (unsigned long) realtime;
           if (delta > maximum - (unsigned long) monotonic)
             return EOVERFLOW;
-          int error = sleep_until ((unsigned long) monotonic + delta);
+          int error = __xos_sleep_until ((unsigned long) monotonic + delta, NULL);
           if (error != 0)
             return error;
         }
@@ -81,7 +74,13 @@ __clock_nanosleep (clockid_t clock_id, int flags, const struct timespec *request
     }
   if (value <= (unsigned long) monotonic)
     return 0;
-  return sleep_until (value);
+  xos_u64 remainder;
+  int error = __xos_sleep_until (value, &remainder);
+  if (error == EINTR && flags == 0 && remaining != NULL)
+    *remaining = (struct timespec) {
+      remainder / 1000000000UL, remainder % 1000000000UL
+    };
+  return error;
 }
 libc_hidden_def (__clock_nanosleep)
 versioned_symbol (libc, __clock_nanosleep, clock_nanosleep, GLIBC_2_17);

@@ -1,0 +1,14 @@
+{
+  "status": "failed",
+  "checks": [
+    {
+      "mode": "ordinary",
+      "status": "passed",
+      "output": "SLEEP_TICKET_HOST_PASS cases=10 identity stale duplicate expired quota fork spurious native_error committed_wake_failure cleanup"
+    }
+  ],
+  "source_sha256": {
+    "src/ports/glibc/sysdeps/xos/xos_sleep.c": "2902941e6b83b37d3222a5fcda75e081f4c66f30bbea12a50d0b79903bbe8545",
+    "tests/fixtures/glibc_timers/sleep_ticket_host.c": "9744799f71e57b6256dc20826a9af6ddcabcbd564602c1de7f88571a6e7a645d"
+  }
+}

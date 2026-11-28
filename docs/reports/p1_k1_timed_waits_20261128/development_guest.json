@@ -1,0 +1,109 @@
+{
+  "status": "passed",
+  "suite": "p1-k1-sleep",
+  "runs": [
+    {
+      "program": "sleep_ticket_core",
+      "shell": "xsh",
+      "status": "passed",
+      "resources": [
+        129690,
+        3,
+        1
+      ],
+      "output": "/bin/sleep_ticket_core\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000360000\r\n[loader] started pid=10 file=/bin/sleep_ticket_core\n[process] event=wait_blocked parent=7 child=10\r\nSLEEP_TICKET_PENDING tid=11 sequence=1 deadline=5570000000 waiting=1\nSLEEP_TICKET_PENDING tid=11 sequence=2 deadline=3730000000 waiting=1\nSLEEP_TICKET_PASS mode=0 interrupted_remaining_late_identity_cleanup\nSLEEP_TICKET_PENDING tid=12 sequence=3 deadline=5740000000 waiting=1\nSLEEP_TICKET_PENDING tid=12 sequence=4 deadline=3890000000 waiting=1\nSLEEP_TICKET_PASS mode=1 interrupted_remaining_late_identity_cleanup\nSLEEP_TICKET_PENDING tid=13 sequence=5 deadline=5890000000 waiting=1\nSLEEP_TICKET_PENDING tid=13 sequence=6 deadline=4040000000 waiting=1\nSLEEP_TICKET_PASS mode=2 interrupted_remaining_late_identity_cleanup\nSLEEP_TICKET_PENDING tid=14 sequence=7 deadline=6050000000 waiting=1\nSLEEP_TICKET_PENDING tid=14 sequence=8 deadline=4200000000 waiting=1\nSLEEP_TICKET_PASS mode=3 interrupted_remaining_late_identity_cleanup\nSLEEP_TICKET_PENDING tid=15 sequence=9 deadline=6210000000 waiting=3\nSLEEP_TICKET_PENDING tid=16 sequence=10 deadline=6220000000 waiting=3\nSLEEP_TICKET_PENDING tid=17 sequence=11 deadline=6220000000 waiting=3\nSLEEP_TICKET_PASS four_real_wait_slots_recovered\nSLEEP_TICKET_PASS complete\n[task] event=reclaimed pid=10 pages=293\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+    },
+    {
+      "program": "sleep_ticket_fork",
+      "shell": "xsh",
+      "status": "passed",
+      "resources": [
+        129690,
+        3,
+        1
+      ],
+      "output": "/bin/sleep_ticket_fork fork_exec\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000360000\r\n[loader] started pid=11 file=/bin/sleep_ticket_fork\n[process] event=wait_blocked parent=7 child=11\r\n[process] event=fork_prepared pid=12 parent=11 depth=1 pages=285\r\n[process] event=fork_committed pid=12 parent=11\r\n[process] event=wait_blocked parent=11 child=12\r\n[process] event=exec_prepared pid=12 staging_pid=13\r\n[process] event=exec_replaced old_pid=12 current_pid=12 target_pid=12 staging_pid=13 tid=19 old_address_space=0x000000000066b000 address_space=0x0000000000684000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0\r\n[task] event=reclaimed pid=13 pages=27\r\nSLEEP_TICKET_PASS same_pid_exec_clean_runtime\n[task] event=reclaimed pid=12 pages=293\r\nSLEEP_TICKET_PASS fork_pid_failed_exec_successful_exec\n[task] event=reclaimed pid=11 pages=293\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+    },
+    {
+      "program": "clock_sleep",
+      "shell": "xsh",
+      "status": "passed",
+      "resources": [
+        129690,
+        3,
+        1
+      ],
+      "output": "/bin/clock_sleep\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x0000000000360000\r\n[loader] started pid=14 file=/bin/clock_sleep\n[process] event=wait_blocked parent=7 child=14\r\nCLOCK_SLEEP_PASS relative_nanosleep\nCLOCK_SLEEP_PASS absolute_monotonic_realtime\nCLOCK_SLEEP_PASS invalid_overflow_error_number_errno\nCLOCK_SLEEP_PASS blocked_wait_peer_progress complete\n[task] event=reclaimed pid=14 pages=236\r\n[wait] pid=14 kind=exited code=0\nxsh> "
+    },
+    {
+      "program": "sleep_ticket_core",
+      "shell": "dash",
+      "status": "passed",
+      "resources": [
+        129690,
+        3,
+        1
+      ],
+      "output": "/bin/dash /tests/sleep_ticket_core.sh\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x0000000000360000\r\n[loader] started pid=15 file=/bin/dash\n[process] event=wait_blocked parent=7 child=15\r\n[process] event=started pid=16 parent=15\r\n[process] pid=16 address_space=0x0000000000690000\r\n[process] event=wait_blocked parent=15 child=16\r\nSLEEP_TICKET_PENDING tid=25 sequence=1 deadline=11060000000 waiting=1\nSLEEP_TICKET_PENDING tid=25 sequence=2 deadline=9240000000 waiting=1\nSLEEP_TICKET_PASS mode=0 interrupted_remaining_late_identity_cleanup\nSLEEP_TICKET_PENDING tid=26 sequence=3 deadline=11250000000 waiting=1\nSLEEP_TICKET_PENDING tid=26 sequence=4 deadline=9400000000 waiting=1\nSLEEP_TICKET_PASS mode=1 interrupted_remaining_late_identity_cleanup\nSLEEP_TICKET_PENDING tid=27 sequence=5 deadline=11400000000 waiting=1\nSLEEP_TICKET_PENDING tid=27 sequence=6 deadline=9550000000 waiting=1\nSLEEP_TICKET_PASS mode=2 interrupted_remaining_late_identity_cleanup\nSLEEP_TICKET_PENDING tid=28 sequence=7 deadline=11550000000 waiting=1\nSLEEP_TICKET_PENDING tid=28 sequence=8 deadline=9700000000 waiting=1\nSLEEP_TICKET_PASS mode=3 interrupted_remaining_late_identity_cleanup\nSLEEP_TICKET_PENDING tid=29 sequence=9 deadline=11710000000 waiting=3\nSLEEP_TICKET_PENDING tid=30 sequence=10 deadline=11710000000 waiting=3\nSLEEP_TICKET_PENDING tid=31 sequence=11 deadline=11710000000 waiting=3\nSLEEP_TICKET_PASS four_real_wait_slots_recovered\nSLEEP_TICKET_PASS complete\n[task] event=reclaimed pid=16 pages=293\r\nK1_SLEEP_DASH_RC=0\n[task] event=reclaimed pid=15 pages=330\r\n[wait] pid=15 kind=exited code=0\nxsh> "
+    },
+    {
+      "program": "sleep_ticket_fork",
+      "shell": "dash",
+      "status": "passed",
+      "resources": [
+        129690,
+        3,
+        1
+      ],
+      "output": "/bin/dash /tests/sleep_ticket_fork.sh\n[process] event=started pid=17 parent=7\r\n[process] pid=17 address_space=0x0000000000360000\r\n[loader] started pid=17 file=/bin/dash\n[process] event=wait_blocked parent=7 child=17\r\n[process] event=started pid=18 parent=17\r\n[process] pid=18 address_space=0x0000000000690000\r\n[process] event=wait_blocked parent=17 child=18\r\n[process] event=fork_prepared pid=19 parent=18 depth=1 pages=285\r\n[process] event=fork_committed pid=19 parent=18\r\n[process] event=wait_blocked parent=18 child=19\r\n[process] event=exec_prepared pid=19 staging_pid=20\r\n[process] event=exec_replaced old_pid=19 current_pid=19 target_pid=19 staging_pid=20 tid=34 old_address_space=0x00000000007b5000 address_space=0x00000000007ce000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0\r\n[task] event=reclaimed pid=20 pages=27\r\nSLEEP_TICKET_PASS same_pid_exec_clean_runtime\n[task] event=reclaimed pid=19 pages=293\r\nSLEEP_TICKET_PASS fork_pid_failed_exec_successful_exec\n[task] event=reclaimed pid=18 pages=293\r\nK1_SLEEP_DASH_RC=0\n[task] event=reclaimed pid=17 pages=330\r\n[wait] pid=17 kind=exited code=0\nxsh> "
+    },
+    {
+      "program": "clock_sleep",
+      "shell": "dash",
+      "status": "passed",
+      "resources": [
+        129690,
+        3,
+        1
+      ],
+      "output": "/bin/dash /tests/clock_sleep.sh\n[process] event=started pid=21 parent=7\r\n[process] pid=21 address_space=0x0000000000360000\r\n[loader] started pid=21 file=/bin/dash\n[process] event=wait_blocked parent=7 child=21\r\n[process] event=started pid=22 parent=21\r\n[process] pid=22 address_space=0x0000000000690000\r\n[process] event=wait_blocked parent=21 child=22\r\nCLOCK_SLEEP_PASS relative_nanosleep\nCLOCK_SLEEP_PASS absolute_monotonic_realtime\nCLOCK_SLEEP_PASS invalid_overflow_error_number_errno\nCLOCK_SLEEP_PASS blocked_wait_peer_progress complete\n[task] event=reclaimed pid=22 pages=236\r\nK1_SLEEP_DASH_RC=0\n[task] event=reclaimed pid=21 pages=330\r\n[wait] pid=21 kind=exited code=0\nxsh> "
+    }
+  ],
+  "system_build_id": "46062e77c26463e0",
+  "system_manifest_sha256": "7da6498700752360cad847d8ae393ec6b33d336b63d55394a7827d8cee619f1d",
+  "sdk_manifest_sha256": "ab0fc4fcff8f836b09abd2a81280120aa6761e94225d55f3ff097401d1205e9c",
+  "runner_sha256": "696c6f042698f8b4807a7811246d5992a35d7921733bd9bc192cbcf57756dacc",
+  "image_sha256": "d4d76f0dd45b8d2eef25690db9acc96acbfb856d34fdaca5b48f61313a0a88b9",
+  "system_source_distinct_from_sdk_source": false,
+  "qmp": "disabled; serial only",
+  "programs": {
+    "sleep_ticket_core": {
+      "source": "glibc_timers/sleep_ticket.c",
+      "source_sha256": "f19c695777dfa2da24a42190121391cf9ad26a9e07b1e9a95ae90c8ba97d9230",
+      "elf_sha256": "0e5be5697f69d1e2f09a60c6933fd1515672d311e03e06a5c9f51fe3a7121a53"
+    },
+    "sleep_ticket_fork": {
+      "source": "glibc_timers/sleep_ticket.c",
+      "source_sha256": "f19c695777dfa2da24a42190121391cf9ad26a9e07b1e9a95ae90c8ba97d9230",
+      "elf_sha256": "0e5be5697f69d1e2f09a60c6933fd1515672d311e03e06a5c9f51fe3a7121a53"
+    },
+    "clock_sleep": {
+      "source": "glibc_timers/clock_sleep.c",
+      "source_sha256": "e9c404f13db36b897061c552d6202abf392113cb0dba7dcffaa5a3aebfcc551c",
+      "elf_sha256": "7fe8c6d02b32568525744d29849afb6ac9a0c0f08b9fe334e6ae31998802f1a2"
+    }
+  },
+  "dash": {
+    "elf_sha256": "d8d9bc3b4fb1f7f194c74e55ee62d007dde91cd60cf179fd8419bb57d7e1b467",
+    "receipt_sha256": "31636918ce16d85fd611de81f23e2545791b782b56cbad2f628db9aaf5c78b8e",
+    "sdk_manifest_sha256": "ab0fc4fcff8f836b09abd2a81280120aa6761e94225d55f3ff097401d1205e9c"
+  },
+  "profile_sha256": "2e27e647799664cd17f553fcc8be35edbc65554aef5e3886d91adb1c5e6160c4",
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "baseline": [
+    129690,
+    3,
+    1
+  ],
+  "serial_sha256": "812786fb8dca51a2f6bd40b5dd41090b2a9a766810f2fb1b4bfaca6406e275e1"
+}

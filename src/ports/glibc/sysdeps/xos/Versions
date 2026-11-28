@@ -3,6 +3,7 @@ libc {
   GLIBC_2.44 {
     __errno_location;
     htonl; htons; in6addr_any; in6addr_loopback; ntohl; ntohs;
+    xos_sleep_query; xos_sleep_interrupt;
   }
   GLIBC_PRIVATE {
     __xos_file_adopt_startup;

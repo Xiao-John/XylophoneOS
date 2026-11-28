@@ -8,6 +8,7 @@
 # include "xos_thread_name.h"
 # include "xos_file_runtime.h"
 # include "xos_timer.h"
+# include "xos_sleep.h"
 #endif
 
 pid_t
@@ -39,6 +40,7 @@ _Fork (void)
       THREAD_SETMEM (THREAD_SELF, tid, info.tid);
       __xos_thread_name_after_fork (previous_tid, info.tid);
       __xos_timer_after_fork ();
+      __xos_sleep_after_fork ();
     }
   return (pid_t) child;
 #endif

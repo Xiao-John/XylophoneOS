@@ -54,6 +54,8 @@ CFLAGS-set-freeres.os += -DXOS_FREERES_WITHOUT_LOGIN
 endif
 endif
 ifeq ($(subdir),posix)
+sysdep_headers += xos/sleep.h
+sysdep_routines += xos_sleep
 ifeq ($(filter nss,$(subdirs)),)
 CPPFLAGS-glob.os += -DXOS_TILDE_WITHOUT_NSS
 CPPFLAGS-glob64.os += -DXOS_TILDE_WITHOUT_NSS

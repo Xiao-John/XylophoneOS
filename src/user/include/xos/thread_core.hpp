@@ -31,6 +31,15 @@ inline i64 enable() {
     return sdk::syscall(sys_thread_profile, reinterpret_cast<u64>(&header));
 }
 inline i64 join(u64 tid, u64& value) { return sdk::syscall(sys_thread_join, tid, reinterpret_cast<u64>(&value)); }
+inline i64 join_until(u64 tid, u64& value, u64 deadline, bool nonblocking = false) {
+    thread_join_options options{{thread_abi_version, sizeof(options), 0}, deadline,
+        nonblocking ? thread_join_mode::try_wait : thread_join_mode::deadline};
+    return sdk::syscall(sys_thread_join, tid, reinterpret_cast<u64>(&value), reinterpret_cast<u64>(&options));
+}
+inline i64 cpu_time(u64 tid, thread_cpu_time& value) {
+    value = {{thread_abi_version, sizeof(value), 0}, tid, 0, 0, 0, 0};
+    return sdk::syscall(sys_thread_info, reinterpret_cast<u64>(&value), thread_info_cpu_time);
+}
 inline i64 detach(u64 tid) { return sdk::syscall(sys_thread_detach, tid); }
 // Initializes only static TLS and a tiny entry record. No malloc, global
 // constructors, newlib reent, pthread TSS or C++ destructor registration here.

@@ -2201,6 +2201,17 @@ void expire_process_cleanup() {
 void expire_waiters() {
     const u64 now = clock::monotonic_ns();
     for (auto& thread : threads) {
+        if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::join &&
+            thread_deadline_reached(now, thread.deadline_ns)) {
+            // Release ownership atomically with timeout. A later join/detach
+            // may still consume the target, and no stale writer retains a pin.
+            for (auto& target : threads) {
+                if (target.process == thread.process && target.tid == thread.wait_target &&
+                    target.joiner == thread.tid) { target.joiner = 0; break; }
+            }
+            ready_with(thread, thread_error_timeout);
+            continue;
+        }
         if (thread.state == thread_state::blocked && thread.wait_kind == thread_wait_kind::device_irq &&
             thread_deadline_reached(now, thread.deadline_ns)) {
             thread.device_result = {};
@@ -2256,9 +2267,9 @@ void expire_waiters() {
 void* thread_syscall(interrupt_frame* frame) {
     i64 result = process_error_invalid;
     const u64 first = frame->rdi, second = frame->rsi;
-    if (frame->rdx != 0 || (second != 0 && frame->rax != sys_thread_prepare &&
+    if ((frame->rdx != 0 && frame->rax != sys_thread_join) || (second != 0 && frame->rax != sys_thread_prepare &&
         frame->rax != sys_thread_join && frame->rax != sys_wake_word &&
-        frame->rax != sys_process_begin_exit) ||
+        frame->rax != sys_process_begin_exit && frame->rax != sys_thread_info) ||
         (frame->rax == sys_thread_begin_exit && first != 0)) {
         frame->rax = static_cast<u64>(process_error_invalid); return frame;
     }
@@ -2376,6 +2387,24 @@ void* thread_syscall(interrupt_frame* frame) {
         reap_threads(); result = 0; break;
     }
     case sys_thread_info: {
+        if (second == thread_info_cpu_time) {
+            thread_cpu_time output{};
+            result = read_thread_request(first, output);
+            if (result != 0) { break; }
+            thread_record* target = thread_by_id(output.tid);
+            if (target == nullptr || target->state == thread_state::dead ||
+                target->state == thread_state::reserved) { result = thread_error_not_found; break; }
+            if (!user_range_ok(first, sizeof(output), true)) { result = thread_error_address; break; }
+            if (!cpu_usage.valid) { result = process_cpu_time_unavailable; break; }
+            cpu_usage.charge(execution_counter());
+            if (!cpu_usage.valid) { result = process_cpu_time_unavailable; break; }
+            output.user_ns = execution_time_ns(target->cpu.user);
+            output.system_ns = execution_time_ns(target->cpu.system);
+            output.elapsed_ns = clock::monotonic_ns();
+            output.resolution_ns = execution_resolution_ns();
+            copy_to_user(first, &output, sizeof(output)); result = 0; break;
+        }
+        if (second != 0) { break; }
         if (!user_range_ok(first, sizeof(thread_info), true)) { result = thread_error_address; break; }
         const auto& t = *current_thread;
         thread_info info{{thread_abi_version, sizeof(thread_info), 0}, current->pid, t.tid,
@@ -2464,6 +2493,20 @@ void* thread_syscall(interrupt_frame* frame) {
         reap_threads(); result = 0; break;
     }
     case sys_thread_join: {
+        u64 until = thread_deadline_infinite;
+        bool nonblocking = false;
+        if (frame->rdx != 0) {
+            thread_join_options options{};
+            result = read_thread_request(frame->rdx, options);
+            if (result != 0) { break; }
+            if ((options.mode != thread_join_mode::try_wait && options.mode != thread_join_mode::deadline) ||
+                (options.mode == thread_join_mode::try_wait && options.deadline_ns != 0)) {
+                result = process_error_invalid; break;
+            }
+            nonblocking = options.mode == thread_join_mode::try_wait;
+            until = options.deadline_ns;
+            result = process_error_invalid;
+        }
         if (first == current_thread->tid) { result = thread_error_deadlock; break; }
         thread_record* target = thread_by_id(first);
         if (target == nullptr) { result = thread_error_not_found; break; }
@@ -2472,14 +2515,18 @@ void* thread_syscall(interrupt_frame* frame) {
         if ((second < target->stack_top && second + sizeof(u64) > target->stack_bottom) ||
             (second < target->tls_end && second + sizeof(u64) > target->tls_begin) ||
             second % 8 != 0 || !user_range_ok(second, sizeof(u64), true)) { result = thread_error_address; break; }
+        if (target->state == thread_state::dead && !target->reaped) { reap_threads(); }
         if (target->reaped) {
             copy_to_user(second, &target->result, sizeof(u64)); *target = thread_record{}; result = 0; break;
         }
+        if (nonblocking) { result = thread_error_busy; break; }
+        if (thread_deadline_reached(clock::monotonic_ns(), until)) { result = thread_error_timeout; break; }
         if (!current_thread->user_pin.set(second, sizeof(u64))) { result = thread_error_busy; break; }
         commit_user_output();
         target->joiner = current_thread->tid;
         current_thread->wait_target = first; current_thread->wait_buffer = second;
         current_thread->wait_kind = thread_wait_kind::join;
+        current_thread->deadline_ns = until;
         current_thread->state = thread_state::blocked;
         frame->rax = 0; return schedule(frame);
     }

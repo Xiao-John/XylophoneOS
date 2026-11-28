@@ -57,6 +57,13 @@ owned building 子进程主线程指针；1 `current_thread` 允许调用线程�
 校验见 [线程契约](threading.md#当前线程安装运行库线程指针)。本扩展供隔离 glibc
 G2/G3 候选使用，SDK 单独记录能力与客体验证；不更换默认 libc。
 
+sys41 第二参数 mode 1 为同进程目标线程 CPU 查询，使用独立的 56 字节
+`thread_cpu_time` v1，mode 0 原 `thread_info` 保持。sys44 第三参数可显式
+指向 32 字节 `thread_join_options` v1：mode 1 立即 try，mode 2 绝对单调
+期限；第三参数零保留阻塞 join。未占用新编号、未复用保留位，sys89 v1/72
+字节不变。权限、旧内核拒绝、输出 pin/超时回收、负 clock ID 身份与错误见
+[线程契约](threading.md#有界-join-与目标线程-cpu-时钟issue-125)。
+
 sys20 第三参数 bit0 为非阻塞，bit1 与第一参数为零共同选择显式
 [wait-any](process_wait.md)；旧精确 PID 请求的 flags 0/1 保持原行为。
 

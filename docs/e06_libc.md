@@ -21,7 +21,9 @@
 - 线程运行时补齐常用 P2 面：`sem_init/wait/trywait/timedwait/post/getvalue`（基于 mutex/cond）、
   `pthread_barrier_*`、`pthread_spin_*`、`pthread_setname_np/getname_np`、attr guardsize、
   `pthread_condattr_getpshared`、`pthread_rwlockattr_*`；普通 SDK 提供同名单线程实现。
-  `pthread_tryjoin_np/timedjoin_np/getcpuclockid` 目前诚实返回 `ENOTSUP`。
+  Issue #125 为默认 glibc 与独立线程运行库补齐 `pthread_tryjoin_np/timedjoin_np/getcpuclockid`：
+  原子 try/deadline join 与绑定目标 TID 的 CPU clock，退出后旧 clock 失效。
+  新机制、旧内核拒绝和受限语义见[线程契约](contracts/threading.md#有界-join-与目标线程-cpu-时钟issue-125)。
 - 线程包使用 profile `xos-x86_64-static-threaded-v1`（features 含 `threads`，登记线程
   SDK 树哈希与已验证系统 build）；xypm 事务按该 profile 建库。
 - 普通 SDK 提供**单线程 pthread 子集**：`pthread_once`、TSS keys、mutex/cond/rwlock、

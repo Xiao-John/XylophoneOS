@@ -1,0 +1,115 @@
+=== current_glibc_1.log ===
+exec-driver /bin/join_clock
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000035e000
+[loader] started pid=10 file=/bin/join_clock
+[process] event=wait_blocked parent=7 child=10
+[process] event=fork_prepared pid=11 parent=10 depth=1 pages=231
+[process] event=fork_committed pid=11 parent=10
+[process] event=wait_blocked parent=10 child=11
+ISSUE125_PASS cross_process_cpu_query_rejected
+[task] event=reclaimed pid=11 pages=17
+ISSUE125_PASS tryjoin_deadline_timeout_output_preserved
+ISSUE125_PASS target_cpu_identity_sleep_busy_resolution
+ISSUE125_PASS versioned_abi_invalid_requests
+ISSUE125_PASS join_detach_contention_timeout_release_stale_clock
+ISSUE125_PASS detached_cpu_clock_lifecycle
+ISSUE125_PASS lifecycle_reuse_and_complete
+[task] event=reclaimed pid=10 pages=239
+[wait] pid=10 kind=exited code=0
+xsh>
+=== current_glibc_2.log ===
+exec-driver /bin/join_clock
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x000000000035e000
+[loader] started pid=12 file=/bin/join_clock
+[process] event=wait_blocked parent=7 child=12
+[process] event=fork_prepared pid=13 parent=12 depth=1 pages=231
+[process] event=fork_committed pid=13 parent=12
+[process] event=wait_blocked parent=12 child=13
+ISSUE125_PASS cross_process_cpu_query_rejected
+[task] event=reclaimed pid=13 pages=17
+ISSUE125_PASS tryjoin_deadline_timeout_output_preserved
+ISSUE125_PASS target_cpu_identity_sleep_busy_resolution
+ISSUE125_PASS versioned_abi_invalid_requests
+ISSUE125_PASS join_detach_contention_timeout_release_stale_clock
+ISSUE125_PASS detached_cpu_clock_lifecycle
+ISSUE125_PASS lifecycle_reuse_and_complete
+[task] event=reclaimed pid=12 pages=239
+[wait] pid=12 kind=exited code=0
+xsh>
+=== current_glibc_3.log ===
+exec-driver /bin/join_clock
+[process] event=started pid=14 parent=7
+[process] pid=14 address_space=0x000000000035e000
+[loader] started pid=14 file=/bin/join_clock
+[process] event=wait_blocked parent=7 child=14
+[process] event=fork_prepared pid=15 parent=14 depth=1 pages=231
+[process] event=fork_committed pid=15 parent=14
+[process] event=wait_blocked parent=14 child=15
+ISSUE125_PASS cross_process_cpu_query_rejected
+[task] event=reclaimed pid=15 pages=17
+ISSUE125_PASS tryjoin_deadline_timeout_output_preserved
+ISSUE125_PASS target_cpu_identity_sleep_busy_resolution
+ISSUE125_PASS versioned_abi_invalid_requests
+ISSUE125_PASS join_detach_contention_timeout_release_stale_clock
+ISSUE125_PASS detached_cpu_clock_lifecycle
+ISSUE125_PASS lifecycle_reuse_and_complete
+[task] event=reclaimed pid=14 pages=239
+[wait] pid=14 kind=exited code=0
+xsh>
+=== current_newlib_1.log ===
+exec-driver /bin/join_clock_legacy
+[process] event=started pid=16 parent=7
+[process] pid=16 address_space=0x000000000035e000
+[loader] started pid=16 file=/bin/join_clock_legacy
+[process] event=wait_blocked parent=7 child=16
+ISSUE125_PASS tryjoin_deadline_timeout_output_preserved
+ISSUE125_PASS target_cpu_identity_sleep_busy_resolution
+ISSUE125_PASS versioned_abi_invalid_requests
+ISSUE125_PASS join_detach_contention_timeout_release_stale_clock
+ISSUE125_PASS detached_cpu_clock_lifecycle
+ISSUE125_PASS lifecycle_reuse_and_complete
+[task] event=reclaimed pid=16 pages=148
+[wait] pid=16 kind=exited code=0
+xsh>
+=== current_newlib_2.log ===
+exec-driver /bin/join_clock_legacy
+[process] event=started pid=17 parent=7
+[process] pid=17 address_space=0x000000000035e000
+[loader] started pid=17 file=/bin/join_clock_legacy
+[process] event=wait_blocked parent=7 child=17
+ISSUE125_PASS tryjoin_deadline_timeout_output_preserved
+ISSUE125_PASS target_cpu_identity_sleep_busy_resolution
+ISSUE125_PASS versioned_abi_invalid_requests
+ISSUE125_PASS join_detach_contention_timeout_release_stale_clock
+ISSUE125_PASS detached_cpu_clock_lifecycle
+ISSUE125_PASS lifecycle_reuse_and_complete
+[task] event=reclaimed pid=17 pages=148
+[wait] pid=17 kind=exited code=0
+xsh>
+=== current_newlib_3.log ===
+exec-driver /bin/join_clock_legacy
+[process] event=started pid=18 parent=7
+[process] pid=18 address_space=0x000000000035e000
+[loader] started pid=18 file=/bin/join_clock_legacy
+[process] event=wait_blocked parent=7 child=18
+ISSUE125_PASS tryjoin_deadline_timeout_output_preserved
+ISSUE125_PASS target_cpu_identity_sleep_busy_resolution
+ISSUE125_PASS versioned_abi_invalid_requests
+ISSUE125_PASS join_detach_contention_timeout_release_stale_clock
+ISSUE125_PASS detached_cpu_clock_lifecycle
+ISSUE125_PASS lifecycle_reuse_and_complete
+[task] event=reclaimed pid=18 pages=148
+[wait] pid=18 kind=exited code=0
+xsh>
+=== old_glibc_1.log ===
+exec-driver /bin/join_clock old-kernel
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000035d000
+[loader] started pid=10 file=/bin/join_clock
+[process] event=wait_blocked parent=7 child=10
+ISSUE125_PASS old_kernel_explicit_rejection_legacy_join
+[task] event=reclaimed pid=10 pages=239
+[wait] pid=10 kind=exited code=0
+xsh>

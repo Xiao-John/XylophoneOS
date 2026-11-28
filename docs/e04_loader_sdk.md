@@ -305,6 +305,14 @@ user/system、当前线程 user/system、独立的 monotonic elapsed 及计数�
 `times/_times` 的四个 CPU 字段按 `CLOCKS_PER_SEC` 转换，返回值为启动后 monotonic
 ticks；`clock()` 只包含本进程 user+system；`sysconf(_SC_CLK_TCK)` 返回相同单位。
 线程 SDK 的 `CLOCK_PROCESS_CPUTIME_ID`/`CLOCK_THREAD_CPUTIME_ID` 使用同一查询。
+
+Issue #125 的线程扩展另用 sys41 mode 1 查询同进程完整 TID 的 CPU 计数，
+sys44 显式 32 字节 options 提供 try/deadline join；二者的旧零参数模式与
+sys89 v1 不变。普通 SDK 的 mechanism 头、独立线程 SDK 和 glibc 构建清单
+同步登记 `thread_extensions`；具体 guest 资格由专项报告记录。
+glibc `pthread_getcpuclockid` 返回绑定目标的私有负 clock ID，目标退出后
+`clock_gettime/getres` 返回 `ESRCH`；生命周期和旧内核拒绝见
+[线程契约](contracts/threading.md#有界-join-与目标线程-cpu-时钟issue-125)。
 校准与暂停边界见[时间域契约](contracts/time_domains.md#cpu-执行时间-v1)。
 
 sys90 `sys_observe(&request,&snapshot,0)` 提供版本 1 的有界只读观测；请求 48

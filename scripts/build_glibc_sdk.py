@@ -82,6 +82,10 @@ def main():
         parser.error('missing tools: ' + ', '.join(missing))
     output.mkdir(parents=True)
     report = {'status': 'building', 'profile': 'xos_glibc_static_research_v1',
+              'thread_extensions': {'join_options': {'version': 1, 'syscall': 44, 'size': 32,
+                                                       'third_argument': 'options_pointer'},
+                                    'target_cpu_time': {'version': 1, 'syscall': 41, 'mode': 1, 'size': 56},
+                                    'guest_qualification': 'not_run'},
               'process_exit_cleanup': {'syscall': 51, 'mode': 1, 'request_version': 1,
                                        'deadline_ns': 30000000000, 'timeout_status': 127},
               'source_sha256': sha(archive),

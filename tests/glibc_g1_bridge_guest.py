@@ -25,6 +25,8 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--system-build', type=Path, default=root / 'build')
+    parser.add_argument('--output', type=Path, help='private directory for probe and report')
     parser.add_argument('--yield-build', type=Path, help='G1 diagnostic output containing the real target sched_yield object')
     parser.add_argument('--pid-build', type=Path, help='G1 diagnostic output containing the real target getpid object')
     parser.add_argument('--clock-build', type=Path, help='G1 diagnostic output containing the real target clock_gettime object')
@@ -37,11 +39,14 @@ def main():
     parser.add_argument('--shared-build', type=Path, help='G1 output with named semaphore and shared memory objects')
     parser.add_argument('--memory-build', type=Path, help='G1 output with target heap and VM objects')
     args = parser.parse_args()
-    build = root/'build'
+    system_build = args.system_build.resolve(strict=True)
+    build = args.output.absolute() if args.output else system_build
+    if args.output:
+        build.mkdir(parents=True, exist_ok=False)
     overlay = root/'src/ports/glibc/sysdeps/xos'
     fixture = root/'tests/fixtures/glibc_g1'
-    image = build/'xos-install.iso'
-    system_manifest = build/'manifest.json'
+    image = system_build/'xos-install.iso'
+    system_manifest = system_build/'manifest.json'
     system = json.loads(system_manifest.read_text())
     def check_system():
         assert sha(system_manifest) == system_digest
@@ -99,15 +104,24 @@ def main():
         if candidate is None:
             return None, {}, None
         candidate = candidate.resolve(strict=True)
-        report_path = candidate/'report.json'
+        report_path = candidate / ('manifest.json' if (candidate / 'manifest.json').is_file() else 'report.json')
         data = json.loads(report_path.read_text())
-        assert data['nptl_backend_experimental'] and not data['hacker_mode']
-        assert not data['synthetic_abi_tag'] and data['sysroot_enforced']
+        complete_sdk = data.get('status') == 'static_sdk_built'
+        archive = None
+        if complete_sdk:
+            archive = candidate / 'sysroot/usr/lib/libc.a'
+            assert sha(archive) == data['artifacts']['usr/lib/libc.a']
+        else:
+            assert data['nptl_backend_experimental'] and not data['hacker_mode']
+            assert not data['synthetic_abi_tag'] and data['sysroot_enforced']
         for name in (*[name + '.c' for name in (*names, *rt_names) if name not in upstream],
                      *headers, 'bits/errno.h'):
             path = overlay/name
             digest = sha(path)
-            assert data['xos_overlay_sha256']['xos/'+name] == digest
+            if complete_sdk:
+                assert data['inputs'][str(path.relative_to(root))] == digest
+            else:
+                assert data['xos_overlay_sha256']['xos/'+name] == digest
             if str(path.relative_to(root)) not in inputs:
                 sources.append(path)
                 inputs[str(path.relative_to(root))] = digest
@@ -115,23 +129,29 @@ def main():
         for subdir, name in ([('nptl', name) for name in names]
                              + [('rt', name) for name in rt_names]):
             obj = candidate/'configure'/subdir/(name+'.o')
-            item = data['diagnostic_objects'][name]
-            assert item['exit_code'] == 0 and item['sha256'] == sha(obj)
+            if complete_sdk:
+                member = subprocess.check_output(['x86_64-elf-ar', 'p', str(archive), name + '.o'])
+                assert hashlib.sha256(member).hexdigest() == sha(obj)
+            else:
+                item = data['diagnostic_objects'][name]
+                assert item['exit_code'] == 0 and item['sha256'] == sha(obj)
             objects[obj] = sha(obj)
         provenance = {'report_sha256': sha(report_path),
                       'object_sha256': {obj.name: digest for obj, digest in objects.items()}}
+        if complete_sdk:
+            provenance['complete_sdk_libc_sha256'] = sha(archive)
         cmd[-2:-2] = [define, *map(str, objects)]
         return report_path, objects, provenance
 
     identity_report, identity_objects, identity_provenance = bind_thread_objects(
         args.identity_build or args.signal_build,
         ('pthread_self', 'pthread_join_common', 'pthread_detach', 'thrd_current'),
-        ('xos_thread_identity.h', 'xos_thread_create.h'), '-DXOS_GLIBC_TEST_IDENTITY')
+        ('xos_thread_identity.h', 'xos_thread_create.h', 'xos_thread_extensions.h'), '-DXOS_GLIBC_TEST_IDENTITY')
     scheduling_report, scheduling_objects, scheduling_provenance = bind_thread_objects(
         args.scheduling_build,
         ('pthread_getaffinity', 'pthread_setaffinity', 'pthread_getschedparam', 'pthread_setschedparam',
          'pthread_setschedprio', 'pthread_getcpuclockid'),
-        (), '-DXOS_GLIBC_TEST_SCHEDULING')
+        ('xos_thread_extensions.h',), '-DXOS_GLIBC_TEST_SCHEDULING')
     signal_report, signal_objects, signal_provenance = bind_thread_objects(
         args.signal_build,
         ('pthread_kill', 'pthread_sigqueue', 'pthread_sigmask', 'xos_thread_name',
@@ -304,7 +324,8 @@ def main():
             if scheduling_provenance is not None:
                 assert sha(scheduling_report) == scheduling_provenance['report_sha256']
                 assert {obj: sha(obj) for obj in scheduling_objects} == scheduling_objects
-                report['checks'].append('glibc_target_unsupported_scheduling_preserves_outputs')
+                report['checks'].extend(['glibc_target_unsupported_scheduling_preserves_outputs',
+                                         'glibc_target_cpu_clock_binds_live_tid'])
             if signal_provenance is not None:
                 assert sha(signal_report) == signal_provenance['report_sha256']
                 assert {obj: sha(obj) for obj in signal_objects} == signal_objects

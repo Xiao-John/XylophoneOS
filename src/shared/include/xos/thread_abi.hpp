@@ -42,6 +42,18 @@ struct thread_info {
     thread_header header;
     u64 pid, tid, stack_bottom, stack_top, thread_pointer;
 };
+// Explicit extensions: sys41 second=1; sys44 third=&options. Zero retains v1.
+inline constexpr u64 thread_info_cpu_time = 1;
+struct thread_cpu_time {
+    thread_header header;
+    u64 tid, user_ns, system_ns, elapsed_ns, resolution_ns;
+};
+enum class thread_join_mode : u64 { try_wait = 1, deadline = 2 };
+struct thread_join_options {
+    thread_header header;
+    u64 deadline_ns;
+    thread_join_mode mode;
+};
 struct thread_wait_request { thread_header header; u64 address; u64 deadline_ns; u32 expected; u32 reserved; };
 struct thread_stats {
     thread_header header;
@@ -53,5 +65,6 @@ static_assert(sizeof(thread_header) == 16 && sizeof(thread_prepare_request) == 4
 static_assert(sizeof(process_exit_cleanup_request) == 32);
 static_assert(sizeof(thread_reservation) == 56 && sizeof(thread_start_request) == 56);
 static_assert(sizeof(thread_info) == 56 && sizeof(thread_wait_request) == 40);
+static_assert(sizeof(thread_cpu_time) == 56 && sizeof(thread_join_options) == 32);
 static_assert(sizeof(thread_stats) == 48);
 }

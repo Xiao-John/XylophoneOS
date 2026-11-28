@@ -102,5 +102,36 @@ manual dispatch. Choose a new `xos-sdk-glibc-preview-N` tag. It refuses any
 existing tag or release, rebuilds from the selected commit, and completes all
 consumer validation before creating a draft. It uploads the fixed five-asset
 set, verifies the uploaded names/sizes/SHA-256 digests, then publishes a prerelease without
-marking it Latest. A failure leaves no public release; a failed upload can leave
+marking it Latest. A failure before publication leaves no public release; a failed upload can leave
 an unpublished draft that must be reviewed before choosing another tag.
+
+### Recover an uploaded draft
+
+If publication stopped after uploading the complete draft, dispatch the same
+workflow with its exact tag and `recover_existing: true`. The default is false;
+normal builds continue to refuse existing tags and releases.
+
+Recovery accepts one prerelease draft with exactly the five SDK assets. It
+downloads those original bytes with the authenticated release-asset API and
+checks every API size/SHA-256, all four `SHA256SUMS` entries, package/qualification
+bindings and the actual tag commit. Its source commit remains the original
+artifact's commit even when the recovery workflow runs at a later revision.
+
+A separate step, without a GitHub token, freshly extracts the downloaded binary
+SDK and runs its installed C/C++ consumer smoke with only the empty consumer
+directory mounted. The five downloaded files remain unchanged. A separate
+recovery report records both the original source commit and the workflow commit.
+The final step rechecks the remote draft, exact asset IDs/names/sizes/digests and
+tag ref before publishing that numeric release ID. It does not rebuild the SDK,
+move or create a tag, upload replacements or change the original qualification.
+It also compares the publication response's assets and reads the tag again
+before reporting success. These API calls are not an atomic transaction across
+the release, assets and ref; a concurrent writer can still cause a post-publication
+check to fail after the release has become public.
+
+GitHub's [update-release permission rules](https://docs.github.com/en/rest/releases/releases#update-a-release)
+can require workflow-write permission when the existing target commit changes
+workflow files relative to the default branch. `GITHUB_TOKEN` cannot receive
+that permission. If GitHub rejects publication, the workflow fails and leaves
+the existing target, tag and assets untouched; it does not change the source
+binding to avoid that restriction.

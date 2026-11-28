@@ -79,7 +79,17 @@ the four checksum entries. The fresh consumer ran the packaged C and C++ ELF
 bytes with exit 0, preserved user data and returned resources to `129693/3/1`.
 See the [public delivery evidence](../reports/p0_public_delivery_20261128/README.md).
 
-Final public-path, evidence-index and local-link checks will be recorded against
+The published SDK was also independently extracted to run the documented R1
+C++ init/build/check/pack sequence. All commands passed, and the 13-payload XPK
+was verified against the R1 profile and rejected by the host default profile.
+Its embedded receipt and ELF match the new build. This specific generated
+application was not run in a guest; the original R1 guest qualification is
+unchanged. The report records actual tools and all relevant bindings.
+
+The staged 12-file public-path scan is PUBLIC_READY with zero findings; all
+five new evidence leaves match the flat index. Relative links and the work log
+identifier have been checked. Final checks must be rerun after actual R1
+publication changes. Those checks are recorded against
 the actual staged delivery tree. No new OS build is implied by this documentation
 checkpoint. Upload the preserved R1 tar
 and checksum, then bind their observed hosted identities and checksums in the

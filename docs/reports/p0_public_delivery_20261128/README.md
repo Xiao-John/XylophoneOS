@@ -14,6 +14,11 @@ validation commit is `b60b9aea`. The original qualification remains unchanged.
 - `sdk_public_download.json`: independent hashes of all five publicly downloaded
   files, checked against the server and four `SHA256SUMS` entries.
 
+- `r1_sdk_consumer.json`: independent extraction of the public host SDK, followed
+  by the documented R1 C++ build/check/pack. The resulting XPK passes its own
+  R1 profile and is rejected by the host default profile. This generated app
+  was not run in a guest; R1 guest qualification remains in its frozen reports.
+
 The [final delivery receipt](../../releases/p0_glibc_preview_3_delivery.json)
 tracks overall SDK/R1 publication separately. No raw operator logs or credentials
 are included here. The flat evidence index binds these exact exported files.

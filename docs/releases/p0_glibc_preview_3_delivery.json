@@ -134,7 +134,8 @@
       "deferred": 1,
       "not_applicable": 7,
       "scope": "Recorded material review, not a legal opinion."
-    }
+    },
+    "host_sdk_consumer_evidence": "../reports/p0_public_delivery_20261128/r1_sdk_consumer.json"
   },
   "boundaries": [
     "SDK host and R1 application profiles are distinct; use R1 application-sdk/xos-app for the R1 release disk.",

@@ -49,7 +49,8 @@ frame_io network_frame_io(virtio_net::driver& nic) {
             const i64 result = static_cast<virtio_net::driver*>(context)->transmit(data, length);
             return result == device_busy ? net2::would_block : result; },
         [](void*) { return sdk::syscall(sys_clock_monotonic); },
-        [](void*, u32& value) { return sdk::syscall(sys_random_bytes, reinterpret_cast<u64>(&value), sizeof(value)); }};
+        [](void*, u32& value) { return sdk::syscall(sys_random_bytes, reinterpret_cast<u64>(&value), sizeof(value)); },
+        [](void* context) { return static_cast<virtio_net::driver*>(context)->link_state(); }};
 }
 i64 serve(u64 controller, virtio_net::driver& nic) {
     i64 result = stack.initialize(network_frame_io(nic), nic.mac());

@@ -15,6 +15,7 @@ struct frame_io {
     i64 (*transmit)(void*, const u8*, u32);
     i64 (*clock)(void*);
     i64 (*random)(void*, u32&);
+    i64 (*link)(void*) = nullptr;
 };
 class lwip_stack {
 public:
@@ -54,7 +55,9 @@ private:
     netif interface_{};
     i64 failure_ = 0;
     u32 dropped_ = 0;
-    bool active_ = false;
+    bool active_ = false, link_active_ = false;
+    i64 refresh_link();
+    i64 discard_input();
 #ifdef XOS_LWIP_DHCP_AUTHORITY
     dhcp::policy dhcp_policy_{};
     dhcp::lease_clock lease_{};
@@ -73,6 +76,7 @@ private:
     void observe_dhcp(u64 now);
     void retire_dhcp();
     bool restart_clock(u64 now, bool new_budget);
+    i64 change_link(bool up);
     bool dhcp_wire(const u8*, u32, u64, bool committed);
 #endif
 #ifdef XOS_LWIP_DNS_LIFETIME

@@ -50,8 +50,27 @@ i64 lwip_stack::start_dhcp(const dhcp::policy& policy, u64 budget,
     const auto clock = monotonic_time();
     if (clock < 0) return net2::io;
     dhcp_policy_ = policy; acquisition_budget_ = budget; publish_ = publisher; publisher_ = context;
-    if (!restart_clock(static_cast<u64>(clock), true)) return net2::invalid;
     dhcp_enabled_ = true;
+    if (!link_active_) {
+        (void)lease_.invalidate(dhcp::reason::link_lost);
+        last_reason_ = dhcp::reason::link_lost; return 0;
+    }
+    if (!restart_clock(static_cast<u64>(clock), true)) return net2::invalid;
+    return start_dhcp_client(static_cast<u64>(clock));
+}
+i64 lwip_stack::change_link(bool up) {
+    const auto clock = monotonic_time();
+    if (clock < 0) return net2::io;
+    if (!up) {
+        (void)lease_.invalidate(dhcp::reason::link_lost);
+        last_reason_ = dhcp::reason::link_lost;
+        gate_open_ = false;
+        retire_dhcp(); stop_dhcp_client();
+        acquisition_deadline_ = 0;
+        retire_pending_ = stop_pending_ = restart_pending_ = renew_pending_ = rebind_pending_ = false;
+        return failure_;
+    }
+    if (!restart_clock(static_cast<u64>(clock), true)) { failure_ = net2::io; return failure_; }
     return start_dhcp_client(static_cast<u64>(clock));
 }
 void lwip_stack::stop_dhcp_client() {
@@ -114,7 +133,7 @@ void lwip_stack::observe_dhcp(u64 now) {
     }
 }
 i64 lwip_stack::advance_dhcp() {
-    if (!dhcp_enabled_) return failure_;
+    if (!dhcp_enabled_ || !link_active_) return failure_;
     const auto clock = monotonic_time();
     if (clock < 0) {
         (void)lease_.invalidate(dhcp::reason::clock_failure);

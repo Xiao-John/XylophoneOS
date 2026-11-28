@@ -9,6 +9,9 @@ namespace xos::pci {
 namespace {
 u32 address(function f,u16 offset){return 0x80000000u|(u32(f.bus)<<16)|(u32(f.slot)<<11)|(u32(f.number)<<8)|(offset&0xfcu);}
 u64 next_mapping=0x32000000ull;
+// The last sixteen pages belong to renewable reset observers. Display and
+// boot mappings below this boundary retain their original lifetime.
+constexpr u64 reset_mapping_begin = 0x33000000ull - device_max_grants * page_size;
 }
 u32 read32(function f,u16 offset){if(offset>252)return ~u32{0};arch::out_dword(0xcf8,address(f,offset));return arch::in_dword(0xcfc);}
 void write32(function f,u16 offset,u32 value){if(offset>252)return;arch::out_dword(0xcf8,address(f,offset));arch::out_dword(0xcfc,value);}
@@ -41,7 +44,7 @@ void* map_bar_range(const bar& b,u32 offset,u32 length){
  if(!b.memory || !length || offset>b.size || length>b.size-offset)return nullptr;
  const u64 physical=b.address+offset,first=physical&~(page_size-1),within=physical-first;
  const u64 bytes=(within+length+page_size-1)&~(page_size-1);
- if(bytes>0x33000000ull-next_mapping)return nullptr;
+ if(bytes>reset_mapping_begin-next_mapping)return nullptr;
  const u64 begin=next_mapping;
  for(u64 i=0;i<bytes;i+=page_size){
   if(map_pci_device_page(begin+i,first+i)!=memory_result::none){for(u64 rollback=0;rollback<i;rollback+=page_size)(void)unmap_page(begin+rollback);return nullptr;}
@@ -89,7 +92,9 @@ bool observe_supported_reset(u64 instance, pci::function function, const device_
     const u32 identity = resources.configuration[0];
     const u16 product = static_cast<u16>(identity >> 16);
     if (static_cast<u16>(identity) != 0x1af4 || (product != 0x1000 && product != 0x1041)) return false;
-    for (const auto& observer : reset_observers) if (observer.instance == instance) return true;
+    // A prior lifetime must have been disabled and unmapped. A BDF is not a
+    // device-generation identity and must never authorize a cached pointer.
+    for (const auto& observer : reset_observers) if (observer.instance == instance) return false;
     reset_observer* available = nullptr;
     for (auto& observer : reset_observers) if (!observer.instance && !available) available = &observer;
     if (!available || !(pci::read16(function, 6) & 0x10)) return false;
@@ -103,9 +108,11 @@ bool observe_supported_reset(u64 instance, pci::function function, const device_
             const u64 length = resources.configuration[offset / 4 + 3];
             if (index >= 6 || (start & 3) || length < 56 || start > resources.bars[index].length ||
                 length > resources.bars[index].length - start) return false;
-            const pci::bar bar{resources.bars[index].physical, resources.bars[index].length, true};
-            auto* status = static_cast<volatile u8*>(pci::map_bar_range(bar, static_cast<u32>(start + 20), 1));
-            if (!status) return false;
+            const u64 physical = resources.bars[index].physical + start + 20;
+            const u64 address = pci::reset_mapping_begin +
+                static_cast<u64>(available - reset_observers) * page_size;
+            if (map_pci_device_page(address, physical & ~(page_size - 1)) != memory_result::none) return false;
+            auto* status = reinterpret_cast<volatile u8*>(address + (physical & (page_size - 1)));
             *available = {instance, status}; return true;
         }
         offset = (header >> 8) & 0xff;
@@ -177,6 +184,12 @@ bool device_dma_stop(u64 instance) {
 void device_disable(u64 instance) {
     const auto function = device_function(instance);
     pci::write16(function, 4, static_cast<u16>((pci::read16(function, 4) & ~6u) | 0x400));
+    for (auto& observer : reset_observers) if (observer.instance == instance) {
+        const u64 address = reinterpret_cast<u64>(observer.status) & ~(page_size - 1);
+        // A failed unmap remains occupied and prevents future admission. No
+        // caller can obtain a fresh grant backed by this old observer.
+        if (unmap_page(address) == memory_result::none) observer = {};
+    }
 }
 bool device_irq_enable(u64 instance, u8 irq) {
     const auto function = device_function(instance);

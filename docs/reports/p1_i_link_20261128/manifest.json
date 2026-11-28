@@ -1,0 +1,25 @@
+{
+  "files": {
+    "README.md": "3e14f00cee1a2eea4149b4a4e16cf0de22f4a96f8b83e4acafa3cbccea698182",
+    "caller.json": "29210cb731561badae910018ffd657f012a9d65c64efbe25a31f19e3acd453ec",
+    "device_store_host.log": "37cab6ce65a130f1efdd0a2a595ce2e837f278557211cfb7d7b7fc848f91e0bb",
+    "dhcp_host.json": "2e31204d2d3d666f2462c202265c181e6ec74622d63d02de9f848d5773637745",
+    "diagnostic_configuration.json": "8aaaab04647dff36d892785aa7c9d5aa5d660840da8371e314bf89da42e86295",
+    "diagnostic_configuration_serial.log.gz": "8badc8b60ce268babf89cc1ff919877b71503b6fb762a8cd03c5b85e30a60537",
+    "diagnostic_removal.json": "71ad6ad73bbc7d2b11351baa10196a8112be32d1ba0271cb2ae73f84f11fc183",
+    "diagnostic_removal_serial.log.gz": "80cee4dda42d243910921302620b8c01e56e8be56aae54211f212eb39d806338",
+    "guest.json": "94cb29fd2fb138a203bbdb9fc70be328e4f6e81482c8020cc83d142ae4dea604",
+    "guest_serial.log.gz": "e0a97583b7c295d1c71618dae751adbec6a0ce359d2ce53e3465e6a272887a61",
+    "network.pcap": "dd6e86ef33818cb45d1f7f80cada4fa819d284f6b5b87870ca4781db5a6fcdf4",
+    "pci_observer_host.log": "126978210bf2c009034056a94949834cc440f7761cd5ded6294ab9a4f947830e",
+    "prior_build_failure.log": "85835cb395f7841928001f113bb3e6893e159dd5bd2dd4a03db80cdd2308e0cd",
+    "prior_partial_guest.json": "e268bd8a7238af5a9fd7433cfea24bad1d9e7aa3ae50416cbd8ba83588930bbd",
+    "prior_partial_serial.log.gz": "b6b5479279334df58b190c570957f5aa15ce52855e558c465131d53831d9aa56",
+    "qtest.log.gz": "deef184638a8f5d31ea031fece502294d943a7fb27182773e84fd6aed487d01e",
+    "raw_receipts.json": "ee782412e84ba6905ad9eada4b4efca0d5de99f3e1a7076861efe8796b1ecd30",
+    "service_host.json": "99300354acf34e157521b314c19876983ff026089ab55ecdb0f012dc48e0f317",
+    "system.json": "d9c9fccc962e4277df25c95da6fdc4459316aae73b1374f1d05eb6c1bf67278d",
+    "virtio_host.log": "afe139e256a3175cdbd885273d8d80a2b0eba14e286c0109f4dc09fd50608c64"
+  },
+  "version": 1
+}

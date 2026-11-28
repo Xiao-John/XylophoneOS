@@ -34,13 +34,14 @@ public:
     i64 transmit(const u8* frame, u32 length);
     i64 receive(u8* frame, u32 capacity);
     i64 wait(u64 deadline);
+    i64 link_state() const;
     i64 shutdown();
     const u8* mac() const { return mac_; }
     u64 irq_count() const { return irq_count_; }
 private:
     u64 grant_ = 0, event_ = 0, acknowledged_ = 0, irq_count_ = 0;
-    bool ready_ = false;
-    volatile u8 *common_ = nullptr, *isr_ = nullptr;
+    bool ready_ = false, link_status_ = false;
+    volatile u8 *common_ = nullptr, *isr_ = nullptr, *configuration_ = nullptr;
     volatile u16* notify_[2]{};
     u8 mac_[6]{};
     split_queue queues_[2];

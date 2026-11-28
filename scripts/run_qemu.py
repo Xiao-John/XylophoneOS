@@ -14,12 +14,16 @@ MACHINE = "pc-i440fx-10.0"
 
 def qemu_command(image, *, vga=False, display=None, qmp=None, qmp_transport="unix", debug_port=None,
                  cpu="qemu64,+rdrand", work_disk=None, iso=False, network=False, network_capture=None,
-                 network_peer_port=None):
+                 network_peer_port=None, network_device_id=None, qtest_pipe=None):
     if network_capture is not None and not network:
         raise ValueError("network_capture requires the explicit network profile")
     if network_peer_port is not None and (not network or isinstance(network_peer_port, bool) or
                                          not isinstance(network_peer_port, int) or not 0 < network_peer_port < 65536):
         raise ValueError("network_peer_port requires the network profile and a valid loopback TCP port")
+    if network_device_id is not None and (not network or not isinstance(network_device_id, str) or
+            not network_device_id or len(network_device_id) > 32 or
+            any(character not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_' for character in network_device_id)):
+        raise ValueError("network_device_id requires the network profile and a bounded QEMU identifier")
     configured_qemu = os.environ.get("QEMU", "qemu-system-x86_64")
     qemu = shutil.which(configured_qemu)
     if not qemu and "QEMU" not in os.environ and os.name == "nt":
@@ -47,8 +51,10 @@ def qemu_command(image, *, vga=False, display=None, qmp=None, qmp_transport="uni
     if network:
         backend = ("user,id=xosnet" if network_peer_port is None else
                    f"socket,id=xosnet,connect=127.0.0.1:{network_peer_port}")
-        command += ["-netdev", backend, "-device",
-                    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"]
+        device = "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+        if network_device_id is not None:
+            device += ',id=' + network_device_id
+        command += ["-netdev", backend, "-device", device]
         if network_capture is not None:
             capture_path = str(network_capture).replace(",", ",,")
             command += ["-object", f"filter-dump,id=xos_capture,netdev=xosnet,file={capture_path}"]
@@ -59,6 +65,9 @@ def qemu_command(image, *, vga=False, display=None, qmp=None, qmp_transport="uni
             command += ["-qmp", f"pipe:{qmp}"]
         else:
             raise ValueError("QMP transport must be unix or pipe")
+    if qtest_pipe is not None:
+        # Explicit host hardware fixture only; normal runs expose no qtest.
+        command += ["-qtest", f"pipe:{qtest_pipe}"]
     if debug_port is not None:
         command += ["-S", "-gdb", f"tcp:127.0.0.1:{debug_port}"]
     return command

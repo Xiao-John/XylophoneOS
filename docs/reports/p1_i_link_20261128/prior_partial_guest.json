@@ -1,0 +1,615 @@
+{
+  "automatic_unannounced_device_rebind": "unsupported_no_presence_generation_or_PCI_hotplug_manager",
+  "build_id": "de2d9a4cb66f09ee",
+  "device_reappearance": {
+    "add_error": "{'error': {'class': 'GenericError', 'desc': \"Invalid parameter type for 'disable-legacy', expected: string\"}}",
+    "delete_result": {},
+    "pci_after_delete": [
+      {
+        "bus": 0,
+        "devices": [
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 1536,
+              "desc": "Host bridge"
+            },
+            "function": 0,
+            "id": {
+              "device": 4663,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 32902
+            },
+            "irq_pin": 0,
+            "qdev_id": "",
+            "regions": [],
+            "slot": 0
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 1537,
+              "desc": "ISA bridge"
+            },
+            "function": 0,
+            "id": {
+              "device": 28672,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 32902
+            },
+            "irq_pin": 0,
+            "qdev_id": "",
+            "regions": [],
+            "slot": 1
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 257,
+              "desc": "IDE controller"
+            },
+            "function": 1,
+            "id": {
+              "device": 28688,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 32902
+            },
+            "irq_pin": 0,
+            "qdev_id": "",
+            "regions": [
+              {
+                "address": 49152,
+                "bar": 4,
+                "size": 16,
+                "type": "io"
+              }
+            ],
+            "slot": 1
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 1664,
+              "desc": "Bridge"
+            },
+            "function": 3,
+            "id": {
+              "device": 28947,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 32902
+            },
+            "irq": 9,
+            "irq_pin": 1,
+            "qdev_id": "",
+            "regions": [],
+            "slot": 1
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 768,
+              "desc": "VGA controller"
+            },
+            "function": 0,
+            "id": {
+              "device": 4369,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 4660
+            },
+            "irq_pin": 0,
+            "qdev_id": "",
+            "regions": [
+              {
+                "address": 4244635648,
+                "bar": 0,
+                "mem_type_64": false,
+                "prefetch": true,
+                "size": 16777216,
+                "type": "memory"
+              },
+              {
+                "address": 4273930240,
+                "bar": 2,
+                "mem_type_64": false,
+                "prefetch": false,
+                "size": 4096,
+                "type": "memory"
+              },
+              {
+                "address": -1,
+                "bar": 6,
+                "mem_type_64": false,
+                "prefetch": false,
+                "size": 65536,
+                "type": "memory"
+              }
+            ],
+            "slot": 2
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 512,
+              "desc": "Ethernet controller"
+            },
+            "function": 0,
+            "id": {
+              "device": 4161,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 6900
+            },
+            "irq": 10,
+            "irq_pin": 1,
+            "qdev_id": "xosnet0",
+            "regions": [
+              {
+                "address": -1,
+                "bar": 1,
+                "mem_type_64": false,
+                "prefetch": false,
+                "size": 4096,
+                "type": "memory"
+              },
+              {
+                "address": -1,
+                "bar": 4,
+                "mem_type_64": true,
+                "prefetch": true,
+                "size": 16384,
+                "type": "memory"
+              }
+            ],
+            "slot": 5
+          }
+        ]
+      }
+    ],
+    "pci_before": [
+      {
+        "bus": 0,
+        "devices": [
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 1536,
+              "desc": "Host bridge"
+            },
+            "function": 0,
+            "id": {
+              "device": 4663,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 32902
+            },
+            "irq_pin": 0,
+            "qdev_id": "",
+            "regions": [],
+            "slot": 0
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 1537,
+              "desc": "ISA bridge"
+            },
+            "function": 0,
+            "id": {
+              "device": 28672,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 32902
+            },
+            "irq_pin": 0,
+            "qdev_id": "",
+            "regions": [],
+            "slot": 1
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 257,
+              "desc": "IDE controller"
+            },
+            "function": 1,
+            "id": {
+              "device": 28688,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 32902
+            },
+            "irq_pin": 0,
+            "qdev_id": "",
+            "regions": [
+              {
+                "address": 49152,
+                "bar": 4,
+                "size": 16,
+                "type": "io"
+              }
+            ],
+            "slot": 1
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 1664,
+              "desc": "Bridge"
+            },
+            "function": 3,
+            "id": {
+              "device": 28947,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 32902
+            },
+            "irq": 9,
+            "irq_pin": 1,
+            "qdev_id": "",
+            "regions": [],
+            "slot": 1
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 768,
+              "desc": "VGA controller"
+            },
+            "function": 0,
+            "id": {
+              "device": 4369,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 4660
+            },
+            "irq_pin": 0,
+            "qdev_id": "",
+            "regions": [
+              {
+                "address": 4244635648,
+                "bar": 0,
+                "mem_type_64": false,
+                "prefetch": true,
+                "size": 16777216,
+                "type": "memory"
+              },
+              {
+                "address": 4273930240,
+                "bar": 2,
+                "mem_type_64": false,
+                "prefetch": false,
+                "size": 4096,
+                "type": "memory"
+              },
+              {
+                "address": -1,
+                "bar": 6,
+                "mem_type_64": false,
+                "prefetch": false,
+                "size": 65536,
+                "type": "memory"
+              }
+            ],
+            "slot": 2
+          },
+          {
+            "bus": 0,
+            "class_info": {
+              "class": 512,
+              "desc": "Ethernet controller"
+            },
+            "function": 0,
+            "id": {
+              "device": 4161,
+              "subsystem": 4352,
+              "subsystem-vendor": 6900,
+              "vendor": 6900
+            },
+            "irq": 10,
+            "irq_pin": 1,
+            "qdev_id": "xosnet0",
+            "regions": [
+              {
+                "address": -1,
+                "bar": 1,
+                "mem_type_64": false,
+                "prefetch": false,
+                "size": 4096,
+                "type": "memory"
+              },
+              {
+                "address": -1,
+                "bar": 4,
+                "mem_type_64": true,
+                "prefetch": true,
+                "size": 16384,
+                "type": "memory"
+              }
+            ],
+            "slot": 5
+          }
+        ]
+      }
+    ],
+    "status": "blocked_guest_did_not_acknowledge_PCI_eject"
+  },
+  "fixture_receipt_sha256": "00bff124366d34c06cb8a5e8e63844cd3a797b146f397b52765630afb0fbaa3e",
+  "image_sha256": "f006cf8f53efc6e62b43c4203f6f73e859231576cb31e456576dec6245ed51ef",
+  "link_down_qmp": {},
+  "link_evidence": {
+    "application": [
+      {
+        "protocol": 17,
+        "source": "10.0.2.15",
+        "target": "10.0.2.2",
+        "time": 3190.063409426
+      },
+      {
+        "protocol": 17,
+        "source": "10.0.2.15",
+        "target": "10.0.2.2",
+        "time": 3190.249609542
+      },
+      {
+        "protocol": 17,
+        "source": "10.0.2.16",
+        "target": "10.0.2.2",
+        "time": 3201.545358645
+      }
+    ],
+    "arp": [
+      {
+        "source": "0.0.0.0",
+        "target": "10.0.2.15",
+        "time": 3183.398609536
+      },
+      {
+        "source": "0.0.0.0",
+        "target": "10.0.2.15",
+        "time": 3184.396642515
+      },
+      {
+        "source": "0.0.0.0",
+        "target": "10.0.2.15",
+        "time": 3185.916164208
+      },
+      {
+        "source": "10.0.2.15",
+        "target": "10.0.2.15",
+        "time": 3187.926720393
+      },
+      {
+        "source": "10.0.2.15",
+        "target": "10.0.2.15",
+        "time": 3189.939374577
+      },
+      {
+        "source": "10.0.2.15",
+        "target": "10.0.2.2",
+        "time": 3190.057198723
+      },
+      {
+        "source": "10.0.2.15",
+        "target": "10.0.2.3",
+        "time": 3190.200187242
+      },
+      {
+        "source": "10.0.2.15",
+        "target": "10.0.2.3",
+        "time": 3190.225718563
+      },
+      {
+        "source": "0.0.0.0",
+        "target": "10.0.2.16",
+        "time": 3194.167948533
+      },
+      {
+        "source": "0.0.0.0",
+        "target": "10.0.2.16",
+        "time": 3195.370955146
+      },
+      {
+        "source": "0.0.0.0",
+        "target": "10.0.2.16",
+        "time": 3196.865063887
+      },
+      {
+        "source": "10.0.2.16",
+        "target": "10.0.2.16",
+        "time": 3198.864817157
+      },
+      {
+        "source": "10.0.2.16",
+        "target": "10.0.2.16",
+        "time": 3200.875689614
+      },
+      {
+        "source": "10.0.2.16",
+        "target": "10.0.2.2",
+        "time": 3201.544887813
+      }
+    ],
+    "late_arp_injected": 3201.008093922,
+    "lease_replacement_time": 3193.448611918
+  },
+  "link_status": "passed_actual_link_loss_reacquisition",
+  "link_up_qmp": {},
+  "net_link_serial.log_sha256": "82f6fa8b051046090533cf8f0d9184c75fe789f1e64798773ff319bb46352075",
+  "network.pcap_sha256": "3061740e38f57949c34596a67c6318211ca4c0a41283efb55502bdcea993e386",
+  "peer_error": null,
+  "physical_nic": "not_run",
+  "profile": {
+    "acquisition_seconds": 60,
+    "addresses": [
+      "10.0.2.15",
+      "10.0.2.16"
+    ],
+    "egress": [
+      {
+        "cidr": "10.0.2.2/32",
+        "ports": [
+          3333,
+          3333
+        ],
+        "protocol": "udp"
+      },
+      {
+        "cidr": "10.0.2.3/32",
+        "ports": [
+          4444,
+          4444
+        ],
+        "protocol": "udp"
+      },
+      {
+        "cidr": "10.0.2.3/32",
+        "ports": [
+          4444,
+          4444
+        ],
+        "protocol": "tcp"
+      }
+    ],
+    "gateways": [
+      "10.0.2.2"
+    ],
+    "max_lease_seconds": 4294967294,
+    "pci_instance": 41,
+    "resolvers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "revision": 1,
+    "servers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "source_sha256": "89fa4c4f3a1a6a327f77afa76d52730239461270311563f1b7a7a2599e575c2c",
+    "subnet": "10.0.2.0/24"
+  },
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_REPO}/build/p1_link_system_v2/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_RUN}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "socket,id=xosnet,connect=127.0.0.1:48563",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56,id=xosnet0",
+    "-object",
+    "filter-dump,id=xos_capture,netdev=xosnet,file=${XOS_REPO}/build/p1_link_guest_v1/network.pcap",
+    "-qmp",
+    "pipe:${XOS_RUN}/qmp.sock"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_after": [
+    129764,
+    2,
+    0
+  ],
+  "resources_before": [
+    129764,
+    2,
+    0
+  ],
+  "runner_sha256": "8cded67ffe13d267eb7f2a3c1370ce6a91fd09733a0d35a4aeea6379d3f2eedf",
+  "sdk_tree_sha256": "c18dfa1486c2310b10024d6eb7303a964df3acc383ee5d3f81e746bee633893c",
+  "status": "passed_link_subset_device_reappearance_blocked",
+  "system_manifest_sha256": "839a510be45605b052790cb3e3220fd13bed4c187159276e3a8475abb6648b54",
+  "wire": {
+    "arp_probes": [
+      3183.398632288,
+      3184.39671818,
+      3185.916253054,
+      3194.16796854,
+      3195.37097425,
+      3196.86509777
+    ],
+    "declines": [],
+    "dhcp": [
+      {
+        "ciaddr": "0.0.0.0",
+        "destination": "255.255.255.255",
+        "sha256": "50f3353f338465adde56238a43782f2b73be19b21e3cbd82a87e798a6a1318c2",
+        "time": 3183.202736856,
+        "type": 1,
+        "xid": 3338162817
+      },
+      {
+        "ciaddr": "0.0.0.0",
+        "destination": "255.255.255.255",
+        "sha256": "90d8d726f45f3f7da9a6125d7706ed5a54cef009500c76f3c3626647bdf3b7ed",
+        "time": 3183.219476547,
+        "type": 3,
+        "xid": 3338162817
+      },
+      {
+        "ciaddr": "0.0.0.0",
+        "destination": "255.255.255.255",
+        "sha256": "b5dd779c67160d6a2ac27c748f0df03d7be258b39a8d9445cca9b31faefb7576",
+        "time": 3193.450288773,
+        "type": 1,
+        "xid": 1888054395
+      },
+      {
+        "ciaddr": "0.0.0.0",
+        "destination": "255.255.255.255",
+        "sha256": "fce6072b2e010b4216c09c67cdaa645b5f78a1942b298e228d5be332837da25e",
+        "time": 3193.45112908,
+        "type": 3,
+        "xid": 1888054395
+      }
+    ],
+    "dns_answers": [],
+    "dns_queries": 1,
+    "injected_malformed": 0,
+    "nonce": "ef0a701df351fa5e8ee18d137376ccae",
+    "scenario": "link_loss",
+    "status": "passed",
+    "udp": [
+      {
+        "challenge": "cba3b083dba24f89b8104c558e31410a8cafc173975a171e9ea44e20eb1fc5ac",
+        "nonce": "ef0a701df351fa5e8ee18d137376ccae",
+        "payload_sha256": "11a7e6f2f8e160fabc9b769713beaf6f70758ec4a6a80bf64a24fe13409c204d",
+        "source": "10.0.2.15"
+      },
+      {
+        "challenge": "f3897deec605660390b3330b8cb01be45e9f0f232e01891961c34b97ac901221",
+        "nonce": "ef0a701df351fa5e8ee18d137376ccae",
+        "payload_sha256": "11a7e6f2f8e160fabc9b769713beaf6f70758ec4a6a80bf64a24fe13409c204d",
+        "source": "10.0.2.16"
+      }
+    ]
+  }
+}

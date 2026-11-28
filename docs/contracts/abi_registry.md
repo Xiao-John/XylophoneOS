@@ -239,6 +239,29 @@ EALREADY，跨 PID 返回 EPERM，仍登记但已到期限返回 ETIMEDOUT。seq
 直接返回错误码且保持 errno。缺少新 API 的旧 SDK 保留原非中断语义，不能冒称支持。
 四个活动槽满时返回 EAGAIN，序号耗尽返回 EOVERFLOW；线程退出清理必须验收。pthread_cancel 保持现行 ENOTSUP。
 
+## P1-F 撤销记录回收认领（2026-11-28）
+
+Net2 operation **21** `peer_policy` 由 P1-F ClarkE 生命周期线认领；状态为
+`claimed`，不在本登记提交中生成常量、能力或运行资格。操作 19/20 与
+revision 2 capability `0x4`/`0x8` 保留给上述 P1-H，P1-F 不复用这些编号或位。
+
+请求保持 Net2 wire v2 的 64 字节报头，带四个 u32 的 16 字节独立负载：
+`revision=1, size=16, action, reserved=0`。action 0 查询时 object 必须为零；
+action 1 回收时 object 是非零、非 controller 的已退休 PID。成功响应是四个
+u32 的 16 字节快照：`revision=1, size=16, occupied, capacity=16`，且
+`occupied <= capacity`。其余无关报头字段和 flags 必须为零，沿用原错误域。
+
+仅内核认证的 bootstrap controller 会话可以查询或回收。回收的调用方必须
+已完成该 PID 的成功 wait，或持有明确的“从未 start 且 kernel abort 成功”
+loader 回执；未知 abort/wait 不满足前提。服务不凭客户端自填 PID 授予 controller
+身份。只清除对应撤销表记录，不复活连接或复用旧 PID，不增加地址权限。
+
+调用方以 operation 21 的只读查询发现此独立扩展，不改变 capabilities
+revision 1，也不扩展 P1-H 的 revision 2。旧服务 unsupported/未知结果时，
+浏览器拒绝声称已建立可持续回收的隔离会话。实现须同步 shared ABI、service、
+client、SDK manifest 与实际生命周期证据；细节见
+[Net2 P1-F 认领](net_service_v2.md#p1-f-peer-policy-认领未实施资格)。
+
 ## 分配流程
 
 1. 使用者先提供最小缺口/探针，说明是否能复用现有SDK/IPC；Qt具体边界见qt_platform.md。

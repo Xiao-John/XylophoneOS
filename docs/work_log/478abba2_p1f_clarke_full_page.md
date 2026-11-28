@@ -57,3 +57,41 @@ python3 -m py_compile src/ports/webkit/target_inputs.py \
 5. 保存平铺证据 manifest、实际暂存索引公开路径检查；完成后再提交可合并 PR。
 
 全部全页、Qt 和生命周期客体验收在此快照中均为 **未运行**。
+
+## 第二份恢复检查点
+
+第二份源码恢复加入真实 WebCore page adapter、六类 DOM/CSS HTML 与几何/像素夹具、
+独立 renderer、OpenSSL/net2 网络代理、Qt `QBackingStore` 视口、固定 ELF 安装绑定、
+Xsh 可信会话控制和系统构建入口。该检查点尚未完成 C++ 编译或全页/Qt 客体运行。
+Python 配方语法检查重新通过，既有 8 个依赖绑定测试重新通过。
+
+net2 新扩展最终使用 operation **21**、独立 revision 1 请求与快照。主线
+[#444](https://github.com/Xiao-John/XylophoneOS/pull/444) 已为另一条工作线登记
+19/20，故本线没有复用它们；operation 21 的协调登记由
+[#446](https://github.com/Xiao-John/XylophoneOS/pull/446) 合入。旧 capabilities
+位和 revision 不变，控制器用 operation 21 query 发现能力，旧服务拒绝则不启动浏览器。
+具体权限与回收规则见 [生命周期契约](../contracts/clarke_renderer_lifecycle.md)。
+
+静态 loader 新入口输出独立的 version-1 abort outcome，不改变 `spawn_options`
+布局和动态 hook。隔离测试编译分支在 prepare 之后把真实 start entry 设为零；
+测试分别检查实际 start 失败/abort0，以及 callback 先 abort 后第二次 abort 失败时
+保留撤销记录。恢复源码中已有该夹具与构建入口，实际 guest **未运行**。
+
+恢复后的唯一静态 SDK 实际构建完成，身份核验结果为
+`candidate_binding_verified`，guest 资格仍为 `not_run`：
+
+| 输入 | SHA-256 |
+| --- | --- |
+| `build/p1f-c-sdk/manifest.json` | `92c8885e8c13b37ae5192a39890f34a7a755dab78334ecce0661fbb003aa89cc` |
+| `build/p1f-cxx-sdk/manifest.json` | `0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b` |
+| `build/p1f-profile.json` | `736d3353d9aad14d019dbc678b77dbb8f6fe8585bed84b71e1f858566a7a3f9f` |
+| C++ SDK tree | `ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254` |
+
+Profile id 为 `xos-x86_64-glibc-p1-20261128-v1`。C SDK 的 glibc 源码、configure
+目录和最终 sysroot 保留供动态 runtime 工作线只读消费。C++ 构建完成后核验全部
+最终 artifacts，再清理仅本线可重建的 `work` 临时目录；前后 1987 个 sysroot 文件
+摘要完全一致，SDK manifest 未改动。GNU 签名材料、源包对应性材料和全部构建日志
+保留。该清理不触及其他工作区或已发布 SDK。
+
+OpenSSL 和 ICU 按 jobs 2 顺序重建，其他依赖、WebCore 完整链接与 Qt 构建继续。
+目前的成功项是恢复源码、锁定输入和新的 SDK 构建，不是 P1-F 的整页验收。

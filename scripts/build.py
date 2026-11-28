@@ -32,6 +32,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--clean", action="store_true")
     parser.add_argument("--output-dir", type=Path, default=BUILD)
+    parser.add_argument("--clarke-bundle", type=Path,
+                        help="bind the verified WebCore/Qt browser bundle to the trusted Xsh controller")
+    parser.add_argument("--clarke-launch-probe", type=Path,
+                        help="small verified ELF for isolated post-prepare kernel start/abort qualification")
     parser.add_argument("--net-dns-probe", action="store_true",
                         help="build an isolated Xsh diagnostic with the private resolver")
     parser.add_argument("--net-dhcp-profile", type=Path,
@@ -196,6 +200,17 @@ def main():
         sources.extend(p for p in sorted((ROOT / folder).rglob("*"))
                        if p.suffix in (".asm", ".s", ".sh", ".inc", ".py", ".cpp", ".hpp", ".c", ".h", ".ld", ".json", ".lldb", ".patch"))
     source_hashes = {str(p.relative_to(ROOT)): sha256(p.read_bytes()) for p in sources}
+    clarke_metadata = {}
+    if args.clarke_bundle is not None:
+        if args.terminal_supervisor_probe or args.ncurses_supervisor_probe or args.pumpkin_anchored_probe:
+            parser.error("ClarkE requires the trusted normal Xsh controller")
+        from clarke_installation import bind
+        clarke_metadata = bind(args.clarke_bundle, BUILD / 'clarke_binding.hpp')
+    if args.clarke_launch_probe and (BUILD == ROOT / 'build' or args.terminal_supervisor_probe or args.ncurses_supervisor_probe or args.pumpkin_anchored_probe):
+        parser.error("ClarkE launch probe requires an isolated output and the normal Xsh controller")
+    if args.clarke_launch_probe:
+        from clarke_installation import bind_probe
+        clarke_metadata.update(bind_probe(args.clarke_launch_probe, BUILD / 'clarke_launch_binding.hpp'))
     desktop_metadata = {}
     if args.pumpkin_mobius_elf is not None:
         if not args.pumpkin_mobius_elf.is_file():
@@ -231,7 +246,7 @@ def main():
                                       **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
                                       **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2}
                                          if args.pumpkin_user_login else {}),
-                                      **deployment, **desktop_metadata,
+                                      **deployment, **desktop_metadata, **clarke_metadata,
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
@@ -266,7 +281,8 @@ def main():
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
                                  pumpkin_provisioning_store=args.pumpkin_provisioning_store,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
-                                 net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile, net_dhcp_profile=net_dhcp_profile)
+                                 net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile, net_dhcp_profile=net_dhcp_profile,
+                                 clarke_bundle=args.clarke_bundle is not None, clarke_launch_probe=args.clarke_launch_probe is not None)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:
@@ -424,7 +440,7 @@ def main():
         **({"pumpkin_anchored_probe": True} if args.pumpkin_anchored_probe else {}),
         **({"pumpkin_native_login": True} if args.pumpkin_native_login else {}),
         **({"pumpkin_user_login": True, "pumpkin_operator_protocol": 2} if args.pumpkin_user_login else {}),
-        **deployment, **desktop_metadata,
+        **deployment, **desktop_metadata, **clarke_metadata,
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),

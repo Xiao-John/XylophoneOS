@@ -229,6 +229,8 @@ def build(args):
         raise ValueError('SDK changed during the raster build')
     exported = [probe, stream_probe, cmake / 'libskia_raster.a', png / 'lib/libpng.a', jpeg / 'lib/libjpeg.a',
                 zlib / 'lib/libz.a', *project_inputs, sources, *(p for p in sorted(notices.iterdir()) if p.is_file())]
+    exported.extend(path for prefix in (png, jpeg, zlib) for path in sorted(prefix.rglob('*')) if path.is_file())
+    exported = list(dict.fromkeys(exported))
     receipt = {'status': 'target_skia_raster_linked', 'builder_sha256': digest(Path(__file__)),
                'source_locks': {k: digest(v) for k, v in source_locks.items()},
                'source_archives': {k: v['sha256'] for k, v in locks.items()},

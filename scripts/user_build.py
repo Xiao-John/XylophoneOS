@@ -21,7 +21,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 pumpkin_user_resource=False, pumpkin_named_resource_store=False, pumpkin_provisioning_store=False,
                 quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
                 net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None,
-                files_uncertain_probe=False):
+                files_uncertain_probe=False, clarke_bundle=False, clarke_launch_probe=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -162,7 +162,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     if archive.exists():
         archive.unlink()
     run([tool("ar"), "rcsD", str(archive), *sdk_objects])
-    loader_objects = [compile_source(root / "src/user/loader" / name)
+    loader_objects = [compile_source(root / "src/user/loader" / name,
+                      ("-DXOS_LOADER_TEST_BAD_START_ENTRY=1",) if clarke_launch_probe and name == "load.cpp" else ())
                       for name in ("elf.cpp", "load.cpp", "elf_cases.cpp", "command.cpp",
                                    "glibc_d1/image_mapping.cpp", "glibc_d1/entry_stack.cpp",
                                    "glibc_d1/interpreter_entry.cpp", "dynamic/identity.cpp",
@@ -230,6 +231,10 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             # Keep the embedded supervisor compact after the bundle installer
             # additions.
             extra_flags += ("-Os", *private_client_flags, *durable_flags)
+            if clarke_bundle:
+                extra_flags += ("-DXOS_CLARKE_FULL_PAGE=1", "-I", str(build))
+            if clarke_launch_probe:
+                extra_flags += ("-DXOS_CLARKE_LAUNCH_PROBE=1", "-I", str(build))
             if quiet_demos_on_launch:
                 extra_flags += ("-DXOS_QUIET_DEMOS_ON_LAUNCH=1",)
             if net_dns_probe:

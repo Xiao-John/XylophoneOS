@@ -21,8 +21,21 @@ enum class operation : u32 {
     information = 1, open = 2, status = 3, send = 4, receive = 5,
     close = 6, cancel = 7, revoke_peer = 8, stop = 9,
     configuration = 10, configure = 11, resolve_start = 12, resolve_result = 13, resolve_cancel = 14,
-    capabilities = 15, readiness = 16, shutdown_write = 17, lease_status = 18
+    capabilities = 15, readiness = 16, shutdown_write = 17, lease_status = 18,
+    peer_policy = 21
 };
+// Only the authenticated bootstrap controller may query or retire a denial.
+// release_retired requires the controller to have reaped the process, or to
+// hold an explicit never-started, successful-abort result from its loader.
+inline constexpr u32 peer_policy_revision = 1, revoked_peer_limit = 16;
+enum class peer_policy_action : u32 { query = 0, release_retired = 1 };
+struct peer_policy_request {
+    u32 revision, size;
+    peer_policy_action action;
+    u32 reserved;
+};
+struct peer_policy_snapshot { u32 revision, size, occupied, capacity; };
+static_assert(sizeof(peer_policy_request) == 16 && sizeof(peer_policy_snapshot) == 16);
 inline constexpr i64 invalid = -201, denied = -202, resources = -203, would_block = -204;
 inline constexpr i64 timeout = -205, closed = -206, io = -207, unsupported = -208;
 inline constexpr i64 buffer_too_small = -209, reset = -210;

@@ -56,6 +56,10 @@
     {
       "path": "page/custom_function_registry_include.patch",
       "sha256": "91a7c085e13f259d459fb4adfcee364ad566740f5ff9a2b9effd8d0d5da50724"
+    },
+    {
+      "path": "page/platform_adwaita.patch",
+      "sha256": "3793cc38f7b650382e263ab7fa68c6825225729154c27afc089b334c80f6fd58"
     }
   ]
 }

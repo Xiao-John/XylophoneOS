@@ -36,6 +36,16 @@ struct launch_diagnostic {
 
 struct image_receipt { u8 digest[32]; u32 size; };
 
+// Independent, versioned output; spawn_options and existing runtime hooks keep
+// their layouts. A negative spawn result alone never proves child destruction.
+struct launch_abort_outcome {
+    u32 version = 1, size = sizeof(launch_abort_outcome);
+    u64 pid = 0;
+    u32 never_started = 0, abort_attempted = 0;
+    i64 abort_result = 0;
+};
+static_assert(sizeof(launch_abort_outcome) == 32);
+
 i64 spawn_file_diagnosed(const char* path, u32 argc, const char* const* argv,
                          const sdk::spawn_options& options,
                          launch_diagnostic& diagnostic);
@@ -45,6 +55,9 @@ i64 spawn_file_diagnosed_receipt(const char* path, u32 argc, const char* const* 
                                  launch_diagnostic& diagnostic, image_receipt& receipt);
 i64 spawn_verified_file(const char* path, u32 argc, const char* const* argv,
                         const sdk::spawn_options& options, const image_receipt& expected);
+i64 spawn_verified_static_file(const char* path, u32 argc, const char* const* argv,
+                               const sdk::spawn_options& options, const image_receipt& expected,
+                               launch_abort_outcome& outcome);
 
 // Static bootstrap adapter for a verified public dynamic closure. The caller
 // retains the same pin. prepare runs after all ELF copies and before either

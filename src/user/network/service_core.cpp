@@ -203,7 +203,7 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
     const bool opening = input.action == operation::open;
     if ((!opening && (input.address || input.port || input.transport != protocol::none)) ||
         (input.action != operation::send && input.action != operation::configure &&
-         input.action != operation::resolve_start && input.length) ||
+         input.action != operation::resolve_start && input.action != operation::peer_policy && input.length) ||
         (input.action != operation::receive && input.flags)) {
         output.result = invalid; return true;
     }
@@ -215,6 +215,28 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
         for (u32 i = 0; i < sizeof(info); ++i) output.data[i] = source[i];
         output.length = sizeof(info); return true;
     }
+    if (input.action == operation::peer_policy) {
+        if (sessions_[slot].peer != controller_) { output.result = denied; return true; }
+        if (input.length != sizeof(peer_policy_request)) { output.result = invalid; return true; }
+        peer_policy_request requested{};
+        __builtin_memcpy(&requested, input.data, sizeof(requested));
+        if (requested.revision != peer_policy_revision || requested.size != sizeof(requested) ||
+            requested.reserved ||
+            (requested.action != peer_policy_action::query && requested.action != peer_policy_action::release_retired) ||
+            (requested.action == peer_policy_action::query ? input.object != 0 :
+                (!input.object || input.object == controller_))) {
+            output.result = invalid; return true;
+        }
+        u32 occupied = 0;
+        for (auto& peer : revoked_) {
+            if (requested.action == peer_policy_action::release_retired && peer == input.object) peer = 0;
+            if (peer) ++occupied;
+        }
+        const peer_policy_snapshot snapshot{peer_policy_revision, sizeof(peer_policy_snapshot), occupied, revoked_peer_limit};
+        __builtin_memcpy(output.data, &snapshot, sizeof(snapshot));
+        output.length = sizeof(snapshot);
+        return true;
+    }
     if (input.action == operation::stop || input.action == operation::revoke_peer) {
         if (sessions_[slot].peer != controller_) { output.result = denied; return true; }
         if (input.action == operation::stop) {
@@ -222,12 +244,12 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
             return true;
         }
         if (!input.object || input.object == controller_) { output.result = invalid; return true; }
-        u32 free = 16;
-        for (u32 i = 0; i < 16; ++i) {
+        u32 free = revoked_peer_limit;
+        for (u32 i = 0; i < revoked_peer_limit; ++i) {
             if (revoked_[i] == input.object) { free = i; break; }
             if (!revoked_[i]) free = i;
         }
-        if (free == 16) { output.result = resources; return true; }
+        if (free == revoked_peer_limit) { output.result = resources; return true; }
         revoked_[free] = input.object;
         for (u32 i = 0; i < session_limit; ++i) if (sessions_[i].peer == input.object) detach(i);
         return true;

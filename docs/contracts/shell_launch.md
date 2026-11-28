@@ -20,6 +20,19 @@ xsh `diag` builtin 走共同契约；深度专用包装器 `xos_posix_spawn_driv
 （含 DU4 #82）。本契约不修订宪法、不分配新 ABI 号；按 C20/C22/C27 审查。
 实现前先读 [ABI 登记](abi_registry.md) 与 [进程 ABI](../implementation) 相关源码。
 
+## P1-K4：后台普通命令入口
+
+`spawn-command <command> [args]` 使用与普通裸命令相同的路径解析、环境和
+`copy_from_caller` 创建权继承，只将 `launch_file` 的 background 参数置为真。
+Xsh 返回提示符后，调用者可使用现有 `wait <pid>` 消费完成记录。它不按文件名
+授予权限，不使用旧 `grant_spawn`/深度委派，也不增加 syscall 或启动结构。
+
+`spawn-file` 和 `exec-file` 继续不继承创建权；`exec-driver` 保留历史语义。
+该独立入口使已安装动态控制器能够按普通继承契约运行，同时让 supervisor
+在网络故障验收期间管理其自有服务。它不宣称 POSIX 作业控制、信号或新的
+终端会话能力。实际后台动态 GNU/TLS、无创建权拒绝及资源回收证据随
+[安装组合](installed_dhcp_tls_composition.md) 的绑定报告记录。
+
 ## 1. 范围与非目标
 
 **范围**：xsh 与 dash 普通命令的启动授权、spawn/fork/exec 继承与削减、失败回收、

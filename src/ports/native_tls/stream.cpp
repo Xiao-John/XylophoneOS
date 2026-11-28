@@ -158,6 +158,14 @@ int stream::finish() {
     return 0;
 }
 
+xos::i64 stream::lease_status(xos::net2::lease_snapshot& snapshot) {
+    snapshot = {};
+    if (!verified_ || peer_closed_) return xos::net2::closed;
+    const auto status = tcp_.lease_status(deadline_, snapshot);
+    if (status) (void)fail(transport_result(status));
+    return status;
+}
+
 int stream::send(void* context, const unsigned char* data, size_t size) {
     auto& self = *static_cast<stream*>(context);
     const auto deadline = self.request_deadline();

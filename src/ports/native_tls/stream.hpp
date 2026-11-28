@@ -33,6 +33,10 @@ public:
     // Zero is a verified TLS close_notify. Unauthenticated transport EOF fails.
     int read(unsigned char* data, size_t capacity);
     int finish();
+    // Read-only Net2 lease authority on this verified stream's original
+    // session/deadline. No new session, reconnect or deadline extension.
+    // Returns a Net2 status; a failed query retires the stream without replay.
+    xos::i64 lease_status(xos::net2::lease_snapshot& snapshot);
     uint32_t verification_flags() const { return verify_flags_; }
     // Available after a verified handshake until finish or a fatal I/O error.
     // Copy the bytes before calling another stream operation or destroying it.

@@ -1,0 +1,157 @@
+{
+  "documentation": {
+    "allocated_syscalls": 79,
+    "history_sources": 73,
+    "local_links": 2353,
+    "status": "passed"
+  },
+  "dynamic_preflight": {
+    "closure_error": 0,
+    "objects": 4,
+    "status": "passed"
+  },
+  "guest": {
+    "checks": 9,
+    "cold_boots": 3,
+    "gnu_callers": 12,
+    "status": "passed",
+    "tls13_flows": 10
+  },
+  "license_audit": {
+    "materials": 10,
+    "open_items": 0,
+    "output": "PASS: 10 license materials | build 13648be5fde3bd78 | open license items: 0 -> none (register: licenses/open_items.json)",
+    "raw_unpublished_log_sha256": "1f17a6bf6aea833d825e96b783b2ac74970ae547d54e0da4a4b12f087c967b76",
+    "scope": "selected final2 system",
+    "status": "passed",
+    "system_build_id": "13648be5fde3bd78"
+  },
+  "not_run": [
+    "GNU workers in this C-only closure",
+    "physical NIC",
+    "SMP",
+    "BIOS hard-disk boot",
+    "general Internet CA bundle",
+    "trusted hardware time or entropy",
+    "power loss",
+    "online dlopen",
+    "pending dynamic capsule ABI v3"
+  ],
+  "public_paths": {
+    "base": "f97ddece8146fb7a4bd2eadfdd4845757557611b",
+    "files_scanned": 44,
+    "files_selected": 44,
+    "findings": [],
+    "source": "index",
+    "status": "PUBLIC_READY"
+  },
+  "report_integrity": {
+    "flat_leaves": 28,
+    "matched": 28,
+    "scope": "this report directory",
+    "status": "PASS"
+  },
+  "repository_report_check": {
+    "preexisting_unmodified_failures": [
+      "glibc_v2_cpython_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_current_release_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_daily_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_dash_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_gnu_make_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_release_upstream_source_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "mobius_qt_v2_replacement_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_reproducible_20261127: unsafe path or invalid hash in manifest"
+    ],
+    "scope": "existing report errors are reported honestly and were not modified by this task",
+    "selected_report_compliant": true,
+    "status": "failed"
+  },
+  "scope": "this exact installed K4 composition",
+  "source_and_artifact_postcheck": {
+    "c_sdk_binding": {
+      "archive_members": {
+        "usr/lib/libc.a": 1687,
+        "usr/lib/libgcc.a": 147,
+        "usr/lib/libm.a": 831,
+        "usr/lib/libxos_terminal.a": 17
+      },
+      "compiler": {
+        "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+        "target": "x86_64-elf",
+        "version": "16.2.0"
+      },
+      "cxx_runtime": null,
+      "format_version": 1,
+      "libc_version": "2.44",
+      "link_artifacts": {
+        "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+        "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+        "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+        "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+        "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+        "usr/lib/libc.a": "ce86ccd8ae89ca58ee3fc4be0b1bab12d87f6402e0d43f8e6833de36c087826e",
+        "usr/lib/libgcc.a": "88beb76641fdae379002b70e5bbb59fb1da96ae476c5d2bc703f738cdc4924c0",
+        "usr/lib/libm.a": "cdaeb5f09651488b008f04c12913ba390ee46297a5e23678e4e40d1beb8ed8ff",
+        "usr/lib/libxos_terminal.a": "14ef0470c10c996d1ca543278d43d5ee5ae715f96139d96cd35dec2b3b06c9db",
+        "usr/lib/xos_start.o": "e8abda8cb2ffebc55b4d98e58a12a1729ef7ea11156808a059a82418fbee4800",
+        "usr/lib/xos_start_c.o": "7cc65ba50f708d5a78d18168594418619ab54c71bb6fd7661e109ecb6019e8de"
+      },
+      "runtime_family": "glibc",
+      "runtime_model": "threaded",
+      "sdk_manifest_sha256": "d5a5d40d1ad60d11d8dbae2b517d5aaeae0244fdcadb09145b2a45095ca884fa",
+      "sdk_tree_sha256": "3b7f05a77d720c6de494a470f495d4688c103e83a84ae997c13a21663ca9624c",
+      "source_authentication": {
+        "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+        "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+        "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+        "report_sha256": "c1a4611c112db05e01500c4453a8ce8de447a8bd1f0833798fc03353f55103de",
+        "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+        "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+        "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+        "status": "upstream_signature_verified",
+        "verification_files": {
+          "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+          "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+          "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af",
+          "source_verification/report.json": "c1a4611c112db05e01500c4453a8ce8de447a8bd1f0833798fc03353f55103de"
+        }
+      }
+    },
+    "cold_boots": 3,
+    "frozen_runtime_identity_unchanged": true,
+    "guest_checks": [
+      "spawn_file_keeps_no_create_authority_and_spawn_command_uses_common_inheritance",
+      "cold_installed_ISO_FAT_boot_automatic_DHCP_GNU_TLS_without_manual_start",
+      "second_cold_boot_and_same_epoch_DHCP_renew_with_live_TLS",
+      "lease_expiry_retires_pending_TLS_bounded_failure_and_fresh_epoch_recovery",
+      "orderly_netd_stop_wakes_pending_dynamic_TLS_old_PID_denied_new_PID_recovers",
+      "installed_trust_generation_mismatch_rejected_before_network_and_generation2_TLS_passed",
+      "netd_kill_wakes_pending_GNU_TLS_and_retains_exact_DMA_quarantine_with_three_regrants_denied",
+      "third_cold_boot_recovers_quarantined_installation_with_automatic_DHCP_and_fresh_dynamic_TLS",
+      "all_XPK_owned_payloads_and_database_unchanged_after_three_cold_boots_and_faults"
+    ],
+    "native_sdk_binding": {
+      "abi": 1,
+      "sdk_manifest_sha256": "10e1c1dec9b84a26eb9773d82db7372cf2066d429f054d2b49542a551c6ae2e1",
+      "sdk_tree_sha256": "a7abc7fc74c01d1124b1e92427361ec5b32a25ec4fa645c5ad541e442ef60a0e",
+      "target": "x86_64-elf"
+    },
+    "ordinary_iso_sha256": "9370740186c5802b81b3117c697b304f92945426de14d5b87451e60f38f54635",
+    "runtime_source_revision": "f97ddece8146fb7a4bd2eadfdd4845757557611b",
+    "source_and_artifact_postcheck": "all selected system, application, runtime, SDK and controller bytes match",
+    "status": "passed",
+    "system_build_id": "13648be5fde3bd78",
+    "system_manifest_sha256": "29df33894bc6ce249f5cf7391a76927e86b7af9dacb175a2a8a93ba683ad8d27",
+    "system_sources": 2309
+  },
+  "status": "passed_for_selected_K4_scope"
+}

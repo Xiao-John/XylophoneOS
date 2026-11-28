@@ -1,0 +1,1449 @@
+{
+  "boots": [
+    {
+      "automatic_service_pid": 9,
+      "boot": 1,
+      "cases": [
+        {
+          "controller_pid": 12,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main once 9 445ba4baa106669320f043dcfbeaa9b9\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x0000000000377000\r\n[loader] started pid=12 file=/usr/bin/k4_dynamic_run\nxsh> wait 12\n[process] event=wait_blocked parent=7 child=12\r\n[process] event=started pid=13 parent=12\r\n[process] pid=13 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=13 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=9 epoch=2 address=167772687 server=167772674 expires=50850000000 generation=1\nINSTALLED_TLS_READY mode=once nonce=445ba4baa106669320f043dcfbeaa9b9 service=9 epoch=2\nINSTALLED_TLS_PASS mode=once nonce=445ba4baa106669320f043dcfbeaa9b9 generation=1 epoch=2\n[task] event=reclaimed pid=13 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=13 outcome=1 code=0\n[task] event=reclaimed pid=12 pages=373\r\n[wait] pid=12 kind=exited code=0\nxsh> ",
+          "mode": "once",
+          "nonce": "445ba4baa106669320f043dcfbeaa9b9",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        }
+      ],
+      "database_after": {
+        "/var/lib/xypm/db.json": "d7d38bc810f9415efc04a9f5e2c50d07fb69a4e4b37804cf0bff2939b6053270",
+        "/var/lib/xypm/index.tsv": "c5ecd5e6f6eca9c61bbf85c669ea8da400a5a73e1d1b4d3d2a01f23a88f6bca9"
+      },
+      "disk_after_sha256": "b8643884deeafa80ce0cdadeab067a0110530a91a22698440f26ab7d68d6510a",
+      "disk_before_sha256": "6ccf0fbea5d8aa46ad90a6857da4489c6cd9e1d6f82abba3796456a4b99446ce",
+      "initial_manual_network_commands": [],
+      "installed_payload_after": {
+        "files": 20,
+        "status": "verified"
+      },
+      "owned_files_after": {
+        "usr/bin/k4_dynamic_run": "e2b4783b22bb0e45fd9bda1346b594bd9065a6e7397a3a4e420dc6413ec4c55d",
+        "usr/lib/xos/generations/installed_dhcp_tls.bin": "abd4990f78e682c212b6ad29bc0a562c08bea2c25731cb1660685252398b59fe",
+        "usr/lib/xos/glibc_dynamic_v1/bootstrap": "d968261d8a143b7f84114c7e74c1d89177fdb5fcdbbd59494780596a3265a682",
+        "usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "ca417a9f37f5d32c4cc2618d7f3ba290715dec7df3bc5dd583bd65b202088279",
+        "usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "0490f8aa043aea28edfe7465684aeb72773e18460de642770b14bde581648be8",
+        "usr/lib/xos/installed_dhcp_tls/main": "02d334c5401f1b90ffcf5cc35719713cf9d55f5275107f5c03aa41a7e248e71c",
+        "usr/share/xos/p1_k4/bootstrap_dhcp.json": "360c3b06e1524bf20c0a23f08a9fd513e3dadc20cc7f9168167a048b62a50c93",
+        "usr/share/xos/p1_k4/build_receipt.json": "abd0b9f61ad2720a9cf6c3189193617421a6ec561363ad7eb0eb19e929de0de2",
+        "usr/share/xos/p1_k4/licenses/APACHE-2.0.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "usr/share/xos/p1_k4/licenses/MIT-legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+        "usr/share/xos/p1_k4/licenses/gcc-COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+        "usr/share/xos/p1_k4/licenses/gcc-COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+        "usr/share/xos/p1_k4/licenses/glibc-COPYING.LIB": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+        "usr/share/xos/p1_k4/licenses/glibc-LICENSES": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+        "usr/share/xos/p1_k4/licenses/mbedtls-LICENSE": "9b405ef4c89342f5eae1dd828882f931747f71001cfba7d114801039b52ad09b",
+        "usr/share/xos/p1_k4/licenses/mbedtls-framework-LICENSE": "11402351e38392230bb8934ba1095c0c0049a296c0f8821f76e4672dff54b490",
+        "usr/share/xos/p1_k4/licenses/tf-psa-LICENSE": "da8c58f05f135a9d15e9ffad4ecf854cfcc1f014c8abfd75ba05f62630ccc118",
+        "usr/share/xos/p1_k4/profile.json": "f46c32882f29fc651a29a403aefc63e433dabae9605c9f49b5ac28baa88a9e3c",
+        "usr/share/xos/p1_k4/roots-1.bin": "ea1ace686f58ac0a9edcbc4a03a0c2af597a3f246e108fd68a47d32eaa7aa400",
+        "usr/share/xos/p1_k4/roots-2.bin": "73cc88dc1d478be87baa1703354c99ef4326cfbdedaa8d55501d3693b68ff3af"
+      },
+      "packet_capture": "boot_1_network.pcap.gz",
+      "peer": {
+        "application_cases": [
+          {
+            "dhcp_ack_before": 1,
+            "dns_queries_before": 0,
+            "flows": [],
+            "mode": "once",
+            "nonce": "6c4712f53b6389f2a4c1c50664db5e51",
+            "started": 5502.793307532
+          },
+          {
+            "dhcp_ack_before": 2,
+            "dns_queries_before": 0,
+            "flows": [
+              {
+                "application_ready": 5539.139503391,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 60343,
+                "mode": "once",
+                "nonce": "445ba4baa106669320f043dcfbeaa9b9",
+                "peer_close_notify": true,
+                "request_sha256": "8e29753fc51ad0e9c25bd63263d4dbba3c83af933f6a31b547563ad1ff262fac",
+                "server": "10.0.2.2:443",
+                "server_close_notify": true,
+                "sni": "tls.xos.test",
+                "tcp_fin": 5539.321584394,
+                "tls_received_bytes": 411,
+                "tls_sent_bytes": 1522,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "once",
+            "nonce": "445ba4baa106669320f043dcfbeaa9b9",
+            "started": 5516.386457334
+          }
+        ],
+        "dhcp_ack_count": 6,
+        "dhcp_epochs": [
+          {
+            "acks": [
+              {
+                "ciaddr": "0.0.0.0",
+                "lease_seconds": 18,
+                "number": 1,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5502.193164873
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 2,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5510.450202213
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 3,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5517.293712626
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 4,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5523.917247222
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 5,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5530.343708066
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 6,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5536.876313286
+              }
+            ],
+            "arp_probes": [
+              5502.42372142,
+              5504.43829026,
+              5505.904223357
+            ],
+            "declines": [],
+            "dhcp": [
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "63b20266ca3c1721a11a38e9c6da7c3c6f32b420bace66f22f53c7803c787b98",
+                "time": 5502.18521695,
+                "type": 1,
+                "xid": 591145362
+              },
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "148e2e00870a92be675dbfaf7a4c6a2a04588b36d2b4bd04497d64a200a9f83e",
+                "time": 5502.193114014,
+                "type": 3,
+                "xid": 591145362
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "bb47e8984fd3bcb08bf665899f78874781aaa4fba9044b52d6b18fc64997d5a6",
+                "time": 5510.450002548,
+                "type": 3,
+                "xid": 2683683777
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "27d5ade42b689415b0248430d02fc7684f7ca54bc2cf3e8fd9ce846fcf47ce97",
+                "time": 5517.293553928,
+                "type": 3,
+                "xid": 398793322
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "f3125743caa90a8eed87120aae791c27a13b5c148c2b1ea01d1dce0c32133ac0",
+                "time": 5523.91670828,
+                "type": 3,
+                "xid": 1043815312
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "b31e87ef238935bdc17d19acc77d0725420ae462dadc8441176240449a0e4f43",
+                "time": 5530.343499858,
+                "type": 3,
+                "xid": 2428358657
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "d057cdcbb6cf33e42e8cb23e66c21ac8c6106b3af402779a65f52cd5e7fe632d",
+                "time": 5536.8762079,
+                "type": 3,
+                "xid": 1361936423
+              }
+            ],
+            "dns_answers": [
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5538.373824795
+              }
+            ],
+            "dns_queries": 1,
+            "injected_malformed": 0,
+            "nonce": "4a99a087db4dca70e572f87c2315044b",
+            "scenario": "renew",
+            "udp": []
+          }
+        ],
+        "tls_provider": "OpenSSL 3.6.5 29 Sep 2026"
+      },
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "serial_log": "boot_1_serial.log.gz",
+      "spawn_file_denial": "spawn-file /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main once 9 6c4712f53b6389f2a4c1c50664db5e51\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000377000\r\n[loader] started pid=11 file=/usr/bin/k4_dynamic_run\nxsh> wait 11\n[process] event=wait_blocked parent=7 child=11\r\ndynamic-run: spawn error=-1\n[task] event=reclaimed pid=11 pages=373\r\n[wait] pid=11 kind=exited code=126\nxsh> stats\n[resources] free=129589 tasks=3 completions=1\nxsh> ",
+      "topology": "ordinary_ISO_boot_with_installed_persistent_FAT"
+    },
+    {
+      "automatic_service_pid": 9,
+      "boot": 2,
+      "cases": [
+        {
+          "controller_pid": 11,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main once 9 5216016d38b65583f255d6482d2a0e66\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000377000\r\n[loader] started pid=11 file=/usr/bin/k4_dynamic_run\nxsh> wait 11\n[process] event=wait_blocked parent=7 child=11\r\n[process] event=started pid=12 parent=11\r\n[process] pid=12 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=12 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=9 epoch=2 address=167772687 server=167772674 expires=31190000000 generation=1\nINSTALLED_TLS_READY mode=once nonce=5216016d38b65583f255d6482d2a0e66 service=9 epoch=2\nINSTALLED_TLS_PASS mode=once nonce=5216016d38b65583f255d6482d2a0e66 generation=1 epoch=2\n[task] event=reclaimed pid=12 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=12 outcome=1 code=0\n[task] event=reclaimed pid=11 pages=373\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+          "mode": "once",
+          "nonce": "5216016d38b65583f255d6482d2a0e66",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        },
+        {
+          "controller_pid": 13,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main renew 9 453909f609b562fc8c4d19a0f1e7403d\n[process] event=started pid=13 parent=7\r\n[process] pid=13 address_space=0x0000000000377000\r\n[loader] started pid=13 file=/usr/bin/k4_dynamic_run\nxsh> wait 13\n[process] event=wait_blocked parent=7 child=13\r\n[process] event=started pid=14 parent=13\r\n[process] pid=14 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=14 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=9 epoch=2 address=167772687 server=167772674 expires=49190000000 generation=1\nINSTALLED_TLS_READY mode=renew nonce=453909f609b562fc8c4d19a0f1e7403d service=9 epoch=2\nINSTALLED_RENEW epoch=2 old_expires=49190000000 new_expires=55190000000 live_stream=1 same_session=1\nINSTALLED_TLS_PASS mode=renew nonce=453909f609b562fc8c4d19a0f1e7403d generation=1 epoch=2\n[task] event=reclaimed pid=14 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=14 outcome=1 code=0\n[task] event=reclaimed pid=13 pages=373\r\n[wait] pid=13 kind=exited code=0\nxsh> ",
+          "mode": "renew",
+          "nonce": "453909f609b562fc8c4d19a0f1e7403d",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        },
+        {
+          "controller_pid": 15,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main expire 9 4eb4f90d124a62ef59b417f56aefff66\n[process] event=started pid=15 parent=7\r\n[process] pid=15 address_space=0x0000000000377000\r\n[loader] started pid=15 file=/usr/bin/k4_dynamic_run\nxsh> wait 15\n[process] event=wait_blocked parent=7 child=15\r\n[process] event=started pid=16 parent=15\r\n[process] pid=16 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=16 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=9 epoch=2 address=167772687 server=167772674 expires=73190000000 generation=1\nINSTALLED_TLS_READY mode=expire nonce=4eb4f90d124a62ef59b417f56aefff66 service=9 epoch=2\nINSTALLED_EXPIRY_ARMED epoch=2 expires=73190000000 same_session=1\nINSTALLED_TLS_PASS mode=expire status=-27648 elapsed_ns=14620000000 deadline=87580000000 finished=73200000000 expires=73190000000\n[task] event=reclaimed pid=16 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=16 outcome=1 code=0\n[task] event=reclaimed pid=15 pages=373\r\n[wait] pid=15 kind=exited code=0\nxsh> ",
+          "mode": "expire",
+          "nonce": "4eb4f90d124a62ef59b417f56aefff66",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        },
+        {
+          "controller_pid": 17,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main once 9 f43b31b23140597b8bc51fffea5a5aea\n[process] event=started pid=17 parent=7\r\n[process] pid=17 address_space=0x0000000000377000\r\n[loader] started pid=17 file=/usr/bin/k4_dynamic_run\nxsh> wait 17\n[process] event=wait_blocked parent=7 child=17\r\n[process] event=started pid=18 parent=17\r\n[process] pid=18 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=18 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=9 epoch=4 address=167772687 server=167772674 expires=99990000000 generation=1\nINSTALLED_TLS_READY mode=once nonce=f43b31b23140597b8bc51fffea5a5aea service=9 epoch=4\nINSTALLED_TLS_PASS mode=once nonce=f43b31b23140597b8bc51fffea5a5aea generation=1 epoch=4\n[task] event=reclaimed pid=18 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=18 outcome=1 code=0\n[task] event=reclaimed pid=17 pages=373\r\n[wait] pid=17 kind=exited code=0\nxsh> ",
+          "mode": "once",
+          "nonce": "f43b31b23140597b8bc51fffea5a5aea",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        },
+        {
+          "controller_pid": 19,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main stop 9 0626a2eccee87ef85e34806a8c6bade9\n[process] event=started pid=19 parent=7\r\n[process] pid=19 address_space=0x0000000000377000\r\n[loader] started pid=19 file=/usr/bin/k4_dynamic_run\nxsh> [process] event=started pid=20 parent=19\r\n[process] pid=20 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=20 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=9 epoch=4 address=167772687 server=167772674 expires=111990000000 generation=1\nINSTALLED_TLS_READY mode=stop nonce=0626a2eccee87ef85e34806a8c6bade9 service=9 epoch=4\nnet-stop\n[process] event=wait_blocked parent=7 child=9\r\nINSTALLED_TLS_PASS mode=stop status=-27648 elapsed_ns=830000000 deadline=128280000000 finished=100110000000 expires=111990000000\n[task] event=reclaimed pid=20 pages=1269\r\n[net] close=0\n[task] event=reclaimed pid=9 pages=110\r\n[wait] pid=9 kind=exited code=0\nxsh> DYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=20 outcome=1 code=0\n[task] event=reclaimed pid=19 pages=373\r\nwait 19\n[wait] pid=19 kind=exited code=0\nxsh> ",
+          "mode": "stop",
+          "nonce": "0626a2eccee87ef85e34806a8c6bade9",
+          "resources": [
+            129765,
+            2,
+            0
+          ]
+        },
+        {
+          "controller_pid": 22,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main stale-pid 9 c979dbb8f9b677d44144108ef63b121e\n[process] event=started pid=22 parent=7\r\n[process] pid=22 address_space=0x0000000000568000\r\n[loader] started pid=22 file=/usr/bin/k4_dynamic_run\nxsh> wait 22\n[process] event=wait_blocked parent=7 child=22\r\n[process] event=started pid=23 parent=22\r\n[process] pid=23 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=23 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_TLS_PASS mode=stale-pid expected_service=9 denied=1\n[task] event=reclaimed pid=23 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=23 outcome=1 code=0\n[task] event=reclaimed pid=22 pages=373\r\n[wait] pid=22 kind=exited code=0\nxsh> ",
+          "mode": "stale-pid",
+          "nonce": "c979dbb8f9b677d44144108ef63b121e",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        },
+        {
+          "controller_pid": 24,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main once 21 333bc04f64092ed980704516a33950db\n[process] event=started pid=24 parent=7\r\n[process] pid=24 address_space=0x0000000000568000\r\n[loader] started pid=24 file=/usr/bin/k4_dynamic_run\nxsh> wait 24\n[process] event=wait_blocked parent=7 child=24\r\n[process] event=started pid=25 parent=24\r\n[process] pid=25 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=25 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=21 epoch=2 address=167772687 server=167772674 expires=137520000000 generation=1\nINSTALLED_TLS_READY mode=once nonce=333bc04f64092ed980704516a33950db service=21 epoch=2\nINSTALLED_TLS_PASS mode=once nonce=333bc04f64092ed980704516a33950db generation=1 epoch=2\n[task] event=reclaimed pid=25 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=25 outcome=1 code=0\n[task] event=reclaimed pid=24 pages=373\r\n[wait] pid=24 kind=exited code=0\nxsh> ",
+          "mode": "once",
+          "nonce": "333bc04f64092ed980704516a33950db",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        },
+        {
+          "controller_pid": 26,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main stale-pin 21 59f71ced13c339b78619a7894e84574a\n[process] event=started pid=26 parent=7\r\n[process] pid=26 address_space=0x0000000000568000\r\n[loader] started pid=26 file=/usr/bin/k4_dynamic_run\nxsh> wait 26\n[process] event=wait_blocked parent=7 child=26\r\n[process] event=started pid=27 parent=26\r\n[process] pid=27 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=27 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_TLS_PASS mode=stale-pin generation=2 rejected_before_network=1\n[task] event=reclaimed pid=27 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=27 outcome=1 code=0\n[task] event=reclaimed pid=26 pages=373\r\n[wait] pid=26 kind=exited code=0\nxsh> ",
+          "mode": "stale-pin",
+          "nonce": "59f71ced13c339b78619a7894e84574a",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        },
+        {
+          "controller_pid": 28,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main trust2 21 8efaeb6ab05870be5cc218f6c1283fcf\n[process] event=started pid=28 parent=7\r\n[process] pid=28 address_space=0x0000000000568000\r\n[loader] started pid=28 file=/usr/bin/k4_dynamic_run\nxsh> wait 28\n[process] event=wait_blocked parent=7 child=28\r\n[process] event=started pid=29 parent=28\r\n[process] pid=29 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=29 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=21 epoch=2 address=167772687 server=167772674 expires=167520000000 generation=2\nINSTALLED_TLS_READY mode=trust2 nonce=8efaeb6ab05870be5cc218f6c1283fcf service=21 epoch=2\nINSTALLED_TLS_PASS mode=trust2 nonce=8efaeb6ab05870be5cc218f6c1283fcf generation=2 epoch=2\n[task] event=reclaimed pid=29 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=29 outcome=1 code=0\n[task] event=reclaimed pid=28 pages=373\r\n[wait] pid=28 kind=exited code=0\nxsh> ",
+          "mode": "trust2",
+          "nonce": "8efaeb6ab05870be5cc218f6c1283fcf",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        },
+        {
+          "controller_pid": 30,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main death 21 1a7858e46eebb8ca18bc49be0dd1635c\n[process] event=started pid=30 parent=7\r\n[process] pid=30 address_space=0x0000000000568000\r\n[loader] started pid=30 file=/usr/bin/k4_dynamic_run\nxsh> [process] event=started pid=31 parent=30\r\n[process] pid=31 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=31 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=21 epoch=2 address=167772687 server=167772674 expires=179520000000 generation=1\nINSTALLED_TLS_READY mode=death nonce=1a7858e46eebb8ca18bc49be0dd1635c service=21 epoch=2\nkill 21\n[task] event=killed_by_supervisor pid=21\r\n[task] event=reclaimed pid=21 pages=110\r\nkill: accepted\nxsh> INSTALLED_TLS_PASS mode=death status=-27648 elapsed_ns=820000000 deadline=196250000000 finished=168070000000 expires=179520000000\n[task] event=reclaimed pid=31 pages=1269\r\nwDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=31 outcome=1 code=0\n[task] event=reclaimed pid=30 pages=373\r\nait 30\n[wait] pid=30 kind=exited code=0\nxsh> ",
+          "mode": "death",
+          "nonce": "1a7858e46eebb8ca18bc49be0dd1635c",
+          "resources": [
+            129699,
+            2,
+            1
+          ]
+        }
+      ],
+      "database_after": {
+        "/var/lib/xypm/db.json": "d7d38bc810f9415efc04a9f5e2c50d07fb69a4e4b37804cf0bff2939b6053270",
+        "/var/lib/xypm/index.tsv": "c5ecd5e6f6eca9c61bbf85c669ea8da400a5a73e1d1b4d3d2a01f23a88f6bca9"
+      },
+      "disk_after_sha256": "b21755deda9c685261a4f5ca2125bdd262038c7cb978d9821bc0739d090fa04d",
+      "disk_before_sha256": "b8643884deeafa80ce0cdadeab067a0110530a91a22698440f26ab7d68d6510a",
+      "initial_manual_network_commands": [],
+      "installed_payload_after": {
+        "files": 20,
+        "status": "verified"
+      },
+      "orderly_stop_failure_seconds": 0.1457580530004634,
+      "owned_files_after": {
+        "usr/bin/k4_dynamic_run": "e2b4783b22bb0e45fd9bda1346b594bd9065a6e7397a3a4e420dc6413ec4c55d",
+        "usr/lib/xos/generations/installed_dhcp_tls.bin": "abd4990f78e682c212b6ad29bc0a562c08bea2c25731cb1660685252398b59fe",
+        "usr/lib/xos/glibc_dynamic_v1/bootstrap": "d968261d8a143b7f84114c7e74c1d89177fdb5fcdbbd59494780596a3265a682",
+        "usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "ca417a9f37f5d32c4cc2618d7f3ba290715dec7df3bc5dd583bd65b202088279",
+        "usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "0490f8aa043aea28edfe7465684aeb72773e18460de642770b14bde581648be8",
+        "usr/lib/xos/installed_dhcp_tls/main": "02d334c5401f1b90ffcf5cc35719713cf9d55f5275107f5c03aa41a7e248e71c",
+        "usr/share/xos/p1_k4/bootstrap_dhcp.json": "360c3b06e1524bf20c0a23f08a9fd513e3dadc20cc7f9168167a048b62a50c93",
+        "usr/share/xos/p1_k4/build_receipt.json": "abd0b9f61ad2720a9cf6c3189193617421a6ec561363ad7eb0eb19e929de0de2",
+        "usr/share/xos/p1_k4/licenses/APACHE-2.0.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "usr/share/xos/p1_k4/licenses/MIT-legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+        "usr/share/xos/p1_k4/licenses/gcc-COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+        "usr/share/xos/p1_k4/licenses/gcc-COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+        "usr/share/xos/p1_k4/licenses/glibc-COPYING.LIB": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+        "usr/share/xos/p1_k4/licenses/glibc-LICENSES": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+        "usr/share/xos/p1_k4/licenses/mbedtls-LICENSE": "9b405ef4c89342f5eae1dd828882f931747f71001cfba7d114801039b52ad09b",
+        "usr/share/xos/p1_k4/licenses/mbedtls-framework-LICENSE": "11402351e38392230bb8934ba1095c0c0049a296c0f8821f76e4672dff54b490",
+        "usr/share/xos/p1_k4/licenses/tf-psa-LICENSE": "da8c58f05f135a9d15e9ffad4ecf854cfcc1f014c8abfd75ba05f62630ccc118",
+        "usr/share/xos/p1_k4/profile.json": "f46c32882f29fc651a29a403aefc63e433dabae9605c9f49b5ac28baa88a9e3c",
+        "usr/share/xos/p1_k4/roots-1.bin": "ea1ace686f58ac0a9edcbc4a03a0c2af597a3f246e108fd68a47d32eaa7aa400",
+        "usr/share/xos/p1_k4/roots-2.bin": "73cc88dc1d478be87baa1703354c99ef4326cfbdedaa8d55501d3693b68ff3af"
+      },
+      "packet_capture": "boot_2_network.pcap.gz",
+      "peer": {
+        "application_cases": [
+          {
+            "dhcp_ack_before": 1,
+            "dns_queries_before": 0,
+            "flows": [
+              {
+                "application_ready": 5562.264588346,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 51525,
+                "mode": "once",
+                "nonce": "5216016d38b65583f255d6482d2a0e66",
+                "peer_close_notify": true,
+                "request_sha256": "d892467e599f85d6d4502894d4ad72233e81380584e92cd668c850c229280a47",
+                "server": "10.0.2.2:443",
+                "server_close_notify": true,
+                "sni": "tls.xos.test",
+                "tcp_fin": 5562.463435118,
+                "tls_received_bytes": 411,
+                "tls_sent_bytes": 1522,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "once",
+            "nonce": "5216016d38b65583f255d6482d2a0e66",
+            "started": 5543.377642323
+          },
+          {
+            "dhcp_ack_before": 3,
+            "dns_queries_before": 1,
+            "flows": [
+              {
+                "application_ready": 5580.705032907,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 51526,
+                "mode": "renew",
+                "nonce": "453909f609b562fc8c4d19a0f1e7403d",
+                "peer_close_notify": true,
+                "renew_ack": 7,
+                "renew_sent": 5581.295249134,
+                "request_sha256": "650b1e350d6841c255e01dee8c2860853de7c5c12535b9f671b51534f406a97c",
+                "server": "10.0.2.2:443",
+                "server_close_notify": true,
+                "sni": "tls.xos.test",
+                "tcp_fin": 5581.50501055,
+                "tls_received_bytes": 411,
+                "tls_sent_bytes": 1583,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "renew",
+            "nonce": "453909f609b562fc8c4d19a0f1e7403d",
+            "started": 5562.498921528
+          },
+          {
+            "dhcp_ack_before": 7,
+            "dns_queries_before": 2,
+            "flows": [
+              {
+                "application_ready": 5606.667955859,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 51527,
+                "expiry_ack_count": 10,
+                "expiry_armed_after_tls_request": 5606.668052814,
+                "mode": "expire",
+                "nonce": "4eb4f90d124a62ef59b417f56aefff66",
+                "request_sha256": "0b0db666cc6508697567a0760a59c327873127f8181b5563a8bbfda2b9787267",
+                "server": "10.0.2.2:443",
+                "sni": "tls.xos.test",
+                "tls_received_bytes": 374,
+                "tls_sent_bytes": 1498,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "expire",
+            "nonce": "4eb4f90d124a62ef59b417f56aefff66",
+            "started": 5581.551978932
+          },
+          {
+            "dhcp_ack_before": 10,
+            "dns_queries_before": 3,
+            "flows": [
+              {
+                "application_ready": 5637.181103671,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 51528,
+                "mode": "once",
+                "nonce": "f43b31b23140597b8bc51fffea5a5aea",
+                "peer_close_notify": true,
+                "request_sha256": "174baf981c84eab6a36abbbe0021010bc57165679b24b0e03f4c939cb6da28cf",
+                "server": "10.0.2.2:443",
+                "server_close_notify": true,
+                "sni": "tls.xos.test",
+                "tcp_fin": 5637.361106933,
+                "tls_received_bytes": 411,
+                "tls_sent_bytes": 1522,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "once",
+            "nonce": "f43b31b23140597b8bc51fffea5a5aea",
+            "started": 5621.056305175
+          },
+          {
+            "dhcp_ack_before": 13,
+            "dns_queries_before": 4,
+            "flows": [
+              {
+                "application_ready": 5649.150234105,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 51529,
+                "mode": "stop",
+                "nonce": "0626a2eccee87ef85e34806a8c6bade9",
+                "request_sha256": "03c4ee89dd7f3d89b004e6cb7bb6ded13017005992163eebfa2ff35d87070991",
+                "server": "10.0.2.2:443",
+                "sni": "tls.xos.test",
+                "tcp_reset": 5649.321336394,
+                "tls_received_bytes": 374,
+                "tls_sent_bytes": 1498,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "stop",
+            "nonce": "0626a2eccee87ef85e34806a8c6bade9",
+            "started": 5637.407335853
+          },
+          {
+            "dhcp_ack_before": 15,
+            "dns_queries_before": 5,
+            "flows": [],
+            "mode": "stale-pid",
+            "nonce": "c979dbb8f9b677d44144108ef63b121e",
+            "started": 5649.562066551
+          },
+          {
+            "dhcp_ack_before": 18,
+            "dns_queries_before": 5,
+            "flows": [
+              {
+                "application_ready": 5675.038694289,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 53016,
+                "mode": "once",
+                "nonce": "333bc04f64092ed980704516a33950db",
+                "peer_close_notify": true,
+                "request_sha256": "151e82bd11c25f203fa97836ef7f74dc7023dad4da9b7125ab590ed4e35d10be",
+                "server": "10.0.2.2:443",
+                "server_close_notify": true,
+                "sni": "tls.xos.test",
+                "tcp_fin": 5675.249103375,
+                "tls_received_bytes": 411,
+                "tls_sent_bytes": 1522,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "once",
+            "nonce": "333bc04f64092ed980704516a33950db",
+            "started": 5664.127830216
+          },
+          {
+            "dhcp_ack_before": 19,
+            "dns_queries_before": 6,
+            "flows": [],
+            "mode": "stale-pin",
+            "nonce": "59f71ced13c339b78619a7894e84574a",
+            "started": 5675.293954942
+          },
+          {
+            "dhcp_ack_before": 22,
+            "dns_queries_before": 6,
+            "flows": [
+              {
+                "application_ready": 5706.906577179,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 53017,
+                "mode": "trust2",
+                "nonce": "8efaeb6ab05870be5cc218f6c1283fcf",
+                "peer_close_notify": true,
+                "request_sha256": "a7669ad5369667591cd6259ed3e66e4649c8e18cf56f9e270d96124480bb8a2b",
+                "server": "10.0.2.2:443",
+                "server_close_notify": true,
+                "sni": "tls.xos.test",
+                "tcp_fin": 5707.116312147,
+                "tls_received_bytes": 411,
+                "tls_sent_bytes": 1522,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "trust2",
+            "nonce": "8efaeb6ab05870be5cc218f6c1283fcf",
+            "started": 5691.220247966
+          },
+          {
+            "dhcp_ack_before": 25,
+            "dns_queries_before": 7,
+            "flows": [
+              {
+                "application_ready": 5718.965837193,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 53018,
+                "mode": "death",
+                "nonce": "1a7858e46eebb8ca18bc49be0dd1635c",
+                "request_sha256": "0398ef834e13a188a3687906ccce0fcee824a6e67473020b52bba20fe432b32c",
+                "server": "10.0.2.2:443",
+                "sni": "tls.xos.test",
+                "tls_received_bytes": 374,
+                "tls_sent_bytes": 1498,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "death",
+            "nonce": "1a7858e46eebb8ca18bc49be0dd1635c",
+            "started": 5707.160411078
+          }
+        ],
+        "dhcp_ack_count": 27,
+        "dhcp_epochs": [
+          {
+            "acks": [
+              {
+                "ciaddr": "0.0.0.0",
+                "lease_seconds": 18,
+                "number": 1,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5542.683462652
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 2,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5549.710200392
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 3,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5556.066940636
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 4,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5562.576691234
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 5,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5568.818077556
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 6,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5575.040343631
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 7,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5581.295129247
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 8,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5588.020551389
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 9,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5594.535168351
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 10,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5602.329325537
+              }
+            ],
+            "arp_probes": [
+              5542.731217844,
+              5543.747923737,
+              5545.298572806
+            ],
+            "declines": [],
+            "dhcp": [
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "a5b3f1a2e8be4946c6b6c2fe1b2080bfc75da7200c9f3a86f41f11b6f9ce7ea9",
+                "time": 5542.635250154,
+                "type": 1,
+                "xid": 863009476
+              },
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "b42f27c6d5a3b4774098ab9765658409367135491e3e91fdec205ba47c9c5970",
+                "time": 5542.683223047,
+                "type": 3,
+                "xid": 863009476
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "fdd9925a2ca4a139d08b953eb4a25e3170fb05b92604eebad2bb73eeacf62f44",
+                "time": 5549.710125046,
+                "type": 3,
+                "xid": 1988820521
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "24a7d9b34e23d28371263f158334a2042ac969ffecf04df72a2bbc0e404ce7a9",
+                "time": 5556.066892006,
+                "type": 3,
+                "xid": 2380357121
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "fb5d863d02b89820af422398ac365ebc3e990bc66c4a550a7a57e320ba76d298",
+                "time": 5562.576642678,
+                "type": 3,
+                "xid": 1397654787
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "50e692cd0f7ee05ec1d4b1737c1d0a5cc23dc3a0cbdbe2d93aa2ed3cbffeec3d",
+                "time": 5568.818018092,
+                "type": 3,
+                "xid": 1507466024
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "4b6c733e1ecca11f41d6575aa55b3892606d99917f77d68f85d3c113cbb83286",
+                "time": 5575.040268729,
+                "type": 3,
+                "xid": 4271225295
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "6525e7608879d79a7b143a03c6563c4f368e8594d22d545a88de7bf8f95fa3fb",
+                "time": 5581.295052385,
+                "type": 3,
+                "xid": 1707426182
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "d5585d86c8ce93d6b433f4a0d4d06ed89ebc42d62617344a055b3178e03fc66d",
+                "time": 5588.020492947,
+                "type": 3,
+                "xid": 3087688299
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "3b58c67467f1fe80dfea28af00dee4e63ba48346ed2bee3fdb181cabca89d3b4",
+                "time": 5594.535111251,
+                "type": 3,
+                "xid": 78016876
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "f49b1634bec3eba3d890bb1b16013024be64da089d97a2680b4f0ade4209bdca",
+                "time": 5602.32906005,
+                "type": 3,
+                "xid": 4266589397
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "7945ad60cdc920b8d8e101a34b861362ab4124daa54e7cc4900b14c6e4fd9de0",
+                "time": 5608.564653783,
+                "type": 3,
+                "xid": 241528199
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "7945ad60cdc920b8d8e101a34b861362ab4124daa54e7cc4900b14c6e4fd9de0",
+                "time": 5610.493973417,
+                "type": 3,
+                "xid": 241528199
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "7945ad60cdc920b8d8e101a34b861362ab4124daa54e7cc4900b14c6e4fd9de0",
+                "time": 5614.703580896,
+                "type": 3,
+                "xid": 241528199
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "255.255.255.255",
+                "sha256": "7945ad60cdc920b8d8e101a34b861362ab4124daa54e7cc4900b14c6e4fd9de0",
+                "time": 5614.803144941,
+                "type": 3,
+                "xid": 241528199
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "255.255.255.255",
+                "sha256": "7945ad60cdc920b8d8e101a34b861362ab4124daa54e7cc4900b14c6e4fd9de0",
+                "time": 5615.763283247,
+                "type": 3,
+                "xid": 241528199
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "255.255.255.255",
+                "sha256": "7945ad60cdc920b8d8e101a34b861362ab4124daa54e7cc4900b14c6e4fd9de0",
+                "time": 5617.870373497,
+                "type": 3,
+                "xid": 241528199
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "255.255.255.255",
+                "sha256": "7945ad60cdc920b8d8e101a34b861362ab4124daa54e7cc4900b14c6e4fd9de0",
+                "time": 5620.892376464,
+                "type": 3,
+                "xid": 241528199
+              },
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "6b0ebe7749c1a7dda6226be6efe5640828f2cd84cbc7420cc0e8608e090140cc",
+                "time": 5620.994561691,
+                "type": 1,
+                "xid": 1850536362
+              }
+            ],
+            "dns_answers": [
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5561.438713111
+              },
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5580.065255485
+              },
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5605.963780765
+              }
+            ],
+            "dns_queries": 3,
+            "injected_malformed": 0,
+            "nonce": "ecbb1df4c0d0b9b375bc3efec915fa33",
+            "scenario": "renew",
+            "udp": []
+          },
+          {
+            "acks": [
+              {
+                "ciaddr": "0.0.0.0",
+                "lease_seconds": 18,
+                "number": 11,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5623.024316158
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 12,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5630.412722771
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 13,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5636.861536755
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 14,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5642.932840816
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 15,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5649.210272053
+              }
+            ],
+            "arp_probes": [
+              5623.222262755,
+              5624.268542016,
+              5626.031616848
+            ],
+            "declines": [],
+            "dhcp": [
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "6b0ebe7749c1a7dda6226be6efe5640828f2cd84cbc7420cc0e8608e090140cc",
+                "time": 5623.022683294,
+                "type": 1,
+                "xid": 1850536362
+              },
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "26606f8e7aab4da83df0f340aa9ad22fc6377d93cc5dce7399db6df01a837a78",
+                "time": 5623.024285746,
+                "type": 3,
+                "xid": 1850536362
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "e9635a13870e12ab5b59a689d7f38570187b221601f0c8817426dffbaf7c8711",
+                "time": 5630.412411046,
+                "type": 3,
+                "xid": 806243293
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "9d4426b27a621072d503413331535860ac0bd1a849e14ef641c80ea342a2d77d",
+                "time": 5636.861318453,
+                "type": 3,
+                "xid": 3366027919
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "cc08033360048d86371db624025ee9320b18b73382e34b8ded39e85585605fa1",
+                "time": 5642.932610394,
+                "type": 3,
+                "xid": 577042009
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "d5f7e2f01969e4a2fb24bfe08aaed4727a3f6333ed1cb730f59feabb2a872554",
+                "time": 5649.210213253,
+                "type": 3,
+                "xid": 712811042
+              }
+            ],
+            "dns_answers": [
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5636.601561377
+              },
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5648.520834976
+              }
+            ],
+            "dns_queries": 2,
+            "injected_malformed": 0,
+            "nonce": "2b274342c862dc5388bff211baf9a4d0",
+            "scenario": "renew",
+            "udp": []
+          },
+          {
+            "acks": [
+              {
+                "ciaddr": "0.0.0.0",
+                "lease_seconds": 18,
+                "number": 16,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5649.584286837
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 17,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5656.87360705
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 18,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5663.032882722
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 19,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5669.358956271
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 20,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5675.411128963
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 21,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5681.488291887
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 22,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5687.777710934
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 23,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5694.065759331
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 24,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5700.167966047
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 25,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5706.346426533
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 26,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5712.3806928
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 27,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5718.535930738
+              }
+            ],
+            "arp_probes": [
+              5650.040817703,
+              5651.339836242,
+              5652.748108111
+            ],
+            "declines": [],
+            "dhcp": [
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "fd541e51e01eb7ed7dc3a65cd38fc8f357ea57cc3f202a88d09fa402c75e32d3",
+                "time": 5649.560374484,
+                "type": 1,
+                "xid": 1514208129
+              },
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "d39c9debe169fe68220c28fe03708e98f987004223e33799ed1dd1a12a6995ee",
+                "time": 5649.583989144,
+                "type": 3,
+                "xid": 1514208129
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "72827be8d30451f74120fa04d3299faf94425d54bb7bcf5847f64cc637a84a91",
+                "time": 5656.873545258,
+                "type": 3,
+                "xid": 4101805404
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "f71106105a12f9c2484696fc048685dd4dd403b0a5fcaf1bd183337fcababb44",
+                "time": 5663.032781794,
+                "type": 3,
+                "xid": 2383017761
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "5a18caa2838d93845c411342aa90497e06cf0a80107bb5af83fc3a1cac99e369",
+                "time": 5669.358879166,
+                "type": 3,
+                "xid": 3981163353
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "a30b2e47ec78f414d39fbb3245d0c59aa59f30fe41f41774763e3b9af4f3b957",
+                "time": 5675.411068945,
+                "type": 3,
+                "xid": 2632461330
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "7e804827d7757fa789a9a8551eb02e9e1b8c5d77569c2eebdf0dca3742cea059",
+                "time": 5681.488210773,
+                "type": 3,
+                "xid": 3426906290
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "2d4310be951d24dbe668532d64eebe31144fbb6bc65889c09b8f5742be1dd01a",
+                "time": 5687.777637336,
+                "type": 3,
+                "xid": 83862534
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "c77ea176dafb841a99dd705442a63c4faa88fb021a89219599966256a2082e61",
+                "time": 5694.065684512,
+                "type": 3,
+                "xid": 3423463907
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "6004d8add05892b4d09dfeb3e0dd0d0e28147c78a9f8f4c88d22563d9a1d6d78",
+                "time": 5700.167692264,
+                "type": 3,
+                "xid": 3823848523
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "9125ebc9362e2036a3d86b27a33d47ff16f690c3ee08edd82a6656b966de3e1a",
+                "time": 5706.346361768,
+                "type": 3,
+                "xid": 2380822551
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "206cbb7d6494a65d7fbd6043bc2691ecf01e13186f08f204431006859ff59ab4",
+                "time": 5712.380612084,
+                "type": 3,
+                "xid": 3883590160
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "59cabad9a46331830f6acded3f7b51a4434bfc5c46f92d58d4d6dc2500083efa",
+                "time": 5718.5356991,
+                "type": 3,
+                "xid": 1303388040
+              }
+            ],
+            "dns_answers": [
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5674.337561578
+              },
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5706.2713219
+              },
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5718.31633847
+              }
+            ],
+            "dns_queries": 3,
+            "injected_malformed": 0,
+            "nonce": "b5bf1b88ab69640d06679230a2c551a8",
+            "scenario": "renew",
+            "udp": []
+          }
+        ],
+        "tls_provider": "OpenSSL 3.6.5 29 Sep 2026"
+      },
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "quarantine_rejections": [
+        "net-start 41\n[task] event=reclaimed pid=32 pages=103\r\nnet: start error=-11\nxsh> ",
+        "net-start 41\n[task] event=reclaimed pid=33 pages=103\r\nnet: start error=-11\nxsh> ",
+        "net-start 41\n[task] event=reclaimed pid=34 pages=103\r\nnet: start error=-11\nxsh> "
+      ],
+      "quarantined_dma_pages": 66,
+      "resources_baseline": [
+        129589,
+        3,
+        1
+      ],
+      "resources_final": [
+        129699,
+        2,
+        0
+      ],
+      "resources_without_service": [
+        129765,
+        2,
+        0
+      ],
+      "restart": {
+        "new_service": 21,
+        "old_service": 9
+      },
+      "serial_log": "boot_2_serial.log.gz",
+      "service_death_failure_seconds": 0.10051131100044586,
+      "topology": "ordinary_ISO_boot_with_installed_persistent_FAT"
+    },
+    {
+      "automatic_service_pid": 9,
+      "boot": 3,
+      "cases": [
+        {
+          "controller_pid": 11,
+          "guest_output": "spawn-command /usr/bin/k4_dynamic_run 0 /usr/lib/xos/installed_dhcp_tls/main once 9 6a81296910c445b416822761b4ae562b\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x0000000000377000\r\n[loader] started pid=11 file=/usr/bin/k4_dynamic_run\nxsh> wait 11\n[process] event=wait_blocked parent=7 child=11\r\n[process] event=started pid=12 parent=11\r\n[process] pid=12 address_space=0x0000000000720000\r\nINSTALLED_GNU_RUNTIME_PASS pid=12 constructor=17 main_tls=19 pthread_create=ENOTSUP\nINSTALLED_LEASE service=9 epoch=2 address=167772687 server=167772674 expires=32540000000 generation=1\nINSTALLED_TLS_READY mode=once nonce=6a81296910c445b416822761b4ae562b service=9 epoch=2\nINSTALLED_TLS_PASS mode=once nonce=6a81296910c445b416822761b4ae562b generation=1 epoch=2\n[task] event=reclaimed pid=12 pages=1269\r\nDYNAMIC_RUN_EXIT slot=0 generation=2026112804 pid=12 outcome=1 code=0\n[task] event=reclaimed pid=11 pages=373\r\n[wait] pid=11 kind=exited code=0\nxsh> ",
+          "mode": "once",
+          "nonce": "6a81296910c445b416822761b4ae562b",
+          "resources": [
+            129589,
+            3,
+            1
+          ]
+        }
+      ],
+      "database_after": {
+        "/var/lib/xypm/db.json": "d7d38bc810f9415efc04a9f5e2c50d07fb69a4e4b37804cf0bff2939b6053270",
+        "/var/lib/xypm/index.tsv": "c5ecd5e6f6eca9c61bbf85c669ea8da400a5a73e1d1b4d3d2a01f23a88f6bca9"
+      },
+      "disk_after_sha256": "a9b7b7ba5596853ba6fbc87ce78d4e463bdad2fc79f0ff3c18f50ef9cd3707e0",
+      "disk_before_sha256": "b21755deda9c685261a4f5ca2125bdd262038c7cb978d9821bc0739d090fa04d",
+      "initial_manual_network_commands": [],
+      "installed_payload_after": {
+        "files": 20,
+        "status": "verified"
+      },
+      "owned_files_after": {
+        "usr/bin/k4_dynamic_run": "e2b4783b22bb0e45fd9bda1346b594bd9065a6e7397a3a4e420dc6413ec4c55d",
+        "usr/lib/xos/generations/installed_dhcp_tls.bin": "abd4990f78e682c212b6ad29bc0a562c08bea2c25731cb1660685252398b59fe",
+        "usr/lib/xos/glibc_dynamic_v1/bootstrap": "d968261d8a143b7f84114c7e74c1d89177fdb5fcdbbd59494780596a3265a682",
+        "usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "ca417a9f37f5d32c4cc2618d7f3ba290715dec7df3bc5dd583bd65b202088279",
+        "usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "0490f8aa043aea28edfe7465684aeb72773e18460de642770b14bde581648be8",
+        "usr/lib/xos/installed_dhcp_tls/main": "02d334c5401f1b90ffcf5cc35719713cf9d55f5275107f5c03aa41a7e248e71c",
+        "usr/share/xos/p1_k4/bootstrap_dhcp.json": "360c3b06e1524bf20c0a23f08a9fd513e3dadc20cc7f9168167a048b62a50c93",
+        "usr/share/xos/p1_k4/build_receipt.json": "abd0b9f61ad2720a9cf6c3189193617421a6ec561363ad7eb0eb19e929de0de2",
+        "usr/share/xos/p1_k4/licenses/APACHE-2.0.txt": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "usr/share/xos/p1_k4/licenses/MIT-legacy.txt": "846e254011ce5097413db5a432bd11a83954834ff17500a1a13b55e1405aec69",
+        "usr/share/xos/p1_k4/licenses/gcc-COPYING": "231f7edcc7352d7734a96eef0b8030f77982678c516876fcb81e25b32d68564c",
+        "usr/share/xos/p1_k4/licenses/gcc-COPYING.RUNTIME": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+        "usr/share/xos/p1_k4/licenses/glibc-COPYING.LIB": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+        "usr/share/xos/p1_k4/licenses/glibc-LICENSES": "b22a69aa3f80a5201818c66cb0df0f25f9fa13cf5861b0093a058dbd12d50dce",
+        "usr/share/xos/p1_k4/licenses/mbedtls-LICENSE": "9b405ef4c89342f5eae1dd828882f931747f71001cfba7d114801039b52ad09b",
+        "usr/share/xos/p1_k4/licenses/mbedtls-framework-LICENSE": "11402351e38392230bb8934ba1095c0c0049a296c0f8821f76e4672dff54b490",
+        "usr/share/xos/p1_k4/licenses/tf-psa-LICENSE": "da8c58f05f135a9d15e9ffad4ecf854cfcc1f014c8abfd75ba05f62630ccc118",
+        "usr/share/xos/p1_k4/profile.json": "f46c32882f29fc651a29a403aefc63e433dabae9605c9f49b5ac28baa88a9e3c",
+        "usr/share/xos/p1_k4/roots-1.bin": "ea1ace686f58ac0a9edcbc4a03a0c2af597a3f246e108fd68a47d32eaa7aa400",
+        "usr/share/xos/p1_k4/roots-2.bin": "73cc88dc1d478be87baa1703354c99ef4326cfbdedaa8d55501d3693b68ff3af"
+      },
+      "packet_capture": "boot_3_network.pcap.gz",
+      "peer": {
+        "application_cases": [
+          {
+            "dhcp_ack_before": 1,
+            "dns_queries_before": 0,
+            "flows": [
+              {
+                "application_ready": 5738.507882705,
+                "cipher": "TLS_AES_256_GCM_SHA384",
+                "client_port": 64499,
+                "mode": "once",
+                "nonce": "6a81296910c445b416822761b4ae562b",
+                "peer_close_notify": true,
+                "request_sha256": "2d770249aecd31427e028e9b88de766155d843ba1d01f187b75a2145a78c9959",
+                "server": "10.0.2.2:443",
+                "server_close_notify": true,
+                "sni": "tls.xos.test",
+                "tcp_fin": 5738.688981779,
+                "tls_received_bytes": 411,
+                "tls_sent_bytes": 1522,
+                "tls_version": "TLSv1.3"
+              }
+            ],
+            "mode": "once",
+            "nonce": "6a81296910c445b416822761b4ae562b",
+            "started": 5722.922853818
+          }
+        ],
+        "dhcp_ack_count": 3,
+        "dhcp_epochs": [
+          {
+            "acks": [
+              {
+                "ciaddr": "0.0.0.0",
+                "lease_seconds": 18,
+                "number": 1,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5722.462136296
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 2,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5730.54211867
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "lease_seconds": 18,
+                "number": 3,
+                "t1_seconds": 6,
+                "t2_seconds": 12,
+                "time": 5736.709783671
+              }
+            ],
+            "arp_probes": [
+              5723.279849908,
+              5724.788758781,
+              5726.398303715
+            ],
+            "declines": [],
+            "dhcp": [
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "1a95d33b0b60c2b72b59c16d120329c585fded4abcde6dbf949a6149a5590c6b",
+                "time": 5722.41178793,
+                "type": 1,
+                "xid": 693022175
+              },
+              {
+                "ciaddr": "0.0.0.0",
+                "destination": "255.255.255.255",
+                "sha256": "680d0d10515c372daee8e5f9adbba8aecab6b7ccd91fe070b4b768e555cd6a2c",
+                "time": 5722.462082735,
+                "type": 3,
+                "xid": 693022175
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "88e9df62729128e8e240a5924c882186727c2a719a5871f9cd384108ed95e11d",
+                "time": 5730.542059616,
+                "type": 3,
+                "xid": 426645082
+              },
+              {
+                "ciaddr": "10.0.2.15",
+                "destination": "10.0.2.2",
+                "sha256": "9ae27e9cbb304f3f38278b75ce2a08dfa1b1dc1b85178b2e4cc4e7525e1106b4",
+                "time": 5736.70972881,
+                "type": 3,
+                "xid": 1312738074
+              }
+            ],
+            "dns_answers": [
+              {
+                "name": "tls.xos.test",
+                "source": "10.0.2.15",
+                "time": 5737.810973113
+              }
+            ],
+            "dns_queries": 1,
+            "injected_malformed": 0,
+            "nonce": "1b8db6242a193a2a2a1ccb4257eb8931",
+            "scenario": "renew",
+            "udp": []
+          }
+        ],
+        "tls_provider": "OpenSSL 3.6.5 29 Sep 2026"
+      },
+      "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+      "serial_log": "boot_3_serial.log.gz",
+      "topology": "ordinary_ISO_boot_with_installed_persistent_FAT"
+    }
+  ],
+  "checks": [
+    "spawn_file_keeps_no_create_authority_and_spawn_command_uses_common_inheritance",
+    "cold_installed_ISO_FAT_boot_automatic_DHCP_GNU_TLS_without_manual_start",
+    "second_cold_boot_and_same_epoch_DHCP_renew_with_live_TLS",
+    "lease_expiry_retires_pending_TLS_bounded_failure_and_fresh_epoch_recovery",
+    "orderly_netd_stop_wakes_pending_dynamic_TLS_old_PID_denied_new_PID_recovers",
+    "installed_trust_generation_mismatch_rejected_before_network_and_generation2_TLS_passed",
+    "netd_kill_wakes_pending_GNU_TLS_and_retains_exact_DMA_quarantine_with_three_regrants_denied",
+    "third_cold_boot_recovers_quarantined_installation_with_automatic_DHCP_and_fresh_dynamic_TLS",
+    "all_XPK_owned_payloads_and_database_unchanged_after_three_cold_boots_and_faults"
+  ],
+  "database_before": {
+    "/var/lib/xypm/db.json": "d7d38bc810f9415efc04a9f5e2c50d07fb69a4e4b37804cf0bff2939b6053270",
+    "/var/lib/xypm/index.tsv": "c5ecd5e6f6eca9c61bbf85c669ea8da400a5a73e1d1b4d3d2a01f23a88f6bca9"
+  },
+  "installation_binding": "builds.json",
+  "installation_receipt_sha256": "b3cb3ce16f758a234200764e851e77c240d3875d9e8c9043ff1633ccf1ec29b9",
+  "not_run": [
+    "BIOS hard-disk boot",
+    "physical NIC",
+    "general Internet trust bundle",
+    "pending dynamic ABI v3",
+    "online dlopen",
+    "SMP"
+  ],
+  "peer_sha256": "0d0058c82221e5391f02236b8aeb2e5e7f3e56aedb94d3069daf8522bc68f39b",
+  "publication": "derived summary; host commands omitted; original report digest identifies unpublished local bytes",
+  "raw_local_report_sha256": "53dc054ea6f33edaa4ca3f22a22da9b9f5df7e251604aa34e958417cd37050c4",
+  "resource_fields": [
+    "free_pages",
+    "tasks",
+    "completions"
+  ],
+  "runner_sha256": "dc79c8dde1fb8664bd6c5c7c47edd3722a1d706211ad7a99725b2af9a648b18c",
+  "scope": "p1_k4_installed_dhcp_tls_v1",
+  "status": "passed",
+  "system_build_id": "13648be5fde3bd78"
+}

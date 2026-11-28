@@ -1,0 +1,89 @@
+{
+  "attempts": [
+    {
+      "candidate": "p1_k4_program",
+      "cause": "Host SDK did not include CMake; selected a separate pinned host tool.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "e1a1ef6f6645bc03b39c7712d7552c60bdb3f323fac25d476e0d0b56dafb2d8a",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_program_v2",
+      "cause": "Native SDK C headers shadowed GNU cdefs; now only native xos/ headers are exported.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "30f74e83ed135e16c07788b96bf12437279a0a4eb4a2a459fa445ff4d6433b4d",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_program_v3",
+      "cause": "Mbed TLS RSA required __udivti3; link the same authenticated C SDK arithmetic archive.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "c7d89f5f2d09e17a31afb0b6f7f3cce805fd5d95cf0ff6f9073274bafd0084e4",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_installation",
+      "cause": "Full parent C++ profile and C-only inspection views were incorrectly compared as dictionaries; now verify_profile authenticates the full parent before anchor comparison.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "ed4797231a45d49de5f098cef9ea4ddeb91e0349934b5b08f16dde3e0a565d9d",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_guest",
+      "cause": "spawn-file correctly denied child creation to the dynamic controller; preserve that denial and add ordinary inherit-create background launch.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "1b90d90d53ed73cfddb2d7b2b23dec325676b29430eb69029446d3d0f9a54935",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_diagnostic",
+      "cause": "GNU constructor/main ran, but the C-only shared closure has no libgcc_s; pthread_create correctly returns ENOTSUP. Main-thread scope is explicit.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "3af3f40490cce1884dcc110c4438d6b845df298b2e01aa5125a54654c9802c07",
+      "recorded_status": "diagnostic_complete"
+    },
+    {
+      "candidate": "p1_k4_guest_v2",
+      "cause": "The renewal fixture attempted a second same-PID Net2 session while TLS was active; the final consumer now forwards operation 18 through the already authenticated TLS session with the original deadline.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "dc672ce38bff36af255a48a26e7ef5b1f88e6725f7142af11637051a47636487",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_guest_v3",
+      "cause": "The independent expiry peer retained a completed renewal XID; reset only the observation of the next unanswered renew/rebind transaction.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "84469baeacbdfb48f2f9188f4e91184d526963a854737f97f3d5c9c9c0a792f2",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_guest_v4",
+      "cause": "The fixture incorrectly expected same-boot restart after kill. Device UNKNOWN/DMA quarantine is the existing required boundary; qualify orderly restart and cold-boot crash recovery separately.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "5e88156145904bda306040c852d98e71ae6f956cd91cb0a7b0182a41d74713c6",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_guest_final",
+      "cause": "Stopping DHCP ACKs at caller launch could expire the short lease during GNU loading before TLS existed. The final independent peer arms expiry only after decrypting the fresh TLS request, and the caller reads the current lease on the same authenticated session.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "cbfbc573950121a091ce217f6a26c66d36036c72c5cb5e1c1cb215529497ddc6",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_installation_final2",
+      "cause": "The isolated host SDK mounted the worktree without its common Git object directory. The retry explicitly exposes an fsck-verified exact shallow Git copy through GIT_DIR; source validation remains strict.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "c20f4edb6348d106a73f3b375d6e56a51b3e923e57d9f9174a4d583821df4dd1",
+      "recorded_status": "failed"
+    },
+    {
+      "candidate": "p1_k4_installation_final2_git",
+      "cause": "The system manifest input inventory omits runtime recipe metadata such as README files. The final source snapshot adds every missing recorded runtime input after exact byte verification; its original 2309 system inputs and all artifacts remain unchanged.",
+      "qualification": "failed or diagnostic only; never promoted by the final pass",
+      "raw_unpublished_receipt_sha256": "a2348ec412c8aafeaec3bd6f0ea706d10010f941e4e50238e101f37ccb3c5825",
+      "recorded_status": "failed"
+    }
+  ],
+  "raw_origins": "Digests identify local unpublished receipts, not public sibling leaves."
+}

@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "round": 0,
+      "cases": [
+        "empty_direction",
+        "non_consuming",
+        "capacity",
+        "invalid_output_and_console",
+        "reserved_rejected",
+        "foreign_owner_denied",
+        "eof",
+        "stale_no_output",
+        "broken_writer"
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "cases": [
+        "empty_direction",
+        "non_consuming",
+        "capacity",
+        "invalid_output_and_console",
+        "reserved_rejected",
+        "foreign_owner_denied",
+        "eof",
+        "stale_no_output",
+        "broken_writer"
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "cases": [
+        "empty_direction",
+        "non_consuming",
+        "capacity",
+        "invalid_output_and_console",
+        "reserved_rejected",
+        "foreign_owner_denied",
+        "eof",
+        "stale_no_output",
+        "broken_writer"
+      ],
+      "status": "passed"
+    }
+  ],
+  "system_build_id": "11a789e000461e5f",
+  "iso_sha256": "a16e52fd7af155cfa476aa0ade5e43b955c1347565425b6ff8589d33b99d8cb2",
+  "elf_sha256": "2734b6f5177b5d5ac4d941d39fdc5561d67ca42c3f5b2b8125d23ea72092f8fc",
+  "sdk_tree_sha256": "8cfeb1fdd6851d0266573f550f31b81d23066c384aacbaa2fed06b8b0b4c4821",
+  "baseline": [
+    129790,
+    2,
+    0
+  ]
+}

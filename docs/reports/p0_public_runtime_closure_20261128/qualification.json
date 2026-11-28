@@ -1,0 +1,303 @@
+{
+  "status": "passed",
+  "scope": "ordinary public approved GNU startup/spawn/exec and C/C++/thread/pipe entry through xsh and dash",
+  "public_source_revision": "0056c9fad097dddfeede319ff7c63b3ebd2bfcd5",
+  "public_source_tree": "3c67a6f4ce7ee0061af3ef743c07b9d6757f1fb1",
+  "gnu_producer_local_source_revision": "1b8b0ae1cc1fc29bfde69b4f0d69f49a9b8a39d0",
+  "source_mapping": "The GNU producer local revision and public source have identical complete Git trees. All listed source files used by later program/launcher/runner builds were independently compared with that public revision. Original raw records are unchanged.",
+  "source_file_count": 399,
+  "native_system_build_id": "ec96cc19110d9906",
+  "native_sdk": {
+    "sdk_manifest_sha256": "8814a536758459d257aa03b46f863f1973dbf118d1199beeb6675c91070436a0",
+    "sdk_tree_sha256": "30a9805e12ffb19235129d14f24c950eefce1776cd94ccaf568c5f08285fd74e",
+    "target": "x86_64-elf",
+    "abi": 1
+  },
+  "c_sdk": {
+    "runtime_family": "glibc",
+    "runtime_model": "threaded",
+    "libc_version": "2.44",
+    "sdk_manifest_sha256": "9bb39b94106b9604d58acc5dc4c78829439c4eba6f456e7afdd270c99a154e22",
+    "sdk_tree_sha256": "081ca8515881a8d608a64e5bb72f2b3df56a3a48f6247a02a66d7d2e83bfee37"
+  },
+  "native_abi": "e830a8bc8a48d660447ace92dd27c31410669c1392a5afb41a33a23697b1db19",
+  "runtime_build_status": "public_runtime_built_not_run",
+  "runtime_build_steps": 75,
+  "shared_gcc_status": "built_not_run",
+  "shared_gcc_artifacts": {
+    "atexit.oS": "6a2570f16f42ddf1a283828a72a7a8afe2b4f00b17fa4816502713af5bf0edf5",
+    "libgcc_s.so.1": "29592a77db4a7725d7f0fce0b475516f062c26f84f449d9fe6c140505de093bb",
+    "libm.so.0.1": "769d83b4a1b2720fde3fb4a8a88b4772265a51166a15c9cbba315821ee729080",
+    "libstdc++.so.6": "36e37cfaee607215a490354ab4b3773141af49a422eb29001ac2af71dd662be0"
+  },
+  "runtime_artifacts": {
+    "gnu/libc.so": "94291b3ea313ea77036f3ff106573443d31865a3a5c82285c622dab4eaa168ee",
+    "gnu/elf/ld.so": "2a6dccdaf9b1dde37a557bd038b43fe501baaea41d2653f8b4aaca1dbdb9ad54",
+    "gnu/elf/xos_file_session.os": "807818e008bd8a0d037a33955ce531235a0e4e905100fb18befdeb87ccde1dee",
+    "gnu/csu/Scrt1.o": "a89039af90596fd24b304209e47d628e5cf808681989ba9aff2038a2f64b72d7",
+    "gnu/csu/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+    "gnu/csu/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+    "pic_crt/target/libgcc/crtbeginS.o": "66fda995333df8d1df62f3aa3d7f1c59b166b720711ef2b95024d395d4713868",
+    "pic_crt/target/libgcc/crtendS.o": "eb9e096ff419207d8fe8a843de4237bca2aeff31002b82f99dff800e8d915a29",
+    "native_pic/libxos_terminal_pic.a": "72e7fe173b65da8935e15c6828263f272ee6b41587b6feaf01050af495087099"
+  },
+  "launcher_elf_sha256": "bea1f3aa76a4ed50377f46ec40262bcbcfc2b7c1dc6f5a0f6c7990fd2bdad51e",
+  "programs": {
+    "p0c": {
+      "status": "built_not_run",
+      "generation": {
+        "local": "payload/generation.bin",
+        "guest": "/usr/lib/xos/generations/p0c.bin",
+        "id": 1,
+        "sha256": "3b0b3bc19961ead2994dd9b6176beb782c2930aed429f066ed01a37d7fccb74e"
+      },
+      "files": {
+        "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "63d59ae0847fb3e7fbba477f0b50d9d3e2dc97ff85b6b6b811d5b50e025091dc",
+        "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "5a409fc3e956cb9a78029ace05e0741714573d7360f64080118f071dc0c4567a",
+        "/apps/p0c/main": "e639801350998a3a7a419a16d032a922b779276c106c82026b1fe6d53d162717",
+        "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "975b956876f7f03b0348bcf5e326954b37db59f189ebeec1e653a03488c055c4"
+      }
+    },
+    "p0cpp": {
+      "status": "built_not_run",
+      "generation": {
+        "local": "payload/generation.bin",
+        "guest": "/usr/lib/xos/generations/p0cpp.bin",
+        "id": 10,
+        "sha256": "310d84802f424aa6f36d0cb6add11c731e14dbc3e785480e3c598a4ad74f27ba"
+      },
+      "files": {
+        "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "63d59ae0847fb3e7fbba477f0b50d9d3e2dc97ff85b6b6b811d5b50e025091dc",
+        "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "5a409fc3e956cb9a78029ace05e0741714573d7360f64080118f071dc0c4567a",
+        "/apps/p0cpp/main": "54ab7d3e58c852514dedde18d0338c72bcdaba9eadfb0334bf708042f3c97449",
+        "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "975b956876f7f03b0348bcf5e326954b37db59f189ebeec1e653a03488c055c4",
+        "/usr/lib/xos/glibc_dynamic_v1/libgcc_s.so.1": "e76efbc095d91bddd8b5f617cd9e9fc4a588777155221b2ce9515e7241d5afdc",
+        "/usr/lib/xos/glibc_dynamic_v1/libm.so.0.1": "8a24e9e9e187de4e021825b335b444a9b597fa402023c982ea380cdbd749bdb2",
+        "/usr/lib/xos/glibc_dynamic_v1/libstdc++.so.6": "8cac5c6415cad400112334d829544d815b2d3e50c1bf257b5d36c63b1a41b3e1",
+        "/apps/p0cpp/libsample.so": "4a5b65769f1e6c7666f26437901bbad4c828ebf0586e9c25c9249efd6b00a0e8"
+      }
+    },
+    "p0thread": {
+      "status": "built_not_run",
+      "generation": {
+        "local": "payload/generation.bin",
+        "guest": "/usr/lib/xos/generations/p0thread.bin",
+        "id": 11,
+        "sha256": "9ec966901c2370fac2642dba345202ea34d41b1082a1cf63f5b890bf68a97b68"
+      },
+      "files": {
+        "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "63d59ae0847fb3e7fbba477f0b50d9d3e2dc97ff85b6b6b811d5b50e025091dc",
+        "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "5a409fc3e956cb9a78029ace05e0741714573d7360f64080118f071dc0c4567a",
+        "/apps/p0thread/main": "75326393d4e8dc92b3d291366b40f0c750844095bf683f469befbbdcc3d891f5",
+        "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "975b956876f7f03b0348bcf5e326954b37db59f189ebeec1e653a03488c055c4",
+        "/usr/lib/xos/glibc_dynamic_v1/libgcc_s.so.1": "e76efbc095d91bddd8b5f617cd9e9fc4a588777155221b2ce9515e7241d5afdc",
+        "/usr/lib/xos/glibc_dynamic_v1/libm.so.0.1": "8a24e9e9e187de4e021825b335b444a9b597fa402023c982ea380cdbd749bdb2",
+        "/usr/lib/xos/glibc_dynamic_v1/libstdc++.so.6": "8cac5c6415cad400112334d829544d815b2d3e50c1bf257b5d36c63b1a41b3e1",
+        "/apps/p0thread/libsample.so": "4a5b65769f1e6c7666f26437901bbad4c828ebf0586e9c25c9249efd6b00a0e8"
+      }
+    },
+    "p0pipe": {
+      "status": "built_not_run",
+      "generation": {
+        "local": "payload/generation.bin",
+        "guest": "/usr/lib/xos/generations/p0pipe.bin",
+        "id": 12,
+        "sha256": "cf4569242c15e02972a7004bb8dedf565c5c733b1735d65866d623821a2e135e"
+      },
+      "files": {
+        "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "63d59ae0847fb3e7fbba477f0b50d9d3e2dc97ff85b6b6b811d5b50e025091dc",
+        "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "5a409fc3e956cb9a78029ace05e0741714573d7360f64080118f071dc0c4567a",
+        "/apps/p0pipe/main": "8eeaba80392a9a81d6d1cccd79cb999f7a1e197f57326e9c5dfccdea87da1c66",
+        "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "975b956876f7f03b0348bcf5e326954b37db59f189ebeec1e653a03488c055c4"
+      }
+    }
+  },
+  "outer_dash": {
+    "elf_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+    "producer_receipt_sha256": "49e39e47719bfd1c6593c428a9421d34085218f239125eb79963edd2af5f3a08",
+    "sdk_profile_binding": {
+      "status": "candidate_binding_verified",
+      "runtime_family": "glibc",
+      "profile_id": "xos-x86_64-glibc-p0-20261128",
+      "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+      "sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab",
+      "guest_qualification": "not_run"
+    },
+    "scope": "ordinary shell entry only; its static libc is separately bound and is not the tested public libc"
+  },
+  "baseline_resources": [
+    129693,
+    3,
+    1
+  ],
+  "rounds": 1,
+  "checks": [
+    {
+      "name": "c-basic",
+      "round": 1,
+      "status": "passed",
+      "seconds": 4.433,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "c-policy",
+      "round": 1,
+      "status": "passed",
+      "seconds": 4.674,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "c-spawn",
+      "round": 1,
+      "status": "passed",
+      "seconds": 7.279,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "c-exec",
+      "round": 1,
+      "status": "passed",
+      "seconds": 6.762,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "c-pipe",
+      "round": 1,
+      "status": "passed",
+      "seconds": 16.116,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "cpp-xsh",
+      "round": 1,
+      "status": "passed",
+      "seconds": 14.771,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "cpp-dash",
+      "round": 1,
+      "status": "passed",
+      "seconds": 13.307,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "thread-xsh",
+      "round": 1,
+      "status": "passed",
+      "seconds": 13.3,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "thread-dash",
+      "round": 1,
+      "status": "passed",
+      "seconds": 17.296,
+      "resources_before": [
+        129693,
+        3,
+        1
+      ],
+      "resources_after": [
+        129693,
+        3,
+        1
+      ]
+    }
+  ],
+  "complete_bound_input_count": 3352,
+  "all_inputs_rechecked_after_execution_and_before_export": true,
+  "raw_local_receipts": {
+    "guest_sha256": "f5a898d66d9c88eb031035dfe30f3823562b49d256e550c976ff9d341d8f9fcf",
+    "runtime_sha256": "e10b1a2f073de8ee69f3e7f38e38812cdd487c1d33c06e9c8fe098ecc957a59c",
+    "shared_gcc_sha256": "aebd214bc4b6a48e765b6cce5b8105752b72adf641cba580fd8a5d17a2f610bd",
+    "launcher_sha256": "c0c8a356ac879903fb76c5232f80bc3aa3f7efeb1f25f11982fd02d997558504",
+    "dash_sha256": "49e39e47719bfd1c6593c428a9421d34085218f239125eb79963edd2af5f3a08",
+    "p0c_sha256": "f6c5b66872d8990489e947533d7e1a6be705f59f7123debdea51f7bc03ba3825",
+    "p0cpp_sha256": "610fd7dc5209a7bd5ad1086f05b80f78218c3f233f6048e7224e94b54ed2e145",
+    "p0thread_sha256": "7ace9c7e87e39d0044f0aceb7305b585577514ed2967e0562f8066145a07952c",
+    "p0pipe_sha256": "306ce41448889307bbf305391c5719102b6b8394919be21e1e5a1b57bde501d3"
+  },
+  "not_qualified": [
+    "online dlopen/dlmopen/dlclose",
+    "persistent/global generation catalog",
+    "cross-descendant revocation",
+    "dynamic fork-to-exec controller migration",
+    "terminal-actor dynamic exec",
+    "dynamic GNU plus DHCP installation composition",
+    "physical hardware"
+  ],
+  "replay_command": "python3 tests/public_runtime_guest.py --system \"${XOS_SYSTEM}\" --system-source \"${XOS_NATIVE_SOURCE}\" --runtime-build \"${XOS_RUNTIME}\" --runtime-source \"${XOS_RUNTIME_SOURCE}\" --gcc-shared-build \"${XOS_SHARED_GCC}\" --launcher-build \"${XOS_LAUNCHER}\" --launcher-source \"${XOS_RUNTIME_SOURCE}\" --dash-receipt \"${XOS_DASH_RECEIPT}\" --dash-source \"${XOS_DASH_SOURCE}\" --dash-sdk \"${XOS_KIT}/sdk\" --rounds 1 --output \"${XOS_GUEST_REPORT}\" --stage \"${XOS_P0C}\" --stage \"${XOS_P0CPP}\" --stage \"${XOS_P0THREAD}\" --stage \"${XOS_P0PIPE}\""
+}

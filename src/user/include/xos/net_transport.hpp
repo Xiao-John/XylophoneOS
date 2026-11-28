@@ -32,6 +32,11 @@ class client {
 public:
     i64 connect(u64 expected_service_pid) { return session_.connect(expected_service_pid); }
     void close() { session_.close(); }
+    // Read authority on this authenticated session without competing for a
+    // second per-process session or changing any connection's lifetime.
+    i64 lease_status(u64 deadline, lease_snapshot& snapshot) {
+        return session_.lease_status(deadline, snapshot);
+    }
     // Use the authenticated session's single resolver ticket. The caller still
     // owns application policy and uses the returned route with normal open().
     using resolve_cancel_check = bool (*)(const void*);

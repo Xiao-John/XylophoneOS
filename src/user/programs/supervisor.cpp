@@ -646,7 +646,7 @@ const char* launch_stage_name(execution::launch_stage stage) {
 bool builtin_named(const char* name) {
     const char* const names[] = {"help", "trace", "type", "ps", "kill", "images", "exec", "spawn",
         "wait", "stats", "primtest", "elftest", "ls", "cat", "stat", "rm", "edit", "filetest",
-        "sync", "exec-file", "exec-driver", "exd", "spawn-file", "mkdir", "mv", "demo",
+        "sync", "exec-file", "exec-driver", "exd", "spawn-file", "spawn-command", "mkdir", "mv", "demo",
         "maint-run", "maint-recover", "maint-recover-boot", "maint-status", "diag", "tty-run",
         "tone", "melody", "audio", "display-start", "interactium-start", "net-start", "net-stop", "net-probe", "net-info", "net-revoke"};
     for (const auto* item : names) { if (equal(name, item)) { return true; } }
@@ -655,7 +655,7 @@ bool builtin_named(const char* name) {
 // SL2 authority modes for launch_file:
 //  spawn_depth: legacy grant(1)/delegate(>1) — kept for exec-driver compat.
 //  inherit_create: copy caller's can_create onto the child (common contract).
-//  Ordinary bare commands and tty-run use inherit_create; exec-file uses neither;
+//  Ordinary bare commands, spawn-command and tty-run use inherit_create; exec-file uses neither;
 //  exec-driver keeps the historical grant.
 namespace {
 struct launch_prepare_ctx {
@@ -909,6 +909,7 @@ void execute(u32 argc, char** argv) {
         print("Files     ls [path] | cat/stat/rm/edit <file> | mkdir <path> | mv <old> <new> | sync\n"
               "Programs  <command> [args] | exd <command> [args] | type <command>\n"
               "          exec-file | exec-driver (exd) | spawn-file | exec | spawn | wait\n"
+              "          spawn-command <command> [args] starts an ordinary command in background\n"
               "          tty-run <terminal-compatible program> [args]\n"
               "Maintain  maint-run <program> [args] | maint-recover <program> [args] | maint-recover-boot | maint-status\n"
               "Shell     dash -i starts dash; exit inside dash returns here\n"
@@ -1072,6 +1073,9 @@ void execute(u32 argc, char** argv) {
         if (argc < 2) { print("Usage: diag <program> [args]\n"); return; }
         // Diagnosed target uses the common inherit-create contract (SL3).
         launch_file(argv[1], argc - 1, argv + 1, 0, false, true, false, true);
+    } else if (equal(argv[0], "spawn-command")) {
+        if (argc < 2) { print("Usage: spawn-command <command> [args]\n"); return; }
+        launch_file(argv[1], argc - 1, argv + 1, 0, true, false, false, true);
     } else if ((equal(argv[0], "exec-file") || equal(argv[0], "spawn-file") ||
                 equal(argv[0], "exec-driver") || equal(argv[0], "exd")) && argc >= 2) {
         const bool driver = equal(argv[0], "exec-driver") || equal(argv[0], "exd");

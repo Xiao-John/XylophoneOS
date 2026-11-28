@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-#include <xos/dynamic_launch.hpp>
+#include "startup.hpp"
 #include <xos/sdk.hpp>
 #include <xos/thread_abi.hpp>
 
@@ -180,6 +180,19 @@ error acquire_inner(const launch_policy& selected, u32 index, const char* reques
                                                         elf::machine_x86_64, bootstrap);
                 if (parsed != elf::error::none)
                     result = parsed == elf::error::io ? error::io : error::header;
+                else for (u32 segment = 0; segment < bootstrap.count; ++segment) {
+                    const auto& load = bootstrap.segments[segment];
+                    const u64 first = load.address & ~u64{4095};
+                    const u64 end = (load.address + load.memory_bytes + 4095) & ~u64{4095};
+                    // Ordinary static ELFs retain their legacy address range.
+                    // This bootstrap must also leave worker storage and the
+                    // read-only launch capsule available to the new image.
+                    if ((first < thread_arena_end && thread_arena_begin < end)
+                        || (first < capsule_end && XOS_DYNAMIC_STARTUP_ADDRESS < end)) {
+                        result = error::bounds;
+                        break;
+                    }
+                }
             }
         } else if (result == error::none) {
             result = inspect_elf(pin_read, &pin, output.value, i, output.images[i]);

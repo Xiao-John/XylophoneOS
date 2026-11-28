@@ -66,6 +66,11 @@ u64 dynamic_tag(const std::vector<u8>& bytes, u64 tag) {
         if (integer(bytes, at, 8) == tag) return integer(bytes, at + 8, 8);
     require(false, "mutation dynamic tag exists"); return 0;
 }
+bool fixture_read(void* context, u64 offset, u8* destination, u32 length) {
+    const auto& bytes = *static_cast<const std::vector<u8>*>(context);
+    if (offset > bytes.size() || length > bytes.size() - offset) return false;
+    std::memcpy(destination, bytes.data() + offset, length); return true;
+}
 std::shared_ptr<object> load(const std::string& path) {
     std::ifstream stream(path, std::ios::binary);
     require(bool(stream), "fixture file");
@@ -171,18 +176,72 @@ void negative_elf(const std::string& name) {
         put(bytes, file_offset(bytes, dynamic_tag(bytes, 23)), 0x30000000, 8);
     } else if (name == "elf_tls") {
         put(bytes, program_header(bytes, 7) + 48, 8192, 8);
-    } else if (name == "elf_version") {
+    } else if (name == "elf_version" || name == "elf_provider_version") {
         const u64 need = file_offset(bytes, dynamic_tag(bytes, 0x6ffffffe));
         const u64 auxiliary = need + integer(bytes, need + 8, 4);
-        put(bytes, auxiliary, integer(bytes, auxiliary, 4) ^ 1, 4);
+        if (name == "elf_version") put(bytes, auxiliary, integer(bytes, auxiliary, 4) ^ 1, 4);
+        else {
+            const u64 name_offset = file_offset(bytes, dynamic_tag(bytes, 5)) + integer(bytes, auxiliary + 8, 4);
+            require(bytes[name_offset] != 0, "real version dependency name");
+            bytes[name_offset] = 'Z';
+            u32 value = 0;
+            for (u64 at = name_offset; bytes[at]; ++at) {
+                value = (value << 4) + bytes[at]; const u32 high = value & 0xf0000000u;
+                if (high) value ^= high >> 24;
+                value &= ~high;
+            }
+            put(bytes, auxiliary, value, 4);
+        }
     } else require(false, "negative ELF case");
     for (u32 i = 0; i < 2; ++i) {
         hash(bytes.data(), static_cast<u32>(bytes.size()), generations[i].objects[index].sha256);
         install_manifest(i);
     }
     const auto result = configure(initial, deadline());
-    require(result == (name == "elf_needed" || name == "elf_soname" ? error::dependency : error::header)
+    require(result == (name == "elf_needed" || name == "elf_soname" || name == "elf_provider_version"
+                       ? error::dependency : error::header)
             && !configured() && handles.empty(), "approved digest cannot bypass ELF metadata rejection");
+}
+void online_tls_relocation(const std::string& name, const generation& online) {
+    auto bytes = names["/lib/libstdc++.so.6"]->bytes;
+    const u64 table = file_offset(bytes, dynamic_tag(bytes, 7));
+    const u64 table_bytes = dynamic_tag(bytes, 8);
+    require(dynamic_tag(bytes, 9) == 24 && table_bytes && table_bytes % 24 == 0 &&
+            table <= bytes.size() && table_bytes <= bytes.size() - table, "real DT_RELA extent");
+    u64 module_relocation = 0, offset_relocation = 0;
+    u32 module_count = 0, offset_count = 0;
+    for (u64 at = table; at < table + table_bytes; at += 24) {
+        const u32 kind = static_cast<u32>(integer(bytes, at + 8, 8));
+        if (kind == 16) { module_relocation = at; ++module_count; }
+        if (kind == 17) { offset_relocation = at; ++offset_count; }
+    }
+    require(module_count == 1 && offset_count == 1 &&
+            integer(bytes, module_relocation, 8) + 8 == integer(bytes, offset_relocation, 8) &&
+            integer(bytes, module_relocation + 8, 8) >> 32 == integer(bytes, offset_relocation + 8, 8) >> 32,
+            "real GD TLS uses a same-symbol DTPMOD64/DTPOFF64 pair in adjacent writable slots");
+    elf_image image{};
+    require(verify_object(fixture_read, &bytes, online.objects[3]) == error::none &&
+            inspect_elf(fixture_read, &bytes, online, 3, image) == error::none &&
+            image.tls_bytes && image.relocation_count >= 2, "unmodified GD TLS passes online digest and ELF admission");
+
+    // Change only the relocation kind, preserving its symbol, destination and
+    // addend. The first GD slot has the 16 writable bytes required by TLSDESC.
+    const u32 rejected_kind = name == "online_static_tls" ? 18u : 36u;
+    const u64 info = integer(bytes, module_relocation + 8, 8);
+    put(bytes, module_relocation + 8, (info & 0xffffffff00000000ULL) | rejected_kind, 8);
+    auto changed = online;
+    hash(bytes.data(), static_cast<u32>(bytes.size()), changed.objects[3].sha256);
+    require(verify_object(fixture_read, &bytes, changed.objects[3]) == error::none,
+            "mutated real ELF has an independently approved matching digest");
+    auto startup = generations[0];
+    startup.objects[3] = changed.objects[3];
+    require(validate_generation(startup) == error::none &&
+            inspect_elf(fixture_read, &bytes, startup, 3, image) == error::none,
+            "startup accepts the same approved static TLS or TLSDESC relocation");
+    require(inspect_elf(fixture_read, &bytes, changed, 3, image) == error::header,
+            "online rejects static TLS and TLSDESC before mapping");
+    std::printf("TLS relocation %u: original GD online PASS; mutated digest PASS; startup PASS; online header rejection PASS\n",
+                rejected_kind);
 }
 }
 
@@ -251,6 +310,38 @@ int main(int argc, char** argv) {
     } else if (name == "wrong_sdk") {
         initial.sdk_sha256[0] ^= 1;
         require(configure(initial, deadline()) == error::sdk && !configured() && handles.empty(), "trusted SDK identity mismatch");
+    } else if (name.starts_with("online_")) {
+        auto value = generations[0];
+        value.header.version = generation_online_version;
+        value.header.online_mask = 1u << 3;
+        value.header.mapping_budget += value.objects[3].span;
+        if (name == "online_startup_edge")
+            require(validate_generation(value) == error::dependency, "startup cannot depend on online roots");
+        else {
+            value.objects[2].needed_count = 0;
+            std::memset(value.objects[2].needed, 0, sizeof(value.objects[2].needed));
+            require(validate_generation(value) == error::none, "online root is reachable and bounded");
+            if (name == "online_header") {
+                auto bad = value; bad.header.online_mask = 0;
+                require(validate_generation(bad) == error::header, "online v2 needs explicit roots");
+                bad = value; bad.header.online_mask = 4;
+                require(validate_generation(bad) == error::header, "main is not an online library");
+                bad = value; bad.header.online_mask = 16;
+                require(validate_generation(bad) == error::header, "online bit outside count");
+                bad = value; bad.header.version = generation_version;
+                require(validate_generation(bad) == error::header, "v1 reserved field stays zero");
+                bad = value; bad.header.version = 3;
+                require(validate_generation(bad) == error::header, "unknown generation version");
+            } else if (name == "online_mapping_budget") {
+                value.header.mapping_budget -= value.objects[3].span;
+                require(validate_generation(value) == error::budget, "both namespace placements are budgeted");
+            } else if (name == "online_mapping_collision") {
+                value.objects[2].bias = value.objects[3].bias + online_namespace_bias;
+                require(validate_generation(value) == error::budget, "private placement cannot overlap base object");
+            } else if (name == "online_static_tls" || name == "online_tlsdesc") {
+                online_tls_relocation(name, value);
+            } else require(false, "known online case");
+        }
     } else if (name.starts_with("bootstrap_")) {
         negative_bootstrap(name);
     } else if (name.starts_with("elf_")) {

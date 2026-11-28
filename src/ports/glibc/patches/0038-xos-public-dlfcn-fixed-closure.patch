@@ -8,14 +8,21 @@
 +#ifdef XOS_DLFUNC_FIXED_CLOSURE
 +# include <xos_dlfcn_policy.h>
 +#endif
-
+ 
  struct dlopen_args
  {
-@@ -75,6 +79,10 @@
+@@ -75,6 +79,17 @@
  void *
  ___dlopen (const char *file, int mode)
  {
-+#ifdef XOS_DLFUNC_FIXED_CLOSURE
++#if defined XOS_DLFUNC_FIXED_CLOSURE && defined XOS_ONLINE_CLOSURE
++  struct xos_dlfcn_request request = { file, LM_ID_BASE, mode, 0 };
++  if (_dlerror_run (__xos_dlfcn_begin, &request))
++    return NULL;
++  void * result = dlopen_implementation (file, mode, RETURN_ADDRESS (0));
++  __xos_rtld_online_end ();
++  return result;
++#elif defined XOS_DLFUNC_FIXED_CLOSURE
 +  _dlerror_run (__xos_dlfcn_unsupported, NULL);
 +  return NULL;
 +#endif
@@ -32,14 +39,21 @@
 +#ifdef XOS_DLFUNC_FIXED_CLOSURE
 +# include <xos_dlfcn_policy.h>
 +#endif
-
+ 
  struct dlmopen_args
  {
-@@ -80,6 +84,10 @@
+@@ -80,6 +84,17 @@
  void *
  ___dlmopen (Lmid_t nsid, const char *file, int mode)
  {
-+#ifdef XOS_DLFUNC_FIXED_CLOSURE
++#if defined XOS_DLFUNC_FIXED_CLOSURE && defined XOS_ONLINE_CLOSURE
++  struct xos_dlfcn_request request = { file, nsid, mode, 0 };
++  if (_dlerror_run (__xos_dlfcn_begin, &request))
++    return NULL;
++  void * result = dlmopen_implementation (nsid, file, mode, RETURN_ADDRESS (0));
++  __xos_rtld_online_end ();
++  return result;
++#elif defined XOS_DLFUNC_FIXED_CLOSURE
 +  _dlerror_run (__xos_dlfcn_unsupported, NULL);
 +  return NULL;
 +#endif
@@ -48,10 +62,10 @@
    else
 --- a/dlfcn/dlclose.c
 +++ b/dlfcn/dlclose.c
-@@ -20,10 +20,18 @@
+@@ -20,10 +20,25 @@
  #include <ldsodefs.h>
  #include <shlib-compat.h>
-
+ 
 +#ifdef XOS_DLFUNC_FIXED_CLOSURE
 +# include <xos_dlfcn_policy.h>
 +#endif
@@ -60,10 +74,17 @@
  __dlclose (void *handle)
  {
  #ifdef SHARED
-+# ifdef XOS_DLFUNC_FIXED_CLOSURE
++#if defined XOS_DLFUNC_FIXED_CLOSURE && defined XOS_ONLINE_CLOSURE
++  struct xos_dlfcn_request request = { NULL, LM_ID_BASE, 0, 1 };
++  if (_dlerror_run (__xos_dlfcn_begin, &request))
++    return -1;
++  int result = _dlerror_run (GLRO (dl_close), handle) ? -1 : 0;
++  __xos_rtld_online_end ();
++  return result;
++#elif defined XOS_DLFUNC_FIXED_CLOSURE
 +  _dlerror_run (__xos_dlfcn_unsupported, NULL);
 +  return -1;
-+# endif
++#endif
    if (GLRO (dl_dlfcn_hook) != NULL)
      return GLRO (dl_dlfcn_hook)->dlclose (handle);
  #endif

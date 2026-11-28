@@ -10,7 +10,35 @@ struct worker_start
 {
   struct xos_thread_entry_args trampoline;
   struct xos_thread_worker worker;
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+  int retire_slot;
+#endif
 };
+
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+struct worker_context
+{
+  const struct xos_thread_worker *worker;
+  struct pthread *pd;
+  int retire_slot;
+};
+
+static void
+rollback_worker (void *argument)
+{
+  struct worker_context *context = argument;
+  if (context->pd != NULL)
+    {
+      __xos_thread_tls_release (context->pd);
+      context->pd = NULL;
+    }
+  if (context->retire_slot >= 0)
+    {
+      __xos_thread_tls_cancel (context->retire_slot);
+      context->retire_slot = -1;
+    }
+}
+#endif
 
 static void
 run_worker (void *argument)
@@ -19,7 +47,14 @@ run_worker (void *argument)
   struct xos_thread_worker worker = state->worker;
   void *result = worker.run (worker.argument);
   worker.cleanup ();
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+  /* A lazy TLS lookup can resize the array while the worker runs.  Capture
+     its final pointer after destructors, never the setup-time DTV. */
+  __xos_thread_finish_worker ((unsigned long) result, worker.last_process_exit,
+                              state->retire_slot, GET_DTV (TLS_TPADJ (THREAD_SELF)));
+#else
   __xos_thread_finish ((unsigned long) result, worker.last_process_exit);
+#endif
 }
 
 static xos_i64
@@ -38,14 +73,27 @@ setup_worker (const struct xos_thread_reservation *reservation,
   int error = __xos_thread_static_tls_initialize (reservation, &pd);
 #endif
   if (error != 0)
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+    return -17; /* Both reservation bounds and GNU DTV allocation failed. */
+#else
     return error == -1 ? -17 : -18;
+#endif
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+  struct worker_context *context = argument;
+  context->pd = pd;
+  state->retire_slot = context->retire_slot;
+#endif
 #ifdef THREAD_COPY_STACK_GUARD
   THREAD_COPY_STACK_GUARD (pd);
 #endif
 #ifdef THREAD_COPY_POINTER_GUARD
   THREAD_COPY_POINTER_GUARD (pd);
 #endif
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+  state->worker = *context->worker;
+#else
   state->worker = *(const struct xos_thread_worker *) argument;
+#endif
   if (state->worker.prepare != 0)
     {
       xos_i64 status = state->worker.prepare (pd, reservation,
@@ -76,7 +124,9 @@ __xos_static_worker_launch (xos_u64 stack_bytes, xos_u64 flags,
   const xos_u64 limit = 0x120000;
   xos_u64 tls = GLRO (dl_tls_static_size);
   xos_u64 alignment = GLRO (dl_tls_static_align);
-#ifdef SHARED
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+  const xos_u64 dtv_slots = 0;
+#elif defined SHARED
   const xos_u64 dtv_slots = XOS_SHARED_DTV_SLOTS;
 #else
   const xos_u64 dtv_slots = 3;
@@ -88,8 +138,25 @@ __xos_static_worker_launch (xos_u64 stack_bytes, xos_u64 flags,
       *result = (struct xos_thread_launch_result) { 0 };
       return -17;
     }
-  /* All per-thread storage is inside the reservation, including the DTV,
-     so abort itself releases the storage if start does not consume it. */
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+  struct worker_context context = { worker, NULL, __xos_thread_tls_reserve () };
+  if (context.retire_slot < 0)
+    {
+      *result = (struct xos_thread_launch_result) { 0 };
+      return -17;
+    }
+  const xos_i64 status = __xos_thread_launch (
+      stack_bytes, tls + alignment - 1 + dtv, flags,
+      setup_worker, rollback_worker, &context, result);
+  /* prepare failure happens before the generic bridge invokes rollback.
+     setup/start failure already cleared the context; this is idempotent. */
+  if (status != 0)
+    rollback_worker (&context);
+  return status;
+#else
+  /* All per-thread storage in the default profiles is in the reservation,
+     including the DTV, so abort releases it if start does not consume it. */
   return __xos_thread_launch (stack_bytes, tls + alignment - 1 + dtv, flags,
                               setup_worker, 0, (void *) worker, result);
+#endif
 }

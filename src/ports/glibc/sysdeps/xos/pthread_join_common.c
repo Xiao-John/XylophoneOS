@@ -3,6 +3,9 @@
 #include <time.h>
 #include "xos_thread_identity.h"
 #include "xos_thread_extensions.h"
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+# include "xos_thread_tls.h"
+#endif
 
 int
 __pthread_clockjoin_ex (pthread_t thread, void **value, clockid_t clockid,
@@ -59,6 +62,9 @@ __pthread_clockjoin_ex (pthread_t thread, void **value, clockid_t clockid,
       if (error == -13) return ETIMEDOUT;
       if (error != 0) return xos_thread_lifecycle_error (error);
       if (value != NULL) *value = (void *) result;
+#if defined SHARED && defined XOS_ONLINE_CLOSURE
+      __xos_thread_tls_drain ();
+#endif
       return 0;
     }
 }

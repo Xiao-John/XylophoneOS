@@ -93,7 +93,11 @@ def main():
     parser.add_argument('--jobs', type=int, choices=(1, 2), default=1)
     parser.add_argument('--public-runtime', type=Path,
                         help='bind native identities to a verified public GNU runtime build')
+    parser.add_argument('--unwinder-only', action='store_true',
+                        help='build only the matched libgcc_s input for native pthread unwinding')
     args = parser.parse_args()
+    if args.unwinder_only and not args.public_runtime:
+        parser.error('unwinder-only requires an independently bound public runtime')
     sdk_build = args.sdk_build.resolve(strict=True)
     gnu_build = args.gnu_build.resolve(strict=True)
     output = args.output.absolute()
@@ -106,6 +110,11 @@ def main():
     bindings = {args.archive: source_verification['archive_sha256'],
                 args.signature: source_verification['signature_sha256'],
                 args.keyring: source_verification['keyring_sha256']}
+    recipe_paths = [Path(__file__), DRIVER, SOURCE_LOCK,
+                    ROOT / 'scripts/verify_gcc_shared_source.py',
+                    ROOT / 'scripts/build_glibc_shared_runtime.py',
+                    ROOT / 'scripts/dynamic_artifacts.py']
+    recipes = {path: sha(path) for path in recipe_paths}
     sdk_path = sdk_build / 'manifest.json'
     sdk = json.loads(sdk_path.read_bytes())
     sdk_binding = inspect_sdk('glibc', sdk_build)['binding']
@@ -153,7 +162,14 @@ def main():
         run('native-identity', [tools['gcc']['path'], '-c', assembly, '-o', native_note])
         env['XOS_NATIVE_DYNAMIC_NOTE'] = str(native_note)
 
-    extract_verified_source(archive_data, source_verification, work)
+    extraction = None
+    if args.unwinder_only:
+        # Identical authenticated-source policy to the PIC CRT producer.
+        # This build does not run the upstream GCC testsuites.
+        from build_glibc_shared_runtime import extract_pic_crt_source
+        extraction = extract_pic_crt_source(archive_data, source_verification, work)
+    else:
+        extract_verified_source(archive_data, source_verification, work)
     del archive_data
     version = locks['version']
     source = work / ('gcc-' + version)
@@ -163,9 +179,10 @@ def main():
         raise ValueError('XOS GCC source did not recognize the native target')
     make = select_gnu_make()['path']
     jobs = f'-j{args.jobs}'
-    glibc = args.glibc_source.resolve(strict=True)
+    glibc = args.glibc_source.resolve(strict=not args.unwinder_only)
     atexit = gnu_build / 'stdlib/atexit.oS'
-    run('glibc-atexit', [make, '-C', glibc / 'stdlib', 'objdir=' + str(gnu_build), jobs, atexit])
+    if not args.unwinder_only:
+        run('glibc-atexit', [make, '-C', glibc / 'stdlib', 'objdir=' + str(gnu_build), jobs, atexit])
 
     for name in ('as', 'ld'):
         (target_tools / name).symlink_to(tools[name]['path'])
@@ -194,6 +211,38 @@ def main():
     run('build-libgcc', [make, jobs, 'gcc_objdir=' + str(gcc), 'SHLIB_LC=-lc',
                          'LIBGCC2_DEBUG_CFLAGS=-g0', 'libgcc_s.so'], libgcc)
     gcc_dso = libgcc / LIBGCC
+    if args.unwinder_only:
+        pkg_lib = output / 'lib'
+        pkg_lib.mkdir()
+        shutil.copyfile(gcc_dso, pkg_lib / LIBGCC)
+        record = elf_record(tools['readelf']['path'], pkg_lib / LIBGCC, LIBGCC, env, output)
+        if set(record['needed']) != {LIBC}:
+            raise RuntimeError('the unwinder has an unexpected dependency graph')
+        licenses = output / 'licenses'
+        licenses.mkdir()
+        for name in ('COPYING3', 'COPYING.RUNTIME'):
+            shutil.copyfile(source / name, licenses / name)
+        for path, expected in (original | bindings | recipes).items():
+            if sha(path) != expected:
+                raise ValueError('a bound unwinder build input changed: ' + str(path))
+        if inspect_sdk('glibc', sdk_build)['binding'] != sdk_binding:
+            raise ValueError('the complete C SDK changed during unwinder build')
+        manifest = {'status': 'built_not_run', 'scope': 'public_native_unwinder_only',
+            'guest_qualification': 'not_run', 'target': TARGET, 'gcc_release': version,
+            'public_startup': True, 'native_abi': public['native_abi'],
+            'public_runtime_manifest_sha256': bindings[report_path],
+            'sdk_manifest_sha256': original[sdk_path], 'sdk_tree_sha256': sdk_binding['sdk_tree_sha256'],
+            'libc_sha256': original[libc], 'interpreter_sha256': original[interpreter],
+            'source_verification': source_verification,
+            'source_verification_report_sha256': sha(output / 'source_verification/report.json'),
+            'source_extraction': extraction, 'artifacts': {LIBGCC: sha(pkg_lib / LIBGCC)},
+            'headers': {}, 'include_directories': [], 'elf': {LIBGCC: record},
+            'tools': tools, 'commands': commands, 'sanitized_environment': removed,
+            'bound_inputs': {str(path): expected for path, expected in (original | bindings).items()},
+            'recipe_inputs': {str(path.relative_to(ROOT)): expected for path, expected in recipes.items()},
+            'not_built': ['libstdc++', 'libm', 'C++ SDK headers']}
+        (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+        return
     (link / LIBGCC).symlink_to(gcc_dso)
     (link / 'libgcc_s.so').symlink_to(gcc_dso)
     # Restore the exact glibc build's compiler configuration for its make
@@ -243,7 +292,7 @@ def main():
     expected = {LIBGCC: {LIBC}, LIBM: {LIBC, LIBGCC}, LIBSTD: {LIBM, LIBGCC, LIBC, RTLD}}
     if any(set(elf[name]['needed']) != libraries for name, libraries in expected.items()):
         raise RuntimeError('GCC runtime has an unexpected shared dependency graph')
-    for path, digest in (original | bindings).items():
+    for path, digest in (original | bindings | recipes).items():
         if sha(path) != digest:
             raise ValueError(f'bound build input changed: {path}')
     manifest = {'status': 'built_not_run', 'target': TARGET, 'gcc_release': version,

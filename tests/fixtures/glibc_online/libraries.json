@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "libraries": [
+    {"soname": "libonline_dep.so", "source": "dependency.c", "dependencies": [], "with_libc": false},
+    {"soname": "libonline_isolated.so", "source": "isolated.c", "dependencies": ["libonline_dep.so"], "with_libc": false},
+    {"soname": "libonline_tls.so", "source": "tls.c", "dependencies": [], "with_libc": true},
+    {"soname": "libonline_block.so", "source": "block.c", "dependencies": [], "with_libc": false}
+  ]
+}

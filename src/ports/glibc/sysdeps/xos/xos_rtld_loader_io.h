@@ -25,6 +25,14 @@ dl_load_open (const char *name, int flags)
   return xos_rtld_loader_result (__xos_rtld_open_pin (name));
 }
 
+static inline int
+dl_load_open_namespace (const char *name, int flags, long ns)
+{
+  if (flags != (O_RDONLY | O_CLOEXEC))
+    return xos_rtld_loader_result (-ENOTSUP);
+  return xos_rtld_loader_result (__xos_rtld_open_pin_namespace (name, ns));
+}
+
 static inline ssize_t
 dl_load_read (int fd, void *bytes, size_t size)
 {

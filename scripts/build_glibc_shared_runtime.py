@@ -10,6 +10,8 @@ import shlex
 import shutil
 import subprocess
 import hashlib
+import io
+import tarfile
 
 from build_glibc_sdk import PORT, ROOT, sha
 from build_glibc_shared_gcc import TARGET, configure_xos, rewrite
@@ -42,15 +44,43 @@ PUBLIC_NATIVE_SOURCES = NATIVE_SOURCES + (
     'src/user/loader/dynamic/spawn.cpp', 'src/user/loader/dynamic/rtld_control.cpp')
 
 
+def extract_pic_crt_source(archive, verified, destination):
+    """Keep authenticated build inputs without materializing unused test suites.
+
+    The complete immutable archive still passes the upstream signature and hash
+    gates. PIC CRT compilation does not run GCC's testsuites; all other archive
+    members remain available to configure, target headers and the normal make.
+    """
+    if (not isinstance(archive, bytes)
+            or verified.get('status') != 'upstream_signature_verified'
+            or hashlib.sha256(archive).hexdigest() != verified.get('archive_sha256')):
+        raise ValueError('PIC CRT extraction differs from authenticated source')
+    with tarfile.open(fileobj=io.BytesIO(archive)) as package:
+        included, excluded = [], []
+        for member in package.getmembers():
+            (excluded if 'testsuite' in Path(member.name).parts else included).append(member)
+        package.extractall(destination, members=included, filter='data')
+    return {'policy': 'all_authenticated_members_except_testsuite_directories',
+            'archive_sha256': verified['archive_sha256'],
+            'included_members': len(included), 'excluded_members': len(excluded),
+            'included_bytes': sum(member.size for member in included),
+            'excluded_bytes': sum(member.size for member in excluded),
+            'upstream_tests_executed': False}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('sdk-build', 'glibc-archive', 'gcc-archive', 'gcc-signature', 'gcc-keyring', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--jobs', type=int, choices=(1, 2), default=2)
     parser.add_argument('--public-startup', action='store_true')
+    parser.add_argument('--online-libraries', action='store_true',
+                        help='explicit bounded approved online-library profile')
     parser.add_argument('--sdk-manifest-sha256')
     parser.add_argument('--sdk-tree-sha256')
     args = parser.parse_args()
+    if args.online_libraries and not args.public_startup:
+        parser.error('online libraries require the public startup profile')
     output = args.output.absolute()
     if output.exists() or output.is_symlink():
         parser.error('output must be a new private directory')
@@ -104,12 +134,17 @@ def main():
     if args.public_startup:
         abi_inputs = {'domain': 'xos-glibc-dynamic-capsule-v3',
                       'sdk_manifest_sha256': sdk_digest, 'startup_headers': startup_abi_inputs}
+        if args.online_libraries:
+            abi_inputs['online_profile'] = 'approved-generation-v2-eager-local-two-namespaces-v1'
         abi_bytes = json.dumps(abi_inputs, sort_keys=True, separators=(',', ':')).encode()
         report.update(scope='public_fixed_startup_closure', public_startup=True,
             native_abi=hashlib.sha256(abi_bytes).hexdigest(), native_abi_inputs=abi_inputs,
             expected_sdk_manifest_sha256=args.sdk_manifest_sha256,
             expected_sdk_tree_sha256=args.sdk_tree_sha256,
             sdk_snapshot='verified_before_and_after_full_copy')
+        if args.online_libraries:
+            report.update(scope='public_approved_online_closure', online_libraries=True,
+                online_profile=abi_inputs['online_profile'])
 
     def save():
         (output / 'manifest.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -235,6 +270,8 @@ def main():
                 object_paths['src/user/sdk/launch_control.cpp'],
                 object_paths['src/user/arch/x86_64/syscall.cpp'])))
             public_flags = 'CPPFLAGS-config += -DXOS_PUBLIC_DYNAMIC_STARTUP\n'
+            if args.online_libraries:
+                public_flags += 'CPPFLAGS-config += -DXOS_ONLINE_CLOSURE\n'
 
         build = output / 'gnu'
         build.mkdir()
@@ -271,7 +308,7 @@ def main():
         report['gcc_source_verification'] = verified
         crt = output / 'pic_crt'
         crt.mkdir()
-        extract_verified_source(archive, verified, crt)
+        report['gcc_pic_crt_extraction'] = extract_pic_crt_source(archive, verified, crt)
         del archive
         gcc_source = crt / ('gcc-' + gcc_auth['version'])
         configure_xos(gcc_source)

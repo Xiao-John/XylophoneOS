@@ -141,7 +141,7 @@ bool symbols(reader& r,const dynamic_info& d) {
     }
     return true;
 }
-bool relocations(reader& r,u64 table,u64 bytes,u64 entsize,bool plt) {
+bool relocations(reader& r,u64 table,u64 bytes,u64 entsize,bool plt,bool dynamic_tls_only) {
     if(!bytes)return table==0;
     if(!table || entsize!=24 || bytes%24 || bytes/24>262144 || !r.segment(table,bytes,map_read))return false;
     for(u64 at=0;at<bytes;at+=24) {
@@ -149,6 +149,9 @@ bool relocations(reader& r,u64 table,u64 bytes,u64 entsize,bool plt) {
         const u64 address=value(data,8),info=value(data+8,8),addend=value(data+16,8);const u32 kind=static_cast<u32>(info),symbol=static_cast<u32>(info>>32);
         if(symbol>=r.image.symbol_count || (plt && kind!=7 && kind!=37))return false;
         if(kind==0)continue;
+        // TPOFF64 requires static TLS; GNU TLSDESC may also allocate it. Native
+        // workers do not join GNU's stack list for retroactive TLS updates.
+        if(dynamic_tls_only && (kind==18 || kind==36))return false;
         if(kind!=1 && kind!=6 && kind!=7 && kind!=8 && kind!=16 && kind!=17 && kind!=18 && kind!=36 && kind!=37)return false;
         if(!r.mapped(address,kind==36?16:8,map_write))return false;
         if((kind==8 || kind==37) && symbol)return false;
@@ -245,9 +248,10 @@ error inspect_elf(elf::read_exact_fn read,void* context,const generation& g,u32 
     const u64 arrays[][2]={{d.init_array,d.init_bytes},{d.fini_array,d.fini_bytes},{d.preinit,d.preinit_bytes}};
     for(const auto& a:arrays)if((a[0]==0)!=(a[1]==0) || a[1]%8 || (a[1] && !r.segment(a[0],a[1],map_read)))return error::header;
     if(index!=2 && d.preinit_bytes)return error::header;
-    if(!version_tables(r,d,g,index) || !symbols(r,d)
-       || !relocations(r,d.rela,d.rela_bytes,d.rela_size,false)
-       || !relocations(r,d.jmp,d.jmp_bytes,24,true) || !packed_relocations(r,d))return error::header;
+    const bool online=g.header.version==generation_online_version && (g.header.online_mask&(1u<<index));
+    if((online && (d.flags&0x10)) || !version_tables(r,d,g,index) || !symbols(r,d)
+       || !relocations(r,d.rela,d.rela_bytes,d.rela_size,false,online)
+       || !relocations(r,d.jmp,d.jmp_bytes,24,true,online) || !packed_relocations(r,d))return error::header;
     return error::none;
 }
 

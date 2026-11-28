@@ -41,13 +41,21 @@ def main():
     parser.add_argument('--name', required=True)
     parser.add_argument('--generation-id', type=int, required=True)
     parser.add_argument('--gcc-shared-build', type=Path)
+    parser.add_argument('--unwinder-build', type=Path,
+                        help='matched public unwinder-only build for C programs using native pthreads')
     parser.add_argument('--library-source', type=Path)
+    parser.add_argument('--online-library-spec', type=Path,
+                        help='ordered approved online C libraries; requires the explicit online runtime')
     parser.add_argument('--cxx', action='store_true')
     args = parser.parse_args()
     if not re.fullmatch(r'[a-z][a-z0-9_]{0,31}', args.name):
         parser.error('name must be a bounded canonical native component')
     if args.cxx != bool(args.gcc_shared_build) or (args.library_source and not args.cxx):
         parser.error('C++ requires the matching public shared GCC build')
+    if args.online_library_spec and (args.cxx or args.library_source):
+        parser.error('the initial online-library builder accepts C libraries')
+    if args.unwinder_build and args.gcc_shared_build:
+        parser.error('select either the full GCC composition or the unwinder-only composition')
     output = args.output.absolute()
     if output.exists() or output.is_symlink():
         parser.error('output must be a new directory')
@@ -65,6 +73,8 @@ def main():
     if (metadata.get('status') != 'public_runtime_built_not_run' or not metadata.get('public_startup')
             or metadata['sdk_binding'] != c_binding):
         raise ValueError('the selected runtime is not the matching public GNU composition')
+    if args.online_library_spec and not metadata.get('online_libraries'):
+        raise ValueError('online libraries require the explicitly selected online runtime')
     for name, expected in metadata['artifacts'].items():
         if digest(relative_file(runtime, name)) != expected:
             raise ValueError('runtime artifact changed: ' + name)
@@ -127,6 +137,26 @@ def main():
         run('strip-interpreter', [objcopy, '--strip-debug', gnu / 'elf/ld.so', payload / 'ld_xos_x86_64.so.1'])
         libraries = [(payload / 'libc.so.0.1', RUNTIME_PATH + '/libc.so.0.1')]
         extra, app_libraries, crt_begin, crt_end = [], [], [], []
+        if args.unwinder_build:
+            unwinder = args.unwinder_build.resolve(strict=True)
+            path = unwinder / 'manifest.json'
+            data = json.loads(path.read_bytes())
+            if (data.get('status') != 'built_not_run' or data.get('scope') != 'public_native_unwinder_only'
+                    or not data.get('public_startup') or data['native_abi'] != metadata['native_abi']
+                    or data['public_runtime_manifest_sha256'] != digest(runtime / 'manifest.json')
+                    or data['sdk_manifest_sha256'] != args.sdk_manifest_sha256
+                    or data['sdk_tree_sha256'] != args.sdk_tree_sha256
+                    or data['libc_sha256'] != digest(gnu / 'libc.so')
+                    or data['interpreter_sha256'] != digest(gnu / 'elf/ld.so')):
+                raise ValueError('the unwinder belongs to another native composition')
+            original = relative_file(unwinder, 'lib/libgcc_s.so.1')
+            if digest(original) != data['artifacts']['libgcc_s.so.1']:
+                raise ValueError('the bound unwinder bytes changed')
+            inputs[str(path)] = digest(path)
+            inputs[str(original)] = digest(original)
+            run('strip-unwinder', [objcopy, '--strip-debug', original, payload / 'libgcc_s.so.1'])
+            libraries.append((payload / 'libgcc_s.so.1', RUNTIME_PATH + '/libgcc_s.so.1'))
+            app_libraries.append(payload / 'libgcc_s.so.1')
         if args.cxx:
             shared = args.gcc_shared_build.resolve(strict=True)
             shared_metadata = json.loads((shared / 'manifest.json').read_bytes())
@@ -170,10 +200,48 @@ def main():
                 payload / 'ld.so.1', *crt_end, gnu / 'csu/crtn.o'])
             libraries.append((payload / 'libsample.so', '/apps/' + args.name + '/libsample.so'))
             app_libraries.insert(0, payload / 'libsample.so')
+        online_sonames = []
+        if args.online_library_spec:
+            spec_path = args.online_library_spec.resolve(strict=True)
+            spec = json.loads(spec_path.read_bytes())
+            inputs[str(spec_path)] = digest(spec_path)
+            if (set(spec) != {'version', 'libraries'} or spec['version'] != 1
+                    or not isinstance(spec['libraries'], list) or not 1 <= len(spec['libraries']) <= 8):
+                raise ValueError('invalid bounded online library specification')
+            for item in spec['libraries']:
+                if (not isinstance(item, dict)
+                        or set(item) != {'soname', 'source', 'dependencies', 'with_libc'}
+                        or not re.fullmatch(r'lib[a-z0-9_]+\.so', item['soname'])
+                        or item['soname'] in online_sonames
+                        or not isinstance(item['dependencies'], list)
+                        or len(set(item['dependencies'])) != len(item['dependencies'])
+                        or any(name not in online_sonames for name in item['dependencies'])
+                        or type(item['with_libc']) is not bool):
+                    raise ValueError('online dependencies must be distinct preceding approved libraries')
+                module_source = (spec_path.parent / item['source']).resolve(strict=True)
+                inputs[str(module_source)] = digest(module_source)
+                for path in module_source.parent.glob('*.h*'):
+                    inputs[str(path)] = digest(path)
+                name = item['soname']
+                obj = output / (name + '.o')
+                run('compile-online-' + name, [cc, *flags, '-I', module_source.parent,
+                    '-fPIC', '-ftls-model=global-dynamic', '-fno-builtin', '-c', module_source, '-o', obj])
+                dependencies = [payload / dependency for dependency in item['dependencies']]
+                # An isolated namespace has no second libc/rtld or thread runtime.
+                # Self-contained DSOs still use real GNU init/fini arrays.
+                support = ([payload / 'libc.so.0.1', payload / 'ld.so.1']
+                           if item['with_libc'] else [])
+                run('link-online-' + name, [*link, '-shared', '-soname', name,
+                    '-o', payload / name, output / 'library_identity.o', obj,
+                    *dependencies, *support])
+                libraries.append((payload / name, '/apps/' + args.name + '/' + name))
+                online_sonames.append(name)
+            report['online_libraries'] = spec
         compiler = cxx if args.cxx else cc
         run('compile-main', [compiler, *extra, *flags, '-fPIE', '-fno-builtin', '-c', source, '-o', output / 'main.o'])
         main_image = payload / 'main.pie'
         run('link-main', [*link, '-pie', '-e', '_start', '--dynamic-linker', INTERPRETER, '-o', main_image,
+            *(['--export-dynamic'] if args.online_library_spec else []),
             gnu / 'csu/Scrt1.o', gnu / 'csu/crti.o', *crt_begin, output / 'main_identity.o',
             output / 'main.o', *app_libraries, payload / 'libc.so.0.1', *crt_end, gnu / 'csu/crtn.o'])
         bootstrap = payload / 'bootstrap'
@@ -199,7 +267,8 @@ def main():
             (payload / 'ld_xos_x86_64.so.1', INTERPRETER),
             (main_image, '/apps/' + args.name + '/main'), *libraries]
         manifest, objects = generation_record(args.generation_id, args.sdk_manifest_sha256,
-                                                metadata['native_abi'], entries)
+                                                metadata['native_abi'], entries,
+                                                online_sonames=online_sonames)
         generation = payload / 'generation.bin'
         generation.write_bytes(manifest)
         preflight_sources = [ROOT / 'scripts/dynamic_preflight.cpp', ROOT / 'src/user/loader/elf.cpp',

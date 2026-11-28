@@ -1,0 +1,110 @@
+{
+  "sources": {
+    "tests/fixtures/launch_control_probe.cpp": "c8cbd61c976d2c20ecedc8a7588d243aef263a3c8a71c034ebfc936df9c995d4",
+    "src/user/sdk/launch_control.cpp": "5ca3992d5edd19917bfc09c1365295855489d47744a772cb9d8d102a61776cc6",
+    "scripts/build_launch_control_probe.py": "8e44405a1d9a08b26723698d53afba84bad2ae661aa3d40dbe242845f4662b84",
+    "src/shared/include/xos/launch_control_abi.h": "b8e32d0971b10d35efe7c5f857f076fb1ed6f6782b2e6b1ff3ae4201a1ae371d",
+    "src/user/include/xos/launch_control.hpp": "36496f2565236ede0294504124e242d7bd7d46c761443bb91bc7acb95c1be419",
+    "src/shared/include/xos/process_abi.hpp": "e7097ee765656ed758382af9d7a44e6723fedf774e3fa8d30bc1667d53eb3542",
+    "src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+    "src/user/include/xos/sdk.hpp": "ed7fef9df4affd52b3a5b99a15954e3407978c8ed12b38ed8fc04408e18353e1",
+    "src/user/include/xos/spawn.hpp": "2e2779af1ab790eca0bd10484921d69d69871828fb5494bdd8e2c7f3f4f30077"
+  },
+  "sdk_tree_sha256": "9d413d59fdb54329cbadd0591e1b22a32e06bde0ee943ce851c7d8d89f19f057",
+  "artifacts": {
+    "launch_control.elf": "570cec0e31cb63afe70c526159424e821ec6010de4841148ff12195ec123c447"
+  },
+  "commands": [
+    [
+      "/opt/xos/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Os",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wconversion",
+      "-Wshadow",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-threadsafe-statics",
+      "-fno-use-cxa-atexit",
+      "-fno-unwind-tables",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-stack-protector",
+      "-fno-pic",
+      "-fno-pie",
+      "-mno-red-zone",
+      "-mgeneral-regs-only",
+      "-nostdinc++",
+      "-I",
+      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/include",
+      "/work/xylophoneos-lifecycle/tests/fixtures/launch_control_probe.cpp",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/user.ld",
+      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/crt0.o",
+      "-Wl,--start-group",
+      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/lib/libxos.a",
+      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/lib/libxos_loader.a",
+      "-Wl,--end-group",
+      "-o",
+      "/work/xylophoneos-lifecycle/build/launch_fixture_v3/launch_control.elf"
+    ]
+  ],
+  "toolchain": {
+    "gcc": "16.2.0",
+    "g++": "16.2.0",
+    "target": "x86_64-elf",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "executables": {
+      "gcc": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+      },
+      "g++": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+      },
+      "as": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+      },
+      "ld": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+      },
+      "objcopy": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+      },
+      "nm": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+      },
+      "ar": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+      },
+      "cc1": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+      },
+      "cc1plus": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+      },
+      "nasm": {
+        "path": "/home/linuxbrew/.linuxbrew/Cellar/nasm/3.02/bin/nasm",
+        "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+      }
+    }
+  },
+  "libc_linked": false,
+  "guest": "not_run"
+}

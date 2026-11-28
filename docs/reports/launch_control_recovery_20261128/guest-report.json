@@ -1,0 +1,378 @@
+{
+  "status": "passed",
+  "runs": [
+    {
+      "round": 0,
+      "case": "success",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "cancel",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "entry-failure",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "entry-revoke",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "prepare-revoke",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "timeout",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "early-exit",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "malformed",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "multiple",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "stale-allow",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 0,
+      "case": "stale-cancel",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "success",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "cancel",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "entry-failure",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "entry-revoke",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "prepare-revoke",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "timeout",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "early-exit",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "malformed",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "multiple",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "stale-allow",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 1,
+      "case": "stale-cancel",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "success",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "cancel",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "entry-failure",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "entry-revoke",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "prepare-revoke",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "timeout",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "early-exit",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "malformed",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "multiple",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "stale-allow",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    },
+    {
+      "round": 2,
+      "case": "stale-cancel",
+      "resources": [
+        129781,
+        2,
+        0
+      ],
+      "status": "passed"
+    }
+  ],
+  "runner_sha256": "c3cc3d9a791ed90ef60119f7c4796c7caef9c98b7850dac7dcf5888cbe3738ce",
+  "system_build_id": "cd41a13a9b8bfc61",
+  "iso_sha256": "3e745d23ba4658e04d263b9f4845c103a1e82b26b81933696c5576bf01fb9fce",
+  "system_manifest_sha256": "629fe714a0d8337a7bbc67105725eeeb0dd4175125e7454851d6ec225cf8c0c0",
+  "fixture_receipt_sha256": "e6fc42d0a31010e3395d5207b8e09b59f4c7d3effc8f88581151a5fcf1b82d49",
+  "sdk_tree_sha256": "9d413d59fdb54329cbadd0591e1b22a32e06bde0ee943ce851c7d8d89f19f057",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "/work/xylophoneos-lifecycle/build/launch_system_v3/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=/tmp/xos_launch_guest_29f6n2vr/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "baseline": [
+    129781,
+    2,
+    0
+  ]
+}

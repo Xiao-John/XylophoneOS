@@ -1,0 +1,14 @@
+[
+  {
+    "file": "guest-serial.log",
+    "raw_sha256": "782d597682e6aa9ca1de376c555ffdf5aa147696071fec7be989e66cc635abf6",
+    "exported_sha256": "a26adf1bf320de3060636cbc6cab378b5039bafecb7e77c821188cd4dc4df6ea",
+    "transform": "LF line endings; trailing whitespace removed; final LF"
+  },
+  {
+    "file": "failed-v2-guest-serial.log",
+    "raw_sha256": "2829fb4fab2d63ef23fb28925a98d16ad842d9d7ca559c4578ce25374bdbfe0c",
+    "exported_sha256": "ed3dc498b3a8a8601bd9558f470571f1b2fbd84f668c315f54c8e33c684eee1c",
+    "transform": "LF line endings; trailing whitespace removed; final LF"
+  }
+]

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <xos/sdk.hpp>
 #include <xos/display_client.hpp>
+#include <xos/thread_abi.hpp>
 #include "../interactium/ipc_transport.hpp"
 #include "../interactium/service_loop.hpp"
 
@@ -53,10 +54,12 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         return 10;
     }
     print("[interactium-service] ready display=800x600\n");
+    manager.invalidate(0, 0, mode.width, mode.height);
     i32 cursor_x = static_cast<i32>(mode.width / 2);
     i32 cursor_y = static_cast<i32>(mode.height / 2);
 
     for (;;) {
+        bool progressed = false;
         for (auto& client : clients) {
             if (client.active) continue;
             ipc_channel channel{};
@@ -65,6 +68,7 @@ extern "C" int xos_user_main(const xos::startup_info*) {
                 client.transport.bind(channel);
                 client.loop.bind(client.transport);
                 client.active = true;
+                progressed = true;
             } else if (accepted != process_error_would_block) {
                 return 11;
             }
@@ -73,30 +77,44 @@ extern "C" int xos_user_main(const xos::startup_info*) {
         for (auto& client : clients) {
             if (!client.active) continue;
             const auto result = client.loop.step();
-            if (result == loop_result::session_closed || result == loop_result::transport_error) {
+            progressed |= result != loop_result::again;
+            if (result == loop_result::session_closed || result == loop_result::transport_error ||
+                result == loop_result::protocol_error) {
                 client.active = false;
             }
         }
         display_event event{};
         const i64 input_result = display.input(event);
-        bool pointer_damage = false;
         if (input_result == 0) {
+            progressed = true;
             (void)manager.queue_input(event);
             if (event.kind == 3 || event.kind == 4) {
-                pointer_damage = cursor_x != event.x || cursor_y != event.y;
+                if (cursor_x != event.x || cursor_y != event.y) {
+                    manager.invalidate(cursor_x, cursor_y, 13, 18);
+                    manager.invalidate(event.x, event.y, 13, 18);
+                }
                 cursor_x = event.x;
                 cursor_y = event.y;
             }
         }
         else if (input_result != display_again) return 11;
-        if (manager.take_damage() || pointer_damage) {
-            if (!manager.compose(display_pixels, mode.width, mode.height, 0xff273342)) return 12;
+        dirty_rect damage{};
+        if (manager.take_damage(damage)) {
+            progressed = true;
+            if (!manager.compose_region(display_pixels, mode.width, mode.height, 0xff273342, damage)) return 12;
             draw_cursor(display_pixels, mode.width, mode.height, cursor_x, cursor_y);
             const display_present frame{1, sizeof(display_present), reinterpret_cast<u64>(display_pixels),
                                         mode.bytes, mode.stride, display_xrgb8888,
-                                        {0, 0, mode.width, mode.height}};
+                                        {damage.x, damage.y, damage.width, damage.height}};
             if (display.present(frame) != 0) return 13;
         }
-        yield();
+        if (progressed) yield();
+        else {
+            // Display v1 and named IPC have no common wait set. Sleep on the
+            // existing monotonic clock between bounded readiness scans; do not
+            // keep an idle desktop runnable or change either public ABI.
+            const auto now = static_cast<u64>(syscall(sys_clock_monotonic));
+            (void)syscall(sys_sleep_until, now + 10000000u);
+        }
     }
 }

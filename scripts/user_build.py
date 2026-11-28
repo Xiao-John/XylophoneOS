@@ -9,6 +9,7 @@ from toolchain import COMMON_FLAGS, X86_FLAGS, TARGET, tool
 from ipc_v1_manifest import ipc_v1_manifest_entry
 from ipc_endpoint_manifest import ipc_endpoint_manifest_entry
 from observation_manifest import observation_manifest_entry
+from interactium_manifest import interactium_manifest_entry
 from device_manifest import device_manifest_entry
 from archive_provenance import capture_build, copy_archive_provenance, digest
 from lwip_service_build import build as build_lwip_service
@@ -365,6 +366,7 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
         "process_exit_cleanup": {"syscall": 51, "mode": 1, "request_version": 1,
                                  "deadline_max_ns": 30000000000, "guest_qualification": "not_run"},
         "display_extensions": {"version": 1, "syscalls": [65, 66], "pixel_format": "XRGB8888", "surface_count": 1},
+        "interactium": interactium_manifest_entry(),
         "vm_extensions": {"version": 1, "syscall": 67, "status": "implemented_unqualified"},
         "process_budget": {"version": 1, "syscall": 87, "set_mode": 4, "query_mode": 5,
                            "config_bytes": 64, "snapshot_bytes": 192,
@@ -398,6 +400,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             "max_fork_depth": 3, "replacement_reservations": 1, "fd_count": 32, "spawn_argument_bytes": 255,
             "exec_argument_bytes": 4095, "startup_bytes": 16384, "pipe_atomic_bytes": 4096,
             "pipe_wait_write_minimum": True, "pipe_wait_deadline": "implemented_unqualified",
+            "pipe_status_query": {"syscall": 54, "mode": 1 << 63, "version": 1,
+                                  "bytes": 32, "ownership": "held_pipe_or_stdio_route"},
             "stream_lease": {"syscall": 80, "status": "claim_unsupported"},
             "channel": {"syscall": 81, "status": "implemented_unqualified"},
             "ipc_wait": {"syscall": 85, "receive_until_mode": 5, "send_until_mode": 6,

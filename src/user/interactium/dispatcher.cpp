@@ -67,7 +67,7 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
     copy_bytes(&header, request, sizeof(header));
     if (header.version != protocol_version || header.size != request_size ||
         header.payload_length != request_size - sizeof(wire_header) ||
-        header.payload_length > max_wire_payload || header.reserved != 0 ||
+        header.payload_length > max_wire_payload || header.reserved != 0 || header.flags != 0 ||
         header.sequence == 0 || header.sequence <= last_sequence_) {
         return static_cast<i32>(dispatch_result::malformed);
     }
@@ -80,7 +80,8 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
         }
         hello_payload hello{};
         copy_bytes(&hello, payload, sizeof(hello));
-        if (hello.client_version != protocol_version || owner_ == 0) {
+        if (hello.client_version != protocol_version || owner_ == 0 || hello.capabilities != 0 ||
+            hello.requested_width > 800 || hello.requested_height > 600) {
             return static_cast<i32>(dispatch_result::unsupported);
         }
         const auto session = service_->connect(owner_);
@@ -126,6 +127,9 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
         configure_payload configure{};
         copy_bytes(&configure, payload, sizeof(configure));
         result = service_->configure_window(session_, object, configure) ? 0 : static_cast<i64>(dispatch_result::denied);
+        // Geometry changes retire in-flight tiles. A later commit must not
+        // apply an old-size staging buffer to the newly configured window.
+        if (result == 0 && frame_.window == object) frame_ = {};
         break;
     }
     case message_type::focus:
@@ -134,6 +138,8 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
         break;
     case message_type::input: {
         if (!object.valid() || !empty_payload(header, request_size)) break;
+        const auto* window = service_->get_window(object);
+        if (!window || window->owner != owner_) { result = static_cast<i64>(dispatch_result::denied); break; }
         input_payload event{};
         if (service_->take_input(session_, object, event)) {
             last_sequence_ = header.sequence;
@@ -149,11 +155,16 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
         copy_bytes(&frame, payload, sizeof(frame));
         if (frame.frame_serial == 0 || frame.width == 0 || frame.height == 0 ||
             frame.width > 800 || frame.height > 600 || frame.stride < frame.width * 4u ||
+            frame.stride % 4u != 0 ||
             frame.bytes > max_frame_bytes || frame.bytes < u64(frame.stride) * frame.height ||
             frame.format != pixel_format::argb8888_premultiplied) break;
+        const auto* window = service_->get_window(object);
+        if (!window || window->owner != owner_) { result = static_cast<i64>(dispatch_result::denied); break; }
+        if (frame.width != window->width || frame.height != window->height ||
+            frame.frame_serial <= window->accepted_frame) break;
         if (!service_->begin_frame(session_, object)) { result = static_cast<i64>(dispatch_result::denied); break; }
         frame_ = {true, object, frame.frame_serial, frame.width, frame.height,
-                  frame.stride, frame.bytes};
+                  frame.stride, frame.bytes, {}, false};
         result = 0;
         break;
     }
@@ -163,7 +174,7 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
             !frame_.active || frame_.window != object) break;
         tile_payload tile{};
         copy_bytes(&tile, payload, sizeof(tile));
-        if (tile.frame_serial != frame_.serial || tile.width == 0 || tile.height == 0 ||
+        if (tile.frame_serial != frame_.serial || tile.width == 0 || tile.height == 0 || tile.reserved != 0 ||
             !checked_rect({tile.x, tile.y, tile.width, tile.height}, frame_.width, frame_.height) ||
             u64(tile.width) * tile.height * 4 != tile.source_length ||
             tile.source_length != header.payload_length - sizeof(tile_payload) ||
@@ -172,6 +183,19 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
             u64(tile.width) * 4 > frame_.stride) break;
         result = service_->write_tile(session_, object, tile, payload + sizeof(tile), tile.source_length)
             ? 0 : static_cast<i64>(dispatch_result::denied);
+        if (result == 0) {
+            if (!frame_.has_changes) frame_.changed = {tile.x, tile.y, tile.width, tile.height};
+            else {
+                const u32 left = tile.x < frame_.changed.x ? tile.x : frame_.changed.x;
+                const u32 top = tile.y < frame_.changed.y ? tile.y : frame_.changed.y;
+                const u32 right = tile.x + tile.width > frame_.changed.x + frame_.changed.width ?
+                                      tile.x + tile.width : frame_.changed.x + frame_.changed.width;
+                const u32 bottom = tile.y + tile.height > frame_.changed.y + frame_.changed.height ?
+                                       tile.y + tile.height : frame_.changed.y + frame_.changed.height;
+                frame_.changed = {left, top, right - left, bottom - top};
+            }
+            frame_.has_changes = true;
+        }
         break;
     }
     case message_type::commit_frame: {
@@ -180,7 +204,7 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
         commit_payload commit{};
         copy_bytes(&commit, payload, sizeof(commit));
         const u64 expected = sizeof(commit_payload) + u64(commit.dirty_rect_count) * sizeof(dirty_rect);
-        if (commit.frame_serial != frame_.serial || commit.dirty_rect_count > max_dirty_rects ||
+        if (commit.frame_serial != frame_.serial || commit.dirty_rect_count > max_dirty_rects || commit.flags != 0 ||
             expected != header.payload_length) break;
         bool valid = true;
         for (u32 i = 0; i < commit.dirty_rect_count; ++i) {
@@ -188,7 +212,10 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
             copy_bytes(&rect, payload + sizeof(commit) + i * sizeof(rect), sizeof(rect));
             valid &= checked_rect(rect, frame_.width, frame_.height);
         }
-        if (valid && service_->accept_frame(session_, object, commit.frame_serial)) {
+        // Damage is derived from accepted writes, never solely from a client
+        // hint that could omit a modified pixel.
+        if (valid && service_->accept_frame(session_, object, commit.frame_serial,
+                                            &frame_.changed, frame_.has_changes ? 1u : 0u)) {
             result = 0;
             frame_ = {};
         } else {
@@ -202,10 +229,15 @@ i32 protocol_dispatcher::dispatch(const u8* request, u32 request_size, u8* respo
         frame_ = {};
         result = 0;
         break;
-    case message_type::close_request:
+    case message_type::close_request: {
         if (!object.valid() || !payload_is<close_payload>(header, request_size)) break;
-        result = 0;
+        close_payload close{};
+        copy_bytes(&close, payload, sizeof(close));
+        if (close.reserved != 0) break;
+        result = service_->destroy_window(session_, object) ? 0 : static_cast<i64>(dispatch_result::denied);
+        if (result == 0 && frame_.window == object) frame_ = {};
         break;
+    }
     default:
         result = static_cast<i64>(dispatch_result::unsupported);
         break;

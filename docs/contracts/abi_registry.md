@@ -207,6 +207,24 @@ create/delegate/map/unmap/close（delegate 保持同值句柄），supported mas
 每个op只在其服务/协议版本内解释，不与syscall共用“全球号表”。上述服务具体布局仍以
 共享头和专项契约为准；若新需求改变结构，必须独立评估版本/尺寸/向后兼容，不只抢新编号。
 
+## Mobius / Interactium copied multiwindow v1
+
+P1-G preserves existing user-space wire version 1, message types 1–14, 48-byte
+headers and at most 4096 copied bytes over sys84–86. Authenticated peer PID,
+session and owned window tokens delimit create/configure/focus/frame/input/close.
+Four sessions, eight window records per session and eight drawable surfaces
+**globally** are bounded. Multiple application surfaces are composed into the
+existing exclusive display-v1 scanout; `display_extensions.surface_count=1`
+continues to describe that final scanout, not the application count.
+
+The [multiwindow contract](mobius_multiwindow.md) defines private staging,
+derived damage, premultiplied pixels, press-owner input, resize frame retirement
+and owned close. `close_request` now destroys the caller-owned window instead
+of returning a false success; it does not terminate the app. No reserved field,
+wire operation or syscall is repurposed. Independent ordinary/threading SDK
+[guest qualifications](../reports/p1_g_multiwindow_20261128/README.md) preserve
+previous single-surface reports as separate evidence.
+
 ## P1-H / P1-K1 协作认领（2026-11-28）
 
 本节只协调下一实现的公共接口；`claimed` 不生成源码常量、能力位或资格。
@@ -216,7 +234,7 @@ create/delegate/map/unmap/close（delegate 保持同值句柄），supported mas
 | 接口 | 认领者与文件范围 | 版本、用途和兼容 |
 | --- | --- | --- |
 | Net2 operations 19 `readiness_bind` / 20 `shutdown_read`；capability 掩码 `0x4` / `0x8` | P1-H 网络线；`net_service_abi.hpp`、Net2 service/client、glibc socket bridge | claimed；capabilities 请求 flags=1 显式选择 revision 2，flags=0 保持旧 revision 1 与原能力位。旧服务拒绝 flags=1 时回退旧查询和有限等待。复用 sys88 grant，不新增 syscall。op19 的 32 字节响应绑定 4096 字节只读客户端页、session generation；页的有效结构为版本 1、128 字节，含序列、采样单调时间和两个绑定 handle 的 readiness/result。op20 是同 socket 所有权的无负载读方向关闭；readiness 的 `0x40` 只在新版页出现，旧 op16 mask 保持。 |
-| sys54 `sys_pipe_wait` 的显式 query mode `1ull << 63` | P1-H/P1-K5 共用机制；kernel pipe dispatch、`process_abi.hpp`、SDK、glibc poll | claimed；arg1 为调用者已持有的 pipe token 或 pipe stdio route，arg2 为模式值，arg3 指 32 字节版本 1 `pipe_status_snapshot`。旧 arg2=0–4096 的等待/期限含义不变，旧内核拒绝新模式。只读当前方向 byte count、方向和 peer_closed，不消费数据、不创造授权；console 拒绝。 |
+| sys54 `sys_pipe_wait` 的显式 query mode `1ull << 63` | P1-H/P1-K5 共用机制；kernel pipe dispatch、`process_abi.hpp`、SDK、glibc poll | allocated；[pipe_status_v1](pipe_status_v1.md) 已有独立 native guest 资格；arg1 为调用者已持有的 pipe token 或 pipe stdio route，arg2 为模式值，arg3 指 32 字节版本 1 `pipe_status_snapshot`。旧 arg2=0–4096 的等待/期限含义不变，旧内核拒绝新模式。只读当前方向 byte count、方向和 peer_closed，不消费数据、不创造授权；console 拒绝。 |
 | glibc `xos/sleep.h` 的 `xos_sleep_query` / `xos_sleep_interrupt` | P1-K1 运行时线；glibc XOS sleep adapter、公共头和 SDK manifest | claimed；版本 1、48 字节精确 sleep ticket，绑定 PID/TID/sequence/deadline。复用 sys48/49，既有正常 nanosleep/clock_nanosleep 保持；新机制是同进程显式中断，不是 POSIX 信号或 pthread_cancel。 |
 
 Net2 页只对认证会话授予 read 权；服务保留写映射，连接、grant 和映射生命周期
@@ -302,6 +320,59 @@ client、SDK manifest 与实际生命周期证据；细节见
 posix_spawn链及same-PID exec；当前shared GNU fork的ENOSYS边界与P1-K2
 组合计划保持独立，不能用本登记宣称fork已经可用。
 协调记录见 [b6c1097c](../work_log/b6c1097c_p1_cd_protocol_claims.md)。
+
+## P1-H grant holder release 认领（2026-11-28）
+
+sys88 `ipc_v1_action` **24** `grant_release` 和 feature **bit 5**（mask `0x20`）
+由 P1-H 认领，状态 `claimed`。现有 action 23 `grant_close` 的 manage 权限与
+全局 revoke 语义保持；不得用全局销毁模拟非管理 holder 的引用释放。
+
+action 24 使用既有 40-byte `ipc_v1_object_close` 请求：version 1、size 40、
+flags 0、调用者持有的 grant handle、两个 u64 reserved 均零。操作不需要 manage，
+只释放调用者该 handle 及调用者对同一 grant 的所有映射，其他 holder 的 handle
+和映射保持有效。全部本地映射的 pin、VM continuation、region capacity 先预检，
+busy/state/resources 或无效请求不允许部分 unmap/释放；复用现有 invalid_handle、
+invalid_argument、unsupported 等错误。最后引用释放后才销毁底页；原 owner 和
+budget_mask/树预算归属不因新增/减少 holder 被转移或提前返还 credit。
+
+`query_features` 新增 opt-in flag bit 1（mask `0x2`）：flags 0/1 继续返回原
+known/supported mask `0x1f`，flags 2/3 才返回 `0x3f`，原 bit 0 的 direct-switch
+counter 语义不变。旧内核拒绝 flag 2 为 invalid_argument，对未知 action 返回
+unsupported。SDK 第三个 `include_grant_release` 参数默认 false；Net2 使用
+显式 `(false, true)` 查询，只有 bulk_grant 与 grant_release 都可用才发布页能力。
+匹配 kernel/shared ABI/SDK/libc 后需要真实 quota、foreign handle、拒绝输出、
+失败原子性及 service/client 任一先退出的 guest 证据。本认领不宣称该实现已通过。
+
+## P1-K3 online library profile 认领（2026-11-28）
+
+本节状态为 `claimed`，先协调格式和权限边界，不能作为 dlopen/dlmopen/dlclose
+已经可用的声明。现有 fixed-startup profile 的显式拒绝保持，只有独立构建、
+独立身份并完成真实目标资格的新 profile 才可以打开下述路径；没有新增 syscall。
+
+| 格式 / 接口 | 认领与兼容 |
+| --- | --- |
+| dynamic generation version 2 | 保持 128-byte header 和 512-byte object；header offset 28 的 u32 在 v2 明确命名为 `online_mask`，v1 的同位置 `reserved0` 仍强制为零。mask 只能选择 index >= 3 的 library，非零且无越界位；startup 图不得依赖 online library，额外 library 必须从声明的 online 根可达，所有图继续无环、受数量/字节/映射预算及完整同-pin 身份/版本检查约束。旧 parser 拒绝 v2。 |
+| private GNU entry version 4 | 原 `xos_rtld_pin_plan` 尾部新增四个 u32 `online_version, online_mask, isolated_mask, online_reserved`，已有保留字段仍为零；扩展为零时保持 fixed-startup 语义。online_version=1 才可保留被批准的 online pins；isolated_mask 必须是 online_mask 子集。新 entry 版本隔离布局变化，旧 entry 不能被新结构误读。 |
+| explicit online shared-runtime profile | 正常 GNU dlfcn/rtld 负责依赖引用、符号版本、构造/析构和 TLS unload interlock；底层仅能映射批准且保持的不可变 pin。native ABI 摘要区分新 profile；默认 builder 不启用。受支持的公共 flags 为 RTLD_NOW/RTLD_LOCAL 和显式 RTLD_NOLOAD，其他 flag 先拒绝。 |
+
+命名空间有界为 base 和同时至多一个独立 namespace。独立 namespace 只允许
+无 TLS、其完整依赖也属于 isolated 集合的库；禁止复制 libc/rtld/线程运行库。
+base namespace 的 online TLS 仅允许 dynamic TLS model，禁止运行中要求给所有
+既有线程补静态 TLS 的对象。真实并发线程使用可扩展且显式清理的 GNU DTV；
+旧 fixed-closure 的保留区 DTV 路径不被错误 realloc/free。
+
+online pins 是原批准闭包的有界、进程范围 authority，必须在初始完整预检时
+取得且以相同开放描述转移；运行期不能用路径搜索、相邻 manifest 或环境变量
+加入新对象。mapping/refcount/namespace 随 GNU unload 回收；批准 pin 在整个
+进程内保留，供同一不可变实例重新加载，直到进程退出由 Files 生命周期回收。
+因此一次 dlclose 不宣称释放 approval pin credit；报告必须分别观察 mapping、
+TLS destructor 留存及最终进程资源回收。父/子或其他进程不由该格式获新权限。
+
+初始 Files 会话进入 libc 后，online I/O 必须通过同一串行化会话、原失败闩和
+每次调用的单一绝对期限，不重放未知结果；不得继续使用已经移交的早期序号。
+新/缺失/错误版本对象、namespace 越界及被拒绝 TLS model 都应在使用前失败。
+真实目标须覆盖并发调用、TLS destructor 阻止过早 unload、最后引用/依赖释放、
+保持 pin 后路径变化、失败清理，以及原 fixed profile 仍明确拒绝。
 
 ## 分配流程
 

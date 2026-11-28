@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "case": "interactium_model_test",
+      "status": "passed"
+    },
+    {
+      "case": "interactium_transport_test",
+      "status": "passed"
+    },
+    {
+      "case": "interactium_demo_host_test",
+      "status": "passed"
+    },
+    {
+      "case": "mobius_multiwindow_host",
+      "status": "passed"
+    }
+  ],
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "leak_sanitizer": "disabled: host ptrace prohibits LSan thread enumeration",
+  "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "sources": {
+    "src/user/interactium/window_manager.cpp": "7079d3a1f9c7bb891c1a9a215dcc2f0435f8ff930d575419af7e08565b20466c",
+    "src/user/interactium/service.cpp": "d326d1e91791477d498fdddbf0cb0ffa3eff46addc27c73f4bd80b222c111035",
+    "src/user/interactium/dispatcher.cpp": "989db4b30a289e7b954debbced3063dcd41b64197eb8b3115d7f3946f8c7cd31",
+    "src/user/interactium/service_loop.cpp": "0a9d3f148dd980df2256048025dde725e54d1744068e35e1b9d51f0b85f17de4",
+    "tests/interactium_model_test.cpp": "bcc4c7116df0f9e8da17477ed6debccac93ee7a0f1c5002a0531b68e4bd4a6b1",
+    "tests/interactium_transport_test.cpp": "f646f0d4b2e710bc480863b3974825f0ee96c9bfb5e549170a15ddcc1d5117fb",
+    "tests/interactium_demo_host_test.cpp": "9c306ed4a651116afaa779cd81cf324ea75a7a886ee8197bb66af28e2fb0d5ad",
+    "tests/mobius_multiwindow_host.cpp": "e94319998e8a10f6019f20f2a30233e6b4b7050c669e03701143efa940f29bcd"
+  }
+}

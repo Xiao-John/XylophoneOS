@@ -63,7 +63,8 @@ int main() {
     display_event first_click{};
     first_click.sequence = 41;
     first_click.kind = 3;
-    first_click.buttons = 1;
+    // This case checks pointer crossing, without a held-button capture.
+    first_click.buttons = 0;
     first_click.x = 20;
     first_click.y = 30;
     display_event second_click = first_click;

@@ -130,5 +130,10 @@ int main() {
     message(request, request_size, 1, 0, message_type::hello, 0, &hello, sizeof(hello));
     reconnect.push(request, request_size);
     assert(reconnect_loop.step() == loop_result::progressed && reconnect_loop.connected());
+    message(request, request_size, 2, 0, message_type::hello, 0, &hello, sizeof(hello));
+    reinterpret_cast<wire_header*>(request)->flags = 1;
+    reconnect.push(request, request_size);
+    assert(reconnect_loop.step() == loop_result::protocol_error && reconnect.closed());
+    assert(!reconnect_loop.connected() && second_loop.connected());
     return 0;
 }

@@ -35,6 +35,14 @@ loop_result service_loop::step() {
     u32 response_size = 0;
     const i32 dispatched = dispatcher_.dispatch(request, request_size, response,
                                                 sizeof(response), response_size);
+    if (dispatched < 0 && response_size == 0) {
+        // Malformed framing cannot carry an authenticated sequence reply.
+        // Revoke only this session so a synchronous caller observes failure.
+        dispatcher_.transport_closed();
+        transport_->close();
+        closed_ = true;
+        return loop_result::protocol_error;
+    }
     if (response_size != 0 && transport_->send(response, response_size) !=
                                    static_cast<i32>(response_size)) {
         dispatcher_.transport_closed();

@@ -1,0 +1,178 @@
+{
+  "clients": [
+    {
+      "build_status": "built_not_run",
+      "client_sources": {
+        "scripts/build_mobius_multiwindow_probe.py": "8bbfdb8324bc1171a729d5ab4c1df68efc1ab7fd5a21084988c0f2fcec54f383",
+        "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+        "src/shared/include/xos/process_abi.hpp": "710a7aba0cc8026c62cf1860e1cb6a6ac1cdb92ff461d7fb67e268df30f0f6b1",
+        "src/shared/include/xos/thread_abi.hpp": "a98a3da040d157a5455c1d0ddb2b701fb4faf3f1d17a68d06b18af5e3fa4dddb",
+        "src/user/include/xos/interactium_client.hpp": "f1b10da554098c55a583fbdbdca48691f9170ea9ca07f9ecf426af2688876340",
+        "src/user/include/xos/sdk.hpp": "a43e3b16c2e69361e1e3d0b7d463bace9ca11b2532dd8f3bf37984d21869061b",
+        "tests/fixtures/mobius_multiwindow.cpp": "5affe8ad419925cd5090f06f48c8e0375855f2583ba4e6d3f5c9611225dd689e"
+      },
+      "elf_bytes": 16480,
+      "fixture_artifacts": {
+        "mobius_multiwindow.elf": "521a8e74c4dcb353cffcd76aed01cc41782e021ea2954aa2e50baa502f537bf2"
+      },
+      "label": "ordinary",
+      "libc_linked": false,
+      "profile": "ordinary_native_no_libc",
+      "raw_fixture_receipt_sha256": "eddd996e9f2bca9eaa7b042feca4447a223d346fc294dc018e35bda17992f16c",
+      "runtime_inputs": {
+        "crt0.o": "770eb79064957c889c63d0c92db0185e8e40a958a77150d38b9fb5f67eebd994",
+        "lib/libxos.a": "1be65484e0c2d850745be30f97d30f067d0d197049724e471b59909b66165cfb",
+        "user.ld": "b8b57be81f11d8f181ba6221f2c51db906b5d282ef8e436c2f0f9bcff068a1de"
+      },
+      "sdk_manifest_sha256": "fda9bdd9dfcab7093ae1b20eaedb5517286fdc5c98a6050abd34bc1ff3716a21",
+      "sdk_tree_sha256": "274dd68ce8d19faa8d98dae05f6d60d6fe8476b897a0459c62f3f26238274d72",
+      "target_tools": {
+        "executables": {
+          "ar": {
+            "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+          },
+          "as": {
+            "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+          },
+          "cc1": {
+            "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+          },
+          "cc1plus": {
+            "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+          },
+          "g++": {
+            "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+          },
+          "gcc": {
+            "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+          },
+          "ld": {
+            "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+          },
+          "nasm": {
+            "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+          },
+          "nm": {
+            "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+          },
+          "objcopy": {
+            "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+          }
+        },
+        "g++": "16.2.0",
+        "gcc": "16.2.0",
+        "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+        "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+        "target": "x86_64-elf"
+      }
+    },
+    {
+      "build_status": "built_not_run",
+      "client_sources": {
+        "scripts/build_mobius_multiwindow_probe.py": "8bbfdb8324bc1171a729d5ab4c1df68efc1ab7fd5a21084988c0f2fcec54f383",
+        "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+        "src/shared/include/xos/process_abi.hpp": "710a7aba0cc8026c62cf1860e1cb6a6ac1cdb92ff461d7fb67e268df30f0f6b1",
+        "src/shared/include/xos/thread_abi.hpp": "a98a3da040d157a5455c1d0ddb2b701fb4faf3f1d17a68d06b18af5e3fa4dddb",
+        "src/user/include/xos/interactium_client.hpp": "f1b10da554098c55a583fbdbdca48691f9170ea9ca07f9ecf426af2688876340",
+        "src/user/include/xos/sdk.hpp": "a43e3b16c2e69361e1e3d0b7d463bace9ca11b2532dd8f3bf37984d21869061b",
+        "tests/fixtures/mobius_multiwindow.cpp": "5affe8ad419925cd5090f06f48c8e0375855f2583ba4e6d3f5c9611225dd689e"
+      },
+      "elf_bytes": 182448,
+      "fixture_artifacts": {
+        "mobius_multiwindow.elf": "7f131100eea0dc1a135784c9ccb3dadf6efdb6f85e78e4acca9e15f0201cf5e7"
+      },
+      "label": "threading",
+      "libc_linked": true,
+      "profile": "threading_posix_newlib",
+      "raw_fixture_receipt_sha256": "8d9617e81ccfe18e6d6416e69c03b75b75c06e27ff9e3fa95a5f652d2ccad6fe",
+      "runtime_inputs": {
+        "crt0_posix.o": "8abde6410a6a39925bf8d6b6c28684f63077094e6936764be9e9e0eed49893cc",
+        "lib/libc.a": "26f10b40500920af83d1c8a8fd3346e74ee62b607fe75bc9b7d14cd6646d244b",
+        "lib/libm.a": "ae9104d3a81f47f515b7088b8ac3d047f9d84d61a74e4e6958c20417c58719dd",
+        "lib/libxos.a": "27beeaa04124c19a14159798f64868f4b93daa433d20ffae645c182fc056e204",
+        "user.ld": "05978d544770b93634e255c0c26220de100ddca268bc1c12404ec735fd19523e"
+      },
+      "sdk_manifest_sha256": "7eb90d7168c4bc1d093d33cf6ab53bf2a3843cfe7e6288fde0b06a986b899b87",
+      "sdk_tree_sha256": "ae24716e650c7b24338492e58829e1ba186f9fb475506344523a68b7093fe1de",
+      "target_tools": {
+        "executables": {
+          "ar": {
+            "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+          },
+          "as": {
+            "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+          },
+          "cc1": {
+            "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+          },
+          "cc1plus": {
+            "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+          },
+          "g++": {
+            "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+          },
+          "gcc": {
+            "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+          },
+          "ld": {
+            "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+          },
+          "nasm": {
+            "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+          },
+          "nm": {
+            "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+          },
+          "objcopy": {
+            "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+          }
+        },
+        "g++": "16.2.0",
+        "gcc": "16.2.0",
+        "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+        "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+        "target": "x86_64-elf"
+      }
+    }
+  ],
+  "iso_sha256": "e4a3f04429b21ee88ba1e3be0b3c596bd11c511eee1ecbf55d6a8106160a1992",
+  "qemu": {
+    "binary_sha256": "bea1a94ed5686c5cc8051175990519138a703982c7e5911a7dad64601633d1bf",
+    "qmp_transport": "pipe",
+    "version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)"
+  },
+  "qualification": "separate matching ordinary and threading guest results; producer receipts remain built_not_run",
+  "source_base_commit": "6332527ab64e92371266363f41f3247717a3cac8",
+  "source_bindings": "source_bindings.json.gz",
+  "source_count": 2305,
+  "system_build_id": "9143113dac0b4851",
+  "system_manifest_sha256": "3121f8ee73bf9898027237e1c0acae4662d570c60a2a01f947afd41926468640",
+  "threaded_newlib": {
+    "archives": {
+      "x86_64-elf/lib/libc.a": "26f10b40500920af83d1c8a8fd3346e74ee62b607fe75bc9b7d14cd6646d244b",
+      "x86_64-elf/lib/libm.a": "ae9104d3a81f47f515b7088b8ac3d047f9d84d61a74e4e6958c20417c58719dd"
+    },
+    "build_id": "b26d1ef0824937f837476c31196c41bfb384337abad74a93e355d363b36522e1",
+    "cpp_runtime_built": false,
+    "patches": {
+      "0001-reject-utf8-surrogates.patch": "786dcff849e2c16fb02383a2e0cc7185bd963b378ef276b93bd15bda32c8291f",
+      "0002_native_atomic_initialization.patch": "23a6c70ee606395a42bbaf5911a17f8f5426b65f3e0c046bedf7ac0f43bbd3ce",
+      "0003_generic_math_dispatch.patch": "e4363d406249f505bd7ec6819f22d595823496388f29c247b7b2b1bf6ead0f3b"
+    },
+    "raw_build_receipt_sha256": "00cdfe20c23928e3c374dedebb7965a7c3d97c7c2f5976a5d533884d34b06477",
+    "sdk_artifact_count": 1333,
+    "source_archive": "newlib-4.6.0.20260123.tar.gz",
+    "source_sha256": "6ff27e3bf022666f43f7802255be680eeff722ac181b1725d21e2e8318604ee3",
+    "source_url": "https://sourceware.org/pub/newlib/newlib-4.6.0.20260123.tar.gz"
+  },
+  "threading_sdk_source_count": 261,
+  "virtual_machine": {
+    "acceleration": "tcg",
+    "cpu": "qemu64,+rdrand",
+    "cpus": 1,
+    "graphics": "std VGA 800x600",
+    "machine": "pc-i440fx-10.0",
+    "network": "none",
+    "ram_mib": 512
+  }
+}

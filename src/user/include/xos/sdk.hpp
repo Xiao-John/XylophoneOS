@@ -47,6 +47,12 @@ inline i64 read(u32 handle, void* data, u64 length) {
     return syscall(sys_handle_read, handle, reinterpret_cast<u64>(data), length);
 }
 inline i64 close(u32 handle) { return syscall(sys_handle_close, handle); }
+inline i64 query_pipe_status(u64 token, pipe_status_snapshot& output) {
+    pipe_status_snapshot request{pipe_status_version, sizeof(pipe_status_snapshot), 0, 0, 0, 0, 0};
+    const i64 result = syscall(sys_pipe_wait, token, pipe_wait_query_mode, reinterpret_cast<u64>(&request));
+    if (result == 0) output = request;
+    return result;
+}
 inline i64 stream_lease(u32 handle, stream_lease_action action, u64 target = 0) {
     return syscall(sys_stream_lease, handle, static_cast<u64>(action), target);
 }

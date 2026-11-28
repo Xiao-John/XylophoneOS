@@ -21,6 +21,30 @@ input_payload make_payload(const display_event& source) {
 }
 }
 
+void service::invalidate(i64 x, i64 y, u32 width, u32 height) {
+    const i64 right = x + width > 800 ? 800 : x + width;
+    const i64 bottom = y + height > 600 ? 600 : y + height;
+    const i64 left = x < 0 ? 0 : x;
+    const i64 top = y < 0 ? 0 : y;
+    if (right <= left || bottom <= top) return;
+    if (!damaged_) {
+        damage_ = {u32(left), u32(top), u32(right - left), u32(bottom - top)};
+    } else {
+        const u32 union_left = u32(left) < damage_.x ? u32(left) : damage_.x;
+        const u32 union_top = u32(top) < damage_.y ? u32(top) : damage_.y;
+        const u32 union_right = u32(right) > damage_.x + damage_.width ?
+                                    u32(right) : damage_.x + damage_.width;
+        const u32 union_bottom = u32(bottom) > damage_.y + damage_.height ?
+                                     u32(bottom) : damage_.y + damage_.height;
+        damage_ = {union_left, union_top, union_right - union_left, union_bottom - union_top};
+    }
+    damaged_ = true;
+}
+
+void service::invalidate(const window_state& window) {
+    if (window.visible) invalidate(window.x, window.y, window.width, window.height);
+}
+
 const service::session* service::find(session_token token) const {
     for (const auto& item : sessions_) if (item.token.value == token.value && token.value != 0) return &item;
     return nullptr;
@@ -50,8 +74,10 @@ bool service::disconnect(session_token token) {
     if (!item) return false;
     for (u32 i = 0; i < window_table_capacity; ++i) {
         const auto* window = manager_.at(i);
-        if (window && window->id.valid() && window->owner == item->owner)
+        if (window && window->id.valid() && window->owner == item->owner) {
+            invalidate(*window);
             release_window(window->id, i);
+        }
     }
     manager_.destroy_owner(item->owner);
     if (surfaces_) {
@@ -60,7 +86,6 @@ bool service::disconnect(session_token token) {
         }
     }
     *item = {};
-    damaged_ = true;
     return true;
 }
 
@@ -81,46 +106,80 @@ window_id service::create_window(session_token token, const create_window_payloa
         for (u32 i = 0; i < surface_pixels; ++i) slot->pixels[i] = 0xff101820;
     }
     (void)manager_.raise_and_focus(id, item->owner);
-    damaged_ = true;
+    invalidate(*manager_.get(id));
     return id;
 }
 
 bool service::destroy_window(session_token token, window_id id) {
     const auto* item = find(token);
     if (!item) return false;
+    const auto* window = manager_.get(id);
+    if (!window || window->owner != item->owner) return false;
+    const window_state previous = *window;
     const u32 slot = window_slot(id);   // resolve before the window disappears
     if (!manager_.destroy(id, item->owner)) return false;
+    invalidate(previous);
     release_window(id, slot);
     if (surfaces_) for (u32 i = 0; i < surface_capacity; ++i)
         if (surfaces_[i].id == id) surfaces_[i] = {};
-    damaged_ = true;
     return true;
 }
 
 bool service::configure_window(session_token token, window_id id, const configure_payload& request) {
     const auto* item = find(token);
-    if (!item || !manager_.configure(id, item->owner, request)) return false;
+    const auto* window = manager_.get(id);
+    if (!item || !window || window->owner != item->owner) return false;
+    const window_state previous = *window;
+    if (!manager_.configure(id, item->owner, request)) return false;
     (void)manager_.set_visible(id, item->owner, (request.flags & flag_visible) != 0);
+    // A resize preserves only the old/new intersection. Erase every other
+    // pixel, so shrinking and expanding cannot reveal previously hidden data.
+    if (surfaces_ && (previous.width != request.width || previous.height != request.height)) {
+        for (u32 i = 0; i < surface_capacity; ++i) {
+            if (surfaces_[i].id != id) continue;
+            const u32 kept_width = previous.width < request.width ? previous.width : request.width;
+            const u32 kept_height = previous.height < request.height ? previous.height : request.height;
+            for (u32 y = 0; y < 600; ++y)
+                for (u32 x = 0; x < 800; ++x)
+                    if (x >= kept_width || y >= kept_height)
+                        surfaces_[i].pixels[y * surface_stride + x] = 0xff101820;
+        }
+    }
     // A hidden window cannot receive the event that proves the pointer left it.
-    if ((request.flags & flag_visible) == 0 && pointer_target_ == id) pointer_target_ = {};
-    damaged_ = true;
+    if ((request.flags & flag_visible) == 0) {
+        if (pointer_target_ == id) pointer_target_ = {};
+        if (pointer_capture_ == id) {
+            pointer_capture_ = {};
+            pointer_suppressed_ = mouse_buttons_ != 0;
+        }
+        purge_input(id);
+    }
+    invalidate(previous);
+    invalidate(*manager_.get(id));
     return true;
 }
 
 bool service::focus_window(session_token token, window_id id) {
     const auto* item = find(token);
     if (!item || !manager_.raise_and_focus(id, item->owner)) return false;
-    damaged_ = true;
+    invalidate(*manager_.get(id));
     return true;
 }
 
-bool service::accept_frame(session_token token, window_id id, u64 frame_serial) {
+bool service::accept_frame(session_token token, window_id id, u64 frame_serial,
+                           const dirty_rect* damage, u32 damage_count) {
     const auto* item = find(token);
     if (!item || !manager_.accept_frame(id, item->owner, frame_serial)) return false;
     if (surfaces_) for (u32 i = 0; i < surface_capacity; ++i)
         if (surfaces_[i].id == id)
             for (u32 p = 0; p < surface_pixels; ++p) surfaces_[i].pixels[p] = surfaces_[i].pending_pixels[p];
-    damaged_ = true;
+    const auto* window = manager_.get(id);
+    if (window && window->visible) {
+        if (damage_count == 0) invalidate(*window);
+        else for (u32 i = 0; i < damage_count; ++i)
+            invalidate(i64(window->x) + damage[i].x, i64(window->y) + damage[i].y,
+                       damage[i].width, damage[i].height);
+    }
     return true;
 }
 
@@ -143,11 +202,17 @@ bool service::write_tile(session_token token, window_id id, const tile_payload& 
     if (!owner_session || !window || window->owner != owner_session->owner || !surfaces_ || !pixels ||
         tile.width == 0 || tile.height == 0 || tile.x > window->width || tile.y > window->height ||
         tile.width > window->width - tile.x || tile.height > window->height - tile.y ||
-        u64(tile.width) * tile.height * 4 != length) return false;
+        tile.reserved != 0 || u64(tile.width) * tile.height * 4 != length) return false;
     surface_buffer* surface = nullptr;
     for (u32 i = 0; i < surface_capacity; ++i)
         if (surfaces_[i].id == id) { surface = &surfaces_[i]; break; }
     if (!surface) return false;
+    // Validate the complete tile before changing any staging pixels.
+    for (u32 offset = 0; offset < length; offset += 4) {
+        const u8 alpha = pixels[offset + 3];
+        if (pixels[offset] > alpha || pixels[offset + 1] > alpha || pixels[offset + 2] > alpha)
+            return false;
+    }
     for (u32 row = 0; row < tile.height; ++row) {
         for (u32 column = 0; column < tile.width; ++column) {
             const u32 source = (row * tile.width + column) * 4;
@@ -175,6 +240,8 @@ bool service::queue_input(const display_event& source) {
     last_modifiers_ = source.modifiers;
     window_id target{};
     if (source.kind == 4) {
+        pointer_capture_ = {};
+        pointer_suppressed_ = source.buttons != 0;
         mouse_buttons_ = source.buttons;
         last_pointer_x_ = source.x;
         last_pointer_y_ = source.y;
@@ -187,19 +254,27 @@ bool service::queue_input(const display_event& source) {
             const auto* window = manager_.at(i);
             if (!window->id.valid()) continue;
             display_event sync = source;
-            sync.buttons = window->id == pointer_target_ ? mouse_buttons_ : 0;
+            sync.buttons = !pointer_suppressed_ && window->id == pointer_target_ ? mouse_buttons_ : 0;
             if (window->id != pointer_target_) project_pointer_outside(sync, *window);
             queued |= enqueue_event(window->id, sync);
         }
         return queued;
     }
     if (source.kind == 3) {
+        if (pointer_suppressed_) {
+            // The press owner disappeared or input was lost. A held drag may
+            // not migrate to the app now underneath the pointer.
+            mouse_buttons_ = source.buttons;
+            if (source.buttons == 0) pointer_suppressed_ = false;
+            return false;
+        }
         const auto hit = manager_.hit_test(source.x, source.y);
-        target = hit.id.valid() ? hit.id : manager_.focused();
-        const bool pressed = (source.buttons & 1u) != 0;
-        if (pressed && (mouse_buttons_ & 1u) == 0 && hit.id.valid()) {
+        const bool new_press = source.buttons != 0 && mouse_buttons_ == 0;
+        if (new_press) pointer_capture_ = hit.id;
+        target = pointer_capture_.valid() ? pointer_capture_ : hit.id;
+        if (new_press && hit.id.valid()) {
             const auto* window = manager_.get(hit.id);
-            if (window && manager_.raise_and_focus(hit.id, window->owner)) damaged_ = true;
+            if (window && manager_.raise_and_focus(hit.id, window->owner)) invalidate(*window);
         }
         mouse_buttons_ = source.buttons;
         last_pointer_x_ = source.x;
@@ -209,6 +284,7 @@ bool service::queue_input(const display_event& source) {
         if (pointer_target_.valid() && pointer_target_ != target)
             send_pointer_leave(source, pointer_target_);
         pointer_target_ = target;
+        if (source.buttons == 0) pointer_capture_ = {};
     } else {
         target = manager_.focused();
         if (source.kind == 1) {
@@ -228,7 +304,8 @@ bool service::queue_input(const display_event& source) {
 }
 
 bool service::enqueue_event(window_id target, const display_event& source) {
-    if (!manager_.get(target)) return false;
+    const auto* window = manager_.get(target);
+    if (!window || !window->visible) return false;
     const u32 slot = window_slot(target);
     // Report earlier drops for this window before delivering new input: the
     // resync tells the client how much input it missed and lets it drop held
@@ -256,7 +333,7 @@ input_payload service::make_resync(u32 lost, window_id target) {
     sync.x = last_pointer_x_;
     sync.y = last_pointer_y_;
     sync.modifiers = last_modifiers_;
-    sync.buttons = pointer_target_ == target ? mouse_buttons_ : 0;
+    sync.buttons = !pointer_suppressed_ && pointer_target_ == target ? mouse_buttons_ : 0;
     sync.input_sequence = assign_sequence(target, 1);
     return sync;
 }
@@ -350,6 +427,10 @@ void service::reset_window_state(window_id id) {
 // to the window that inherited focus.
 void service::release_window(window_id id, u32 slot) {
     if (pointer_target_ == id) pointer_target_ = {};
+    if (pointer_capture_ == id) {
+        pointer_capture_ = {};
+        pointer_suppressed_ = mouse_buttons_ != 0;
+    }
     purge_input(id);
     if (slot < window_table_capacity) {
         pending_lost_[slot] = 0;
@@ -384,6 +465,7 @@ void service::send_pointer_leave(const display_event& source, window_id old_targ
     const auto* old_window = manager_.get(old_target);
     if (!old_window || !old_window->visible) return;   // destroyed or hidden: no recipient
     display_event leave = source;
+    leave.buttons = 0;
     project_pointer_outside(leave, *old_window);
     (void)enqueue_event(old_target, leave);
 }
@@ -411,6 +493,11 @@ bool service::take_input(session_token token, window_id target, input_payload& e
 }
 
 bool service::compose(u32* destination, u32 width, u32 height, u32 background) {
+    return compose_region(destination, width, height, background, {0, 0, width, height});
+}
+
+bool service::compose_region(u32* destination, u32 width, u32 height, u32 background,
+                             const dirty_rect& region) {
     if (!surfaces_) return false;
     surface_view views[surface_capacity]{};
     u32 count = 0;
@@ -420,7 +507,7 @@ bool service::compose(u32* destination, u32 width, u32 height, u32 background) {
         views[count++] = {window->id, surfaces_[i].pixels, window->width, window->height,
                           surface_stride * 4};
     }
-    return compositor_.compose(manager_, views, count, destination, width, height, background);
+    return compositor_.compose_region(manager_, views, count, destination, width, height, background, region);
 }
 
 } // namespace xos::interactium

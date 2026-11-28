@@ -5379,7 +5379,8 @@ void* process_syscall(interrupt_frame* frame) {
         result = 0; break;
     }
     case sys_pipe_wait: {
-        if (second > process_pipe_bytes) { result = process_error_invalid; break; }
+        const bool query = second == pipe_wait_query_mode;
+        if (!query && second > process_pipe_bytes) { result = process_error_invalid; break; }
         u32 pipe_index = process_max_pipes;
         bool writable = false;
         if (first < 3) {
@@ -5387,6 +5388,7 @@ void* process_syscall(interrupt_frame* frame) {
                 !current->stdio[first].valid) { result = process_error_denied; break; }
             const auto& route = current->stdio[first];
             if (route.console) {
+                if (query) { result = process_error_invalid; break; }
                 if (input_lease.active() && input_lease.holder() != current->pid) {
                     result = process_error_denied; break;
                 }
@@ -5404,6 +5406,33 @@ void* process_syscall(interrupt_frame* frame) {
         }
         if (pipe_index >= process_max_pipes || !pipes[pipe_index].used) {
             result = process_error_invalid; break;
+        }
+        if (query) {
+            // Ownership is checked before touching the caller's output. COW
+            // preparation can fail; never publish a partial or borrowed view.
+            if (!user_range_ok(third, sizeof(pipe_status_snapshot), false) ||
+                !user_range_ok(third, sizeof(pipe_status_snapshot), true)) {
+                result = process_error_invalid; break;
+            }
+            pipe_status_snapshot request{};
+            copy_from_user(&request, third, sizeof(request));
+            if (request.version != pipe_status_version || request.size != sizeof(request) ||
+                request.readable || request.writable || request.flags || request.reserved || request.reserved2) {
+                result = process_error_invalid; break;
+            }
+            // syscalls run in one non-preemptible critical section. Read the
+            // live pipe only after output validation, without consuming bytes.
+            const auto& pipe = pipes[pipe_index];
+            request.flags = writable ? pipe_status_write_end : pipe_status_read_end;
+            if (writable) {
+                request.writable = process_pipe_bytes - pipe.length;
+                if (pipe.reader_references == 0) request.flags |= pipe_status_peer_closed;
+            } else {
+                request.readable = pipe.length;
+                if (pipe.writer_references == 0) request.flags |= pipe_status_peer_closed;
+            }
+            copy_to_user(third, &request, sizeof(request));
+            result = 0; break;
         }
         if (!writable && second != 0) { result = process_error_invalid; break; }
         const auto& pipe = pipes[pipe_index];

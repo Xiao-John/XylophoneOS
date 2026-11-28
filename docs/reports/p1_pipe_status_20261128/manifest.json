@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "files": {
+    "fixture_receipt.json": "b9a532341b0b2bd55c728f4446a280b5d1845caaf1e1952a41395c71cc42c18e",
+    "initial_link_failure.log": "56dbd2ab7f40573c4ee09efe92e7b93c223abad75cd6ccf4200d59e9f23a42ee",
+    "probe_build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "provenance.json": "5c418b8ef61a828b6d266730ce56d86cf358dd8ba269e1ec29cf8b8fc8841377",
+    "qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "qualification.json": "0b898f097ebb3dc73dbf7deab35f4139d21f03c70c5d730c1f68febe8b638b3b",
+    "report.json": "4eaffa0480635b8aa0d69e16bfd3b9daa57ef7bac8ab48ac4892f3881cee2dab",
+    "sdk_manifest.json": "0b1d8cce46bfee1e2d4983e892c52ce0eeef6ef6be86abc388fb4bb1cc436b1b",
+    "serial.log.gz": "fe5775c7f522cce76c87a119257e2413c2326c560207e2db60b2d6676e7ba757",
+    "system_manifest.json.gz": "7a86a244c04af2826edcb4e629698b8d817dc19c0daaf235bd7348ca607c424e"
+  }
+}

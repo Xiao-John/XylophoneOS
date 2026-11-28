@@ -318,6 +318,101 @@ void authority_case(const char* image, const char* nonce) {
     wait_service({static_cast<u64>(pid), control, {}}, process_outcome::exited, 0);
     sdk::print("IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered\n");
 }
+
+constexpr char quota_peer_name[] = "ipc-quota-peer";
+constexpr char quota_peer_second[] = "ipc-quota-peer-second";
+constexpr char quota_parent_second[] = "ipc-quota-parent-second";
+constexpr char quota_parent_extra[] = "ipc-quota-parent-extra";
+void pair_quota_full(u64 peer) {
+    ipc_channel unchanged{0x7ffffff0, 0x7ffffff1};
+    require(sdk::ipc_channel_create(peer, unchanged) == process_error_resources &&
+            unchanged.send == 0x7ffffff0 && unchanged.receive == 0x7ffffff1, "direct-quota-output-unchanged");
+    require(sdk::ipc_name_connect(quota_peer_name, unchanged) == process_error_resources &&
+            unchanged.send == 0x7ffffff0 && unchanged.receive == 0x7ffffff1, "connect-shares-owner-quota");
+}
+void name_quota_full() {
+    require(sdk::ipc_name_publish(quota_parent_extra) == process_error_resources, "name-quota");
+    require(!sdk::ipc_name_publish(parent_name) && !sdk::ipc_name_publish(quota_parent_second),
+            "name-publish-idempotent-at-quota");
+    require(sdk::ipc_name_unpublish(quota_parent_extra) == process_error_denied, "failed-publish-left-no-name");
+}
+int quota_peer(u64 parent, const char* nonce) {
+    require(!sdk::ipc_name_publish(quota_peer_name) && !sdk::ipc_name_publish(quota_peer_second), "peer-name-budget");
+    ipc_channel control{}; require(!sdk::ipc_name_connect(parent_name, control), "quota-control");
+    authenticate(control, parent); send(control, 50, nonce);
+    const packet direct = receive(control, 51, nonce);
+    ipc_channel owner_pair{static_cast<u32>(direct.extra), static_cast<u32>(direct.value)};
+    authenticate(owner_pair, parent);
+    ipc_channel first = accept(parent), second = accept(parent);
+    // Another authenticated owner retains its allocation budget even while
+    // the parent has filled both its direct/create and pending/connect quota.
+    ipc_channel independent{};
+    require(!sdk::ipc_channel_create(parent, independent), "other-owner-can-create");
+    authenticate(independent, parent); close(independent);
+    require(sdk::ipc_channel_revoke(owner_pair.send) == process_error_denied, "peer-revoke-does-not-release-owner-budget");
+    send(control, 52, nonce); receive(control, 53, nonce);
+    require(!sdk::ipc_channel_close(owner_pair.send), "peer-close-releases-owner-budget");
+    require(sdk::ipc_channel_close(owner_pair.receive) == process_error_denied, "repeat-close-denied");
+    send(control, 54, nonce); receive(control, 55, nonce);
+    authenticate(first, parent); authenticate(second, parent);
+    // Leave both published names and all accepted pair references live. Exit
+    // must recover their owners' budgets, including the parent's four pairs.
+    return 0;
+}
+void quota_case(const char* image, const char* nonce) {
+    static_assert(ipc_max_owned_channels == 4 && ipc_max_owned_names == 2);
+    require(!sdk::ipc_name_publish(quota_parent_second), "second-parent-name"); name_quota_full();
+    char parent[21]{}; number_text(sdk::pid(), parent);
+    const char* args[]{image, "quota-peer", parent, nonce};
+    const i64 pid = sdk::spawn_file(image, 4, args); require(pid > 0, "spawn-quota-peer", pid);
+    const u64 peer = static_cast<u64>(pid);
+    ipc_channel control = accept(peer); receive(control, 50, nonce);
+    require(sdk::ipc_name_publish(quota_peer_name) == process_error_busy, "other-owner-name-conflict");
+    ipc_channel channels[ipc_max_owned_channels]{};
+    require(!sdk::ipc_channel_create(peer, channels[0]) &&
+            !sdk::ipc_name_connect(quota_peer_name, channels[1]) &&
+            !sdk::ipc_channel_create(peer, channels[2]) &&
+            !sdk::ipc_name_connect(quota_peer_name, channels[3]), "fill-mixed-pair-quota");
+    for (const auto& channel : channels) authenticate(channel, peer);
+    pair_quota_full(peer); // Pending connections already consume their pairs.
+    send(control, 51, nonce, channels[0].send, channels[0].receive);
+    receive(control, 52, nonce); pair_quota_full(peer); // Accept is not release.
+    waiter blocked{};
+    start_waiter(blocked, channels[0].receive, ipc_wait_mode::receive); observe_waiters(1);
+    pair_quota_full(peer);
+    require(sdk::ipc_channel_revoke(control.send) == process_error_denied &&
+            sdk::ipc_channel_close(0x7fffffff) == process_error_denied, "failed-release-denied");
+    pair_quota_full(peer); name_quota_full();
+    send(control, 53, nonce); join_broken(blocked); receive(control, 54, nonce);
+    const ipc_channel stale = channels[0]; invalidated(stale);
+    require(!sdk::ipc_channel_create(peer, channels[0]) && channels[0].send != stale.send &&
+            channels[0].receive != stale.receive, "peer-close-recovers-one-pair");
+    invalidated(stale); pair_quota_full(peer);
+    require(sdk::ipc_channel_close(stale.send) == process_error_denied, "stale-release-denied");
+    pair_quota_full(peer); // Failed close cannot manufacture another credit.
+
+    require(!sdk::ipc_name_unpublish(quota_parent_second) &&
+            !sdk::ipc_name_publish(quota_parent_extra), "name-budget-recovers");
+    require(sdk::ipc_name_publish(quota_parent_second) == process_error_resources, "name-budget-still-bounded");
+    require(!sdk::ipc_name_unpublish(quota_parent_extra), "parent-extra-unpublish");
+    send(control, 55, nonce);
+    wait_service({peer, control, {}}, process_outcome::exited, 0);
+    for (const auto& channel : channels) invalidated(channel);
+    invalidated(control);
+    ipc_channel missing{};
+    require(sdk::ipc_name_connect(quota_peer_name, missing) == ipc_error_name_not_found &&
+            sdk::ipc_name_connect(quota_peer_second, missing) == ipc_error_name_not_found, "peer-exit-reclaims-names");
+    // The live supervisor is only a peer for these unused pairs. Neither its
+    // identity nor possession of a token grants this process extra authority.
+    for (auto& channel : channels) require(!sdk::ipc_channel_create(0, channel), "exit-recovers-full-owner-budget");
+    missing = {0x7ffffff0, 0x7ffffff1};
+    require(sdk::ipc_channel_create(0, missing) == process_error_resources &&
+            missing.send == 0x7ffffff0 && missing.receive == 0x7ffffff1, "recovered-budget-remains-bounded");
+    for (auto& channel : channels) {
+        require(!sdk::ipc_channel_close(channel.send), "owner-closes-recovered-pair"); invalidated(channel);
+    }
+    sdk::print("IPC_QUOTA_PASS shared_owner_budget pending_and_accepted_counted blocked_counted failure_atomic peer_isolated recovered\n");
+}
 }
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
@@ -339,10 +434,15 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         require(startup->argc == 4 && sdk::length(argv[3]) == 32, "authority-arguments");
         return authority_child(number(argv[2]), argv[3]);
     }
-    if (sdk::equal(argv[1], "lifecycle") || sdk::equal(argv[1], "authority")) {
+    if (sdk::equal(argv[1], "quota-peer")) {
+        require(startup->argc == 4 && sdk::length(argv[3]) == 32, "quota-peer-arguments");
+        return quota_peer(number(argv[2]), argv[3]);
+    }
+    if (sdk::equal(argv[1], "lifecycle") || sdk::equal(argv[1], "authority") || sdk::equal(argv[1], "quota")) {
         require(startup->argc == 3 && sdk::length(argv[2]) == 32, "lifecycle-arguments");
         require(!sdk::ipc_name_publish(parent_name), "publish-parent");
-        if (sdk::equal(argv[1], "authority")) authority_case(argv[0], argv[2]);
+        if (sdk::equal(argv[1], "quota")) quota_case(argv[0], argv[2]);
+        else if (sdk::equal(argv[1], "authority")) authority_case(argv[0], argv[2]);
         else {
             const char* events[]{"revoke", "close", "exit", "fault", "cancel"};
             for (const char* event : events) lifecycle_case(argv[0], argv[2], event);

@@ -37,6 +37,9 @@ sys51 显式 mode 1 为有界进程清理窗口，32 字节版本 1 请求，旧
 sys84–86 端点、待 accept 连接及发布名称在成功 exec 时按
 [endpoint 生命周期](ipc_endpoint_lifecycle.md) 一起撤销，失败 exec 完整保留；
 sys81 的显式 channel 继承仍由原契约约束。
+sys84 create 与 sys86 connect 共用每 PID 4 个 pair 的额度（含 pending 与已 accept
+连接），sys86 publish 每 PID 最多 2 个名称；超额返回既有 resources，失败不修改
+输出或已建立对象。共享常量与两个 SDK manifest 同步，详见同一生命周期契约。
 
 sys60 试行 bit32 扩展 entry 可显式保留通用通道，布局见 `process_exec_channel_entry`
 和 [通道契约](channel.md)；默认 ABI 不变，尚未客体验证。

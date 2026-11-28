@@ -99,6 +99,7 @@ def main():
                                       ('IPC_LIFECYCLE_PASS ' + event +
                                        ' blocked_both restart_authenticated stale_tokens_denied').encode())],
                     'authority': [b'IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered'],
+                    'quota': [b'IPC_QUOTA_PASS shared_owner_budget pending_and_accepted_counted blocked_counted failure_atomic peer_isolated recovered'],
                 }
                 for mode, expected in cases.items():
                     output = command(guest, 'exec-driver /bin/ipcexec.elf ' + mode + ' ' + nonce,

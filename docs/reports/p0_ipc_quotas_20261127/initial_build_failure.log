@@ -1,0 +1,29 @@
+${XOS_SOURCE_ROOT}/src/kernel/arch/x86_64/tasks.cpp: In function 'void* xos::arch::{anonymous}::process_syscall(xos::arch::interrupt_frame*)':
+${XOS_SOURCE_ROOT}/src/kernel/arch/x86_64/tasks.cpp:5582:34: error: declaration of 'name' shadows a previous local [-Werror=shadow]
+ 5582 |                 for (const auto& name : ipc_names) {
+      |                                  ^~~~
+${XOS_SOURCE_ROOT}/src/kernel/arch/x86_64/tasks.cpp:5572:18: note: shadowed declaration is here
+ 5572 |             char name[32]{};
+      |                  ^~~~
+cc1plus: all warnings being treated as errors
+Traceback (most recent call last):
+  File "${XOS_SOURCE_ROOT}/scripts/build.py", line 428, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_SOURCE_ROOT}/scripts/build.py", line 276, in main
+    run([tool("g++"), *COMMON_FLAGS, *X86_FLAGS, *gpu_flags,
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         "-I", str(ROOT / "src/kernel/include"), "-I", str(ROOT / "src/kernel"),
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+         "-I", str(BUILD), "-ffile-prefix-map=" + str(ROOT) + "=.",
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         "-c", str(source), "-o", str(obj)])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_SOURCE_ROOT}/scripts/build.py", line 233, in run
+    subprocess.run(command, check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['${XOS_SDK_ROOT}/bin/x86_64-elf-g++', '-std=c++20', '-ffreestanding', '-nostdinc++', '-fno-exceptions', '-fno-rtti', '-fno-stack-protector', '-fno-threadsafe-statics', '-fno-use-cxa-atexit', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-fno-omit-frame-pointer', '-fno-pic', '-fno-pie', '-g3', '-gdwarf-4', '-O2', '-Wall', '-Wextra', '-Werror', '-Wconversion', '-Wshadow', '-m64', '-march=x86-64', '-mtune=generic', '-mcmodel=small', '-mno-red-zone', '-mgeneral-regs-only', '-I', '${XOS_SOURCE_ROOT}/src/kernel/include', '-I', '${XOS_SOURCE_ROOT}/src/kernel', '-I', '${XOS_SOURCE_ROOT}/src/shared/include', '-I', '${XOS_SOURCE_ROOT}/src/kernel/arch/x86_64', '-I', '${XOS_SOURCE_ROOT}/build/p0_quota_system', '-ffile-prefix-map=/work=.', '-c', '${XOS_SOURCE_ROOT}/src/kernel/arch/x86_64/tasks.cpp', '-o', '${XOS_SOURCE_ROOT}/build/p0_quota_system/src_kernel_arch_x86_64_tasks.cpp.o']' returned non-zero exit status 1.

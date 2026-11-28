@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Exercise IPC revocation with failed and successful exec in a real guest."""
+"""Qualify IPC authority, deterministic blocked revocation, and service restart."""
 import argparse
 import hashlib
 import json
@@ -14,11 +14,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / 'scripts'), str(ROOT / 'tests')]
 from boot_smoke import Guest
 from build_ipc_exec_probe import INPUTS
+from build_ipc_deadline_probe import INPUTS as DEADLINE_INPUTS
 from make_work_disk import create_fat32
 from process_smoke import command, resources
 from task_smoke import send_bytes, pump
 from work_disk import transfer
 from xos_app import tree_receipt
+from process_wait_any_guest import system_identity, verify_system_identity
 
 
 def sha(path):
@@ -32,22 +34,27 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--repeat', type=int, default=3, choices=range(1, 17))
     parser.add_argument('--serial-only', action='store_true')
+    parser.add_argument('--suite', choices=('lifecycle', 'deadline'), default='lifecycle')
     args = parser.parse_args()
     system, fixture, out = args.system.resolve(), args.fixture.resolve(), args.output.absolute()
     out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
-    report = {'status': 'not_run', 'runner_sha256': sha(Path(__file__)), 'checks': [],
+    inputs = DEADLINE_INPUTS if args.suite == 'deadline' else INPUTS
+    report = {'status': 'not_run', 'suite': args.suite, 'runner_sha256': sha(Path(__file__)), 'checks': [],
               'not_run': ['sys81_explicit_channel_inheritance_stress', 'terminal_display_interactium_regression']}
     guest = None
 
     def verify_inputs():
+        verify_system_identity(system, identity)
+        if sha(fixture / 'receipt.json') != receipt_hash:
+            raise ValueError('fixture receipt changed during acceptance')
         for name, digest in manifest['sources'].items():
             if sha(ROOT / name) != digest:
                 raise ValueError('system source mismatch: ' + name)
         for name, info in manifest['artifacts'].items():
             if sha(system / name) != info['sha256']:
                 raise ValueError('system artifact mismatch: ' + name)
-        if receipt['sources'] != {name: sha(ROOT / name) for name in INPUTS}:
+        if receipt['sources'] != {name: sha(ROOT / name) for name in inputs}:
             raise ValueError('fixture source mismatch')
         if tree_receipt(system / 'sdk')[0] != receipt['sdk_tree_sha256']:
             raise ValueError('fixture SDK mismatch')
@@ -56,8 +63,11 @@ def main():
                 raise ValueError('fixture artifact mismatch: ' + name)
 
     try:
+        identity = system_identity(system)
         manifest = json.loads((system / 'manifest.json').read_text())
-        receipt = json.loads((fixture / 'receipt.json').read_text())
+        receipt_bytes = (fixture / 'receipt.json').read_bytes()
+        receipt_hash = hashlib.sha256(receipt_bytes).hexdigest()
+        receipt = json.loads(receipt_bytes)
         verify_inputs()
         report.update(build_id=manifest['build_id'], image_sha256=sha(system / 'xos-install.iso'),
                       system_manifest_sha256=sha(system / 'manifest.json'),
@@ -67,7 +77,8 @@ def main():
             disk = Path(temporary) / 'work.img'
             create_fat32(disk, 512)
             transfer(disk, 'mkdir', '/bin')
-            transfer(disk, 'import', '/bin/ipcexec.elf', fixture / 'ipc_exec_probe.elf')
+            binary_name = 'ipc_deadline_probe.elf' if args.suite == 'deadline' else 'ipc_exec_probe.elf'
+            transfer(disk, 'import', '/bin/ipcexec.elf', fixture / binary_name)
             report['initial_disk_sha256'] = sha(disk)
             guest = Guest(system / 'xos-install.iso', str(out.relative_to(ROOT / 'build')) + '/guest',
                           iso=True, work_disk=disk, qmp_enabled=not args.serial_only)
@@ -76,25 +87,42 @@ def main():
             send_bytes(guest, b'run\r')
             guest.expect_supervisor(trace=True, timeout=60)
             command(guest, 'demo quiet', b'demo tasks')
+            command(guest, 'audio stop', b'xsh> ')
             pump(guest, 0.2)
             baseline = resources(guest)
             report['baseline'] = baseline
             for round_number in range(args.repeat):
                 nonce = secrets.token_hex(16)
-                output = command(guest, 'exec-driver /bin/ipcexec.elf parent ' + nonce,
-                                 b'kind=exited code=', timeout=45)
-                expected = b'IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected'
-                if (expected not in output or b'IPC_EXEC_CHILD_PASS' not in output or
-                    not re.search(rb'\[wait\].*kind=exited code=0', output) or b'IPC_EXEC_FAIL' in output):
-                    raise AssertionError(output[-5000:])
-                actual = resources(guest)
-                if actual != baseline:
-                    raise AssertionError(f'resource mismatch {actual}, expected {baseline}')
-                report['checks'].append({'round': round_number, 'nonce': nonce, 'resources': actual,
-                    'status': 'passed', 'scope': ['failed_exec_preserves_name_and_channel',
-                    'successful_exec_revokes_both_endpoints', 'blocked_peer_wakes',
-                    'old_name_removed', 'queued_unaccepted_connection_discarded',
-                    'same_pid_new_tokens_authenticated', 'child_exit_reclaims_everything']})
+                cases = {
+                    'parent': [
+                        b'IPC_EXEC_BLOCKED receive', b'IPC_EXEC_CHILD_PASS',
+                        b'IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected'],
+                    'lifecycle': [marker for event in ('revoke', 'close', 'exit', 'fault', 'cancel')
+                                  for marker in (
+                                      ('IPC_LIFECYCLE_BLOCKED ' + event + ' receive send').encode(),
+                                      ('IPC_LIFECYCLE_PASS ' + event +
+                                       ' blocked_both restart_authenticated stale_tokens_denied').encode())],
+                    'authority': [b'IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered'],
+                    'quota': [b'IPC_QUOTA_PASS shared_owner_budget pending_and_accepted_counted blocked_counted failure_atomic peer_isolated recovered'],
+                }
+                if args.suite == 'deadline':
+                    cases = {'parent': [('IPC_DEADLINE_PASS ' + marker).encode() for marker in (
+                        'receive_timeout peer_alive', 'send_timeout payload_preserved',
+                        'immediate expired readiness_first', 'scope_and_legacy_rejected',
+                        'ready_wakes_receive_send', 'close_wakes_both no_wrap timeout_final')]}
+                for mode, expected in cases.items():
+                    output = command(guest, 'exec-driver /bin/ipcexec.elf ' + mode + ' ' + nonce,
+                                     b'kind=exited code=', timeout=90)
+                    outcomes = re.findall(rb'\[wait\] pid=\d+ kind=exited code=(-?\d+)', output)
+                    if (any(output.count(marker) != 1 for marker in expected) or outcomes != [b'0'] or
+                            b'IPC_EXEC_FAIL' in output):
+                        raise AssertionError(output[-8000:])
+                    actual = resources(guest)
+                    if actual != baseline:
+                        raise AssertionError(f'resource mismatch {actual}, expected {baseline}')
+                    report['checks'].append({'round': round_number, 'mode': mode, 'nonce': nonce,
+                        'resources': actual, 'status': 'passed',
+                        'markers': [marker.decode() for marker in expected]})
             verify_inputs()
             report['status'] = 'passed'
     except BaseException as error:
@@ -106,7 +134,7 @@ def main():
         report['evidence_files'] = [{'path': path.name, 'sha256': sha(path)}
                                     for path in sorted(out.glob('*')) if path.is_file() and path.name != 'report.json']
         (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
-    print('PASS IPC exec lifecycle:', len(report['checks']), 'rounds')
+    print('PASS IPC', args.suite, 'runs:', len(report['checks']))
 
 
 if __name__ == '__main__':

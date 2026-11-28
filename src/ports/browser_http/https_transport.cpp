@@ -14,8 +14,11 @@ xos::i64 fetch_https(const https_route& route, const url& target, unsigned char*
     if (get_request(target, request, sizeof request, length) != error::ok) return net2::invalid;
 
     native_tls::stream stream;
-    const int connected = stream.connect(route.service_pid, route.address, target.port, target.host,
-                                         route.trust_anchor, route.trust_anchor_size, deadline, route.source);
+    const int connected = route.store
+        ? stream.connect(route.service_pid, route.address, target.port, target.host,
+                         *route.store, deadline, route.source)
+        : stream.connect(route.service_pid, route.address, target.port, target.host,
+                         route.trust_anchor, route.trust_anchor_size, deadline, route.source);
     if (connected) return connected;
     const auto* bytes = reinterpret_cast<const unsigned char*>(request);
     for (size_t sent = 0; sent < length;) {

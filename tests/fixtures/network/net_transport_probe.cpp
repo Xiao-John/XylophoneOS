@@ -44,6 +44,60 @@ void result(const char* label, const char* nonce, const u8* data) {
 int failed(i64 error) {
     sdk::print("NET2_FAIL error="); sdk::signed_decimal(error); sdk::print("\n"); return 1;
 }
+i64 tcp_half_close(u64 service_pid, u16 port, const char* nonce, u64 deadline) {
+    net2::session_client client;
+    i64 status = client.connect(service_pid);
+    if (status) return status;
+    net2::capability_snapshot capabilities{};
+    status = client.capabilities(deadline, capabilities);
+    if (status || capabilities.flags != (net2::capability_readiness | net2::capability_shutdown_write))
+        return status ? status : net2::unsupported;
+    net2::message request{}, reply{};
+    request.action = net2::operation::open; request.address = net2::permitted_address;
+    request.port = port; request.transport = net2::protocol::tcp; request.deadline = deadline;
+    status = client.request(request, reply);
+    if (status) return status;
+    const u64 handle = reply.object;
+    net2::readiness_snapshot snapshot{};
+    auto wait_ready = [&](u32 events) -> i64 {
+        for (;;) {
+            const i64 checked = client.readiness(handle, deadline, snapshot);
+            if (checked) return checked;
+            if (snapshot.error) return snapshot.error;
+            if (snapshot.events & events) return 0;
+            const i64 now = sdk::syscall(sys_clock_monotonic);
+            if (now < 0 || static_cast<u64>(now) >= deadline) return net2::timeout;
+            if (sdk::syscall(sys_sleep_until, static_cast<u64>(now) + 1'000'000ull)) return net2::io;
+        }
+    };
+    status = wait_ready(net2::ready_write); if (status) return status;
+    request = {}; request.action = net2::operation::send; request.object = handle;
+    request.length = 32; request.deadline = deadline; __builtin_memcpy(request.data, nonce, 32);
+    status = client.request(request, reply); if (status != 32) return status < 0 ? status : net2::io;
+    status = client.shutdown_write(handle, deadline); if (status) return status;
+    status = client.shutdown_write(handle, deadline); if (status) return status;
+    // The fixture withholds its unpredictable response until it receives FIN.
+    // Thus successful bytes here prove the receive path survives SHUT_WR.
+    u32 received = 0;
+    for (;;) {
+        status = wait_ready(net2::ready_read); if (status) return status;
+        if (!(snapshot.events & net2::ready_write_closed) || (snapshot.events & net2::ready_write)) return net2::io;
+        request = {}; request.action = net2::operation::receive; request.object = handle;
+        request.flags = 32; request.deadline = deadline;
+        status = client.request(request, reply); if (status) return status;
+        if (reply.length > 32 - received) return net2::io;
+        __builtin_memcpy(buffer + received, reply.data, reply.length); received += reply.length;
+        if (reply.flags & net2::eof) break;
+    }
+    if (received != 32) return net2::io;
+    request = {}; request.action = net2::operation::send; request.object = handle;
+    request.length = 1; request.data[0] = 1; request.deadline = deadline;
+    if (client.request(request, reply) != net2::closed) return net2::io;
+    request = {}; request.action = net2::operation::close; request.object = handle; request.deadline = deadline;
+    status = client.request(request, reply); if (status) return status;
+    result("NET2_HALF_CLOSE bytes=32", nonce, buffer);
+    return 0;
+}
 i64 tcp_unread_close(u64 service_pid, u16 port, const char* nonce, u64 deadline,
                      bool controlled = false, bool drained = false) {
     net2::session_client client;
@@ -144,11 +198,15 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     const auto* argv = reinterpret_cast<const char* const*>(startup->argv);
     u64 service_pid = 0, port = 0;
     if (startup->argc != 5 || (!sdk::equal(argv[1], "http") && !sdk::equal(argv[1], "udp") &&
-        !sdk::equal(argv[1], "tcp_close") && !sdk::equal(argv[1], "tcp_queued") && !sdk::equal(argv[1], "tcp_drained")) ||
+        !sdk::equal(argv[1], "tcp_half") && !sdk::equal(argv[1], "tcp_close") && !sdk::equal(argv[1], "tcp_queued") && !sdk::equal(argv[1], "tcp_drained")) ||
         !decimal(argv[2], ~u64{0}, service_pid) || !decimal(argv[3], 65535, port) || !nonce_valid(argv[4])) return 2;
     const i64 now = sdk::syscall(sys_clock_monotonic);
     if (now < 0) return failed(net2::io);
     const u64 deadline = static_cast<u64>(now) + 15'000'000'000ull;
+    if (sdk::equal(argv[1], "tcp_half")) {
+        const i64 status = tcp_half_close(service_pid, static_cast<u16>(port), argv[4], deadline);
+        return status ? failed(status) : 0;
+    }
     if (sdk::equal(argv[1], "tcp_close") || sdk::equal(argv[1], "tcp_queued") || sdk::equal(argv[1], "tcp_drained")) {
         const bool controlled = !sdk::equal(argv[1], "tcp_close");
         if (controlled && port == 65535) return 2;

@@ -1,0 +1,207 @@
+{
+  "status": "verified_local_full_manifests_not_published",
+  "reason": "Automatic approval review rejected opaque compressed build metadata; publish only necessary bindings and readable test evidence. No omitted payload is republished through another channel.",
+  "implementation_commit": "95a2b54aefba84608ee4271e86fd053a8f6930ae",
+  "profiles": {
+    "deadline": {
+      "system_build_id": "b57a29f32c000699",
+      "system_source_sha256": "b57a29f32c0006990ddcda2ade84a3c09b06bd7e0615874d77f0e65c05cf7d36",
+      "system_manifest_sha256": "15646d367aaf875d8c94a3e5966f9362ac5ba683c81c8451313efa79b1c624d7",
+      "glibc_sdk_manifest_sha256": "77143b515a2420df9b4d4f24cb87e78c941ad188519280b307aeea0dbda9443a",
+      "system_iso_sha256": "aef2b01ad54063546d7ba97d5bf4cfc3d8002fdefba71f3898326f1645b88b70",
+      "probe_elf_sha256": "2e961905435a97d661acd0005c22cadc2cc14ec959ee6ffceff8c0df455e93ba",
+      "system_source_count": 2122,
+      "sdk_source_count": 353,
+      "sdk_artifact_count": 1073,
+      "relevant_system_sources": {
+        "src/kernel/arch/x86_64/tasks.cpp": "45e70ed42db2adc41ff5e837a85ee9e19201eb8758ccc3e55a59f3cf3834017e",
+        "src/shared/include/xos/process_abi.hpp": "036ce95c5cf6160b08cc036e17dd5817993722437ecb982a77cc7c422e41b3a0",
+        "src/user/include/xos/net_transport.hpp": "f0b51ddb1d1b23a2d73f6f99b60a3eaeb76e47f5f1bafde9899191bd4898b44f",
+        "src/user/include/xos/sdk.hpp": "4c566f6e2565d41e98a8c240cbe9852e385d67284d9c94233ef608b15ee68b59",
+        "src/user/network/lwip_stack.cpp": "211699687d4ec560460ada496d8ae011bdb138e163918fd0beaec8e077ae2aa7",
+        "src/user/network/service_core.cpp": "af89771e16f7130c4a0d2963cd7b61e41b1c2fda8ac2e6511594d51cf1c2ed27"
+      },
+      "relevant_glibc_inputs": {
+        "src/ports/glibc/sysdeps/xos/poll.c": "b83ec1da3b0cad215d48a9237ad0fdb65f9d0a75e0de954ec66c26aca634a306",
+        "src/ports/glibc/sysdeps/xos/shutdown.c": "f41ae392b657cea55cf5240f259fa487883d809c8c219490d3ef6de51c9c52b0",
+        "src/ports/glibc/sysdeps/xos/xos_file_runtime.c": "7ba9d8053d596e1269035b685a5d11840573f8e4d3727e71ea30258ee40ffec2",
+        "src/ports/glibc/sysdeps/xos/xos_file_runtime.h": "ab6f254296e05afd75aa30b5f3733fcc19cab4006b1903c2ff7e2e43048b8dde",
+        "src/ports/glibc/sysdeps/xos/xos_net2_socket.c": "9d57512159d6cfec4314743ed3fbcfa822f790ecc6005c7090cb58585e89045b",
+        "src/ports/glibc/sysdeps/xos/xos_net2_socket.h": "4fc4e099e161cb784a21cd2e2f495766a7350d6f9642f8b64beca2724f4c8244",
+        "src/ports/glibc/sysdeps/xos/xos_net2_wire.h": "dc2511da5e0e1aec1e3a5117d44f1903f51367b1b3a3581da9684dd14b5d6d6b"
+      },
+      "tool_identities": {
+        "x86_64-elf-gcc": {
+          "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+          "version": "x86_64-elf-gcc (GCC) 16.2.0"
+        },
+        "x86_64-elf-g++": {
+          "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+          "version": "x86_64-elf-g++ (GCC) 16.2.0"
+        },
+        "x86_64-elf-ld": {
+          "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+          "version": "GNU ld (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-as": {
+          "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+          "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-ar": {
+          "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0",
+          "version": "GNU ar (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-readelf": {
+          "sha256": "a6e0ff4b51a996352b63f45270e1381035acba1445da79e91c6efee837edac9d",
+          "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-objdump": {
+          "sha256": "70fa553546f0d0e9500e07249c8138a171cfa2e8794873b6cc69514afb05657d",
+          "version": "GNU objdump (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-objcopy": {
+          "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab",
+          "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-nm": {
+          "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f",
+          "version": "GNU nm (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-ranlib": {
+          "sha256": "7428cac88865cdb9aa5750f71c66babcddf2c16c925491818ca251becd974216",
+          "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
+        },
+        "gcc": {
+          "sha256": "edbaaa4930e277b5655b943c6d14befcc526c5633f4a2307f0b4a022bd465dee",
+          "version": "x86_64-linux-gnu-gcc-16 (Debian 16.2.0-5) 16.2.0"
+        },
+        "python3": {
+          "sha256": "2d06547d95f85724a410978f7fb4894c3be13ac3164be5d8955ee6d6df6c86a1",
+          "version": "Python 3.14.10"
+        },
+        "make": {
+          "sha256": "b5441a23f8354840947d2e9dac7f29c8a42e08cab32c0a93b8a7e9fb9f13103e",
+          "version": "GNU Make 4.4.1"
+        },
+        "gawk": {
+          "sha256": "16b48c0812cc16ac615eff1926b62ef77da4d24b32cf8a18fe6e276741c0b3b8",
+          "version": "GNU Awk 5.3.2, API 4.0, PMA Avon 8-g1, (GNU MPFR 4.2.2, GNU MP 6.3.0)"
+        },
+        "bison": {
+          "sha256": "7a05f69de2af6f39fbf0223ce2eff5b183b0937eb3fcc3d0077dfb5e2b255cf2",
+          "version": "bison (GNU Bison) 3.8.2"
+        },
+        "patch": {
+          "sha256": "0d507a62e0f112d6958e46a634b49124a562fcaff271a51983f6607be866f17d",
+          "version": "GNU patch 2.8.1"
+        },
+        "gpgv": {
+          "sha256": "e82416f3ae002b63c0731f311519c55fc9e7d3c8bdadbd64239833298f09a2cf",
+          "version": "gpgv (GnuPG) 2.2.40"
+        }
+      },
+      "source_archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "original_manifest_location": "retained in the independent local development worktree; exact bytes are bound above"
+    },
+    "legacy": {
+      "system_build_id": "a1822e5aa44d66c8",
+      "system_source_sha256": "a1822e5aa44d66c8f6b5e77cf054f337637c2e76604f465d84992edae41d35c3",
+      "system_manifest_sha256": "daac14f7b83a50583d6ae2323bc682d150b78df795f5c2a22ea712b158aa3dcd",
+      "glibc_sdk_manifest_sha256": "a71604f9f8a66b8902bd5b71afb61b0280582fd4d1db54aab7639b52448e3920",
+      "system_iso_sha256": "344013e130c9f634055739edd80a2a082a9bf3206432ef395128923c51c448ad",
+      "probe_elf_sha256": "1313f4d21cebf370ed6dd6645a018985cefcd8eec038ebaeacb0fcb078bfda36",
+      "system_source_count": 2119,
+      "sdk_source_count": 353,
+      "sdk_artifact_count": 1073,
+      "relevant_system_sources": {
+        "src/kernel/arch/x86_64/tasks.cpp": "24c936070ab0f8f4075d0602f0e5cccb3092f18d4047115361ca77cfed1bb28f",
+        "src/shared/include/xos/process_abi.hpp": "86a50a4d5326ab2797bbec9c460cb2226d72de803948fce5312bb9276e49acb9",
+        "src/user/include/xos/net_transport.hpp": "f0b51ddb1d1b23a2d73f6f99b60a3eaeb76e47f5f1bafde9899191bd4898b44f",
+        "src/user/include/xos/sdk.hpp": "9d1649943e9a62ff83612ec1d7bcbdfacec302696a89554e0cf82526f9c82769",
+        "src/user/network/lwip_stack.cpp": "211699687d4ec560460ada496d8ae011bdb138e163918fd0beaec8e077ae2aa7",
+        "src/user/network/service_core.cpp": "af89771e16f7130c4a0d2963cd7b61e41b1c2fda8ac2e6511594d51cf1c2ed27"
+      },
+      "relevant_glibc_inputs": {
+        "src/ports/glibc/sysdeps/xos/poll.c": "b83ec1da3b0cad215d48a9237ad0fdb65f9d0a75e0de954ec66c26aca634a306",
+        "src/ports/glibc/sysdeps/xos/shutdown.c": "f41ae392b657cea55cf5240f259fa487883d809c8c219490d3ef6de51c9c52b0",
+        "src/ports/glibc/sysdeps/xos/xos_file_runtime.c": "7ba9d8053d596e1269035b685a5d11840573f8e4d3727e71ea30258ee40ffec2",
+        "src/ports/glibc/sysdeps/xos/xos_file_runtime.h": "ab6f254296e05afd75aa30b5f3733fcc19cab4006b1903c2ff7e2e43048b8dde",
+        "src/ports/glibc/sysdeps/xos/xos_net2_socket.c": "9d57512159d6cfec4314743ed3fbcfa822f790ecc6005c7090cb58585e89045b",
+        "src/ports/glibc/sysdeps/xos/xos_net2_socket.h": "4fc4e099e161cb784a21cd2e2f495766a7350d6f9642f8b64beca2724f4c8244",
+        "src/ports/glibc/sysdeps/xos/xos_net2_wire.h": "dc2511da5e0e1aec1e3a5117d44f1903f51367b1b3a3581da9684dd14b5d6d6b"
+      },
+      "tool_identities": {
+        "x86_64-elf-gcc": {
+          "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+          "version": "x86_64-elf-gcc (GCC) 16.2.0"
+        },
+        "x86_64-elf-g++": {
+          "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+          "version": "x86_64-elf-g++ (GCC) 16.2.0"
+        },
+        "x86_64-elf-ld": {
+          "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+          "version": "GNU ld (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-as": {
+          "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+          "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-ar": {
+          "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0",
+          "version": "GNU ar (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-readelf": {
+          "sha256": "a6e0ff4b51a996352b63f45270e1381035acba1445da79e91c6efee837edac9d",
+          "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-objdump": {
+          "sha256": "70fa553546f0d0e9500e07249c8138a171cfa2e8794873b6cc69514afb05657d",
+          "version": "GNU objdump (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-objcopy": {
+          "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab",
+          "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-nm": {
+          "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f",
+          "version": "GNU nm (GNU Binutils) 2.47.20260726"
+        },
+        "x86_64-elf-ranlib": {
+          "sha256": "7428cac88865cdb9aa5750f71c66babcddf2c16c925491818ca251becd974216",
+          "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
+        },
+        "gcc": {
+          "sha256": "edbaaa4930e277b5655b943c6d14befcc526c5633f4a2307f0b4a022bd465dee",
+          "version": "x86_64-linux-gnu-gcc-16 (Debian 16.2.0-5) 16.2.0"
+        },
+        "python3": {
+          "sha256": "2d06547d95f85724a410978f7fb4894c3be13ac3164be5d8955ee6d6df6c86a1",
+          "version": "Python 3.14.10"
+        },
+        "make": {
+          "sha256": "b5441a23f8354840947d2e9dac7f29c8a42e08cab32c0a93b8a7e9fb9f13103e",
+          "version": "GNU Make 4.4.1"
+        },
+        "gawk": {
+          "sha256": "16b48c0812cc16ac615eff1926b62ef77da4d24b32cf8a18fe6e276741c0b3b8",
+          "version": "GNU Awk 5.3.2, API 4.0, PMA Avon 8-g1, (GNU MPFR 4.2.2, GNU MP 6.3.0)"
+        },
+        "bison": {
+          "sha256": "7a05f69de2af6f39fbf0223ce2eff5b183b0937eb3fcc3d0077dfb5e2b255cf2",
+          "version": "bison (GNU Bison) 3.8.2"
+        },
+        "patch": {
+          "sha256": "0d507a62e0f112d6958e46a634b49124a562fcaff271a51983f6607be866f17d",
+          "version": "GNU patch 2.8.1"
+        },
+        "gpgv": {
+          "sha256": "e82416f3ae002b63c0731f311519c55fc9e7d3c8bdadbd64239833298f09a2cf",
+          "version": "gpgv (GnuPG) 2.2.40"
+        }
+      },
+      "source_archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "original_manifest_location": "retained in the independent local development worktree; exact bytes are bound above"
+    }
+  }
+}

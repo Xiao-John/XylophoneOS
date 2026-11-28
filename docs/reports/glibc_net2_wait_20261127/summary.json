@@ -1,0 +1,62 @@
+{
+  "status": "passed_restricted_profile",
+  "module": "static glibc Net2 caller-deadline poll and write half-close",
+  "baseline": "a2a33b86bd2d350ac75cbd4a6d4fd9f1848b5358",
+  "deadline_dependencies": [
+    "96d75c9",
+    "545a5cf"
+  ],
+  "deadline_pr": 403,
+  "deadline_build_id": "b57a29f32c000699",
+  "legacy_build_id": "a1822e5aa44d66c8",
+  "new_kernel": {
+    "guest_cases": 12,
+    "live_peer_delay_ms": 1000,
+    "caller_timeout_ms": 40,
+    "actual_elapsed_ns": 40000000,
+    "late_reply_recovered": true,
+    "readiness_requests": 1,
+    "capability_requests": 1,
+    "real_half_close_challenges": 2,
+    "real_tcp_stream_challenges": 4
+  },
+  "old_kernel": {
+    "guest_cases": 9,
+    "extension_calls": "EOPNOTSUPP before a new service extension request",
+    "ordinary_tcp_challenges": 4
+  },
+  "host": {
+    "bridge": "actual C bridge at injected IPC/FD boundary, ASan/UBSan",
+    "fd_runtime_cases": 59,
+    "real_files_fatfs_groups": 15,
+    "leak_sanitizer": "not_run"
+  },
+  "limits": [
+    "connected TCP poll(0) unsupported",
+    "pipe/terminal and unlisted poll events unsupported",
+    "no event subscription or nonblocking connect",
+    "SHUT_RD/SHUT_RDWR unsupported",
+    "no new SIGPIPE semantics",
+    "Dash not_run",
+    "quota integration not_run in these two images",
+    "controlled peers; no public Internet qualification"
+  ],
+  "development_failures": [
+    {
+      "report": "initial_fd_failure.json",
+      "cause": "out-of-range descriptor checked after uninitialized FD table",
+      "fix": "range checked before initialization; final capacity guest passes"
+    },
+    {
+      "report": "initial_peer_close_failure.json",
+      "cause": "fixture treated client exit/revocation after close reply as failure",
+      "fix": "accept terminal peer close only after close response; independently require client success"
+    }
+  ],
+  "publication_scope": {
+    "production_and_tests": "unchanged from 95a2b54",
+    "complete_build_metadata": "four opaque compressed files omitted after automatic approval review; originals retained locally and exact SHA-256 retained",
+    "public_bindings": "build_binding_summary.json",
+    "serial_logs": "complete readable normalized text"
+  }
+}

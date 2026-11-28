@@ -58,6 +58,86 @@ void print_answer(const resolve_reply& answer) {
     sdk::print("N4_ANSWER epoch="); sdk::decimal(answer.epoch);
     sdk::print(" address="); sdk::decimal(answer.address); sdk::print("\n");
 }
+
+i64 open_destination(session_client& client, u32 address, protocol transport, u16 port, u64& handle) {
+    message request{}, reply{};
+    request.action = operation::open; request.address = address; request.transport = transport;
+    request.port = port; request.deadline = clock_ns() + second;
+    const auto result = client.request(request, reply); handle = reply.object; return result;
+}
+
+void policy_probe(session_client& client, const config_snapshot& initial, const char* nonce) {
+    u32 nonce_length = 0; while (nonce_length < 33 && nonce[nonce_length]) ++nonce_length;
+    check(nonce_length == 32, "policy nonce");
+    char allowed_name[64] = "allow-", denied_name[64] = "deny-";
+    for (u32 i = 0; i < 32; ++i) { allowed_name[6 + i] = nonce[i]; denied_name[5 + i] = nonce[i]; }
+    __builtin_memcpy(allowed_name + 38, ".n4.test", 9);
+    __builtin_memcpy(denied_name + 37, ".n4.test", 9);
+    u64 old_ticket = 0; u32 old_address = 0;
+    for (u32 round = 0; round < 2; ++round) {
+        resolve_reply allowed{}, forbidden{};
+        const u64 ticket = begin(client, allowed_name, 8 * second);
+        check(!complete(client, ticket, allowed) && allowed.expiry > clock_ns(), "policy resolve admitted");
+        check((allowed.address & 0xffffff00u) == 0xc0000200u && allowed.address != old_address,
+              "fresh permitted CIDR answer");
+        if (!round) {
+            const u64 denied_ticket = begin(client, denied_name, 8 * second);
+            check(!complete(client, denied_ticket, forbidden), "policy resolve denied address still succeeds");
+            u64 rejected = 0;
+            check(open_destination(client, forbidden.address, protocol::udp, 41001, rejected) == denied && !rejected,
+                  "DNS answer cannot grant address authority");
+            check(open_destination(client, forbidden.address, protocol::tcp, 41001, rejected) == denied && !rejected,
+                  "DNS answer cannot grant TCP authority");
+            sdk::print("EGRESS_DENIED_ADDRESS="); sdk::decimal(forbidden.address); sdk::print("\n");
+        }
+        u64 handle = 0;
+        check(open_destination(client, allowed.address, protocol::udp, 41002, handle) == denied && !handle,
+              "same address wrong port denied");
+        check(open_destination(client, allowed.address, protocol::tcp, 41001, handle) == denied && !handle,
+              "same tuple wrong transport denied");
+        check(!open_destination(client, allowed.address, protocol::udp, 41001, handle) && handle,
+              "trusted CIDR tuple admitted");
+        message request{}, reply{};
+        request.action = operation::send; request.object = handle; request.deadline = clock_ns() + second;
+        request.length = 32; __builtin_memcpy(request.data, nonce, 32);
+        check(client.request(request, reply) == 32, "policy UDP nonce sent");
+        const auto stop = clock_ns() + 5 * second;
+        for (;;) {
+            request = {}; request.action = operation::receive; request.object = handle;
+            request.deadline = clock_ns() + second; request.flags = 32;
+            const auto result = client.request(request, reply);
+            if (!result) { check(reply.length == 32, "fresh challenge length"); break; }
+            check(result == would_block && clock_ns() < stop, "challenge wait", result);
+            check(!sdk::syscall(sys_sleep_until, clock_ns() + 10'000'000ull), "policy sleep");
+        }
+        sdk::print("EGRESS_CHALLENGE round="); sdk::decimal(round);
+        sdk::print(" address="); sdk::decimal(allowed.address); sdk::print(" data=");
+        constexpr char hex[] = "0123456789abcdef";
+        char encoded[65]{};
+        for (u32 i = 0; i < reply.length; ++i) {
+            encoded[2 * i] = hex[reply.data[i] >> 4]; encoded[2 * i + 1] = hex[reply.data[i] & 15];
+        }
+        sdk::print(encoded); sdk::print("\n");
+        request = {}; request.action = operation::close; request.object = handle; request.deadline = clock_ns() + second;
+        check(!client.request(request, reply), "policy close");
+        if (!round) {
+            old_ticket = ticket; old_address = allowed.address;
+            sdk::print("EGRESS_AWAIT_EPOCH\n");
+            config_snapshot current{};
+            const auto deadline = clock_ns() + 12 * second;
+            for (;;) {
+                check(!client.configuration(clock_ns() + second, current), "policy configuration");
+                if (current.epoch >= initial.epoch + 2 && current.mode == network_mode::static_direct) break;
+                check(clock_ns() < deadline, "controller epoch transition timeout");
+                check(!sdk::syscall(sys_sleep_until, clock_ns() + 20'000'000ull), "epoch wait");
+            }
+            resolve_reply ignored{};
+            check(client.resolve_result(old_ticket, clock_ns() + second, ignored) == closed,
+                  "old ticket remains invalid after epoch change");
+        }
+    }
+    sdk::print("EGRESS_POLICY_PASS\n");
+}
 }
 
 extern "C" int xos_user_main(const xos::startup_info* startup) {
@@ -87,6 +167,10 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         return 0;
     }
     check(config.mode == network_mode::static_direct, "expected enabled");
+    if (sdk::equal(args[1], "policy")) {
+        check(startup->argc == 4, "policy nonce argument");
+        policy_probe(client, config, args[3]); return 0;
+    }
     resolve_reply answer{};
     if (sdk::equal(args[1], "owner")) {
         const u64 ticket = begin(client, "pair.n4.test", 10 * second);

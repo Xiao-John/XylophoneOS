@@ -1,0 +1,108 @@
+{
+  "status": "passed",
+  "base_commit": "96d75c9",
+  "build_id": "8fcd94339fdd58cc",
+  "source_sha256": "8fcd94339fdd58ccae3c2fff898deba874292c616c7e8c7c111487548da52eca",
+  "system_manifest_sha256": "7897165c8e058024a2dee20156e2ff79c93e37554c471df6559d0c1c97eed6ed",
+  "iso_sha256": "56aaf05c2c8ef166bcdf067643e723a6d369ccc3adf0e63d02b7ceba8bbe19a8",
+  "sdk_manifest_sha256": "c202939ac98de3de93acfa2f0fc47e5f1eda0a660f3441e9b5b4a5bf21bf4906",
+  "ipc_wait": {
+    "syscall": 85,
+    "receive_until_mode": 5,
+    "send_until_mode": 6,
+    "deadline": "absolute_monotonic_ns",
+    "readiness_before_deadline": true,
+    "guest_qualification": "not_run"
+  },
+  "environment": "XOS SDK Preview 2 Linux x86-64, regular Bubblewrap launcher, QEMU TCG",
+  "qualification": {
+    "deadline_rounds": 3,
+    "deadline_groups_per_round": 6,
+    "deadline_worker_outcomes": {
+      "timeout": 6,
+      "ready": 9,
+      "broken": 6
+    },
+    "lifecycle_rounds": 3,
+    "lifecycle_invocations": 9,
+    "lifecycle_cases": 21,
+    "lifecycle_strict_broken_wakeups": 33,
+    "host_checks": 13,
+    "asan_ubsan_checks": 13,
+    "resource_baseline": [
+      129806,
+      2,
+      0
+    ]
+  },
+  "not_run": [
+    "network poll integration; owned by network module",
+    "threading SDK package rebuild",
+    "SMP",
+    "physical hardware",
+    "LeakSanitizer"
+  ],
+  "normalization": "Paths replaced with portable placeholders; text logs normalize CRLF and trailing terminal padding. Original hashes retained.",
+  "files": {
+    "deadline_guest.json": {
+      "source": "build/p0_deadline_guest2/report.json",
+      "original_sha256": "aef02c8cb01b6013d5418e0d3954e26901acd5b1fd7c223a596687d43fe62988",
+      "public_sha256": "0271eedc8ff7141a9b7a8209692d6db8e5a46cae4161475f7725eb7314c557a5"
+    },
+    "deadline_serial.log": {
+      "source": "build/p0_deadline_guest2/guest_serial.log",
+      "original_sha256": "ca3b6865dcca49e4f54cd09a54bf06e6c1f16a591eacf09a859fdd4fc0eb1b83",
+      "public_sha256": "b66d6d8f952ec8813b098583364089a48ae6e3613547bfb0fd6a32bb761b177a"
+    },
+    "lifecycle_guest.json": {
+      "source": "build/p0_deadline_lifecycle_guest2/report.json",
+      "original_sha256": "0cf780ad33b89f039f746165cf488f4703ad2748aed4469fc82e1310e2edc156",
+      "public_sha256": "fc7683f0e16203bf25b222ae7513fb30610679d52710d7387f6f6a6eb3dea3c5"
+    },
+    "lifecycle_serial.log": {
+      "source": "build/p0_deadline_lifecycle_guest2/guest_serial.log",
+      "original_sha256": "48e8b3125d76f49169733c0c5d6f273bdd6f0c3b3e9e06a28c2b40e85b07e1fd",
+      "public_sha256": "ca15876ebc6c512766bec9d9cda953189c01683d27c8b483c8057e7a7800e77f"
+    },
+    "deadline_fixture.json": {
+      "source": "build/p0_deadline_fixture2/receipt.json",
+      "original_sha256": "95b207bcae0f8e7c3902298f300640297dbf081a2fb08b44c0ae36c72c8011d5",
+      "public_sha256": "e2f0ca52c490fd606f34a3ce257eb6223e9ddd2f4909373e2032fe79d42ef521"
+    },
+    "lifecycle_fixture.json": {
+      "source": "build/p0_deadline_lifecycle_fixture2/receipt.json",
+      "original_sha256": "eeb58e90dba656c4a31d71ce16f1ca32482dcc38b8908da455e300bdac7de808",
+      "public_sha256": "8243cb06c8bdb7e6312ea9de715a649e4c98c751967d7addf0997ef593b3db30"
+    },
+    "host.json": {
+      "source": "build/p0_deadline_host_final/report.json",
+      "original_sha256": "33ba410cffa7a6fbf2ed56a3d8caf298aa7340d334a2d66e945592ea14917a71",
+      "public_sha256": "acdd81f17f0833ec081dc221c5906913b124aa3700ac949c87f61f81e7017ceb"
+    },
+    "host.log": {
+      "source": "build/p0_deadline_host_final/host.log",
+      "original_sha256": "e692f0ccea082cfea90641cac94c4860fc638df92e9c6341b124b7719c621178",
+      "public_sha256": "e692f0ccea082cfea90641cac94c4860fc638df92e9c6341b124b7719c621178"
+    },
+    "sanitized.json": {
+      "source": "build/p0_deadline_sanitized_final/report.json",
+      "original_sha256": "0e3898a31df2b20ae6ec27a5bc6e34703cc7a0a824b2dedfd0887ea9f02b8608",
+      "public_sha256": "40b18b5bec22f8e1bebaee82c449d771e998d71dd03012528c10261b8e10d0f6"
+    },
+    "sanitized.log": {
+      "source": "build/p0_deadline_sanitized_final/host.log",
+      "original_sha256": "e692f0ccea082cfea90641cac94c4860fc638df92e9c6341b124b7719c621178",
+      "public_sha256": "e692f0ccea082cfea90641cac94c4860fc638df92e9c6341b124b7719c621178"
+    },
+    "build.log": {
+      "source": "build/p0_deadline_logs/build2.log",
+      "original_sha256": "ad0f8aff7992a5685ffaa62ba078089416b471d143270c72c8245547dcd86ead",
+      "public_sha256": "283b45c6d3d14f061e027fba93e6421085d6ff0cba6cb5f6c5b5302d50b5b317"
+    },
+    "initial_host_compile_failure.log": {
+      "source": "build/p0_deadline_host/compile.log",
+      "original_sha256": "4f1cdf35836a830c20aff7291c6a0f4177a4c3c0aa6c58ddcf0222d91a27acdb",
+      "public_sha256": "bdb9ea4ba2f548fb2377981e281d875956830b1ccb0e3b8377884399f778e78b"
+    }
+  }
+}

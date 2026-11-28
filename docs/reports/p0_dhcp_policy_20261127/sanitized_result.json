@@ -1,0 +1,132 @@
+{
+  "artifacts": {
+    "dhcp_policy_host": "5b69b04428e1443ec2179813753336fe660a4786bf175b8b94797391af30a0f3",
+    "dhcp_policy_target.o": "2f30a5cf842d72a00c925fbabb71d1328596014fada80eb6e365504a73ce2294"
+  },
+  "asan_options": "detect_leaks=0",
+  "commands": [
+    [
+      "/usr/bin/c++",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wshadow",
+      "-O1",
+      "-g",
+      "-I",
+      "${XOS_SOURCE_ROOT}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE_ROOT}/src/user",
+      "-fsanitize=address,undefined",
+      "-fno-sanitize-recover=all",
+      "-fno-omit-frame-pointer",
+      "${XOS_SOURCE_ROOT}/tests/fixtures/network/dhcp_policy_host.cpp",
+      "${XOS_SOURCE_ROOT}/src/user/network/dhcp_policy.cpp",
+      "-o",
+      "${XOS_SOURCE_ROOT}/build/p0_dhcp_policy_sanitized_final/dhcp_policy_host"
+    ],
+    [
+      "${XOS_SDK_ROOT}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wshadow",
+      "-O1",
+      "-g",
+      "-I",
+      "${XOS_SOURCE_ROOT}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE_ROOT}/src/user",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-nostdinc++",
+      "-mno-red-zone",
+      "-c",
+      "${XOS_SOURCE_ROOT}/src/user/network/dhcp_policy.cpp",
+      "-o",
+      "${XOS_SOURCE_ROOT}/build/p0_dhcp_policy_sanitized_final/dhcp_policy_target.o"
+    ]
+  ],
+  "compiler": "c++ (Debian 16.2.0-5) 16.2.0",
+  "guest_qualification": "not_run",
+  "inputs": {
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/user/network/dhcp_policy.cpp": "2a770673e35e706560d4ed16eed29659c624c5b12c295477817ec46dd661c75d",
+    "src/user/network/dhcp_policy.hpp": "0c55d31e166a29beb51ba8dc4b0a183400c1c917e7b93861a7f923e93f5eca03",
+    "tests/fixtures/network/dhcp_policy_host.cpp": "e551b97abf19bf9bce85b991be22754563303b12086110a879bf546267537073",
+    "tests/net_dhcp_policy_host.py": "a0eabb4e052fc4d0ab36a088bc5dbcf2d6ac3517a98b91fab4a1d8b2a21c1b12"
+  },
+  "leak_sanitizer": "not_run",
+  "lwip_integration": "not_run",
+  "mutation_iterations": 20000,
+  "python": "3.14.10 (main, Oct 26 2026, 15:12:11) [GCC 16.2.0]",
+  "qualification": "production_helper_host_and_target_object",
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "scenarios": [
+    {
+      "name": "policy_bounds",
+      "returncode": 0
+    },
+    {
+      "name": "valid_messages",
+      "returncode": 0
+    },
+    {
+      "name": "header_identity",
+      "returncode": 0
+    },
+    {
+      "name": "server_authority",
+      "returncode": 0
+    },
+    {
+      "name": "option_framing",
+      "returncode": 0
+    },
+    {
+      "name": "configuration_and_timers",
+      "returncode": 0
+    },
+    {
+      "name": "actual_request_and_acd",
+      "returncode": 0
+    },
+    {
+      "name": "exact_deadlines_and_loss",
+      "returncode": 0
+    },
+    {
+      "name": "renewal_and_configuration",
+      "returncode": 0
+    },
+    {
+      "name": "invalidation_and_generation",
+      "returncode": 0
+    },
+    {
+      "name": "nak_and_late_ack",
+      "returncode": 0
+    },
+    {
+      "name": "short_lease_and_acquisition",
+      "returncode": 0
+    },
+    {
+      "name": "time_width_and_regression",
+      "returncode": 0
+    },
+    {
+      "name": "bounded_mutations",
+      "returncode": 0
+    }
+  ],
+  "sdk_profile": "xos-sdk-preview-2-linux-x86_64",
+  "target_compiler": "x86_64-elf-g++ (GCC) 16.2.0",
+  "target_machine": "x86_64-elf"
+}

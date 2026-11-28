@@ -1,0 +1,183 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=d190e3847fa425fd
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x000000000026c110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130172 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x0000000000364000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+ping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+Abad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+[net-start] pid=9
+Aping
+[net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+Abad length
+bad pointer
+tx
+Abad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+xsh> tAping
+bad length
+bad pointer
+tx
+race on
+xsh: trace on
+xsh> Aping
+bad length
+bad pointer
+tx
+demo quietAping
+
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> audio stop
+[task] event=reclaimed pid=10 pages=97
+audio: service stopped
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=9
+[net] close=0
+[task] event=reclaimed pid=9 pages=106
+[wait] pid=9 kind=exited code=0
+xsh> net-probe 41
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x0000000000364000
+[process] event=wait_blocked parent=7 child=11
+[net-probe] tx=1 rx_arp=1 irq=1
+[net] close=0
+NET_USER_DRIVER_PASS
+[task] event=reclaimed pid=11 pages=106
+[wait] pid=11 kind=exited code=0
+xsh> stats
+[resources] free=129787 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x0000000000364000
+[net-start] pid=12
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+stats
+[resources] free=129615 tasks=3 completions=1
+xsh> spawn-file /bin/policy.elf policy 12 754a338b00baa0f15de277456195e7e0
+[process] event=started pid=13 parent=7
+[process] pid=13 address_space=0x000000000054e000
+[loader] started pid=13 file=/bin/policy.elf
+xsh> EGRESS_DENIED_ADDRESS=3325256705
+EGRESS_CHALLENGE round=0 address=3221226149 data=1d29e930c537a71099c1690adc31fe50af3e108cc3c9a688caa02b9db70812a0
+EGRESS_AWAIT_EPOCH
+net-dns-configure off
+[net-dns-config] epoch=2
+xsh> net-dns-configure on
+[net-dns-config] epoch=3
+xsh> wait 13
+[process] event=wait_blocked parent=7 child=13
+EGRESS_CHALLENGE round=1 address=3221226011 data=8b87b2a4c1be2539e1cce79bfeaa63a02618dc3b3d8b65b31a724a14fc316d2e
+EGRESS_POLICY_PASS
+[task] event=reclaimed pid=13 pages=45
+[wait] pid=13 kind=exited code=0
+xsh> stats
+[resources] free=129615 tasks=3 completions=1
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=12
+[net] close=0
+[task] event=reclaimed pid=12 pages=106
+[wait] pid=12 kind=exited code=0
+xsh> stats
+[resources] free=129787 tasks=2 completions=0
+xsh>

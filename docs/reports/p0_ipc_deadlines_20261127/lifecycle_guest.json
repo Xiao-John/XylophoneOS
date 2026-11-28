@@ -1,0 +1,226 @@
+{
+  "status": "passed",
+  "suite": "lifecycle",
+  "runner_sha256": "c31c83d50ecb67a3b1909e5b70f901be55480740d753bf2dda1b800a911d9903",
+  "checks": [
+    {
+      "round": 0,
+      "mode": "parent",
+      "nonce": "eb68254993157fc66b7e91d3c1215e67",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_EXEC_BLOCKED receive",
+        "IPC_EXEC_CHILD_PASS",
+        "IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected"
+      ]
+    },
+    {
+      "round": 0,
+      "mode": "lifecycle",
+      "nonce": "eb68254993157fc66b7e91d3c1215e67",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_LIFECYCLE_BLOCKED revoke receive send",
+        "IPC_LIFECYCLE_PASS revoke blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED close receive send",
+        "IPC_LIFECYCLE_PASS close blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED exit receive send",
+        "IPC_LIFECYCLE_PASS exit blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED fault receive send",
+        "IPC_LIFECYCLE_PASS fault blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED cancel receive send",
+        "IPC_LIFECYCLE_PASS cancel blocked_both restart_authenticated stale_tokens_denied"
+      ]
+    },
+    {
+      "round": 0,
+      "mode": "authority",
+      "nonce": "eb68254993157fc66b7e91d3c1215e67",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered"
+      ]
+    },
+    {
+      "round": 1,
+      "mode": "parent",
+      "nonce": "70a4302c67478833d01fa3b6ec10a046",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_EXEC_BLOCKED receive",
+        "IPC_EXEC_CHILD_PASS",
+        "IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected"
+      ]
+    },
+    {
+      "round": 1,
+      "mode": "lifecycle",
+      "nonce": "70a4302c67478833d01fa3b6ec10a046",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_LIFECYCLE_BLOCKED revoke receive send",
+        "IPC_LIFECYCLE_PASS revoke blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED close receive send",
+        "IPC_LIFECYCLE_PASS close blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED exit receive send",
+        "IPC_LIFECYCLE_PASS exit blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED fault receive send",
+        "IPC_LIFECYCLE_PASS fault blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED cancel receive send",
+        "IPC_LIFECYCLE_PASS cancel blocked_both restart_authenticated stale_tokens_denied"
+      ]
+    },
+    {
+      "round": 1,
+      "mode": "authority",
+      "nonce": "70a4302c67478833d01fa3b6ec10a046",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered"
+      ]
+    },
+    {
+      "round": 2,
+      "mode": "parent",
+      "nonce": "e957df508fda382f873d4b42ac55edb0",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_EXEC_BLOCKED receive",
+        "IPC_EXEC_CHILD_PASS",
+        "IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected"
+      ]
+    },
+    {
+      "round": 2,
+      "mode": "lifecycle",
+      "nonce": "e957df508fda382f873d4b42ac55edb0",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_LIFECYCLE_BLOCKED revoke receive send",
+        "IPC_LIFECYCLE_PASS revoke blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED close receive send",
+        "IPC_LIFECYCLE_PASS close blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED exit receive send",
+        "IPC_LIFECYCLE_PASS exit blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED fault receive send",
+        "IPC_LIFECYCLE_PASS fault blocked_both restart_authenticated stale_tokens_denied",
+        "IPC_LIFECYCLE_BLOCKED cancel receive send",
+        "IPC_LIFECYCLE_PASS cancel blocked_both restart_authenticated stale_tokens_denied"
+      ]
+    },
+    {
+      "round": 2,
+      "mode": "authority",
+      "nonce": "e957df508fda382f873d4b42ac55edb0",
+      "resources": [
+        129806,
+        2,
+        0
+      ],
+      "status": "passed",
+      "markers": [
+        "IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered"
+      ]
+    }
+  ],
+  "not_run": [
+    "sys81_explicit_channel_inheritance_stress",
+    "terminal_display_interactium_regression"
+  ],
+  "build_id": "8fcd94339fdd58cc",
+  "image_sha256": "56aaf05c2c8ef166bcdf067643e723a6d369ccc3adf0e63d02b7ceba8bbe19a8",
+  "system_manifest_sha256": "7897165c8e058024a2dee20156e2ff79c93e37554c471df6559d0c1c97eed6ed",
+  "fixture_receipt_sha256": "eeb58e90dba656c4a31d71ce16f1ca32482dcc38b8908da455e300bdac7de808",
+  "sdk_tree_sha256": "6b8c2d644d208028d47c3e5b10efb34e1f9f95b2600d7c9786dfbdc7a7f20a1a",
+  "artifacts": {
+    "ipc_exec_probe.elf": "8da0ccddb1167fcca7d9ff062d2bc85e8ce6f28ff2428f426a0345f9f9347d39"
+  },
+  "initial_disk_sha256": "07c2bfc460eed75c1c1fb93b10e1de62e900311b2ad34413dcfd1241da78d176",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_SOURCE_ROOT}/build/p0_deadline_system2/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_WORK_TMP}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "baseline": [
+    129806,
+    2,
+    0
+  ],
+  "evidence_files": [
+    {
+      "path": "guest_qemu.log",
+      "sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5"
+    },
+    {
+      "path": "guest_serial.log",
+      "sha256": "48e8b3125d76f49169733c0c5d6f273bdd6f0c3b3e9e06a28c2b40e85b07e1fd"
+    }
+  ]
+}

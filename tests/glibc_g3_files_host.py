@@ -12,7 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
     "basic", "bounds", "access_legacy_stat", "spawn_cwd_serialization", "concurrent",
-    "public_lease", "native_read_capacity",
+    "public_lease", "poll_deferred_lease", "native_read_capacity",
     "native_deadline_expired", "native_deadline_lock", "native_deadline_reply", "native_deadline_timeout",
     "block_valid", "block_bad_value", "block_bad_payload", "block_zero_success", "block_large_success",
     "anonymous_valid", "anonymous_bad_handle", "anonymous_bad_inode", "anonymous_bad_flags",

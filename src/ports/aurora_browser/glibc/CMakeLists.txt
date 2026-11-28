@@ -52,7 +52,7 @@ if(XOS_CLARKE_TLS_BUILD)
     set(tls "${CMAKE_CURRENT_LIST_DIR}/../../native_tls")
     set(psa "${XOS_CLARKE_TLS_UPSTREAM}/tf-psa-crypto")
     target_sources(clarke PRIVATE https.cpp ../../browser_http/https_transport.cpp
-        "${tls}/stream.cpp" "${tls}/platform.c")
+        "${tls}/stream.cpp" "${tls}/trust_store.cpp" "${tls}/platform.c")
     target_compile_features(clarke PRIVATE c_std_11)
     target_compile_definitions(clarke PRIVATE
         XOS_CLARKE_HTTPS=1

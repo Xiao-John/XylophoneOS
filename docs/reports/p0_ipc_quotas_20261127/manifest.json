@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "files": {
+    "build.log": "7c814a7401b6921ec61eccea88ad2259ac0f3e2f7802041b516eedafdce89468",
+    "fixture.json": "5af50269796bb6d3a464daf486a02b705156b1f5dac74e220d10426ad4aa5038",
+    "guest.json": "1421118a888c0493a5d9c2e47d61677ab5574025cf3332e27e96807fb14c2882",
+    "guest_serial.log": "4d61532c15d39ee4ca01d996703857e739bdbca40cc36af649980283efc84fad",
+    "initial_build_failure.log": "88e87c92c2cb332db157e76e77599ae5d00ff64346f263b7290f2f4fade73d57",
+    "summary.json": "0671c165ee47130158a9813acb9b94f5dd581b3eb314b6f586612eef00dc16dd"
+  }
+}

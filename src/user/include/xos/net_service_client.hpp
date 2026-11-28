@@ -83,6 +83,27 @@ public:
         if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
         return result;
     }
+    i64 capabilities(u64 deadline, capability_snapshot& snapshot) {
+        message input{}, reply{};
+        input.action = operation::capabilities; input.deadline = deadline;
+        const i64 result = request(input, reply);
+        snapshot = {};
+        if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+        return result;
+    }
+    i64 readiness(u64 handle, u64 deadline, readiness_snapshot& snapshot) {
+        message input{}, reply{};
+        input.action = operation::readiness; input.object = handle; input.deadline = deadline;
+        const i64 result = request(input, reply);
+        snapshot = {};
+        if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+        return result;
+    }
+    i64 shutdown_write(u64 handle, u64 deadline) {
+        message input{}, reply{};
+        input.action = operation::shutdown_write; input.object = handle; input.deadline = deadline;
+        return request(input, reply);
+    }
     i64 configure(network_mode mode, u64 epoch, u64 deadline, config_snapshot& snapshot) {
         message input{}, reply{};
         const config_request config{configuration_revision, mode, epoch};
@@ -144,7 +165,28 @@ private:
         case operation::stop:
         case operation::resolve_start:
         case operation::resolve_cancel:
+        case operation::shutdown_write:
             return !reply.result && !reply.length && !reply.flags;
+        case operation::capabilities: {
+            if (reply.result || reply.length != sizeof(capability_snapshot) || reply.flags) return false;
+            capability_snapshot snapshot{};
+            __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+            return snapshot.revision == socket_extension_revision && !snapshot.reserved &&
+                !(snapshot.flags & ~(capability_readiness | capability_shutdown_write));
+        }
+        case operation::readiness: {
+            if (reply.result || reply.length != sizeof(readiness_snapshot) || reply.flags) return false;
+            readiness_snapshot snapshot{};
+            __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
+            return snapshot.generation && !snapshot.reserved && !(snapshot.events & ~ready_all) &&
+                snapshot.readable_bytes <= tcp_receive_bytes &&
+                ((snapshot.error < 0 && snapshot.error >= reset && snapshot.error <= invalid &&
+                  (snapshot.events & ready_error)) || (!snapshot.error && !(snapshot.events & ready_error))) &&
+                (!snapshot.readable_bytes || (snapshot.events & ready_read)) &&
+                ((snapshot.writable_bytes != 0) == ((snapshot.events & ready_write) != 0)) &&
+                (!(snapshot.events & ready_eof) || ((snapshot.events & ready_read) && !snapshot.error)) &&
+                (!(snapshot.events & ready_write_closed) || !(snapshot.events & ready_write));
+        }
         case operation::configuration:
         case operation::configure: {
             if (reply.result || reply.length != sizeof(config_snapshot) || reply.flags) return false;

@@ -54,6 +54,12 @@ long __xos_file_lease_acquire (int, int, struct xos_file_lease *)
   __attribute__ ((visibility ("hidden")));
 long __xos_file_lease_release (struct xos_file_lease *)
   __attribute__ ((visibility ("hidden")));
+/* Poll must not enter a file RPC or a deferred network close while acquiring
+   or dropping a description. Initialization remains an ordinary FD operation. */
+long __xos_file_poll_lease_acquire (int, struct xos_file_lease *)
+  __attribute__ ((visibility ("hidden")));
+void __xos_file_poll_lease_release (struct xos_file_lease *)
+  __attribute__ ((visibility ("hidden")));
 long __xos_file_request_path (struct xos_file_request *, const char *)
   __attribute__ ((visibility ("hidden")));
 /* Serialized files exchange: one request ID and one failure latch shared by

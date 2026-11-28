@@ -33,7 +33,8 @@ private:
         udp_pcb* udp;
         u64 deadline;
         i64 error;
-        bool established, ended;
+        bool established, ended, write_closed;
+        net2::readiness_snapshot ready;
         u32 head, count;
         u16 datagram_lengths[net2::udp_queue_limit];
         u8 data[net2::tcp_receive_bytes];
@@ -55,6 +56,8 @@ private:
     i64 send(u32 slot, const u8* data, u32 length);
     i64 receive(u32 slot, u8* data, u32 capacity, u32& length, u32& flags);
     i64 close(u32 slot, bool aborting);
+    i64 readiness(u32 slot, net2::readiness_snapshot& snapshot);
+    i64 shutdown_write(u32 slot);
     void expire_connects(u64 now);
     static err_t link_output(netif*, pbuf*);
     static err_t configure(netif*);

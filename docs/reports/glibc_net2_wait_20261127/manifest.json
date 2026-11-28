@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "files": {
+    "bridge_host.json": "90e14bb68df52040fb884acf74b1c911c9d91f094c93fea00dc8279a31dc981f",
+    "build_binding_summary.json": "cf7f3fa74d9102db43ede9f61d5f91fd77568315f80dfbc2727f9d0ce4965fa9",
+    "deadline_elf_manifest.json": "58e17d6bb5859a1ab1f548e13277a9041de0560d04d5b414bcbff4e0756a5ab2",
+    "deadline_guest.json": "7080b0b0139cc9df86053ac3661ccd8cd10a1632bb84b875b5924fbe2367b3f2",
+    "deadline_serial.log": "4e42056fa1e2e5c3978e2b4bcdf3df2a61759a50f4d634ef31794e43cfe14c9f",
+    "export.json": "7976926ef80e772a8fad2e177ab827d2ba127b643cc7c7f599246b95c8915248",
+    "files_host.json": "972a026978d2db5761b4fa5da33f104f7cbd0a5b8a162c8259066c6465d8d040",
+    "initial_fd_failure.json": "75c70740a506b6802054870248fc835c94dd74f7bec1120020dd28751d1a4e4c",
+    "initial_peer_close_failure.json": "3ecb33f2ef7f9a212e8acbd0f9aaec49a617ecf0eab8ad3aa7ebe403be2e33b6",
+    "legacy_elf_manifest.json": "edb1c241f266b3af626f0bc0d6251d4c58fd8c4ac8815c774bca283fc655ff38",
+    "legacy_guest.json": "120972156c6330119cac501e3f169c90406d6e9a0e63a0f867b680eca1d4c699",
+    "legacy_serial.log": "aa0c61c5067fe91aff03dfd03b878541226ede089aaf29a16300d35c66bd3652",
+    "summary.json": "013cf8736ee7303222ef096d7d537f74a019eacc4fa4b44f3794dde7c3a35b6c"
+  }
+}

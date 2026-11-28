@@ -1,0 +1,22 @@
+{
+  "source_sha256": {
+    "host.json": "546424c270d6cb294202668e50da87bc774909601172a17e54c4834ccff2fe94",
+    "asan.json": "924c7e2d7e2145324e98802b5ddd92a55693c2a02121f689124aa483f29567f7",
+    "transport_host.json": "d57ab90780e7b00efb3c46817a54f7da461ff2c2a78585f13ba1ddbcc201fc64",
+    "guest.json": "a0c92dc23c6f4fc62df31607ff42d7efec5ad3930c6726821b2391d9ddd3fcd4",
+    "probe.json": "d0442b85b242397918c697f9ca997907441f0066ff810d6ee1ffabfef857f0eb",
+    "system_manifest.json.gz": "f3c5d94a2c18b4563645a0c5db1c9c0f0bbd6e2a0fe14d105c96e27cceb7ac47",
+    "lwip_inputs.json.gz": "626c6b9a4b56b65916977bcc238bd3e65752a21802e150f5e1d2ef536cbb262b",
+    "user_network.serial.log.gz": "cba856591c26dc3c09598a3bb5b1128cc9f2641823e77babb16c46762d765ed3",
+    "window_network.serial.log.gz": "01b6f6ab678bade6ca389ac29a095399d97c4cabb552d6fc3ba502cbef6bf299",
+    "network.pcap.gz": "da70d904b7426b9b9ffa314e6b20797e29eccfeb96636b9340114a389a1147f3",
+    "window_network.pcap.gz": "fc4ffbee89a9e7d93c4c90af1c348a7e01b861ff745156c6fdcf608a73f7007c"
+  },
+  "path_placeholders": [
+    "XOS_REPO",
+    "XOS_TOOLCHAIN",
+    "XOS_RUN_TMP",
+    "XOS_TOOLCHAIN_BUILD_HOME"
+  ],
+  "note": "Source digests refer to original local receipts before public command-path normalization. Evidence index hashes refer to exported files."
+}

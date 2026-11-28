@@ -37,6 +37,9 @@ sys51 显式 mode 1 为有界进程清理窗口，32 字节版本 1 请求，旧
 sys84–86 端点、待 accept 连接及发布名称在成功 exec 时按
 [endpoint 生命周期](ipc_endpoint_lifecycle.md) 一起撤销，失败 exec 完整保留；
 sys81 的显式 channel 继承仍由原契约约束。
+sys84 create 与 sys86 connect 共用每 PID 4 个 pair 的额度（含 pending 与已 accept
+连接），sys86 publish 每 PID 最多 2 个名称；超额返回既有 resources，失败不修改
+输出或已建立对象。共享常量与两个 SDK manifest 同步，详见同一生命周期契约。
 
 sys60 试行 bit32 扩展 entry 可显式保留通用通道，布局见 `process_exec_channel_entry`
 和 [通道契约](channel.md)；默认 ABI 不变，尚未客体验证。
@@ -142,6 +145,9 @@ sys20 第三参数 bit0 为非阻塞，bit1 与第一参数为零共同选择显
 
 sys85 mode 4 为调用者当前 Files 回复端点的绝对期限等待。
 [端点生命周期契约](ipc_endpoint_lifecycle.md#文件回复等待)
+的 Files mode 4 保持；generic 端点新增 sys85 mode 5 `receive_until` 与 mode 6
+`send_until`，第三参数是绝对单调纳秒期限。就绪优先，未就绪且到期返回现有
+thread timeout；零期限立即检查，最大 u64 无限。布局及旧 mode 0–4 不变。
 
 ## 待实施的具体预分配
 
@@ -177,6 +183,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 | net 服务协议 | v1 information/transmit/receive/stop，raw Ethernet 1514 字节 | 用户态 VirtIO-net。[纵切契约](net_user_driver.md)记录 ARP、IRQ 与 reset 的限定客体验收 |
 | net2 服务协议 | v2 64字节header，1024字节payload，operations1–9，原生TCP/UDP连接与认证多会话 | 网络用户态线。[v2 契约](net_service_v2.md)与[多应用复验](../work_log/69b0e274_network_guest_readiness_and_window.md)登记已验范围。v1 诊断显式隔离，沿用既有 syscall |
 | net2 N4 预览扩展 | v2 可选 operations10–14，配置快照 48 字节、写配置 16 字节、直接 A 结果 24 字节，错误 -211 至 -217 | 仅显式构建并经受信 controller 启用。客户端先询问 configuration，旧镜像可返回 unsupported。保留 operations1–9。[N4 线格式](network_n4_v1_proposal.md#21-n4-静态解析预览线格式) |
+| net2 TCP 扩展 | v2 可选 operations15–17：capabilities 16 字节、readiness 32 字节、shutdown_write 空负载 | [TCP readiness 和半关闭](net_service_v2.md#tcp-readiness-和写半关闭扩展)。先查询 capability，旧服务 unsupported 保留原阻塞传输；不改变地址授权，不包含事件订阅 |
 
 2026-11-12 用户授权将本轮实现交付与 guest 资格分开：sys88 actions 19–23 沿用 PR #112 公开 grant
 create/delegate/map/unmap/close（delegate 保持同值句柄），supported mask `0x1f` 表示可调用机制；SDK manifest

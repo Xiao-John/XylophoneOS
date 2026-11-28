@@ -1,0 +1,124 @@
+{
+  "status": "passed_subset",
+  "base_commit": "daf2bd24ce92525ce61054ebe585ab0e88ed06e4",
+  "scope": "P0-N4 versioned user-space CA snapshots and controlled TLS 1.3",
+  "environment": "verified XOS SDK Preview 2 regular launcher, separate signed glibc SDK, QEMU TCG",
+  "prerelease_sdk_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "system_build_id": "2ef59f282e0e110c",
+  "system_manifest_sha256": "890f8cf1cce680d6617be6b15ed785dbc47af75b062296648e86f17f09a808bb",
+  "iso_sha256": "1e54eb5d7436e8ca215164ed5f393cdb4f92363202b6c2caa0e447f55604e92d",
+  "glibc_sdk_manifest_sha256": "c1df8e02985df4e37198885a4a8fc78f21344011b1b851e8be4524cefe13ab1a",
+  "probe_sha256": "4a34171b3dd410d7bccc6615252a7452c7ae317c938330a885d22d725a1f1f1c",
+  "qualification": {
+    "host_compiler_checks": 24,
+    "target_parser_cases": 15,
+    "guest_checks": 20,
+    "public_snapshot_anchors": 118,
+    "public_snapshot_generation": 20261105,
+    "public_snapshot_bytes": 127607,
+    "resources_after_every_exchange": [
+      129525,
+      4,
+      2
+    ],
+    "https_adapter": "target compiled with exact probe toolchain; full Qt consumer not rerun",
+    "license_materials": "10 matched; no new third-party runtime or bundled CA source"
+  },
+  "not_run": [
+    "public_CA_online_handshake",
+    "production_trusted_time",
+    "hardware_entropy_qualification",
+    "DNS",
+    "NetworkProcess",
+    "concurrent_tls_callers",
+    "HTTP2_HTTP3",
+    "full ClarkE Qt consumer",
+    "physical power-loss atomicity",
+    "automatic CA updates and OCSP/CRL"
+  ],
+  "initial_failure": "QEMU Unix QMP socket denied before boot; the serial-only runner now explicitly disables its unused QMP surface",
+  "public_evidence_review": {
+    "serial_logs": "fully inspected: synthetic fresh disk, test-root hashes, generated nonces and resource counters only",
+    "manifest": "public repository source/artifact digests, build commands and tool identity; host-specific paths normalized before gzip",
+    "private_keys": "local disposable test keys excluded; no PEM or DER trust bundle distributed",
+    "network": "controlled loopback TLS peers only; public root bundle used for target parsing, no public TLS peer traffic"
+  },
+  "normalization": "Host paths replaced with explicit XOS templates; text line endings and terminal trailing padding normalized. Raw and public SHA-256 retained.",
+  "files": {
+    "guest.json": {
+      "source": "build/p0_tls_guest_final/report.json",
+      "original_sha256": "7ed2e063e2f32c296ad0ac137707f1114b4a90a79b4f20dec41d9b9b7142227e",
+      "public_sha256": "d797b52510037a3617403ee03637b144d7054ac1a20041a580203b4538c1ba58"
+    },
+    "guest_serial.log": {
+      "source": "build/p0_tls_guest_final/guest_serial.log",
+      "original_sha256": "066087cf78dea39a02353999386b0220c5d5ee893d504d0596e9264117788026",
+      "public_sha256": "ed1fbed28c8ba9034e2e6e91a360024962d27cd5a49b260cc8dc1033f09e036f"
+    },
+    "no_entropy_serial.log": {
+      "source": "build/p0_tls_guest_final/no_entropy_serial.log",
+      "original_sha256": "018c439266246f78ea942057338f9c49be6a71cfb938d0e527f1b1def2ddb513",
+      "public_sha256": "62b8ec8fd49d9b90cc3e0819b3c665629c64be5144cd65c4ce509abb921f8c44"
+    },
+    "guest_qemu.log": {
+      "source": "build/p0_tls_guest_final/guest_qemu.log",
+      "original_sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+      "public_sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5"
+    },
+    "no_entropy_qemu.log": {
+      "source": "build/p0_tls_guest_final/no_entropy_qemu.log",
+      "original_sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+      "public_sha256": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5"
+    },
+    "host.json": {
+      "source": "build/p0_tls_host_final/report.json",
+      "original_sha256": "79af2b0e034f2b5f4cf84bfc83061f13f93724e296c1288b27cf2bdc86d9a494",
+      "public_sha256": "79af2b0e034f2b5f4cf84bfc83061f13f93724e296c1288b27cf2bdc86d9a494"
+    },
+    "initial_qmp_failure.json": {
+      "source": "build/p0_tls_guest/report.json",
+      "original_sha256": "0929f1ba4af4cd6e8e14a8ab8effc26f9c12a2e4e6e15d8bb8924911be19dc70",
+      "public_sha256": "c91b9a1b2114bb8503f71fa616f6926f5f7ebd11174b562a98a1fa10961ca623"
+    },
+    "initial_qmp_failure.log": {
+      "source": "build/p0_tls_guest/guest_qemu.log",
+      "original_sha256": "0e1aa85e9458df576f3d70d03136c0e27d1569895a4ab8dff6932c995f62a3f7",
+      "public_sha256": "8ee45cff6363eb226e385ddbfc5cf23238598f40377a3bc40130625155dc1faa"
+    },
+    "probe_receipt.json": {
+      "source": "build/p0_tls_probe_final/receipt.json",
+      "original_sha256": "d16dd551c975b19938bf5d9b9341597217a01cff25a9504defded41ba96c416a",
+      "public_sha256": "36c0bef2af3ef13ff3471d52d4fe465a20c679fa7cd5ccb4a513be6b99a75830"
+    },
+    "trust_store_compile.log": {
+      "source": "build/p0_tls_probe_final/trust_store.log",
+      "original_sha256": "f78efd087b3da34831f7eb2ce466f584400f3dd5058eb8dadbea700ed65adb38",
+      "public_sha256": "7d31bfd752deac511bdb93b7817e7deb0397523f232a6e0300d13ff034fc287e"
+    },
+    "probe_link.log": {
+      "source": "build/p0_tls_probe_final/link.log",
+      "original_sha256": "dd275908b4233966a726e68e598347f6027c46ffa5e3cb7c5d6c5181074e2b75",
+      "public_sha256": "e09f527e7fcf21f409d23a495fe71da71f9ba71ed7c04c5691bcaa15152d2468"
+    },
+    "https_adapter_compile.json": {
+      "source": "build/p0_tls_adapter_compile.json",
+      "original_sha256": "f3c2440df67735d468de9a087e1bc540523c8c00d3e2691e52d693b65390401d",
+      "public_sha256": "60ae89e91ccd099634e8c595cf18d5738be6a240f08067a7f13fc1b20c4f8a0c"
+    },
+    "system_manifest.json.gz": {
+      "source": "build/p0_tls_system_final/manifest.json",
+      "original_sha256": "890f8cf1cce680d6617be6b15ed785dbc47af75b062296648e86f17f09a808bb",
+      "public_sha256": "207128077fdc8f958c812bdc4f0b4fec83b5445e6f7f6b3437895ca940f858e2"
+    },
+    "license_report.json": {
+      "source": "build/p0_tls_system_final/license_report.json",
+      "original_sha256": "fffe01c91f7e3b294e853704e27facedea2ecd7785a19617af1c5bd3e61591a5",
+      "public_sha256": "fffe01c91f7e3b294e853704e27facedea2ecd7785a19617af1c5bd3e61591a5"
+    },
+    "public_ca_snapshot.json": {
+      "source": "build/p0_public_ca_final_receipt.json",
+      "original_sha256": "424b4f6afc3cdddc175242abb8850aa778d4612ef984ae3ada7c7748734ea6bb",
+      "public_sha256": "424b4f6afc3cdddc175242abb8850aa778d4612ef984ae3ada7c7748734ea6bb"
+    }
+  }
+}

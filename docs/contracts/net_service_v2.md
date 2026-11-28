@@ -131,3 +131,41 @@ NO_SYS单线程服务不依赖pthread/TLS，DNS/DHCP/TLS与POSIX socket分别按
 挑战，校验HTTP状态/字节、UDP字节、双向关闭、错误PID、关闭端口、服务重启和资源
 回收。测试记录按实际执行分别标为passed/failed/not_run；固定工具链与QEMU缺失时
 保留具体原因，不复用旧raw/纯parser报告取得N3资格。
+
+## TCP readiness 和写半关闭扩展
+
+可选操作 15–17 保持 v2 报头、操作 1–14 及既有错误码。先请求
+`capabilities`（15，object、flags、length 均为零）；成功负载固定 16 字节：
+`u32 revision=1, u32 flags, u64 reserved=0`。flags 的 bit0 表示 TCP readiness，
+bit1 表示 TCP 写半关闭。旧服务返回 `unsupported`，应用可继续既有阻塞传输；
+不得将旧 `status=connected` 当作可写证据。这些能力不增加目的地址权限。
+
+`readiness`（16）请求携带当前会话的连接 handle，其余字段为空。成功负载固定
+32 字节：`u64 generation; u32 events, readable_bytes, writable_bytes, reserved;
+i64 error`。reserved=0，generation 非零；同一 handle 的可观察快照变化时递增且不回绕。
+它是 level 快照版本，不是边沿计数，不建立订阅，也不预留后续读写容量。
+
+| events 位 | 数值 | 含义 |
+|---|---:|---|
+| ready_read | 1 | 有已接收字节或可读取的有序 EOF |
+| ready_write | 2 | TCP 已建立、发送方向开放，实际发送缓冲区和段队列仍可接纳字节 |
+| ready_eof | 4 | 远端 FIN 已到达；接收环可能还有未读字节 |
+| ready_error | 8 | error 携带既有 Net2 终止错误；之前收到的字节仍可读 |
+| ready_write_closed | 16 | 本地写半关闭已接受 |
+| ready_connecting | 32 | 连接正在建立，不能据此报告可写 |
+
+`readable_bytes` 为接收环当前字节数，最大 8192。`writable_bytes` 为当下实际
+发送缓冲容量；共享内存压力及另一操作仍可令后续 send 返回 would_block。
+调用者必须检查实际读写结果并在等待后重查。UDP 在本扩展返回 unsupported。
+权限、代际、撤销、旧 handle、期限和资源上界均沿用原协议。
+
+`shutdown_write`（17）请求只有 handle；成功无负载、无 flags，使用
+`tcp_shutdown(pcb, 0, 1)`，将 FIN 排在已接受输出之后。保留 handle、接收环和
+接收回调；重复请求成功且不重复 FIN。未建立连接返回 would_block，UDP 返回
+unsupported；写半关闭后 send 返回 closed。其后仍需 close/cancel 释放应用 handle。
+关闭排队内存不足时沿用锁定 lwIP 的 TF_CLOSEPEND 重试。LAST_ACK 的 ERR_CLSD
+为正常结束；TIME_WAIT 进入后解除应用回调和指针，再由 lwIP 定时器释放 PCB，
+不会把定时器持有的 PCB 地址保留给后续应用请求。
+
+本扩展不提供事件订阅、阻塞 wait-set、POSIX 非阻塞 connect 或监听。等待者使用
+同一个绝对单调截止时刻重查 level；实际 readiness 不等于消息已消费或副作用可重放。

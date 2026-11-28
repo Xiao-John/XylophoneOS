@@ -1,0 +1,122 @@
+{
+  "artifacts": {
+    "dhcp_policy_host": "67ec6615959cac164bd4c3eb996d6fe941e9d76ed94675c8e34f8fa37b46c93c",
+    "dhcp_policy_target.o": "c5500470e5dc013861fa1d77f8aa428e671dc4606af4c45c20051606fc11a423"
+  },
+  "asan_options": "",
+  "commands": [
+    [
+      "/usr/bin/c++",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wshadow",
+      "-O1",
+      "-g",
+      "-I",
+      "${XOS_SOURCE_ROOT}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE_ROOT}/src/user",
+      "${XOS_SOURCE_ROOT}/tests/fixtures/network/dhcp_policy_host.cpp",
+      "${XOS_SOURCE_ROOT}/src/user/network/dhcp_policy.cpp",
+      "-o",
+      "${XOS_SOURCE_ROOT}/build/p0_dhcp_policy_host/dhcp_policy_host"
+    ],
+    [
+      "${XOS_SDK_ROOT}/bin/x86_64-elf-g++",
+      "-std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wshadow",
+      "-O1",
+      "-g",
+      "-I",
+      "${XOS_SOURCE_ROOT}/src/shared/include",
+      "-I",
+      "${XOS_SOURCE_ROOT}/src/user",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-nostdinc++",
+      "-mno-red-zone",
+      "-c",
+      "${XOS_SOURCE_ROOT}/src/user/network/dhcp_policy.cpp",
+      "-o",
+      "${XOS_SOURCE_ROOT}/build/p0_dhcp_policy_host/dhcp_policy_target.o"
+    ]
+  ],
+  "compiler": "c++ (Debian 16.2.0-5) 16.2.0",
+  "guest_qualification": "not_run",
+  "inputs": {
+    "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+    "src/user/network/dhcp_policy.cpp": "24d0b33ead5335d2731ef0d9f3d984146c5c2bdcd7a151f1788eb9cd8df30944",
+    "src/user/network/dhcp_policy.hpp": "9cab0e1a5cf20579d8c5f79d80e7c41e5c3d1959b9d2cd86377a559658431866",
+    "tests/fixtures/network/dhcp_policy_host.cpp": "6634f5e4662647b0bb059343f3f7f3bba293eed785b7fbea3dfc88202e77eb5b",
+    "tests/net_dhcp_policy_host.py": "e8c4147db2428d1dc86e6b251e975685948be3a7d0fb590c1c095f66c239521d"
+  },
+  "leak_sanitizer": "not_run",
+  "lwip_integration": "not_run",
+  "mutation_iterations": 20000,
+  "python": "3.14.10 (main, Oct 26 2026, 15:12:11) [GCC 16.2.0]",
+  "qualification": "production_helper_host_and_target_object",
+  "sanitizers": [],
+  "scenarios": [
+    {
+      "name": "policy_bounds",
+      "returncode": 0
+    },
+    {
+      "name": "valid_messages",
+      "returncode": 0
+    },
+    {
+      "name": "header_identity",
+      "returncode": 0
+    },
+    {
+      "name": "server_authority",
+      "returncode": 0
+    },
+    {
+      "name": "option_framing",
+      "returncode": 0
+    },
+    {
+      "name": "configuration_and_timers",
+      "returncode": 0
+    },
+    {
+      "name": "actual_request_and_acd",
+      "returncode": 0
+    },
+    {
+      "name": "exact_deadlines_and_loss",
+      "returncode": 0
+    },
+    {
+      "name": "renewal_and_configuration",
+      "returncode": 0
+    },
+    {
+      "name": "invalidation_and_generation",
+      "returncode": 0
+    },
+    {
+      "name": "short_lease_and_acquisition",
+      "returncode": 0
+    },
+    {
+      "name": "time_width_and_regression",
+      "returncode": 0
+    },
+    {
+      "name": "bounded_mutations",
+      "returncode": 0
+    }
+  ],
+  "sdk_profile": "xos-sdk-preview-2-linux-x86_64",
+  "target_compiler": "x86_64-elf-g++ (GCC) 16.2.0",
+  "target_machine": "x86_64-elf"
+}

@@ -62,6 +62,7 @@ struct packet_peer {
     u32 random_state = 0x9712ab41, tcp_syn_count = 0, tcp_fin_count = 0, tcp_rst_count = 0;
     u16 udp_local_port = 0, udp_remote_port = 0;
     bool answer_arp = true, answer_syn = true, answer_data = true, echo_tcp = true, echo_udp = true;
+    bool answer_fin = true;
     bool transmit_blocked = false, transmit_failed = false, clock_failed = false, random_failed = false;
     bytes ethernet(u16 type, usize body_length) {
         bytes frame(14 + body_length);
@@ -156,7 +157,7 @@ struct packet_peer {
                 bytes echoed;
                 if (fresh && echo_tcp) echoed.assign(body + tcp_header, body + body_length);
                 tcp_packet(connection, ack_bit | (echoed.empty() ? 0 : psh_bit) |
-                           ((flags & fin_bit) && fresh ? fin_bit : 0), echoed);
+                           ((flags & fin_bit) && fresh && answer_fin ? fin_bit : 0), echoed);
             }
         }
     }
@@ -194,9 +195,9 @@ struct environment {
     service_core core;
     u64 sequences[session_limit]{};
     static constexpr u64 controller = 77;
-    environment() {
+    explicit environment(const egress_policy& policy = default_egress_policy) {
         expect(stack.initialize(peer.callbacks(), local_mac.data()) == 0, "initialize production lwIP");
-        core.initialize(controller, stack.api()); peer.output.clear();
+        core.initialize(controller, stack.api(), {}, 0, policy); peer.output.clear();
     }
     ~environment() { core.shutdown(); stack.shutdown(); }
     u32 attach(u64 pid = 101) {
@@ -231,6 +232,14 @@ struct environment {
     }
     message receive(u32 slot, u64 handle, u32 capacity = payload_bytes) {
         auto request = input(slot, operation::receive, handle); request.flags = capacity; return dispatch(slot, request);
+    }
+    readiness_snapshot readiness(u32 slot, u64 handle) {
+        const auto reply = request(slot, operation::readiness, handle);
+        expect(reply.result == 0 && reply.length == sizeof(readiness_snapshot), "valid readiness response");
+        readiness_snapshot snapshot{};
+        std::memcpy(&snapshot, reply.data, sizeof(snapshot));
+        expect(snapshot.generation && !snapshot.reserved && !(snapshot.events & ~ready_all), "bounded readiness snapshot");
+        return snapshot;
     }
     void poll() { expect(stack.poll() == 0, "poll production lwIP"); }
     u64 connected_tcp(u32 slot) {
@@ -293,6 +302,53 @@ void address_policy() {
     }
     expect(env.core.connection_count() == 0 && env.peer.output.empty(), "denied requests cannot emit frames");
 }
+void trusted_egress_policy() {
+    egress_policy policy{{{0x0a000200, 24, protocol::udp, 9000, 9000},
+                          {0x0a000202, 32, protocol::udp, 67, 68}}, 2};
+    environment env(policy); const u32 slot = env.attach();
+    // The service snapshots installation authority; mutable caller storage is
+    // not a way for subsequent network configuration to expand that grant.
+    policy.rules[0].last_port = 65535;
+    for (const auto rule : {egress_rule{0x0a000202, 32, protocol::udp, 9001, 9001},
+                            egress_rule{0x0a000202, 32, protocol::tcp, 9000, 9000},
+                            egress_rule{0x0a000301, 32, protocol::udp, 9000, 9000},
+                            egress_rule{0x0a000202, 32, protocol::udp, 67, 67},
+                            egress_rule{0x0a000202, 32, protocol::udp, 68, 68}}) {
+        auto input = env.input(slot, operation::open); input.address = rule.network;
+        input.transport = rule.transport; input.port = rule.first_port;
+        expect(env.dispatch(slot, input).result == denied, "tuple denied by immutable installation policy");
+    }
+    expect(env.core.connection_count() == 0 && env.peer.output.empty(), "policy denial precedes PCB and frames");
+    const auto handle = env.open(slot, protocol::udp, 9000);
+    const auto data = pattern(43);
+    expect(env.send(slot, handle, data).result == 43, "admitted tuple sends via real lwIP");
+    env.poll(); const auto echoed = env.receive(slot, handle);
+    expect(echoed.result == 0 && bytes(echoed.data, echoed.data + echoed.length) == data,
+           "admitted policy tuple receives the real packet echo");
+}
+void invalid_egress_fails_closed() {
+    environment env; const u32 slot = env.attach();
+    for (u32 change = 0; change < 6; ++change) {
+        auto policy = default_egress_policy;
+        if (change == 0) policy.count = egress_rule_limit + 1;
+        if (change == 1) policy.rules[0].prefix = 33;
+        if (change == 2) policy.rules[0].prefix = 24;
+        if (change == 3) policy.rules[0].transport = protocol::none;
+        if (change == 4) policy.rules[0].first_port = 0;
+        if (change == 5) { policy.rules[0].first_port = 90; policy.rules[0].last_port = 80; }
+        expect(!valid_egress_policy(policy), "invalid trusted input detected");
+        env.core.initialize(environment::controller, env.stack.api(), {}, 0, policy);
+        auto input = env.input(slot, operation::open); input.address = permitted_address;
+        input.transport = protocol::udp; input.port = 9000;
+        expect(env.dispatch(slot, input).result == denied && !env.core.connection_count() && env.peer.output.empty(),
+               "malformed policy does not retain a permissive default");
+    }
+    constexpr egress_policy all{{{0, 0, protocol::tcp, 1, 65535}}, 1};
+    static_assert(valid_egress_policy(all));
+    for (const u32 address : {0u, 0x7f000001u, 0xe0000001u, 0xffffffffu})
+        expect(!egress_permitted(all, address, protocol::tcp, 80), "non-unicast addresses remain denied");
+    expect(egress_permitted(all, 0xc0000201u, protocol::tcp, 80), "an explicit /0 is an explicit broad grant");
+}
 void object_isolation() {
     environment env; const u32 owner = env.attach(), other = env.attach(102); const u64 handle = env.open(owner);
     for (const auto action : {operation::status, operation::send, operation::receive, operation::close, operation::cancel}) {
@@ -351,6 +407,108 @@ void deadlines_and_idle() {
     env.core.expire(initial + idle_ns); expect(env.core.alive(slot), "request refreshes idle timer");
     env.core.expire(env.peer.now + idle_ns);
     expect(!env.core.alive(slot) && env.core.connection_count() == 0, "idle expiry releases PCB");
+}
+void socket_capabilities_and_isolation() {
+    environment env; const u32 owner = env.attach(), other = env.attach(102);
+    const auto reply = env.request(owner, operation::capabilities);
+    capability_snapshot capabilities{};
+    expect(!reply.result && reply.length == sizeof(capabilities), "capability snapshot shape");
+    std::memcpy(&capabilities, reply.data, sizeof(capabilities));
+    expect(capabilities.revision == socket_extension_revision && !capabilities.reserved &&
+           capabilities.flags == (capability_readiness | capability_shutdown_write), "explicit extension support");
+    expect(env.request(owner, operation::capabilities, 1).result == invalid, "capabilities has no handle");
+    const u64 handle = env.connected_tcp(owner);
+    for (const auto action : {operation::readiness, operation::shutdown_write}) {
+        expect(env.request(other, action, handle).result == denied, "extensions preserve handle ownership");
+        auto malformed = env.input(owner, action, handle); malformed.flags = 1;
+        expect(env.dispatch(owner, malformed).result == invalid, "extension flags must be zero");
+    }
+    expect(!env.peer.tcp_fin_count, "rejected shutdown emits no FIN");
+    const u64 udp = env.open(owner);
+    expect(env.request(owner, operation::readiness, udp).result == unsupported &&
+           env.request(owner, operation::shutdown_write, udp).result == unsupported, "extension explicitly TCP only");
+    expect(env.request(owner, operation::cancel, handle).result == 0, "cancel extended socket");
+    expect(env.request(owner, operation::readiness, handle).result == closed, "stale snapshot handle rejected");
+}
+void tcp_level_readiness() {
+    environment env; const u32 slot = env.attach(); env.peer.answer_syn = false;
+    const u64 handle = env.open(slot, protocol::tcp); env.poll();
+    auto pending = env.readiness(slot, handle);
+    expect(pending.events == ready_connecting && !pending.readable_bytes && !pending.writable_bytes,
+           "connecting is not writable");
+    expect(env.request(slot, operation::shutdown_write, handle).result == would_block, "shutdown pending connect is not accepted");
+    auto& remote = env.peer.tcp_connection(); remote.peer_next = 0x12987533;
+    env.peer.tcp_packet(remote, syn_bit | ack_bit); env.poll();
+    auto ready = env.readiness(slot, handle);
+    expect(ready.events == ready_write && ready.writable_bytes && ready.generation > pending.generation,
+           "established socket reports actual send capacity");
+    expect(env.readiness(slot, handle).generation == ready.generation, "unchanged level has stable generation");
+    const auto incoming = pattern(87); env.peer.tcp_packet(remote, ack_bit | psh_bit, incoming); env.poll();
+    auto readable = env.readiness(slot, handle);
+    expect((readable.events & ready_read) && readable.readable_bytes == incoming.size() &&
+           readable.generation > ready.generation, "queued byte count reported without consuming");
+    expect(env.receive(slot, handle, 12).length == 12, "partial readiness read");
+    expect(env.readiness(slot, handle).readable_bytes == incoming.size() - 12, "readiness rechecks after consumption");
+    env.peer.tcp_packet(remote, rst_bit | ack_bit); env.poll();
+    auto reset_state = env.readiness(slot, handle);
+    expect(reset_state.error == reset && (reset_state.events & (ready_read | ready_error)) == (ready_read | ready_error)
+           && !reset_state.writable_bytes, "buffered input and reset reported together");
+    expect(env.receive(slot, handle).length == incoming.size() - 12, "reset does not discard earlier bytes");
+    expect(env.readiness(slot, handle).events == ready_error, "after draining reset only error is ready");
+}
+void tcp_readiness_backpressure() {
+    environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
+    env.peer.answer_data = false; env.peer.echo_tcp = false;
+    for (;;) {
+        const auto sent = env.send(slot, handle, pattern(payload_bytes)).result;
+        if (sent == would_block) break;
+        expect(sent > 0, "fill actual TCP send queue");
+    }
+    const auto blocked = env.readiness(slot, handle);
+    expect(!(blocked.events & ready_write) && !blocked.writable_bytes, "connection state does not imply writable");
+    env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit); env.poll();
+    expect(env.readiness(slot, handle).events & ready_write, "real ACK restores write readiness");
+}
+void tcp_half_close_keeps_receive() {
+    environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
+    env.peer.answer_fin = false; env.peer.echo_tcp = false;
+    const auto outgoing = pattern(311), incoming = pattern(199, 71);
+    env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | psh_bit, incoming); env.poll();
+    expect(env.send(slot, handle, outgoing).result == static_cast<i64>(outgoing.size()), "send before half-close");
+    expect(env.request(slot, operation::shutdown_write, handle).result == 0, "half-close accepts FIN with unread input");
+    expect(env.core.connection_count() == 1, "half-close retains public handle");
+    expect(env.request(slot, operation::shutdown_write, handle).result == 0, "repeat half-close idempotent");
+    expect(env.send(slot, handle, bytes{1}).result == closed, "write after half-close rejected");
+    env.poll();
+    expect(env.peer.tcp_fin_count == 1 && !env.peer.tcp_rst_count && env.peer.tcp_connection().client_data == outgoing,
+           "peer receives queued bytes followed by exactly one FIN");
+    auto state = env.readiness(slot, handle);
+    expect((state.events & (ready_read | ready_write_closed)) == (ready_read | ready_write_closed) &&
+           !(state.events & (ready_write | ready_eof)), "receive remains open after local FIN");
+    const auto received = env.receive(slot, handle);
+    expect(bytes(received.data, received.data + received.length) == incoming, "half-close preserves unread input");
+    const auto after_fin = pattern(43, 19);
+    env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | psh_bit, after_fin); env.poll();
+    expect(env.receive(slot, handle).length == after_fin.size(), "peer can send after observing local FIN");
+    env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | fin_bit); env.poll();
+    state = env.readiness(slot, handle);
+    expect(state.events == (ready_read | ready_eof | ready_write_closed), "remote FIN is readable clean EOF");
+    env.peer.now += 130'000'000'000ull; env.poll();
+    expect(env.receive(slot, handle).flags == eof, "EOF survives TIME_WAIT PCB expiry without stale pointer");
+    expect(env.request(slot, operation::close, handle).result == 0 && !env.core.connection_count(), "final close releases half-closed handle");
+}
+void tcp_half_close_passive_and_pressure() {
+    environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
+    env.peer.tcp_packet(env.peer.tcp_connection(), ack_bit | fin_bit); env.poll();
+    std::vector<void*> segments;
+    while (void* segment = memp_malloc(MEMP_TCP_SEG)) segments.push_back(segment);
+    expect(env.request(slot, operation::shutdown_write, handle).result == 0, "FIN memory pressure accepted by pinned lwIP retry");
+    expect(env.readiness(slot, handle).events == (ready_read | ready_eof | ready_write_closed), "pending FIN keeps EOF level");
+    for (void* segment : segments) memp_free(MEMP_TCP_SEG, segment);
+    env.peer.now += 250'000'000ull; env.poll(); env.poll();
+    expect(env.receive(slot, handle).flags == eof, "LAST_ACK clean completion preserves EOF");
+    expect(!env.readiness(slot, handle).error && env.peer.tcp_fin_count == 1, "clean completion is not an error");
+    expect(env.request(slot, operation::close, handle).result == 0, "close completed passive half-close");
 }
 void tcp_echo_and_eof() {
     environment env; const u32 slot = env.attach(); const u64 handle = env.connected_tcp(slot);
@@ -630,8 +788,13 @@ struct test_case { const char* name; void (*run)(); };
 const test_case cases[] = {
     {"admission_and_stop", admission_and_stop}, {"framing_and_replay", framing_and_replay},
     {"address_policy", address_policy}, {"object_isolation", object_isolation},
+    {"trusted_egress_policy", trusted_egress_policy}, {"invalid_egress_fails_closed", invalid_egress_fails_closed},
     {"connection_quotas", connection_quotas}, {"revoke_policy", revoke_policy},
     {"deadlines_and_idle", deadlines_and_idle}, {"tcp_echo_and_eof", tcp_echo_and_eof},
+    {"socket_capabilities_and_isolation", socket_capabilities_and_isolation},
+    {"tcp_level_readiness", tcp_level_readiness}, {"tcp_readiness_backpressure", tcp_readiness_backpressure},
+    {"tcp_half_close_keeps_receive", tcp_half_close_keeps_receive},
+    {"tcp_half_close_passive_and_pressure", tcp_half_close_passive_and_pressure},
     {"tcp_short_write_pressure", tcp_short_write_pressure}, {"tcp_receive_wrap_and_reset", tcp_receive_wrap_and_reset},
     {"tcp_close_unread_preserves_data", tcp_close_unread_preserves_data},
     {"tcp_close_fin_memory_pressure", tcp_close_fin_memory_pressure},

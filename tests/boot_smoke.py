@@ -4,7 +4,9 @@
 
 import hashlib
 import json
+import os
 from pathlib import Path
+import select
 import selectors
 import socket
 import subprocess
@@ -15,6 +17,60 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from run_qemu import MACHINE, qemu_command
+
+
+class QmpPipe:
+    """Private local FIFOs for runners without Unix-domain sockets."""
+    def __init__(self, prefix):
+        self.read_fd = self.write_fd = None
+        self.buffer = bytearray()
+        try:
+            for suffix in ('.in', '.out'):
+                os.mkfifo(prefix + suffix, 0o600)
+            # RDWR keeps the private endpoints open while QEMU starts. All
+            # protocol I/O remains bounded even when it exits before greeting.
+            self.read_fd = os.open(prefix + '.out', os.O_RDWR | os.O_NONBLOCK)
+            self.write_fd = os.open(prefix + '.in', os.O_RDWR | os.O_NONBLOCK)
+        except BaseException:
+            self.close()
+            raise
+
+    def readline(self):
+        deadline = time.monotonic() + 5
+        while b'\n' not in self.buffer:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0 or not select.select([self.read_fd], [], [], remaining)[0]:
+                raise TimeoutError('QMP pipe response timed out')
+            data = os.read(self.read_fd, 4096)
+            if not data:
+                raise EOFError('QMP pipe closed')
+            self.buffer.extend(data)
+            if len(self.buffer) > 65536:
+                raise ValueError('QMP pipe response exceeds 64 KiB')
+        end = self.buffer.index(b'\n') + 1
+        value = bytes(self.buffer[:end])
+        del self.buffer[:end]
+        return value
+
+    def write(self, data):
+        deadline = time.monotonic() + 5
+        offset = 0
+        while offset < len(data):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0 or not select.select([], [self.write_fd], [], remaining)[1]:
+                raise TimeoutError('QMP pipe request timed out')
+            try:
+                offset += os.write(self.write_fd, data[offset:])
+            except BlockingIOError:
+                continue
+        return offset
+
+    def close(self):
+        for name in ('read_fd', 'write_fd'):
+            fd = getattr(self, name)
+            if fd is not None:
+                os.close(fd)
+                setattr(self, name, None)
 
 
 class Guest:
@@ -29,7 +85,12 @@ class Guest:
         self.output = bytearray()
         self.temp = tempfile.TemporaryDirectory(prefix="xos_")
         self.qmp_path = str(Path(self.temp.name) / "qmp.sock") if qmp_enabled else None
-        self.command = qemu_command(image, qmp=self.qmp_path, cpu=cpu, debug_port=debug_port,
+        self.qmp_transport = os.environ.get('XOS_QMP_TRANSPORT', 'unix')
+        if self.qmp_transport not in ('unix', 'pipe'):
+            raise ValueError('XOS_QMP_TRANSPORT must be unix or pipe')
+        self.qmp_pipe = QmpPipe(self.qmp_path) if qmp_enabled and self.qmp_transport == 'pipe' else None
+        self.command = qemu_command(image, qmp=self.qmp_path, qmp_transport=self.qmp_transport,
+                                    cpu=cpu, debug_port=debug_port,
                                     work_disk=work_disk, iso=iso, network=network, network_capture=network_capture,
                                     network_peer_port=network_peer_port)
         self.stderr = (self.log_dir / f'{name}_qemu.log').open('wb')
@@ -38,6 +99,15 @@ class Guest:
         self.selector = selectors.DefaultSelector()
         self.selector.register(self.process.stdout, selectors.EVENT_READ)
         self.qmp_socket = None
+        if self.qmp_pipe is not None:
+            try:
+                self.qmp('query-status')
+                # Preserve the existing readiness marker used by the debugger
+                # fixture, after an actual QEMU protocol round trip.
+                Path(self.qmp_path).touch(exist_ok=False)
+            except BaseException:
+                self.close()
+                raise
 
     def expect(self, expected, *, start=0, timeout=12):
         if expected == b"[sup] demo tasks stopped":
@@ -88,10 +158,13 @@ class Guest:
         if self.qmp_path is None:
             raise RuntimeError("QMP is disabled for this serial-only guest")
         if self.qmp_socket is None:
-            self.qmp_socket = socket.socket(socket.AF_UNIX)
-            self.qmp_socket.settimeout(5)
-            self.qmp_socket.connect(self.qmp_path)
-            self.qmp_file = self.qmp_socket.makefile("rwb", buffering=0)
+            if self.qmp_pipe is not None:
+                self.qmp_socket = self.qmp_file = self.qmp_pipe
+            else:
+                self.qmp_socket = socket.socket(socket.AF_UNIX)
+                self.qmp_socket.settimeout(5)
+                self.qmp_socket.connect(self.qmp_path)
+                self.qmp_file = self.qmp_socket.makefile("rwb", buffering=0)
             json.loads(self.qmp_file.readline())
             self.qmp("qmp_capabilities")
         request = {"execute": execute}
@@ -115,6 +188,8 @@ class Guest:
         if self.qmp_socket:
             self.qmp_file.close()
             self.qmp_socket.close()
+        if self.qmp_pipe:
+            self.qmp_pipe.close()
         self.selector.close()
         self.process.stdin.close()
         self.process.stdout.close()

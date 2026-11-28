@@ -1,0 +1,57 @@
+{
+  "source_sha256": {
+    "bridge_host.json": "90e14bb68df52040fb884acf74b1c911c9d91f094c93fea00dc8279a31dc981f",
+    "files_host.json": "972a026978d2db5761b4fa5da33f104f7cbd0a5b8a162c8259066c6465d8d040",
+    "initial_fd_failure.json": "4600bd491098789ed2f5f2cdbd5219325c3d919815d824213d7a60dc9d9fcdd1",
+    "initial_peer_close_failure.json": "fdd9a0121880c98ecab5772378c2478f467168a998f4d42a02cd48316fe0cfa5",
+    "legacy_guest.json": "78ca78d48f8bcb10c22a43a8e8e67d611f458b195cd9795d673334b01e77d1e2",
+    "legacy_elf_manifest.json": "aa29de49485d43cd6e2fac032be0741673f06e1f78c2b3682a623d60d81fc6c3",
+    "deadline_guest.json": "f6191ad578a688cd30f3ce582e95a0df8107ec27d9d0549051ec3c746bbb1e84",
+    "deadline_elf_manifest.json": "d8cf6ca3eb353481a9c75e7a4439018a176f9c54ac131da1b42a6cb6dbc03687",
+    "deadline_serial.log": "cc9ba16c91d3d3bc9c1c8997d2e3afa645b212e9d9605d8e025763f671d315d5",
+    "legacy_serial.log": "13a7b0c44eeb81e2580378137ebddb68127c2819b929ad43bb7fffafbc45a70a"
+  },
+  "path_placeholders": [
+    "XOS_REPO",
+    "XOS_TOOLCHAIN",
+    "XOS_INPUTS",
+    "XOS_RUN_TMP",
+    "XOS_TOOLCHAIN_BUILD_HOME",
+    "XOS_SDK_TOOLS"
+  ],
+  "note": "Source hashes bind original local receipts. Public evidence includes readable full serial logs and selected source/tool/output bindings; four complete build metadata payloads remain local after automatic approval review rejected their public compressed uploads.",
+  "omitted_large_metadata": {
+    "deadline_system_manifest.json.gz": {
+      "original_sha256": "15646d367aaf875d8c94a3e5966f9362ac5ba683c81c8451313efa79b1c624d7",
+      "compressed_sha256": "63eaa0e794146b87e4eecfb0594a779db510251804939ebf8eff7a93d9807194",
+      "publication": "omitted_after_automatic_approval_review_rejection"
+    },
+    "deadline_sdk_manifest.json.gz": {
+      "original_sha256": "77143b515a2420df9b4d4f24cb87e78c941ad188519280b307aeea0dbda9443a",
+      "compressed_sha256": "a3baa797e235880c53fadbfda3aa66864fd9841f45b6126fa9f1540a82265f39",
+      "publication": "omitted_after_automatic_approval_review_rejection"
+    },
+    "legacy_system_manifest.json.gz": {
+      "original_sha256": "daac14f7b83a50583d6ae2323bc682d150b78df795f5c2a22ea712b158aa3dcd",
+      "compressed_sha256": "63f4844a32f72700e50510b2213cc0e95d392bde65d60966e6b4e1eb4deeb696",
+      "publication": "omitted_after_automatic_approval_review_rejection"
+    },
+    "legacy_sdk_manifest.json.gz": {
+      "original_sha256": "a71604f9f8a66b8902bd5b71afb61b0280582fd4d1db54aab7639b52448e3920",
+      "compressed_sha256": "04fcdc1430c5f32a98c1e8a6651631e7e436730a2d9767ed47d8b4d921b57587",
+      "publication": "omitted_after_automatic_approval_review_rejection"
+    }
+  },
+  "serial_normalization": {
+    "deadline_serial.log": {
+      "source_sha256": "cc9ba16c91d3d3bc9c1c8997d2e3afa645b212e9d9605d8e025763f671d315d5",
+      "public_sha256": "4e42056fa1e2e5c3978e2b4bcdf3df2a61759a50f4d634ef31794e43cfe14c9f",
+      "changes": "CRLF and terminal trailing padding normalized; complete log retained in readable text"
+    },
+    "legacy_serial.log": {
+      "source_sha256": "13a7b0c44eeb81e2580378137ebddb68127c2819b929ad43bb7fffafbc45a70a",
+      "public_sha256": "aa0c61c5067fe91aff03dfd03b878541226ede089aaf29a16300d35c66bd3652",
+      "changes": "CRLF and terminal trailing padding normalized; complete log retained in readable text"
+    }
+  }
+}

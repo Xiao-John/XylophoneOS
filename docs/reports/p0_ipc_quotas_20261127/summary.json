@@ -1,0 +1,68 @@
+{
+  "status": "passed",
+  "base_commit": "96d75c9",
+  "build_id": "d9527dfd4974eb89",
+  "source_sha256": "d9527dfd4974eb89152c65c8813fc11bc6111eff31f39f29a762b051e7b5319a",
+  "system_manifest_sha256": "000498cf51ee00f8265690a7cb799f234729c1cf4002cfbb6c737a407ceaced6",
+  "iso_sha256": "e6f032ebfbcf1db8009ea257d7f112093b21ec76418a7b6be255740e6184b4f8",
+  "sdk_manifest_sha256": "d3cc3da6bcb51494a0dcad29c3355909b9332f9910a7528001bcf84003c98062",
+  "ipc_endpoint": {
+    "syscalls": [
+      84,
+      85,
+      86
+    ],
+    "quota_owner": "authenticated_pid",
+    "max_owned_channels": 4,
+    "max_owned_names": 2,
+    "pending_connections_count_as_channels": true,
+    "guest_qualification": "not_run"
+  },
+  "environment": "XOS SDK Preview 2 Linux x86-64, regular Bubblewrap launcher, QEMU TCG",
+  "qualification": {
+    "rounds": 3,
+    "invocations": 12,
+    "cases": 24,
+    "strict_blocked_wakeups": 36,
+    "resource_baseline": [
+      129806,
+      2,
+      0
+    ]
+  },
+  "not_run": [
+    "whole process-tree budgets",
+    "full Pumpkin/network/display application profiles",
+    "threading SDK package rebuild",
+    "SMP",
+    "physical hardware"
+  ],
+  "normalization": "Paths replaced with portable placeholders; text logs normalize CRLF and trailing terminal padding. Original hashes retained.",
+  "files": {
+    "guest.json": {
+      "source": "build/p0_quota_guest/report.json",
+      "original_sha256": "309066dd9fc7a56733b1dd623cbdb2bea1301c48e53c0842f659e046c7429e5a",
+      "public_sha256": "1421118a888c0493a5d9c2e47d61677ab5574025cf3332e27e96807fb14c2882"
+    },
+    "guest_serial.log": {
+      "source": "build/p0_quota_guest/guest_serial.log",
+      "original_sha256": "9c79d0c83685347b31802bc09e587d0ce6963a82a7be73f5c4d54649e094fb50",
+      "public_sha256": "4d61532c15d39ee4ca01d996703857e739bdbca40cc36af649980283efc84fad"
+    },
+    "fixture.json": {
+      "source": "build/p0_quota_fixture/receipt.json",
+      "original_sha256": "36751d4f00f7c305059800aeeb3afbfdffc083a7a8b2c9607f8ef644824ac152",
+      "public_sha256": "5af50269796bb6d3a464daf486a02b705156b1f5dac74e220d10426ad4aa5038"
+    },
+    "build.log": {
+      "source": "build/p0_lifecycle_logs/quota_build2.log",
+      "original_sha256": "67e36fe1652793b46df5e4165d5ae0677cb60b6077d7c2e27abaddb03cf5caf8",
+      "public_sha256": "7c814a7401b6921ec61eccea88ad2259ac0f3e2f7802041b516eedafdce89468"
+    },
+    "initial_build_failure.log": {
+      "source": "build/p0_lifecycle_logs/quota_build.log",
+      "original_sha256": "8a7a2050a51395975e0b15bdaeb93c1f41641fe5400649bb24669efe1e0f8894",
+      "public_sha256": "88e87c92c2cb332db157e76e77599ae5d00ff64346f263b7290f2f4fade73d57"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "source_sha256": {
+    "guest.json": "2df6bf494f0487584527bf989d66a24ec85511f7c2174c2587d44b9c95742a06",
+    "probe.json": "e86347de3bee754ed6347f461b96f6f935b0019450fa0c76eb337d0011ec393c",
+    "asan.json": "cd75549e13dafa77782efa6c04649b5502b1b426d59cab2923aa5a5c8fb43c17",
+    "profile_host.json": "0607191eb4b8822733d9bc93e2eb58121fb4e7e12d0eee13d873c169b62d374f",
+    "serial.log": "75cf76c258741e6a1062a66f6d02b2729bb046dd83b6b10a78eabe528307ebbe"
+  },
+  "path_placeholders": [
+    "XOS_REPO",
+    "XOS_TOOLCHAIN",
+    "XOS_SDK_TOOLS",
+    "XOS_INPUTS",
+    "XOS_RUN_TMP"
+  ],
+  "note": "Source hashes cover unmodified local receipts; index covers public exports. Large full manifests and raw packet capture are retained locally with exact hashes in binding.json.",
+  "serial_text_normalization": "LF newlines and trailing prompt whitespace removed; source_sha256 retains original bytes"
+}

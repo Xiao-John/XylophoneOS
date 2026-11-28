@@ -501,6 +501,30 @@ static void pipe_writev() {
     assert(xos_test_writev(3, nullptr, 0) == -1 && errno == EBADF);
 }
 
+static void poll_deferred_lease() {
+    const int fd = static_cast<int>(__xos_file_open("/fixture", O_RDWR));
+    assert(fd >= 0);
+    xos_file_lease lease{};
+    assert(__xos_file_poll_lease_acquire(fd, &lease) == 0);
+    assert(__xos_file_close(fd) == 0 && closes == 0);
+    const auto before = sends;
+    __xos_file_poll_lease_release(&lease);
+    assert(lease.object == -1 && closes == 0 && sends == before);
+    assert(__xos_file_poll_lease_acquire(fd, &lease) == -EBADF);
+    assert(closes == 0 && sends == before); // Poll cleanup cannot enter a Files RPC.
+    const int replacement = static_cast<int>(__xos_file_open("/fixture", O_RDWR));
+    assert(replacement == fd && closes == 1);
+    assert(__xos_file_close(replacement) == 0 && closes == 2);
+    for (unsigned int i = 0; i < 96; ++i) {
+        const int socket = static_cast<int>(__xos_file_socket(0));
+        assert(socket == fd);
+        assert(__xos_file_poll_lease_acquire(socket, &lease) == 0);
+        assert(__xos_file_close(socket) == 0);
+        __xos_file_poll_lease_release(&lease);
+    }
+    assert(lease.object == -1); // Repeated last-reference release does not exhaust 32 routes.
+}
+
 static void public_lease() {
     const int old_fd = static_cast<int>(__xos_file_open("/fixture", O_RDWR));
     assert(old_fd == 3 && __xos_file_write(old_fd, "abcdef", 6) == 6);
@@ -730,6 +754,7 @@ int main(int argc, char** argv) {
     else if (!std::strcmp(argv[1], "pipe_lease")) pipe_lease();
     else if (!std::strcmp(argv[1], "pipe_writev")) pipe_writev();
     else if (!std::strcmp(argv[1], "public_lease")) public_lease();
+    else if (!std::strcmp(argv[1], "poll_deferred_lease")) poll_deferred_lease();
     else if (!std::strcmp(argv[1], "native_read_capacity")) native_read_capacity();
     else if (!std::strncmp(argv[1], "native_deadline_", 16)) native_deadline(argv[1]);
     else if (!std::strncmp(argv[1], "block_", 6)) block_bench(argv[1]);

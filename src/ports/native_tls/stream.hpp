@@ -3,6 +3,7 @@
 
 #include <mbedtls/ssl.h>
 #include <xos/net_transport.hpp>
+#include "trust_store.hpp"
 
 namespace native_tls {
 
@@ -25,6 +26,9 @@ public:
     int connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
                 const char* hostname, const unsigned char* trust_anchor,
                 size_t trust_anchor_size, xos::u64 deadline, route_source route = route_source::pinned);
+    int connect(xos::u64 service_pid, xos::u32 address, xos::u16 port,
+                const char* hostname, const trust_store& store,
+                xos::u64 deadline, route_source route = route_source::pinned);
     int write(const unsigned char* data, size_t size);
     // Zero is a verified TLS close_notify. Unauthenticated transport EOF fails.
     int read(unsigned char* data, size_t capacity);
@@ -35,6 +39,10 @@ public:
     [[nodiscard]] peer_certificate_view verified_peer_leaf_der() const;
 
 private:
+    int prepare(xos::u64 service_pid, xos::u32 address, xos::u16 port,
+                const char* hostname, xos::u64 deadline);
+    int handshake(xos::u64 service_pid, xos::u32 address, xos::u16 port,
+                  const char* hostname, route_source route);
     static int send(void* context, const unsigned char* data, size_t size);
     static int receive(void* context, unsigned char* data, size_t size);
     int fail(int error);

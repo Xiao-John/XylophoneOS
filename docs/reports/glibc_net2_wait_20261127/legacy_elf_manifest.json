@@ -1,0 +1,140 @@
+{
+  "status": "static_program_linked",
+  "diagnostic": false,
+  "language": "c",
+  "builder_sha256": "5c63b120681020ad392909c4c8886fba800488afe8ed5d7ba5d550e24862d201",
+  "sdk_manifest_sha256": "a71604f9f8a66b8902bd5b71afb61b0280582fd4d1db54aab7639b52448e3920",
+  "compiler": {
+    "available": true,
+    "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+    "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+    "version_exit_code": 0,
+    "version": "x86_64-elf-gcc (GCC) 16.2.0"
+  },
+  "sanitized_environment": [],
+  "sources": {
+    "${XOS_REPO}/tests/fixtures/glibc_net2/socket_probe.c": "42752012d927bb02f275791c60bbe05499a29bd4743888690a368beae9d9fbe9"
+  },
+  "steps": [
+    {
+      "name": "compile-0",
+      "command": [
+        "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot",
+        "-B${XOS_REPO}/build/net_poll/guest_legacy_verified/net2.elf.build/tools/",
+        "-O2",
+        "-g",
+        "-mno-red-zone",
+        "-fno-pie",
+        "-fno-omit-frame-pointer",
+        "-ftls-model=local-exec",
+        "-nostdinc",
+        "-std=gnu11",
+        "-fno-builtin",
+        "-isystem",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/include",
+        "-isystem",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/compiler-include",
+        "-c",
+        "${XOS_REPO}/tests/fixtures/glibc_net2/socket_probe.c",
+        "-o",
+        "${XOS_REPO}/build/net_poll/guest_legacy_verified/net2.elf.build/program_0.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "link",
+      "command": [
+        "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "--sysroot=${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot",
+        "-B${XOS_REPO}/build/net_poll/guest_legacy_verified/net2.elf.build/tools/",
+        "-static",
+        "-no-pie",
+        "-nostdlib",
+        "-Wl,--build-id=none",
+        "-Wl,-z,noexecstack",
+        "-Wl,-z,max-page-size=4096",
+        "-T",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/user.ld",
+        "-o",
+        "${XOS_REPO}/build/net_poll/guest_legacy_verified/net2.elf.build/program.elf",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/xos_start.o",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/crti.o",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/crtbegin.o",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/xos_start_c.o",
+        "${XOS_REPO}/build/net_poll/guest_legacy_verified/net2.elf.build/program_0.o",
+        "-Wl,--start-group",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/libc.a",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/libm.a",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/libxos_terminal.a",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/libgcc.a",
+        "-Wl,--end-group",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/crtend.o",
+        "${XOS_REPO}/build/net_poll/glibc_legacy_final/sysroot/usr/lib/crtn.o"
+      ],
+      "exit_code": 0,
+      "log_sha256": "83eb12c415e95a240fe609cac495970432ae9a4c216592b4182d206e6186ac49"
+    }
+  ],
+  "guest_qualification": "not_run",
+  "profile_binding": {
+    "status": "candidate_binding_verified",
+    "runtime_family": "glibc",
+    "profile_id": "xos-x86_64-glibc-net2-legacy-wait",
+    "profile_sha256": "809ade2e9ccfe388bf62583b8428bc5e29082868d47adb47251356da2e70c023",
+    "sdk_tree_sha256": "ef47a46c75794d35230c395af7117b4bfb1537d795f8304c519e3129e9070f07",
+    "guest_qualification": "not_run"
+  },
+  "binutils": {
+    "as": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+      "version_exit_code": 0,
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 423782,
+      "memory_size": 423782,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1074167808,
+      "file_size": 175525,
+      "memory_size": 175525,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1074343936,
+      "file_size": 14048,
+      "memory_size": 36888,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 1074357928,
+      "file_size": 56,
+      "memory_size": 80,
+      "alignment": 8
+    }
+  ],
+  "elf_sha256": "1313f4d21cebf370ed6dd6645a018985cefcd8eec038ebaeacb0fcb078bfda36"
+}

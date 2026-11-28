@@ -1,0 +1,123 @@
+{
+  "asan_options": "detect_leaks=0",
+  "guest_qualification": "not_run",
+  "inputs": {
+    "scripts/lwip_service_build.py": "e5f31999dbf85a3815e73eb2bb644b04f793b25559c53a306b87be9ed0595345",
+    "src/ports/lwip/include/arch/cc.h": "446b61b46b5990ffca4555f53e20a73b83074719578344564383844f1fde32b4",
+    "src/ports/lwip/include/lwipopts.h": "b0ba2607e7e0ee626de3878a334ac25200846c958a6132ae97c789f25548245b",
+    "src/ports/lwip/patches/0001_dns_reply_validation.patch": "d2b61475f66ff6a2b7e858db135b3f2c8586bf8d7935730c47b2c1da265d4ccb",
+    "src/ports/lwip/patches/0002_dns_bounded_entropy.patch": "ab5fd751ff436224e43a7968447889db5d25e7e0b0b5dc85949fbeeca954ce4b",
+    "src/ports/lwip/patches/0003_dns_lifecycle.patch": "ad37721e5938845ad876ef95f8c7f4ce50d3fd6fbf5c89e24fd59e1330f92dce",
+    "src/ports/lwip/patches/0004_dns_results.patch": "117774bf61ac3d5902eddbdbba6ae19096fe3917c20339ca30b650f3412cbc7e",
+    "src/ports/lwip/source_lock.json": "9619424a44b05fae979b3d3fb95a9ddf84eb51c6a83ad24023881d1d9b8d453a",
+    "src/shared/include/xos/net_service_abi.hpp": "58e8fa7a1e9750112745f3691abf8ee217cfd842470f3d7474db6dda08786e47",
+    "src/user/network/include/arch/cc.h": "79bb4a36cb41343857a73a8f082dc6a9cdbb116664a588fccb01df62adc35a21",
+    "src/user/network/include/lwipopts.h": "5cc74b65249f84ac9fe21982d3b98779d81036d7e321e445b9fae4b628975894",
+    "src/user/network/lwip_stack.cpp": "211699687d4ec560460ada496d8ae011bdb138e163918fd0beaec8e077ae2aa7",
+    "src/user/network/lwip_stack.hpp": "2fae14fcd3594d4dc3eddd54cabcf05257734a3f345f8d10f3e39e814b0a7753",
+    "src/user/network/service_core.cpp": "af89771e16f7130c4a0d2963cd7b61e41b1c2fda8ac2e6511594d51cf1c2ed27",
+    "src/user/network/service_core.hpp": "b4acf2db6116b5cf15bef36caaa7b42cddfabe18cc961ea653b5b28eb1f0b583",
+    "src/user/network/service_loop.cpp": "3b663650966de6c36b8aef4fde1bb5cbb595e7cc4ae8b94bd871ae567e2ab385",
+    "src/user/network/service_loop.hpp": "37d03baa0e32d140358f49705f19da5af48613a9a92c208edae8a2c0da020a2f",
+    "src/user/programs/net_service.cpp": "d674a2027df0507abba766b3fbaf13e6c6ed12ddbcbe3862b35c6a4e51e78aa3",
+    "tests/fixtures/network/service_host.cpp": "12f3f0b54173e5ca2b4657fc221e9e7665b1bb070af8603e9d7677d64f825b19",
+    "tests/fixtures/network/service_loop_host.cpp": "23c3dd01fa8b9bf38547de7499dde1074e08987e2fef9a44ea694d191985c261",
+    "tests/net_service_host.py": "595dca010545a6223ca48dcb7229e52586bc8ed6366937d1edf690d94d9c1aaf"
+  },
+  "loop_scenarios": [
+    "revoked_slot_reply_isolation",
+    "expired_request_after_receive"
+  ],
+  "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "lwip_patches": [
+    {
+      "files": {
+        "src/core/dns.c": {
+          "after": "b52265704c191a97c6af244f27ab948e404bd3c9fd3a007152c46494dda0e3e5",
+          "before": "fe35ede9919974da54598630cc08d654ccc30b668c45b09668c3ba572686b26c"
+        },
+        "src/include/lwip/prot/dns.h": {
+          "after": "f264c9100589169dd867cb7642905857609259bfadbcb83352c78fc15e1bd992",
+          "before": "34049c0f7f489aaec12d0589dc51ecfb24408dba422f605d8deb207c44d02b8f"
+        }
+      },
+      "path": "patches/0001_dns_reply_validation.patch",
+      "sha256": "d2b61475f66ff6a2b7e858db135b3f2c8586bf8d7935730c47b2c1da265d4ccb"
+    },
+    {
+      "files": {
+        "src/core/dns.c": {
+          "after": "5a84611e7c63e082981eae0ffa9c735c4ba3bcb3b9852ac6db9f74295597ed36",
+          "before": "b52265704c191a97c6af244f27ab948e404bd3c9fd3a007152c46494dda0e3e5"
+        }
+      },
+      "path": "patches/0002_dns_bounded_entropy.patch",
+      "sha256": "ab5fd751ff436224e43a7968447889db5d25e7e0b0b5dc85949fbeeca954ce4b"
+    },
+    {
+      "files": {
+        "src/core/dns.c": {
+          "after": "0ad939d1079602c035750ac4d0927bceabbf8c0c6b8cf56bfcedd22ae2b3d649",
+          "before": "5a84611e7c63e082981eae0ffa9c735c4ba3bcb3b9852ac6db9f74295597ed36"
+        },
+        "src/include/lwip/dns.h": {
+          "after": "502985a368bd25b005173b28d9fb536be4293594ccd7bac3c49d81364bc681b0",
+          "before": "962c462c90afd41ed010b961f539c11b2baba3e8a6bfe584f331a5e4d43c1b05"
+        }
+      },
+      "path": "patches/0003_dns_lifecycle.patch",
+      "sha256": "ad37721e5938845ad876ef95f8c7f4ce50d3fd6fbf5c89e24fd59e1330f92dce"
+    },
+    {
+      "files": {
+        "src/core/dns.c": {
+          "after": "88c7f6aadab3b725999c54a1562fdbf34739378f6aaa5bd9ac9b87ae0db9d99e",
+          "before": "0ad939d1079602c035750ac4d0927bceabbf8c0c6b8cf56bfcedd22ae2b3d649"
+        },
+        "src/include/lwip/dns.h": {
+          "after": "758d9cbb8bc0a7a7f8b9f1238abe39b508c2f83efa99276937b09e6290c5a5f3",
+          "before": "502985a368bd25b005173b28d9fb536be4293594ccd7bac3c49d81364bc681b0"
+        }
+      },
+      "path": "patches/0004_dns_results.patch",
+      "sha256": "117774bf61ac3d5902eddbdbba6ae19096fe3917c20339ca30b650f3412cbc7e"
+    }
+  ],
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "scenarios": [
+    "admission_and_stop",
+    "framing_and_replay",
+    "address_policy",
+    "object_isolation",
+    "connection_quotas",
+    "revoke_policy",
+    "deadlines_and_idle",
+    "tcp_echo_and_eof",
+    "socket_capabilities_and_isolation",
+    "tcp_level_readiness",
+    "tcp_readiness_backpressure",
+    "tcp_half_close_keeps_receive",
+    "tcp_half_close_passive_and_pressure",
+    "tcp_short_write_pressure",
+    "tcp_receive_wrap_and_reset",
+    "tcp_close_unread_preserves_data",
+    "tcp_close_fin_memory_pressure",
+    "tcp_close_reused_slot_callbacks",
+    "tcp_closing_pool_preserves_other_application",
+    "tcp_connect_deadline",
+    "tcp_late_handshake",
+    "tcp_handshake_callback_deadline",
+    "tcp_timer_retransmission",
+    "udp_binary_and_empty",
+    "udp_pressure_and_source_filter",
+    "link_backpressure_and_budget",
+    "transport_faults",
+    "clock_failure",
+    "entropy_failure",
+    "runtime_entropy_stops_transmit"
+  ],
+  "wire_version": 2
+}

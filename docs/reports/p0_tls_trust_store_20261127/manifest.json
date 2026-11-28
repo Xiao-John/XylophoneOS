@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "files": {
+    "guest.json": "d797b52510037a3617403ee03637b144d7054ac1a20041a580203b4538c1ba58",
+    "guest_qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "guest_serial.log": "ed1fbed28c8ba9034e2e6e91a360024962d27cd5a49b260cc8dc1033f09e036f",
+    "host.json": "79af2b0e034f2b5f4cf84bfc83061f13f93724e296c1288b27cf2bdc86d9a494",
+    "https_adapter_compile.json": "60ae89e91ccd099634e8c595cf18d5738be6a240f08067a7f13fc1b20c4f8a0c",
+    "initial_qmp_failure.json": "c91b9a1b2114bb8503f71fa616f6926f5f7ebd11174b562a98a1fa10961ca623",
+    "initial_qmp_failure.log": "8ee45cff6363eb226e385ddbfc5cf23238598f40377a3bc40130625155dc1faa",
+    "license_report.json": "fffe01c91f7e3b294e853704e27facedea2ecd7785a19617af1c5bd3e61591a5",
+    "no_entropy_qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "no_entropy_serial.log": "62b8ec8fd49d9b90cc3e0819b3c665629c64be5144cd65c4ce509abb921f8c44",
+    "probe_link.log": "e09f527e7fcf21f409d23a495fe71da71f9ba71ed7c04c5691bcaa15152d2468",
+    "probe_receipt.json": "36c0bef2af3ef13ff3471d52d4fe465a20c679fa7cd5ccb4a513be6b99a75830",
+    "public_ca_snapshot.json": "424b4f6afc3cdddc175242abb8850aa778d4612ef984ae3ada7c7748734ea6bb",
+    "summary.json": "81a450a8cb5fbccf4e81e877c21beb2b066550de29c8259e0b85bd43e247b152",
+    "system_manifest.json.gz": "207128077fdc8f958c812bdc4f0b4fec83b5445e6f7f6b3437895ca940f858e2",
+    "trust_store_compile.log": "7d31bfd752deac511bdb93b7817e7deb0397523f232a6e0300d13ff034fc287e"
+  }
+}

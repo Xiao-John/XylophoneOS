@@ -22,6 +22,28 @@
 会话、显式继承请求和 authority 的所有可失败检查通过以后执行。退出、kill 和
 fault 的进程销毁使用同一个撤销实现，避免不同结束路径遗漏对象。
 
+## 每主体资源额度
+
+sys84 `create` 与 sys86 `connect` 按内核认证的 owner PID 共用最多 **4 个双向
+pair**，每 pair 的两个端点只计一次。未 accept、已 accept、空/满队列、登记了
+waiter 的 pair 同样计入；不能通过 drain accept、交给 peer 或换一个发现名称
+重新取得额度。peer 接收已有 pair 不转移 owner，也不计为 peer 新建的 pair。
+sys86 `publish` 每 PID 最多 **2 个名称**；重复发布自己的现有名称保持幂等成功。
+
+限制在分配或写入输出之前检查，超额返回既有 `process_error_resources`；旧
+pair、名称、消息及调用者输出保持原值。owner revoke 或任一参与者 close、
+exit/fault/cancel、成功 exec 撤销 pair 后归还额度；失败 release、失败 exec
+不归还。名称 unpublish/owner 终止后归还；失败 unpublish 不变。额度从现存
+对象计算，避免独立计数与撤销路径不一致。名称上限与全局冲突分别判断：已有
+他人名称仍返回 busy，不把命名冲突解释成授权。
+
+共享头 `ipc_max_owned_channels` / `ipc_max_owned_names` 和 SDK manifest 的
+`ipc_endpoint` 项公开限制。syscall 数字、请求布局、单调 token 和错误码保持；
+旧二进制仍可使用原请求，超过新 profile 的额度收到原有资源失败。网络服务
+可同时发布两个协议名，现有 Pumpkin/broker 流程保留其最多三个自建 pair。
+全局池上限不扩大，仍可能因其他主体或系统资源压力提前失败。此机制保证单一
+PID 不能占满 pair/name 池，不承诺整个进程树的预算、任意客户端数或防 DoS。
+
 ## 与其它 IPC 的关系
 
 - sys81 通用 channel 的显式、静止继承沿用 [channel 契约](channel.md)；这里
@@ -29,6 +51,40 @@ fault 的进程销毁使用同一个撤销实现，避免不同结束路径遗�
 - sys88 IPC v1 继续使用 [ipc_v1 契约](ipc_v1.md) 的 exec 撤销规则。
 - 文件服务专用会话继续按现有 exec 规则重新生成不透明端点 token；已打开文件
   描述和 FD 继承由文件/装载契约定义。
+
+## 通用端点绝对期限等待
+
+sys85 扩展两个模式：`receive_until=5` 和 `send_until=6`，第三参数为绝对
+`CLOCK_MONOTONIC` 纳秒期限。SDK `ipc_wait_until(endpoint, receive|send, deadline)`
+选择这两个模式。只有既有 sys84–86 generic endpoint 可用，receive/send 分别
+要求调用者为内核认证的 receiver/sender；不会授予新通信权利或开放 Files 端点。
+
+| 条件 | 结果 |
+|---|---|
+| receive 已有消息，或 send 槽为空 | 0；就绪优先于已过期期限，但不消费/发送任何字节 |
+| 未就绪，期限为 0 或已到期 | `thread_error_timeout` (-13)，立即返回，队列保持 |
+| 未就绪，期限在未来 | 原子登记 blocked，ready/timeout/close 由同一内核等待生命周期裁决 |
+| 等待中 peer close/revoke/退出 | `ipc_error_broken` (-7)；已经完成的 timeout 不被再次改写 |
+| 已失效 token 或错误的主体/方向 | 既有 denied (-1)，不能据此回退到其他身份或权限 |
+| 未知 mode 或旧 mode 携带不允许的第三参数 | 既有 invalid (-2) |
+
+`UINT64_MAX` 表示无限等待；`UINT64_MAX-1` 仍是合法有限绝对期限，比较不通过
+加法或有符号转换计算。调用方从相对时长构造期限时必须拒绝溢出或显式饱和，
+不能把加法回绕当作较短等待。当前 tick 分辨率与 sys46 一致，不能提前超时，
+不承诺抢占或外部服务响应的实时上界。
+
+超时只结束等待，不撤回已发送的消息，也不能证明业务操作未发生。调用方必须
+保存请求标识与待收回复，或按自身协议废弃会话；有副作用的 RPC 不得因等待超时
+自动重放。返回 0 后仍应实际 send/recv 并重查状态，另一线程可能先消费就绪条件。
+
+mode 0–3 的行为与参数保留；mode 4 继续仅用于 Files，并保留其原有先检查期限
+的顺序。新 mode 在旧内核返回 invalid，调用方可以在明确能力协商后选择既有有界
+兼容策略，但不能把 denied/broken/timeout 解释成旧内核缺少能力。新模式和两个
+SDK manifest 同步，不新增 syscall 编号。
+
+`--suite deadline` 客体用活而不答复的独立服务检查有界等待、消息保持、真实
+阻塞就绪/关闭唤醒、过去/零期限与全宽期限；生产代码 host 提取在同一时间点
+分别先 close 和先 timeout，证明两种顺序都只完成一次。
 
 ## 文件回复等待
 
@@ -50,8 +106,21 @@ glibc 经期限、请求序号、协议内容校验后才向应用交付响应�
 
 ## 验收
 
-`tests/ipc_exec_guest.py` 构建独立 native fixture，真实执行失败 commit、成功
-exec、新同 PID 认证连接、旧端点失效、旧名称移除、待 accept 消息丢弃以及精确
-资源回收。fixture 只允许空 startup-v3 FD snapshot，并验证镜像、SDK、源码和
-程序哈希。网络客户端的 exit/exec/fault 回收由 `tests/net_service_guest.py`
-后续网络验收覆盖；完整终端/显示/Interactium 重跑和 sys81 继承压力单独记录。
+`scripts/build_ipc_exec_probe.py` 用所选 SDK 构建独立 native fixture；
+`tests/ipc_exec_guest.py` 将它装入同源系统，真实执行失败 commit、成功 exec、
+新同 PID 认证连接、旧端点失效、旧名称移除、待 accept 消息丢弃以及精确资源回收。
+fixture 只允许空 startup-v3 FD snapshot，并验证镜像、SDK、源码和程序哈希。
+
+阻塞唤醒必须与调用前已失效分开验收。fixture 通过 native worker 发起等待，
+同进程的主线程使用既有 sys50 观察真实 `waiting` 计数，确认只有目标 worker
+已经阻塞后才触发撤销。结果严格要求 `ipc_error_broken`，不接受
+`process_error_denied` 代替阻塞唤醒。线程机制单独编译，不启用 single-thread libc。
+
+组合检查还包括 owner revoke、peer close、正常退出、fault 与 parent cancel。
+每条路径同时登记满队列 send 和空队列 receive 两个等待，要求分别唤醒；再由
+用户态显式启动同名服务，重新验证真实 PID、新端点、旧 token 不复活及业务往返。
+创建权默认不继承、sys88 句柄按主体绑定、委派只能缩权、reply token 单次消费、
+配额失败与回收通过同一客体探针交叉检查，不能将名称或消息中的数字视为授权。
+
+网络业务的恢复由 `tests/net_service_guest.py` 的专项验收覆盖；完整终端/显示/
+Interactium 重跑、sys81 继承压力、SMP 与物理硬件资格单独记录。

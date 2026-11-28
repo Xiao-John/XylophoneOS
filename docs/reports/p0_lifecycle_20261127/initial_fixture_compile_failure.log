@@ -1,0 +1,19 @@
+${XOS_SOURCE_ROOT}/tests/fixtures/ipc_exec/ipc_exec_probe.cpp: In function 'void {anonymous}::lifecycle_case(const char*, const char*, const char*)':
+${XOS_SOURCE_ROOT}/tests/fixtures/ipc_exec/ipc_exec_probe.cpp:220:26: error: too many arguments to function 'xos::i64 xos::sdk::wait(xos::u64, xos::process_status&)'
+  220 |         require(sdk::wait(old.pid, alive, true) == process_error_would_block, "explicit-close-keeps-peer-live");
+      |                 ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+In file included from ${XOS_SOURCE_ROOT}/tests/fixtures/ipc_exec/ipc_exec_probe.cpp:2:
+${XOS_SOURCE_ROOT}/build/p0_lifecycle_system/sdk/include/xos/sdk.hpp:137:12: note: declared here
+  137 | inline i64 wait(u64 child, process_status& status) {
+      |            ^~~~
+Traceback (most recent call last):
+  File "${XOS_SOURCE_ROOT}/scripts/build_ipc_exec_probe.py", line 72, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_SOURCE_ROOT}/scripts/build_ipc_exec_probe.py", line 58, in main
+    subprocess.run(command, check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['${XOS_SDK_ROOT}/bin/x86_64-elf-g++', '-std=c++20', '-Os', '-g', '-Wall', '-Wextra', '-Werror', '-ffreestanding', '-fno-exceptions', '-fno-rtti', '-fno-threadsafe-statics', '-fno-use-cxa-atexit', '-fno-unwind-tables', '-fno-asynchronous-unwind-tables', '-fno-stack-protector', '-fno-pic', '-fno-pie', '-mno-red-zone', '-mgeneral-regs-only', '-nostdinc++', '-ffunction-sections', '-fdata-sections', '-I', '${XOS_SOURCE_ROOT}/build/p0_lifecycle_fixture/include', '-idirafter', '${XOS_SOURCE_ROOT}/build/p0_lifecycle_system/sdk/include', '${XOS_SOURCE_ROOT}/tests/fixtures/ipc_exec/ipc_exec_probe.cpp', '${XOS_SOURCE_ROOT}/src/user/arch/x86_64/thread_core.cpp', '-nostdlib', '-static', '-no-pie', '-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096', '-T', '${XOS_SOURCE_ROOT}/build/p0_lifecycle_system/sdk/user.ld', '${XOS_SOURCE_ROOT}/build/p0_lifecycle_system/sdk/crt0.o', '-Wl,--start-group', '${XOS_SOURCE_ROOT}/build/p0_lifecycle_system/sdk/lib/libxos.a', '${XOS_SOURCE_ROOT}/build/p0_lifecycle_system/sdk/lib/libxos_loader.a', '-Wl,--end-group', '-o', '${XOS_SOURCE_ROOT}/build/p0_lifecycle_fixture/ipc_exec_probe.elf']' returned non-zero exit status 1.

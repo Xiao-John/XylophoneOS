@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "files": {
+    "build.log": "32356a02c75570a0a644deab496a565606ce71830ea34ba86ccd0abf89342ec6",
+    "fixture.json": "864b38887dcb45e45f64551c06b19466d3feffe6554d46cb1d85b09a72ce67ee",
+    "initial_fixture_compile_failure.log": "b935639323c50fdbcc370b071d5be0718f772b67837f9ae31dd8bc793b7c60f7",
+    "initial_wait_host_compile_failure.log": "697ad7b138398836c6449722db3c87bcc36ed54f99f015b7f41090c38ec46103",
+    "ipc_guest.json": "9171be823980e94133aab19da8e6042bc2c443ad3333567f0d0af2fad7ad38fb",
+    "ipc_qemu.log": "3b7815e7154d23fb7835c91c691ea4776324e85738f4ec4ec8dc763711ff56b5",
+    "ipc_serial.log": "68433c4cbf9ca1a1e7da5d3ab5bc7e0880efbb9284d98b0e90082d47d5c853fb",
+    "summary.json": "045c3db547cbc7689e806e25b1de71c62f16c763e7aecf9a708a1a2002934382",
+    "wait_guest.json": "6d4b324f990b218fd125af0205b8daa93c1813f35a441b11de6c8aac34f855d4",
+    "wait_host.json": "ec4f795bf64ed419779e33057af2aef73073594ee5ab9b012cf9619f898c7f25",
+    "wait_host.log": "2d5adf2c0f18b8eb7be3b429c2bba0e7c3ed6aeb25a98c433b8f340414fad0bb",
+    "wait_sanitized.json": "79f063223d8097cc8652f1f3dd36a54b63d847e85258f226b70538ef141efcb5",
+    "wait_sanitized.log": "2d5adf2c0f18b8eb7be3b429c2bba0e7c3ed6aeb25a98c433b8f340414fad0bb",
+    "wait_serial.log": "a6ff2e31f6d81a12a4477c7bb930d6c6e243d92b278bce718829a97107676797"
+  }
+}

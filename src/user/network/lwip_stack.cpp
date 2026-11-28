@@ -131,6 +131,12 @@ i64 lwip_stack::poll() {
         if (pbuf_take(packet, frame, static_cast<u16_t>(size)) != ERR_OK ||
             interface_.input(packet, &interface_) != ERR_OK) pbuf_free(packet);
     }
+    // A CLOSING -> TIME_WAIT ACK has no receive/error callback. Detach before
+    // timers can free such PCBs, including after an arbitrarily long pause.
+    for (auto& item : connections_) if (item.tcp && item.tcp->state == TIME_WAIT) {
+        tcp_arg(item.tcp, nullptr); tcp_recv(item.tcp, nullptr); tcp_err(item.tcp, nullptr);
+        item.tcp = nullptr;
+    }
     sys_check_timeouts();
     const i64 now = io_.clock(io_.context);
     if (now < 0) failure_ = io;
@@ -159,11 +165,24 @@ err_t lwip_stack::on_connected(void* context, tcp_pcb* pcb, err_t error) {
 }
 void lwip_stack::on_error(void* context, err_t error) {
     auto& item = *static_cast<connection*>(context);
-    item.tcp = nullptr; item.error = map_error(error); item.ended = true;
+    item.tcp = nullptr;
+    // lwIP reports ERR_CLSD when LAST_ACK completes after TX-only shutdown.
+    // This is clean EOF, not a reset, and buffered input still belongs to us.
+    item.error = error == ERR_CLSD && item.write_closed && item.ended ? 0 : map_error(error);
+    item.ended = true;
 }
-err_t lwip_stack::on_receive(void* context, tcp_pcb*, pbuf* packet, err_t error) {
+err_t lwip_stack::on_receive(void* context, tcp_pcb* pcb, pbuf* packet, err_t error) {
     auto& item = *static_cast<connection*>(context);
-    if (!packet) { item.ended = true; return ERR_OK; }
+    if (!packet) {
+        item.ended = true;
+        // An active half-close can enter TIME_WAIT before this callback. The
+        // timer then owns the PCB and can free it without an error callback.
+        if (pcb->state == TIME_WAIT) {
+            tcp_arg(pcb, nullptr); tcp_recv(pcb, nullptr); tcp_err(pcb, nullptr);
+            item.tcp = nullptr;
+        }
+        return ERR_OK;
+    }
     if (error != ERR_OK) return error;
     if (packet->tot_len > tcp_receive_bytes - item.count) return ERR_MEM;
     const u32 tail = (item.head + item.count) % tcp_receive_bytes;
@@ -215,7 +234,7 @@ i64 lwip_stack::open(u32 slot, protocol transport, u32 address, u16 port, u64 de
 i64 lwip_stack::status(u32 slot, u32& flags) {
     auto& item = connections_[slot]; flags = 0;
     if (item.error) { flags = failed; return item.error; }
-    if (!item.tcp && !item.udp) return closed;
+    if (!item.tcp && !item.udp && !(item.established && item.ended)) return closed;
     flags = item.established ? connected : connecting;
     if (item.ended) flags |= eof;
     return 0;
@@ -224,6 +243,7 @@ i64 lwip_stack::send(u32 slot, const u8* data, u32 length) {
     auto& item = connections_[slot];
     if (length > payload_bytes || (length && !data)) return invalid;
     if (item.error) return item.error;
+    if (item.write_closed) return closed;
     if (item.udp) {
         auto* packet = pbuf_alloc(PBUF_TRANSPORT, static_cast<u16_t>(length), PBUF_RAM);
         if (!packet) return would_block;
@@ -259,9 +279,46 @@ i64 lwip_stack::receive(u32 slot, u8* data, u32 capacity, u32& length, u32& flag
         length = count; if (item.ended && !item.count && !item.error) flags = eof; return 0;
     }
     if (item.error) return item.error;
-    if (!item.tcp) return closed;
     if (item.ended) { flags = eof; return 0; }
+    if (!item.tcp) return closed;
     return would_block;
+}
+i64 lwip_stack::readiness(u32 slot, readiness_snapshot& snapshot) {
+    auto& item = connections_[slot];
+    if (item.udp) return unsupported;
+    readiness_snapshot current{};
+    current.error = item.error;
+    current.readable_bytes = item.count;
+    if (item.count || (item.ended && !item.error)) current.events |= ready_read;
+    if (item.ended && !item.error) current.events |= ready_eof;
+    if (item.error) current.events |= ready_error;
+    if (item.write_closed) current.events |= ready_write_closed;
+    if (item.tcp && !item.established) current.events |= ready_connecting;
+    if (item.tcp && item.established && !item.write_closed && !item.error &&
+        tcp_sndqueuelen(item.tcp) < TCP_SND_QUEUELEN) {
+        current.writable_bytes = tcp_sndbuf(item.tcp);
+        if (current.writable_bytes) current.events |= ready_write;
+    }
+    const auto& old = item.ready;
+    const bool changed = !old.generation || old.events != current.events || old.error != current.error ||
+        old.readable_bytes != current.readable_bytes || old.writable_bytes != current.writable_bytes;
+    if (changed && old.generation == ~u64{0}) return resources;
+    current.generation = old.generation + (changed ? 1 : 0);
+    item.ready = current;
+    snapshot = current;
+    return 0;
+}
+i64 lwip_stack::shutdown_write(u32 slot) {
+    auto& item = connections_[slot];
+    if (item.udp) return unsupported;
+    if (item.error) return item.error;
+    if (item.write_closed) return 0;
+    if (!item.tcp) return closed;
+    if (!item.established) return would_block;
+    const auto result = tcp_shutdown(item.tcp, 0, 1);
+    if (result != ERR_OK) return map_error(result);
+    item.write_closed = true;
+    return 0;
 }
 i64 lwip_stack::close(u32 slot, bool aborting) {
     auto& item = connections_[slot];
@@ -296,7 +353,10 @@ stack_api lwip_stack::api() {
         [](void* self, u32 slot, u8* data, u32 capacity, u32& length, u32& flags) {
             return static_cast<lwip_stack*>(self)->receive(slot, data, capacity, length, flags); },
         [](void* self, u32 slot, bool aborting) { return static_cast<lwip_stack*>(self)->close(slot, aborting); },
-        [](void* self) { return static_cast<lwip_stack*>(self)->dropped_; }};
+        [](void* self) { return static_cast<lwip_stack*>(self)->dropped_; },
+        [](void* self, u32 slot, readiness_snapshot& snapshot) {
+            return static_cast<lwip_stack*>(self)->readiness(slot, snapshot); },
+        [](void* self, u32 slot) { return static_cast<lwip_stack*>(self)->shutdown_write(slot); }};
 }
 
 #ifdef XOS_LWIP_DNS_LIFETIME

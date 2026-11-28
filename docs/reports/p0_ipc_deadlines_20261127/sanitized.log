@@ -1,0 +1,13 @@
+PASS IPC deadlines: exact deadline close/timeout both orders for send and receive complete once
+PASS IPC deadlines: zero and expired fast paths preserve queues and prefer readiness
+PASS IPC deadlines: full-width absolute deadlines do not wrap and infinity stays blocked
+PASS IPC deadlines: legacy indefinite and Files-only deadline precedence stay unchanged
+PASS process exit: Files death wakes only its blocked reply receivers with broken
+PASS normal/fault parent exit, orphan cleanup, builder cancellation, explicit kill ancestry, child CPU consumption
+PASS wait-any: flags, nohang, output preservation, building and killed-builder invisibility
+PASS wait-any: deferred claim survives polling and wakes last-child competitors
+PASS wait-any: exact priority and multiple-any fault/kill unique consumption
+PASS wait-any: failed deferred copyout returns claim, preserves output and accounts CPU once
+PASS wait-any: parent exit releases pin and retains ordinary orphan lifecycle
+PASS wait-any: authenticated parent selection and ready nonblocking consumption
+PASS process wait: pending duplicate, ready owner, cross-page pin, delivery, single consumption

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 #include <xos/net_service_abi.hpp>
+#include "egress_policy.hpp"
 
 namespace xos::user::network {
 // The production service uses lwIP. Tests may inject a transport at this narrow
@@ -13,6 +14,8 @@ struct stack_api {
     i64 (*receive)(void*, u32, u8*, u32, u32&, u32&);
     i64 (*close)(void*, u32, bool);
     u32 (*dropped)(void*);
+    i64 (*readiness)(void*, u32, net2::readiness_snapshot&) = nullptr;
+    i64 (*shutdown_write)(void*, u32) = nullptr;
 };
 using resolver_completion = void (*)(void*, u64, i64, u32, u64, u64);
 struct resolver_api {
@@ -24,7 +27,7 @@ struct resolver_api {
 class service_core {
 public:
     void initialize(u64 controller, const stack_api& stack, const resolver_api& resolver = {},
-                    u32 configured_resolver = 0);
+                    u32 configured_resolver = 0, const egress_policy& policy = default_egress_policy);
     i64 attach(u64 peer, u64 now);
     void detach(u32 session);
     void expire(u64 now);
@@ -48,6 +51,7 @@ private:
     u64 revoked_[16]{}, controller_ = 0, next_handle_ = 1, next_generation_ = 1;
     stack_api stack_{};
     resolver_api resolver_{};
+    egress_policy policy_{};
     u32 resolver_address_ = net2::permitted_address;
     net2::network_mode mode_ = net2::network_mode::disabled;
     u64 config_epoch_ = 1, next_ticket_ = 1;

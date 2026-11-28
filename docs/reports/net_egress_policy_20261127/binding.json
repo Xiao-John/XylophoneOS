@@ -1,0 +1,79 @@
+{
+  "note": "Curated source/artifact binding. Full raw manifests remain in the local build output; their exact SHA-256 identities are retained here. The runner verified the complete source map and artifact map before/after guest execution.",
+  "build_id": "d190e3847fa425fd",
+  "raw_system_manifest_sha256": "98d9ab289d21dfbb7f9d3a0ea3e07b3dce27052c20c8ef6e0bd3f1d88b595995",
+  "full_source_count": 2117,
+  "full_source_map_sha256": "bb902fbcec076f766cf5d8c8fff1606e9848774264948ab1d7cd63b9a62d1ab7",
+  "selected_sources": {
+    "src/ports/lwip/build.py": "861cbc4f650dd425eabc0e9485017f08b6ae2796043c4ce6669b18261bba14ec",
+    "src/ports/lwip/include/arch/cc.h": "446b61b46b5990ffca4555f53e20a73b83074719578344564383844f1fde32b4",
+    "src/ports/lwip/include/lwipopts.h": "b0ba2607e7e0ee626de3878a334ac25200846c958a6132ae97c789f25548245b",
+    "src/ports/lwip/include/xos_lwip.h": "0d0d08bf55f5fbff7532d3236435682096fea0b405d44f6f43d664c34f9e2edf",
+    "src/ports/lwip/net_ping.cpp": "907e6aa8052a596e32d5f87d2e8e8e4d320bc6846a61e1f9176583d88964c630",
+    "src/ports/lwip/net_tcp_probe.cpp": "9db5e4842f983235138516527ca08144d045130857a46aab9d411efef138ed59",
+    "src/ports/lwip/patches/0001_dns_reply_validation.patch": "d2b61475f66ff6a2b7e858db135b3f2c8586bf8d7935730c47b2c1da265d4ccb",
+    "src/ports/lwip/patches/0002_dns_bounded_entropy.patch": "ab5fd751ff436224e43a7968447889db5d25e7e0b0b5dc85949fbeeca954ce4b",
+    "src/ports/lwip/patches/0003_dns_lifecycle.patch": "ad37721e5938845ad876ef95f8c7f4ce50d3fd6fbf5c89e24fd59e1330f92dce",
+    "src/ports/lwip/patches/0004_dns_results.patch": "117774bf61ac3d5902eddbdbba6ae19096fe3917c20339ca30b650f3412cbc7e",
+    "src/ports/lwip/port.json": "bd45bb7d067887e23ccf16141de52c2a28cfe3b29a6ca5fcbe32de9802caf0b7",
+    "src/ports/lwip/source_lock.json": "9619424a44b05fae979b3d3fb95a9ddf84eb51c6a83ad24023881d1d9b8d453a",
+    "src/shared/include/xos/net_service_abi.hpp": "58e8fa7a1e9750112745f3691abf8ee217cfd842470f3d7474db6dda08786e47",
+    "src/user/network/dns_probe.cpp": "235ac1a1479fd89f5769c1d9e9fb2d098484589feb492de1701c25a46792a17d",
+    "src/user/network/egress_policy.hpp": "24a64876371a9b3557b6917cef1ba575f443bd0cb56e164afa4caaffa549f862",
+    "src/user/network/include/arch/cc.h": "79bb4a36cb41343857a73a8f082dc6a9cdbb116664a588fccb01df62adc35a21",
+    "src/user/network/include/lwipopts.h": "5cc74b65249f84ac9fe21982d3b98779d81036d7e321e445b9fae4b628975894",
+    "src/user/network/lwip_stack.cpp": "211699687d4ec560460ada496d8ae011bdb138e163918fd0beaec8e077ae2aa7",
+    "src/user/network/lwip_stack.hpp": "2fae14fcd3594d4dc3eddd54cabcf05257734a3f345f8d10f3e39e814b0a7753",
+    "src/user/network/service_core.cpp": "65d8bad10e8fd6c269012ab12a8c7a9607bd8af0aac9b686098cf0e1521a69e1",
+    "src/user/network/service_core.hpp": "1a9ad77579b4fa58a6e51ab2682c652b674b5349af8754bd6e1f5d0d6bed78f5",
+    "src/user/network/service_loop.cpp": "6b7ff74d307c47867affb3d1afa3d446afd19ffcd5b92d05890762096c89c70f",
+    "src/user/network/service_loop.hpp": "37d03baa0e32d140358f49705f19da5af48613a9a92c208edae8a2c0da020a2f",
+    "src/user/programs/supervisor.cpp": "00e9175253f45f0dea3e00486ca5b3ae8a0fb94ef854173cdb12abd2bd7b355a",
+    "scripts/build.py": "f4dcc90823b06c9a1b32e810345e78b0418abe7be8c25728c7c11209ce21e079",
+    "scripts/lwip_service_build.py": "40f04ff1237f0c85a364d2cc465952db19cb597b3449de5601cc2d764d5d284a",
+    "scripts/user_build.py": "f865ff284b9708751d2328bf4bdf3c8d051030449ab999079109b892e24e0223",
+    "tests/fixtures/network/net_resolver_probe.cpp": "ed1dfac4ca1aa75e0100a8ea26178f31c924d5ee74f90fdc4b3e09d73e3e7193",
+    "tests/fixtures/network/service_host.cpp": "064e865e6377413718d082d642f4d74997d1ccfb66c4b30c3f281e41a32338c1",
+    "tests/net_egress_guest.py": "7130f649944d17c45f0a566471c5adb462cc4b8948e30665d67fc242a4ba9f0a",
+    "tests/net_egress_profile.py": "f24d9ce412b1ef773ed8260c0f2f3b45596d601b5d50e352e33e9533ba03b179",
+    "tests/net_service_host.py": "b7efbbd941ec106cc5c83d1513f4c1dbee40daf3f499cb90a680b6029cd418a6"
+  },
+  "selected_artifacts": {
+    "xos-install.iso": {
+      "bytes": 983040,
+      "sha256": "0004bdf56d8c144fe9113ae8a41c0b8a12821f6826c7a85b9b03cc6b90fcb8ff"
+    },
+    "user_supervisor.elf": {
+      "bytes": 686488,
+      "sha256": "ae16a65e3ea4914ad7b1a0171417f68409b0cff353e03ffcb3ed55ce8493c631"
+    },
+    "user_net_service.elf": {
+      "bytes": 357336,
+      "sha256": "c338603da8e7a5cca435b798ff1e26f35473e35308eeb48396f121d875a3ef4d"
+    },
+    "net_lwip_inputs.json": {
+      "bytes": 83923,
+      "sha256": "58479493f4e180b8ff02f2f3a9185ff97b67d84e7c511e5faad1fd2b302e069d"
+    }
+  },
+  "raw_lwip_inputs_sha256": "58479493f4e180b8ff02f2f3a9185ff97b67d84e7c511e5faad1fd2b302e069d",
+  "lwip_archive_sha256": "83729c274c499d3348e9fbbe043a3113f3fa8953e7efddc7c21c7fcbb1f2b7b1",
+  "profile": {
+    "egress": [
+      {
+        "cidr": "192.0.2.0/24",
+        "ports": [
+          41001,
+          41001
+        ],
+        "protocol": "udp"
+      }
+    ],
+    "pci_instance": 41,
+    "resolver": "10.0.2.2",
+    "revision": 2,
+    "source_sha256": "2c96ad1e9cdb1bccba2ad0eba9cfd6468ff86586d7a86c55b213af3c6c95ed1a"
+  },
+  "sdk_tree_sha256": "bedf4b636ca94cc8b6a16dddd87389d4839ae8d2c826341a7257b5b8fbb5a05e",
+  "raw_capture_sha256": "1c8e712b946e64f9f23794b55a8d9c5a808fa96566d714a2cca8e99cfc04daf0"
+}

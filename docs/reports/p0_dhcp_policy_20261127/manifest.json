@@ -1,0 +1,12 @@
+{
+  "files": {
+    "first_host_result.json": "782f00016b12064e35053347b9a0afea24b81c98de2bbf39ee0f5794df9230f0",
+    "first_sanitizer_failure.json": "f6dfbc3fc0bb6e26ab02829d8851709d4990051ce38349cb4092d85d8c8d710d",
+    "host_result.json": "c0cc9641176dc9afa07c6ee91ce824f9fc8b4096ff9f65794b0d4755d064913b",
+    "host_scenarios.log": "dcad08746547ab45a0e9559d991ccbfc52dadda6a8c270e195bca27c57e8b1b1",
+    "sanitized_result.json": "6f00e87e559d225203b630a94e9ef6e3fb6b64b7694a1394f6ed530439733764",
+    "sanitized_scenarios.log": "dcad08746547ab45a0e9559d991ccbfc52dadda6a8c270e195bca27c57e8b1b1",
+    "summary.json": "d8cb0b698d6c300659e05034393dc02e4cb80a30ebaa83f169b23652e8f574cb"
+  },
+  "version": 1
+}

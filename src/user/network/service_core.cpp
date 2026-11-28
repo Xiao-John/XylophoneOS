@@ -29,29 +29,41 @@ bool normalize_name(const u8* input, u32 length, char (&name)[dns_name_limit + 1
 }
 
 void service_core::initialize(u64 controller, const stack_api& stack, const resolver_api& resolver,
-                              u32 configured_resolver, const egress_policy& policy) {
+                              u32 configured_resolver, const egress_policy& policy, u32 secondary_resolver) {
     policy_ = valid_egress_policy(policy) ? policy : egress_policy{};
     controller_ = controller; stack_ = stack; resolver_ = resolver;
-    if (valid_static_resolver(configured_resolver) && resolver_.configure) {
+    if (valid_static_resolver(configured_resolver) && resolver_.configure &&
+        (!secondary_resolver || (valid_static_resolver(secondary_resolver) &&
+         secondary_resolver != configured_resolver && resolver_.configure_pair))) {
         resolver_address_ = configured_resolver;
-        resolver_.configure(resolver_.context, resolver_address_);
+        secondary_resolver_ = secondary_resolver;
+        configure_resolvers(true);
         mode_ = network_mode::static_direct;
     }
 }
+void service_core::configure_resolvers(bool enabled) {
+    if (resolver_.configure_pair)
+        resolver_.configure_pair(resolver_.context, enabled ? resolver_address_ : 0,
+                                 enabled ? secondary_resolver_ : 0);
+    else if (resolver_.configure) resolver_.configure(resolver_.context, enabled ? resolver_address_ : 0);
+}
 void service_core::enable_dhcp() {
     mode_ = network_mode::dhcp;
-    address_ = mask_ = gateway_ = resolver_address_ = 0;
-    if (resolver_.configure) resolver_.configure(resolver_.context, 0);
+    address_ = mask_ = gateway_ = resolver_address_ = secondary_resolver_ = 0;
+    configure_resolvers(false);
 }
-bool service_core::publish_dhcp(u32 address, u32 mask, u32 gateway, u32 resolver) {
+bool service_core::publish_dhcp(u32 address, u32 mask, u32 gateway, u32 resolver, u32 secondary_resolver) {
     if (mode_ != network_mode::dhcp || config_epoch_ == ~u64{0}) return false;
     if (address ? !valid_lease_configuration(address, mask, gateway, resolver) : (mask || gateway || resolver)) return false;
+    if (secondary_resolver && (!resolver || secondary_resolver == resolver || !resolver_.configure_pair ||
+        !valid_lease_configuration(address, mask, gateway, secondary_resolver))) return false;
     // Controller owns a separate slot; every application transport/generation,
     // socket and DNS ticket belongs to the retiring configuration epoch.
     for (u32 slot = 0; slot < client_sessions; ++slot) detach(slot);
     address_ = address; mask_ = mask; gateway_ = gateway; resolver_address_ = resolver;
+    secondary_resolver_ = secondary_resolver;
     ++config_epoch_;
-    if (resolver_.configure) resolver_.configure(resolver_.context, resolver);
+    configure_resolvers(address != 0);
     return true;
 }
 u32 service_core::session_count() const {
@@ -141,8 +153,7 @@ bool service_core::resolve(u32 slot, const message& input, u64 now, message& out
             }
             if (requested.expected_epoch != config_epoch_) { output.result = config_changed; return true; }
             if (count || connection_count() || config_epoch_ == ~u64{0}) { output.result = resources; return true; }
-            resolver_.configure(resolver_.context,
-                                requested.mode == network_mode::static_direct ? resolver_address_ : 0);
+            configure_resolvers(requested.mode == network_mode::static_direct);
             mode_ = requested.mode;
             ++config_epoch_;
         }

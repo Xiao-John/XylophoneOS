@@ -60,16 +60,17 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
     const auto& application_policy = default_egress_policy;
 #endif
 #ifdef XOS_NET_STATIC_RESOLVER
-    core.initialize(controller, stack.api(), stack.dns_api(), XOS_NET_STATIC_RESOLVER, application_policy);
+    core.initialize(controller, stack.api(), stack.dns_api(), XOS_NET_STATIC_RESOLVER, application_policy,
+                    XOS_NET_SECONDARY_RESOLVER);
 #else
     core.initialize(controller, stack.api(), stack.dns_api(), 0, application_policy);
 #endif
 #ifdef XOS_NET_DHCP_PROFILE
     core.enable_dhcp();
     result = stack.start_dhcp(installed_dhcp_policy, installed_acquisition_ns,
-        [](void*, u32 address, u32 mask, u32 gateway, u32 resolver) {
+        [](void*, u32 address, u32 mask, u32 gateway, u32 resolver, u32 secondary) {
             for (u32 slot = 0; slot < net2::client_sessions; ++slot) clear_session(slot);
-            return core.publish_dhcp(address, mask, gateway, resolver);
+            return core.publish_dhcp(address, mask, gateway, resolver, secondary);
         }, nullptr);
     if (result) { stack.shutdown(); return result; }
 #endif

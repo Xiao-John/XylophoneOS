@@ -31,23 +31,29 @@ def load_static_profile(path):
     if not isinstance(profile, dict) or type(profile.get("revision")) is not int:
         raise ValueError("Expected an integer static network profile revision")
     revision = profile["revision"]
-    fields = {"revision", "pci_instance", "resolver"}
-    if revision == 2:
+    fields = {"revision", "pci_instance", "resolvers" if revision == 3 else "resolver"}
+    if revision in (2, 3):
         fields.add("egress")
     elif revision != 1 or len(data) > 512:
-        raise ValueError("Expected revision 1 (at most 512 bytes) or revision 2")
+        raise ValueError("Expected revision 1 (at most 512 bytes), 2 or 3")
     if set(profile) != fields:
         raise ValueError("Unexpected or missing static network profile fields")
-    instance, address = profile["pci_instance"], profile["resolver"]
+    instance = profile["pci_instance"]
     if type(instance) is not int or not 1 <= instance <= 65536:
         raise ValueError("pci_instance must be 1 + PCI BDF")
-    if not isinstance(address, str):
-        raise ValueError("resolver must be a canonical IPv4 address")
-    peer = ipaddress.IPv4Address(address)
-    if (str(peer) != address or peer not in ipaddress.IPv4Network("10.0.2.0/24") or
-            address in {"10.0.2.0", "10.0.2.15", "10.0.2.255"}):
-        raise ValueError("resolver must be a peer on the admitted static IPv4 subnet")
-    if revision == 2:
+    resolvers = profile["resolvers"] if revision == 3 else [profile["resolver"]]
+    if not isinstance(resolvers, list) or not 1 <= len(resolvers) <= 2:
+        raise ValueError("resolvers must be an ordered array of one or two addresses")
+    for address in resolvers:
+        if not isinstance(address, str):
+            raise ValueError("resolver must be a canonical IPv4 address")
+        peer = ipaddress.IPv4Address(address)
+        if (str(peer) != address or peer not in ipaddress.IPv4Network("10.0.2.0/24") or
+                address in {"10.0.2.0", "10.0.2.15", "10.0.2.255"}):
+            raise ValueError("resolver must be a peer on the admitted static IPv4 subnet")
+    if len(set(resolvers)) != len(resolvers):
+        raise ValueError("duplicate resolver")
+    if revision in (2, 3):
         validate_egress(profile["egress"])
     return dict(profile, source_sha256=hashlib.sha256(data).hexdigest())
 
@@ -194,12 +200,16 @@ def build(root, output, sdk, run, tool, isa_flags, dns_probe=False, static_profi
         from dhcp_profile import write_dhcp_header
         write_dhcp_header(dhcp_profile, work / "include")
         policy_flags += ("-DXOS_NET_DHCP_PROFILE=1",)
+    resolver_flags = ()
+    if static_profile:
+        resolvers = static_profile.get("resolvers", [static_profile.get("resolver")])
+        resolver_flags = (f"-DXOS_NET_STATIC_RESOLVER={int(ipaddress.IPv4Address(resolvers[0]))}u",
+                          f"-DXOS_NET_SECONDARY_RESOLVER={int(ipaddress.IPv4Address(resolvers[1])) if len(resolvers) > 1 else 0}u")
     include_flags = ("-I", str(root / "src/user/network/include"),
                      "-I", str(root / "src/ports/lwip/include"), "-I", str(source / "src/include"),
                      *policy_flags,
                      *(("-DXOS_NET_DNS_PROBE=1",) if dns_probe else ()),
-                     *((f"-DXOS_NET_STATIC_RESOLVER={int(ipaddress.IPv4Address(static_profile['resolver']))}u",)
-                       if static_profile else ()))
+                     *resolver_flags)
     flags = ["-std=c11", "-Os", "-ffreestanding", "-fno-stack-protector", "-fno-pie", "-fno-pic",
              "-ffunction-sections", "-fdata-sections", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables",
              *isa_flags, "-I", str(sdk / "include"), *include_flags,

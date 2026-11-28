@@ -426,14 +426,17 @@ stack_api lwip_stack::api() {
 }
 
 #ifdef XOS_LWIP_DNS_LIFETIME
-void lwip_stack::configure_dns(u32 address) {
+void lwip_stack::configure_dns(u32 address, u32 secondary) {
     dns_xos_reset();
     for (auto& subscription : subscriptions_) subscription = {};
-    if (address) {
+    const u32 addresses[]{address, secondary};
+    static_assert(DNS_MAX_SERVERS >= 2);
+    for (u32 slot = 0; slot < 2; ++slot) if (addresses[slot]) {
         ip_addr_t resolver{};
-        IP_ADDR4(&resolver, address >> 24, (address >> 16) & 0xff,
-                 (address >> 8) & 0xff, address & 0xff);
-        dns_setserver(0, &resolver);
+        const u32 value = addresses[slot];
+        IP_ADDR4(&resolver, value >> 24, (value >> 16) & 0xff,
+                 (value >> 8) & 0xff, value & 0xff);
+        dns_setserver(static_cast<u8>(slot), &resolver);
     }
 }
 
@@ -505,7 +508,9 @@ resolver_api lwip_stack::dns_api() {
         [](void* self, u32 address) { static_cast<lwip_stack*>(self)->configure_dns(address); },
         [](void* self, const char* name, u64 token, resolver_completion callback, void* owner) {
             return static_cast<lwip_stack*>(self)->resolve_name(name, token, callback, owner); },
-        [](void* self, u64 token) { static_cast<lwip_stack*>(self)->cancel_dns(token); }};
+        [](void* self, u64 token) { static_cast<lwip_stack*>(self)->cancel_dns(token); },
+        [](void* self, u32 primary, u32 secondary) {
+            static_cast<lwip_stack*>(self)->configure_dns(primary, secondary); }};
 #else
     return {};
 #endif

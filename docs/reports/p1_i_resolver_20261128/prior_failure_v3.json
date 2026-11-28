@@ -1,0 +1,89 @@
+{
+  "build_id": "51b876b387a11127",
+  "compile_command": [
+    "${XOS_HOST_SDK}/bin/x86_64-elf-g++",
+    "-std=c++17",
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-ffreestanding",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-fno-stack-protector",
+    "-fno-pie",
+    "-fno-pic",
+    "-mno-red-zone",
+    "-mgeneral-regs-only",
+    "-nostdinc++",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-I",
+    "${XOS_REPO}/build/p1i_system_v3/sdk/include",
+    "${XOS_REPO}/tests/fixtures/network/net_multi_resolver_probe.cpp",
+    "-nostdlib",
+    "-static",
+    "-no-pie",
+    "-Wl,--gc-sections,--build-id=none,--no-undefined,-z,noexecstack,-z,max-page-size=4096",
+    "-T",
+    "${XOS_REPO}/build/p1i_system_v3/sdk/user.ld",
+    "${XOS_REPO}/build/p1i_system_v3/sdk/crt0.o",
+    "${XOS_REPO}/build/p1i_system_v3/sdk/lib/libxos.a",
+    "-o",
+    "${XOS_REPO}/build/p1i_guest_v3/net_multi_resolver_probe.elf"
+  ],
+  "elf_sha256": "228184de1b1708defd9b41d5b28371fedf2577c35105089dddbe4e8059e03912",
+  "epochs": [
+    1,
+    2,
+    3
+  ],
+  "error": "invalid resolver IPv4 envelope",
+  "physical_nic": "not_run",
+  "profile": {
+    "egress": [],
+    "pci_instance": 41,
+    "resolvers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "revision": 3,
+    "source_sha256": "8d459affc81dbc0cefadacce16c7fa34eb1e8d9aa08b1a0659e4e5a522e8150f"
+  },
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "quota_owners": [
+    {
+      "pid": 15,
+      "ticket": 8
+    },
+    {
+      "pid": 17,
+      "ticket": 9
+    },
+    {
+      "pid": 18,
+      "ticket": 10
+    },
+    {
+      "pid": 19,
+      "ticket": 11
+    }
+  ],
+  "replacement_pid": 21,
+  "resources_after": [
+    129769,
+    2,
+    0
+  ],
+  "resources_before": [
+    129769,
+    2,
+    0
+  ],
+  "runner_sha256": "05f55c32486563a28020e044221dea4d2412664c5b494f8681c0cab18c4e6bf3",
+  "sdk_tree_sha256": "8abbc5ee7a2677b3335f7d3dd59b8ff06846f0ea896b503cb3b8b339d8fe44b1",
+  "service": 12,
+  "source_sha256": "f13f459ba7fe7b1146521e1a3dc98f60400ee17f689fce2313d75d7d6f4538a2",
+  "status": "failed",
+  "system_manifest_sha256": "45f4a9bb57b1b5ae07042fe1427a07872604272a0a878c80b6def015798690b5"
+}

@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "first_qualification": {
+    "path": "docs/reports/p0_release_final_20261128/qualification.json",
+    "artifact": {
+      "bytes": 2705,
+      "sha256": "090931049e5923c9747dcb3b2f6358fede8d631605a9c348412610d4e616048e"
+    }
+  },
+  "first_qualification_status": "qualification_passed_public_asset_upload_pending",
+  "delivery_receipt": {
+    "path": "docs/releases/p0_glibc_preview_3_delivery.json",
+    "artifact": {
+      "bytes": 8621,
+      "sha256": "46e047addc889b8b027697555bb65d91d8e45f8307293bcf9f4cc356a7b9c0de"
+    }
+  },
+  "bundle_name": "p0-r1-glibc-release-20261128.tar",
+  "bundle_root": "p0-r1-glibc-release-20261128",
+  "bundle": {
+    "bytes": 430346240,
+    "sha256": "492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4"
+  },
+  "system_source_commit": "819ea63ae84b1e89862648af002c2a09d1936c02",
+  "frozen_sdk": {
+    "name": "xylophoneos_revival_0.0.1-1024_sdk.tar.gz",
+    "artifact": {
+      "bytes": 8917110,
+      "sha256": "86583de2a13b3eea095e94e3768243fdb40216bdfb7e01bc8909d969331e5f66"
+    }
+  }
+}

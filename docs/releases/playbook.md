@@ -1,7 +1,9 @@
 # XOS 发版 Playbook（0.0.2-1103 实操沉淀）
 
 2026-11-04。把 0.0.2-1103 的摸索固化为可重复流程。一键入口：
-`scripts/release_pipeline.sh`（本页解释每步与坑）。**不覆盖已有版本资产**；
+历史流程使用 `scripts/release_pipeline.sh --newlib`（本页解释每步与坑）。
+默认入口现在执行 [glibc 统一流程](glibc_pipeline.md)，下文显式 glibc 候选命令
+继续适用。**不覆盖已有版本资产**；
 发公开 release 前须用户明确下令。
 
 ## 0. 前提

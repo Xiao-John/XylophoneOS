@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# XOS release pipeline — stages for 0.0.2-1103+ releases (see docs/releases/playbook.md).
-# Usage: scripts/release_pipeline.sh <stage> [args]
+# XOS release pipeline. glibc is the default; --newlib selects the historical recipe.
+# Usage: scripts/release_pipeline.sh [--newlib] <stage> [args]
 # Stages: build | gates | freeze | package | application-preview | smoke | materials | checksums | status
 # Publish (tag/upload) is intentionally NOT automated; run manually after user order.
 set -euo pipefail
@@ -10,6 +10,15 @@ cd "$ROOT"
 V="$(tr -d '[:space:]' < VERSION)"
 R="build/releases/$V"
 PYTHON="${PYTHON:-python3}"
+
+# Keep the historical recipe available only through an explicit family choice.
+# A missing glibc input must fail, never fall back to a different SDK or disk.
+if [[ "${1:-}" == --newlib ]]; then
+  shift
+else
+  [[ "${1:-}" != --glibc ]] || shift
+  exec "$PYTHON" scripts/glibc_release_pipeline.py "$@"
+fi
 
 stage_build() {
   make build

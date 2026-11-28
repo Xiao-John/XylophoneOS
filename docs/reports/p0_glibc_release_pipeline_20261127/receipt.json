@@ -1,0 +1,34 @@
+{
+  "status": "passed_host_only",
+  "base_commit": "daf2bd24ce92525ce61054ebe585ab0e88ed06e4",
+  "sdk": {
+    "tag": "sdk-preview-2",
+    "asset": "xos-sdk-preview-2-linux-x86_64.tar.zst",
+    "sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+    "target_sysroot": "newlib",
+    "host_python": "3.14.10",
+    "host_architecture": "Linux x86_64"
+  },
+  "commands": [
+    "xos-sdk --workdir \"$REPOSITORY\" python3 tests/glibc_release_pipeline_host.py",
+    "xos-sdk --workdir \"$REPOSITORY\" python3 tests/release_sdk_binding.py"
+  ],
+  "checks": {
+    "release_pipeline_host": 20,
+    "existing_sdk_binding_host": 11
+  },
+  "network_isolation": "not_claimed; normal SDK launcher used",
+  "not_run": [
+    "full_candidate_freeze_with_same_build_glibc_assets",
+    "guest_release_smoke",
+    "final_glibc_newlib_cold_boot_roundtrip",
+    "public_dynamic_startup_D3_D4",
+    "publication"
+  ],
+  "inputs": {
+    "scripts/glibc_release_pipeline.py": "60516e7998a533bb4c1e524d8495412759d0ef8e44243ebc4009ce981ac105f6",
+    "scripts/release_pipeline.sh": "53ab44130b8b10eb87f558f1c5c1794fb38ac36c2b2ed66e7f4f4142a89a4283",
+    "tests/glibc_release_pipeline_host.py": "200be003e904a5c40163dc676f1f94ab5dda394c974feaf62c3e4d7d24f61809",
+    "tests/release_sdk_binding.py": "2de08890ea3fd240e3998fd7329f9ebaddd0372496805755f7dfcc92b6e8f9f6"
+  }
+}

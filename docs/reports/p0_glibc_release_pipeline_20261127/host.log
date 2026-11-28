@@ -1,0 +1,25 @@
+test_asset_paths_cannot_escape_or_inject_checksum_lines (__main__.release_pipeline_cases.test_asset_paths_cannot_escape_or_inject_checksum_lines) ... ok
+test_atomic_copy_and_checksums_keep_inputs (__main__.release_pipeline_cases.test_atomic_copy_and_checksums_keep_inputs) ... ok
+test_build_requests_both_real_guest_gates (__main__.release_pipeline_cases.test_build_requests_both_real_guest_gates) ... ok
+test_changed_input_leaves_no_output_or_staging (__main__.release_pipeline_cases.test_changed_input_leaves_no_output_or_staging) ... ok
+test_complete_material_inventory_is_byte_bound (__main__.release_pipeline_cases.test_complete_material_inventory_is_byte_bound) ... ok
+test_default_refuses_historical_package_arguments (__main__.release_pipeline_cases.test_default_refuses_historical_package_arguments) ... ok
+test_default_smoke_cannot_use_implicit_historical_directory (__main__.release_pipeline_cases.test_default_smoke_cannot_use_implicit_historical_directory) ... ok
+test_explicit_historical_route_remains_available (__main__.release_pipeline_cases.test_explicit_historical_route_remains_available) ... ok
+test_failed_smoke_is_not_promoted (__main__.release_pipeline_cases.test_failed_smoke_is_not_promoted) ... ok
+test_incomplete_materials_cannot_reach_freeze (__main__.release_pipeline_cases.test_incomplete_materials_cannot_reach_freeze) ... ok
+test_license_gate_rejects_another_build_before_running_audit (__main__.release_pipeline_cases.test_license_gate_rejects_another_build_before_running_audit) ... ok
+test_missing_input_leaves_no_output (__main__.release_pipeline_cases.test_missing_input_leaves_no_output) ... ok
+test_no_replace_publication_preserves_racing_empty_directory (__main__.release_pipeline_cases.test_no_replace_publication_preserves_racing_empty_directory) ... ok
+test_old_or_other_release_materials_are_rejected (__main__.release_pipeline_cases.test_old_or_other_release_materials_are_rejected) ... ok
+test_option_values_remain_single_arguments (__main__.release_pipeline_cases.test_option_values_remain_single_arguments) ... ok
+test_real_bundled_newlib_sdk_cannot_be_glibc_kit (__main__.release_pipeline_cases.test_real_bundled_newlib_sdk_cannot_be_glibc_kit) ... ok
+test_report_replaced_after_validation_keeps_original_binding (__main__.release_pipeline_cases.test_report_replaced_after_validation_keeps_original_binding) ... ok
+test_report_replaced_during_validation_is_rejected (__main__.release_pipeline_cases.test_report_replaced_during_validation_is_rejected) ... ok
+test_smoke_requires_same_release_disk_profile_and_raw_reports (__main__.release_pipeline_cases.test_smoke_requires_same_release_disk_profile_and_raw_reports) ... ok
+test_supplement_receipt_replaced_after_read_is_rejected (__main__.release_pipeline_cases.test_supplement_receipt_replaced_after_read_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.258s
+
+OK

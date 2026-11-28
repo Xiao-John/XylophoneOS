@@ -2,6 +2,7 @@
 #include "startup.hpp"
 #include "authority.hpp"
 #include <xos/execution.hpp>
+#include <xos/fork_control_abi.h>
 #include <xos/sdk.hpp>
 #include <xos/thread_abi.hpp>
 
@@ -24,6 +25,9 @@ alignas(4096) u8 capsule_page[4096];
 u64 operation_owner;
 launch::descriptor active_control{};
 launch::artifact active_artifact{};
+bool active_ready;
+u64 fork_parent_pid, fork_registered_child;
+xos_fork_control_offer fork_offer{};
 bool replacing, registered, exec_pins_moved;
 u64 prepared_child;
 
@@ -158,6 +162,8 @@ extern "C" bool xos_dynamic_spawn_hook(const char* path, xos::u32 argc, const ch
         if (!active_control.magic || options.exec_channel_count > exec_preserve_channels_max - 2
             || (options.exec_channel_count && !options.exec_channels)) result = process_error_denied;
         else result = launch::prepare_exec(active_control, selected.deadline, artifact(selected.ticket), pending);
+        if (result != 0)
+            diagnostic = {execution::launch_stage::start, result, elf::error::none};
         if (result == 0) {
             for (u32 i = 0; i < options.exec_channel_count; ++i) channels[i] = options.exec_channels[i];
             channels[options.exec_channel_count++] = pending.ready_handle;
@@ -223,6 +229,7 @@ extern "C" long xos_dynamic_adopt_startup(xos::u64 deadline) {
     if (restore_authority(startup.authority, startup.prefix.artifact) != error::none) return -8;
     active_control = startup.prefix.control;
     active_artifact = startup.prefix.artifact;
+    active_ready = false;
     return 0;
 }
 
@@ -231,5 +238,143 @@ extern "C" __attribute__((visibility("hidden"))) long xos_dynamic_startup_ready(
     using namespace xos::dynamic;
     if (!active_control.magic || active_control.child_pid != sdk::pid())
         return process_error_denied;
-    return launch::notify_ready(active_control, active_artifact);
+    const i64 result = launch::notify_ready(active_control, active_artifact);
+    if (result == 0) active_ready = true;
+    return result;
+}
+
+extern "C" long xos_dynamic_fork_begin() {
+    using namespace xos;
+    using namespace xos::dynamic;
+    const u64 self = sdk::pid();
+    u64 expected = 0;
+    if (!__atomic_compare_exchange_n(&operation_owner, &expected, self, false,
+                                     __ATOMIC_ACQUIRE, __ATOMIC_RELAXED)) return process_error_busy;
+    i64 result = process_error_state;
+    controller_snapshot state{};
+    if (active_ready && active_control.child_pid == self && !fork_parent_pid &&
+        inspect_controller(state) == error::none && (state.flags & controller_configured) &&
+        !(state.flags & (controller_quarantined | controller_uncertain)) && !selected.live && !selected.quarantined) {
+        bool ready = false, ack = false;
+        result = process_error_denied;
+        for (u32 index = 0; index < 128; ++index) {
+            channel_info info{};
+            const i64 found = sdk::channel_get(index, info);
+            if (found == thread_error_not_found) break;
+            if (found != 0) { result = found; break; }
+            if (info.handle != active_control.ready_handle && info.handle != active_control.ack_handle) continue;
+            if (info.version != channel_version || info.size != sizeof(info) ||
+                info.peer_pid != active_control.controller_pid || info.controller_pid != active_control.controller_pid)
+                break;
+            if (info.handle == active_control.ready_handle && info.rights == channel_send && !ready) ready = true;
+            else if (info.handle == active_control.ack_handle && info.rights == channel_receive && !ack) ack = true;
+            else break;
+            if (ready && ack) { result = 0; break; }
+        }
+    }
+    if (result == 0) {
+        fork_parent_pid = self;
+        fork_registered_child = 0;
+        fork_offer = {};
+    } else __atomic_store_n(&operation_owner, 0, __ATOMIC_RELEASE);
+    return result;
+}
+
+extern "C" long xos_dynamic_fork_prepare(xos::u64 child, xos::u64 deadline) {
+    using namespace xos;
+    using namespace xos::dynamic;
+    if (!child || child == fork_parent_pid || fork_parent_pid != sdk::pid() ||
+        __atomic_load_n(&operation_owner, __ATOMIC_ACQUIRE) != fork_parent_pid || fork_registered_child)
+        return process_error_state;
+    launch::descriptor control{};
+    const i64 recorded = launch::record_child(child, deadline, control, active_artifact, admission);
+    if (recorded != 0) return recorded;
+    fork_registered_child = child;
+    fork_offer = {XOS_FORK_CONTROL_MAGIC, XOS_FORK_CONTROL_VERSION, sizeof(fork_offer),
+        control.controller_pid, control.child_pid, control.generation, control.nonce, control.deadline,
+        control.ready_handle, control.ack_handle, active_artifact, {0, 0, 0}};
+    // Native IPC rejects every building receiver. Publish only after native
+    // commit; the child will authenticate this pair and wait for its offer.
+    return 0;
+}
+
+extern "C" long xos_dynamic_fork_child(xos::u64 deadline) {
+    using namespace xos;
+    using namespace xos::dynamic;
+    const u64 self = sdk::pid();
+    if (!fork_parent_pid || fork_parent_pid == self ||
+        __atomic_load_n(&operation_owner, __ATOMIC_ACQUIRE) != fork_parent_pid ||
+        active_control.child_pid != fork_parent_pid || !active_ready) return process_error_state;
+    u32 ready = 0, ack = 0;
+    for (u32 index = 0; index < 128; ++index) {
+        channel_info info{};
+        const i64 found = sdk::channel_get(index, info);
+        if (found == thread_error_not_found) break;
+        if (found != 0) return found;
+        if (info.peer_pid != fork_parent_pid || info.controller_pid != fork_parent_pid) continue;
+        if (info.version != channel_version || info.size != sizeof(info)) return process_error_denied;
+        if (info.rights == channel_send && !ready) ready = info.handle;
+        else if (info.rights == channel_receive && !ack) ack = info.handle;
+        else return process_error_denied; // Never consume an ambiguous pair.
+    }
+    if (!ready || !ack || ready == ack) return process_error_denied;
+    xos_fork_control_offer offer{};
+    for (;;) {
+        const i64 now = sdk::syscall(sys_clock_monotonic);
+        if (now < 0) return now;
+        if (static_cast<u64>(now) >= deadline) return thread_error_timeout;
+        const i64 received = sdk::ipc_recv(ack, &offer, sizeof(offer));
+        if (received == sizeof(offer)) break;
+        if (received != process_error_would_block) return received < 0 ? received : process_error_invalid;
+        const i64 waited = sdk::channel_wait(ack, deadline);
+        if (waited != 0) return waited;
+    }
+    if (offer.magic != XOS_FORK_CONTROL_MAGIC || offer.version != XOS_FORK_CONTROL_VERSION ||
+        offer.size != sizeof(offer) || offer.controller_pid != fork_parent_pid || offer.child_pid != self ||
+        offer.generation != 1 || !offer.nonce || offer.deadline != deadline ||
+        offer.ready_handle != ready || offer.ack_handle != ack || offer.reserved[0] || offer.reserved[1] ||
+        offer.reserved[2] || offer.artifact.id != active_artifact.id) return process_error_denied;
+    for (u32 i = 0; i < 32; ++i)
+        if (offer.artifact.sha256[i] != active_artifact.sha256[i]) return process_error_denied;
+    active_control = {XOS_LAUNCH_CONTROL_MAGIC, XOS_LAUNCH_CONTROL_VERSION, sizeof(active_control),
+        offer.controller_pid, self, offer.generation, offer.nonce, deadline, ready, ack, {0, 0}};
+    active_ready = false;
+    selected = {}; capsule = {};
+    replacing = registered = exec_pins_moved = false;
+    prepared_child = fork_registered_child = fork_parent_pid = 0;
+    fork_offer = {};
+    const i64 result = launch::notify_ready(active_control, active_artifact);
+    if (result == 0) active_ready = true;
+    __atomic_store_n(&operation_owner, 0, __ATOMIC_RELEASE);
+    return result;
+}
+
+extern "C" long xos_dynamic_fork_finish(xos::u64 child, int committed) {
+    using namespace xos;
+    using namespace xos::dynamic;
+    if (fork_parent_pid != sdk::pid() ||
+        __atomic_load_n(&operation_owner, __ATOMIC_ACQUIRE) != fork_parent_pid) return process_error_state;
+    i64 result = 0;
+    if (committed) {
+        launch::diagnostic diagnostic{};
+        result = process_error_state;
+        if (child && fork_registered_child == child && fork_offer.child_pid == child) {
+            const i64 now = sdk::syscall(sys_clock_monotonic);
+            result = now < 0 ? now : static_cast<u64>(now) >= fork_offer.deadline
+                ? thread_error_timeout : sdk::ipc_send(fork_offer.ack_handle, &fork_offer, sizeof(fork_offer));
+            // The fresh ACK channel has one sender and no previous message.
+            // Never replay a failed send, including after a peer disappears.
+            if (result == 0) result = launch::await_ready(child, diagnostic);
+        }
+        if (result != 0) {
+            (void)sdk::syscall(sys_process_cancel, child);
+            process_status ended{};
+            (void)launch::wait(child, ended);
+            (void)launch::close_control(child);
+        }
+    } else if (fork_registered_child) (void)launch::close_control(fork_registered_child);
+    fork_parent_pid = fork_registered_child = 0;
+    fork_offer = {};
+    __atomic_store_n(&operation_owner, 0, __ATOMIC_RELEASE);
+    return result;
 }

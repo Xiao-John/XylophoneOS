@@ -10,6 +10,8 @@ import shlex
 import shutil
 import subprocess
 import hashlib
+import io
+import tarfile
 
 from build_glibc_sdk import PORT, ROOT, sha
 from build_glibc_shared_gcc import TARGET, configure_xos, rewrite
@@ -40,6 +42,30 @@ PUBLIC_NATIVE_SOURCES = NATIVE_SOURCES + (
     'src/user/loader/dynamic/closure.cpp', 'src/user/loader/dynamic/authority.cpp',
     'src/user/loader/dynamic/startup.cpp',
     'src/user/loader/dynamic/spawn.cpp', 'src/user/loader/dynamic/rtld_control.cpp')
+
+
+def extract_pic_crt_source(archive, verified, destination):
+    """Keep authenticated build inputs without materializing unused test suites.
+
+    The complete immutable archive still passes the upstream signature and hash
+    gates. PIC CRT compilation does not run GCC's testsuites; all other archive
+    members remain available to configure, target headers and the normal make.
+    """
+    if (not isinstance(archive, bytes)
+            or verified.get('status') != 'upstream_signature_verified'
+            or hashlib.sha256(archive).hexdigest() != verified.get('archive_sha256')):
+        raise ValueError('PIC CRT extraction differs from authenticated source')
+    with tarfile.open(fileobj=io.BytesIO(archive)) as package:
+        included, excluded = [], []
+        for member in package.getmembers():
+            (excluded if 'testsuite' in Path(member.name).parts else included).append(member)
+        package.extractall(destination, members=included, filter='data')
+    return {'policy': 'all_authenticated_members_except_testsuite_directories',
+            'archive_sha256': verified['archive_sha256'],
+            'included_members': len(included), 'excluded_members': len(excluded),
+            'included_bytes': sum(member.size for member in included),
+            'excluded_bytes': sum(member.size for member in excluded),
+            'upstream_tests_executed': False}
 
 
 def main():
@@ -106,6 +132,10 @@ def main():
                       'sdk_manifest_sha256': sdk_digest, 'startup_headers': startup_abi_inputs}
         abi_bytes = json.dumps(abi_inputs, sort_keys=True, separators=(',', ':')).encode()
         report.update(scope='public_fixed_startup_closure', public_startup=True,
+            process_composition={'fork': 'single_thread_fresh_parent_controller_offer_v1',
+                'fork_offer_bytes': 128, 'fork_deadline_ns': 5000000000,
+                'fork_before_initial_ready': 'EBUSY', 'thread_profile_fork': 'ENOTSUP',
+                'terminal_actor_dynamic_exec': 'separate_protocol', 'guest_qualification': 'not_run'},
             native_abi=hashlib.sha256(abi_bytes).hexdigest(), native_abi_inputs=abi_inputs,
             expected_sdk_manifest_sha256=args.sdk_manifest_sha256,
             expected_sdk_tree_sha256=args.sdk_tree_sha256,
@@ -271,7 +301,7 @@ def main():
         report['gcc_source_verification'] = verified
         crt = output / 'pic_crt'
         crt.mkdir()
-        extract_verified_source(archive, verified, crt)
+        report['gcc_pic_crt_extraction'] = extract_pic_crt_source(archive, verified, crt)
         del archive
         gcc_source = crt / ('gcc-' + gcc_auth['version'])
         configure_xos(gcc_source)

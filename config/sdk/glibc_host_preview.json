@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "base_name": "xos-sdk-preview-2-linux-x86_64",
+  "base_url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-preview-2/xos-sdk-preview-2-linux-x86_64.tar.zst",
+  "base_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9"
+}

@@ -1,0 +1,96 @@
+name: Glibc SDK prerelease
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: New numbered tag (xos-sdk-glibc-preview-N)
+        required: true
+        type: string
+        default: xos-sdk-glibc-preview-3
+
+permissions:
+  contents: read
+
+concurrency:
+  group: glibc-sdk-prerelease
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Refuse an existing release or tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^xos-sdk-glibc-preview-[0-9]+$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/$RELEASE_TAG" > "$RUNNER_TEMP/tag-refs.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          refs = json.loads((Path(os.environ['RUNNER_TEMP']) / 'tag-refs.json').read_text())
+          assert not any(x['ref'] == 'refs/tags/' + os.environ['RELEASE_TAG'] for x in refs), 'tag already exists'
+          PY
+          gh api --paginate "repos/$GITHUB_REPOSITORY/releases" --jq '.[].tag_name' > "$RUNNER_TEMP/release-tags.txt"
+          if grep -Fxq "$RELEASE_TAG" "$RUNNER_TEMP/release-tags.txt"; then
+            echo 'release already exists' >&2
+            exit 1
+          fi
+      - name: Install host prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap zstd
+      - name: Build and qualify the finished SDK
+        run: |
+          python3 scripts/build_glibc_host_sdk.py build \
+            --tag "$RELEASE_TAG" --workdir "$RUNNER_TEMP/host-sdk-work" \
+            --output "$RUNNER_TEMP/host-sdk-release" --jobs 2
+      - name: Publish the qualified prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/host-sdk-release"
+          sha256sum -c SHA256SUMS
+          # Creating the ref is atomic and fails if anyone claimed this tag
+          # after preflight. Never update an existing ref or release.
+          gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
+            -f "ref=refs/tags/$RELEASE_TAG" -f "sha=$GITHUB_SHA"
+          # --draft prevents partial uploads becoming a public release.
+          gh release create "$RELEASE_TAG" --verify-tag --target "$GITHUB_SHA" --draft --prerelease \
+            --latest=false --title "$RELEASE_TAG" --notes-file release-notes.md \
+            "$RELEASE_TAG-linux-x86_64.tar.zst" "$RELEASE_TAG-sources.tar.zst" \
+            package.json qualification.json SHA256SUMS
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RUNNER_TEMP/uploaded-release.json"
+          gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" > "$RUNNER_TEMP/release-ref.json"
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          tag = os.environ['RELEASE_TAG']
+          release = json.loads((Path(os.environ['RUNNER_TEMP']) / 'uploaded-release.json').read_text())
+          names = [tag + '-linux-x86_64.tar.zst', tag + '-sources.tar.zst', 'package.json', 'qualification.json', 'SHA256SUMS']
+          assert release['draft'] and release['prerelease']
+          ref = json.loads((Path(os.environ['RUNNER_TEMP']) / 'release-ref.json').read_text())
+          assert ref['ref'] == 'refs/tags/' + tag and ref['object']['type'] == 'commit'
+          assert ref['object']['sha'] == os.environ['GITHUB_SHA']
+          assert {x['name']: x['size'] for x in release['assets']} == {n: Path(n).stat().st_size for n in names}
+          for asset in release['assets']:
+              with Path(asset['name']).open('rb') as stream:
+                  assert asset['digest'] == 'sha256:' + hashlib.file_digest(stream, 'sha256').hexdigest()
+          report = json.loads(Path('qualification.json').read_text())
+          assert report['status'] == 'passed' and report['fresh_extraction_verified']
+          assert report['source_commit'] == os.environ['GITHUB_SHA']
+          PY
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease --latest=false
+          gh release view "$RELEASE_TAG" --json url,isDraft,isPrerelease

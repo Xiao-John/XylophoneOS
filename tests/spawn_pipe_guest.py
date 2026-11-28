@@ -80,7 +80,8 @@ def main():
         guest = Guest(system / 'xos-install.iso', 'serial', iso=True, work_disk=disk,
                       qmp_enabled=False, log_dir=out)
         report.update(system_build_id=manifest['build_id'], qemu_command=guest.command,
-                      scope=receipt['scope'], loader_sha256=receipt['sources']['src/user/loader/load.cpp'])
+                      scope=receipt['scope'], loader_mode=receipt.get('loader_mode', 'diagnostic_override'),
+                      loader_sha256=receipt['sources']['src/user/loader/load.cpp'])
         guest.expect(b'xos64> ', timeout=60)
         send_bytes(guest, b'run\r'); guest.expect_supervisor(trace=True, timeout=60)
         command(guest, 'demo quiet', b'demo tasks')

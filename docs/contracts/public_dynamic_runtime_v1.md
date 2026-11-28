@@ -80,6 +80,14 @@ pipe 继续在 glibc bridge 明确返回 `ENOTSUP`。同 PID `execve` 保留既�
 token，不能套用普通 spawn 的 route 转换。旧静态 v1/v2 降级的准入条件也
 保持不变。
 
+`build_spawn_pipe_probe.py` 的默认模式明确记录为 `diagnostic_override`，
+用于把所选真实 loader 对象显式链接到一个有独立 SDK 双锚的诊断程序。
+最终 SDK 门使用 `--sdk-loader`：核对 SDK 输入记录和随 SDK 分发的
+`load.cpp` 摘要与受测源码完全一致，只从已验证的 `libxos_terminal.a`
+链接，不插入 loader override。两种模式的 receipt 与执行报告分别保留。
+同一个公共 C 夹具也可构建为 `p0pipe` 批准根，由公共动态运行时矩阵的
+第九场 `c-pipe` 真正启动；最终报告导出加 `--require-pipe` 强制要求该场通过。
+
 `execve` 使用真实 kernel image replacement。新闭包完整预检后，旧进程先
 向原启动控制器发送 PREPARE，并获得新 generation/nonce 的 ALLOW。新映像
 继续使用同 PID、原有 Files 所有者及明确保留的控制通道。commit 前失败，旧

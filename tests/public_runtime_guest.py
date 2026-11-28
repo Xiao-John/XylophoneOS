@@ -31,7 +31,8 @@ def main():
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--stage', type=Path, action='append', required=True)
     parser.add_argument('--case', action='append', choices=(
-        'c-basic', 'c-policy', 'c-spawn', 'c-exec', 'cpp-xsh', 'cpp-dash', 'thread-xsh', 'thread-dash'))
+        'c-basic', 'c-policy', 'c-spawn', 'c-exec', 'c-pipe',
+        'cpp-xsh', 'cpp-dash', 'thread-xsh', 'thread-dash'))
     parser.add_argument('--rounds', type=int, default=1)
     args = parser.parse_args()
     if not 1 <= args.rounds <= 3:
@@ -160,8 +161,11 @@ def main():
                 payload(path, relative_file(stage_path, item['local']), item['sha256'])
             payload(generation['guest'], relative_file(stage_path, generation['local']), generation['sha256'])
             bind(args.launcher_build / approved['snapshot'], generation['sha256'])
-        if set(stages) != {'p0c', 'p0cpp', 'p0thread'}:
-            raise ValueError('the complete C, C++ exception and std::thread stages are required')
+        required_stages = {'p0c', 'p0cpp', 'p0thread'}
+        if not required_stages.issubset(stages) or set(stages) - required_stages - {'p0pipe'}:
+            raise ValueError('the complete C, C++ exception and std::thread stages are required; only p0pipe is optional')
+        if args.case and 'c-pipe' in args.case and 'p0pipe' not in stages:
+            raise ValueError('c-pipe needs the actual approved p0pipe generation')
         payload('/usr/bin/dynamic-run', args.launcher_build / 'dynamic-run.elf',
                 launcher['artifacts']['dynamic-run.elf'])
 
@@ -190,6 +194,12 @@ def main():
         input_file = out / 'input.txt'
         input_file.write_bytes(b'ABCDEFGH\n')
         payload('/tests/input', input_file, sha(input_file))
+        if 'p0pipe' in stages:
+            # Give the shared static/dynamic fixture an empty, real Files
+            # directory for its bounded child-alive/last-close handshake.
+            data_seed = out / 'pipe_seed.txt'
+            data_seed.write_bytes(b'public pipe lifecycle fixture\n')
+            payload('/data/pipe_seed.txt', data_seed, sha(data_seed))
         definitions = []
         c_markers = {
             'basic': ('P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1',),
@@ -205,6 +215,12 @@ def main():
                 + str(slots['p0c']) + ' /apps/p0c/main ' + mode + '\n')
             payload('/tests/c_' + mode + '.sh', script, sha(script))
             definitions.append(('c-' + mode, 'dash /tests/c_' + mode + '.sh', markers))
+        if 'p0pipe' in stages:
+            definitions.append(('c-pipe', 'dynamic-run ' + str(slots['p0pipe']) + ' /apps/p0pipe/main', (
+                'SPAWN_PIPE_PASS routed_read_write_alias_flags_cloexec_eof_before_exit',
+                'SPAWN_PIPE_PASS kernel_extra_alias_after_original_stdio_close',
+                'SPAWN_PIPE_PASS unrouted_pipe_explicit_rejection_parent_preserved',
+                'SPAWN_PIPE_PASS closed_reader_epipe', 'SPAWN_PIPE_OK cases=4')))
         for name, program, markers in (
                 ('cpp', 'p0cpp', ('D2_SHARED_CXX_OK throw=DSO catch=PIE rtti=shared unwind=complete',
                                  'D2_SHARED_CXX_TLS_DTOR', 'D2_SHARED_CXX_ATEXIT')),

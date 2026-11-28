@@ -124,6 +124,8 @@ static int release(pid_t pid)
 
 int main(int argc, char **argv)
 {
+    CHECK(argc > 0 && argv[0] != NULL && argv[0][0] == '/');
+    self = argv[0];
     if (argc == 2) return child(argv[1]);
     CHECK(argc == 1);
     int saved[3];

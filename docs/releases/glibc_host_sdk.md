@@ -73,6 +73,20 @@ python3 scripts/build_glibc_host_sdk.py build \
   --workdir build/host-sdk-work --output build/host-sdk-release --jobs 2
 ```
 
+The release workflow currently uses `ubuntu-22.04` and
+[`actions/setup-python@v6`](https://github.com/actions/setup-python/releases/tag/v6.0.0)
+with Python `3.12` for the outer host recipe. Before downloading the SDK, it
+checks the Python version and launches a minimal Bubblewrap process with
+unprivileged user, PID, IPC and UTS namespaces. The build itself runs as the
+normal runner user. A host that rejects these namespaces fails this preflight.
+The SDK's own read-only root and consumer-directory mounts remain in its launcher.
+
+GitHub still lists the [Ubuntu 22.04 runner](https://github.com/actions/runner-images/blob/main/README.md)
+as available. Its announced [retirement date is April 17, 2027](https://github.com/actions/runner-images/issues/14254),
+so migrate to another verified host before that date. Ubuntu 24.04 rejected
+the SDK's UID-map setup in the first release run; a different host must pass
+the same preflight and complete consumer qualification before being selected.
+
 Both directories must be new. The recipe snapshots committed Git object bytes;
 untracked files cannot enter the build or source archive. The isolated snapshot
 carries its commit and per-file hashes, which packaging verifies again against

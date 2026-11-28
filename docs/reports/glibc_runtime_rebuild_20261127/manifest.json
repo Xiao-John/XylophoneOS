@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "files": {
+    "binding.json": "f59dc25adb6b72ba9d530099b093b1245536fe09415afe224707ee94c2afdee0",
+    "build_record.json": "600955f30cdc594d9a23530e94df07f0ccc37cbdd92c89ee7df8bccbdbb01f5a",
+    "c_guest.json": "8f0264e104d13d6454a18df14f5321e7e95204089f94357fd615433cf794ec3d",
+    "c_guest_serial.log": "c9c5a649586d5df7d5866cd580efdabc9096385c7bcd89c5d3726eb5b20c469f",
+    "first_build_failure.json": "c840138186ac2d6704a5a63031906d63bc8cc23ea23455f498828701b869765f",
+    "first_build_failure_tail.log": "22da5a6f4e848389a5332bdcb4e718f24bede36145a37ef71679ed7073589810",
+    "official_guard.log": "20100a22939ada2c78f489bfa8b47fd577edf1df5fbca193e349a9b56eee1844",
+    "shared_cxx_initial_guest.json": "616203178a3e4a705bf191926118272243e528d8eac371faf25e0485e5670726",
+    "shared_cxx_initial_serial.log": "f7852fb37cd8cad89bd8e875211c4d94de7de4cf8e19268e1462bfe8f9cf8001",
+    "unlisted_guest.json": "2d1ab34f9fab6fcfa33079ed41ad88fd7775c9bcec7bd3cc35d273de6c8bf1ee",
+    "unlisted_guest_serial.log": "48b675914ed3b8172c598910fc18edf2fd0fc4a47544feec22e8d59dada7325f"
+  }
+}

@@ -1,0 +1,178 @@
+make: Entering directory '${RUNTIME_BUILD}/glibc-2.44/elf'
+gawk -f ../scripts/gen-sorted.awk \
+       -v subdirs='csu assert ctype locale intl catgets math setjmp signal stdlib stdio-common libio malloc string wcsmbs time dirent posix io termios resource misc socket sysvipc gmon gnulib iconv iconvdata wctype manual po argp localedata timezone rt conform debug mathvec support dlfcn elf' \
+       -v srcpfx='../' \
+       ../sysdeps/nptl/Subdirs ../assert/Depend ../catgets/Depend ../debug/Depend ../iconvdata/Depend ../intl/Depend ../libio/Depend ../localedata/Depend ../malloc/Depend ../mathvec/Depend ../posix/Depend ../rt/Depend ../stdio-common/Depend ../stdlib/Depend ../string/Depend ../support/Depend ../time/Depend ../wcsmbs/Depend > ${RUNTIME_BUILD}/gnu/sysd-sorted-tmp
+mv -f ${RUNTIME_BUILD}/gnu/sysd-sorted-tmp ${RUNTIME_BUILD}/gnu/sysd-sorted
+(echo "ifeq (\$(subdir)\$(build-mathvec),mathyes)"; \
+ echo; \
+ echo "extra-test-objs += \\"; \
+ for i in "" "-avx" "-avx2" "-avx512f"; do \
+   echo "  test-libmvec$i.o \\"; \
+ done; \
+ echo "# extra-test-objs"; \
+ echo; \
+ for i in "" "-avx" "-avx2" "-avx512f"; do \
+   for t in test-double-libmvec-acos test-double-libmvec-acosh test-double-libmvec-asin test-double-libmvec-asinh test-double-libmvec-atan test-double-libmvec-atan2 test-double-libmvec-atanh test-double-libmvec-cbrt test-double-libmvec-cos test-double-libmvec-cosh test-double-libmvec-erf test-double-libmvec-erfc test-double-libmvec-exp test-double-libmvec-exp10 test-double-libmvec-exp2 test-double-libmvec-expm1 test-double-libmvec-hypot test-double-libmvec-log test-double-libmvec-log10 test-double-libmvec-log1p test-double-libmvec-log2 test-double-libmvec-pow test-double-libmvec-sin test-double-libmvec-sincos test-double-libmvec-sinh test-double-libmvec-tan test-double-libmvec-tanh test-float-libmvec-acosf test-float-libmvec-acoshf test-float-libmvec-asinf test-float-libmvec-asinhf test-float-libmvec-atanf test-float-libmvec-atan2f test-float-libmvec-atanhf test-float-libmvec-cbrtf test-float-libmvec-cosf test-float-libmvec-coshf test-float-libmvec-erff test-float-libmvec-erfcf test-float-libmvec-expf test-float-libmvec-exp10f test-float-libmvec-exp2f test-float-libmvec-expm1f test-float-libmvec-hypotf test-float-libmvec-logf test-float-libmvec-log10f test-float-libmvec-log1pf test-float-libmvec-log2f test-float-libmvec-powf test-float-libmvec-sinf test-float-libmvec-sincosf test-float-libmvec-sinhf test-float-libmvec-tanf test-float-libmvec-tanhf; do \
+     echo "\$(objpfx)$t$i: \\"; \
+     echo "  \$(objpfx)$t$i.o \\"; \
+     echo "  \$(objpfx)test-libmvec$i.o \$(libmvec)"; \
+     echo; \
+   done; \
+ done; \
+ for t in acos acosh asin asinh atan atan2 atanh cbrt cos cosh erf erfc exp exp10 exp2 expm1 hypot log log10 log1p log2 pow sin sincos sinh tan tanh ; do \
+   echo "CFLAGS-test-double-libmvec-$t.c = \\"; \
+   echo "  \$(libmvec-abi-test-cflags)"; \
+   echo "CFLAGS-test-double-libmvec-$t-avx.c = \\"; \
+   echo "  \$(libmvec-abi-test-cflags) \\"; \
+   echo "  \$(double-vlen4-arch-ext-cflags)"; \
+   echo "CFLAGS-test-double-libmvec-$t-avx2.c = \\"; \
+   echo "  \$(libmvec-abi-test-cflags) \\"; \
+   echo "  \$(double-vlen4-arch-ext2-cflags)"; \
+   echo "CFLAGS-test-double-libmvec-$t-avx512f.c = \\"; \
+   echo "  \$(libmvec-abi-test-cflags) \\"; \
+   echo "  \$(double-vlen8-arch-ext-cflags)"; \
+   echo; \
+   echo "CFLAGS-test-float-libmvec-${t}f.c = \\"; \
+   echo "  \$(libmvec-abi-test-cflags)"; \
+   echo "CFLAGS-test-float-libmvec-${t}f-avx.c = \\"; \
+   echo "  \$(libmvec-abi-test-cflags) \\"; \
+   echo "  \$(float-vlen8-arch-ext-cflags)"; \
+   echo "CFLAGS-test-float-libmvec-${t}f-avx2.c = \\"; \
+   echo "  \$(libmvec-abi-test-cflags) \\"; \
+   echo "  \$(float-vlen8-arch-ext2-cflags)"; \
+   echo "CFLAGS-test-float-libmvec-${t}f-avx512f.c = \\"; \
+   echo "  \$(libmvec-abi-test-cflags) \\"; \
+   echo "  \$(float-vlen16-arch-ext-cflags)"; \
+   echo; \
+ done; \
+ echo "endif"; \
+ echo "ifeq (\$(subdir),benchtests)"; \
+ for t in acos acosh asin asinh atan atan2 atanh cbrt cos cosh erf erfc exp exp10 exp2 expm1 hypot log log10 log1p log2 pow sin sinh tan tanh ; do \
+   echo "CFLAGS-bench-double-vlen4-$t.c = \\"; \
+   echo "  \$(double-vlen4-arch-ext-cflags)"; \
+   echo "CFLAGS-bench-double-vlen4-avx2-$t.c = \\"; \
+   echo "  \$(double-vlen4-arch-ext2-cflags)"; \
+   echo "CFLAGS-bench-double-vlen8-$t.c = \\"; \
+   echo "  \$(double-vlen8-arch-ext-cflags)"; \
+   echo; \
+   echo "CFLAGS-bench-float-vlen8-${t}f.c = \\"; \
+   echo "  \$(float-vlen8-arch-ext-cflags)"; \
+   echo "CFLAGS-bench-float-vlen8-avx2-${t}f.c = \\"; \
+   echo "  \$(float-vlen8-arch-ext2-cflags)"; \
+   echo "CFLAGS-bench-float-vlen16-${t}f.c = \\"; \
+   echo "  \$(float-vlen16-arch-ext-cflags)"; \
+   echo; \
+ done; \
+ echo "endif") > ${RUNTIME_BUILD}/gnu/libmvec.mkT
+mv -f ${RUNTIME_BUILD}/gnu/libmvec.mkT ${RUNTIME_BUILD}/gnu/libmvec.mk
+.././scripts/mkinstalldirs ${RUNTIME_BUILD}/gnu/elf
+mkdir -p -- ${RUNTIME_BUILD}/gnu/elf
+python3 -B ../scripts/dso-ordering-test.py --description-file dso-sort-tests-1.def --objpfx ${RUNTIME_BUILD}/gnu/elf/ --output-makefile ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-1.def.generated-makefileT
+mv ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-1.def.generated-makefileT ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-1.def.generated-makefile
+python3 -B ../scripts/dso-ordering-test.py --description-file dso-sort-tests-2.def --objpfx ${RUNTIME_BUILD}/gnu/elf/ --output-makefile ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-2.def.generated-makefileT
+mv ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-2.def.generated-makefileT ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-2.def.generated-makefile
+python3 -B dso-sort-tests-all.py 2 > ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all2.def
+python3 -B ../scripts/dso-ordering-test.py --description-file ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all2.def --objpfx ${RUNTIME_BUILD}/gnu/elf/ --output-makefile ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all2.def.generated-makefileT
+mv ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all2.def.generated-makefileT ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all2.def.generated-makefile
+python3 -B dso-sort-tests-all.py 3 > ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all3.def
+python3 -B ../scripts/dso-ordering-test.py --description-file ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all3.def --objpfx ${RUNTIME_BUILD}/gnu/elf/ --output-makefile ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all3.def.generated-makefileT
+mv ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all3.def.generated-makefileT ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all3.def.generated-makefile
+python3 -B dso-sort-tests-all.py 4 > ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all4.def
+python3 -B ../scripts/dso-ordering-test.py --description-file ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all4.def --objpfx ${RUNTIME_BUILD}/gnu/elf/ --output-makefile ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all4.def.generated-makefileT
+mv ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all4.def.generated-makefileT ${RUNTIME_BUILD}/gnu/elf/dso-sort-tests-all4.def.generated-makefile
+LC_ALL=C gawk -f ../scripts/sysd-rules.awk > ${RUNTIME_BUILD}/gnu/sysd-rulesT \
+		-v all_object_suffixes='.o .os .oS' \
+		-v inhibit_sysdep_asm='' \
+		-v sysd_rules_patterns='%:% rtld-%:rtld-% rtld-%:% m_%:s_%' \
+		-v config_sysdirs='sysdeps/x86_64/64 sysdeps/x86_64/fpu sysdeps/x86/fpu sysdeps/x86_64/xos sysdeps/x86_64/nptl sysdeps/x86/nptl sysdeps/x86_64 sysdeps/x86 sysdeps/ieee754/float128 sysdeps/ieee754/ldbl-96 sysdeps/ieee754/dbl-64 sysdeps/ieee754/flt-32 sysdeps/xos sysdeps/nptl sysdeps/pthread sysdeps/wordsize-64 sysdeps/ieee754 sysdeps/generic'
+mv -f ${RUNTIME_BUILD}/gnu/sysd-rulesT ${RUNTIME_BUILD}/gnu/sysd-rules
+sed '/^[ 	]*%/!s/#.*$//;/^[ 	]*$/d;s/^[ 	]*%/#/' \
+    ../sysdeps/xos/shlib-versions ../nptl/shlib-versions ../nptl_db/shlib-versions ../shlib-versions \
+| ${RUNTIME_BUILD}/cc -E -undef    -I../include -I${RUNTIME_BUILD}/gnu/elf  -I${RUNTIME_BUILD}/gnu  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/xos  -I../sysdeps/x86_64/nptl  -I../sysdeps/x86/nptl  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/xos  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I.  -D_LIBC_REENTRANT  -include ../include/libc-symbols.h       -DTOP_NAMESPACE=glibc -x assembler-with-cpp - \
+	   > ${RUNTIME_BUILD}/gnu/shlib-versions.v.iT
+mv -f ${RUNTIME_BUILD}/gnu/shlib-versions.v.iT ${RUNTIME_BUILD}/gnu/shlib-versions.v.i
+sed '/^[ 	]*#/d;/^[ 	]*$/d' ${RUNTIME_BUILD}/gnu/shlib-versions.v.i > ${RUNTIME_BUILD}/gnu/shlib-versions.vT
+mv -f ${RUNTIME_BUILD}/gnu/shlib-versions.vT ${RUNTIME_BUILD}/gnu/shlib-versions.v
+gawk -f ../scripts/soversions.awk ${RUNTIME_BUILD}/gnu/shlib-versions.v > ${RUNTIME_BUILD}/gnu/soversions.iT
+mv -f ${RUNTIME_BUILD}/gnu/soversions.iT ${RUNTIME_BUILD}/gnu/soversions.i
+(while read which lib number setname; do \
+   eval seen_$which=1; \
+   test x"$which" = xDEFAULT || continue; \
+   case $number in \
+     [0-9]*) echo "$lib.so-version=.$number"; \
+	     echo "all-sonames+=$lib=$lib.so\$($lib.so-version)";;\
+     *)	     echo "$lib.so-version=$number"; \
+	     echo "all-sonames+=$lib=\$($lib.so-version)";;\
+   esac; \
+ done; \
+ echo soversions.mk-done = t;) < ${RUNTIME_BUILD}/gnu/soversions.i > ${RUNTIME_BUILD}/gnu/soversions.mkT; exit 0
+mv -f ${RUNTIME_BUILD}/gnu/soversions.mkT ${RUNTIME_BUILD}/gnu/soversions.mk
+sed '/^[ 	]*%/!s/#.*$//;/^[ 	]*$/d;s/^[ 	]*%/#/' \
+    ../csu/Versions ../iconv/Versions ../locale/Versions ../assert/Versions ../ctype/Versions ../intl/Versions ../catgets/Versions ../math/Versions ../setjmp/Versions ../signal/Versions ../stdlib/Versions ../stdio-common/Versions ../libio/Versions ../dlfcn/Versions ../nptl/Versions ../rt/Versions ../malloc/Versions ../string/Versions ../wcsmbs/Versions ../time/Versions ../dirent/Versions ../posix/Versions ../io/Versions ../termios/Versions ../resource/Versions ../misc/Versions ../socket/Versions ../sysvipc/Versions ../gmon/Versions ../wctype/Versions ../argp/Versions ../debug/Versions ../nptl_db/Versions ../elf/Versions ../sysdeps/x86_64/fpu/Versions ../sysdeps/x86_64/xos/Versions ../sysdeps/x86_64/Versions ../sysdeps/x86/Versions ../sysdeps/ieee754/float128/Versions ../sysdeps/xos/Versions ../sysdeps/wordsize-64/Versions \
+| ${RUNTIME_BUILD}/cc -E -undef    -I../include -I${RUNTIME_BUILD}/gnu/elf  -I${RUNTIME_BUILD}/gnu  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/xos  -I../sysdeps/x86_64/nptl  -I../sysdeps/x86/nptl  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/xos  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I.  -D_LIBC_REENTRANT  -include ../include/libc-symbols.h       -DTOP_NAMESPACE=glibc -x assembler-with-cpp - \
+	   > ${RUNTIME_BUILD}/gnu/Versions.v.iT
+mv -f ${RUNTIME_BUILD}/gnu/Versions.v.iT ${RUNTIME_BUILD}/gnu/Versions.v.i
+sed '/^[ 	]*#/d;/^[ 	]*$/d' ${RUNTIME_BUILD}/gnu/Versions.v.i > ${RUNTIME_BUILD}/gnu/Versions.vT
+mv -f ${RUNTIME_BUILD}/gnu/Versions.vT ${RUNTIME_BUILD}/gnu/Versions.v
+LC_ALL=C gawk -f ../scripts/versionlist.awk ${RUNTIME_BUILD}/gnu/Versions.v > ${RUNTIME_BUILD}/gnu/Versions.defT
+mv -f ${RUNTIME_BUILD}/gnu/Versions.defT ${RUNTIME_BUILD}/gnu/Versions.def
+{ while read which lib version setname; do \
+    test x"$which" = xDEFAULT || continue; \
+    test -z "$setname" || echo "$lib : $setname"; \
+  done < ${RUNTIME_BUILD}/gnu/soversions.i; \
+  cat ${RUNTIME_BUILD}/gnu/Versions.def; \
+} | LC_ALL=C gawk -f ../scripts/firstversions.awk > ${RUNTIME_BUILD}/gnu/Versions.allT
+mv -f ${RUNTIME_BUILD}/gnu/Versions.allT ${RUNTIME_BUILD}/gnu/Versions.all
+( echo 'sysd-versions-subdirs = csu iconv locale localedata iconvdata assert ctype intl catgets math setjmp signal stdlib stdio-common libio dlfcn nptl rt malloc string wcsmbs timezone time dirent posix io termios resource misc socket sysvipc gmon gnulib wctype manual po argp conform debug mathvec support nptl_db elf sysdeps/x86_64/64 sysdeps/x86_64/fpu sysdeps/x86/fpu sysdeps/x86_64/xos sysdeps/x86_64/nptl sysdeps/x86/nptl sysdeps/x86_64 sysdeps/x86 sysdeps/ieee754/float128 sysdeps/ieee754/ldbl-96 sysdeps/ieee754/dbl-64 sysdeps/ieee754/flt-32 sysdeps/xos sysdeps/nptl sysdeps/pthread sysdeps/wordsize-64 sysdeps/ieee754 sysdeps/generic' ; \
+  cat ${RUNTIME_BUILD}/gnu/Versions.v \
+  | LC_ALL=C gawk -v buildroot=${RUNTIME_BUILD}/gnu/ -v defsfile=${RUNTIME_BUILD}/gnu/Versions.all \
+		    -v move_if_change='/bin/sh ../scripts/move-if-change' \
+		    -f ../scripts/versions.awk; \
+) > ${RUNTIME_BUILD}/gnu/sysd-versionsT
+mv -f ${RUNTIME_BUILD}/gnu/sysd-versionsT ${RUNTIME_BUILD}/gnu/sysd-versions
+touch ${RUNTIME_BUILD}/gnu/versions.stmp
+gawk -f ../scripts/haveversions.awk ${RUNTIME_BUILD}/gnu/Versions.all > ${RUNTIME_BUILD}/gnu/Versions.mkT
+mv -f ${RUNTIME_BUILD}/gnu/Versions.mkT ${RUNTIME_BUILD}/gnu/Versions.mk
+printf "#include <time64-compat.h>\n#ifdef TIME64_NON_DEFAULT\nhave-time64-compat = yes\n#endif" \
+| ${RUNTIME_BUILD}/cc -E -undef    -I../include -I${RUNTIME_BUILD}/gnu/elf  -I${RUNTIME_BUILD}/gnu  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/xos  -I../sysdeps/x86_64/nptl  -I../sysdeps/x86/nptl  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/xos  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I.  -D_LIBC_REENTRANT  -include ../include/libc-symbols.h       -DTOP_NAMESPACE=glibc -x assembler-with-cpp - > ${RUNTIME_BUILD}/gnu/time64-compat.mk.iT
+mv -f ${RUNTIME_BUILD}/gnu/time64-compat.mk.iT ${RUNTIME_BUILD}/gnu/time64-compat.mk.i
+sed '/^[        ]*#/d;/^[       ]*$/d' ${RUNTIME_BUILD}/gnu/time64-compat.mk.i > ${RUNTIME_BUILD}/gnu/time64-compat.mkT
+mv -f ${RUNTIME_BUILD}/gnu/time64-compat.mkT ${RUNTIME_BUILD}/gnu/time64-compat.mk
+/bin/sh ../scripts/gen-libc-abis \
+	 x86_64-unknown-xos \
+	 < ../libc-abis > ${RUNTIME_BUILD}/gnu/libc-abis.hT
+/bin/sh ../scripts/move-if-change ${RUNTIME_BUILD}/gnu/libc-abis.hT ${RUNTIME_BUILD}/gnu/libc-abis.h
+touch ${RUNTIME_BUILD}/gnu/libc-abis.stamp
+LC_ALL=C gawk -f ../scripts/abi-versions.awk ${RUNTIME_BUILD}/gnu/Versions.all > ${RUNTIME_BUILD}/gnu/abi-versions.hT
+mv -f ${RUNTIME_BUILD}/gnu/abi-versions.hT ${RUNTIME_BUILD}/gnu/abi-versions.h
+gawk -v buildlist="iconvprogs iconvdata ldconfig libmemusage libpcprofile librpcsvc locale_programs memusagestat nonlib nscd extramodules libnldbl libsupport testsuite testsuite_internal" -f ../scripts/gen-libc-modules.awk ${RUNTIME_BUILD}/gnu/soversions.i > ${RUNTIME_BUILD}/gnu/libc-modules.T
+/bin/sh ../scripts/move-if-change ${RUNTIME_BUILD}/gnu/libc-modules.T ${RUNTIME_BUILD}/gnu/libc-modules.h
+touch ${RUNTIME_BUILD}/gnu/libc-modules.stmp
+LC_ALL=C gawk -f ../scripts/gen-tunables.awk ../elf/dl-tunables.list ../sysdeps/x86_64/64/dl-tunables.list ../sysdeps/x86/dl-tunables.list ../sysdeps/nptl/dl-tunables.list > ${RUNTIME_BUILD}/gnu/dl-tunable-list.T
+/bin/sh ../scripts/move-if-change ${RUNTIME_BUILD}/gnu/dl-tunable-list.T ${RUNTIME_BUILD}/gnu/dl-tunable-list.h
+touch ${RUNTIME_BUILD}/gnu/dl-tunable-list.stmp
+${RUNTIME_BUILD}/cc -std=gnu11 -fgnu89-inline  -O2 -g -mno-red-zone -Wall -Wwrite-strings -Wundef -Wimplicit-fallthrough -fmerge-all-constants -frounding-math -ftrapping-math -fno-stack-protector -fno-common -U_FORTIFY_SOURCE -Wstrict-prototypes -Wold-style-definition -Wfree-labels -Wmissing-parameter-name -fmath-errno      -ftls-model=initial-exec     -I../include -I${RUNTIME_BUILD}/gnu/elf  -I${RUNTIME_BUILD}/gnu  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/xos  -I../sysdeps/x86_64/nptl  -I../sysdeps/x86/nptl  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/xos  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I.  -D_LIBC_REENTRANT -include ${RUNTIME_BUILD}/gnu/libc-modules.h -DMODULE_NAME=libc -include ../include/libc-symbols.h       -DTOP_NAMESPACE=glibc -E -dM -x c -o ${RUNTIME_BUILD}/gnu/gcc-macros.h.in /dev/null
+sed 's/^#define /#define GCCMACRO/' < ${RUNTIME_BUILD}/gnu/gcc-macros.h.in > ${RUNTIME_BUILD}/gnu/gcc-macros.h
+echo "/usr/lib "    \
+| gawk -f gen-trusted-dirs.awk > ${RUNTIME_BUILD}/gnu/elf/trusted-dirs.T;
+echo '#define DL_DST_LIB "lib"' >> ${RUNTIME_BUILD}/gnu/elf/trusted-dirs.T
+/bin/sh ../scripts/move-if-change ${RUNTIME_BUILD}/gnu/elf/trusted-dirs.T ${RUNTIME_BUILD}/gnu/elf/trusted-dirs.h
+touch ${RUNTIME_BUILD}/gnu/elf/trusted-dirs.st
+.././scripts/mkinstalldirs ${RUNTIME_BUILD}/gnu/gnu
+mkdir -p -- ${RUNTIME_BUILD}/gnu/gnu
+{ \
+  echo '/* This file is automatically generated.'; echo '   It defines macros to allow user program to find the shared'; echo '   library files which come as part of GNU libc.  */'; echo '#ifndef __GNU_LIB_NAMES_H'; echo '#define __GNU_LIB_NAMES_H	1'; \
+ echo ''; \
+ ( echo libc=libc.so.0.1;  echo ld=ld.so.1;  echo libBrokenLocale=libBrokenLocale.so.1;  echo libpthread=libpthread.so.0;  echo libthread_db=libthread_db.so.1;  echo libdl=libdl.so.2;  echo libgcc_s=libgcc_s.so.1;  echo libnsl=libnsl.so.1;  echo libc_malloc_debug=libc_malloc_debug.so.0;  echo libutil=libutil.so.1;  echo libnss_ldap=libnss_ldap.so.2;  echo libnss_dns=libnss_dns.so.2;  echo libnss_compat=libnss_compat.so.2;  echo libmvec=libmvec.so.1;  echo libresolv=libresolv.so.2;  echo libnss_db=libnss_db.so.2;  echo libunwind=libunwind.so.1;  echo libm=libm.so.0.1;  echo libnss_files=libnss_files.so.2;  echo librt=librt.so.1;  echo libnss_hesiod=libnss_hesiod.so.2;  echo libanl=libanl.so.1;) \
+ | LC_ALL=C gawk -f ../scripts/lib-names.awk | LC_ALL=C sort; \
+  echo ''; echo '#endif	/* gnu/lib-names.h */'; \
+} >  ${RUNTIME_BUILD}/gnu/gnu/lib-names.T
+/bin/sh ../scripts/move-if-change ${RUNTIME_BUILD}/gnu/gnu/lib-names.T ${RUNTIME_BUILD}/gnu/gnu/lib-names.h
+touch ${RUNTIME_BUILD}/gnu/gnu/lib-names.stmp
+${RUNTIME_BUILD}/cc ../sysdeps/xos/dl-sysdep.c -c -std=gnu11 -fgnu89-inline  -O2 -g -mno-red-zone -Wall -Wwrite-strings -Wundef -Wimplicit-fallthrough -fmerge-all-constants -frounding-math -ftrapping-math -fno-stack-protector -fno-common -U_FORTIFY_SOURCE -Wstrict-prototypes -Wold-style-definition -Wfree-labels -Wmissing-parameter-name -fmath-errno    -fPIC    -fno-stack-protector -DSTACK_PROTECTOR_LEVEL=0  -mno-mmx      -ftls-model=initial-exec     -I../include -I${RUNTIME_BUILD}/gnu/elf  -I${RUNTIME_BUILD}/gnu  -I../sysdeps/x86_64/64  -I../sysdeps/x86_64/fpu  -I../sysdeps/x86/fpu  -I../sysdeps/x86_64/xos  -I../sysdeps/x86_64/nptl  -I../sysdeps/x86/nptl  -I../sysdeps/x86_64  -I../sysdeps/x86/include -I../sysdeps/x86  -I../sysdeps/ieee754/float128  -I../sysdeps/ieee754/ldbl-96/include -I../sysdeps/ieee754/ldbl-96  -I../sysdeps/ieee754/dbl-64  -I../sysdeps/ieee754/flt-32  -I../sysdeps/xos  -I../sysdeps/nptl  -I../sysdeps/pthread  -I../sysdeps/wordsize-64  -I../sysdeps/ieee754  -I../sysdeps/generic  -I.. -I../libio -I.  -D_LIBC_REENTRANT -include ${RUNTIME_BUILD}/gnu/libc-modules.h -DMODULE_NAME=rtld -include ../include/libc-symbols.h  -DPIC -DSHARED     -DTOP_NAMESPACE=glibc -o ${RUNTIME_BUILD}/gnu/elf/dl-sysdep.os -MD -MP -MF ${RUNTIME_BUILD}/gnu/elf/dl-sysdep.os.dt -MT ${RUNTIME_BUILD}/gnu/elf/dl-sysdep.os
+../sysdeps/xos/dl-sysdep.c:5:3: error: #error "XOS dynamic interpreter startup is not implemented"
+    5 | # error "XOS dynamic interpreter startup is not implemented"
+      |   ^~~~~
+make: *** [${RUNTIME_BUILD}/gnu/sysd-rules:433: ${RUNTIME_BUILD}/gnu/elf/dl-sysdep.os] Error 1
+make: Leaving directory '${RUNTIME_BUILD}/glibc-2.44/elf'

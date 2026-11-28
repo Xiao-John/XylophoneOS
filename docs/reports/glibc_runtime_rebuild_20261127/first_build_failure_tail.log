@@ -1,0 +1,35 @@
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strchr.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strcmp.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strcpy.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strcspn.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strdup.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strlen.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strncmp.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strncpy.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-cacheinfo.os
+a - ${FIRST_RUNTIME_BUILD}/gnu/string/rtld-strchrnul.os
+mv -f ${FIRST_RUNTIME_BUILD}/gnu/elf/rtld-libc.aT ${FIRST_RUNTIME_BUILD}/gnu/elf/rtld-libc.a
+make[3]: Leaving directory '${FIRST_RUNTIME_BUILD}/glibc-2.44/elf'
+${FIRST_RUNTIME_BUILD}/cc   -nostdlib -nostartfiles -r -o ${FIRST_RUNTIME_BUILD}/gnu/elf/librtld.os '-Wl,-(' ${FIRST_RUNTIME_BUILD}/gnu/elf/dl-allobjs.os ${FIRST_RUNTIME_BUILD}/gnu/elf/rtld-libc.a -lgcc  '-Wl,-)' \
+	  -Wl,-Map,${FIRST_RUNTIME_BUILD}/gnu/elf/librtld.os.map
+${FIRST_RUNTIME_BUILD}/cc   -nostdlib -nostartfiles -shared -o ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so.new		\
+	  -Wl,-shared,--eh-frame-hdr,-z,now,-z,relro,-z,noexecstack,-z,nomark-plt,-z,nopack-relative-relocs,-z,max-page-size=8192,-z,separate-code -Wl,-z,relro -Wl,-z,nomark-plt -Wl,-z,defs 	\
+	  -Wl,-z,pack-relative-relocs \
+	  ${FIRST_RUNTIME_BUILD}/gnu/elf/librtld.os -Wl,--version-script=${FIRST_RUNTIME_BUILD}/gnu/ld.map -Wl,--undefined-version		\
+	  -Wl,-soname=ld.so.1
+${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf -s ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so.new \
+  | gawk '($7 ~ /^UND(|EF)$/ && $1 != "0:" && $4 != "REGISTER") { print; p=1 } END { exit p != 0 }'
+mv -f ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so.new ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so
+rm -f ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so.1.new
+/bin/sh ../scripts/rellns-sh ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so.1.new
+mv -f ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so.1.new ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so.1
+${FIRST_RUNTIME_BUILD}/cc   -shared -static-libgcc -Wl,-O1 -Wl,-z,mark-plt -Wl,-z,defs -Wl,-dynamic-linker=/usr/lib/ld.so.1 -Wl,-z,pack-relative-relocs  -B${FIRST_RUNTIME_BUILD}/gnu/csu/  -Wl,--version-script=${FIRST_RUNTIME_BUILD}/gnu/libc.map -Wl,--undefined-version -Wl,-soname=libc.so.0.1 -Wl,-shared,--eh-frame-hdr,-z,now,-z,relro,-z,noexecstack,-z,nomark-plt,-z,nopack-relative-relocs,-z,max-page-size=8192,-z,separate-code -Wl,-z,relro -Wl,--eh-frame-hdr  -nostdlib -nostartfiles -e __libc_main -L${FIRST_RUNTIME_BUILD}/gnu -L${FIRST_RUNTIME_BUILD}/gnu/math -L${FIRST_RUNTIME_BUILD}/gnu/elf -L${FIRST_RUNTIME_BUILD}/gnu/dlfcn -L${FIRST_RUNTIME_BUILD}/gnu/nss -L${FIRST_RUNTIME_BUILD}/gnu/nis -L${FIRST_RUNTIME_BUILD}/gnu/rt -L${FIRST_RUNTIME_BUILD}/gnu/resolv -L${FIRST_RUNTIME_BUILD}/gnu/mathvec -L${FIRST_RUNTIME_BUILD}/gnu/support -L${FIRST_RUNTIME_BUILD}/gnu/misc -L${FIRST_RUNTIME_BUILD}/gnu/debug -L${FIRST_RUNTIME_BUILD}/gnu/nptl -L./ -Wl,-rpath-link=${FIRST_RUNTIME_BUILD}/gnu:${FIRST_RUNTIME_BUILD}/gnu/math:${FIRST_RUNTIME_BUILD}/gnu/elf:${FIRST_RUNTIME_BUILD}/gnu/dlfcn:${FIRST_RUNTIME_BUILD}/gnu/nss:${FIRST_RUNTIME_BUILD}/gnu/nis:${FIRST_RUNTIME_BUILD}/gnu/rt:${FIRST_RUNTIME_BUILD}/gnu/resolv:${FIRST_RUNTIME_BUILD}/gnu/mathvec:${FIRST_RUNTIME_BUILD}/gnu/support:${FIRST_RUNTIME_BUILD}/gnu/misc:${FIRST_RUNTIME_BUILD}/gnu/debug:${FIRST_RUNTIME_BUILD}/gnu/nptl:./ -o ${FIRST_RUNTIME_BUILD}/gnu/libc.so ${FIRST_RUNTIME_BUILD}/gnu/csu/abi-note.o ${FIRST_RUNTIME_BUILD}/gnu/libc_pic.os.clean ${FIRST_RUNTIME_BUILD}/gnu/elf/interp.os ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so ${FIRST_RUNTIME_BUILD}/native_pic/libxos_terminal_pic.a -lgcc ${FIRST_RUNTIME_BUILD}/gnu/elf/sofini.os
+${FIRST_RUNTIME_BUILD}/cc   -shared -static-libgcc -Wl,-z,mark-plt -Wl,-dynamic-linker=/usr/lib/ld.so.1 -Wl,-z,defs -Wl,-z,pack-relative-relocs -B${FIRST_RUNTIME_BUILD}/gnu/csu/  -Wl,--undefined-version -Wl,-shared,--eh-frame-hdr,-z,now,-z,relro,-z,noexecstack,-z,nomark-plt,-z,nopack-relative-relocs,-z,max-page-size=8192,-z,separate-code -Wl,-z,relro -Wl,--eh-frame-hdr   -L${FIRST_RUNTIME_BUILD}/gnu -L${FIRST_RUNTIME_BUILD}/gnu/math -L${FIRST_RUNTIME_BUILD}/gnu/elf -L${FIRST_RUNTIME_BUILD}/gnu/dlfcn -L${FIRST_RUNTIME_BUILD}/gnu/nss -L${FIRST_RUNTIME_BUILD}/gnu/nis -L${FIRST_RUNTIME_BUILD}/gnu/rt -L${FIRST_RUNTIME_BUILD}/gnu/resolv -L${FIRST_RUNTIME_BUILD}/gnu/mathvec -L${FIRST_RUNTIME_BUILD}/gnu/support -L${FIRST_RUNTIME_BUILD}/gnu/misc -L${FIRST_RUNTIME_BUILD}/gnu/debug -L${FIRST_RUNTIME_BUILD}/gnu/nptl -L./ -Wl,-rpath-link=${FIRST_RUNTIME_BUILD}/gnu:${FIRST_RUNTIME_BUILD}/gnu/math:${FIRST_RUNTIME_BUILD}/gnu/elf:${FIRST_RUNTIME_BUILD}/gnu/dlfcn:${FIRST_RUNTIME_BUILD}/gnu/nss:${FIRST_RUNTIME_BUILD}/gnu/nis:${FIRST_RUNTIME_BUILD}/gnu/rt:${FIRST_RUNTIME_BUILD}/gnu/resolv:${FIRST_RUNTIME_BUILD}/gnu/mathvec:${FIRST_RUNTIME_BUILD}/gnu/support:${FIRST_RUNTIME_BUILD}/gnu/misc:${FIRST_RUNTIME_BUILD}/gnu/debug:${FIRST_RUNTIME_BUILD}/gnu/nptl:./ -Wl,--as-needed  -Wl,--no-as-needed -o ${FIRST_RUNTIME_BUILD}/gnu/elf/sotruss-lib.so ${FIRST_RUNTIME_BUILD}/gnu/csu/abi-note.o -Wl,--as-needed ${FIRST_RUNTIME_BUILD}/gnu/elf/sotruss-lib.os  -Wl,--no-as-needed -Wl,--start-group ${FIRST_RUNTIME_BUILD}/gnu/libc.so ${FIRST_RUNTIME_BUILD}/gnu/libc_nonshared.a -Wl,--as-needed ${FIRST_RUNTIME_BUILD}/gnu/elf/ld.so -Wl,--no-as-needed -Wl,--end-group
+${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/lib/gcc/x86_64-elf/16.2.0/crtbegin.o: relocation R_X86_64_32 against hidden symbol `__TMC_END__' can not be used when making a shared object
+${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: failed to set dynamic section sizes: bad value
+collect2: error: ld returned 1 exit status
+make[2]: *** [Makefile:248: ${FIRST_RUNTIME_BUILD}/gnu/elf/sotruss-lib.so] Error 1
+make[2]: Leaving directory '${FIRST_RUNTIME_BUILD}/glibc-2.44/elf'
+make[1]: *** [Makefile:488: elf/subdir_lib] Error 2
+make[1]: Leaving directory '${FIRST_RUNTIME_BUILD}/glibc-2.44'
+make: *** [Makefile:20: lib] Error 2

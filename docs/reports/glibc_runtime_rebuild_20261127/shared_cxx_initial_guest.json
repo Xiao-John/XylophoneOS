@@ -1,0 +1,472 @@
+{
+  "status": "passed_subset",
+  "scope": "private native GNU interpreter and a versioned application",
+  "case": "shared-std-thread",
+  "language": "cpp",
+  "system_build_id": "d2f006e5b36d293a",
+  "commands": {
+    "strip_debug_libc": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${INITIAL_RUNTIME_BUILD}/gnu/libc.so",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/dependency.so"
+    ],
+    "strip_debug_interpreter": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${INITIAL_RUNTIME_BUILD}/gnu/elf/ld.so",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/interpreter.so"
+    ],
+    "strip_1": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${GCC_SHARED_BUILD}/lib/libgcc_s.so.1",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/dependency-1.so"
+    ],
+    "strip_2": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${GCC_SHARED_BUILD}/lib/libm.so.0.1",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/dependency-2.so"
+    ],
+    "strip_3": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${GCC_SHARED_BUILD}/lib/libstdc++.so.6",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/dependency-3.so"
+    ],
+    "compile_module": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "-nostdinc++",
+      "-std=gnu++20",
+      "-isystem",
+      "${GCC_CXX_INCLUDE}",
+      "-isystem",
+      "${GCC_CXX_INCLUDE}/x86_64-unknown-xos",
+      "-isystem",
+      "${GCC_CXX_INCLUDE}/backward",
+      "--sysroot=${GLIBC_SDK}/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-isystem",
+      "${GLIBC_SDK}/sysroot/usr/include",
+      "-isystem",
+      "${GLIBC_SDK}/sysroot/usr/lib/compiler-include",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-fPIC",
+      "-c",
+      "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_cxx_dependency.cpp",
+      "-o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/sample.o"
+    ],
+    "link_module": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--build-id=none",
+      "--no-undefined",
+      "-z",
+      "noexecstack",
+      "-z",
+      "now",
+      "-z",
+      "relro",
+      "-z",
+      "max-page-size=8192",
+      "-z",
+      "separate-code",
+      "-rpath-link",
+      "${INITIAL_RUNTIME_BUILD}/gnu/elf",
+      "--eh-frame-hdr",
+      "-rpath-link",
+      "${GCC_SHARED_BUILD}/lib",
+      "-shared",
+      "-soname",
+      "libsample.so",
+      "-o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/sample.so",
+      "${INITIAL_RUNTIME_BUILD}/gnu/csu/crti.o",
+      "${INITIAL_PIC_CRT_BUILD}/target/libgcc/crtbeginS.o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/sample.o",
+      "${GCC_SHARED_BUILD}/lib/libstdc++.so.6",
+      "${GCC_SHARED_BUILD}/lib/libgcc_s.so.1",
+      "${INITIAL_RUNTIME_BUILD}/gnu/libc.so",
+      "${INITIAL_RUNTIME_BUILD}/gnu/elf/ld.so",
+      "${INITIAL_PIC_CRT_BUILD}/target/libgcc/crtendS.o",
+      "${INITIAL_RUNTIME_BUILD}/gnu/csu/crtn.o"
+    ],
+    "compile_app": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "-nostdinc++",
+      "-std=gnu++20",
+      "-isystem",
+      "${GCC_CXX_INCLUDE}",
+      "-isystem",
+      "${GCC_CXX_INCLUDE}/x86_64-unknown-xos",
+      "-isystem",
+      "${GCC_CXX_INCLUDE}/backward",
+      "--sysroot=${GLIBC_SDK}/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-isystem",
+      "${GLIBC_SDK}/sysroot/usr/include",
+      "-isystem",
+      "${GLIBC_SDK}/sysroot/usr/lib/compiler-include",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-fPIE",
+      "-fno-builtin",
+      "-c",
+      "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_std_thread_application.cpp",
+      "-o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/application.o"
+    ],
+    "link_app": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--build-id=none",
+      "--no-undefined",
+      "-z",
+      "noexecstack",
+      "-z",
+      "now",
+      "-z",
+      "relro",
+      "-z",
+      "max-page-size=8192",
+      "-z",
+      "separate-code",
+      "-rpath-link",
+      "${INITIAL_RUNTIME_BUILD}/gnu/elf",
+      "--eh-frame-hdr",
+      "-rpath-link",
+      "${GCC_SHARED_BUILD}/lib",
+      "-pie",
+      "-e",
+      "_start",
+      "--dynamic-linker",
+      "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1",
+      "-o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/main.pie",
+      "${INITIAL_RUNTIME_BUILD}/gnu/csu/Scrt1.o",
+      "${INITIAL_RUNTIME_BUILD}/gnu/csu/crti.o",
+      "${INITIAL_PIC_CRT_BUILD}/target/libgcc/crtbeginS.o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/application.o",
+      "${GCC_SHARED_BUILD}/lib/atexit.oS",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/sample.so",
+      "${GCC_SHARED_BUILD}/lib/libstdc++.so.6",
+      "${GCC_SHARED_BUILD}/lib/libgcc_s.so.1",
+      "${INITIAL_RUNTIME_BUILD}/gnu/libc.so",
+      "${INITIAL_PIC_CRT_BUILD}/target/libgcc/crtendS.o",
+      "${INITIAL_RUNTIME_BUILD}/gnu/csu/crtn.o"
+    ],
+    "elf_metadata": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "-hW",
+      "-lW",
+      "-dW",
+      "-VW",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/main.pie",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/interpreter.so",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/dependency.so",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/dependency-1.so",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/dependency-2.so",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/dependency-3.so",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/sample.so"
+    ],
+    "compile_bootstrap": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "--sysroot=${GLIBC_SDK}/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-isystem",
+      "${GLIBC_SDK}/sysroot/usr/include",
+      "-isystem",
+      "${GLIBC_SDK}/sysroot/usr/lib/compiler-include",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-nostdinc++",
+      "-std=gnu++20",
+      "-ffreestanding",
+      "-fno-pie",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-DD1_ACTUAL_INTERPRETER",
+      "-I",
+      "${XOS_SOURCE}/build/p0_dynamic_system/sdk/include",
+      "-I",
+      "${XOS_SOURCE}/src/user/loader/glibc_d1",
+      "-I",
+      "${XOS_SOURCE}/src/ports/glibc/sysdeps/xos",
+      "-I",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest",
+      "-c",
+      "${XOS_SOURCE}/tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp",
+      "-o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/entry.o"
+    ],
+    "link_bootstrap": [
+      "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--gc-sections",
+      "-z",
+      "noexecstack",
+      "-z",
+      "max-page-size=4096",
+      "--build-id=none",
+      "-Map",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/link.map",
+      "-T",
+      "${GLIBC_SDK}/sysroot/user.ld",
+      "-o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/entry.elf",
+      "${GLIBC_SDK}/sysroot/usr/lib/xos_start.o",
+      "${XOS_SOURCE}/build/p0_dynamic_std_thread_guest/entry.o",
+      "${INITIAL_RUNTIME_BUILD}/gnu/elf/xos_file_session.os",
+      "--start-group",
+      "${XOS_SOURCE}/build/p0_dynamic_system/sdk/lib/libxos_loader.a",
+      "${XOS_SOURCE}/build/p0_dynamic_system/sdk/lib/libxos.a",
+      "${GLIBC_SDK}/sysroot/usr/lib/libgcc.a",
+      "--end-group"
+    ]
+  },
+  "tools": {
+    "gcc": {
+      "available": true,
+      "path": "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-gcc (GCC) 16.2.0"
+    },
+    "g++": {
+      "available": true,
+      "path": "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "version_exit_code": 0,
+      "version": "x86_64-elf-g++ (GCC) 16.2.0"
+    },
+    "ld": {
+      "available": true,
+      "path": "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+      "version_exit_code": 0,
+      "version": "GNU ld (GNU Binutils) 2.47.20260726"
+    },
+    "readelf": {
+      "available": true,
+      "path": "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "sha256": "a6e0ff4b51a996352b63f45270e1381035acba1445da79e91c6efee837edac9d",
+      "version_exit_code": 0,
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+    },
+    "objcopy": {
+      "available": true,
+      "path": "${SDK_TOOL_PREFIX}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab",
+      "version_exit_code": 0,
+      "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+    }
+  },
+  "sanitized_environment": [],
+  "sdk_manifest_sha256": "c1df8e02985df4e37198885a4a8fc78f21344011b1b851e8be4524cefe13ab1a",
+  "sdk_tree_sha256": "cdb7d3b1da3be1f1281d531c0ef9f477028531a54e5974537355f968d121666a",
+  "system_manifest_sha256": "809bc9eb541bce9c91fd507c820dc09196148b765e001d58e82c564dd6bcd80b",
+  "iso_sha256": "e7b7d8dab1b4b60ac950bbaeabcf99453011846886f92137e18d7d09799190c5",
+  "dash_sha256": "c55332b44ab6b6ad06e19fec033994cd8a0668136948a97616b5738a9dd354ed",
+  "dash_receipt_sha256": "ba00dbf8851b745608ba797a974e3ebc37fec9ad8547ca236ae89b34dd7921cb",
+  "runner_sha256": "357ed7ce99d5411ae60bbc9fe34806b1a564d7e88304f4b52b665fa28c154da9",
+  "linked_originals": {
+    "${INITIAL_RUNTIME_BUILD}/gnu/libc.so": "2deaac6efafb49e293eb871dff734d02e911b32dcd1a1006f1315a0c0ba6d311",
+    "${INITIAL_RUNTIME_BUILD}/gnu/elf/ld.so": "753fa13ec0ec680309802412b867334f1c86904c8ad770921e5fe5cb491f9029",
+    "${INITIAL_RUNTIME_BUILD}/gnu/elf/xos_file_session.os": "299c9986ac30be13a5145c1c7a7a0d638d66dbbf42235c88b3b11ae552668324",
+    "${INITIAL_RUNTIME_BUILD}/gnu/csu/Scrt1.o": "ff43efc77eca876e3d9c4c63c705f6b2d5a83b5c03f5c3a9618ac51d8c436b5d",
+    "${INITIAL_RUNTIME_BUILD}/gnu/csu/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+    "${INITIAL_RUNTIME_BUILD}/gnu/csu/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+    "${GCC_SHARED_BUILD}/manifest.json": "84a94982693d8ce9b708753d227a142a12bac2663c221de14aa85139fc4d931c",
+    "${GCC_SHARED_BUILD}/lib/libgcc_s.so.1": "f0c37dbe69e804917b898de71e5bee70c7c35e42915f02e5beb8a490170ddd4b",
+    "${GCC_SHARED_BUILD}/lib/libm.so.0.1": "c84447a69bfac70b7190a28cc513de6806df8c350ea57fcd7a36bf13f44679e7",
+    "${GCC_SHARED_BUILD}/lib/libstdc++.so.6": "fd7ce0dfbe217071bdf64b8588fd9403463c4fa889df4df310dbbdc4f0d9344e",
+    "${GCC_SHARED_BUILD}/lib/atexit.oS": "1cd7afe9b08ab4c4323ca12364d39626baecabae9e9aa3545c613e869ff073c3"
+  },
+  "sources": {
+    "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_std_thread_application.cpp": "ee6f0aa5966aedb84ba946ee675708cc2edaaf2092e1a774ce7e85ff5b5b1308",
+    "${XOS_SOURCE}/tests/fixtures/glibc_d1/sysdep_start_bootstrap.cpp": "7582d097fbeb5bae4930a0263ff0a5aed25de547199977e14131ac91ff0192f2",
+    "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_cxx_dependency.cpp": "ecdc47e12e5b3c371f97b7db58095562f8f8d4923b2c1918bc4dd822b431445c",
+    "${XOS_SOURCE}/tests/fixtures/glibc_d1/shared_cxx_exception.hpp": "6c9d99a02b447d2ff7228fcfa62d1c2a4266b51ca62e6a107d2f2e0ec8ae032f"
+  },
+  "pic_crt": {
+    "crtbeginS.o": "66fda995333df8d1df62f3aa3d7f1c59b166b720711ef2b95024d395d4713868",
+    "crtendS.o": "eb9e096ff419207d8fe8a843de4237bca2aeff31002b82f99dff800e8d915a29"
+  },
+  "std_thread_imports": [
+    "_ZNSt6thread15_M_start_threadESt10unique_ptrINS_6_StateESt14default_deleteIS1_EEPFvvE@GLIBCXX_3.4.22",
+    "_ZNSt6thread4joinEv@GLIBCXX_3.4.11"
+  ],
+  "dependency_graph": {
+    "main.pie": [
+      "libsample.so",
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libc.so.0.1"
+    ],
+    "libc.so.0.1": [
+      "ld.so.1"
+    ],
+    "libgcc_s.so.1": [
+      "libc.so.0.1"
+    ],
+    "libm.so.0.1": [
+      "libc.so.0.1",
+      "libgcc_s.so.1"
+    ],
+    "libstdc++.so.6": [
+      "libm.so.0.1",
+      "libgcc_s.so.1",
+      "libc.so.0.1",
+      "ld.so.1"
+    ],
+    "libsample.so": [
+      "libstdc++.so.6",
+      "libgcc_s.so.1",
+      "libc.so.0.1",
+      "ld.so.1"
+    ]
+  },
+  "images": {
+    "main": {
+      "entry": 17592188150784,
+      "phnum": 13,
+      "sha256": "8635b6745172a3dd3fca567eadbb77164e574ed5dd314aa98523ba2268018e7e",
+      "span": 36864
+    },
+    "interpreter": {
+      "entry": 26389352914464,
+      "phnum": 8,
+      "sha256": "df56de77590fcafa6ef743745b5a29d23cc30843ba2caa1b762ef3a9f222d449",
+      "span": 237568
+    },
+    "dependency": {
+      "entry": 21990769558112,
+      "phnum": 13,
+      "sha256": "25cb123f00efaab4ca67f7ca7448334c55dd27ec6dd56675c8bc12326b6ea1ac",
+      "span": 1642496
+    },
+    "dependency_1": {
+      "entry": 21990802980864,
+      "phnum": 8,
+      "sha256": "1797784df1ff3d2f31f53067b02b8a0b6a55d679de2984a5d07745240333d5bb",
+      "span": 200704
+    },
+    "dependency_2": {
+      "entry": 21990836535296,
+      "phnum": 10,
+      "sha256": "4df09851f5cd66deba5a9054ecd91c60f77a247cd6f6fc89855502425438c9ad",
+      "span": 847872
+    },
+    "dependency_3": {
+      "entry": 21990870089728,
+      "phnum": 9,
+      "sha256": "c5d8c32b8f187ecc49a8c630b940388d1583aec43f21ba4c54a391e3f4de7e5e",
+      "span": 2789376
+    },
+    "sample": {
+      "entry": 21990903644160,
+      "phnum": 9,
+      "sha256": "069ea3f34546ef1468eb19c379b29859695b5f708a87190c59822787e75c79e7",
+      "span": 36864
+    }
+  },
+  "startup_budget_seconds": 90,
+  "early_heap_pages": 128,
+  "bootstrap_sha256": "d5803831ba092601d69c5ae19f863dede328662fd9f10608e63f57e8bc3e320a",
+  "bootstrap_program_headers": [
+    {
+      "type": 1,
+      "flags": 5,
+      "virtual_address": 1073741824,
+      "file_size": 17409,
+      "memory_size": 17409,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 4,
+      "virtual_address": 1073762304,
+      "file_size": 2712,
+      "memory_size": 2712,
+      "alignment": 4096
+    },
+    {
+      "type": 1,
+      "flags": 6,
+      "virtual_address": 1073766400,
+      "file_size": 0,
+      "memory_size": 8224,
+      "alignment": 4096
+    },
+    {
+      "type": 7,
+      "flags": 4,
+      "virtual_address": 0,
+      "file_size": 0,
+      "memory_size": 0,
+      "alignment": 8
+    }
+  ],
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_SOURCE}/build/p0_dynamic_system/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${TEMP_PATH},format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_before": [
+    129709,
+    3,
+    1
+  ],
+  "guest_command_seconds": 5.646,
+  "guest_output": "dash /tests/app.sh\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x0000000000353000\r\n[loader] started pid=10 file=/usr/bin/dash\n[process] event=wait_blocked parent=7 child=10\r\n[process] event=started pid=11 parent=10\r\n[process] pid=11 address_space=0x0000000000672000\r\n[process] event=wait_blocked parent=10 child=11\r\nD2_SHARED_CXX_TLS_DTOR\nD2_STD_THREAD_APP_TLS_DTOR\nD2_STD_THREAD_OK move=joined app-dtor=1 dso-dtor=1 tls=isolated\n[task] event=reclaimed pid=11 pages=1529\r\nD1_DYNAMIC_STATUS=0\n[task] event=reclaimed pid=10 pages=319\r\n[wait] pid=10 kind=exited code=0\nxsh> ",
+  "resources_after": [
+    129709,
+    3,
+    1
+  ],
+  "serial_sha256": "f4f5740f26ab7be39fe86689bef00963ed78b86638482c6d84b017ac04b2329b"
+}

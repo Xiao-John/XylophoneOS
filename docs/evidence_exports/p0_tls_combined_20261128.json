@@ -1,0 +1,105 @@
+{
+  "exports": [
+    {
+      "original_sha256": "c02713a8c7ae976804320a02d090ff55d5c4ee25a106bd3b9e1221e8b52356f4",
+      "output": "docs/reports/p0_tls_combined_20261128/system_manifest.json",
+      "public_sha256": "67f955e976f926d24fbce1fcfb6697f27d2f8e333e373cf7e69c43fa576a4511",
+      "source": "runtime_sources/native_integrated_86a06b0a/build/system/manifest.json"
+    },
+    {
+      "original_sha256": "e98e85bf08fa4d6272e1c5dc2f2eb85e28ccc73c916cc36b529d7f5500829cab",
+      "output": "docs/reports/p0_tls_combined_20261128/glibc_sdk_manifest.json",
+      "public_sha256": "82e220c4fbada589084e47743a70588d4b40d01f00dacc6bc9e3c3a4d159a7f8",
+      "source": "r1_work/glibc_c_sdk_v2/manifest.json"
+    },
+    {
+      "original_sha256": "2ca6e35a9166de1e81ab073ad02aca49a00d2992ed2e0428dd20b0c8c98b7459",
+      "output": "docs/reports/p0_tls_combined_20261128/probe_receipt.json",
+      "public_sha256": "247e4cb9961fd0474ff1b18aef2965649938601905abcfd1b4a95de33214790e",
+      "source": "r1_work/n4_probe_v2/receipt.json"
+    },
+    {
+      "original_sha256": "79af2b0e034f2b5f4cf84bfc83061f13f93724e296c1288b27cf2bdc86d9a494",
+      "output": "docs/reports/p0_tls_combined_20261128/host.json",
+      "public_sha256": "48e9c909989b2ac0b050e4d7c38e16157ad335f1b58ab4c5046694d7ee37230a",
+      "source": "r1_work/n4_host/report.json"
+    },
+    {
+      "original_sha256": "424b4f6afc3cdddc175242abb8850aa778d4612ef984ae3ada7c7748734ea6bb",
+      "output": "docs/reports/p0_tls_combined_20261128/public_ca_snapshot.json",
+      "public_sha256": "458a9388ca5f6c27390b7ea8437f98f07c60352404d1206c3af1a8f370f40d2f",
+      "source": "r1_work/n4_public_ca_receipt.json"
+    },
+    {
+      "original_sha256": "8a8cc462c1116215ecacb627e5df720d243e202f09e6d4fe93c89fa4d984bf0e",
+      "output": "docs/reports/p0_tls_combined_20261128/guest.json",
+      "public_sha256": "208d62ddd0fbbe6409aae2d2e2626f5b97aeadd4a52356dcc3a2ec93f0e92a33",
+      "source": "r1_work/n4_guest_v2/report.json"
+    },
+    {
+      "original_sha256": "80adf29a26de9ffbfe19a73ae314e17e6841766263be261ffcbf387f3ae2800d",
+      "output": "docs/reports/p0_tls_combined_20261128/guest_serial.log",
+      "public_sha256": "80adf29a26de9ffbfe19a73ae314e17e6841766263be261ffcbf387f3ae2800d",
+      "source": "r1_work/n4_guest_v2/guest_serial.log"
+    },
+    {
+      "original_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "output": "docs/reports/p0_tls_combined_20261128/guest_qemu.log",
+      "public_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "source": "r1_work/n4_guest_v2/guest_qemu.log"
+    },
+    {
+      "original_sha256": "ab1e6e999e17f751e69961b2f263b2845161ade39e64fbc97c9595a0c092fc9d",
+      "output": "docs/reports/p0_tls_combined_20261128/no_entropy_serial.log",
+      "public_sha256": "ab1e6e999e17f751e69961b2f263b2845161ade39e64fbc97c9595a0c092fc9d",
+      "source": "r1_work/n4_guest_v2/no_entropy_serial.log"
+    },
+    {
+      "original_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "output": "docs/reports/p0_tls_combined_20261128/no_entropy_qemu.log",
+      "public_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "source": "r1_work/n4_guest_v2/no_entropy_qemu.log"
+    },
+    {
+      "original_sha256": "435375dce9dbf252dbf3e59d25632a12162315c01c720d05ca65c2c194a01e93",
+      "output": "docs/reports/p0_tls_combined_20261128/https_adapter_compile.json",
+      "public_sha256": "21fd92cfae5deb3685cadb6e0451c008e1398e17e0bc8eb4d8046958f747bd6b",
+      "source": "r1_work/n4_probe_v2/https_adapter_compile.json"
+    },
+    {
+      "original_sha256": "8a1a6bdcba909454ccc8bf225f483f8892f5182db75e84068747fdd6569181ba",
+      "output": "docs/reports/p0_tls_combined_20261128/mbedtls_configure.log",
+      "public_sha256": "2222480867129d7c16cff24fea67fe11d3ff21bd99dcfdcf8de13116c225f168",
+      "source": "r1_work/n4_probe_v2/configure.log"
+    },
+    {
+      "original_sha256": "260ae72001eb5737ceaf797f3864f2645002bc2af6dfc13fd88cd107fa9fa462",
+      "output": "docs/reports/p0_tls_combined_20261128/mbedtls_build.log",
+      "public_sha256": "91c3fb1d298cd57d508f148d9666aab50e3f0a8175bcf4552573ad1d0c622f5f",
+      "source": "r1_work/n4_probe_v2/mbedtls.log"
+    },
+    {
+      "original_sha256": "08d237f87ee24fdb406a7655d9cf04f4b44ca906aae1b1970a97b49e9bb72a30",
+      "output": "docs/reports/p0_tls_combined_20261128/trust_store_compile.log",
+      "public_sha256": "40a91b84e2904dd6825d88112c47b791c6a8beea50d5f2d5e297c1b59a9ca788",
+      "source": "r1_work/n4_probe_v2/trust_store.log"
+    },
+    {
+      "original_sha256": "cf808303e05e174bf7a888ca7f07e2f2789894ca725c73098adfe7ef2af7ecd3",
+      "output": "docs/reports/p0_tls_combined_20261128/probe_link.log",
+      "public_sha256": "a8b4143a101519fa84c4edbc3ce2bc009b73fc7602f8e1e47a2f3e7ecc13947f",
+      "source": "r1_work/n4_probe_v2/link.log"
+    },
+    {
+      "original_sha256": "8cacdcea7a3f16971a4d42efb2ae1f85e20548b6ded5c34ce99ec453a0411843",
+      "output": "docs/reports/p0_tls_combined_20261128/input_provenance.json",
+      "public_sha256": "3e200230fa3704e314325a7eda8ae08c3b80cf78aaf83a92afde439c23bf0fd4",
+      "source": "r1_work/n4_inputs.json"
+    }
+  ],
+  "rules": [
+    "Normalize build, source, toolchain and temporary roots.",
+    "Replace sibling evidence hashes by explicit artifact names; original and normalized byte digests remain in this separate conversion ledger.",
+    "External source, SDK artifact, certificate and binary identities remain unchanged."
+  ]
+}

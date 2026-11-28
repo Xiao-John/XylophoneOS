@@ -1,0 +1,53 @@
+{
+  "capture_guest_crosscheck": {
+    "scope": "Performed against the locally retained capture during qualification; public evidence contains only the aggregate result, not packet frames or decoded payloads.",
+    "status": "passed",
+    "unique_binary_challenges": 10
+  },
+  "capture_publication_review": {
+    "action": "Removed raw capture and full decode from this candidate public tree. No alternative encoding or equivalent frame/payload export is included.",
+    "reason": "Automatic approval rejected public create_blob upload, including after a read-only fixture provenance/content review, because explicit permission to disclose this capture metadata was not established.",
+    "status": "raw_and_full_decode_withheld"
+  },
+  "flat_manifest": {
+    "scope": "p0_network_combined_20261128",
+    "status": "passed"
+  },
+  "public_evidence_scope": "Fresh synthetic test inputs; ordinary receipts and serial logs are public. DHCP raw capture, full decode and detailed safety audit remain local; aggregate protocol counts and test conclusions are public.",
+  "public_path_gate": {
+    "correction": "Normalize host temporary work-disk path in public guest metadata; original bytes stay in private raw outputs and conversion map",
+    "findings": [],
+    "initial_failure_artifact": "first_public_path_check.json",
+    "source": "actual staged Git index",
+    "status": "PUBLIC_READY"
+  },
+  "repository_report_gate": {
+    "frozen_reports_modified": false,
+    "pre_existing_failures": [
+      "glibc_v2_cpython_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_current_release_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_daily_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_dash_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_gnu_make_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_release_upstream_source_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "mobius_qt_v2_replacement_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_reproducible_20261127: unsafe path or invalid hash in manifest"
+    ],
+    "status": "failed"
+  },
+  "source_checks": {
+    "dhcp_copy_sources": 2196,
+    "glibc_sdk_source_inputs": 370,
+    "native_system_sources": 2196
+  },
+  "source_commit": "3699916df590a2fe0ea9b419836ded2d9344e6b3"
+}

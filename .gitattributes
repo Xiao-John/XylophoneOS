@@ -47,3 +47,9 @@ src/ports/lwip/patches/0005_dhcp_absolute_authority.patch whitespace=-blank-at-e
 
 # Preserve exact serial/diagnostic output from the DHCP qualification.
 docs/reports/p0_dhcp_service_20261128/*.log whitespace=-blank-at-eol,cr-at-eol
+
+# Preserve exact serial output from the combined TLS qualification.
+docs/reports/p0_tls_combined_20261128/*.log whitespace=-blank-at-eol,cr-at-eol
+
+# The final network regression retains original serial/diagnostic bytes.
+docs/reports/p0_network_combined_20261128/*.log whitespace=-blank-at-eol,cr-at-eol

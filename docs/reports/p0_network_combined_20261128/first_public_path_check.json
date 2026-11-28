@@ -1,0 +1,21 @@
+{
+  "base": "HEAD",
+  "files_scanned": 33,
+  "files_selected": 33,
+  "findings": [
+    {
+      "category": "ambiguous_tmp",
+      "classification": "NEEDS_REVIEW",
+      "location": "docs/reports/p0_network_combined_20261128/dhcp_guest.json",
+      "status": "DOUBTFUL"
+    },
+    {
+      "category": "absolute_command",
+      "classification": "PORTABILITY_ISSUE",
+      "location": "docs/reports/p0_network_combined_20261128/dhcp_guest.json",
+      "status": "OPEN"
+    }
+  ],
+  "source": "index",
+  "status": "NOT_PUBLIC_READY"
+}

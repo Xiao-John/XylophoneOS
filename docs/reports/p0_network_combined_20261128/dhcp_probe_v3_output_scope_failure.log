@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "${XOS_DHCP_SOURCE}/scripts/build_net_dhcp_probe.py", line 70, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_DHCP_SOURCE}/scripts/build_net_dhcp_probe.py", line 33, in main
+    out.relative_to(ROOT / 'build')
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 489, in relative_to
+    raise ValueError(f"{str(self)!r} is not in the subpath of {str(other)!r}")
+ValueError: '${XOS_R1_WORK}/dhcp_probe_v3' is not in the subpath of '${XOS_DHCP_SOURCE}/build'

@@ -1,0 +1,105 @@
+{
+  "artifacts": {
+    "net_dhcp_probe.elf": "ff7719e2a0c998d41d4b8cbd89d52b1cfbb17880956caeff4375b7f3efff6161"
+  },
+  "commands": [
+    [
+      "${XOS_PRERELEASE_SDK}/bin/x86_64-elf-g++",
+      "-std=c++17",
+      "-Os",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-ffreestanding",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-threadsafe-statics",
+      "-fno-use-cxa-atexit",
+      "-fno-unwind-tables",
+      "-fno-asynchronous-unwind-tables",
+      "-fno-stack-protector",
+      "-fno-pic",
+      "-fno-pie",
+      "-mno-red-zone",
+      "-mgeneral-regs-only",
+      "-nostdinc++",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-idirafter",
+      "${XOS_DHCP_SOURCE}/build/system_dhcp/sdk/include",
+      "${XOS_DHCP_SOURCE}/tests/fixtures/network/net_dhcp_probe.cpp",
+      "-nostdlib",
+      "-static",
+      "-no-pie",
+      "-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
+      "-T",
+      "${XOS_DHCP_SOURCE}/build/system_dhcp/sdk/user.ld",
+      "${XOS_DHCP_SOURCE}/build/system_dhcp/sdk/crt0.o",
+      "-Wl,--start-group",
+      "${XOS_DHCP_SOURCE}/build/system_dhcp/sdk/lib/libxos.a",
+      "${XOS_DHCP_SOURCE}/build/system_dhcp/sdk/lib/libxos_loader.a",
+      "-Wl,--end-group",
+      "-o",
+      "${XOS_DHCP_SOURCE}/build/probe_dhcp/net_dhcp_probe.elf"
+    ]
+  ],
+  "libc_linked": false,
+  "sdk_tree_sha256": "18d2f44b521093b83ccb8fe09e55b1201f86dae695aff18793825c57310464e5",
+  "sources": {
+    "scripts/build_net_dhcp_probe.py": "44124fccbe0bb02942ec5ee4baf7b976eba1957741f643a986438cccf9f757dd",
+    "src/shared/include/xos/net_service_abi.hpp": "8365d89889c7d8bc32318dc56c85fb6ce012aee703e779a3dc37d8a16987091f",
+    "src/user/include/xos/net_service_client.hpp": "5c8fb4a1b803906c10e285fda5caeb0e1fe3f5f3de33dd206bb530b91f1ecb40",
+    "src/user/include/xos/net_transport.hpp": "6f5e7a5ba2cca4ebcec93a43f170adc8e93c385c25098377b259a7d0ac100674",
+    "tests/fixtures/network/net_dhcp_probe.cpp": "9318604b8070bfc54d2fb86b47d1fcf788266994cd149ab19bd564527595fb9c"
+  },
+  "toolchain": {
+    "executables": {
+      "ar": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+      },
+      "as": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+      },
+      "cc1": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+      },
+      "cc1plus": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+      },
+      "g++": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+      },
+      "gcc": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+      },
+      "ld": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+      },
+      "nasm": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/nasm/3.02/bin/nasm",
+        "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+      },
+      "nm": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+      },
+      "objcopy": {
+        "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+      }
+    },
+    "g++": "16.2.0",
+    "gcc": "16.2.0",
+    "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+    "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+    "target": "x86_64-elf"
+  }
+}

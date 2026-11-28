@@ -1,0 +1,31 @@
+${XOS_R1_WORK}/n4_tools/cmake-4.2.0-linux-x86_64/bin/cmake -S ${XOS_R1_WORK}/n4_probe_v3/source/mbedtls-4.1.1 -B ${XOS_R1_WORK}/n4_probe_v3/mbedtls -DCMAKE_SYSTEM_NAME=Generic -DCMAKE_SYSTEM_PROCESSOR=x86_64 -DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc -DCMAKE_AR=${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar -DCMAKE_RANLIB=${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ranlib '-DCMAKE_C_FLAGS=--sysroot=${XOS_R1_WORK}/glibc_c_sdk_v3/sysroot -B${XOS_R1_WORK}/n4_probe_v3/tools/ -nostdinc -isystem ${XOS_R1_WORK}/glibc_c_sdk_v3/sysroot/usr/include -isystem ${XOS_R1_WORK}/glibc_c_sdk_v3/sysroot/usr/lib/compiler-include -D_GNU_SOURCE -mno-red-zone -fno-pie -fno-builtin -ffunction-sections -fdata-sections -ftls-model=local-exec' -DENABLE_PROGRAMS=OFF -DENABLE_TESTING=OFF -DGEN_FILES=OFF -DDISABLE_PACKAGE_CONFIG_AND_INSTALL=ON -DMBEDTLS_USER_CONFIG_FILE=${XOS_NATIVE_SOURCE}/src/ports/native_tls/mbedtls_xos_config.h -DTF_PSA_CRYPTO_USER_CONFIG_FILE=${XOS_NATIVE_SOURCE}/src/ports/native_tls/tf_psa_crypto_xos_config.h
+CMake Deprecation Warning at CMakeLists.txt:21 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+-- The C compiler identification is GNU 16.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: ${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found Python3: /usr/bin/python3.14 (found version "3.14.10") found components: Interpreter
+CMake Deprecation Warning at tf-psa-crypto/CMakeLists.txt:21 (cmake_minimum_required):
+  Compatibility with CMake < 3.10 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS - Success
+-- Configuring done (0.5s)
+-- Generating done (0.0s)
+-- Build files have been written to: ${XOS_R1_WORK}/n4_probe_v3/mbedtls

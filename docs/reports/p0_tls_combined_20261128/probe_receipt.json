@@ -1,0 +1,132 @@
+{
+  "archive_sha256": "3359a349e23db3d5536fcee032ae7b2ecbfc08972fab643089b5cbf2a375c98c",
+  "archives": {
+    "mbedtls/library/libmbedtls.a": "fc5cc7aac3914c39b2403e1fd1a7df004e10f2b62c119dfb34afc60e62e94ab1",
+    "mbedtls/library/libmbedx509.a": "f2ca908cb6e3bc1fa7b0f7561ff97098b6554414cbb363600e97e5b39111a822",
+    "mbedtls/tf-psa-crypto/core/libtfpsacrypto.a": "ebc1b20276eae5e4ddb340b9b4c2b5bd27ef5e18bc78be12b36680194b60c409"
+  },
+  "elf_sha256": "98aedf946cb21944a02fff38cc1ac5815888cca28e94d77f7d0956032fce89c0",
+  "glibc_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+  "glibc_verification_sha256": "f1bb3329408acb6c188424e52ea166627e213da3e13ea593a1eca38bd41aab61",
+  "inputs": {
+    "scripts/build_glibc_program.py": "5c63b120681020ad392909c4c8886fba800488afe8ed5d7ba5d550e24862d201",
+    "scripts/glibc_g1_probe.py": "0e508036b6e4098faa290c4e41c32b651aea54167fbf5d3b4c9283732fabc451",
+    "scripts/xypm_sdk_profile.py": "58ba003d4d44837949c370e4693e3834540296722c35180b98fe3deb1858ae32",
+    "src/ports/browser_http/http.cpp": "7c3b7c8afb3fa76ae8471e14061452e4e70ad581762dd15560963e6ac91be3a5",
+    "src/ports/browser_http/http.hpp": "aa47d931bcab49d5906c844e9c83d109f2c7ca2f5292e1142a65370dde1ba2b1",
+    "src/ports/glibc/sysdeps/xos/clock_gettime.c": "d41cde65ad6b3e65d1452b0c4c5cac0301493073b2bf592bead10e912e187159",
+    "src/ports/glibc/sysdeps/xos/getrandom.c": "72717c3fda92feda477027db01ab87a7f70f544103003c7847d11385fe7baa47",
+    "src/ports/native_tls/build_probe.py": "1d0c2f9bd4da7d7d6e220f16b2b5dc2bcb32892ccc05d23808cc49b193a0e6e3",
+    "src/ports/native_tls/mbedtls_xos_config.h": "f34feb5330a8d1e1745bb54155d400f308de330e86e0eb216f9e42d32fe73a87",
+    "src/ports/native_tls/platform.c": "212bdd70c767c881001fbb64effc88d16ebb638aafbda84fdb130c8293118636",
+    "src/ports/native_tls/source_lock.json": "e4aa78dad05aab0f2a31b8b7e80df7bf53faf7a0c23b7df0eff4db16ae6b49a5",
+    "src/ports/native_tls/stream.cpp": "ae0d60aa66be0a9acc6d47ce3ff3895d4c356f6be246f36cda68097766777e4b",
+    "src/ports/native_tls/stream.hpp": "8319d1e0ed498af48d878c9b6a6d738d28673564a9ab9ce6afa3861eca726417",
+    "src/ports/native_tls/tf_psa_crypto_xos_config.h": "69ca59d27157762e5044d63069c6768975844b18edf3556b7776dca797475135",
+    "src/ports/native_tls/trust_store.cpp": "9db02fd4f420f2ea0019459335dfa3745463bb0e91771cb8544be9fa0979df33",
+    "src/ports/native_tls/trust_store.hpp": "6616741d9435f3b99411937d6f54fdfa9bc470ff757ae4f7bc631be4f20220b9",
+    "src/shared/include/xos/net_service_abi.hpp": "8365d89889c7d8bc32318dc56c85fb6ce012aee703e779a3dc37d8a16987091f",
+    "src/user/include/xos/net_service_client.hpp": "5c8fb4a1b803906c10e285fda5caeb0e1fe3f5f3de33dd206bb530b91f1ecb40",
+    "src/user/include/xos/net_transport.hpp": "6f5e7a5ba2cca4ebcec93a43f170adc8e93c385c25098377b259a7d0ac100674",
+    "tests/fixtures/network/native_tls_probe.cpp": "d3979f8489a8a8ba5e3d9724572aaf1c53bdc2d32bd9854a1bcb817d5d91d475"
+  },
+  "network_wire_version": 2,
+  "profile": "native_tls_controlled_guest",
+  "program_headers": [
+    {
+      "alignment": 4096,
+      "file_size": 951334,
+      "flags": 5,
+      "memory_size": 951334,
+      "type": 1,
+      "virtual_address": 1073741824
+    },
+    {
+      "alignment": 4096,
+      "file_size": 352951,
+      "flags": 4,
+      "memory_size": 352951,
+      "type": 1,
+      "virtual_address": 1074696192
+    },
+    {
+      "alignment": 4096,
+      "file_size": 14624,
+      "flags": 6,
+      "memory_size": 46040,
+      "type": 1,
+      "virtual_address": 1075052544
+    },
+    {
+      "alignment": 8,
+      "file_size": 56,
+      "flags": 4,
+      "memory_size": 80,
+      "type": 7,
+      "virtual_address": 1075067112
+    }
+  ],
+  "sanitized_environment": [],
+  "sdk_manifest_artifact": "glibc_sdk_manifest.json",
+  "status": "linked",
+  "test_root_header_sha256": "8ae6906e9cff8cb6928d2ad3725a1823297a84c645930343f3e937defb1b38e0",
+  "tools": {
+    "ar": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+      "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0",
+      "version": "GNU ar (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "as": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+      "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+      "version": "GNU assembler (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "cmake": {
+      "available": true,
+      "path": "${XOS_R1_WORK}/n4_tools/cmake-4.2.0-linux-x86_64/bin/cmake",
+      "sha256": "1b8bffb9e82925587e70a6211d5e539e06133cae978610917e1ed90e111bd208",
+      "version": "cmake version 4.2.0",
+      "version_exit_code": 0
+    },
+    "g++": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0",
+      "version_exit_code": 0
+    },
+    "gcc": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0",
+      "version_exit_code": 0
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "nm": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+      "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f",
+      "version": "GNU nm (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "ranlib": {
+      "available": true,
+      "path": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ranlib",
+      "sha256": "7428cac88865cdb9aa5750f71c66babcddf2c16c925491818ca251becd974216",
+      "version": "GNU ranlib (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    }
+  },
+  "trust_fixture_sha256": "c232903852db9ccf82107a15045dc7a395c7998124c93bfcc1160a1ac51a6d91"
+}

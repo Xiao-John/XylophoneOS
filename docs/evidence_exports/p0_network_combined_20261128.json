@@ -1,0 +1,179 @@
+{
+  "exports": [
+    {
+      "original_sha256": "94f00c8f19f7a6fa98db64b0da2d7c97393723955502967b120e6d8ffcc81472",
+      "output": "docs/reports/p0_network_combined_20261128/system_manifest.json",
+      "public_sha256": "1e9fae3afd9a6ddf079d1b780dcc9b746509dc3060e20c2c98e1341d840c3312",
+      "source": "runtime_sources/integrated_capsule_v2_3699916d/build/system/manifest.json"
+    },
+    {
+      "original_sha256": "ba1996ad0c048d97be53fb532315b2d3909631d37a8f83d456e28312de9b035c",
+      "output": "docs/reports/p0_network_combined_20261128/glibc_sdk_manifest.json",
+      "public_sha256": "07c321300dd8ad4e7bcddfd0217d0ca10946be30572e36cb79d84f3ef6c9ccdb",
+      "source": "r1_work/glibc_c_sdk_v3/manifest.json"
+    },
+    {
+      "original_sha256": "233f7bd23650fc4fcf3aacde4f2d2d58e82a271c64d476a5ed8e2acded610631",
+      "output": "docs/reports/p0_network_combined_20261128/probe_receipt.json",
+      "public_sha256": "19970609f91eae7da57544e50cbbcea99c11ddca09d34253e605f8b1dc2e0fc9",
+      "source": "r1_work/n4_probe_v3/receipt.json"
+    },
+    {
+      "original_sha256": "79af2b0e034f2b5f4cf84bfc83061f13f93724e296c1288b27cf2bdc86d9a494",
+      "output": "docs/reports/p0_network_combined_20261128/host.json",
+      "public_sha256": "48e9c909989b2ac0b050e4d7c38e16157ad335f1b58ab4c5046694d7ee37230a",
+      "source": "r1_work/n4_host/report.json"
+    },
+    {
+      "original_sha256": "424b4f6afc3cdddc175242abb8850aa778d4612ef984ae3ada7c7748734ea6bb",
+      "output": "docs/reports/p0_network_combined_20261128/public_ca_snapshot.json",
+      "public_sha256": "458a9388ca5f6c27390b7ea8437f98f07c60352404d1206c3af1a8f370f40d2f",
+      "source": "r1_work/n4_public_ca_receipt.json"
+    },
+    {
+      "original_sha256": "2e71c5ba4ae8801648652380edadc62a6ef1681e2279b43d428587c4570b4fe1",
+      "output": "docs/reports/p0_network_combined_20261128/guest.json",
+      "public_sha256": "e916b1512f4cc14168cd88d3a6359049646336dd3919fd725738426ccf274fbb",
+      "source": "r1_work/n4_guest_v3/report.json"
+    },
+    {
+      "original_sha256": "977dc5849ad77289531841ca887afe39bc6bf2891ae260fe26068088d5603e43",
+      "output": "docs/reports/p0_network_combined_20261128/guest_serial.log",
+      "public_sha256": "977dc5849ad77289531841ca887afe39bc6bf2891ae260fe26068088d5603e43",
+      "source": "r1_work/n4_guest_v3/guest_serial.log"
+    },
+    {
+      "original_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "output": "docs/reports/p0_network_combined_20261128/guest_qemu.log",
+      "public_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "source": "r1_work/n4_guest_v3/guest_qemu.log"
+    },
+    {
+      "original_sha256": "bcc334ba6d21bd9c58a2f1a0ee8dbafd59fe5ca187820527d402098abe751e0a",
+      "output": "docs/reports/p0_network_combined_20261128/no_entropy_serial.log",
+      "public_sha256": "bcc334ba6d21bd9c58a2f1a0ee8dbafd59fe5ca187820527d402098abe751e0a",
+      "source": "r1_work/n4_guest_v3/no_entropy_serial.log"
+    },
+    {
+      "original_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "output": "docs/reports/p0_network_combined_20261128/no_entropy_qemu.log",
+      "public_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "source": "r1_work/n4_guest_v3/no_entropy_qemu.log"
+    },
+    {
+      "original_sha256": "6d1db9b385a7cba8f6716a4807db2974516d9d6f5f8c2090565a1d33c99dd7b9",
+      "output": "docs/reports/p0_network_combined_20261128/https_adapter_compile.json",
+      "public_sha256": "d88f08a76aca7600daa78a69a2cf41205469b01f26a2aa2cc2f15e9e4d7b5374",
+      "source": "r1_work/n4_probe_v3/https_adapter_compile.json"
+    },
+    {
+      "original_sha256": "2aa07dc9a42aece52c527039b2f2633efbdf9bbba992cc2ffe22627f588c6314",
+      "output": "docs/reports/p0_network_combined_20261128/mbedtls_configure.log",
+      "public_sha256": "e3c4c4e99e09b8b667e676c62599a909e9685fa50f34f7e09070807655617da9",
+      "source": "r1_work/n4_probe_v3/configure.log"
+    },
+    {
+      "original_sha256": "72c18511247ea56b146adcf1913ea86a3f29c35c49116828cd56ca816ce8ef99",
+      "output": "docs/reports/p0_network_combined_20261128/mbedtls_build.log",
+      "public_sha256": "0aec94e1f898ade2c2db10162d96abc4d6dece2a2245748dad25cf596d6eddc4",
+      "source": "r1_work/n4_probe_v3/mbedtls.log"
+    },
+    {
+      "original_sha256": "6be1c2a2ce9389e0e70fee48212eeb0490e92bd99c2e11164f5d009d6f463540",
+      "output": "docs/reports/p0_network_combined_20261128/trust_store_compile.log",
+      "public_sha256": "9d37180dc770b92637ac3add44e9eff412b4ab67ac3279c70ae4d501817fec69",
+      "source": "r1_work/n4_probe_v3/trust_store.log"
+    },
+    {
+      "original_sha256": "944355ec4e6a0f30e4991b5bbd367e11cf7e706b6a74d313a0692f51de2e7710",
+      "output": "docs/reports/p0_network_combined_20261128/probe_link.log",
+      "public_sha256": "1576c807dde679dfbb294b06d03f8a147bbe0e0c2d9564d31837d527d3b66751",
+      "source": "r1_work/n4_probe_v3/link.log"
+    },
+    {
+      "original_sha256": "8cacdcea7a3f16971a4d42efb2ae1f85e20548b6ded5c34ce99ec453a0411843",
+      "output": "docs/reports/p0_network_combined_20261128/input_provenance.json",
+      "public_sha256": "268a48c062502811e2ff79c410299d747735bf271acc3e349d66272c2023c29e",
+      "source": "r1_work/n4_inputs.json"
+    },
+    {
+      "original_sha256": "981869df30a46b5b5f4bbc5cfc7b827f4e61c90876c4a23cfc59350876c6de96",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_system_manifest.json",
+      "public_sha256": "6a0e97c50d1633fdfdb628c8492c92d2e95c6db4643c53c2480d9a9eb3257b8f",
+      "source": "xylophoneos-network/build/combined_3699916d/build/system_dhcp/manifest.json"
+    },
+    {
+      "original_sha256": "87715cfd09a5c348fdeb34b79d1c879ac7b271e293147e820ce6a4a4913d5182",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_lwip_inputs.json",
+      "public_sha256": "87715cfd09a5c348fdeb34b79d1c879ac7b271e293147e820ce6a4a4913d5182",
+      "source": "xylophoneos-network/build/combined_3699916d/build/system_dhcp/net_lwip_inputs.json"
+    },
+    {
+      "original_sha256": "cb8e68cc26302de1a2bcd2e1b8258986666e771ff0dd8a017486e44c76fa8b47",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_probe_receipt.json",
+      "public_sha256": "1abf9d21619ccd3b6de3ce36bc2c8a8f323bb8c929212a62366f5acc4edef776",
+      "source": "xylophoneos-network/build/combined_3699916d/build/probe_dhcp/receipt.json"
+    },
+    {
+      "original_sha256": "4fa751969c8ddde1e20de71a3a9ecbaab8e8b50ba601859c0acfb503e1f3cc22",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_guest.json",
+      "public_sha256": "7dbb964b9b8dc4b1f7a5262e012345ec61173f0b5167a450f738fe3508e1e42e",
+      "source": "r1_work/dhcp_guest_v3/report.json"
+    },
+    {
+      "original_sha256": "cc6bf48a1a1d222da2e95c7ddff41bc26efdb6482256207d69aef7a931328deb",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_serial.log",
+      "public_sha256": "cc6bf48a1a1d222da2e95c7ddff41bc26efdb6482256207d69aef7a931328deb",
+      "source": "r1_work/dhcp_guest_v3/dhcp_serial.log"
+    },
+    {
+      "original_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_qemu.log",
+      "public_sha256": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5",
+      "source": "r1_work/dhcp_guest_v3/dhcp_qemu.log"
+    },
+    {
+      "original_sha256": "84904ebcb9caaee3dcc047cd0f2bf63bff5d7e48fa77840b9229bba179625312",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_source_copy.json",
+      "public_sha256": "d3b0d2069fdc3f35b9b5c0d6a3f6dada1fe14abea47bedf7ef36effd8f2feb97",
+      "source": "r1_work/dhcp_combined_source_copy.json"
+    },
+    {
+      "original_sha256": "5e06490a0b895c7c3735c2c84f169749b4811c7e95ed0b6221bdb0ea95d40788",
+      "output": "docs/reports/p0_network_combined_20261128/first_public_path_check.json",
+      "public_sha256": "d5600717f82274991d1d1b1e37c5362e605f9859ee355c49f7f5c76d39f7166e",
+      "source": "xylophoneos-network/build/network_v3_public_gate.json"
+    },
+    {
+      "original_sha256": "4240c98af28407d45558bcef7eaf0936b991409a319933951d1984f03f9784be",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_system_v3_early_copy_failure.log",
+      "public_sha256": "4240c98af28407d45558bcef7eaf0936b991409a319933951d1984f03f9784be",
+      "source": "r1_work/dhcp_system_v3_early_copy_failure.log"
+    },
+    {
+      "original_sha256": "2d4b706d0b61f7ff48a327c1fbb6057a6cad435d1059c220c678986a2b881a4f",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_system_v3_output_scope_failure.log",
+      "public_sha256": "2d4b706d0b61f7ff48a327c1fbb6057a6cad435d1059c220c678986a2b881a4f",
+      "source": "r1_work/dhcp_system_v3_output_scope_failure.log"
+    },
+    {
+      "original_sha256": "0e0193dc92b64b4b3057d7daf1cb37d0d62327406d2a901070b9e910fb8af2fa",
+      "output": "docs/reports/p0_network_combined_20261128/dhcp_probe_v3_output_scope_failure.log",
+      "public_sha256": "9e9f34e6e0e8f77df8d8a4fac97d16560c8dc0fd4bb30abb82470991465e21e7",
+      "source": "r1_work/dhcp_probe_v3_output_scope_failure.log"
+    }
+  ],
+  "rules": [
+    "Normalize source/build/toolchain/temp roots.",
+    "Keep ordinary raw serial bytes; flat manifest alone hashes published leaves.",
+    "Original-to-public hashes live only in this separate conversion record.",
+    "Retain the DHCP raw capture and full packet decode only locally after upload approval rejection; publish aggregate counts and test conclusions without frames or payload equivalents."
+  ],
+  "withheld_local_capture": {
+    "full_decode_public_export": false,
+    "public_export": false,
+    "reason": "Automatic public-upload approval rejection; original, full decode and read-only safety review preserved locally.",
+    "sha256": "ef40f835af3c515052e2d7d5066d38e3b2902cbbdfb7ec94c385371f85409557",
+    "source": "r1_work/dhcp_guest_v3/network.pcap"
+  }
+}

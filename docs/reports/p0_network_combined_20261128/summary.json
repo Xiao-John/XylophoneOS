@@ -1,0 +1,144 @@
+{
+  "all_glibc_source_inputs_verified": 370,
+  "authenticated_tls_closures": 6,
+  "cases": [
+    "valid",
+    "wrong-name",
+    "unknown-ca",
+    "missing-intermediate",
+    "expired",
+    "truncated",
+    "valid",
+    "store-selftest",
+    "store-tampered",
+    "store-stale",
+    "store-public",
+    "store-valid",
+    "store-second",
+    "store-unknown-ca",
+    "store-wrong-name",
+    "store-expired",
+    "store-removed",
+    "store-updated",
+    "store-rollback",
+    "no_rdrand"
+  ],
+  "certificate_rejections_without_application_request": 8,
+  "commands": [
+    "python3 -B tests/tls_trust_store_test.py --output ${XOS_R1_WORK}/n4_host",
+    "python3 -B scripts/package_tls_trust_store.py --pem ${XOS_INPUT_ROOT}/cacert.pem --source-sha256 427c064216761a1e72a8b30f0d954d08cb6e4435a82091fb865afd20c8497285 --source-url https://curl.se/ca/cacert.pem --generation 20261105 --output ${XOS_R1_WORK}/n4_public_ca.bin",
+    "python3 -B tests/native_tls_guest.py prepare --certificates ${XOS_R1_WORK}/n4_certificates --trust-store --public-trust-store ${XOS_R1_WORK}/n4_public_ca.bin",
+    "python3 -B src/ports/native_tls/build_probe.py --archive ${XOS_INPUT_ROOT}/mbedtls-4.1.1.tar.bz2 --sdk ${XOS_R1_WORK}/glibc_c_sdk_v3 --test-root ${XOS_R1_WORK}/n4_certificates/tls_test_root.h --trust-fixtures ${XOS_R1_WORK}/n4_certificates/tls_trust_fixtures.hpp --output ${XOS_R1_WORK}/n4_probe_v3",
+    "python3 -B tests/native_tls_guest.py test --system ${XOS_NATIVE_SOURCE}/build/system --probe ${XOS_R1_WORK}/n4_probe_v3 --certificates ${XOS_R1_WORK}/n4_certificates --output ${XOS_R1_WORK}/n4_guest_v3",
+    "XOS_LWIP_SOURCE_ARCHIVE=${XOS_INPUT_ROOT}/lwip-2.2.1.tar.xz python3 -B scripts/build.py --output-dir build/system_dhcp --net-dhcp-profile tests/fixtures/network/dhcp_profile.json --quiet-demos-on-launch",
+    "python3 -B scripts/build_net_dhcp_probe.py --sdk build/system_dhcp/sdk --output build/probe_dhcp",
+    "python3 -B tests/net_dhcp_guest.py --system build/system_dhcp --fixtures build/probe_dhcp --output ${XOS_R1_WORK}/dhcp_guest_v3"
+  ],
+  "component_scope": "Native system and libc SDK both bind public source 3699916d; all 370 SDK source inputs also match that frozen tree. Default static and explicit DHCP systems are separately identified.",
+  "dhcp": {
+    "cases": [
+      "renew",
+      "expire",
+      "nak_config_change",
+      "rebind_new_issuer",
+      "malformed",
+      "acd_conflict",
+      "conflict_backoff_recover",
+      "service_restart"
+    ],
+    "dns_epoch_requery_source_addresses": [
+      "10.0.2.15",
+      "10.0.2.16"
+    ],
+    "export_check_development": "Initial supplementary check compared the hexadecimal challenge with printable payload_text; corrected to exact payload_hex and reran. Raw guest/capture bytes were unchanged.",
+    "frames": 197,
+    "image_sha256": "e57f42c382d6364a6e91c4505f2004cb9fc0376d67cb61f411984d5de9a17fc7",
+    "local_capture": {
+      "bytes": 35857,
+      "full_frame_decode_public": false,
+      "public_copy": false,
+      "scope": "Protocol counts and case conclusions only; raw packet data and detailed decode remain local.",
+      "sha256": "ef40f835af3c515052e2d7d5066d38e3b2902cbbdfb7ec94c385371f85409557"
+    },
+    "native_sdk_tree_sha256": "18d2f44b521093b83ccb8fe09e55b1201f86dae695aff18793825c57310464e5",
+    "packet_counts": {
+      "application_udp": 20,
+      "arp": 76,
+      "dhcp": 73,
+      "dns": 28
+    },
+    "pre_build_failures": [
+      "First launcher attempt preceded completion of the owned source copy and rejected the absent fixture argument.",
+      "System builder rejected output outside its build subtree before compiling.",
+      "Probe builder rejected output outside its build subtree before compiling."
+    ],
+    "probe_sha256": "ff7719e2a0c998d41d4b8cbd89d52b1cfbb17880956caeff4375b7f3efff6161",
+    "resources_after": [
+      129769,
+      2,
+      0
+    ],
+    "resources_before": [
+      129769,
+      2,
+      0
+    ],
+    "runtime_failures": [],
+    "source_files_rechecked_against_frozen_3699916d": 2196,
+    "status": "passed_subset",
+    "system_build_id": "be86ebd60698e6d6",
+    "unique_peer_challenges_matched_in_capture_and_guest": 10
+  },
+  "failures_in_this_n4_build_and_guest_run": [],
+  "glibc_source_commit": "3699916df590a2fe0ea9b419836ded2d9344e6b3",
+  "guest_parser_subchecks": 15,
+  "guest_realtime_range": [
+    1795830572,
+    1795830595
+  ],
+  "guest_scenarios": 20,
+  "host_checks": 24,
+  "https_adapter": "Actual production https_transport.cpp compiled with the fresh probe toolchain and flags; full Qt consumer not run",
+  "image_sha256": "94dddaf6da7b8a68617fb8ade2980c91f797eef73f4062d8d9a0d25049edb550",
+  "native_source_commit": "3699916df590a2fe0ea9b419836ded2d9344e6b3",
+  "no_entropy_scope": "Separate cold boot: exited 127 before main and did not connect; no separate post-exit resource counter assertion",
+  "normal_guest_scenarios_with_resource_check": 19,
+  "not_qualified": [
+    "public_CA_online_handshake",
+    "production_trusted_time",
+    "hardware_entropy_qualification",
+    "DNS",
+    "NetworkProcess",
+    "concurrent_tls_callers",
+    "HTTP2_HTTP3",
+    "TLS over the DHCP installation profile",
+    "full ClarkE Qt consumer",
+    "R1 release promotion and receiver materials",
+    "physical NIC or physical power-loss semantics"
+  ],
+  "peer_tls": "OpenSSL 3.6.5 29 Sep 2026",
+  "prior_v2_tls_evidence": "The separate p0_tls_combined_20261128 directory remains frozen and predates the capsule/thread-arena address correction; only this new run qualifies 3699916d.",
+  "probe_sha256": "b451bce6951b13f3222267be4fcaa4e512230de81d34c2c851e9968327e5a66d",
+  "public_snapshot_anchors": 118,
+  "public_snapshot_generation": 20261105,
+  "publication": "Build/guest receipts, serial logs and aggregate test results are public. The DHCP raw capture and full frame/payload decode are retained only locally after automatic approval rejected their public upload; this directory does not provide independent raw-capture reinspection. No alternate encoding is published. No private keys, CA PEM/DER bundles or ELF files are included. Flat manifest alone hashes the published leaves.",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_after_normal_guest_scenarios": [
+    129508,
+    4,
+    2
+  ],
+  "scope": "P0-I network regression at public source 3699916d: sealed DHCP lifecycle and versioned TLS trust stores",
+  "sdk_environment": "XOS SDK Preview 2 ordinary launcher; offline isolation not claimed",
+  "session_date": "2026-11-28",
+  "source_bindings_rechecked_after_guest": {
+    "glibc_sdk_artifacts": 1090,
+    "host_gate_inputs": 2,
+    "https_adapter_inputs": 6,
+    "native_system_sources": 2196,
+    "probe_inputs": 20
+  },
+  "status": "passed_subset",
+  "system_build_id": "c1575e2adfc6fa5d",
+  "target_compile_jobs": 2
+}

@@ -1,0 +1,36 @@
+{
+  "flat_manifest": {
+    "scope": "p0_tls_combined_20261128",
+    "status": "passed"
+  },
+  "public_path_gate": {
+    "findings": [],
+    "source": "Git index against parent HEAD",
+    "status": "PUBLIC_READY"
+  },
+  "repository_report_gate": {
+    "frozen_reports_modified": false,
+    "pre_existing_failures": [
+      "glibc_v2_cpython_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_current_release_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_daily_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_dash_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_gnu_make_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_release_upstream_source_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "mobius_qt_v2_replacement_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_reproducible_20261127: unsafe path or invalid hash in manifest"
+    ],
+    "status": "failed"
+  },
+  "serial_review": "Both complete raw serial logs inspected; only private fresh work disk, synthetic test identities/nonces, public program output and counters. No private keys published.",
+  "source_bindings": "Native system, final C SDK artifact tree, production probe/adapter and host-gate sources rechecked after real guest qualification"
+}

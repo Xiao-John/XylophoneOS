@@ -1,0 +1,45 @@
+{
+  "cmake": {
+    "archive_sha256": "bbcebd4c433eab3af03a8c80bb5d84e8dfc3ff8a4ab9d01547b21240c23f7c2c",
+    "binary_sha256": "1b8bffb9e82925587e70a6211d5e539e06133cae978610917e1ed90e111bd208",
+    "binary_sha_matches_existing_n4_receipt": true,
+    "checksum_file_sha256": "dafca36b3841c3f07c0edfb18eeed03a81bd8be08d9e748f2e0b1374cb988cb9",
+    "scope": "official HTTPS checksum plus prior exact executable digest; no detached signature verification claimed",
+    "upstream_checksum_url": "https://github.com/Kitware/CMake/releases/download/v4.2.0/cmake-4.2.0-SHA-256.txt",
+    "url": "https://github.com/Kitware/CMake/releases/download/v4.2.0/cmake-4.2.0-linux-x86_64.tar.gz"
+  },
+  "mbedtls": {
+    "sha256": "3359a349e23db3d5536fcee032ae7b2ecbfc08972fab643089b5cbf2a375c98c",
+    "source_lock_sha256": "e4aa78dad05aab0f2a31b8b7e80df7bf53faf7a0c23b7df0eff4db16ae6b49a5",
+    "url": "https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-4.1.1/mbedtls-4.1.1.tar.bz2"
+  },
+  "preparation": {
+    "certificates_binding": {
+      "path": "n4_certificates/certificates.json",
+      "scope": "fresh disposable private fixtures; only public identities belong in exported evidence",
+      "sha256": "5743390b7c549ea967ad85ab8b1136d00fd96b88007b5c3b1129a161adf4c05e"
+    },
+    "comparison_integrated_commit": "022b02ce7a41e5739bae6f14fe7ec6d0f5d90790",
+    "final_host_input_equivalence": "Both host-gate input files rechecked against native source 3699916d after the actual guest run",
+    "host_gate": {
+      "artifact": "host.json",
+      "checks": 24,
+      "path": "n4_host/report.json"
+    },
+    "public_snapshot": {
+      "path": "n4_public_ca.bin",
+      "receipt_artifact": "public_ca_snapshot.json",
+      "receipt_path": "n4_public_ca_receipt.json",
+      "sha256": "8bc902a15d7d0a7d1161b26fce999fcb1e7215b2c22003bad935a0abafe8ac29"
+    },
+    "scope": "TLS implementation, native headers, host/guest scripts, packer and clock/random bridge sources compared byte-identical; final full system source binding not yet run",
+    "source_commit": "d70fd3865626d532d538b5c2533de1e5224a4ce5"
+  },
+  "public_ca": {
+    "generation": 20261105,
+    "scope": "existing explicit parser-only fixture digest; no production trust provisioning or online handshake claim",
+    "source_sha256": "427c064216761a1e72a8b30f0d954d08cb6e4435a82091fb865afd20c8497285",
+    "url": "https://curl.se/ca/cacert.pem"
+  },
+  "status": "verified_locked_downloads"
+}

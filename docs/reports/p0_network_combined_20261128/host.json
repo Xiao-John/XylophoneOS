@@ -1,0 +1,107 @@
+{
+  "checks": [
+    {
+      "name": "deterministic sorted CA closure",
+      "status": "passed"
+    },
+    {
+      "name": "exact format identity and count",
+      "status": "passed"
+    },
+    {
+      "name": "generation changes snapshot identity",
+      "status": "passed"
+    },
+    {
+      "name": "empty source",
+      "status": "passed"
+    },
+    {
+      "name": "oversized source",
+      "status": "passed"
+    },
+    {
+      "name": "zero generation",
+      "status": "passed"
+    },
+    {
+      "name": "overflow generation",
+      "status": "passed"
+    },
+    {
+      "name": "boolean generation",
+      "status": "passed"
+    },
+    {
+      "name": "duplicate anchor",
+      "status": "passed"
+    },
+    {
+      "name": "leaf cannot grant trust",
+      "status": "passed"
+    },
+    {
+      "name": "CA without certificate signing usage",
+      "status": "passed"
+    },
+    {
+      "name": "malformed certificate PEM",
+      "status": "passed"
+    },
+    {
+      "name": "unrecognized private-key block",
+      "status": "passed"
+    },
+    {
+      "name": "certificate-count budget",
+      "status": "passed"
+    },
+    {
+      "name": "DER trailing bytes",
+      "status": "passed"
+    },
+    {
+      "name": "malformed DER",
+      "status": "passed"
+    },
+    {
+      "name": "complete publication",
+      "status": "passed"
+    },
+    {
+      "name": "existing generation cannot be overwritten",
+      "status": "passed"
+    },
+    {
+      "name": "failed replacement preserves old bytes",
+      "status": "passed"
+    },
+    {
+      "name": "symlink destination cannot be replaced",
+      "status": "passed"
+    },
+    {
+      "name": "publication temporary files cleaned",
+      "status": "passed"
+    },
+    {
+      "name": "CLI rejects source pin before publishing",
+      "status": "passed"
+    },
+    {
+      "name": "CLI receipt binds real output",
+      "status": "passed"
+    },
+    {
+      "name": "provenance URL cannot contain credentials",
+      "status": "passed"
+    }
+  ],
+  "openssl": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)",
+  "scope": "real_host_openssl_and_snapshot_compiler",
+  "source_sha256": {
+    "scripts/package_tls_trust_store.py": "b84f1dd2a183de89ca5ce895c86d1cf1c7b4a2b35c0290c133acddefebe8475d",
+    "tests/tls_trust_store_test.py": "5b9a79f05fa380ab63b7ef59f4d7b4f78605163bddbb68da5f2f1a30d986b6db"
+  },
+  "status": "passed"
+}

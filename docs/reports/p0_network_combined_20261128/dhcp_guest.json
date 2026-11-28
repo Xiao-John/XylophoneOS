@@ -1,0 +1,819 @@
+{
+  "build_id": "be86ebd60698e6d6",
+  "capture_local_sha256": "ef40f835af3c515052e2d7d5066d38e3b2902cbbdfb7ec94c385371f85409557",
+  "capture_publication": "Retained locally only. Neither the raw packet capture nor full frame/payload decoding is part of this public report. See README.md.",
+  "image_sha256": "e57f42c382d6364a6e91c4505f2004cb9fc0376d67cb61f411984d5de9a17fc7",
+  "manifest_artifact": "dhcp_system_manifest.json",
+  "network_profile": {
+    "acquisition_seconds": 60,
+    "addresses": [
+      "10.0.2.15",
+      "10.0.2.16"
+    ],
+    "egress": [
+      {
+        "cidr": "10.0.2.2/32",
+        "ports": [
+          3333,
+          3333
+        ],
+        "protocol": "udp"
+      }
+    ],
+    "gateways": [
+      "10.0.2.2"
+    ],
+    "max_lease_seconds": 4294967294,
+    "pci_instance": 41,
+    "resolvers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "revision": 1,
+    "servers": [
+      "10.0.2.2",
+      "10.0.2.3"
+    ],
+    "source_sha256": "2a86e93c53ae5d46d8308ad41eb017eae95a8d05b203e4d850c6d4a8c3697cbf",
+    "subnet": "10.0.2.0/24"
+  },
+  "peer_sha256": "d62b8a641615a55b2fd6c7bd816fc6095368aa08ce2ded55ee084846552b853e",
+  "probe_sha256": "ff7719e2a0c998d41d4b8cbd89d52b1cfbb17880956caeff4375b7f3efff6161",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_DHCP_SOURCE}/build/system_dhcp/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_DHCP_WORK_DISK}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "socket,id=xosnet,connect=127.0.0.1:43289",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56",
+    "-object",
+    "filter-dump,id=xos_capture,netdev=xosnet,file=${XOS_R1_WORK}/dhcp_guest_v3/network.pcap"
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "resources_after": [
+    129769,
+    2,
+    0
+  ],
+  "resources_before": [
+    129769,
+    2,
+    0
+  ],
+  "runner_sha256": "d164000b84be8e25f0aadfaabdc2eb9b5efe6beee57f0617808e37ec3476165b",
+  "scenarios": [
+    {
+      "arp_probes": [
+        3819.895163832,
+        3821.4947369,
+        3822.795088927
+      ],
+      "declines": [],
+      "dhcp": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "f139a67b64ac34596582e6251fd1613fb8af6a1cf0756d435ed7a1f4d50ff102",
+          "time": 3819.493146018,
+          "type": 1,
+          "xid": 161835568
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "23adf2312fdcad5fe04f6e52ad64625d53ddafb358d4ab5f9a525172c9a2bcfa",
+          "time": 3819.521087938,
+          "type": 3,
+          "xid": 161835568
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "10.0.2.2",
+          "sha256": "26cbcbd875cb072d96ac4b8b7323b3ff72fc44a3ecdfc581255af7f9bd555bca",
+          "time": 3833.534622651,
+          "type": 3,
+          "xid": 2142237612
+        }
+      ],
+      "dns_answers": [
+        {
+          "name": "live-fb62fdc2d2118a68078f173afee4b21f.dhcp.test",
+          "question_sha256": "46d327e5e16dd0243ae853d014d94dc0e4725344884658710c7f4b9ce6bff46f",
+          "source": "10.0.2.15",
+          "transaction_id": 60479
+        }
+      ],
+      "dns_queries": 1,
+      "injected_malformed": 0,
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=2 state=4 address=167772687 server=167772674 request=22730000000 t1=36730000000 t2=46730000000 expiry=58730000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0"
+      ],
+      "nonce": "fb62fdc2d2118a68078f173afee4b21f",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ],
+      "scenario": "renew",
+      "status": "passed",
+      "udp": [
+        {
+          "challenge": "8770186d594f993e42ce29d81b99b8bba7c1870c0b4b47bfa594cee6cb4432e1",
+          "nonce": "fb62fdc2d2118a68078f173afee4b21f",
+          "payload_sha256": "25c32331efc5daf29e6f9ba3acaa1d932298606f3d04c18c597d89906b98952a",
+          "source": "10.0.2.15"
+        }
+      ]
+    },
+    {
+      "arp_probes": [
+        3834.194081181,
+        3835.293833129,
+        3836.293709332
+      ],
+      "declines": [],
+      "dhcp": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "11a510428741b0bda864190af0681fe1d50aa24d15e88092fb7f5d95ba004703",
+          "time": 3834.104137441,
+          "type": 1,
+          "xid": 323235449
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "5d45e96bd7881cba5c5a6181e3ea3dcb76345898cb0c8eda5fc7af8c3692848a",
+          "time": 3834.106495059,
+          "type": 3,
+          "xid": 323235449
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "10.0.2.2",
+          "sha256": "d4ff42bf66453712899f0a3d356325a806bff817f929a8c98c7666ee2719f9be",
+          "time": 3848.183428976,
+          "type": 3,
+          "xid": 290379762
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "10.0.2.2",
+          "sha256": "d4ff42bf66453712899f0a3d356325a806bff817f929a8c98c7666ee2719f9be",
+          "time": 3850.193109015,
+          "type": 3,
+          "xid": 290379762
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "10.0.2.2",
+          "sha256": "d4ff42bf66453712899f0a3d356325a806bff817f929a8c98c7666ee2719f9be",
+          "time": 3854.194386443,
+          "type": 3,
+          "xid": 290379762
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "255.255.255.255",
+          "sha256": "d4ff42bf66453712899f0a3d356325a806bff817f929a8c98c7666ee2719f9be",
+          "time": 3858.202721082,
+          "type": 3,
+          "xid": 290379762
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "255.255.255.255",
+          "sha256": "d4ff42bf66453712899f0a3d356325a806bff817f929a8c98c7666ee2719f9be",
+          "time": 3859.202441721,
+          "type": 3,
+          "xid": 290379762
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "255.255.255.255",
+          "sha256": "d4ff42bf66453712899f0a3d356325a806bff817f929a8c98c7666ee2719f9be",
+          "time": 3861.203458555,
+          "type": 3,
+          "xid": 290379762
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "255.255.255.255",
+          "sha256": "d4ff42bf66453712899f0a3d356325a806bff817f929a8c98c7666ee2719f9be",
+          "time": 3864.212044493,
+          "type": 3,
+          "xid": 290379762
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "255.255.255.255",
+          "sha256": "d4ff42bf66453712899f0a3d356325a806bff817f929a8c98c7666ee2719f9be",
+          "time": 3868.258040973,
+          "type": 3,
+          "xid": 290379762
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "8629ff49f89e3cdad67ef7825a2929d6a9eb51f0250a9dde3a5b841b7032aacb",
+          "time": 3870.272118389,
+          "type": 1,
+          "xid": 385869945
+        }
+      ],
+      "dns_answers": [
+        {
+          "name": "live-378cc8da04e7951936310285baa1646f.dhcp.test",
+          "question_sha256": "33312ac15062881794f13ffafca250f411ce598409309ed7c7e239db47019bc5",
+          "source": "10.0.2.15",
+          "transaction_id": 23848
+        }
+      ],
+      "dns_queries": 5,
+      "injected_malformed": 0,
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=3 state=1 address=0 server=0 request=0 t1=0 t2=0 expiry=0 reason=5 rejected=0 conflicts=0 starts=2 start_failures=0"
+      ],
+      "nonce": "378cc8da04e7951936310285baa1646f",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ],
+      "scenario": "expire",
+      "status": "passed",
+      "udp": [
+        {
+          "challenge": "8cc0c2e15d0cb80d8dc8f318b72c7789f28258665f5a7f0de75d85bbb4679b5f",
+          "nonce": "378cc8da04e7951936310285baa1646f",
+          "payload_sha256": "a0845f079c4511d09b2454c0bdd225e14cd3879a6817d463d42800230aaa5ce4",
+          "source": "10.0.2.15"
+        }
+      ]
+    },
+    {
+      "arp_probes": [
+        3871.811439397,
+        3873.012502024,
+        3874.311095116,
+        3885.362039944,
+        3887.150265221,
+        3888.950418558
+      ],
+      "declines": [],
+      "dhcp": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "8b0af8707d9c15ad9d33fee0494243899c768231b540e9f9e84a3e9efd40ed3a",
+          "time": 3870.92678926,
+          "type": 1,
+          "xid": 3638652259
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "28522123d4d1570a6ac2038050e5bfc050d758667a2d6d0058abb469363c6596",
+          "time": 3870.930296328,
+          "type": 3,
+          "xid": 3638652259
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "10.0.2.2",
+          "sha256": "bffa26d5017121b9ccd0388244ff83fa2c4312e6e1bb63464acdd92d9a97ec3d",
+          "time": 3884.951620157,
+          "type": 3,
+          "xid": 3867157389
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "b6d6feff3a00b63b9045571f6226406f5483c1d1f3739978c683b03d64bfe2f5",
+          "time": 3884.952793013,
+          "type": 1,
+          "xid": 2682371071
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "52d1e2c6898494a6923ad12b2bf41f6d8422d5e40d8940cb50a66ab25550c093",
+          "time": 3884.953023972,
+          "type": 3,
+          "xid": 2682371071
+        }
+      ],
+      "dns_answers": [
+        {
+          "name": "live-d53701b8494960aab87bb35eba11a90c.dhcp.test",
+          "question_sha256": "6ee89797a0dc91c2d09abba4b3c8367b8a9b2be796b859ce1c56279339132699",
+          "source": "10.0.2.15",
+          "transaction_id": 54393
+        },
+        {
+          "name": "live-d53701b8494960aab87bb35eba11a90c.dhcp.test",
+          "question_sha256": "6ee89797a0dc91c2d09abba4b3c8367b8a9b2be796b859ce1c56279339132699",
+          "source": "10.0.2.16",
+          "transaction_id": 54334
+        }
+      ],
+      "dns_queries": 6,
+      "injected_malformed": 0,
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=4 state=4 address=167772688 server=167772674 request=73950000000 t1=87950000000 t2=97950000000 expiry=109950000000 reason=1 rejected=0 conflicts=0 starts=2 start_failures=0"
+      ],
+      "nonce": "d53701b8494960aab87bb35eba11a90c",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ],
+      "scenario": "nak_config_change",
+      "status": "passed",
+      "udp": [
+        {
+          "challenge": "ed12825d5303d7d4d466afd00e1e8a93079ad87fdcf77f715c26f5b0db84fac9",
+          "nonce": "d53701b8494960aab87bb35eba11a90c",
+          "payload_sha256": "c984c9956e7aa7a7ba9db9a9872bfeae62c1060a6c11971eea44dec67760fe88",
+          "source": "10.0.2.15"
+        },
+        {
+          "challenge": "cfda78d80ca98e3271369a7aa7ea66534e8645aeaa23d4624b77c7d7b1b37d03",
+          "nonce": "d53701b8494960aab87bb35eba11a90c",
+          "payload_sha256": "c984c9956e7aa7a7ba9db9a9872bfeae62c1060a6c11971eea44dec67760fe88",
+          "source": "10.0.2.16"
+        }
+      ]
+    },
+    {
+      "arp_probes": [
+        3894.210196618,
+        3896.118182144,
+        3898.009525019
+      ],
+      "declines": [],
+      "dhcp": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "fb0f6f64d2222b0ad61094082d9f4da032dc16d4f733592aa08d58f918544b3b",
+          "time": 3893.706832826,
+          "type": 1,
+          "xid": 1779799642
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "0b44c5553b343f5aa188709cc7fb2e63861492c3e6f280d35066c3a3816902b3",
+          "time": 3893.716160554,
+          "type": 3,
+          "xid": 1779799642
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "10.0.2.2",
+          "sha256": "8ca0ddbe4ef752986d7c232b5a9b0f532f9fd965fff1419ab86d490173c3e4c4",
+          "time": 3907.768032744,
+          "type": 3,
+          "xid": 3355269194
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "10.0.2.2",
+          "sha256": "8ca0ddbe4ef752986d7c232b5a9b0f532f9fd965fff1419ab86d490173c3e4c4",
+          "time": 3909.746043205,
+          "type": 3,
+          "xid": 3355269194
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "10.0.2.2",
+          "sha256": "8ca0ddbe4ef752986d7c232b5a9b0f532f9fd965fff1419ab86d490173c3e4c4",
+          "time": 3913.740992536,
+          "type": 3,
+          "xid": 3355269194
+        },
+        {
+          "ciaddr": "10.0.2.15",
+          "destination": "255.255.255.255",
+          "sha256": "8ca0ddbe4ef752986d7c232b5a9b0f532f9fd965fff1419ab86d490173c3e4c4",
+          "time": 3917.813145245,
+          "type": 3,
+          "xid": 3355269194
+        }
+      ],
+      "dns_answers": [
+        {
+          "name": "live-955359fdcc3780a927f76d1eb6482db2.dhcp.test",
+          "question_sha256": "dd1c74f528fe2754d38eb17053e1f5798a38c15b28a46baf79e0ac7a76132116",
+          "source": "10.0.2.15",
+          "transaction_id": 45239
+        }
+      ],
+      "dns_queries": 1,
+      "injected_malformed": 0,
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=2 state=4 address=167772687 server=167772675 request=96700000000 t1=110700000000 t2=120700000000 expiry=132700000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0"
+      ],
+      "nonce": "955359fdcc3780a927f76d1eb6482db2",
+      "rebind_same_xid": true,
+      "renew_to_rebind_seconds": 10.045112501000403,
+      "resources_after": [
+        129769,
+        2,
+        0
+      ],
+      "scenario": "rebind_new_issuer",
+      "status": "passed",
+      "udp": [
+        {
+          "challenge": "a0d4a2b45d084d04c76a742ff2be14bc8d402fb63499768a4c6a36c25c223ae3",
+          "nonce": "955359fdcc3780a927f76d1eb6482db2",
+          "payload_sha256": "938d05407a15e82979287418e34fe35cffc6272688010445e76733c6e1369c15",
+          "source": "10.0.2.15"
+        }
+      ]
+    },
+    {
+      "arp_probes": [
+        3918.939444453,
+        3920.738221194,
+        3922.138975566
+      ],
+      "declines": [],
+      "dhcp": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "8bef4aaed44cd341e3314fb5f17e776ce15c6117bb19e1ae23c8ca2a68dfa326",
+          "time": 3918.447781051,
+          "type": 1,
+          "xid": 1758600937
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "348fc7bfb3e4ac999d648e1f803a4acf733450ea50df45f8fe7243e65b3df70d",
+          "time": 3918.450660379,
+          "type": 3,
+          "xid": 1758600937
+        }
+      ],
+      "dns_answers": [
+        {
+          "name": "live-18890ac34d9c16609e2ae04d0c6eb4a7.dhcp.test",
+          "question_sha256": "53d0a3cd6aca68e0e4ab1a260bab97c1c2d8329b4ce7493d451bc558ff943d26",
+          "source": "10.0.2.15",
+          "transaction_id": 47101
+        }
+      ],
+      "dns_queries": 1,
+      "injected_malformed": 4,
+      "native_snapshots": [],
+      "nonce": "18890ac34d9c16609e2ae04d0c6eb4a7",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ],
+      "scenario": "malformed",
+      "status": "passed",
+      "udp": [
+        {
+          "challenge": "82e5f89b93eb73212544659ad138b435552b89331c7ee376731c40a54f9e4679",
+          "nonce": "18890ac34d9c16609e2ae04d0c6eb4a7",
+          "payload_sha256": "2faf6295978035822896bfdd41154ecb6a9d36112aee042a0a9c82ade28fc52a",
+          "source": "10.0.2.15"
+        }
+      ]
+    },
+    {
+      "arp_probes": [
+        3927.308801241
+      ],
+      "declines": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "eb72b30c2a660b34073e93118794a269959afb10f984376a978d712c3cc8a128",
+          "time": 3927.3095271,
+          "type": 4,
+          "xid": 99770263
+        }
+      ],
+      "dhcp": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "0ecede6d00f8db09c7b59b53de8101b97f18806d173ebe599632a0cbd9219352",
+          "time": 3927.115823082,
+          "type": 1,
+          "xid": 1458414795
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "179ea612c2a8f8c2a3dd75e93f87c000e6111f5943645ec410476d904d99c47a",
+          "time": 3927.118509653,
+          "type": 3,
+          "xid": 1458414795
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "eb72b30c2a660b34073e93118794a269959afb10f984376a978d712c3cc8a128",
+          "time": 3927.3095271,
+          "type": 4,
+          "xid": 99770263
+        }
+      ],
+      "dns_answers": [],
+      "dns_queries": 0,
+      "injected_malformed": 0,
+      "native_snapshots": [
+        "DHCP_GUEST_FINAL epoch=1 state=1 address=0 server=0 request=0 t1=0 t2=0 expiry=0 reason=2 rejected=0 conflicts=1 starts=1 start_failures=0"
+      ],
+      "nonce": "4177e62fd3797aecd615f83931d9eaee",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ],
+      "scenario": "acd_conflict",
+      "status": "passed",
+      "udp": []
+    },
+    {
+      "arp_probes": [
+        3928.807563804,
+        3939.016639735,
+        3940.943021336,
+        3942.728179404
+      ],
+      "backoff_seconds": 9.717836335000356,
+      "declines": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "b6354215ae95592d9ac7b3f754d6d304300e386ad654fa0bcb103772a655fc62",
+          "time": 3928.808432088,
+          "type": 4,
+          "xid": 1784538282
+        }
+      ],
+      "dhcp": [
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "5615944f678ebae4c23a48a849a6339596750b6bed2678ed5ac532dc408b73f2",
+          "time": 3928.012755788,
+          "type": 1,
+          "xid": 137167287
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "bcac682c15998df333a858ba7765d6a881b9911a55b1f12b2179f629a9b6e546",
+          "time": 3928.015226678,
+          "type": 3,
+          "xid": 137167287
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "b6354215ae95592d9ac7b3f754d6d304300e386ad654fa0bcb103772a655fc62",
+          "time": 3928.808432088,
+          "type": 4,
+          "xid": 1784538282
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "dc6f54840abc4cd8163f9da5c394e1813600e3ec26892771879e1ccbed823058",
+          "time": 3938.526268423,
+          "type": 1,
+          "xid": 2504585600
+        },
+        {
+          "ciaddr": "0.0.0.0",
+          "destination": "255.255.255.255",
+          "sha256": "1e275370c2c2cff73f7ed723b38013ee09d7b84fa4342f1b5c8a0c76fe2ecafe",
+          "time": 3938.532695019,
+          "type": 3,
+          "xid": 2504585600
+        }
+      ],
+      "dns_answers": [
+        {
+          "name": "live-0c69f70a8a050ee866008b40f5b27e30.dhcp.test",
+          "question_sha256": "cc9da09d73b4b220b5978f241459e1c43198c70c3a7645f38b5a67d8e6fb6649",
+          "source": "10.0.2.15",
+          "transaction_id": 24044
+        }
+      ],
+      "dns_queries": 1,
+      "injected_malformed": 0,
+      "native_snapshots": [],
+      "nonce": "0c69f70a8a050ee866008b40f5b27e30",
+      "resources_after": [
+        129769,
+        2,
+        0
+      ],
+      "scenario": "conflict_backoff_recover",
+      "status": "passed",
+      "udp": [
+        {
+          "challenge": "67ca6919037a30289b5377feb600e9d6217b835902293729e547fa399e9da7e2",
+          "nonce": "0c69f70a8a050ee866008b40f5b27e30",
+          "payload_sha256": "4f1175d1094a14c9a51e7a0ddadbbe8ab2e95592bc9635b0491d3784f6ec5236",
+          "source": "10.0.2.15"
+        }
+      ]
+    },
+    {
+      "new": {
+        "arp_probes": [
+          3955.966217272,
+          3957.562126998,
+          3958.695326525
+        ],
+        "declines": [],
+        "dhcp": [
+          {
+            "ciaddr": "0.0.0.0",
+            "destination": "255.255.255.255",
+            "sha256": "724a4a58d7f362580929d7a7ce9bbab356b3f90acd334e066d63febe2f1217a0",
+            "time": 3955.874237444,
+            "type": 1,
+            "xid": 3075381511
+          },
+          {
+            "ciaddr": "0.0.0.0",
+            "destination": "255.255.255.255",
+            "sha256": "0faa5a7771c46d9f45aa1ea0cb503de8af1f3ff5a876230a52c211e3bfe1562b",
+            "time": 3955.877958676,
+            "type": 3,
+            "xid": 3075381511
+          }
+        ],
+        "dns_answers": [
+          {
+            "name": "live-fd0a34284ac154bea5c9c517d4098a4a.dhcp.test",
+            "question_sha256": "f4fe951eef93bc280e5a03f3ba76c73b73229f471b0a62a727c876a41fbc8b2c",
+            "source": "10.0.2.15",
+            "transaction_id": 3087
+          }
+        ],
+        "dns_queries": 1,
+        "injected_malformed": 0,
+        "nonce": "fd0a34284ac154bea5c9c517d4098a4a",
+        "scenario": "bound",
+        "status": "passed",
+        "udp": [
+          {
+            "challenge": "50aaa8bbc26b390bd1be316a23fda3eee24ae9fdf052a4cbb4fc6869cafa75b2",
+            "nonce": "fd0a34284ac154bea5c9c517d4098a4a",
+            "payload_sha256": "95f9810fade8194446a9919f455c1f643b3ea6b3a03a55127e792cde5ce88d72",
+            "source": "10.0.2.15"
+          }
+        ]
+      },
+      "new_service": 45,
+      "old": {
+        "arp_probes": [
+          3948.566204438,
+          3950.179727724,
+          3951.275949683
+        ],
+        "declines": [],
+        "dhcp": [
+          {
+            "ciaddr": "0.0.0.0",
+            "destination": "255.255.255.255",
+            "sha256": "97d554716812d717de26e57a933dd516eaf3597a95c330e43ffb065327ebaf17",
+            "time": 3947.772601556,
+            "type": 1,
+            "xid": 1760130108
+          },
+          {
+            "ciaddr": "0.0.0.0",
+            "destination": "255.255.255.255",
+            "sha256": "c9981d119acdf800f5feae43c860bc1a009b99d7ba256d66852b19351afe4267",
+            "time": 3947.775873668,
+            "type": 3,
+            "xid": 1760130108
+          }
+        ],
+        "dns_answers": [
+          {
+            "name": "live-f00ccc8f422c28c467b2f91c43aa9cb4.dhcp.test",
+            "question_sha256": "6b668421fdcd72cf68f0ca9cb216c4f1fba43e7933aa2234dcac9299c31e7d9c",
+            "source": "10.0.2.15",
+            "transaction_id": 48700
+          }
+        ],
+        "dns_queries": 1,
+        "injected_malformed": 0,
+        "nonce": "f00ccc8f422c28c467b2f91c43aa9cb4",
+        "scenario": "restart_old",
+        "status": "passed",
+        "udp": [
+          {
+            "challenge": "dcc59db970a5473b64ce2cb47e9ab76dd06ead87a9cf65c8ac8b91238bb80f38",
+            "nonce": "f00ccc8f422c28c467b2f91c43aa9cb4",
+            "payload_sha256": "7e97d5d11011ef952060026a2bef1294d2ffae322fbd642208a26a4adf63e8e4",
+            "source": "10.0.2.15"
+          }
+        ]
+      },
+      "old_service": 42,
+      "resources_after": [
+        129769,
+        2,
+        0
+      ],
+      "scenario": "service_restart",
+      "status": "passed"
+    }
+  ],
+  "sdk_tree_sha256": "18d2f44b521093b83ccb8fe09e55b1201f86dae695aff18793825c57310464e5",
+  "serial_artifact": "dhcp_serial.log",
+  "status": "passed_subset",
+  "warmup": {
+    "arp_probes": [
+      3812.455533469,
+      3813.555360912,
+      3814.655319089
+    ],
+    "declines": [],
+    "dhcp": [
+      {
+        "ciaddr": "0.0.0.0",
+        "destination": "255.255.255.255",
+        "sha256": "0ba9b3786becf81e82aa228a16146e45e5d0d75bd40adf920f0eb574f3382363",
+        "time": 3811.858319528,
+        "type": 1,
+        "xid": 3254519800
+      },
+      {
+        "ciaddr": "0.0.0.0",
+        "destination": "255.255.255.255",
+        "sha256": "c71b379d89cc1a5a3fb6ab8fbfe084587f87a054a259a77e0e11ee463813ae2f",
+        "time": 3811.861015669,
+        "type": 3,
+        "xid": 3254519800
+      }
+    ],
+    "dns_answers": [
+      {
+        "name": "live-f982d72f470772af0097a7ee0069c07c.dhcp.test",
+        "question_sha256": "f68837497b095b6d7ffd3406524ef7b94c7a2c0d262816d554a8bb985b8d0c7e",
+        "source": "10.0.2.15",
+        "transaction_id": 44717
+      }
+    ],
+    "dns_queries": 1,
+    "injected_malformed": 0,
+    "nonce": "f982d72f470772af0097a7ee0069c07c",
+    "scenario": "bound",
+    "status": "passed",
+    "udp": [
+      {
+        "challenge": "5898070e15a3b24dfaaa9e04b6e0ea9da3e01a6334d8117190e3904ff5d273d3",
+        "nonce": "f982d72f470772af0097a7ee0069c07c",
+        "payload_sha256": "6aa70b8858150a78e1fc3910deadf718c188653589342db64b434e90aedacaaf",
+        "source": "10.0.2.15"
+      }
+    ]
+  }
+}

@@ -1,0 +1,394 @@
+{
+  "certificates": {
+    "certificate_generator": "OpenSSL 3.6.5 29 Sep 2026 (Library: OpenSSL 3.6.5 29 Sep 2026)",
+    "public_fixtures": {
+      "expired-chain.pem": "8a2ad4f1af0d09fa539ea7e1b8061cc815875a8f34887ede9ee6e260bb700b3f",
+      "expired.pem": "cf33e32e616991d1b8543aebf977e8b7828886f4e62a28ad9ef7428ad7af1505",
+      "intermediate.pem": "d79109901baef434fecd2af54522021c7c601b8ae84bdb095b068387a21cc1c1",
+      "other-root.pem": "da2f576f1c6d2dffb527e7c32fc5e7aeb7f7e4a773737870105da045c29bf246",
+      "root.pem": "583b7c7f9196173bda1dd60f176c9f7c67ab036ffc0d356c86f01e5d0921af5f",
+      "second-chain.pem": "904974f75312abaa4b7da07024138eb7369e50fddd1d4298c0d25eddf0eb9be7",
+      "second-root.pem": "55ba103d275008a7af6461a8a3652eeff2e1bacde9dc2de9cdbe593bd1a87058",
+      "second.pem": "904974f75312abaa4b7da07024138eb7369e50fddd1d4298c0d25eddf0eb9be7",
+      "unknown-ca-chain.pem": "1478a02e613fd08ae53101c30d37ccfd96f3694c3fcc71ff2a65577d494c7792",
+      "unknown-ca.pem": "1478a02e613fd08ae53101c30d37ccfd96f3694c3fcc71ff2a65577d494c7792",
+      "valid-chain.pem": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "valid.pem": "30e802c864543c5c055a926705457ac3d83cf710721c426ea912a873f07ca33e",
+      "wrong-host-chain.pem": "25ca96d2ba95c211b7e85cd36c8d93ec17fef8e5d7aaa31e869b727ce4c7b6c6",
+      "wrong-host.pem": "2e8568f8c60c6fa4d08991cd55577cae9a231eee59d9a05eea67cfccc8cae21c"
+    },
+    "root_der_sha256": "96e2e292b6037814ed9ffa86c16d6fc299524348dbae668db92eacbf284672e1",
+    "root_header_sha256": "8ae6906e9cff8cb6928d2ad3725a1823297a84c645930343f3e937defb1b38e0",
+    "trust_store_fixtures": {
+      "tls-public-roots.bin": "8bc902a15d7d0a7d1161b26fce999fcb1e7215b2c22003bad935a0abafe8ac29",
+      "tls-roots-1.bin": "6b2966f4404670fb272fb4403dc14c18a39656de2e90073e5856c042bef06ad5",
+      "tls-roots-2.bin": "a328ad98b09ed68d38ff1cf0850bb36fd1c5234fba4ee9a7ed17ef84b2c2cdfe",
+      "tls-roots-bad.bin": "a73ff3373b8d4d133d52140d69042a41f0eebd6f954f278c34aae8ced392795a",
+      "tls_trust_fixtures.hpp": "c232903852db9ccf82107a15045dc7a395c7998124c93bfcc1160a1ac51a6d91"
+    }
+  },
+  "checks": [
+    {
+      "application_request": true,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "guest_realtime": 1795830572,
+      "host_realtime_window": [
+        1795830572,
+        1795830573
+      ],
+      "nonce_sha256": "40402aad9eaf6c3061434762ac7a8aa9731844a6d58982b28c62a1fa26371dfb",
+      "peer_certificate_chain_sha256": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "scenario": "valid",
+      "sni": "tls.xos.test",
+      "verified_leaf_der_sha256": "922dff948361800d0da898d49ae9f3d08d07a5648687720abd53f72e159d30c7",
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": false,
+      "guest": "NATIVE_TLS_REJECT scenario=wrong-name flags=0x00000004",
+      "guest_realtime": 1795830574,
+      "handshake_alert": "SSLV3_ALERT_BAD_CERTIFICATE",
+      "host_realtime_window": [
+        1795830573,
+        1795830575
+      ],
+      "nonce_sha256": "fe3e2abea0b259a072c595628d2aeb6d3af97931ffabfd84678977b1a1c2220a",
+      "peer_certificate_chain_sha256": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "scenario": "wrong-name",
+      "sni": "other.xos.test"
+    },
+    {
+      "application_request": false,
+      "guest": "NATIVE_TLS_REJECT scenario=unknown-ca flags=0x00000008",
+      "guest_realtime": 1795830575,
+      "handshake_alert": "TLSV1_ALERT_UNKNOWN_CA",
+      "host_realtime_window": [
+        1795830575,
+        1795830576
+      ],
+      "nonce_sha256": "333110bef71a26591787b6cdf1fb6872248d42b21d304d5bf4d6a49dbda0d9dc",
+      "peer_certificate_chain_sha256": "1478a02e613fd08ae53101c30d37ccfd96f3694c3fcc71ff2a65577d494c7792",
+      "scenario": "unknown-ca",
+      "sni": "tls.xos.test"
+    },
+    {
+      "application_request": false,
+      "guest": "NATIVE_TLS_REJECT scenario=missing-intermediate flags=0x00000008",
+      "guest_realtime": 1795830576,
+      "handshake_alert": "TLSV1_ALERT_UNKNOWN_CA",
+      "host_realtime_window": [
+        1795830576,
+        1795830577
+      ],
+      "nonce_sha256": "eb988e094aeb6cec493668ff45d1a14ea74988424c3ddfc797d6ca8bdcb7c073",
+      "peer_certificate_chain_sha256": "30e802c864543c5c055a926705457ac3d83cf710721c426ea912a873f07ca33e",
+      "scenario": "missing-intermediate",
+      "sni": "tls.xos.test"
+    },
+    {
+      "application_request": false,
+      "guest": "NATIVE_TLS_REJECT scenario=expired flags=0x00000001",
+      "guest_realtime": 1795830577,
+      "handshake_alert": "SSLV3_ALERT_CERTIFICATE_EXPIRED",
+      "host_realtime_window": [
+        1795830577,
+        1795830578
+      ],
+      "nonce_sha256": "97ab7cf0ab96629e70dbe73060ec9300ac846571e72bc9c68e7128d59642e303",
+      "peer_certificate_chain_sha256": "8a2ad4f1af0d09fa539ea7e1b8061cc815875a8f34887ede9ee6e260bb700b3f",
+      "scenario": "expired",
+      "sni": "tls.xos.test"
+    },
+    {
+      "application_request": true,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "guest": "NATIVE_TLS_REJECT scenario=truncated status=-29312",
+      "guest_realtime": 1795830578,
+      "host_realtime_window": [
+        1795830578,
+        1795830580
+      ],
+      "nonce_sha256": "05e320e996f3254a1d587a41fc8cbff2933a6212efb6cd12ef0faf886eab937b",
+      "peer_certificate_chain_sha256": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "scenario": "truncated",
+      "sni": "tls.xos.test",
+      "verified_leaf_der_sha256": "922dff948361800d0da898d49ae9f3d08d07a5648687720abd53f72e159d30c7",
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": true,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "guest_realtime": 1795830580,
+      "host_realtime_window": [
+        1795830580,
+        1795830581
+      ],
+      "nonce_sha256": "3920889e2f8c49530134a9ee2229a8e728d02d397742ada57756b2fdb2dea4bb",
+      "peer_certificate_chain_sha256": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "scenario": "valid",
+      "sni": "tls.xos.test",
+      "verified_leaf_der_sha256": "922dff948361800d0da898d49ae9f3d08d07a5648687720abd53f72e159d30c7",
+      "version": "TLSv1.3"
+    },
+    {
+      "scenario": "store-selftest",
+      "status": "passed_before_network"
+    },
+    {
+      "scenario": "store-tampered",
+      "status": "passed_before_network"
+    },
+    {
+      "scenario": "store-stale",
+      "status": "passed_before_network"
+    },
+    {
+      "scenario": "store-public",
+      "snapshot_sha256": "8bc902a15d7d0a7d1161b26fce999fcb1e7215b2c22003bad935a0abafe8ac29",
+      "status": "parsed_pinned_CA_snapshot"
+    },
+    {
+      "application_request": true,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "guest_realtime": 1795830585,
+      "host_realtime_window": [
+        1795830585,
+        1795830587
+      ],
+      "nonce_sha256": "e319dcbcb4712124ad2d0329257395354c8ff6b75b03be64099c3be3df818da8",
+      "peer_certificate_chain_sha256": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "scenario": "store-valid",
+      "sni": "tls.xos.test",
+      "verified_leaf_der_sha256": "922dff948361800d0da898d49ae9f3d08d07a5648687720abd53f72e159d30c7",
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": true,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "guest_realtime": 1795830587,
+      "host_realtime_window": [
+        1795830587,
+        1795830588
+      ],
+      "nonce_sha256": "ba94cde1095d2fc83632cccf5811a192715f7e3b2646166d34ecc3574c494919",
+      "peer_certificate_chain_sha256": "904974f75312abaa4b7da07024138eb7369e50fddd1d4298c0d25eddf0eb9be7",
+      "scenario": "store-second",
+      "sni": "tls.xos.test",
+      "verified_leaf_der_sha256": "e4a8c8f4c2ecdf01d67531d7cd4f0e62f85ac602f3dc752824ab5dc89fdcad13",
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": false,
+      "guest": "NATIVE_TLS_REJECT scenario=store-unknown-ca flags=0x00000008",
+      "guest_realtime": 1795830589,
+      "handshake_alert": "TLSV1_ALERT_UNKNOWN_CA",
+      "host_realtime_window": [
+        1795830588,
+        1795830590
+      ],
+      "nonce_sha256": "14b937fbffd102c8972329490873495b5c00d61ec6703df43d20b058c1cbb5d6",
+      "peer_certificate_chain_sha256": "1478a02e613fd08ae53101c30d37ccfd96f3694c3fcc71ff2a65577d494c7792",
+      "scenario": "store-unknown-ca",
+      "sni": "tls.xos.test"
+    },
+    {
+      "application_request": false,
+      "guest": "NATIVE_TLS_REJECT scenario=store-wrong-name flags=0x00000004",
+      "guest_realtime": 1795830590,
+      "handshake_alert": "SSLV3_ALERT_BAD_CERTIFICATE",
+      "host_realtime_window": [
+        1795830590,
+        1795830591
+      ],
+      "nonce_sha256": "6281865f6674fdda458fa57840d9de6d5ce9e8f23cb3220a91434042d33e7623",
+      "peer_certificate_chain_sha256": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "scenario": "store-wrong-name",
+      "sni": "other.xos.test"
+    },
+    {
+      "application_request": false,
+      "guest": "NATIVE_TLS_REJECT scenario=store-expired flags=0x00000001",
+      "guest_realtime": 1795830591,
+      "handshake_alert": "SSLV3_ALERT_CERTIFICATE_EXPIRED",
+      "host_realtime_window": [
+        1795830591,
+        1795830592
+      ],
+      "nonce_sha256": "4454b47a85f763442ac8c0074f2fc3e30736aef7753c8d3daeb0daa2e25d8a0d",
+      "peer_certificate_chain_sha256": "8a2ad4f1af0d09fa539ea7e1b8061cc815875a8f34887ede9ee6e260bb700b3f",
+      "scenario": "store-expired",
+      "sni": "tls.xos.test"
+    },
+    {
+      "application_request": false,
+      "guest": "NATIVE_TLS_REJECT scenario=store-removed flags=0x00000008",
+      "guest_realtime": 1795830592,
+      "handshake_alert": "TLSV1_ALERT_UNKNOWN_CA",
+      "host_realtime_window": [
+        1795830592,
+        1795830593
+      ],
+      "nonce_sha256": "a4d87b2d7d2f61040e97f2aafd3940c43bb71bf349a48dc10128d5189467975b",
+      "peer_certificate_chain_sha256": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "scenario": "store-removed",
+      "sni": "tls.xos.test"
+    },
+    {
+      "application_request": true,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "guest_realtime": 1795830594,
+      "host_realtime_window": [
+        1795830593,
+        1795830595
+      ],
+      "nonce_sha256": "ed54dfd0ad62f19d33f759170c979fbafa97b32ba1c19019343c52b702412883",
+      "peer_certificate_chain_sha256": "904974f75312abaa4b7da07024138eb7369e50fddd1d4298c0d25eddf0eb9be7",
+      "scenario": "store-updated",
+      "sni": "tls.xos.test",
+      "verified_leaf_der_sha256": "e4a8c8f4c2ecdf01d67531d7cd4f0e62f85ac602f3dc752824ab5dc89fdcad13",
+      "version": "TLSv1.3"
+    },
+    {
+      "application_request": true,
+      "cipher": "TLS_AES_256_GCM_SHA384",
+      "client_close_notify": true,
+      "guest": "NATIVE_TLS_HTTPS status=200 bytes=32 close_notify=verified",
+      "guest_realtime": 1795830595,
+      "host_realtime_window": [
+        1795830595,
+        1795830596
+      ],
+      "nonce_sha256": "3453843341afa0fe07f3ba415db5399474af87131ca4e3885585f6425f4333fe",
+      "peer_certificate_chain_sha256": "1f7da3d0aa14ba45297ac68fae64f0c821c8908f76f721b06becdcb0f99b8a58",
+      "scenario": "store-rollback",
+      "sni": "tls.xos.test",
+      "verified_leaf_der_sha256": "922dff948361800d0da898d49ae9f3d08d07a5648687720abd53f72e159d30c7",
+      "version": "TLSv1.3"
+    },
+    {
+      "scenario": "no_rdrand",
+      "startup": "exited_127_before_network"
+    }
+  ],
+  "image_sha256": "94dddaf6da7b8a68617fb8ade2980c91f797eef73f4062d8d9a0d25049edb550",
+  "log_artifacts": [
+    "guest_qemu.log",
+    "guest_serial.log",
+    "no_entropy_qemu.log",
+    "no_entropy_serial.log"
+  ],
+  "not_run": [
+    "public_CA_online_handshake",
+    "production_trusted_time",
+    "hardware_entropy_qualification",
+    "DNS",
+    "NetworkProcess",
+    "concurrent_tls_callers",
+    "HTTP2_HTTP3"
+  ],
+  "peer_tls": "OpenSSL 3.6.5 29 Sep 2026",
+  "probe_receipt_artifact": "probe_receipt.json",
+  "probe_sha256": "b451bce6951b13f3222267be4fcaa4e512230de81d34c2c851e9968327e5a66d",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_NATIVE_SOURCE}/build/system/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_PRIVATE_WORK_DISK}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "qemu_no_entropy_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,-rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_NATIVE_SOURCE}/build/system/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_PRIVATE_WORK_DISK}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback",
+    "-netdev",
+    "user,id=xosnet",
+    "-device",
+    "virtio-net-pci,disable-legacy=on,romfile=,netdev=xosnet,addr=05.0,mac=52:54:00:12:34:56"
+  ],
+  "resources_after_every_exchange": [
+    129508,
+    4,
+    2
+  ],
+  "runner_sha256": "922ddafa23bf3b46079a0e5e7e7a9fb7ecd90367e01c8e39c668af6b517e2dcc",
+  "scope": "controlled_ipv4_user_space_tls13",
+  "sdk_manifest_artifact": "glibc_sdk_manifest.json",
+  "status": "passed_subset",
+  "system_build_id": "c1575e2adfc6fa5d",
+  "system_manifest_artifact": "system_manifest.json",
+  "tls_archive_sha256": "3359a349e23db3d5536fcee032ae7b2ecbfc08972fab643089b5cbf2a375c98c",
+  "trust_store_fixtures": {
+    "tls-public-roots.bin": "8bc902a15d7d0a7d1161b26fce999fcb1e7215b2c22003bad935a0abafe8ac29",
+    "tls-roots-1.bin": "6b2966f4404670fb272fb4403dc14c18a39656de2e90073e5856c042bef06ad5",
+    "tls-roots-2.bin": "a328ad98b09ed68d38ff1cf0850bb36fd1c5234fba4ee9a7ed17ef84b2c2cdfe",
+    "tls-roots-bad.bin": "a73ff3373b8d4d133d52140d69042a41f0eebd6f954f278c34aae8ced392795a",
+    "tls_trust_fixtures.hpp": "c232903852db9ccf82107a15045dc7a395c7998124c93bfcc1160a1ac51a6d91"
+  }
+}

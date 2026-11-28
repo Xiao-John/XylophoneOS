@@ -1,0 +1,12 @@
+{
+  "excluded_generated_outputs": [
+    "build",
+    "native_build.log"
+  ],
+  "normal_system_build_id": "c1575e2adfc6fa5d",
+  "owned_copy": "${XOS_WORKSPACE}/xylophoneos-network/build/combined_3699916d",
+  "parent_system_manifest_artifact": "system_manifest.json",
+  "source_commit": "3699916df590a2fe0ea9b419836ded2d9344e6b3",
+  "source_directory": "${XOS_WORKSPACE}/runtime_sources/integrated_capsule_v2_3699916d",
+  "source_files_verified": 2196
+}

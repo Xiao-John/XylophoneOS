@@ -1,0 +1,130 @@
+${XOS_R1_WORK}/n4_tools/cmake-4.2.0-linux-x86_64/bin/cmake --build ${XOS_R1_WORK}/n4_probe_v2/mbedtls --parallel 2 --target mbedtls
+[  1%] Building C object tf-psa-crypto/drivers/everest/CMakeFiles/everest.dir/library/x25519.c.obj
+[  1%] Building C object tf-psa-crypto/utilities/CMakeFiles/utilities.dir/asn1parse.c.obj
+[  2%] Building C object tf-psa-crypto/drivers/everest/CMakeFiles/everest.dir/library/Hacl_Curve25519_joined.c.obj
+[  2%] Built target everest
+[  2%] Building C object tf-psa-crypto/drivers/p256-m/CMakeFiles/p256-m.dir/p256-m_driver_entrypoints.c.obj
+[  3%] Building C object tf-psa-crypto/drivers/p256-m/CMakeFiles/p256-m.dir/p256-m/p256-m.c.obj
+[  3%] Built target p256-m
+[  3%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/aes.c.obj
+[  4%] Building C object tf-psa-crypto/utilities/CMakeFiles/utilities.dir/asn1write.c.obj
+[  5%] Building C object tf-psa-crypto/utilities/CMakeFiles/utilities.dir/base64.c.obj
+[  6%] Building C object tf-psa-crypto/utilities/CMakeFiles/utilities.dir/constant_time.c.obj
+[  7%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/aesce.c.obj
+[  8%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/aesni.c.obj
+[ 10%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/aria.c.obj
+[ 10%] Building C object tf-psa-crypto/utilities/CMakeFiles/utilities.dir/oid.c.obj
+[ 11%] Building C object tf-psa-crypto/utilities/CMakeFiles/utilities.dir/pem.c.obj
+[ 12%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/bignum.c.obj
+[ 13%] Building C object tf-psa-crypto/utilities/CMakeFiles/utilities.dir/pkcs5.c.obj
+[ 13%] Built target utilities
+[ 14%] Building C object tf-psa-crypto/drivers/pqcp/CMakeFiles/pqcp.dir/src/psa_crypto_mldsa.c.obj
+[ 14%] Building C object tf-psa-crypto/drivers/pqcp/CMakeFiles/pqcp.dir/src/wrap_mldsa_native.c.obj
+[ 14%] Built target pqcp
+[ 15%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/lmots.c.obj
+[ 16%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/lms.c.obj
+[ 16%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/md.c.obj
+[ 17%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/nist_kw.c.obj
+[ 18%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/bignum_core.c.obj
+[ 19%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/pk.c.obj
+[ 20%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/pk_ecc.c.obj
+[ 20%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/bignum_mod.c.obj
+[ 21%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/bignum_mod_raw.c.obj
+[ 22%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/pk_rsa.c.obj
+[ 23%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/block_cipher.c.obj
+[ 24%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/camellia.c.obj
+[ 25%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/pk_wrap.c.obj
+[ 25%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/pkparse.c.obj
+[ 26%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/ccm.c.obj
+[ 27%] Building C object tf-psa-crypto/extras/CMakeFiles/extras.dir/pkwrite.c.obj
+[ 28%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/chacha20.c.obj
+[ 28%] Built target extras
+[ 29%] Building C object tf-psa-crypto/platform/CMakeFiles/platform.dir/memory_buffer_alloc.c.obj
+[ 30%] Building C object tf-psa-crypto/platform/CMakeFiles/platform.dir/platform.c.obj
+[ 31%] Building C object tf-psa-crypto/platform/CMakeFiles/platform.dir/platform_util.c.obj
+[ 32%] Building C object tf-psa-crypto/platform/CMakeFiles/platform.dir/threading.c.obj
+[ 32%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/chacha20_neon.c.obj
+[ 32%] Built target platform
+[ 33%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/chachapoly.c.obj
+[ 34%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/cipher.c.obj
+[ 35%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/cipher_wrap.c.obj
+[ 36%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/cmac.c.obj
+[ 37%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/ctr_drbg.c.obj
+[ 37%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/ecdsa.c.obj
+[ 38%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/ecjpake.c.obj
+[ 39%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/ecp.c.obj
+[ 40%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/ecp_curves.c.obj
+[ 41%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/ecp_curves_new.c.obj
+[ 42%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/entropy.c.obj
+[ 43%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/entropy_poll.c.obj
+[ 43%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/gcm.c.obj
+[ 44%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/hmac_drbg.c.obj
+[ 45%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/md5.c.obj
+[ 46%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/poly1305.c.obj
+[ 47%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_aead.c.obj
+[ 48%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_cipher.c.obj
+[ 48%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_ecp.c.obj
+[ 49%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_ffdh.c.obj
+[ 50%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_hash.c.obj
+[ 51%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_mac.c.obj
+[ 52%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_pake.c.obj
+[ 53%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_rsa.c.obj
+[ 53%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_crypto_xof.c.obj
+[ 54%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/psa_util_internal.c.obj
+[ 55%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/ripemd160.c.obj
+[ 56%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/rsa.c.obj
+[ 57%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/rsa_alt_helpers.c.obj
+[ 58%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/sha1.c.obj
+[ 58%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/sha256.c.obj
+[ 59%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/sha3.c.obj
+[ 60%] Building C object tf-psa-crypto/drivers/builtin/CMakeFiles/builtin.dir/src/sha512.c.obj
+[ 60%] Built target builtin
+[ 61%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/psa_crypto.c.obj
+[ 62%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/psa_crypto_client.c.obj
+[ 63%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/psa_crypto_random.c.obj
+[ 64%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/psa_crypto_slot_management.c.obj
+[ 65%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/psa_crypto_storage.c.obj
+[ 65%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/psa_its_file.c.obj
+[ 66%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/psa_util.c.obj
+[ 67%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/tf_psa_crypto_config.c.obj
+[ 68%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/tf_psa_crypto_version.c.obj
+[ 69%] Building C object tf-psa-crypto/core/CMakeFiles/tfpsacrypto.dir/psa_crypto_driver_wrappers_no_static.c.obj
+[ 70%] Linking C static library libtfpsacrypto.a
+[ 70%] Built target tfpsacrypto
+[ 71%] Building C object library/CMakeFiles/mbedx509.dir/error.c.obj
+[ 71%] Building C object library/CMakeFiles/mbedx509.dir/mbedtls_config.c.obj
+[ 72%] Building C object library/CMakeFiles/mbedx509.dir/pkcs7.c.obj
+[ 73%] Building C object library/CMakeFiles/mbedx509.dir/x509.c.obj
+[ 74%] Building C object library/CMakeFiles/mbedx509.dir/x509_create.c.obj
+[ 75%] Building C object library/CMakeFiles/mbedx509.dir/x509_crl.c.obj
+[ 76%] Building C object library/CMakeFiles/mbedx509.dir/x509_crt.c.obj
+[ 76%] Building C object library/CMakeFiles/mbedx509.dir/x509_csr.c.obj
+[ 77%] Building C object library/CMakeFiles/mbedx509.dir/x509_oid.c.obj
+[ 78%] Building C object library/CMakeFiles/mbedx509.dir/x509write.c.obj
+[ 79%] Building C object library/CMakeFiles/mbedx509.dir/x509write_crt.c.obj
+[ 80%] Building C object library/CMakeFiles/mbedx509.dir/x509write_csr.c.obj
+[ 81%] Linking C static library libmbedx509.a
+[ 81%] Built target mbedx509
+[ 82%] Building C object library/CMakeFiles/mbedtls.dir/debug.c.obj
+[ 83%] Building C object library/CMakeFiles/mbedtls.dir/mps_reader.c.obj
+[ 84%] Building C object library/CMakeFiles/mbedtls.dir/mps_trace.c.obj
+[ 85%] Building C object library/CMakeFiles/mbedtls.dir/net_sockets.c.obj
+[ 85%] Building C object library/CMakeFiles/mbedtls.dir/ssl_cache.c.obj
+[ 86%] Building C object library/CMakeFiles/mbedtls.dir/ssl_ciphersuites.c.obj
+[ 87%] Building C object library/CMakeFiles/mbedtls.dir/ssl_client.c.obj
+[ 88%] Building C object library/CMakeFiles/mbedtls.dir/ssl_cookie.c.obj
+[ 89%] Building C object library/CMakeFiles/mbedtls.dir/ssl_debug_helpers_generated.c.obj
+[ 90%] Building C object library/CMakeFiles/mbedtls.dir/ssl_msg.c.obj
+[ 90%] Building C object library/CMakeFiles/mbedtls.dir/ssl_ticket.c.obj
+[ 91%] Building C object library/CMakeFiles/mbedtls.dir/ssl_tls.c.obj
+[ 92%] Building C object library/CMakeFiles/mbedtls.dir/ssl_tls12_client.c.obj
+[ 93%] Building C object library/CMakeFiles/mbedtls.dir/ssl_tls12_server.c.obj
+[ 94%] Building C object library/CMakeFiles/mbedtls.dir/ssl_tls13_keys.c.obj
+[ 95%] Building C object library/CMakeFiles/mbedtls.dir/ssl_tls13_server.c.obj
+[ 96%] Building C object library/CMakeFiles/mbedtls.dir/ssl_tls13_client.c.obj
+[ 96%] Building C object library/CMakeFiles/mbedtls.dir/ssl_tls13_generic.c.obj
+[ 97%] Building C object library/CMakeFiles/mbedtls.dir/timing.c.obj
+[ 98%] Building C object library/CMakeFiles/mbedtls.dir/version.c.obj
+[ 99%] Building C object library/CMakeFiles/mbedtls.dir/version_features.c.obj
+[100%] Linking C static library libmbedtls.a
+[100%] Built target mbedtls

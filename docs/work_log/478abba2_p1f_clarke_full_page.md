@@ -232,3 +232,43 @@ backend manifest 为
 临时对象生命周期、失败尝试日志保留、WebCore 源/生成树的前后绑定和 QPA 键盘
 入口。WebCore 完整配置现已成功并进入实际 bmalloc、WTF 和原生 LLInt 编译。
 当前完整页面链接、六类 DOM/CSS、Qt scanout 和全部浏览器生命周期仍未完成。
+
+检查点 5 为 `ca093c9d1a5634cad46c6a088a06a7098faf3890`，tree 为
+`3545ae1028c2b18a41e57a5da0171d2a3a075a93`。随后给 diagnostics 导航输出增加
+UI 自身预算的实际查询结果、pages 和 threads，runner 将保留它与全局 free-pages
+的两份顺序快照。每轮已有 worker tasks/completions 与 policy 归零检查，最终
+退出才检查全局页数精确恢复；当前没有用固定页数猜测 Qt 的存活缓存，也没有把
+待跑的逐导航采样当作稳定性通过。真实数据若显示持续增长，必须定位处理。
+
+浏览器 runner 补充两条仍待实际运行的路径：等 renderer 真正完成 WebCore paint
+后按 Esc，以及在同一阶段用下一次导航替换。诊断只打印实际阶段，不引入等待或
+合成画面；runner 要求内核 wait 的 killed outcome、没有完整 frame ACK，并检查
+取消后的实际 scanout 仍等于上一个已确认页面。原请求仍在 broker 中时的取消
+保留为独立用例。完整正常集合因此扩展至 29 次导航。
+
+最终整合采用原应用 producer 与新原生镜像分别绑定的方式。当前只读核对到主线
+`a4d409695c4368a8522a15cb8565fd5905064d72`：process ABI 新增可选 pipe 查询，
+G 保持 Interactium wire v1，C 的动态 capsule v3 不参与 ClarkE 静态 ELF 启动。
+新 `--system-source-root` 对传入原生 manifest 的 boot/kernel/shared/user 和
+ClarkE 控制器所用头文件逐一核验；旧 WebCore/Qt/SDK 的摘要不修改。该兼容判断
+仍须以最终整合镜像上的真实 DOM/Qt/浏览器客体证明。
+
+独立检查发现 QPA `exchange` 原先仅核对 IPC transport 的最大 payload，未核对
+调用者更小的回复缓冲区。现在五个调用都显式传入容量，共用 production decoder
+先核对实际收到的长度、请求对应回复类型和精确 payload 尺寸，再复制并发布输出。
+失败保持调用者的输出不变，不改变 Interactium wire 协议。该修复由本轮 C 线
+协作者实现，保留本线已有 frame receipt 与键盘映射。
+
+在发布 SDK 中用 GCC 16.2.0 实测普通和 ASan/UBSan 各 32 例通过：五种合法消息
+由真实 Interactium dispatcher/service 生成，随后覆盖小 heap/stack 目标、超长、
+截断、错误类型、序列、session 和版本。LSan 在该执行环境关闭，没有泄漏检测
+资格。原始报告 SHA-256 为
+`9810a5cd12feb9dd42328b8986dec09468772489bd5dcd00bd57e98cd19c907d`；
+公开投影和两份逐例日志进入平铺证据目录。该门没有编译整个 Qt 插件或运行客体。
+
+另一次已完成依赖清理前，实际检查活 WebCore 的 `compile_commands.json`、
+`CMakeCache.txt` 与 Ninja 图，确认没有 include/link 路径引用待删目录。只删除
+本线已完成的 ICU、raster、font-backend、WebP、SQLite 可重建源码和中间对象，
+467 个保留项的原始字节前后相同，全部锁源档复核通过；删除 283,621,803 逻辑
+字节。最终 prefixes、归档、probe、许可证、原始日志与每个被删文件的摘要均
+保留，没有改动活 WebCore 源码、生成文件、SDK 或另一条工作线。

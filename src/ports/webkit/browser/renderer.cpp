@@ -53,6 +53,13 @@ int main(int argc, char** argv)
     }
 #endif
     if (!clarke_page::render(document, length, rgba)) return 7;
+    if (config.diagnostics) {
+        // Observe a real completed WebCore paint before its bounded IPC
+        // transfer. The guest may cancel or replace this live renderer; no
+        // test delay or synthetic frame participates in that path.
+        std::printf("CLARKE_RENDERER_PAINTED navigation=%llu\n", static_cast<unsigned long long>(navigation));
+        std::fflush(stdout);
+    }
     packet output{}; output.action = operation::frame_begin; output.navigation = navigation;
     const frame_info info{viewport_width, viewport_height, viewport_width * 4, frame_bytes};
     output.length = sizeof(info); std::memcpy(output.data, &info, sizeof(info));

@@ -296,9 +296,23 @@ private:
             policy.occupied != baseline_revoked_) { fatal_ = true; return false; }
         const auto after = sdk::stats();
         const bool counts = after.tasks == navigation_before_.tasks && after.completions == navigation_before_.completions;
+        process_budget_snapshot ui_budget{};
+        i64 ui_status = process_error_state;
+        if (diagnostics_) {
+            ui_status = sdk::query_process_budget(ui_.pid, ui_budget);
+            if (!ui_status && (ui_budget.version != process_budget_version || ui_budget.size != sizeof(ui_budget) ||
+                ui_budget.pid != ui_.pid || ui_budget.owner_pid != ui_.pid ||
+                !(ui_budget.flags & process_budget_active))) ui_status = process_error_state;
+        }
         sdk::print("CLARKE_NAVIGATION_DONE navigation="); sdk::decimal(navigation_); sdk::print(" result="); sdk::signed_decimal(static_cast<i32>(result));
         sdk::print(" lifetimes_reaped="); sdk::decimal(counts); sdk::print(" revoked="); sdk::decimal(policy.occupied);
-        sdk::print(" free_pages="); sdk::decimal(after.free_pages); sdk::print("\n");
+        sdk::print(" free_pages="); sdk::decimal(after.free_pages);
+        if (diagnostics_) {
+            sdk::print(" ui_budget_status="); sdk::signed_decimal(ui_status);
+            sdk::print(" ui_pages="); sdk::decimal(ui_status ? 0 : ui_budget.usage.pages);
+            sdk::print(" ui_threads="); sdk::decimal(ui_status ? 0 : ui_budget.usage.threads);
+        }
+        sdk::print("\n");
         if (diagnostics_ && !counts) { fatal_ = true; return false; }
         return true;
     }

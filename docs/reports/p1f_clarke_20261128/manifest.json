@@ -19,7 +19,10 @@
     "launch_supervisor_strip.json": "971925d82464c64eef7808883352644eed703e83edf7a5f89a30a4b540ebd52b",
     "net_client_host.log": "719f12921083acaf0598425f4ee9d09dca6c6a3e9467eb6d174002f1348f4e69",
     "net_service_host.log": "6614b4eb819bb25af82e8a7f5065e3a0959706cee23c8d2593315b56bedf8d9a",
-    "qualification.json": "a2cf781c460659995818ab3bcdab1be12ed33c215c252680abf89ea2131a6531",
+    "qpa_reply_host.json": "7a02514faf3ed43d1e5b209dabe19c0aca3451705f6d8a18a1a3c5c1bb2740f4",
+    "qpa_reply_ordinary.log": "623c8b8707b14163db182dfa314d20ea89f04be0fe8ec8e241fe9f3fb56740e7",
+    "qpa_reply_sanitized.log": "623c8b8707b14163db182dfa314d20ea89f04be0fe8ec8e241fe9f3fb56740e7",
+    "qualification.json": "588e202c2d913333e168321afd84b22bc5eda8d7ebb29a6269f827721d1a7b9b",
     "temporary_archive_probe.json": "9e364e13ed5ec7c7884d5ce1c381d4113676c5cbe0581b09c71e3a6822936f8c"
   },
   "version": 1

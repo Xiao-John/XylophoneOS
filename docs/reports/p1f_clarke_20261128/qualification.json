@@ -40,6 +40,14 @@
     "real_lwip_scenarios": 33,
     "status": "passed"
   },
+  "qpa_reply_host": {
+    "asan_ubsan_cases": 32,
+    "full_qt_plugin": "not_built_by_this_host_gate",
+    "guest": "not_run",
+    "leak_sanitizer": "not_qualified",
+    "ordinary_cases": 32,
+    "status": "passed_subset"
+  },
   "qt_viewport_guest": "not_run",
   "sdk": {
     "p1f-c-sdk": {

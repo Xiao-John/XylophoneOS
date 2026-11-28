@@ -116,6 +116,18 @@ ordinary broker succeeds, unauthorized operation-21 release refusal, more than
 16 real navigation lifetimes, cancel and renderer fault cleanup, and process
 and policy capacity recovery. DOM/CSS fixture geometry and pixels come from
 actual WebCore and viewport evidence comes from actual Qt scanout.
+Cancellation covers both an outstanding broker request and a renderer which
+has completed actual WebCore painting but has not completed frame transfer.
+Replacement navigation also retires that live renderer. Diagnostic paint
+markers add no delay; successful cancellation requires the actual kernel wait
+outcome to be killed, no frame acceptance, and retained visible page pixels.
+Per-navigation global free pages and live UI domain usage are recorded
+separately; final teardown equality does not establish navigation stability.
+
+Application libraries and the native image may have separate frozen producers
+when their consumed ABI remains compatible. Qualification verifies each
+producer's original hashes and runs that exact combination. It never rewrites
+an old library manifest to claim newer native inputs.
 
 Two isolated compile flags exercise real failure boundaries:
 `XOS_LOADER_TEST_BAD_START_ENTRY` changes the post-prepare entry to unmapped zero,

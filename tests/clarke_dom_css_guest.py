@@ -11,6 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'scripts'),str(ROOT/'tests')]
 from boot_smoke import Guest
+from clarke_native_inputs import native_inputs
 from make_work_disk import create_fat32
 from process_smoke import command,resources
 from task_smoke import send_bytes,pump
@@ -34,6 +35,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ('system','bundle','output'):
         parser.add_argument('--'+name,required=True,type=lambda value:Path(value).resolve())
+    parser.add_argument('--system-source-root',default=ROOT,type=lambda value:Path(value).resolve())
     args=parser.parse_args()
     system=json.loads((args.system/'manifest.json').read_bytes())
     bundle=json.loads((args.bundle/'manifest.json').read_bytes())
@@ -42,6 +44,7 @@ def main():
         if digest(args.bundle/name)!=bundle['artifacts'][name]: raise ValueError('bundle artifact mismatch: '+name)
     image=args.system/'xos-install.iso'
     if digest(image)!=system['artifacts'][image.name]['sha256']: raise ValueError('ISO mismatch')
+    native=native_inputs(system,args.system_source_root)
     cases=('box','flex','grid','cascade','clip','text')
     fixtures=ROOT/'tests/fixtures/webkit/dom_css'
     for name in cases:
@@ -60,7 +63,8 @@ def main():
     wrong.write_bytes(body.replace(b'background:red',b'background:blue'))
     transfer(disk,'import','/fixtures/wrong.html',wrong)
     report={'status':'failed','runner_sha256':digest(Path(__file__)),'system_manifest_sha256':digest(args.system/'manifest.json'),
-            'bundle_manifest_sha256':digest(args.bundle/'manifest.json'),'elf_sha256':digest(args.bundle/'dom_css.elf'),'cases':[]}
+            'bundle_manifest_sha256':digest(args.bundle/'manifest.json'),'elf_sha256':digest(args.bundle/'dom_css.elf'),
+            'native_inputs':native,'native_input_verifier_sha256':digest(ROOT/'tests/clarke_native_inputs.py'),'cases':[]}
     guest=None
     try:
         guest=Guest(image,'clarke_dom_css',work_disk=disk,log_dir=args.output)

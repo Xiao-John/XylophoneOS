@@ -21,6 +21,7 @@
 #include <private/qfreetypefontdatabase_p.h>
 #include "qeventdispatcher_xos_p.h"
 #include "frame_receipt.hpp"
+#include "interactium_reply.hpp"
 #include <xos/interactium_abi.hpp>
 #include <xos/process_abi.hpp>
 #include <xos/sdk.hpp>
@@ -142,7 +143,7 @@ class interactium_connection {
                       const void* payload, xos::u32 payload_length,
                       const xos::u8* data, xos::u32 data_length,
                       xos::interactium::wire_header& reply, xos::u8* reply_payload,
-                      xos::u32& reply_length, bool hello = false) {
+                      xos::u32 reply_capacity, xos::u32& reply_length, bool hello = false) {
         using namespace xos;
         using namespace xos::interactium;
         const u64 total = sizeof(wire_header) + u64(payload_length) + data_length;
@@ -164,17 +165,8 @@ class interactium_connection {
             sdk::ipc_wait(channel_.receive, ipc_wait_mode::receive) != 0) return process_error_state;
         alignas(8) u8 response[process_pipe_bytes]{};
         const i64 received = sdk::ipc_recv(channel_.receive, response, sizeof(response));
-        if (received < static_cast<i64>(sizeof(wire_header))) return process_error_state;
-        for (u32 i = 0; i < sizeof(reply); ++i)
-            reinterpret_cast<u8*>(&reply)[i] = response[i];
-        if (reply.version != protocol_version || reply.size != static_cast<u32>(received) ||
-            reply.sequence != header.sequence || reply.payload_length !=
-                static_cast<u32>(received) - sizeof(wire_header) || reply.session !=
-                (hello ? reply.session : session_) || reply_payload == nullptr ||
-            reply.payload_length > process_pipe_bytes - sizeof(wire_header)) return process_error_invalid;
-        reply_length = reply.payload_length;
-        for (u32 i = 0; i < reply_length; ++i) reply_payload[i] = response[sizeof(wire_header) + i];
-        return 0;
+        return xos::qt::decode_interactium_reply(response, received, header, reply,
+                                                reply_payload, reply_capacity, reply_length);
     }
 
     xos::i64 status_call(xos::interactium::message_type type, xos::u64 object,
@@ -185,7 +177,7 @@ class interactium_connection {
         u8 body[sizeof(input_payload)]{};
         u32 body_length = 0;
         const i64 rc = exchange(type, object, payload, length, nullptr, 0,
-                                reply, body, body_length);
+                                reply, body, sizeof(body), body_length);
         if (rc != 0) return rc;
         if (reply.type != message_type::ack || body_length != sizeof(status_payload))
             return process_error_invalid;
@@ -209,7 +201,7 @@ public:
         u8 body[sizeof(hello_reply_payload)]{};
         u32 body_length = 0;
         const i64 rc = exchange(message_type::hello, 0, &hello, sizeof(hello), nullptr, 0,
-                                reply, body, body_length, true);
+                                reply, body, sizeof(body), body_length, true);
         if (rc != 0 || reply.type != message_type::hello_reply ||
             body_length != sizeof(hello_reply_payload)) return process_error_state;
         hello_reply_payload hello_reply{};
@@ -233,7 +225,7 @@ public:
                                            u32(geometry.height()), window_role::normal, 0, 0};
         wire_header reply{}; u8 body[sizeof(status_payload)]{}; u32 length = 0;
         const i64 rc = exchange(message_type::create_window, 0, &create, sizeof(create), nullptr, 0,
-                                reply, body, length);
+                                reply, body, sizeof(body), length);
         if (rc != 0 || reply.type != message_type::ack || length != sizeof(status_payload))
             return process_error_state;
         status_payload status{};
@@ -262,7 +254,7 @@ public:
         using namespace xos::interactium;
         wire_header reply{}; u8 body[sizeof(status_payload)]{}; u32 reply_length = 0;
         const i64 rc = exchange(message_type::write_tile, id, &tile, sizeof(tile), pixels, length,
-                                reply, body, reply_length);
+                                reply, body, sizeof(body), reply_length);
         if (rc != 0 || reply.type != message_type::ack || reply_length != sizeof(status_payload))
             return process_error_state;
         status_payload status{};
@@ -278,7 +270,7 @@ public:
         using namespace xos::interactium;
         wire_header reply{}; u8 body[sizeof(input_payload)]{}; u32 length = 0;
         const i64 rc = exchange(message_type::input, id, nullptr, 0, nullptr, 0,
-                                reply, body, length);
+                                reply, body, sizeof(body), length);
         if (rc != 0) return rc;
         if (reply.type == message_type::ack && length == sizeof(status_payload)) {
             status_payload status{};

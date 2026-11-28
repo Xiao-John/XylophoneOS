@@ -16,6 +16,7 @@ import threading
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'tests')]
 from boot_smoke import Guest
+from clarke_native_inputs import native_inputs
 from make_work_disk import create_fat32
 from process_smoke import command,resources
 from task_smoke import pump,send_bytes
@@ -108,22 +109,61 @@ def completed(guest,navigation,start,result=0):
     if found!=prefix:raise AssertionError('browser controller failed: '+repr(bytes(guest.output)[start:]))
     guest.expect(b'free_pages=',start=start,timeout=10);pump(guest,0.1)
     row=bytes(guest.output)[start:]
+    # A replacement navigation may already start while the observer consumes
+    # the prior cancellation. Keep each native lifetime's diagnostic span.
+    previous=re.search(rb'CLARKE_NAVIGATION_DONE navigation='+str(navigation-1).encode()+rb' [^\n]*\n',row)
+    if previous:row=row[previous.end():]
+    following=re.search(rb'CLARKE_PREPARED navigation='+str(navigation+1).encode()+rb' ',row)
+    if following:row=row[:following.start()]
     match=re.search(rb'CLARKE_NAVIGATION_DONE navigation='+str(navigation).encode()+
         rb' result=(-?\d+) lifetimes_reaped=(\d+) revoked=(\d+) free_pages=(\d+)',row)
     if not match or tuple(map(int,match.groups()[:3]))!=(result,1,0):raise AssertionError('navigation did not restore policy/process capacity')
-    if result in (0,-5):
-        raw=re.findall(rb'CLARKE_RENDERER_RAW_NET connect=(-?\d+) request=(-?\d+)',row)
-        if len(raw)!=1 or int(raw[0][1]) not in (-202,-206):raise AssertionError('renderer raw net2 was not actually denied')
-        if f'CLARKE_BROKER_POLICY navigation={navigation} live=0 release=-202'.encode() not in row:
-            raise AssertionError('live ordinary broker or unauthorized release control failed')
     presented=re.findall(rb'CLARKE_VIEWPORT_PRESENT navigation='+str(navigation).encode()+
         rb' x=(\d+) y=(\d+) width=320 height=180 frame=(\d+) sha256=([0-9a-f]{64})',row)
     if len(presented)!=(1 if result==0 else 0):raise AssertionError('unexpected viewport frame acknowledgement')
     prepared=[{'role':int(role),'pid':int(pid),'domain':int(domain),'pages':int(pages),'threads':int(threads),'revoked':int(revoked)}
         for role,pid,domain,pages,threads,revoked in re.findall(rb'CLARKE_PREPARED navigation='+str(navigation).encode()+
         rb' role=(\d+) pid=(\d+) domain=(\d+) pages=(\d+) threads=(\d+) revoked=(\d+)',row)]
-    return {'navigation':navigation,'result':result,'free_pages':int(match[4]),'prepared':prepared,
+    if result in (0,-5) or any(item['role']==3 for item in prepared):
+        raw=re.findall(rb'CLARKE_RENDERER_RAW_NET connect=(-?\d+) request=(-?\d+)',row)
+        if len(raw)!=1 or int(raw[0][1]) not in (-202,-206):raise AssertionError('renderer raw net2 was not actually denied')
+        if f'CLARKE_BROKER_POLICY navigation={navigation} live=0 release=-202'.encode() not in row:
+            raise AssertionError('live ordinary broker or unauthorized release control failed')
+    reaped=[{'role':int(role),'pid':int(pid),'outcome':int(outcome),'code':int(code)}
+        for role,pid,outcome,code in re.findall(rb'CLARKE_REAPED navigation='+str(navigation).encode()+
+        rb' role=(\d+) pid=(\d+) outcome=(\d+) code=(-?\d+)',row)]
+    if sorted((item['role'],item['pid']) for item in prepared)!=sorted((item['role'],item['pid']) for item in reaped):
+        raise AssertionError('a prepared worker lacks its actual successful wait')
+    ui=re.search(rb'ui_budget_status=(-?\d+) ui_pages=(\d+) ui_threads=(\d+)',row)
+    if not ui or int(ui[1])!=0 or not 0<int(ui[2])<=32768 or not 0<int(ui[3])<=4:
+        raise AssertionError('live UI budget measurement failed')
+    return {'navigation':navigation,'result':result,'free_pages':int(match[4]),'prepared':prepared,'reaped':reaped,
+            'ui_budget':{'pages':int(ui[2]),'threads':int(ui[3]),
+                         'measurement':'kernel domain query after global process-stats sample'},
             'presentation':[value.decode() for value in presented[0]] if presented else None}
+
+
+def painted(guest,navigation,start):
+    marker=f'CLARKE_RENDERER_PAINTED navigation={navigation}\n'.encode()
+    failed=f'CLARKE_NAVIGATION_DONE navigation={navigation} '.encode()
+    if guest.expect_any((marker,failed,b'CLARKE_SESSION_FAILED'),start=start,timeout=120)!=marker:
+        raise AssertionError('renderer did not reach actual WebCore paint before interruption')
+    if failed in bytes(guest.output)[start:]:
+        raise AssertionError('renderer interruption arrived after navigation completion')
+
+
+def interrupted_renderer(guest,record,start):
+    navigation=record['navigation'];row=bytes(guest.output)[start:]
+    actual=[item for item in record['reaped'] if item['role']==3]
+    if len(actual)!=1 or actual[0]['outcome']!=3:
+        raise AssertionError('painted renderer was not actually cancelled and reaped')
+    if f'CLARKE_RENDERER_PAINTED navigation={navigation}\n'.encode() not in row:
+        raise AssertionError('missing actual WebCore paint before cancellation')
+    if f'CLARKE_BROKER_POLICY navigation={navigation} live=0 release=-202'.encode() not in row:
+        raise AssertionError('ordinary broker control did not precede renderer cancellation')
+    if f'CLARKE_RENDERER_FRAME navigation={navigation} '.encode() in row:
+        raise AssertionError('cancelled renderer already completed frame delivery')
+    record['interruption_stage']='actual WebCore paint completed; frame transfer not acknowledged'
 
 
 def capture(guest,record,reference,output):
@@ -139,6 +179,12 @@ def capture(guest,record,reference,output):
     if sha256(rgba).hexdigest()!=rgba_hash:raise AssertionError('IPC frame hash differs from actual WebCore pixels')
     record['scanout']={'file':path.name,'sha256':digest(path),'reference_sha256':digest(reference),
                        'exact_pixels':True,'frame_serial':int(serial),'x':x,'y':y}
+
+
+def retained_capture(guest,record,previous,reference,output):
+    observed={'navigation':record['navigation'],'presentation':previous['presentation']}
+    capture(guest,observed,reference,output)
+    record['retained_scanout']={**observed['scanout'],'from_navigation':previous['navigation']}
 
 
 def https_peer(certificates,policy,body):
@@ -173,6 +219,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ('system','bundle','dom-results','certificates','output'):
         parser.add_argument('--'+name,required=True,type=lambda value:Path(value).resolve())
+    parser.add_argument('--system-source-root',default=ROOT,type=lambda value:Path(value).resolve())
     parser.add_argument('--mode',choices=('normal','fault'),default='normal');args=parser.parse_args()
     system=json.loads((args.system/'manifest.json').read_bytes());bundle=json.loads((args.bundle/'manifest.json').read_bytes())
     dom=json.loads((args.dom_results/'report.json').read_bytes());selected=system['clarke']
@@ -184,10 +231,7 @@ def main():
     if fault!=(2 if args.mode=='fault' else 0):raise ValueError('incorrect isolated renderer fault profile')
     image=args.system/'xos-install.iso'
     if digest(image)!=system['artifacts'][image.name]['sha256']:raise ValueError('native image changed')
-    for name in ('src/user/programs/clarke_session.hpp','src/user/include/xos/execution.hpp','src/user/loader/load.cpp',
-                 'src/shared/include/xos/net_service_abi.hpp','src/user/network/service_core.cpp',
-                 'src/kernel/platform/pc/pci.cpp','src/kernel/arch/x86_64/paging.cpp'):
-        if digest(ROOT/name)!=system['sources'][name]:raise ValueError('qualified system source changed: '+name)
+    native=native_inputs(system,args.system_source_root)
     args.output.mkdir(parents=True,exist_ok=False);disk=args.output/'browser.img';create_fat32(disk,512)
     for directory in ('/usr','/usr/bin','/usr/libexec','/usr/libexec/clarke','/usr/share','/usr/share/fonts','/usr/share/fonts/clarke'):
         transfer(disk,'mkdir',directory)
@@ -204,7 +248,8 @@ def main():
         if digest(args.dom_results/(name+'.ppm'))!=dom['ppm'][name]['sha256']:raise ValueError('DOM reference image changed')
     report={'status':'failed','mode':args.mode,'runner_sha256':digest(Path(__file__)),
         'bundle_manifest_sha256':digest(args.bundle/'manifest.json'),'system_manifest_sha256':digest(args.system/'manifest.json'),
-        'dom_report_sha256':digest(args.dom_results/'report.json'),'image_sha256':digest(image),'navigations':[]}
+        'dom_report_sha256':digest(args.dom_results/'report.json'),'image_sha256':digest(image),
+        'native_inputs':native,'native_input_verifier_sha256':digest(ROOT/'tests/clarke_native_inputs.py'),'navigations':[]}
     guest=None;peer=http_peer()
     try:
         guest=Guest(image,'clarke_browser',work_disk=disk,network=True,log_dir=args.output)
@@ -249,10 +294,26 @@ def main():
                 record=completed(guest,navigation,start,result);peer.finish(item)
                 if not result:capture(guest,record,args.dom_results/(name+'.ppm'),args.output)
                 report['navigations'].append(record)
+            previous=report['navigations'][-1]
+            item=peer.add('cancel-painted-renderer',bodies['box']);start=len(guest.output);stroke(guest,'f5')
+            painted(guest,25,start);stroke(guest,'esc')
+            record=completed(guest,25,start,-1);interrupted_renderer(guest,record,start);peer.finish(item)
+            retained_capture(guest,record,previous,args.dom_results/'grid.ppm',args.output)
+            report['navigations'].append(record)
+            item=peer.add('recover-after-renderer-cancel',bodies['flex']);start=len(guest.output);stroke(guest,'f5')
+            record=completed(guest,26,start);peer.finish(item);capture(guest,record,args.dom_results/'flex.ppm',args.output)
+            report['navigations'].append(record)
+            item=peer.add('replace-painted-renderer',bodies['grid']);start=len(guest.output);stroke(guest,'f5')
+            painted(guest,27,start)
+            replacement=peer.add('replacement-navigation',bodies['text']);stroke(guest,'f5')
+            record=completed(guest,27,start,-1);interrupted_renderer(guest,record,start);peer.finish(item)
+            report['navigations'].append(record)
+            record=completed(guest,28,start);peer.finish(replacement);capture(guest,record,args.dom_results/'text.ppm',args.output)
+            report['navigations'].append(record)
             policy=bundle['network_policy']['https']
             if digest(args.certificates/'clarke-root.der')!=policy['ca_sha256']:raise ValueError('HTTPS fixture trust anchor changed')
             worker,tls=https_peer(args.certificates,policy,bodies['text']);start=len(guest.output)
-            address(guest,policy['origin']+'/fixture.html');record=completed(guest,25,start)
+            address(guest,policy['origin']+'/fixture.html');record=completed(guest,29,start)
             worker.join(5)
             if worker.is_alive() or 'error' in tls or not tls.get('bidirectional_close_notify') or tls.get('sni')!=policy['host']:
                 raise AssertionError('full browser HTTPS peer failed: '+repr(tls))

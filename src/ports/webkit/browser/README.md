@@ -42,7 +42,8 @@ python3 src/ports/webkit/browser/build_target.py \
   --qt "$QT_TARGET" --host-qt "$QT_HOST_TARGET" --openssl "$OPENSSL_TARGET" \
   --tls-origin "$TLS_ORIGIN" --tls-address "$TLS_IPV4" --tls-root-der "$TLS_CA_DER" \
   --output "$BROWSER_TARGET" --jobs 2
-python3 scripts/build.py --output-dir "$SYSTEM_TARGET" --clarke-bundle "$BROWSER_TARGET"
+XOS_LWIP_SOURCE_ARCHIVE="$LWIP_ARCHIVE" python3 scripts/build.py \
+  --output-dir "$SYSTEM_TARGET" --clarke-bundle "$BROWSER_TARGET"
 ```
 
 WebCore 的 `--temporary-objects` 可指定当前 SDK 私有临时盘中的独立目录，以普通
@@ -73,24 +74,35 @@ Enter/F5 或 Go 导航、Esc 或 Cancel 取消、Ctrl+Q 退出。每次导航使
 
 真实验收先执行六类 DOM/CSS 夹具、几何/像素断言和错误颜色负例，再把 Qt 实际
 scanout 与独立 WebCore PPM 逐像素比较。正常浏览器 runner 检查超过 16 次导航、
-取消、HTTP 截断、恢复和完整 HTTPS。独立 renderer fault bundle 只在第二次
+网络请求中的取消、实际 WebCore paint 后帧传输中的 renderer 取消和导航替换、
+HTTP 截断、恢复和完整 HTTPS。取消后的页面像素须保持上次已确认的页面。
+独立 renderer fault bundle 只在第二次
 导航执行真实 trap，随后验证第三次导航恢复；生产 bundle 不含该编译分支。
 
 ```sh
 XOS_QMP_TRANSPORT=pipe python3 tests/clarke_dom_css_guest.py \
-  --system "$SYSTEM_TARGET" --bundle "$BROWSER_TARGET" --output "$DOM_GUEST"
+  --system "$SYSTEM_TARGET" --system-source-root "$SYSTEM_SOURCE_ROOT" \
+  --bundle "$BROWSER_TARGET" --output "$DOM_GUEST"
 XOS_QMP_TRANSPORT=pipe python3 tests/clarke_browser_guest.py \
-  --system "$SYSTEM_TARGET" --bundle "$BROWSER_TARGET" --dom-results "$DOM_GUEST" \
+  --system "$SYSTEM_TARGET" --system-source-root "$SYSTEM_SOURCE_ROOT" \
+  --bundle "$BROWSER_TARGET" --dom-results "$DOM_GUEST" \
   --certificates "$TLS_FIXTURES" --output "$BROWSER_GUEST" --mode normal
 python3 src/ports/webkit/browser/build_fault_bundle.py \
   --bundle "$BROWSER_TARGET" --sdk-build "$CXX_SDK" --sdk-profile "$SDK_PROFILE" \
   --fault-navigation 2 --output "$FAULT_BROWSER_TARGET"
-python3 scripts/build.py --output-dir "$FAULT_SYSTEM_TARGET" --clarke-bundle "$FAULT_BROWSER_TARGET"
+XOS_LWIP_SOURCE_ARCHIVE="$LWIP_ARCHIVE" python3 scripts/build.py \
+  --output-dir "$FAULT_SYSTEM_TARGET" --clarke-bundle "$FAULT_BROWSER_TARGET"
 XOS_QMP_TRANSPORT=pipe python3 tests/clarke_browser_guest.py \
-  --system "$FAULT_SYSTEM_TARGET" --bundle "$FAULT_BROWSER_TARGET" --dom-results "$DOM_GUEST" \
+  --system "$FAULT_SYSTEM_TARGET" --system-source-root "$SYSTEM_SOURCE_ROOT" \
+  --bundle "$FAULT_BROWSER_TARGET" --dom-results "$DOM_GUEST" \
   --certificates "$TLS_FIXTURES" --output "$FAULT_BROWSER_GUEST" --mode fault
 ```
 
 runner 会读回安装文件验证摘要、记录实际资源与 policy occupancy，并保存失败日志。
+`SYSTEM_SOURCE_ROOT` 是对应原生镜像的冻结源码树；不指定时使用 runner 所在源码树。
+它可以与旧应用 producer 不同，runner 分别检查原生 boot/kernel/shared/user 源码
+和应用 bundle 身份。这样的组合必须重新执行客体，不能把旧 WebCore、Qt 或 SDK
+manifest 改绑成新原生源码。逐轮输出还记录全局 free-pages 和仍存活 UI 的预算
+使用量；最终退出通过不替代对导航期间持续增长的检查。
 设备首次创建 boot-lifetime reset observer 的一页开销单独记录；第二个普通设备
 周期必须严格稳定，再进行浏览器测试。浏览器和服务最终退出必须回到该精确基线。

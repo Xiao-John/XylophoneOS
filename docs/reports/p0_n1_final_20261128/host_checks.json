@@ -1,0 +1,65 @@
+{
+  "production_lwip_scenarios": [
+    "admission_and_stop",
+    "framing_and_replay",
+    "address_policy",
+    "object_isolation",
+    "trusted_egress_policy",
+    "invalid_egress_fails_closed",
+    "connection_quotas",
+    "revoke_policy",
+    "deadlines_and_idle",
+    "tcp_echo_and_eof",
+    "socket_capabilities_and_isolation",
+    "tcp_level_readiness",
+    "tcp_readiness_backpressure",
+    "tcp_half_close_keeps_receive",
+    "tcp_half_close_passive_and_pressure",
+    "tcp_short_write_pressure",
+    "tcp_receive_wrap_and_reset",
+    "tcp_close_unread_preserves_data",
+    "tcp_close_fin_memory_pressure",
+    "tcp_close_reused_slot_callbacks",
+    "tcp_closing_pool_preserves_other_application",
+    "tcp_connect_deadline",
+    "tcp_late_handshake",
+    "tcp_handshake_callback_deadline",
+    "tcp_timer_retransmission",
+    "udp_binary_and_empty",
+    "udp_pressure_and_source_filter",
+    "link_backpressure_and_budget",
+    "transport_faults",
+    "clock_failure",
+    "entropy_failure",
+    "runtime_entropy_stops_transmit"
+  ],
+  "production_service_loop_scenarios": [
+    "revoked_slot_reply_isolation",
+    "expired_request_after_receive"
+  ],
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "asan_options": "detect_leaks=0",
+  "native_transport_status": "passed",
+  "native_transport_results": [
+    {
+      "case": "client_transport_host",
+      "stdout": "PASS N3 native client: groups=8 UDP-zero,required-retry,connecting,short-write,would-block,close-preserves-siblings,timeout-no-replay,EOF,malformed,cleanup strict-replies=1\n"
+    },
+    {
+      "case": "transport_host",
+      "stdout": "PASS N3 production SDK/HTTP: short writes, binary payload, EOF, truncation, trailing bytes, bounds, framing, same-origin redirects, redirect budget, numeric IPv4\n"
+    },
+    {
+      "case": "host_freestanding_probe_link",
+      "libc_linked": false
+    }
+  ],
+  "leak_sanitizer": "not_run",
+  "license_materials": {
+    "checked": 10,
+    "open": 0
+  }
+}

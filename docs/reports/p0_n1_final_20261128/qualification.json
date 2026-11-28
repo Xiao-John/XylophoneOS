@@ -1,0 +1,142 @@
+{
+  "status": "passed_explicit_profile",
+  "module": "P0-N1",
+  "qualified_source_commit": "7d4489df05b5e6bff57794773d3f4a1727d8cc57",
+  "preview_sdk_release": "xos-sdk-preview-2",
+  "preview_sdk_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "environment": "Linux x86-64 Preview 2 ordinary launcher, QEMU 11.1.3 TCG, one vCPU per guest",
+  "offline_network_namespace": "not_qualified",
+  "system_build_id": "39cb2c9af47cc7d8",
+  "system_image_sha256": "6da53ad541f74b5a625bf59ebfb5cd3477e5371728c7e4d37aceb1c38e2c92bb",
+  "system_manifest_sha256": "809de31c3455b8f158f2522b900521cec8b810fe7828871cb8f394f91bdf636e",
+  "system_source_file_count": 2211,
+  "system_source_map_sha256": "6b637ea755514eb4ea40dda675b9fd4030d9278acca610c4dd28fc51de65a206",
+  "original_report_sha256": "5fc4fea4a725fe5035c68f3b04061e22635c005d7f8acbe1dfa8c0f9825201fc",
+  "evidence_scope": "Fresh result extracts from the checked-in runners. Raw serial output, packet captures and host command/tool inventories are retained locally, not included in this report.",
+  "runner": "tests/net_transport_guest.py",
+  "runner_sha256": "c8ec9ca01a8456df4dacccc3c03819c0b1c8c0a5a0968eb2758d138a60081007",
+  "native_sdk_tree_sha256": "047a897e5b3f5510712d9f7360d311cd2be3de1d09c6364abb526deeb2c7930e",
+  "probe_sha256": "78825c6b84c0c27dc2b4201cc0bd18e9f8c15721ce772cdb296e2417745fba06",
+  "network_profile": "manual net-start, locked lwIP, default controlled static IPv4; no automatic installed static/DHCP profile",
+  "checks": [
+    "xsh_http_fresh_exact_bytes_and_resources",
+    "xsh_udp_fresh_exact_bytes_and_resources",
+    "xsh_tcp_close_fresh_exact_bytes_and_resources",
+    "xsh_tcp_half_fresh_exact_bytes_and_resources",
+    "four_concurrent_applications_distinct_http_udp_challenges_and_resources",
+    "wrong_service_pid_denied",
+    "closed_port_fails_and_reclaims",
+    "xsh_http_fresh_exact_bytes_and_resources",
+    "xsh_tcp_half_fresh_exact_bytes_and_resources",
+    "service_restart_and_resource_baseline",
+    "xsh_tcp_queued_controlled_window_close_and_resources",
+    "xsh_tcp_drained_controlled_window_close_and_resources"
+  ],
+  "exchanges": [
+    {
+      "kind": "http",
+      "shell": "xsh",
+      "client_eof": true,
+      "worker_stopped": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "udp",
+      "shell": "xsh",
+      "worker_stopped": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "tcp_close",
+      "shell": "xsh",
+      "client_eof": true,
+      "queued_tx_bytes_verified": 8192,
+      "worker_stopped": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "tcp_half",
+      "shell": "xsh",
+      "client_eof_before_response": true,
+      "verified_half_close": true,
+      "worker_stopped": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "http",
+      "shell": "xsh",
+      "concurrent": true,
+      "client_eof": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "udp",
+      "shell": "xsh",
+      "concurrent": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "http",
+      "shell": "xsh",
+      "concurrent": true,
+      "client_eof": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "udp",
+      "shell": "xsh",
+      "concurrent": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "http",
+      "shell": "xsh",
+      "client_eof": true,
+      "worker_stopped": true,
+      "verified_bytes": 32
+    },
+    {
+      "kind": "tcp_half",
+      "shell": "xsh",
+      "client_eof_before_response": true,
+      "verified_half_close": true,
+      "worker_stopped": true,
+      "verified_bytes": 32
+    }
+  ],
+  "controlled_closes": [
+    {
+      "mode": "queued",
+      "status": "passed",
+      "fin_count": 1,
+      "queued_tx_bytes_verified": 4096,
+      "barrier": {
+        "advertised_window": 0,
+        "accepted_bytes": 4096,
+        "queued_data_bytes_received": 0,
+        "distinct_probe_bytes": 0,
+        "unsent_bytes_lower_bound": 4096
+      }
+    },
+    {
+      "mode": "drained",
+      "status": "passed",
+      "fin_count": 1,
+      "queued_tx_bytes_verified": 8192,
+      "barrier": {
+        "advertised_window": 65535,
+        "accepted_bytes": 8192,
+        "acknowledged_bytes_before_close": 8192
+      }
+    }
+  ],
+  "resource_validation": "Every exchange and both service lifecycles must recover the exact observed baseline in the runner; all checks passed.",
+  "not_qualified": [
+    "NIC_reset_failure_quarantine",
+    "packet_loss_reordering",
+    "DNS_DHCP_TLS",
+    "dash_shell"
+  ],
+  "source_and_artifact_validation": "The runner verified the system source/artifact map and matching native SDK/probe receipt before launching either real peer.",
+  "derivation": "Minimized fresh-run result derived from the retained original report identified by original_report_sha256. Random nonces and reply/challenge/frame payload bytes are omitted; pass/fail, counts, booleans, resource values and artifact digests are unchanged."
+}

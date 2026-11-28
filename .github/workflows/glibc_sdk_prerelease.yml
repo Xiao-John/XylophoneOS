@@ -4,10 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: New numbered tag (xos-sdk-glibc-preview-N)
+        description: SDK tag (new, or an existing draft when recovering)
         required: true
         type: string
         default: xos-sdk-glibc-preview-3
+      recover_existing:
+        description: Revalidate and publish an existing draft without rebuilding
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -33,6 +38,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Refuse an existing release or tag
+        if: ${{ !inputs.recover_existing }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -62,11 +68,13 @@ jobs:
           bwrap --die-with-parent --unshare-user --unshare-pid --unshare-ipc --unshare-uts \
             --ro-bind / / --dev /dev --proc /proc --tmpfs /tmp --clearenv /usr/bin/true
       - name: Build and qualify the finished SDK
+        if: ${{ !inputs.recover_existing }}
         run: |
           python3 scripts/build_glibc_host_sdk.py build \
             --tag "$RELEASE_TAG" --workdir "$RUNNER_TEMP/host-sdk-work" \
             --output "$RUNNER_TEMP/host-sdk-release" --jobs 2
       - name: Publish the qualified prerelease
+        if: ${{ !inputs.recover_existing }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -82,7 +90,12 @@ jobs:
             --latest=false --title "$RELEASE_TAG" --notes-file release-notes.md \
             "$RELEASE_TAG-linux-x86_64.tar.zst" "$RELEASE_TAG-sources.tar.zst" \
             package.json qualification.json SHA256SUMS
-          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RUNNER_TEMP/uploaded-release.json"
+          # The tag endpoint only resolves published releases. Resolve this
+          # authenticated draft by its exact pending tag, then use its ID.
+          release_id=$(gh api --paginate "repos/$GITHUB_REPOSITORY/releases" \
+            --jq ".[] | select(.tag_name == \"$RELEASE_TAG\") | .id")
+          [[ "$release_id" =~ ^[0-9]+$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/releases/$release_id" > "$RUNNER_TEMP/uploaded-release.json"
           gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" > "$RUNNER_TEMP/release-ref.json"
           python3 - <<'PY'
           import hashlib, json, os
@@ -90,7 +103,7 @@ jobs:
           tag = os.environ['RELEASE_TAG']
           release = json.loads((Path(os.environ['RUNNER_TEMP']) / 'uploaded-release.json').read_text())
           names = [tag + '-linux-x86_64.tar.zst', tag + '-sources.tar.zst', 'package.json', 'qualification.json', 'SHA256SUMS']
-          assert release['draft'] and release['prerelease']
+          assert release['tag_name'] == tag and release['draft'] and release['prerelease']
           ref = json.loads((Path(os.environ['RUNNER_TEMP']) / 'release-ref.json').read_text())
           assert ref['ref'] == 'refs/tags/' + tag and ref['object']['type'] == 'commit'
           assert ref['object']['sha'] == os.environ['GITHUB_SHA']
@@ -104,3 +117,23 @@ jobs:
           PY
           gh release edit "$RELEASE_TAG" --draft=false --prerelease --latest=false
           gh release view "$RELEASE_TAG" --json url,isDraft,isPrerelease
+      - name: Download and verify the existing draft
+        if: ${{ inputs.recover_existing }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/recover_glibc_sdk_release.py download \
+            --repository "$GITHUB_REPOSITORY" --tag "$RELEASE_TAG" \
+            --directory "$RUNNER_TEMP/sdk-recovery"
+      - name: Requalify the original SDK in a fresh consumer
+        if: ${{ inputs.recover_existing }}
+        run: |
+          python3 scripts/recover_glibc_sdk_release.py qualify \
+            --directory "$RUNNER_TEMP/sdk-recovery"
+      - name: Recheck and publish the existing draft
+        if: ${{ inputs.recover_existing }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/recover_glibc_sdk_release.py publish \
+            --directory "$RUNNER_TEMP/sdk-recovery"

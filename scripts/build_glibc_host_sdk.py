@@ -35,7 +35,8 @@ def download(url, destination, expected):
         raise ValueError('download SHA-256 mismatch: ' + destination.name)
 
 
-def validate(output):
+def qualify_archive(output):
+    """Read existing assets and return a fresh consumer result without changing them."""
     package = load(output / 'package.json')
     for field in ('archive', 'source_archive'):
         asset = package[field]
@@ -61,7 +62,12 @@ def validate(output):
         result['source_archive'] = package['source_archive']
         result['fresh_extraction_verified'] = True
         result['consumer_mount'] = 'empty consumer directory only; SDK root read-only'
-        (output / 'qualification.json').write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
+    return package, result
+
+
+def validate(output):
+    package, result = qualify_archive(output)
+    (output / 'qualification.json').write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
     # Publish a fixed asset set, excluding build trees, raw command logs and disks.
     assets = [package['archive']['name'], package['source_archive']['name'], 'package.json', 'qualification.json']
     (output / 'SHA256SUMS').write_text(''.join(sha(output / name) + '  ' + name + '\n' for name in assets))

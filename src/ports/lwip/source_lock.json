@@ -57,6 +57,16 @@
           "after": "758d9cbb8bc0a7a7f8b9f1238abe39b508c2f83efa99276937b09e6290c5a5f3"
         }
       }
+    },
+    {
+      "path": "patches/0005_dhcp_absolute_authority.patch",
+      "sha256": "96597ed4d6723264d320f585459fb51d480e61c116a07e2ea3e403db42e097e1",
+      "files": {
+        "src/core/ipv4/dhcp.c": {
+          "before": "f89cf1aacbd9a04dcb47a03c81a1a231331f4edb323d2e0cf26e640ca78c3453",
+          "after": "9a763711bda78142729502e3a955d2065a66d04dafb4e83e3e9f5deb1a4e7c25"
+        }
+      }
     }
   ]
 }

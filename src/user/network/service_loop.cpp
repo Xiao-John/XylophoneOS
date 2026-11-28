@@ -5,6 +5,9 @@
 #include <xos/net_abi.hpp>
 #include <xos/sdk.hpp>
 #include <xos/thread_abi.hpp>
+#ifdef XOS_NET_DHCP_PROFILE
+#include "xos_net_dhcp_profile.hpp"
+#endif
 #ifdef XOS_NET_EGRESS_PROFILE
 #include "xos_net_egress_profile.hpp"
 #endif
@@ -61,6 +64,15 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
 #else
     core.initialize(controller, stack.api(), stack.dns_api(), 0, application_policy);
 #endif
+#ifdef XOS_NET_DHCP_PROFILE
+    core.enable_dhcp();
+    result = stack.start_dhcp(installed_dhcp_policy, installed_acquisition_ns,
+        [](void*, u32 address, u32 mask, u32 gateway, u32 resolver) {
+            for (u32 slot = 0; slot < net2::client_sessions; ++slot) clear_session(slot);
+            return core.publish_dhcp(address, mask, gateway, resolver);
+        }, nullptr);
+    if (result) { stack.shutdown(); return result; }
+#endif
     result = sdk::ipc_name_publish(net2::service_name);
     if (result) { stack.shutdown(); return result; }
     result = sdk::ipc_name_publish(net::service_name);
@@ -86,6 +98,10 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
             const i64 reply_clock = sdk::syscall(sys_clock_monotonic);
             if (reply_clock < 0) { result = net2::io; break; }
             now = static_cast<u64>(reply_clock);
+#ifdef XOS_NET_DHCP_PROFILE
+            if (stack.advance_dhcp()) { result = net2::io; break; }
+            if (!session.channel.send || !core.alive(slot) || session.generation != core.generation(slot)) continue;
+#endif
             if (session.pending) {
                 if (now >= session.reply_deadline) { drop(slot); continue; }
                 if (!session.delivered) {
@@ -105,6 +121,10 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
             const i64 request_clock = sdk::syscall(sys_clock_monotonic);
             if (request_clock < 0) { result = net2::io; break; }
             now = static_cast<u64>(request_clock);
+#ifdef XOS_NET_DHCP_PROFILE
+            if (stack.advance_dhcp()) { result = net2::io; break; }
+            if (!session.channel.send || !core.alive(slot) || session.generation != core.generation(slot)) continue;
+#endif
             if (incoming.version == net::version) {
                 net::message legacy{};
                 __builtin_memcpy(&legacy, &incoming, net::header_bytes);
@@ -126,6 +146,10 @@ i64 serve(u64 controller, virtio_net::driver& nic) {
                 if (!core.dispatch(slot, incoming, static_cast<u32>(received), now, session.reply)) { drop(slot); continue; }
                 session.reply_bytes = net2::header_bytes + session.reply.length;
             }
+#ifdef XOS_NET_DHCP_PROFILE
+            if (stack.advance_dhcp()) { result = net2::io; break; }
+            if (!session.channel.send || !core.alive(slot) || session.generation != core.generation(slot)) continue;
+#endif
             session.pending = true; session.delivered = false;
             session.reply_deadline = bounded_deadline(now, net2::reply_timeout_ns); replies_pending = true;
         }

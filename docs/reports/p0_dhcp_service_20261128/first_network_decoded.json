@@ -1,0 +1,65 @@
+{
+  "capture_artifact": "first_network.pcap",
+  "counts": {
+    "arp": 1,
+    "dhcp": 1
+  },
+  "dhcp_message_type_counts": {
+    "1": 1
+  },
+  "frame_count": 2,
+  "frames": [
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 1,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 683402,
+      "timestamp_seconds": 1795827666,
+      "udp_bytes": 316,
+      "xid": 2203190400,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 2,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 60,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 211014,
+      "timestamp_seconds": 1795827667
+    }
+  ]
+}

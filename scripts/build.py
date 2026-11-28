@@ -14,6 +14,7 @@ import sys
 from toolchain import LOCK, TARGET, COMMON_FLAGS, X86_FLAGS, audit, tool, output
 from user_build import build_users
 from lwip_service_build import configuration as network_configuration, load_static_profile
+from dhcp_profile import load_dhcp_profile
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILD = ROOT / "build"
@@ -33,6 +34,8 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=BUILD)
     parser.add_argument("--net-dns-probe", action="store_true",
                         help="build an isolated Xsh diagnostic with the private resolver")
+    parser.add_argument("--net-dhcp-profile", type=Path,
+                        help="seal DHCP lease authority and application egress into an isolated installation")
     parser.add_argument("--net-static-profile", type=Path,
                         help="seal a static resolver and NIC selection into the installed system")
     parser.add_argument("--quiet-demos-on-launch", action="store_true",
@@ -90,7 +93,11 @@ def main():
                                     args.pumpkin_anchored_probe or args.terminal_supervisor_probe or
                                     args.ncurses_supervisor_probe):
         parser.error("--net-static-profile requires isolated output and the normal Xsh supervisor")
+    if args.net_dhcp_profile and (BUILD == ROOT / "build" or args.net_static_profile or args.net_dns_probe or
+                                  args.pumpkin_anchored_probe or args.terminal_supervisor_probe or args.ncurses_supervisor_probe):
+        parser.error("--net-dhcp-profile requires isolated output and the normal Xsh supervisor")
     try:
+        net_dhcp_profile = load_dhcp_profile(args.net_dhcp_profile) if args.net_dhcp_profile else None
         net_static_profile = load_static_profile(args.net_static_profile) if args.net_static_profile else None
     except (OSError, ValueError) as error:
         parser.error(str(error))
@@ -219,7 +226,7 @@ def main():
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
                                       "virtio_gpu": gpu_config,
-                                      "network_service": network_configuration(ROOT, args.net_dns_probe, net_static_profile)}, sort_keys=True).encode())
+                                      "network_service": network_configuration(ROOT, args.net_dns_probe, net_static_profile, net_dhcp_profile)}, sort_keys=True).encode())
     build_id = source_digest[:16]
     eggs = int(TARGET["easter_eggs"])
     (BUILD / "build_info.inc").write_text(
@@ -246,7 +253,7 @@ def main():
                                  pumpkin_user_resource=args.pumpkin_user_resource,
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
-                                 net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile)
+                                 net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile, net_dhcp_profile=net_dhcp_profile)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
     header = ["#pragma once", "#include <xos/types.hpp>", "namespace xos::user_blobs {"]
     for name in user_programs:

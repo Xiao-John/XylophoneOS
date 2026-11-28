@@ -1,0 +1,64 @@
+{
+  "capture_serial_cross_check": {
+    "nak_dns_query_sources": [
+      "10.0.2.15",
+      "10.0.2.16"
+    ],
+    "received_markers": 10,
+    "status": "passed",
+    "unique_peer_challenges": 10
+  },
+  "flat_manifest": {
+    "directory": "docs/reports/p0_dhcp_service_20261128",
+    "status": "compliant"
+  },
+  "public_path_gate": {
+    "base": "origin/main",
+    "findings": [],
+    "source": "Git index",
+    "status": "PUBLIC_READY"
+  },
+  "publication_mapping": {
+    "difference": "PR #397 reviewer documentation fix: 5 added and 3 removed lines",
+    "local_source_commit": "da889821137645a014e47d13109042fd0d34caf8",
+    "local_source_tree": "e62e17a2b0be8de9623b7d4da24e8b3eb3e989bd",
+    "only_differing_path": "docs/plans/p0_completion.md",
+    "production_source_scripts_tests_identical": true,
+    "public_source_commit": "e1ee290792a0265aeb60edaaa2499a5cdfe654ac",
+    "public_source_tree": "a05787273d1a495c72ef58095a9effd1ed8ac753",
+    "verification": "parent independently compared complete trees",
+    "whole_tree_identical": false
+  },
+  "repository_manifest_gate": {
+    "compliant_directories": 235,
+    "frozen_reports_modified": false,
+    "grandfathered_directories": 60,
+    "pre_existing_failures": [
+      "glibc_v2_cpython_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_current_release_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_daily_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_dash_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_gnu_make_material_delivery_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "glibc_v2_release_upstream_source_20261127: manifest must be {\"version\": 1, \"files\": {...}}",
+      "mobius_qt_v2_replacement_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_guest_20261127: unsafe path or invalid hash in manifest",
+      "mobius_widgets_v2_reproducible_20261127: unsafe path or invalid hash in manifest"
+    ],
+    "status": "failed"
+  },
+  "source_bound_inputs_rechecked": {
+    "build/dhcp_host_final_v2/result.json": 21,
+    "build/dhcp_static_final/result.json": 23,
+    "build/dhcp_transport_final/result.json": 51
+  },
+  "source_commit": "da889821137645a014e47d13109042fd0d34caf8",
+  "source_tree": "e62e17a2b0be8de9623b7d4da24e8b3eb3e989bd"
+}

@@ -265,6 +265,17 @@ EALREADY，跨 PID 返回 EPERM，仍登记但已到期限返回 ETIMEDOUT。seq
 | --- | --- | --- |
 | sys34 `sys_process_stdio` arg2=`1ull << 63` 独立 pipe 批量 transfer | P1-K5；kernel pipe/process、`process_abi.hpp`、native loader/SDK 和匹配 glibc spawn | claimed；arg1 只能是调用者拥有的 building child，排除 fork/replacement pending；arg3 指版本 1、144 字节请求，四个 u32 header（version,size,count,reserved）后接 16 项 {u32 source,target}。输入 target 与未用项皆零，source 为 caller 持有且去重的 private pipe token；整批验证和输出准备成功后一次增加 child 引用并返回 target。旧 stdio mode0–2 不变，旧内核拒绝新模式。 |
 | `xos_fork_control_offer` wire v1（128 字节） | P1-K2 fork/controller 线；native loader control、glibc process adapter | claimed；复用现有受保护 launch channel 容量，独立 magic/type，不改既有 READY/ACK message 布局。header u64 magic、u32 version,size；五个 u64 controller_pid,child_pid,generation,nonce,deadline；两个 u32 ready_handle,ack_handle；40 字节 launch artifact；三个 u64 reserved。fork child 必须核内核认证对端、同 artifact/代次和绝对期限后才接受新 controller 并发 READY。 |
+| sys81 `channel_action` 7 `create_extended` | P1-K2 terminal/controller 组合；kernel generic channel、native SDK、launch control | claimed；显式 opt-in 的普通单向通道创建，仍使用原版本 1、32 字节 `channel_create`，reserved 与 syscall third 均为零。调用此动作时 owner 的总 generic channel 上限为 6；旧 action0 create 的 4 条上限不变，fork_pair 的 8 条总上限不变。旧内核拒绝未知 action7。 |
+
+`create_extended` 只协调 terminal 控制对、应用对与独立 READY/ACK 对的有界组合。
+控制者仍只能连接自己或其受控制的活子进程；不会放宽 peer、authority、capacity、
+pending/replacement、全局端点池或 P1-B 树预算规则。第七条扩展 create 必须失败，
+已有六条时普通 create 也不能增加；从六条派生两条 fork 通道仍受总八条限制。
+默认 SDK/launch 调用不自动扩容，只有显式选择的 terminal + dynamic launch 组合使用。
+same-PID exec 继续使用 sys60 bit32 和原最多四条 preserve list，terminal 对与
+READY/ACK 对须分别验证；没有变更 sys56 cancel 或增加 terminal wire opcode。
+实现 PR 须给出旧 action0 的原限制回归、extended 第六/第七边界、预算/失败回收、
+真实 terminal I/O 与动态 exec/fork 组合证据，再更新资格状态。
 
 pipe transfer 不复制对象或扩充 authority；token 仍由 PID membership 限权，同一对象
 的别名保留。16 个 native pipe references（含 stdio）与 8 个全局 pipe objects 上限保持，

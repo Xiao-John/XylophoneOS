@@ -15,6 +15,16 @@ thread_local unsigned application_zero;
 std::atomic<unsigned> application_destroyed;
 std::atomic<bool> started;
 std::atomic<bool> finish;
+std::atomic<bool> constructor_worker_done;
+
+struct startup_worker {
+    startup_worker() {
+        std::thread worker([] { constructor_worker_done.store(true, std::memory_order_release); });
+        worker.join();
+        if (!constructor_worker_done.load(std::memory_order_acquire)) _Exit(54);
+        std::puts("P0_PUBLIC_CONSTRUCTOR_THREAD_OK");
+    }
+} initialized_worker;
 
 struct holder {
     bool touched = false;
@@ -31,6 +41,7 @@ thread_local holder application_holder;
 }
 
 int main() {
+    if (!constructor_worker_done.load(std::memory_order_acquire)) return 54;
     const auto main_id = std::this_thread::get_id();
     const auto* main_value = &application_value;
     application_value = 97;

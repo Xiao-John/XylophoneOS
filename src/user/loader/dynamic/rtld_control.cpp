@@ -11,10 +11,6 @@ const xos_dynamic_startup_prefix* startup() {
     return value;
 }
 }
-extern "C" __attribute__((visibility("hidden"))) long xos_rtld_public_ready() {
-    const auto* value = startup();
-    return value ? xos::launch::notify_ready(value->control, value->artifact) : xos::process_error_denied;
-}
 extern "C" __attribute__((visibility("hidden"))) void xos_rtld_public_failure() {
     const auto* value = startup();
     if (value) (void)xos::launch::notify_ready(value->control, value->artifact,

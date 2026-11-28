@@ -1,0 +1,435 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=c1575e2adfc6fa5d
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x0000000000273110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130165 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x000000000036b000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+ping
+Abad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+bad length
+bad pointer
+Aping
+Abad length
+bad pointer
+tx
+Abad length
+bad pointer
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+Aping
+bad length
+Abad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Abad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+Aping
+Abad length
+bad pointer
+tx
+xsh> Aping
+bad length
+bad pointer
+tx
+trace on
+xsh: trace on
+xsh> ping
+bad length
+bad pointer
+tx
+demo quietAA
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> audio stop
+[task] event=reclaimed pid=9 pages=99
+audio: service stopped
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf parent 46eb127135f4f8fee5a37ef935df3ea0
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000036b000
+[loader] started pid=10 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=10
+[process] event=started pid=11 parent=10
+[process] pid=11 address_space=0x000000000054e000
+[process] event=exec_prepared pid=11 staging_pid=12
+[task] event=reclaimed pid=12 pages=97
+IPC_EXEC_BLOCKED receive
+[process] event=exec_prepared pid=11 staging_pid=13
+[process] event=exec_replaced old_pid=11 current_pid=11 target_pid=11 staging_pid=13 tid=11 old_address_space=0x000000000054e000 address_space=0x00000000005f3000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0
+[task] event=reclaimed pid=13 pages=97
+[process] event=wait_blocked parent=10 child=11
+IPC_EXEC_CHILD_PASS
+[task] event=reclaimed pid=11 pages=97
+IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected
+[task] event=reclaimed pid=10 pages=97
+[wait] pid=10 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf lifecycle 46eb127135f4f8fee5a37ef935df3ea0
+[process] event=started pid=14 parent=7
+[process] pid=14 address_space=0x000000000036b000
+[loader] started pid=14 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=14
+[process] event=started pid=15 parent=14
+[process] pid=15 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED revoke receive send
+[process] event=wait_blocked parent=14 child=15
+[task] event=reclaimed pid=15 pages=97
+[process] event=started pid=16 parent=14
+[process] pid=16 address_space=0x000000000054e000
+[process] event=wait_blocked parent=14 child=16
+[task] event=reclaimed pid=16 pages=97
+IPC_LIFECYCLE_PASS revoke blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=17 parent=14
+[process] pid=17 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED close receive send
+[process] event=wait_blocked parent=14 child=17
+[task] event=reclaimed pid=17 pages=97
+[process] event=started pid=18 parent=14
+[process] pid=18 address_space=0x000000000054e000
+[process] event=wait_blocked parent=14 child=18
+[task] event=reclaimed pid=18 pages=97
+IPC_LIFECYCLE_PASS close blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=19 parent=14
+[process] pid=19 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED exit receive send
+[task] event=reclaimed pid=19 pages=97
+[process] event=started pid=20 parent=14
+[process] pid=20 address_space=0x000000000054e000
+[process] event=wait_blocked parent=14 child=20
+[task] event=reclaimed pid=20 pages=97
+IPC_LIFECYCLE_PASS exit blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=21 parent=14
+[process] pid=21 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED fault receive send
+[task] event=fault pid=21 vector=6 rip=0x0000000040001214 result=killed tid=28
+[task] event=reclaimed pid=21 pages=97
+[process] event=started pid=22 parent=14
+[process] pid=22 address_space=0x000000000054e000
+[process] event=wait_blocked parent=14 child=22
+[task] event=reclaimed pid=22 pages=97
+IPC_LIFECYCLE_PASS fault blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=23 parent=14
+[process] pid=23 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED cancel receive send
+[task] event=reclaimed pid=23 pages=97
+[process] event=started pid=24 parent=14
+[process] pid=24 address_space=0x000000000054e000
+[process] event=wait_blocked parent=14 child=24
+[task] event=reclaimed pid=24 pages=97
+IPC_LIFECYCLE_PASS cancel blocked_both restart_authenticated stale_tokens_denied
+[task] event=reclaimed pid=14 pages=97
+[wait] pid=14 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf authority 46eb127135f4f8fee5a37ef935df3ea0
+[process] event=started pid=25 parent=7
+[process] pid=25 address_space=0x000000000036b000
+[loader] started pid=25 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=25
+[process] event=started pid=26 parent=25
+[process] pid=26 address_space=0x000000000054e000
+[process] event=wait_blocked parent=25 child=26
+[task] event=reclaimed pid=26 pages=97
+IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered
+[task] event=reclaimed pid=25 pages=97
+[wait] pid=25 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf quota 46eb127135f4f8fee5a37ef935df3ea0
+[process] event=started pid=27 parent=7
+[process] pid=27 address_space=0x000000000036b000
+[loader] started pid=27 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=27
+[process] event=started pid=28 parent=27
+[process] pid=28 address_space=0x000000000054e000
+[process] event=wait_blocked parent=27 child=28
+[task] event=reclaimed pid=28 pages=97
+IPC_QUOTA_PASS shared_owner_budget pending_and_accepted_counted blocked_counted failure_atomic peer_isolated recovered
+[task] event=reclaimed pid=27 pages=97
+[wait] pid=27 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf parent 87e0ad5eb9e96e54e026fc4644b4fc85
+[process] event=started pid=29 parent=7
+[process] pid=29 address_space=0x000000000036b000
+[loader] started pid=29 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=29
+[process] event=started pid=30 parent=29
+[process] pid=30 address_space=0x000000000054e000
+[process] event=exec_prepared pid=30 staging_pid=31
+[task] event=reclaimed pid=31 pages=97
+IPC_EXEC_BLOCKED receive
+[process] event=exec_prepared pid=30 staging_pid=32
+[process] event=exec_replaced old_pid=30 current_pid=30 target_pid=30 staging_pid=32 tid=42 old_address_space=0x000000000054e000 address_space=0x00000000005f3000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0
+[task] event=reclaimed pid=32 pages=97
+[process] event=wait_blocked parent=29 child=30
+IPC_EXEC_CHILD_PASS
+[task] event=reclaimed pid=30 pages=97
+IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected
+[task] event=reclaimed pid=29 pages=97
+[wait] pid=29 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf lifecycle 87e0ad5eb9e96e54e026fc4644b4fc85
+[process] event=started pid=33 parent=7
+[process] pid=33 address_space=0x000000000036b000
+[loader] started pid=33 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=33
+[process] event=started pid=34 parent=33
+[process] pid=34 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED revoke receive send
+[process] event=wait_blocked parent=33 child=34
+[task] event=reclaimed pid=34 pages=97
+[process] event=started pid=35 parent=33
+[process] pid=35 address_space=0x000000000054e000
+[process] event=wait_blocked parent=33 child=35
+[task] event=reclaimed pid=35 pages=97
+IPC_LIFECYCLE_PASS revoke blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=36 parent=33
+[process] pid=36 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED close receive send
+[process] event=wait_blocked parent=33 child=36
+[task] event=reclaimed pid=36 pages=97
+[process] event=started pid=37 parent=33
+[process] pid=37 address_space=0x000000000054e000
+[process] event=wait_blocked parent=33 child=37
+[task] event=reclaimed pid=37 pages=97
+IPC_LIFECYCLE_PASS close blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=38 parent=33
+[process] pid=38 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED exit receive send
+[task] event=reclaimed pid=38 pages=97
+[process] event=started pid=39 parent=33
+[process] pid=39 address_space=0x000000000054e000
+[process] event=wait_blocked parent=33 child=39
+[task] event=reclaimed pid=39 pages=97
+IPC_LIFECYCLE_PASS exit blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=40 parent=33
+[process] pid=40 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED fault receive send
+[task] event=fault pid=40 vector=6 rip=0x0000000040001214 result=killed tid=59
+[task] event=reclaimed pid=40 pages=97
+[process] event=started pid=41 parent=33
+[process] pid=41 address_space=0x000000000054e000
+[process] event=wait_blocked parent=33 child=41
+[task] event=reclaimed pid=41 pages=97
+IPC_LIFECYCLE_PASS fault blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=42 parent=33
+[process] pid=42 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED cancel receive send
+[task] event=reclaimed pid=42 pages=97
+[process] event=started pid=43 parent=33
+[process] pid=43 address_space=0x000000000054e000
+[process] event=wait_blocked parent=33 child=43
+[task] event=reclaimed pid=43 pages=97
+IPC_LIFECYCLE_PASS cancel blocked_both restart_authenticated stale_tokens_denied
+[task] event=reclaimed pid=33 pages=97
+[wait] pid=33 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf authority 87e0ad5eb9e96e54e026fc4644b4fc85
+[process] event=started pid=44 parent=7
+[process] pid=44 address_space=0x000000000036b000
+[loader] started pid=44 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=44
+[process] event=started pid=45 parent=44
+[process] pid=45 address_space=0x000000000054e000
+[process] event=wait_blocked parent=44 child=45
+[task] event=reclaimed pid=45 pages=97
+IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered
+[task] event=reclaimed pid=44 pages=97
+[wait] pid=44 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf quota 87e0ad5eb9e96e54e026fc4644b4fc85
+[process] event=started pid=46 parent=7
+[process] pid=46 address_space=0x000000000036b000
+[loader] started pid=46 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=46
+[process] event=started pid=47 parent=46
+[process] pid=47 address_space=0x000000000054e000
+[process] event=wait_blocked parent=46 child=47
+[task] event=reclaimed pid=47 pages=97
+IPC_QUOTA_PASS shared_owner_budget pending_and_accepted_counted blocked_counted failure_atomic peer_isolated recovered
+[task] event=reclaimed pid=46 pages=97
+[wait] pid=46 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf parent cc9769003724a2cbee2fca951126e75e
+[process] event=started pid=48 parent=7
+[process] pid=48 address_space=0x000000000036b000
+[loader] started pid=48 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=48
+[process] event=started pid=49 parent=48
+[process] pid=49 address_space=0x000000000054e000
+[process] event=exec_prepared pid=49 staging_pid=50
+[task] event=reclaimed pid=50 pages=97
+IPC_EXEC_BLOCKED receive
+[process] event=exec_prepared pid=49 staging_pid=51
+[process] event=exec_replaced old_pid=49 current_pid=49 target_pid=49 staging_pid=51 tid=73 old_address_space=0x000000000054e000 address_space=0x00000000005f3000 file_session_rekeyed=1 old_spawn_depth=0 spawn_depth=0
+[task] event=reclaimed pid=51 pages=97
+[process] event=wait_blocked parent=48 child=49
+IPC_EXEC_CHILD_PASS
+[task] event=reclaimed pid=49 pages=97
+IPC_EXEC_PASS failed_commit_preserved success_revoked pending_destroyed same_pid_reconnected
+[task] event=reclaimed pid=48 pages=97
+[wait] pid=48 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf lifecycle cc9769003724a2cbee2fca951126e75e
+[process] event=started pid=52 parent=7
+[process] pid=52 address_space=0x000000000036b000
+[loader] started pid=52 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=52
+[process] event=started pid=53 parent=52
+[process] pid=53 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED revoke receive send
+[process] event=wait_blocked parent=52 child=53
+[task] event=reclaimed pid=53 pages=97
+[process] event=started pid=54 parent=52
+[process] pid=54 address_space=0x000000000054e000
+[process] event=wait_blocked parent=52 child=54
+[task] event=reclaimed pid=54 pages=97
+IPC_LIFECYCLE_PASS revoke blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=55 parent=52
+[process] pid=55 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED close receive send
+[process] event=wait_blocked parent=52 child=55
+[task] event=reclaimed pid=55 pages=97
+[process] event=started pid=56 parent=52
+[process] pid=56 address_space=0x000000000054e000
+[process] event=wait_blocked parent=52 child=56
+[task] event=reclaimed pid=56 pages=97
+IPC_LIFECYCLE_PASS close blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=57 parent=52
+[process] pid=57 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED exit receive send
+[task] event=reclaimed pid=57 pages=97
+[process] event=started pid=58 parent=52
+[process] pid=58 address_space=0x000000000054e000
+[process] event=wait_blocked parent=52 child=58
+[task] event=reclaimed pid=58 pages=97
+IPC_LIFECYCLE_PASS exit blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=59 parent=52
+[process] pid=59 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED fault receive send
+[task] event=fault pid=59 vector=6 rip=0x0000000040001214 result=killed tid=90
+[task] event=reclaimed pid=59 pages=97
+[process] event=started pid=60 parent=52
+[process] pid=60 address_space=0x000000000054e000
+[process] event=wait_blocked parent=52 child=60
+[task] event=reclaimed pid=60 pages=97
+IPC_LIFECYCLE_PASS fault blocked_both restart_authenticated stale_tokens_denied
+[process] event=started pid=61 parent=52
+[process] pid=61 address_space=0x000000000054e000
+IPC_LIFECYCLE_BLOCKED cancel receive send
+[task] event=reclaimed pid=61 pages=97
+[process] event=started pid=62 parent=52
+[process] pid=62 address_space=0x000000000054e000
+[process] event=wait_blocked parent=52 child=62
+[task] event=reclaimed pid=62 pages=97
+IPC_LIFECYCLE_PASS cancel blocked_both restart_authenticated stale_tokens_denied
+[task] event=reclaimed pid=52 pages=97
+[wait] pid=52 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf authority cc9769003724a2cbee2fca951126e75e
+[process] event=started pid=63 parent=7
+[process] pid=63 address_space=0x000000000036b000
+[loader] started pid=63 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=63
+[process] event=started pid=64 parent=63
+[process] pid=64 address_space=0x000000000054e000
+[process] event=wait_blocked parent=63 child=64
+[task] event=reclaimed pid=64 pages=97
+IPC_AUTHORITY_PASS subject_bound attenuated redelegated revoked reply_once quota_recovered
+[task] event=reclaimed pid=63 pages=97
+[wait] pid=63 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh> exec-driver /bin/ipcexec.elf quota cc9769003724a2cbee2fca951126e75e
+[process] event=started pid=65 parent=7
+[process] pid=65 address_space=0x000000000036b000
+[loader] started pid=65 file=/bin/ipcexec.elf
+[process] event=wait_blocked parent=7 child=65
+[process] event=started pid=66 parent=65
+[process] pid=66 address_space=0x000000000054e000
+[process] event=wait_blocked parent=65 child=66
+[task] event=reclaimed pid=66 pages=97
+IPC_QUOTA_PASS shared_owner_budget pending_and_accepted_counted blocked_counted failure_atomic peer_isolated recovered
+[task] event=reclaimed pid=65 pages=97
+[wait] pid=65 kind=exited code=0
+xsh> stats
+[resources] free=129779 tasks=2 completions=0
+xsh>

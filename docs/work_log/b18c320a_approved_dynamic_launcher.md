@@ -128,3 +128,28 @@ C 源，替换 1654 成员中的一件、保留其余 1653，partial/full GNU li
 产物、Git 原始源/脚本、C3 全部对象和三个 generation，均对应已运行的
 准确 bytes。`source_byte_correspondence.json` 单独记录这一对应关系；旧
 guest report、source 身份与观察值未改，未把新编译伪写为新的 guest 运行。
+
+## Capsule v2 的最终独立复验
+
+随后真实 GNU 线程用例发现启动 capsule 与 native worker arena 的地址冲突。
+生产修复将 capsule 移至 `0x71000000`、ABI version 更新为 2，并在动态
+bootstrap preflight 排除 worker/capsule LOAD 交叠。它改变了实际来源和产物，
+所以上述 v3 通过记录继续保留为历史，不能用新 hash 替换。
+
+冻结生产源码 `3699916df590a2fe0ea9b419836ded2d9344e6b3` 的新 native
+`c1575e2adfc6fa5d`、C SDK v3、GNU v4、C stage v4 全量重建后，独立完整源码
+导出无需 owned overlays，所有 SDK 头精确匹配。launcher 与 probe 重新构建，
+三个批准 root 全部重算；C main2 复用真实 C4 bytes，main3 继续故意不安装。
+
+新组合再完成 **3 轮 / 21 组 / 12 次真实 GNU C launch**；每轮精确恢复
+129779 free pages、2 tasks、0 completions。全部 producer 源从 immutable Git
+objects 复核，系统、SDK、receipt、闭包及安装 ELF 运行前后再检查。独立额外
+核验 C4 的完整 native SDK snapshot 与该系统的 file/directory inventory
+一致。完整 [capsule v2 R2 报告](../reports/dynamic_generation_capsule_20261128/README.md)
+含新的 launcher/probe/program/runtime 回执和实际串口，旧记录没有改写。
+
+同一冻结生产源上的 [46 项真实 ELF host 检查](../reports/dynamic_closure_capsule_20261128/README.md)
+补齐两个 bootstrap 地址负例；[最终 L1/L2 native gate](../reports/p0_integrated_lifecycle_20261128/README.md)
+另完成 controller 33 场、IPC lifetime/authority/quota 12 组和 deadline 3 组。
+这完成准确新字节的 P0 易失单控制器激活/回滚与本轮原生生命周期组合要求；
+P1 的持久防回滚、跨后代撤销、进程树预算边界不变。

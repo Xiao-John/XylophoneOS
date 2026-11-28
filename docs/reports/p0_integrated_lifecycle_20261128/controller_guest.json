@@ -1,0 +1,378 @@
+{
+  "baseline": [
+    129779,
+    2,
+    0
+  ],
+  "fixture_receipt_sha256": "cf18168baed5eefba43534a7db70a4030a0462d51df699880ed5551b43d0f309",
+  "iso_sha256": "94dddaf6da7b8a68617fb8ade2980c91f797eef73f4062d8d9a0d25049edb550",
+  "qemu_command": [
+    "/usr/bin/qemu-system-x86_64",
+    "-machine",
+    "pc-i440fx-10.0",
+    "-accel",
+    "tcg",
+    "-cpu",
+    "qemu64,+rdrand",
+    "-m",
+    "512M",
+    "-smp",
+    "1",
+    "-nic",
+    "none",
+    "-vga",
+    "std",
+    "-rtc",
+    "base=utc,clock=host",
+    "-cdrom",
+    "${XOS_NATIVE_SOURCE}/build/system/xos-install.iso",
+    "-boot",
+    "order=d,strict=on",
+    "-no-reboot",
+    "-monitor",
+    "none",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+    "-drive",
+    "file=${XOS_LAUNCH_GUEST_TEMP}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+  ],
+  "runner_sha256": "c3cc3d9a791ed90ef60119f7c4796c7caef9c98b7850dac7dcf5888cbe3738ce",
+  "runs": [
+    {
+      "case": "success",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "cancel",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "entry-failure",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "entry-revoke",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "prepare-revoke",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "timeout",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "early-exit",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "malformed",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "multiple",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "stale-allow",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "stale-cancel",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 0,
+      "status": "passed"
+    },
+    {
+      "case": "success",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "cancel",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "entry-failure",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "entry-revoke",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "prepare-revoke",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "timeout",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "early-exit",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "malformed",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "multiple",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "stale-allow",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "stale-cancel",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 1,
+      "status": "passed"
+    },
+    {
+      "case": "success",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "cancel",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "entry-failure",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "entry-revoke",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "prepare-revoke",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "timeout",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "early-exit",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "malformed",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "multiple",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "stale-allow",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    },
+    {
+      "case": "stale-cancel",
+      "resources": [
+        129779,
+        2,
+        0
+      ],
+      "round": 2,
+      "status": "passed"
+    }
+  ],
+  "sdk_tree_sha256": "29eeceac7b5913ccf66116d6420a502069ab357efbe80b2917515d4e971bdaee",
+  "status": "passed",
+  "system_build_id": "c1575e2adfc6fa5d",
+  "system_manifest_sha256": "94f00c8f19f7a6fa98db64b0da2d7c97393723955502967b120e6d8ffcc81472"
+}

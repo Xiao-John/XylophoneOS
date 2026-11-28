@@ -1,0 +1,27 @@
+{
+  "templates": {
+    "XOS_IPC_GUEST_TEMP": "Private temporary IPC FAT disk directory.",
+    "XOS_LAUNCH_GUEST_TEMP": "Private temporary controller FAT disk directory.",
+    "XOS_NATIVE_SOURCE": "Frozen native producer source tree; its build/system is the tested artifact.",
+    "XOS_PREVIEW2_CELLAR": "Packaged Preview 2 dependencies.",
+    "XOS_PREVIEW2_PREFIX": "Preview 2 tool wrappers.",
+    "XOS_SOURCE_SNAPSHOT": "Complete source export of the stated production revision."
+  },
+  "transform": [
+    "Sort JSON object keys without changing source, artifact or receipt digests.",
+    "Replace environment prefixes with declared XOS replay variables.",
+    "Normalize serial CR/LF to LF and remove trailing line whitespace; retain all markers and numbers."
+  ],
+  "unpublished_raw_sha256": {
+    "controller_fixture.json": "cf18168baed5eefba43534a7db70a4030a0462d51df699880ed5551b43d0f309",
+    "controller_guest.json": "b7c75854907b2bd2feb276dbd7e65c80be48e0490f5ad048340c8d2a3e50b815",
+    "controller_serial.log": "3dc05118dae107f5da1ed76328d8e03e165d195d9739c5e6a7034d6ac8f9fc90",
+    "ipc_deadline_fixture.json": "7dbde73558846008c7c66658e2873cc2017dc4635fdcab8aac9a77f850fbfb3d",
+    "ipc_deadline_guest.json": "df3d87beefaffff07677a36b02a751c0e9665de0f61af320c532db594fbbeeaf",
+    "ipc_deadline_serial.log": "aa235d6e3609ee94c0de446661f0c8557d05e1ebf59d7993b1b157ac2f1750ad",
+    "ipc_lifecycle_fixture.json": "84886e7b767caf7612f8cb4641ba01c81de581e293053f079c1ed7720ff5d2d1",
+    "ipc_lifecycle_guest.json": "5c526f338aec5d82fb65c6820ca6f7c5b173fd60268389b685224231b59a30e3",
+    "ipc_lifecycle_serial.log": "c35727ca071c09b9fd0172aa0e6a819f07c717b0b47ea984b58937d4be18f629",
+    "system_manifest": "94f00c8f19f7a6fa98db64b0da2d7c97393723955502967b120e6d8ffcc81472"
+  }
+}

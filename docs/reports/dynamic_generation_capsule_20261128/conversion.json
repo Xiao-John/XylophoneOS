@@ -1,0 +1,30 @@
+{
+  "templates": {
+    "XOS_ALTERNATE_GENERATIONS": "Explicit id2/id3 generation records approved for this test.",
+    "XOS_C_SDK_BUILD": "Independently anchored static C SDK v3.",
+    "XOS_C_STAGE": "Fresh C4 stage used in this guest.",
+    "XOS_PREVIEW2_CELLAR": "Packaged Preview 2 dependencies.",
+    "XOS_PREVIEW2_PREFIX": "Preview 2 tool wrapper prefix.",
+    "XOS_PRODUCTION_SOURCE": "Immutable native/GNU producer source at the stated revision.",
+    "XOS_PUBLIC_RUNTIME_BUILD": "Fresh public GNU v4 producer build.",
+    "XOS_R2_GUEST_TEMP": "Private temporary FAT disk directory.",
+    "XOS_R2_SOURCE": "Complete matching source export used to build the launcher/probe and run R2.",
+    "XOS_WORK_DIR": "Session SDK work mount for remaining explicit producer inputs."
+  },
+  "transform": [
+    "Sort JSON object keys and template environment paths without changing observations or input identities.",
+    "Normalize serial CR/LF to LF and remove trailing whitespace; preserve marker order and values."
+  ],
+  "unpublished_raw_sha256": {
+    "guest_report.json": "3aa16766f64b1e3ae4a9cd4ce3cc965a4ef35a82dbd982da02d22d1e759caf00",
+    "guest_serial.log": "ebe4e227c974ccaf321a1365f249b9a838b4260964d2715a6455f0ae216f3d4a",
+    "launcher_build.json": "73ed30ddca0a28d3b4ef548362ebf4eb5e9092b524078e8079355c8731998992",
+    "native_cross_binding.json": "837cabc2cd6cd5c0ff92d25918b605d1bb9df09f08c7833251c5f8bfc582c17d",
+    "probe_build.json": "6dbd92af43339799e18332abe1d3379992e99fa74ca9a97c9e36ac6d07b5f343",
+    "program_build.json": "3b7b91c45b8853e4ef751a6e722d5d74d262b893cf84a7f9d237125b836ed7c5",
+    "round_0.log": "082185c824e9a04591381c0084268dab7e4a1f8cf99e003636535408c03f0bd0",
+    "round_1.log": "4b86fcc70313243b931541ebf65c1c81ff9a3443ce13cec1ee703768ab60f26a",
+    "round_2.log": "7700fa0bc2b58359c716e9457e070a9142a3feb16e336e843e578f98ecd7d026",
+    "runtime_build.json": "063e8dd8df0bb20b1df4595dc4a0b0b3f61aa4d37cd3a76fafb01ac8b21f1f21"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "generation_scope": "Volatile approval, activation, rollback and revocation inside one native controller per round.",
+  "native_and_launcher_source": "Complete matching Git export; no owned source overlays or weakened SDK header checks.",
+  "production_revision": "3699916df590a2fe0ea9b419836ded2d9344e6b3",
+  "program_producer_revision": "3699916df590a2fe0ea9b419836ded2d9344e6b3",
+  "program_sources": {
+    "scripts/build_dynamic_program.py": "a737feb737fbdf6678fe490044789027888c21447d88af45ffd993d4f2bc4e09",
+    "scripts/dynamic_artifacts.py": "e6c4401258e857c627333119f56fa46af8d8791db5ed6b19c1b27b30c0d0fdd9",
+    "scripts/dynamic_preflight.cpp": "88858058f33568477147c6a32e9741d9d1c97297ba38db4cd09a7221af5e668b",
+    "src/user/loader/dynamic/bootstrap.cpp": "b53c3eaf7d1ce33a5b153c7070cd0b88e308ecf4317cf4d6fccc39d2d42c4215",
+    "src/user/loader/dynamic/elf.cpp": "6703011b4b43e501ddbc6f9074a508fb946dc7216e1da5f52bf635b041577c14",
+    "src/user/loader/dynamic/generation.cpp": "09d55f0b2c6f0571b433ea25ec182d9305bfb9dbf932e9a234bdb741083e844e",
+    "src/user/loader/dynamic/identity.cpp": "1da4640550eee5f3766bfc01ff6f3d7cbf6d3e00c9b4c91e8fc1c5a141c365c1",
+    "src/user/loader/dynamic/startup.hpp": "0eecfdff04f4df98f21663222ecd3972575de1220a8dee55ccfe7aaeee20af67",
+    "src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "tests/fixtures/public_runtime/application.c": "ec94da5234e8535ee2763e6ccecfa9e95077fe2904a1cbea0389c112cd5dc589"
+  },
+  "runner_sources": {
+    "scripts/build_dynamic_launcher.py": "1d41e850daa829c66280cdb7ff0407e3f4ebd7a6898357b07d4d82ee6473a1e0",
+    "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+    "scripts/sdk_receipt.py": "902e3351a5ca7e3fcb99c5f5827ebb983cf65f593fcec52b55a3868388e67bbd",
+    "scripts/work_disk.py": "9ad9180df909cabfc4e3820089680ca03e1df1ebe2c2da66dada214c76c7fe28",
+    "tests/boot_smoke.py": "651b1226c871ec310bcf0c39107713f450c26962ce3ae28400639f4adf2aff63",
+    "tests/dynamic_generation_guest.py": "33aad9791530899213d76790eee3af9c9259554147aecd0ce9d6ea4ae88b043a",
+    "tests/process_smoke.py": "38e41d54222a2734b32000f30fe1677d10056454362f6d47e3b6259861721ee6",
+    "tests/shell_launch_support.py": "6a4b7d2555db36025633008fdb50ce66a0c323804985b7a37b36858edc5b7544",
+    "tests/task_smoke.py": "38ff9083d0afa4f9a77778a1bf8a689bbdba1b4307bb3d25fe9403f580a3d824"
+  },
+  "source_verification": "Every recorded system, linked fixture, SDK snapshot, runtime/program receipt and installed payload checked before and after native guest execution. Program inputs materialized from immutable Git objects and matched against recorded producer source SHA values.",
+  "startup_capsule_address": "0x71000000",
+  "startup_capsule_version": 2
+}

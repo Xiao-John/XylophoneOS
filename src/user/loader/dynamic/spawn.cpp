@@ -214,3 +214,11 @@ extern "C" long xos_dynamic_adopt_startup(xos::u64 deadline) {
     active_artifact = startup.prefix.artifact;
     return 0;
 }
+
+extern "C" __attribute__((visibility("hidden"))) long xos_dynamic_startup_ready() {
+    using namespace xos;
+    using namespace xos::dynamic;
+    if (!active_control.magic || active_control.child_pid != sdk::pid())
+        return process_error_denied;
+    return launch::notify_ready(active_control, active_artifact);
+}

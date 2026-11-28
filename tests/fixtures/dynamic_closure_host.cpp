@@ -123,6 +123,36 @@ launch::artifact artifact(u32 index) {
     launch::artifact result{}; result.id = initial.roots[index].root.id;
     std::memcpy(result.sha256, initial.roots[index].root.sha256, 32); return result;
 }
+void negative_bootstrap(const std::string& name) {
+    auto& bytes = names["/app/bootstrap"]->bytes;
+    const u64 target = name == "bootstrap_thread_arena" ? 0x70000000 : 0x71000000;
+    const u64 first_load = program_header(bytes, 1);
+    const u64 base = integer(bytes, first_load + 16, 8);
+    require(base < target, "bootstrap fixture can be shifted upward");
+    const u64 delta = target - base;
+    put(bytes, 24, integer(bytes, 24, 8) + delta, 8);
+    const u64 phoff = integer(bytes, 32, 8), count = integer(bytes, 56, 2);
+    for (u64 i = 0; i < count; ++i) {
+        const u64 at = phoff + 56 * i;
+        for (const u32 field : {16U, 24U}) {
+            const u64 address = integer(bytes, at + field, 8);
+            if (address) put(bytes, at + field, address + delta, 8);
+        }
+    }
+    // Retain the actual read-only identity NOTE in its original LOAD and move
+    // every virtual address consistently. Legacy static admission accepts this
+    // ELF; only dynamic bootstrap admission reserves workers and the capsule.
+    elf::load_plan ordinary{};
+    require(elf::inspect(bytes.data(), bytes.size(), elf::machine_x86_64, ordinary) == elf::error::none
+            && ordinary.count && ordinary.segments[0].address == target,
+            "ordinary static inspector accepts shifted real bootstrap");
+    for (u32 i = 0; i < 2; ++i) {
+        hash(bytes.data(), static_cast<u32>(bytes.size()), generations[i].objects[0].sha256);
+        install_manifest(i);
+    }
+    require(configure(initial, deadline()) == error::bounds && !configured() && handles.empty(),
+            "approved dynamic bootstrap cannot overlap worker or capsule storage");
+}
 void negative_elf(const std::string& name) {
     const u32 index = name == "elf_soname" || name == "elf_tls" ? 3 : 2;
     const char* path = index == 3 ? "/lib/libstdc++.so.6" : "/app/main";
@@ -221,6 +251,8 @@ int main(int argc, char** argv) {
     } else if (name == "wrong_sdk") {
         initial.sdk_sha256[0] ^= 1;
         require(configure(initial, deadline()) == error::sdk && !configured() && handles.empty(), "trusted SDK identity mismatch");
+    } else if (name.starts_with("bootstrap_")) {
+        negative_bootstrap(name);
     } else if (name.starts_with("elf_")) {
         negative_elf(name);
     } else if (name == "configure_close_unknown") {

@@ -169,3 +169,32 @@ unsupported；写半关闭后 send 返回 closed。其后仍需 close/cancel 释
 
 本扩展不提供事件订阅、阻塞 wait-set、POSIX 非阻塞 connect 或监听。等待者使用
 同一个绝对单调截止时刻重查 level；实际 readiness 不等于消息已消费或副作用可重放。
+
+## P1-F peer policy 认领（未实施资格）
+
+为使 ClarkE 在既有 16 个撤销 PID 上限内反复创建和回收 renderer，P1-F 认领
+可选 operation 21 `peer_policy`。本节只协调接口，尚不宣称实现或 guest 通过。
+原操作 8 revoke 的拒绝策略保持；操作 19/20 及 capabilities revision 2 已由
+P1-H 认领，本接口不占用其能力位，也不改变旧 revision 1 的响应。
+
+operation 21 请求的 object 为目标 PID，16 字节 payload 为四个 u32：
+revision=1、size=16、action、reserved=0。action 0 查询要求 object=0；
+action 1 `release_retired` 要求 object 非零且不等于 bootstrap controller。
+仅内核认证的 bootstrap controller 会话获准调用；普通 UI、renderer、broker
+和任意自填 PID 均不能取得该权限。无关报头字段必须为零，deadline、sequence、
+版本与会话身份检查沿用既有协议。
+
+成功 payload 为四个 u32：revision=1、size=16、occupied、capacity=16，flags=0。
+查询不修改状态。回收只移除该 PID 的撤销记录；重复明确的回收不影响其它 PID，
+也不复活原会话/连接。invalid、denied、timeout、unsupported 等使用原错误域。
+未知结果关闭本地会话并保留不确定状态，不把未知当成回收确认。
+
+生命周期前提由可信 controller 保证：已运行的 renderer 必须成功 wait/reap；
+从未运行的 child 必须由 loader 明确报告 never_started、abort_attempted 和
+真实 kernel abort 返回零。启动/中止结果未知时保留撤销记录并终止本浏览会话。
+UI 不提供可执行路径、PID 或回收命令，实际 PID 由 Xsh 自己创建并追踪。
+
+旧服务可返回 unsupported；新 controller 在开始导航前调用只读 query 验明版本
+和容量，无法确认时拒绝启动该可回收隔离模式。rollback 不隐式恢复 renderer
+原始网络权限。实现验收须覆盖超过 16 次导航、普通客户端越权拒绝、实际 wait、
+start 拒绝/abort 成功、abort 未确认、服务死亡和无关网络所有者继续可用。

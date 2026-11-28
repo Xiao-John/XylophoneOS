@@ -94,8 +94,10 @@ dynamic::install_anchored(binding, deadline) 读取当前持久 catalog，再调
 进程也不能通过选择另一个仍获批准的根绕过撤销。原生受信控制器没有 GNU
 artifact 时可有空 owner；它仍需核对当前和目标。
 
-fork 保留独立政策及自身身份，但每次 admission 重新连接 authority；同 PID exec
-从新只读 capsule 恢复绑定与新 artifact。后代不能因持有旧的本地 policy
+独立进程的每次 admission 重新连接 authority；同 PID exec 从新只读 capsule
+恢复绑定与新 artifact。源码中的 fork-aware 本地状态不复用父进程 endpoint，
+但 shared GNU fork 当前仍返回 ENOSYS，其运行资格归独立 P1-K2，本文不声明
+shared fork 支持。实际后代通过 GNU posix_spawn 产生。后代不能因持有旧的本地 policy
 snapshot 而绕过当前撤销。已经获准的 grant-to-commit 事务可以完成，不承诺即时
 终止计算、取消已接受的所有事务或广播停掉进程树。撤销以明确的 root 为单位；
 先前已合法转换到另一根的进程不自动继承被撤销旧根的永久污点，必要时管理员
@@ -128,18 +130,30 @@ Host authority 测试直接编译生产读取和 admission 代码，覆盖 owner
 
 tests/pumpkin_catalog_guest.py 通过真实 private Files 和 daemon IPC 运行两个
 GNU generation：注入拒绝、已提交但答复未知和未提交且答复未知，再在新 VM
-中实际启动被选中的旧或新 ELF；另用真正的 reexec、fork 子进程和孙进程检查
+中实际启动被选中的旧或新 ELF；另用真正的 reexec 和 GNU posix_spawn 产生的
+父、子、孙三代进程检查
 撤销前可启动、撤销后拒绝，以及 daemon 不可用时拒绝。显式原生 owner 种子
 测试与 GNU 后代测试分别记录，不能互相替代。
 
 该测试 profile 以现有 sys84 named pair 承载 supervisor/proxy 控制消息；双方
 核对实际 kernel peer，并完成精确 PPC1 HELLO/ACK。daemon/proxy backing
-仍使用 sys81，主管在启动前枚举并要求自己持有两个 sys81 endpoint，给真实
-动态 READY/ACK 留出现有配额。默认 E/P2 profile 和内核容量不变。串口帧中
+仍使用 sys81，夹具保存两次成功 create 的真实 handle，双方独立核对 kernel
+peer/owner。主管启动前枚举的 sender/receiver 可见且自身 owned endpoint
+必须为零；enumeration 不列出仅由它 owned 的第三方 pair。两次 backing
+创建与成功的动态启动共同证明现有配额容纳 backing 和真实 READY/ACK。
+默认 E/P2 profile 和内核容量不变。串口帧中
 100–179 为启动 stage/error 的失败诊断，只有 finish 1 可判为通过。
 
+完整 launch acceptance 另显式选择 --pumpkin-launch-storage-lease，将 backing
+storage lease 设为固定 300 秒，profile 与 duration_ns 都进入 build manifest
+及 build_id。该选项要求 provisioning、隔离输出和明确 launch fixture；普通
+short-operation 仍为 30 秒，desktop 仍为 1860 秒。每次 PPR/PCQ 及存储 RPC
+期限保持原值，没有自动续租或未知结果重放。三代程序和完整安装跨过短租约
+时不能把 backing 到期误算成 catalog 拒绝。shared fork 的失败与租约边界
+分别记录；只有实际选择该 profile 的 guest 结果可归入此资格。
+
 独立 provider gate 在真实 Linux VM 内使用实际 UID 1001/1002/1003；它核对
-peer、私有记录权限、CAS、格式拒绝和 provider 冷重启。它不证明用户物理宿主
+peer、私有记录权限、CAS、格式拒绝和 provider 进程重启。它不证明用户物理宿主
 已部署。XOS guest 的 developer authority、Linux UID isolation、物理硬件和
 任意断电是不同资格。普通 sync/reboot、停止 QEMU、杀死 host 进程均不能
 冒称任意掉电验证。

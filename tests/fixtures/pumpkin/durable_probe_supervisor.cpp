@@ -78,12 +78,14 @@ public:
         options.stdio[0] = pipe.read_token;
         const char* mode = initialize ? "--durable-init-test" : "--durable-test";
 #if XOS_PUMPKIN_ANCHORED_PROBE
+        struct backing_offer { u64 proxy; anchor_guest::pair* channels; };
+        backing_offer backing{anchor.proxy, &backing_channels};
         if (anchor.proxy != 0) {
             mode = initialize ? "--anchored-init-test" : "--anchored-test";
-            options.prepare_context = &anchor.proxy;
+            options.prepare_context = &backing;
             options.prepare_child = [](u64 child, void* context) -> i64 {
-                anchor_guest::pair endpoints{};
-                return anchor_guest::create_pair(child, *static_cast<u64*>(context), endpoints)
+                auto& offered = *static_cast<backing_offer*>(context);
+                return anchor_guest::create_pair(child, offered.proxy, *offered.channels)
                     ? 0 : process_error_denied;
             };
         }
@@ -130,6 +132,12 @@ public:
     u64 pid = 0;
     ipc_client control;
     bool control_admitted = false;
+#if XOS_PUMPKIN_ANCHORED_PROBE
+    // Kernel-returned handles for the owner-only daemon/proxy sys81 pair.
+    // channel_get enumerates only sender/receiver participation, so this pair
+    // cannot be counted by enumerating the supervisor's visible endpoints.
+    anchor_guest::pair backing_channels{};
+#endif
 
 private:
     bool accept_control(discovery& entry) {

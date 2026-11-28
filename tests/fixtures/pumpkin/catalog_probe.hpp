@@ -3,8 +3,13 @@
 // crosses the production daemon transport; the catalog itself is explicit test
 // provisioning and is not evidence of signed repository verification.
 u8 catalog_failure = 0;
+u32 catalog_received_bytes = 0;
 
-bool catalog_channel_budget() {
+bool catalog_channel_budget(const daemon& server) {
+    if (!server.pid || !server.backing_channels.transmit || !server.backing_channels.receive ||
+        server.backing_channels.transmit == server.backing_channels.receive) {
+        catalog_failure = 14; return false;
+    }
     u32 owned = 0;
     for (u32 i = 0; i < 32; ++i) {
         channel_info info{};
@@ -15,7 +20,11 @@ bool catalog_channel_budget() {
         }
         if (info.controller_pid == sdk::pid()) ++owned;
     }
-    if (owned != 2) { catalog_failure = 15; return false; }
+    // Enumeration excludes channels where this PID is owner but neither peer.
+    // The two successful backing create calls are recorded above; both peers
+    // independently authenticate their owner and opposite peer with find_pair.
+    // No legacy control pair may additionally be visible to this supervisor.
+    if (owned != 0) { catalog_failure = 15; return false; }
     return true;
 }
 u64 catalog_deadline() {
@@ -95,8 +104,8 @@ bool catalog_wait(i64 child) {
     return true;
 }
 bool catalog_leaf(daemon& server, u32 active, u32 revoked) {
-    return catalog_channel_budget() && catalog_install(server, active, revoked) &&
-        catalog_wait(catalog_child(active)) && catalog_channel_budget();
+    return catalog_channel_budget(server) && catalog_install(server, active, revoked) &&
+        catalog_wait(catalog_child(active)) && catalog_channel_budget(server);
 }
 bool catalog_switch(daemon& server, status expected) {
     provisioning_reply reply{};
@@ -108,13 +117,14 @@ bool catalog_switch(daemon& server, status expected) {
     return expected == status::outcome_unknown || catalog_leaf(server, expected == status::ok ? 1u : 0u, 0);
 }
 bool catalog_pipe_bytes(u32 handle, char expected, u32 count) {
+    catalog_received_bytes = 0;
     const auto started = sdk::syscall(sys_clock_monotonic);
     if (started < 0) return false;
     const auto end = static_cast<u64>(started) + 60'000'000'000;
     while (count) {
         char value = 0;
         const auto result = sdk::syscall(sys_pipe_read, handle, reinterpret_cast<u64>(&value), 1);
-        if (result == 1) { if (value != expected) return false; --count; continue; }
+        if (result == 1) { if (value != expected) return false; --count; ++catalog_received_bytes; continue; }
         if (result != process_error_would_block) return false;
         // Reexec requests arrive at the parent's real launch-control endpoint.
         if (launch::poll() < 0) return false;
@@ -125,7 +135,7 @@ bool catalog_pipe_bytes(u32 handle, char expected, u32 count) {
     return true;
 }
 bool catalog_descendants(daemon& server, bool unavailable) {
-    if (!catalog_channel_budget() || !catalog_install(server, 0, 0)) return false;
+    if (!catalog_channel_budget(server) || !catalog_install(server, 0, 0)) return false;
     pipe_handles input{}, output{};
     if (sdk::syscall(sys_pipe_create, reinterpret_cast<u64>(&input)) ||
         sdk::syscall(sys_pipe_create, reinterpret_cast<u64>(&output))) { catalog_failure = 7; return false; }
@@ -133,7 +143,17 @@ bool catalog_descendants(daemon& server, bool unavailable) {
                                      input.read_token, output.write_token);
     close_pipe(input.read_token); close_pipe(output.write_token);
     bool ready = child > 0 && catalog_pipe_bytes(output.read_token, 'R', 3);
-    if (!ready && !catalog_failure) catalog_failure = 8;
+    if (!ready && !catalog_failure) {
+        process_status ended{};
+        const auto waited = sdk::wait_flags(static_cast<u64>(child), ended, process_wait_nonblocking);
+        if (waited == 0 && ended.outcome == process_outcome::exited) {
+            catalog_failure = static_cast<u8>(ended.code < 64 ? 181 + ended.code : 244);
+        } else {
+            // Distinguish the number of actual ready descendants from a child
+            // exit. This is diagnostic only; every code remains a failure.
+            catalog_failure = static_cast<u8>(20 + catalog_received_bytes);
+        }
+    }
     if (ready && unavailable) {
         ready = server.stop();
     } else if (ready) {

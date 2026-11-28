@@ -21,7 +21,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
                 pumpkin_user_resource=False, pumpkin_named_resource_store=False, pumpkin_provisioning_store=False,
                 quiet_demos_on_launch=False, net_dns_probe=False, pumpkin_mobius=False,
                 net_static_profile=None, pumpkin_deployment_realm=None, net_dhcp_profile=None,
-                files_uncertain_probe=False, pumpkin_catalog_fixture=False):
+                files_uncertain_probe=False, pumpkin_catalog_fixture=False,
+                pumpkin_launch_probe=False, pumpkin_launch_storage_lease=False):
     capture = capture_build(build, build_id, 'xos-source-declarations')
     sdk = build / "sdk"
     if sdk.is_symlink():
@@ -113,7 +114,9 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
     if pumpkin_provisioning_store:
         login_flags += ("-DXOS_PUMPKIN_PROVISIONING_STORE=1",)
     if pumpkin_catalog_fixture:
-        login_flags += ("-DXOS_PUMPKIN_CATALOG_PROBE=1", "-DXOS_PUMPKIN_LAUNCH_PROBE=1", "-I", str(build))
+        login_flags += ("-DXOS_PUMPKIN_CATALOG_PROBE=1", "-I", str(build))
+    if pumpkin_catalog_fixture or pumpkin_launch_probe:
+        login_flags += ("-DXOS_PUMPKIN_LAUNCH_PROBE=1",)
     provisioning_flags = ("-DXOS_PUMPKIN_PROVISIONING_STORE=1",) if pumpkin_provisioning_store else ()
     durable_flags += login_flags
     private_storage_flags = (("-DXOS_FILES_PRIVATE_STORAGE_PROBE=1", *private_client_flags)
@@ -247,6 +250,8 @@ def build_users(root, build, nasm, run, build_id, terminal_supervisor_probe=Fals
             extra_flags += private_storage_flags
             if pumpkin_mobius:
                 extra_flags += ("-DXOS_FILES_PRIVATE_DESKTOP_LEASE=1",)
+            if pumpkin_launch_storage_lease:
+                extra_flags += ("-DXOS_FILES_PRIVATE_LAUNCH_LEASE=1",)
         if name in ("pumpkin_durable", "p2_auth_probe", "p2_anchor_proxy", "pumpkin_holder", "p2_sealed"):
             extra_flags += ("-Os", *durable_flags)
         if name == "net_service":

@@ -1,0 +1,707 @@
+{
+  "boots": {
+    "authority_unavailable": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2448,
+          "sha256": "1c8d307779804e4011d08dfa2a6ca557eccde8752551993ca4d2bc06cb296b38"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 28,
+        "status": "passed"
+      }
+    },
+    "cold_all_revoked": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2475,
+          "sha256": "4513997fde4e5883ca53383cbd4d359da8708cda8d8e6e5cd45f00961518824f"
+        }
+      },
+      "result": {
+        "authority_revision": 4,
+        "events": [
+          {
+            "read_revision": 4
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 31,
+        "status": "passed"
+      }
+    },
+    "cold_revoked": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2467,
+          "sha256": "e5c9725171aacdb3086e2f27b942f67178c3001a0e3eea3cf184fca25b14620b"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 3
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 25,
+        "status": "passed"
+      }
+    },
+    "committed_unknown_cold_recovery": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2448,
+          "sha256": "1c8d307779804e4011d08dfa2a6ca557eccde8752551993ca4d2bc06cb296b38"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 3
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 23,
+        "status": "passed"
+      }
+    },
+    "committed_unknown_initial": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2897,
+          "sha256": "8549d34ec31bcbc01af1979b720ee0ad4dcfe9fa12babdc6b6b45d77d5b84094"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": null
+          },
+          {
+            "candidate_revision": 1,
+            "reply": "committed",
+            "selected_revision": 1
+          },
+          {
+            "read_revision": 1
+          },
+          {
+            "candidate_revision": 2,
+            "reply": "committed",
+            "selected_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 20,
+        "status": "passed"
+      }
+    },
+    "committed_unknown_mutation": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2731,
+          "sha256": "7f7c88eeec07d4b2b2a61eb39808804ec75518941498ee7d85eaaa3509cd2356"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 2
+          },
+          {
+            "read_revision": 2
+          },
+          {
+            "candidate_revision": 3,
+            "reply": "outcome_unknown",
+            "selected_revision": 3
+          }
+        ],
+        "fault": "committed_unknown",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 26,
+        "status": "passed"
+      }
+    },
+    "committed_unknown_stale_disk": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2447,
+          "sha256": "b0c8c2de0828b504a8cc8fe78cdb1e77e8e4ff62268034d047f78410d63ea8b9"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 3
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 3,
+        "status": "passed"
+      }
+    },
+    "gnu_live_revoke": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2730,
+          "sha256": "91dc925b1c3d915fc850b330fbcfd96b55247573871714c6b8ef3612a7ff1e5e"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 2
+          },
+          {
+            "read_revision": 2
+          },
+          {
+            "candidate_revision": 3,
+            "reply": "committed",
+            "selected_revision": 3
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 24,
+        "status": "passed"
+      }
+    },
+    "initial": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2804,
+          "sha256": "3902e745f44b70c1fd2ce4b9245b272adbc682369b7d75a1cbec072b58bf71b8"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": null
+          },
+          {
+            "candidate_revision": 1,
+            "reply": "committed",
+            "selected_revision": 1
+          },
+          {
+            "read_revision": 1
+          },
+          {
+            "candidate_revision": 2,
+            "reply": "committed",
+            "selected_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 20,
+        "status": "passed"
+      }
+    },
+    "native_owner_after": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2480,
+          "sha256": "93afd6eb5b290b5453932dba62388ecb722654108c26e6fb63e88b6ab797c6c8"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 3
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 29,
+        "status": "passed"
+      }
+    },
+    "native_owner_before": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2497,
+          "sha256": "e24d8701e1aff473ea85d13c5f0c683d115f86aca42c4e58dd5b94ab8bd71911"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 29,
+        "status": "passed"
+      }
+    },
+    "none_cold_recovery": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2371,
+          "sha256": "3557d145473acec988194b1a843b8cee0d7336f1e27cf111594f2c30e0d2125d"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 3
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 23,
+        "status": "passed"
+      }
+    },
+    "none_initial": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2777,
+          "sha256": "deb076b952f0e22a77a3651e5613cf98f86757d00ac651f3941588c6ecf4e867"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": null
+          },
+          {
+            "candidate_revision": 1,
+            "reply": "committed",
+            "selected_revision": 1
+          },
+          {
+            "read_revision": 1
+          },
+          {
+            "candidate_revision": 2,
+            "reply": "committed",
+            "selected_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 20,
+        "status": "passed"
+      }
+    },
+    "none_mutation": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2761,
+          "sha256": "37580332fc8818c2a69a817402867c0247f262bb7a21ed0b5ec24f85758e6149"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 2
+          },
+          {
+            "read_revision": 2
+          },
+          {
+            "candidate_revision": 3,
+            "reply": "committed",
+            "selected_revision": 3
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 22,
+        "status": "passed"
+      }
+    },
+    "none_stale_disk": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2417,
+          "sha256": "cdd183f5cb4610f15b900063db10ef9cb893ca078ea17eb5af2645e6d6e1d523"
+        }
+      },
+      "result": {
+        "authority_revision": 3,
+        "events": [
+          {
+            "read_revision": 3
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 3,
+        "status": "passed"
+      }
+    },
+    "rejected_cas_cold_recovery": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2474,
+          "sha256": "7fb4002ca33ce834510994421f9446773e94eef2e29a5938ec420f29cfc7691e"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 21,
+        "status": "passed"
+      }
+    },
+    "rejected_cas_initial": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2826,
+          "sha256": "4239f16948e4ef1a821fdb98388614a3e67195fc94dfb8796447e816c6521512"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": null
+          },
+          {
+            "candidate_revision": 1,
+            "reply": "committed",
+            "selected_revision": 1
+          },
+          {
+            "read_revision": 1
+          },
+          {
+            "candidate_revision": 2,
+            "reply": "committed",
+            "selected_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 20,
+        "status": "passed"
+      }
+    },
+    "rejected_cas_mutation": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2695,
+          "sha256": "55fc581c3d300ce0a0fbf961e366d97c8df3a85907c80fdfa88bf32df1e12f45"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": 2
+          },
+          {
+            "read_revision": 2
+          },
+          {
+            "candidate_revision": 3,
+            "reply": "unchanged",
+            "selected_revision": 2
+          }
+        ],
+        "fault": "rejected_cas",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 27,
+        "status": "passed"
+      }
+    },
+    "revoke_last": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2763,
+          "sha256": "b03601a500ff3de31b827f4eb9033d8cc0ed82d54cf904856f89fc4cb2a10a56"
+        }
+      },
+      "result": {
+        "authority_revision": 4,
+        "events": [
+          {
+            "read_revision": 3
+          },
+          {
+            "read_revision": 3
+          },
+          {
+            "candidate_revision": 4,
+            "reply": "committed",
+            "selected_revision": 4
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 30,
+        "status": "passed"
+      }
+    },
+    "unavailable_initial": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2899,
+          "sha256": "40652e9672d15fab551081b68101410fbf9d1303e389ee82a5fa8a4848ac59b3"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": null
+          },
+          {
+            "candidate_revision": 1,
+            "reply": "committed",
+            "selected_revision": 1
+          },
+          {
+            "read_revision": 1
+          },
+          {
+            "candidate_revision": 2,
+            "reply": "committed",
+            "selected_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 20,
+        "status": "passed"
+      }
+    },
+    "uncommitted_unknown_cold_recovery": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2448,
+          "sha256": "1c8d307779804e4011d08dfa2a6ca557eccde8752551993ca4d2bc06cb296b38"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 21,
+        "status": "passed"
+      }
+    },
+    "uncommitted_unknown_initial": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2874,
+          "sha256": "6d33b9054b44cf7524fd287041a52c8d2e2fcc18913894628d83864a12523e2d"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": null
+          },
+          {
+            "candidate_revision": 1,
+            "reply": "committed",
+            "selected_revision": 1
+          },
+          {
+            "read_revision": 1
+          },
+          {
+            "candidate_revision": 2,
+            "reply": "committed",
+            "selected_revision": 2
+          }
+        ],
+        "fault": "none",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 20,
+        "status": "passed"
+      }
+    },
+    "uncommitted_unknown_mutation": {
+      "raw_log_digests": {
+        "qemu": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "serial": {
+          "bytes": 2762,
+          "sha256": "0c46d22e719d61e526b454a8d6b5f160843c6388dc47affe75f2375a5dc1da0f"
+        }
+      },
+      "result": {
+        "authority_revision": 2,
+        "events": [
+          {
+            "read_revision": 2
+          },
+          {
+            "read_revision": 2
+          },
+          {
+            "candidate_revision": 3,
+            "reply": "outcome_unknown",
+            "selected_revision": 2
+          }
+        ],
+        "fault": "uncommitted_unknown",
+        "finish_code": 1,
+        "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "scenario": 26,
+        "status": "passed"
+      }
+    }
+  },
+  "format": "xos-p1c-actual-boot-records-v1",
+  "status": "passed"
+}

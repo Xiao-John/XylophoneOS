@@ -2219,7 +2219,12 @@ extern "C" int xos_user_main(const xos::startup_info*) {
     if (mounted) { recover(); if (!recovery_failed) { recover_orphans(); } }
 #if XOS_FILES_PRIVATE_CLIENT_PROBE
     namespace storage = user::files_private_storage;
-#if XOS_FILES_PRIVATE_DESKTOP_LEASE
+#if XOS_FILES_PRIVATE_LAUNCH_LEASE && XOS_FILES_PRIVATE_DESKTOP_LEASE
+#error "Select one explicit private storage lease profile"
+#elif XOS_FILES_PRIVATE_LAUNCH_LEASE
+    // Isolated provisioning launch acceptance; never selected by default.
+    constexpr auto lease = storage::lease_profile::launch_acceptance;
+#elif XOS_FILES_PRIVATE_DESKTOP_LEASE
     // The authenticated desktop supervisor owns the backing store for its full session.
     constexpr auto lease = storage::lease_profile::desktop;
 #else

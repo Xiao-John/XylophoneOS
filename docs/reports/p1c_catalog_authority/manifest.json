@@ -1,9 +1,18 @@
 {
   "files": {
+    "README.md": "9e57d3f43fdadd796724d519fe565ac3f8a022d8e73ad111e6a880d1c194b1a6",
     "authority_host.json": "b6aae6eb3e56ae41444d67f467042bf4dad06e80e613deebfa6b4b4002d21ce2",
-    "build_bindings.json": "d8a7a15d9806306affe660bf63cab8964a00ba96cdd7c0659ffa51c733a8758e",
+    "build_bindings.json": "bbf8988c2b797c9547a08d6c7d6d8008810034aa15191c80dbc657d06c82be4d",
     "closure_host.json": "53d3dd87e5a8bf5e4e6f840fa5aa80df61c225e0f09dc1af695c1abe4e9dbb27",
+    "early_diagnostic.json": "0105a8636b87e0427661f5883bfb959df0667daafdfe071e615afea7ef09ae7c",
+    "guest_boots.json": "7f3fb1dc90128752871feccb22360aeb5a4e4a02796584b1e2c9aa0cba1ab97c",
+    "guest_conversion.json": "658d411828cfe9c967e1442840e165eb09fa6e32e83439ce569b3a8e06d3c65e",
+    "guest_report.json": "c28d990b93178ff8652ba0725668b982369c82cf8026b3abc89fc52b487d8a68",
     "host_conversion.json": "ed3a3efa9f1086ed0c1984009e18e76f8c414285ab723640bc64a78ab1826f73",
+    "launch_lease_host.json": "30ee6925f8fcb7558371c89a2a92fdb8649df8a178ec85fcef035f636a1e123d",
+    "program_201.json": "92337eb0e3c1fc7e678b90cd863b2282d3487ac4a78edd84195f3a41c63493b8",
+    "program_202.json": "2a8940b860cdf9b63042cbd9be1657fe4050eac24167632c4015b2f4f49d45a5",
+    "program_conversion.json": "3161145c623010bc2657ee2a334bb14183f1ef9b2e0a4e8e1ced167d5255467b",
     "provider_conversion.json": "b9cdf5a7a7217c809ff61ea6e926e298a57e0a121b8e6b74d91c00ab8b2486a1",
     "provider_report.json": "f959a9b6cd0399eaaa13ea3edc6b3df5926fa448c5a9c01e621293b2c9a1704b",
     "provider_vm_initramfs.json": "68afe7f702a6764955a53dceac3fe25ec6b586432702848979158d3e73f6725f",
@@ -11,7 +20,9 @@
     "provider_vm_qemu.json": "d462471736c72f9cb413d26a8a11b61c2b79817d191ef2a04c18578e129713bb",
     "provider_vm_receipt.json": "9df4af73d986fe3a677e4d26df836a2ceafda75744c426929b0cb11f6c467590",
     "provider_vm_sources.json": "466dfcfae8ff38a8fc991f9cc4b16a0a2d2344fbf2d233b629eba3b632e4aa2e",
-    "provisioning_host.json": "25a9e1da9cefae4a919a3dd2091f14014b5eb38211a6fae01790c18b7e2760ee"
+    "provisioning_host.json": "25a9e1da9cefae4a919a3dd2091f14014b5eb38211a6fae01790c18b7e2760ee",
+    "shared_fork_disassembly.txt": "4e46cdca19971691bb12a76dd9362effbb3fe8e25595c879876c4e14905a3d17",
+    "system_build.json": "59e8c9a26282fdb7914569204a08c026f7c012bc47ffba4f3e7134055b5a39e0"
   },
   "version": 1
 }

@@ -1,0 +1,227 @@
+{
+  "status": "passed",
+  "system": {
+    "build_id": "6477a33592698159",
+    "manifest_sha256": "8b580a5dc75f2ce90b4a5a4c14eae01d7390a685025993baa058b92eb7dbcea5",
+    "sdk_manifest_sha256": "aed789512dc9f2498d5c82361e1157180bf537e2f853a290bc1eaf34995dcdf2",
+    "sdk_tree_sha256": "50ac56fd65d2c4924cfc6da03b078a7b1bc79609080f8728681176b38bcfe69c",
+    "artifacts": {
+      "xos-install.iso": "d7e91c926050bc7f8595602abff37bcfd237bf3c69ab7edc02870dabecdb5494",
+      "user_files.image.elf": "9d5b07f82bed4d5a2069d638a6dea5a9bb60d059ec8d333796d5dd71d915fb93",
+      "user_supervisor.image.elf": "1d2740842289de04b737654804f0dcb12d22435323c42b4dd534b5b58169291e",
+      "user_pumpkin_durable.image.elf": "c7dd9217d37fd1e36ecec9056080eaef0f9dbffdec01a91a25539eeaac2e6fac",
+      "user_p2_anchor_proxy.image.elf": "d91164444857f9b10f134bd8d0396d856284870523cac1d23d0078d875d778d3"
+    }
+  },
+  "programs": [
+    {
+      "build_manifest_sha256": "3c68c2ede4d306e151ce74315d2bc1166cb1d37567434764b132962777804810",
+      "generation": {
+        "local": "payload/generation.bin",
+        "guest": "/usr/lib/xos/generations/p1c201.bin",
+        "id": 201,
+        "sha256": "35d735aae26a5502d9ad3dbfceecedbe1217a09b3fea42133ef2121e166ca47d"
+      },
+      "sdk_binding": {
+        "libc_version": "2.44",
+        "runtime_model": "threaded",
+        "compiler": {
+          "target": "x86_64-elf",
+          "version": "16.2.0",
+          "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+        },
+        "source_authentication": {
+          "status": "upstream_signature_verified",
+          "report_sha256": "3e4af7cce082eb1991aa7dcbeef6a1753c24a39b7e50873331b0226cc8981f47",
+          "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+          "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+          "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+          "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+          "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+          "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+          "verification_files": {
+            "source_verification/report.json": "3e4af7cce082eb1991aa7dcbeef6a1753c24a39b7e50873331b0226cc8981f47",
+            "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+            "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+            "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af"
+          }
+        },
+        "cxx_runtime": null,
+        "archive_members": {
+          "usr/lib/libc.a": 1688,
+          "usr/lib/libm.a": 831,
+          "usr/lib/libgcc.a": 147,
+          "usr/lib/libxos_terminal.a": 17
+        },
+        "link_artifacts": {
+          "usr/lib/libc.a": "ec14da8503339cb3d2667759e8eaf00922beac5417d70cae42cf3a318bdd2570",
+          "usr/lib/libm.a": "80ab9b97341e1033bae66ae93c4d16962cc043307cdb28ecc6ceab8880b3610f",
+          "usr/lib/libgcc.a": "88beb76641fdae379002b70e5bbb59fb1da96ae476c5d2bc703f738cdc4924c0",
+          "usr/lib/libxos_terminal.a": "6313f89b1df5c82fd5ced0cdd0c11292addd5ae80e946ac51e6314257f8b6526",
+          "usr/lib/xos_start.o": "48084e19037c54f1ca8da325404011528656d457698f030e46a9a7f1930f979c",
+          "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+          "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+          "usr/lib/xos_start_c.o": "199c4a3c68f392555542ede7654e06c7aea35c277aa0019bbc8330cc0b3fa69c",
+          "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+          "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+          "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d"
+        },
+        "format_version": 1,
+        "runtime_family": "glibc",
+        "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+        "sdk_tree_sha256": "ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254"
+      },
+      "native_sdk_binding": {
+        "sdk_manifest_sha256": "d2f47f5e16cd7b36da3e1e8e969f91639dad122751674ed6bebf23ad7ca9fce4",
+        "sdk_tree_sha256": "71538fd10792c7a14572a059f6cbf1a999eaff21d6cd12597dfae09ee54121d8",
+        "target": "x86_64-elf",
+        "abi": 1
+      },
+      "native_abi": "9dafe8ee0e45fbc1ccb00ee2362d1be5db38584553efcb8ae7a50d699cd4c849",
+      "guest_files": {
+        "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "a1d55c28186af302cdd4dcba5402663cfe8af8b7cedd8f904abf230eeaf399dc",
+        "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "bea7ada46c03b2c2ad1233de0784651a5e70dd9929b52472e0fc735973318a2b",
+        "/apps/p1c201/main": "f5268f807e0ee840b9bc7a3dcf2064d392b4442b3220556296ae53867efdb944",
+        "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "370dfd7a5d03e7ef8405c237354e5a40d9de89072058e56be2f0e7499d87955b"
+      }
+    },
+    {
+      "build_manifest_sha256": "732f614a962e805458dc351366463761b2ba7592eb1d9675f5a896e6ddfb92f4",
+      "generation": {
+        "local": "payload/generation.bin",
+        "guest": "/usr/lib/xos/generations/p1c202.bin",
+        "id": 202,
+        "sha256": "e979b30b40930b35a746d2afcd45b17afc23d7d028f1034312e1163e7b8e28ae"
+      },
+      "sdk_binding": {
+        "libc_version": "2.44",
+        "runtime_model": "threaded",
+        "compiler": {
+          "target": "x86_64-elf",
+          "version": "16.2.0",
+          "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+        },
+        "source_authentication": {
+          "status": "upstream_signature_verified",
+          "report_sha256": "3e4af7cce082eb1991aa7dcbeef6a1753c24a39b7e50873331b0226cc8981f47",
+          "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+          "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+          "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+          "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+          "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+          "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+          "verification_files": {
+            "source_verification/report.json": "3e4af7cce082eb1991aa7dcbeef6a1753c24a39b7e50873331b0226cc8981f47",
+            "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+            "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+            "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af"
+          }
+        },
+        "cxx_runtime": null,
+        "archive_members": {
+          "usr/lib/libc.a": 1688,
+          "usr/lib/libm.a": 831,
+          "usr/lib/libgcc.a": 147,
+          "usr/lib/libxos_terminal.a": 17
+        },
+        "link_artifacts": {
+          "usr/lib/libc.a": "ec14da8503339cb3d2667759e8eaf00922beac5417d70cae42cf3a318bdd2570",
+          "usr/lib/libm.a": "80ab9b97341e1033bae66ae93c4d16962cc043307cdb28ecc6ceab8880b3610f",
+          "usr/lib/libgcc.a": "88beb76641fdae379002b70e5bbb59fb1da96ae476c5d2bc703f738cdc4924c0",
+          "usr/lib/libxos_terminal.a": "6313f89b1df5c82fd5ced0cdd0c11292addd5ae80e946ac51e6314257f8b6526",
+          "usr/lib/xos_start.o": "48084e19037c54f1ca8da325404011528656d457698f030e46a9a7f1930f979c",
+          "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+          "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+          "usr/lib/xos_start_c.o": "199c4a3c68f392555542ede7654e06c7aea35c277aa0019bbc8330cc0b3fa69c",
+          "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+          "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+          "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d"
+        },
+        "format_version": 1,
+        "runtime_family": "glibc",
+        "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+        "sdk_tree_sha256": "ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254"
+      },
+      "native_sdk_binding": {
+        "sdk_manifest_sha256": "d2f47f5e16cd7b36da3e1e8e969f91639dad122751674ed6bebf23ad7ca9fce4",
+        "sdk_tree_sha256": "71538fd10792c7a14572a059f6cbf1a999eaff21d6cd12597dfae09ee54121d8",
+        "target": "x86_64-elf",
+        "abi": 1
+      },
+      "native_abi": "9dafe8ee0e45fbc1ccb00ee2362d1be5db38584553efcb8ae7a50d699cd4c849",
+      "guest_files": {
+        "/usr/lib/xos/glibc_dynamic_v1/bootstrap": "a1d55c28186af302cdd4dcba5402663cfe8af8b7cedd8f904abf230eeaf399dc",
+        "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": "bea7ada46c03b2c2ad1233de0784651a5e70dd9929b52472e0fc735973318a2b",
+        "/apps/p1c202/main": "f5268f807e0ee840b9bc7a3dcf2064d392b4442b3220556296ae53867efdb944",
+        "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": "370dfd7a5d03e7ef8405c237354e5a40d9de89072058e56be2f0e7499d87955b"
+      }
+    }
+  ],
+  "fixture_sha256": "d2aca723d462677e462cb889d2406e9c1e056f5ad4dfc9a3f682bdf3ba983f3d",
+  "profile": "provisioning/private-region-v2/capsule-v3",
+  "scope": "real GNU descendants and guest Files/IPC; developer authority CAS/ACK injection",
+  "descendant_creation": "GNU posix_spawn parent to child to grandchild; parent first performs same-PID exec",
+  "shared_gnu_fork": "ENOSYS; separate P1-K2 composition scope, not qualified here",
+  "backing_storage_lease": {
+    "profile": "launch_acceptance",
+    "duration_ns": 300000000000
+  },
+  "physical_power_loss": "not_qualified",
+  "independent_provider_uid": "separate_gate",
+  "test_control": "sys84 named pair; exact PPC1 HELLO/ACK; both peers checked against kernel identities",
+  "sys81_backing_created_handles_required": 2,
+  "sys81_supervisor_visible_owned_before_launch_required": 0,
+  "sys81_visibility": "channel_get omits owner-only channels; the backing pair is recorded from create and authenticated by both peers",
+  "cases": {
+    "none": {
+      "mutation": "passed",
+      "cold_recovery": "passed",
+      "selected_generation": 202,
+      "selected_revision": 3,
+      "actual_elf_launch": true,
+      "stale_disk_denied": true
+    },
+    "rejected_cas": {
+      "mutation": "passed",
+      "cold_recovery": "passed",
+      "selected_generation": 201,
+      "selected_revision": 2,
+      "actual_elf_launch": true
+    },
+    "committed_unknown": {
+      "mutation": "passed",
+      "cold_recovery": "passed",
+      "selected_generation": 202,
+      "selected_revision": 3,
+      "actual_elf_launch": true,
+      "stale_disk_denied": true
+    },
+    "uncommitted_unknown": {
+      "mutation": "passed",
+      "cold_recovery": "passed",
+      "selected_generation": 201,
+      "selected_revision": 2,
+      "actual_elf_launch": true
+    },
+    "initial": "passed",
+    "native_owner_before": "passed",
+    "gnu_live_revoke": "passed",
+    "native_owner_after": "passed",
+    "cold_revoked": "passed",
+    "revoke_last": "passed",
+    "cold_all_revoked": "passed",
+    "authority_unavailable": "passed"
+  },
+  "boot_count": 23,
+  "checks": [
+    "persisted active root restored and real GNU ELF launched",
+    "rejected and unknown CAS select the exact complete old or new catalog",
+    "stale work disk rejected against the independent revision",
+    "GNU same-PID exec carries capsule v3 authority",
+    "three actual parent/child/grandchild processes launch before explicit root revocation",
+    "all three existing processes refuse launch after durable root revocation",
+    "explicit native owner cannot launch another approved target after owner root revocation",
+    "cold all-root revocation remains fail-closed",
+    "three actual live descendants fail-closed when the daemon becomes unavailable"
+  ]
+}

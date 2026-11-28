@@ -153,15 +153,22 @@ def run(system, builds, fixture, output):
     assert json.loads(fixture.read_bytes()) == selected_fixture
     manifest = json.loads((system / "manifest.json").read_bytes())
     assert manifest.get("pumpkin_provisioning_store") == 1
+    lease_profile = {"profile": "launch_acceptance", "duration_ns": 300_000_000_000}
+    assert manifest.get("pumpkin_launch_storage_lease") == lease_profile
     assert manifest["pumpkin_catalog_fixture"]["input_sha256"] == digest(fixture)
     for key, value in selected_fixture.items():
         assert manifest["pumpkin_catalog_fixture"][key] == value
     report = {"status": "failed", "system": binding(system), "programs": receipts,
               "fixture_sha256": digest(fixture), "profile": "provisioning/private-region-v2/capsule-v3",
               "scope": "real GNU descendants and guest Files/IPC; developer authority CAS/ACK injection",
+              "descendant_creation": "GNU posix_spawn parent to child to grandchild; parent first performs same-PID exec",
+              "shared_gnu_fork": "ENOSYS; separate P1-K2 composition scope, not qualified here",
+              "backing_storage_lease": lease_profile,
               "physical_power_loss": "not_qualified", "independent_provider_uid": "separate_gate",
               "test_control": "sys84 named pair; exact PPC1 HELLO/ACK; both peers checked against kernel identities",
-              "sys81_supervisor_owned_before_launch_required": 2,
+              "sys81_backing_created_handles_required": 2,
+              "sys81_supervisor_visible_owned_before_launch_required": 0,
+              "sys81_visibility": "channel_get omits owner-only channels; the backing pair is recorded from create and authenticated by both peers",
               "cases": {}, "boot_count": 0}
 
     def run_boot(disk, name, scenario, authority, fault="none"):

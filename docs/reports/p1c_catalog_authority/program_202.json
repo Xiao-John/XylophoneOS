@@ -1,0 +1,363 @@
+{
+  "commands": {
+    "compile-bootstrap": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "--sysroot=${XOS_GNU_RUNTIME}/sdk_snapshot/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-isystem",
+      "${XOS_GNU_RUNTIME}/sdk_snapshot/sysroot/usr/include",
+      "-isystem",
+      "${XOS_GNU_RUNTIME}/sdk_snapshot/sysroot/usr/lib/compiler-include",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-I",
+      "${XOS_PROGRAM_SOURCE}",
+      "-nostdinc++",
+      "-std=gnu++20",
+      "-ffreestanding",
+      "-fno-pie",
+      "-fno-exceptions",
+      "-fno-rtti",
+      "-fno-stack-protector",
+      "-I",
+      "${XOS_PROGRAM_202}/native_sdk_snapshot/include",
+      "-c",
+      "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/bootstrap.cpp",
+      "-o",
+      "${XOS_PROGRAM_202}/bootstrap.o"
+    ],
+    "compile-main": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "--sysroot=${XOS_GNU_RUNTIME}/sdk_snapshot/sysroot",
+      "-O2",
+      "-mno-red-zone",
+      "-nostdinc",
+      "-isystem",
+      "${XOS_GNU_RUNTIME}/sdk_snapshot/sysroot/usr/include",
+      "-isystem",
+      "${XOS_GNU_RUNTIME}/sdk_snapshot/sysroot/usr/lib/compiler-include",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wa,--noexecstack",
+      "-Werror=trampolines",
+      "-I",
+      "${XOS_PROGRAM_SOURCE}",
+      "-fPIE",
+      "-fno-builtin",
+      "-c",
+      "${XOS_PROGRAM_SOURCE}/catalog_descendants.c",
+      "-o",
+      "${XOS_PROGRAM_202}/main.o"
+    ],
+    "compile-preflight": [
+      "${XOS_TOOLS}/x86_64-linux-gnu-g++-16",
+      "-std=c++20",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wconversion",
+      "-Wshadow",
+      "-I",
+      "${XOS_C_BASE_SOURCE}/src/user/include",
+      "-I",
+      "${XOS_C_BASE_SOURCE}/src/shared/include",
+      "${XOS_C_BASE_SOURCE}/scripts/dynamic_preflight.cpp",
+      "${XOS_C_BASE_SOURCE}/src/user/loader/elf.cpp",
+      "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/identity.cpp",
+      "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/generation.cpp",
+      "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/elf.cpp",
+      "-o",
+      "${XOS_PROGRAM_202}/preflight"
+    ],
+    "identity-bootstrap": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "-c",
+      "${XOS_PROGRAM_202}/bootstrap_identity.S",
+      "-o",
+      "${XOS_PROGRAM_202}/bootstrap_identity.o"
+    ],
+    "identity-library": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "-c",
+      "${XOS_PROGRAM_202}/library_identity.S",
+      "-o",
+      "${XOS_PROGRAM_202}/library_identity.o"
+    ],
+    "identity-main": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "-c",
+      "${XOS_PROGRAM_202}/main_identity.S",
+      "-o",
+      "${XOS_PROGRAM_202}/main_identity.o"
+    ],
+    "link-bootstrap": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--gc-sections",
+      "-z",
+      "noexecstack",
+      "-z",
+      "max-page-size=4096",
+      "--build-id=none",
+      "--no-undefined",
+      "-T",
+      "${XOS_PROGRAM_202}/bootstrap.ld",
+      "-o",
+      "${XOS_PROGRAM_202}/bootstrap.elf",
+      "${XOS_GNU_RUNTIME}/sdk_snapshot/sysroot/usr/lib/xos_start.o",
+      "${XOS_PROGRAM_202}/bootstrap_identity.o",
+      "${XOS_PROGRAM_202}/bootstrap.o",
+      "${XOS_GNU_RUNTIME}/gnu/elf/xos_file_session.os",
+      "--start-group",
+      "${XOS_PROGRAM_202}/native_sdk_snapshot/lib/libxos_loader.a",
+      "${XOS_PROGRAM_202}/native_sdk_snapshot/lib/libxos.a",
+      "${XOS_GNU_RUNTIME}/sdk_snapshot/sysroot/usr/lib/libgcc.a",
+      "--end-group"
+    ],
+    "link-main": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "--build-id=none",
+      "--hash-style=both",
+      "--no-undefined",
+      "--eh-frame-hdr",
+      "-z",
+      "noexecstack",
+      "-z",
+      "now",
+      "-z",
+      "relro",
+      "-z",
+      "max-page-size=8192",
+      "-z",
+      "separate-code",
+      "-rpath-link",
+      "${XOS_PROGRAM_202}/payload",
+      "-pie",
+      "-e",
+      "_start",
+      "--dynamic-linker",
+      "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1",
+      "-o",
+      "${XOS_PROGRAM_202}/payload/main.pie",
+      "${XOS_GNU_RUNTIME}/gnu/csu/Scrt1.o",
+      "${XOS_GNU_RUNTIME}/gnu/csu/crti.o",
+      "${XOS_PROGRAM_202}/main_identity.o",
+      "${XOS_PROGRAM_202}/main.o",
+      "${XOS_PROGRAM_202}/payload/libc.so.0.1",
+      "${XOS_GNU_RUNTIME}/gnu/csu/crtn.o"
+    ],
+    "preflight": [
+      "${XOS_PROGRAM_202}/preflight",
+      "${XOS_PROGRAM_202}/payload/generation.bin",
+      "${XOS_PROGRAM_202}/payload/bootstrap",
+      "${XOS_PROGRAM_202}/payload/ld_xos_x86_64.so.1",
+      "${XOS_PROGRAM_202}/payload/main.pie",
+      "${XOS_PROGRAM_202}/payload/libc.so.0.1"
+    ],
+    "strip-bootstrap": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_PROGRAM_202}/bootstrap.elf",
+      "${XOS_PROGRAM_202}/payload/bootstrap"
+    ],
+    "strip-interpreter": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_GNU_RUNTIME}/gnu/elf/ld.so",
+      "${XOS_PROGRAM_202}/payload/ld_xos_x86_64.so.1"
+    ],
+    "strip-libc": [
+      "${XOS_SDK_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "--strip-debug",
+      "${XOS_GNU_RUNTIME}/gnu/libc.so",
+      "${XOS_PROGRAM_202}/payload/libc.so.0.1"
+    ]
+  },
+  "files": {
+    "/apps/p1c202/main": {
+      "local": "payload/main.pie",
+      "sha256": "f5268f807e0ee840b9bc7a3dcf2064d392b4442b3220556296ae53867efdb944"
+    },
+    "/usr/lib/xos/glibc_dynamic_v1/bootstrap": {
+      "local": "payload/bootstrap",
+      "sha256": "a1d55c28186af302cdd4dcba5402663cfe8af8b7cedd8f904abf230eeaf399dc"
+    },
+    "/usr/lib/xos/glibc_dynamic_v1/ld_xos_x86_64.so.1": {
+      "local": "payload/ld_xos_x86_64.so.1",
+      "sha256": "bea7ada46c03b2c2ad1233de0784651a5e70dd9929b52472e0fc735973318a2b"
+    },
+    "/usr/lib/xos/glibc_dynamic_v1/libc.so.0.1": {
+      "local": "payload/libc.so.0.1",
+      "sha256": "370dfd7a5d03e7ef8405c237354e5a40d9de89072058e56be2f0e7499d87955b"
+    }
+  },
+  "generation": {
+    "guest": "/usr/lib/xos/generations/p1c202.bin",
+    "id": 202,
+    "local": "payload/generation.bin",
+    "sha256": "e979b30b40930b35a746d2afcd45b17afc23d7d028f1034312e1163e7b8e28ae"
+  },
+  "generation_id": 202,
+  "guest_qualification": "not_run",
+  "host_compiler": {
+    "available": true,
+    "path": "${XOS_TOOLS}/x86_64-linux-gnu-g++-16",
+    "sha256": "b387d77828b16660cbd6d5b7e3351d9bd89cefe236e457b75de3e5a2b3255d6c",
+    "version": "x86_64-linux-gnu-g++-16 (Debian 16.2.0-5) 16.2.0",
+    "version_exit_code": 0
+  },
+  "inputs": {
+    "${XOS_C_BASE_SOURCE}/scripts/build_dynamic_program.py": "a737feb737fbdf6678fe490044789027888c21447d88af45ffd993d4f2bc4e09",
+    "${XOS_C_BASE_SOURCE}/scripts/dynamic_artifacts.py": "e6c4401258e857c627333119f56fa46af8d8791db5ed6b19c1b27b30c0d0fdd9",
+    "${XOS_C_BASE_SOURCE}/scripts/dynamic_preflight.cpp": "88858058f33568477147c6a32e9741d9d1c97297ba38db4cd09a7221af5e668b",
+    "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/bootstrap.cpp": "b53c3eaf7d1ce33a5b153c7070cd0b88e308ecf4317cf4d6fccc39d2d42c4215",
+    "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/elf.cpp": "6703011b4b43e501ddbc6f9074a508fb946dc7216e1da5f52bf635b041577c14",
+    "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/generation.cpp": "09d55f0b2c6f0571b433ea25ec182d9305bfb9dbf932e9a234bdb741083e844e",
+    "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/identity.cpp": "1da4640550eee5f3766bfc01ff6f3d7cbf6d3e00c9b4c91e8fc1c5a141c365c1",
+    "${XOS_C_BASE_SOURCE}/src/user/loader/dynamic/startup.hpp": "b5dce3a2cba9e67b6f57bc2af6e2bc289096bad47ebf2be30a1882f723b06a5e",
+    "${XOS_C_BASE_SOURCE}/src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+    "${XOS_GNU_RUNTIME}/manifest.json": "a7a6360491bb8ebe13b85aab61be7d61d0cd26137d1f02f433d7ca908e8bd0dc",
+    "${XOS_PROGRAM_SOURCE}/catalog_descendants.c": "d483dbb5edad5a2a944d43d21ad9cf08329073729aafe2364e1006b2f90b09a6"
+  },
+  "name": "p1c202",
+  "native_abi": "9dafe8ee0e45fbc1ccb00ee2362d1be5db38584553efcb8ae7a50d699cd4c849",
+  "native_sdk_binding": {
+    "abi": 1,
+    "sdk_manifest_sha256": "d2f47f5e16cd7b36da3e1e8e969f91639dad122751674ed6bebf23ad7ca9fce4",
+    "sdk_tree_sha256": "71538fd10792c7a14572a059f6cbf1a999eaff21d6cd12597dfae09ee54121d8",
+    "target": "x86_64-elf"
+  },
+  "objects": [
+    {
+      "needed": [],
+      "path": "${XOS_PROGRAM_202}/payload/bootstrap",
+      "sha256": "a1d55c28186af302cdd4dcba5402663cfe8af8b7cedd8f904abf230eeaf399dc",
+      "size": 50152,
+      "soname": "",
+      "span": 1073807360
+    },
+    {
+      "needed": [],
+      "path": "${XOS_PROGRAM_202}/payload/ld_xos_x86_64.so.1",
+      "sha256": "bea7ada46c03b2c2ad1233de0784651a5e70dd9929b52472e0fc735973318a2b",
+      "size": 266240,
+      "soname": "ld.so.1",
+      "span": 270336
+    },
+    {
+      "needed": [
+        "libc.so.0.1"
+      ],
+      "path": "${XOS_PROGRAM_202}/payload/main.pie",
+      "sha256": "f5268f807e0ee840b9bc7a3dcf2064d392b4442b3220556296ae53867efdb944",
+      "size": 28872,
+      "soname": "",
+      "span": 36864
+    },
+    {
+      "needed": [
+        "ld.so.1"
+      ],
+      "path": "${XOS_PROGRAM_202}/payload/libc.so.0.1",
+      "sha256": "370dfd7a5d03e7ef8405c237354e5a40d9de89072058e56be2f0e7499d87955b",
+      "size": 1821800,
+      "soname": "libc.so.0.1",
+      "span": 2830336
+    }
+  ],
+  "public_startup": true,
+  "sanitized_environment": [],
+  "sdk_binding": {
+    "archive_members": {
+      "usr/lib/libc.a": 1688,
+      "usr/lib/libgcc.a": 147,
+      "usr/lib/libm.a": 831,
+      "usr/lib/libxos_terminal.a": 17
+    },
+    "compiler": {
+      "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "target": "x86_64-elf",
+      "version": "16.2.0"
+    },
+    "cxx_runtime": null,
+    "format_version": 1,
+    "libc_version": "2.44",
+    "link_artifacts": {
+      "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+      "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+      "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+      "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+      "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+      "usr/lib/libc.a": "ec14da8503339cb3d2667759e8eaf00922beac5417d70cae42cf3a318bdd2570",
+      "usr/lib/libgcc.a": "88beb76641fdae379002b70e5bbb59fb1da96ae476c5d2bc703f738cdc4924c0",
+      "usr/lib/libm.a": "80ab9b97341e1033bae66ae93c4d16962cc043307cdb28ecc6ceab8880b3610f",
+      "usr/lib/libxos_terminal.a": "6313f89b1df5c82fd5ced0cdd0c11292addd5ae80e946ac51e6314257f8b6526",
+      "usr/lib/xos_start.o": "48084e19037c54f1ca8da325404011528656d457698f030e46a9a7f1930f979c",
+      "usr/lib/xos_start_c.o": "199c4a3c68f392555542ede7654e06c7aea35c277aa0019bbc8330cc0b3fa69c"
+    },
+    "runtime_family": "glibc",
+    "runtime_model": "threaded",
+    "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+    "sdk_tree_sha256": "ce808de26f1ede38a543c94bba5d5a5592606c71305267854cb57ea519429254",
+    "source_authentication": {
+      "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+      "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+      "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+      "report_sha256": "3e4af7cce082eb1991aa7dcbeef6a1753c24a39b7e50873331b0226cc8981f47",
+      "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+      "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+      "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+      "status": "upstream_signature_verified",
+      "verification_files": {
+        "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+        "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+        "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af",
+        "source_verification/report.json": "3e4af7cce082eb1991aa7dcbeef6a1753c24a39b7e50873331b0226cc8981f47"
+      }
+    }
+  },
+  "status": "built_not_run",
+  "tools": {
+    "g++": {
+      "available": true,
+      "path": "${XOS_SDK_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+      "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+      "version": "x86_64-elf-g++ (GCC) 16.2.0",
+      "version_exit_code": 0
+    },
+    "gcc": {
+      "available": true,
+      "path": "${XOS_SDK_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+      "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+      "version": "x86_64-elf-gcc (GCC) 16.2.0",
+      "version_exit_code": 0
+    },
+    "ld": {
+      "available": true,
+      "path": "${XOS_SDK_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+      "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+      "version": "GNU ld (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "objcopy": {
+      "available": true,
+      "path": "${XOS_SDK_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+      "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab",
+      "version": "GNU objcopy (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    },
+    "readelf": {
+      "available": true,
+      "path": "${XOS_SDK_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-readelf",
+      "sha256": "a6e0ff4b51a996352b63f45270e1381035acba1445da79e91c6efee837edac9d",
+      "version": "GNU readelf (GNU Binutils) 2.47.20260726",
+      "version_exit_code": 0
+    }
+  }
+}

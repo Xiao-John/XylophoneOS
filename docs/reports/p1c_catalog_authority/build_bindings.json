@@ -28,6 +28,8 @@
     "native_sdk_manifest_sha256": "d2f47f5e16cd7b36da3e1e8e969f91639dad122751674ed6bebf23ad7ca9fce4",
     "native_sdk_tree_sha256": "71538fd10792c7a14572a059f6cbf1a999eaff21d6cd12597dfae09ee54121d8",
     "production": "independent C foundation build; not the D system native SDK",
+    "source_checkpoint": "2e577093222250d49ca6104e5179e4e76242a624",
+    "source_checkpoint_scope": "C foundation source before later test-only observation correction; preserve this WIP checkpoint as an ancestor of the final C commit to reproduce the original SDK build_id. No D production implementation is required.",
     "system_build_id": "0ffc9d37ee3c43a8",
     "system_manifest_sha256": "6e8d1b8fedeabd9166726e757f4950e49adb8d24b998a0d3aaf17a068d20f948"
   },

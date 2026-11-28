@@ -18,23 +18,21 @@ static int launch_leaf(const char *path) {
 
 int main(int argc, char **argv) {
     if (argc == 2 && strcmp(argv[1], "leaf") == 0) return 0;
-    if (argc != 3) return 2;
-    if (strcmp(argv[1], "reexec") == 0) {
-        char *arguments[] = {argv[0], "tree", argv[2], 0};
+    if (argc == 3 && strcmp(argv[1], "reexec") == 0) {
+        char *arguments[] = {argv[0], "tree", argv[2], "3", 0};
         execv(argv[0], arguments);
         return 3;
     }
-    if (strcmp(argv[1], "tree") != 0) return 4;
+    if (argc != 4 || strcmp(argv[1], "tree") != 0 || argv[3][1] ||
+        argv[3][0] < '1' || argv[3][0] > '3') return 4;
     /* Serialize successful leaf launches before creating the next descendant:
        the native eight-process budget remains unchanged. */
     if (launch_leaf(argv[0]) != 0) return 7;
-    pid_t owned = fork();
-    if (owned < 0) return 5;
-    if (owned == 0) {
-        if (launch_leaf(argv[0]) != 0) return 7;
-        owned = fork();
-        if (owned < 0) return 6;
-        if (owned == 0 && launch_leaf(argv[0]) != 0) return 7;
+    pid_t owned = 0;
+    if (argv[3][0] > '1') {
+        char depth[] = {(char)(argv[3][0] - 1), 0};
+        char *arguments[] = {argv[0], "tree", argv[2], depth, 0};
+        if (posix_spawn(&owned, argv[0], 0, 0, arguments, environ) != 0) return 12;
     }
     if (write(1, "R", 1) != 1) return 8;
     char go = 0;

@@ -10,6 +10,9 @@
 #include <cstring>
 #include <string>
 #include <algorithm>
+extern "C" {
+#include "lwip/dns.h"
+}
 namespace {
 using namespace xos;
 using namespace xos::net2;
@@ -40,6 +43,7 @@ struct peer {
     u32 random=0x9712ab41, issuer=server1, offered=address1, lease=40, t1=16,t2=28;
     u32 declines=0, discovers=0, app_frames=0, probes=0;
     bool offer=true, ack=true, arp=true, conflict=false, blocked=false, fail_random=false;
+    bool two_resolvers=false, reverse_resolvers=false;
     bytes ethernet(u16 type,usize n) {
         bytes frame(14+n);std::copy(mac.begin(),mac.end(),frame.begin());
         std::copy(peer_mac.begin(),peer_mac.end(),frame.begin()+6);w16(frame.data()+12,type);return frame;
@@ -67,7 +71,15 @@ struct peer {
         value.insert(value.end(),{53,1,type});
         auto option=[&](u8 code,u32 number) {value.push_back(code);value.push_back(4);usize n=value.size();value.resize(n+4);w32(value.data()+n,number);};
         option(54,issuer);
-        if(type!=6) {option(1,0xffffff00);option(3,server1);option(6,server1);option(51,lease);option(58,t1);option(59,t2);}
+        if(type!=6) {
+            option(1,0xffffff00);option(3,server1);
+            if(two_resolvers) {
+                value.insert(value.end(),{6,8});const auto offset=value.size();value.resize(offset+8);
+                w32(value.data()+offset,reverse_resolvers?server2:server1);
+                w32(value.data()+offset+4,reverse_resolvers?server1:server2);
+            } else option(6,server1);
+            option(51,lease);option(58,t1);option(59,t2);
+        }
         value.push_back(255);return value;
     }
     void answer(u8 type=5) {udp(issuer,67,68,reply(last_request,type));}
@@ -107,9 +119,9 @@ struct environment {
         expect(!stack.initialize(wire.io(),mac.data()),"stack initialize");
         core.initialize(100,stack.api(),stack.dns_api());core.enable_dhcp();
         if(udp_pressure) for(auto& item:blockers) {item=udp_new();expect(item!=nullptr,"occupy real UDP PCB pool");}
-        const dhcp::policy policy{0x0a000200,0xffffff00,address1,address2,{server1,server2},2,{server1,0},1,{server1,server2},2,0xfffffffe};
-        expect(!stack.start_dhcp(policy,60*second,[](void* context,u32 ip,u32 mask,u32 gateway,u32 dns) {
-            auto& self=*static_cast<environment*>(context);++self.publications;return self.core.publish_dhcp(ip,mask,gateway,dns);
+        const dhcp::policy policy{0x0a000200,0xffffff00,address1,address2,{server1,server2},2,{server1,server2},2,{server1,server2},2,0xfffffffe};
+        expect(!stack.start_dhcp(policy,60*second,[](void* context,u32 ip,u32 mask,u32 gateway,u32 dns,u32 secondary) {
+            auto& self=*static_cast<environment*>(context);++self.publications;return self.core.publish_dhcp(ip,mask,gateway,dns,secondary);
         },this),"start DHCP");
     }
     void release_pressure(){for(auto& item:blockers) if(item){udp_remove(item);item=nullptr;}}
@@ -122,6 +134,7 @@ struct environment {
 void run(const std::string& scenario) {
     environment e(scenario=="initial_discover_backpressure" || scenario=="initial_discover_budget",
                   scenario=="initial_udp_pcb_pressure" || scenario=="initial_udp_pcb_budget");
+    e.wire.two_resolvers=scenario=="multiple_resolvers";
     if(scenario=="initial_discover_backpressure" || scenario=="initial_udp_pcb_pressure") {
         const bool allocation=scenario=="initial_udp_pcb_pressure";
         expect(e.snapshot().start_attempts==1 && e.snapshot().start_failures==u32(allocation),"startup pressure classified correctly");
@@ -160,7 +173,17 @@ void run(const std::string& scenario) {
         e.until(62*second);expect(!e.snapshot().address,"no bind without a transmitted request");
     } else {
         e.bound();auto initial=e.snapshot();const auto epoch=e.publications;
-        if(scenario=="arp_deferred_request_anchor") {
+        if(scenario=="multiple_resolvers") {
+            expect(lwip_ntohl(ip4_addr_get_u32(ip_2_ip4(dns_getserver(0))))==server1 &&
+                   lwip_ntohl(ip4_addr_get_u32(ip_2_ip4(dns_getserver(1))))==server2,
+                   "approved DHCP option 6 configures both resolver endpoints");
+            const auto slot=e.core.attach(200,e.wire.now);expect(slot>=0,"application session before resolver change");
+            e.wire.reverse_resolvers=true;e.until(initial.t1+second);
+            expect(e.publications==epoch+1 && !e.core.alive(slot) &&
+                   lwip_ntohl(ip4_addr_get_u32(ip_2_ip4(dns_getserver(0))))==server2 &&
+                   lwip_ntohl(ip4_addr_get_u32(ip_2_ip4(dns_getserver(1))))==server1,
+                   "resolver order change retires application epoch and replaces both endpoints");
+        } else if(scenario=="arp_deferred_request_anchor") {
             e.wire.arp=false;e.wire.ack=false;e.until(initial.t1+2*second);
             expect(e.wire.requests.size()==1,"ARP queuing did not count as REQUEST transmit");
             e.wire.arp_reply(server1,address1);e.poll();const auto transmitted=e.wire.now;
@@ -200,7 +223,7 @@ void run(const std::string& scenario) {
 }
 }
 int main(int argc,char** argv) {
-    const char* cases[]={"renew","expire","nak_config_change","rebind_new_issuer","malformed_reply","acd_conflict","conflict_backoff_recover","request_tx_anchor","queued_arp_retirement","no_static_fallback","untransmitted_request","max_finite_lease","arp_deferred_request_anchor","initial_discover_backpressure","initial_discover_budget","initial_udp_pcb_pressure","initial_udp_pcb_budget","clock_regression"};
+    const char* cases[]={"renew","expire","nak_config_change","rebind_new_issuer","malformed_reply","acd_conflict","conflict_backoff_recover","request_tx_anchor","queued_arp_retirement","no_static_fallback","untransmitted_request","max_finite_lease","arp_deferred_request_anchor","initial_discover_backpressure","initial_discover_budget","initial_udp_pcb_pressure","initial_udp_pcb_budget","clock_regression","multiple_resolvers"};
     if(argc==2 && std::string(argv[1])=="--list") {for(auto value:cases)std::puts(value);return 0;}
     expect(argc==2,"one scenario");run(argv[1]);std::printf("DHCP_PRODUCTION_PASS %s\n",argv[1]);
 }

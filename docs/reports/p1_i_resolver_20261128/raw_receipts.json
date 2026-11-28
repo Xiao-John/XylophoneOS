@@ -1,0 +1,19 @@
+{
+  "public_derivatives": "Path substitutions only; source and artifact digests remain original.",
+  "raw_evidence_sha256": {
+    "guest.json": "8dd5512914da8ae46e451d745a395118e4ca011e566c2a1a55cebb883a8f5d4f",
+    "guest_serial.log.gz": "bb39c87ec7d0675450959445b4f55b7917c601d7aea849f172251f623ae2c181",
+    "host.json": "f46a3833f76615538efbae4a55f053dfae58e8d5138479c076f0f31083627e41",
+    "prior_failure_v1.json": "8c7edc3fb7df556fb5029508098f41430d94bc0aaa86b1d0d0f6b5dc9d1c127d",
+    "prior_failure_v1_serial.log.gz": "67831ed71c2b4094cf42b9ecaa1f3da6cb14ced40afa4565c3177c7d93a9ad61",
+    "prior_failure_v2.json": "57c720be830ef7337448f11e3b133d6a948704aca45b750fc804f74bc4cbb5f3",
+    "prior_failure_v2_serial.log.gz": "cdc69bdd546d866cb46d9b4cf0f45346840e09bed1977937281c96716e8ea32c",
+    "prior_failure_v3.json": "2f6b5044585a08009d6320ff7a3bdf6baf85d7a21dd4234e405b834f9b115b5f",
+    "prior_failure_v3_serial.log.gz": "a46c5aa2c72ae8a944bf52f824fc0c3c6a88adce930c948a3ebac199e61a3d6f",
+    "prior_failure_v4.json": "3bd60d68c1e6b1e1e6fab61efe85c301153c151fcf474d9529747901d3b52835",
+    "prior_failure_v4_serial.log.gz": "50d8f899cb1ff9c7749a8aa1f5653e59a7ee883939170a2bda97c9d1de1d9fb8",
+    "profile.log": "b2a8e67aa1cb8f715d218ef643373cef5073f388c1257611f046fbed10052188",
+    "system.json": "165fcb2070bf2cc12bc042ba3f21ffa6e48ae8f6368381cfb097e76c5cbfb4c3"
+  },
+  "version": 1
+}

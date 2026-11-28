@@ -91,7 +91,7 @@ void lwip_stack::retire_dhcp() {
     etharp_cleanup_netif(&interface_);
     for (u32 slot = 0; slot < net2::connection_limit; ++slot) (void)close(slot, true);
     configure_dns(0);
-    if (published_ && !publish_(publisher_, 0, 0, 0, 0)) failure_ = net2::io;
+    if (published_ && !publish_(publisher_, 0, 0, 0, 0, 0)) failure_ = net2::io;
     published_ = false;
     netif_set_addr(&interface_, IP4_ADDR_ANY4, IP4_ADDR_ANY4, IP4_ADDR_ANY4);
     retire_pending_ = false;
@@ -179,7 +179,7 @@ int lwip_stack::dhcp_reply(pbuf* packet, const ip_addr_t* source, u16_t port) {
     if (pbuf_copy_partial(packet, bytes, packet->tot_len, 0) != packet->tot_len) return ERR_VAL;
     dhcp::reply reply{};
     if (dhcp::validate_reply(bytes, packet->tot_len, lwip_ntohl(ip4_addr_get_u32(ip_2_ip4(source))),
-                             port, expected, dhcp_policy_, reply) != dhcp::error::none || reply.resolver_count > 1) {
+                             port, expected, dhcp_policy_, reply) != dhcp::error::none) {
         increment(rejected_); return ERR_VAL;
     }
     if (reply.type == dhcp::message_type::ack) {
@@ -219,7 +219,8 @@ int lwip_stack::dhcp_bind() {
         for (u32 slot = 0; slot < net2::connection_limit; ++slot) (void)close(slot, true);
         const auto& value = lease_.current().configuration;
         if (!publish_(publisher_, value.address, value.mask, value.gateway,
-                      value.resolver_count ? value.resolvers[0] : 0)) {
+                      value.resolver_count ? value.resolvers[0] : 0,
+                      value.resolver_count > 1 ? value.resolvers[1] : 0)) {
             (void)lease_.invalidate(dhcp::reason::stopped); failure_ = net2::io; return ERR_IF;
         }
     }

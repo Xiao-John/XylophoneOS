@@ -29,7 +29,7 @@ public:
     i64 random_checked(u32& result);
     void fault() { failure_ = net2::io; }
 #ifdef XOS_LWIP_DHCP_AUTHORITY
-    using configuration_publisher = bool (*)(void*, u32, u32, u32, u32);
+    using configuration_publisher = bool (*)(void*, u32, u32, u32, u32, u32);
     i64 start_dhcp(const dhcp::policy&, u64 budget, configuration_publisher, void*);
     i64 advance_dhcp();
     i64 lease_status(net2::lease_snapshot&);
@@ -77,7 +77,7 @@ private:
 #endif
 #ifdef XOS_LWIP_DNS_LIFETIME
     struct dns_subscription { u64 token; resolver_completion callback; void* owner; } subscriptions_[net2::client_sessions]{};
-    void configure_dns(u32 address);
+    void configure_dns(u32 address, u32 secondary = 0);
     i64 resolve_name(const char* name, u64 token, resolver_completion callback, void* owner);
     void cancel_dns(u64 token);
     static void on_dns_found(const char*, const ip_addr_t*, void*);

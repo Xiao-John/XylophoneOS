@@ -159,6 +159,7 @@ PX4-A 提议认领如下；本分支未合入前不构成全项目登记，不�
 | 编号 | 拟用符号 | 责任角色 | 状态 | 实现PR |
 |---:|---|---|---|---|
 | 67 | `sys_vm` | VM负责人；匿名私有VMA v1 | allocated | 已实现，完整资格待验。[契约](anonymous_vm.md)与[恢复记录](../work_log/58b24599_vm3_lifecycle_sdk.md) |
+| 90 | `sys_observe` | P1-A 系统底座线；v1 受权限约束的进程、资源与持有端点只读状态 | claimed | 登记合入后由 `codex/p1-a-observation` 实施；版本、身份、deadline 与文件占用见[认领记录](../work_log/eb2b4c9a_p1_a_scoped_observation_syscall_claim.md)，尚未实现或验收 |
 | files op 29 | `file::op::set_metadata` | 文件/包管理共用服务；FAT 诚实子集 | allocated (M1) | [契约](file_metadata_v1.md)；`tests/file_metadata_guest.py` |
 | files op 30/31 | `file::op::read_at/write_at` | G3 文件模块；显式位置，不改共享 offset | allocated | [契约](glibc_files_v1.md#定位读写与目录流)；`tests/glibc_files_extra_host.py` |
 | files op 32 | `file::op::remove_directory` | 在同一请求内确认目标为目录、为空并移除 | allocated | [路径变更](glibc_files_v1.md#路径变更)；`tests/fixtures/glibc_g3/path_mutations.c` |

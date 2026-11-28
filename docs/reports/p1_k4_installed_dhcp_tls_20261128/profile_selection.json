@@ -1,0 +1,613 @@
+{
+  "publication": "derived selection record; not the installed profile bytes",
+  "raw_installed_profile_sha256": "f46c32882f29fc651a29a403aefc63e433dabae9605c9f49b5ac28baa88a9e3c",
+  "selected_profile": {
+    "architecture": "x86_64",
+    "byte_order": "little",
+    "compiler_version": "16.2.0",
+    "composition": {
+      "application_manifest_sha256": "37d3dfcdf13868268a3e0c1e0600c2d20885553d74ae96e6f5096a76156e2a3a",
+      "bootstrap_policy_sha256": "360c3b06e1524bf20c0a23f08a9fd513e3dadc20cc7f9168167a048b62a50c93",
+      "c_sdk_binding": {
+        "archive_members": {
+          "usr/lib/libc.a": 1687,
+          "usr/lib/libgcc.a": 147,
+          "usr/lib/libm.a": 831,
+          "usr/lib/libxos_terminal.a": 17
+        },
+        "compiler": {
+          "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+          "target": "x86_64-elf",
+          "version": "16.2.0"
+        },
+        "cxx_runtime": null,
+        "format_version": 1,
+        "libc_version": "2.44",
+        "link_artifacts": {
+          "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+          "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+          "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+          "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+          "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+          "usr/lib/libc.a": "ce86ccd8ae89ca58ee3fc4be0b1bab12d87f6402e0d43f8e6833de36c087826e",
+          "usr/lib/libgcc.a": "88beb76641fdae379002b70e5bbb59fb1da96ae476c5d2bc703f738cdc4924c0",
+          "usr/lib/libm.a": "cdaeb5f09651488b008f04c12913ba390ee46297a5e23678e4e40d1beb8ed8ff",
+          "usr/lib/libxos_terminal.a": "14ef0470c10c996d1ca543278d43d5ee5ae715f96139d96cd35dec2b3b06c9db",
+          "usr/lib/xos_start.o": "e8abda8cb2ffebc55b4d98e58a12a1729ef7ea11156808a059a82418fbee4800",
+          "usr/lib/xos_start_c.o": "7cc65ba50f708d5a78d18168594418619ab54c71bb6fd7661e109ecb6019e8de"
+        },
+        "runtime_family": "glibc",
+        "runtime_model": "threaded",
+        "sdk_manifest_sha256": "d5a5d40d1ad60d11d8dbae2b517d5aaeae0244fdcadb09145b2a45095ca884fa",
+        "sdk_tree_sha256": "3b7f05a77d720c6de494a470f495d4688c103e83a84ae997c13a21663ca9624c",
+        "source_authentication": {
+          "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+          "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+          "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+          "report_sha256": "c1a4611c112db05e01500c4453a8ce8de447a8bd1f0833798fc03353f55103de",
+          "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+          "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+          "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+          "status": "upstream_signature_verified",
+          "verification_files": {
+            "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+            "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+            "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af",
+            "source_verification/report.json": "c1a4611c112db05e01500c4453a8ce8de447a8bd1f0833798fc03353f55103de"
+          }
+        }
+      },
+      "configuration": "p1_k4_installed_dhcp_tls_v1",
+      "controller_receipt_sha256": "667d7874f5d9f7da1ab3333886dd885b21aca7155bf3ddf5dcfb231615ab682d",
+      "dynamic_thread_scope": "main_thread; pthread_create=ENOTSUP_without_libgcc_s",
+      "generation": {
+        "guest": "/usr/lib/xos/generations/installed_dhcp_tls.bin",
+        "id": 2026112804,
+        "local": "payload/generation.bin",
+        "sha256": "abd4990f78e682c212b6ad29bc0a562c08bea2c25731cb1660685252398b59fe"
+      },
+      "native_abi": "c080a98581ac683150ce49f79fccc85cef737bb26a7d62afa6ca0181505696e3",
+      "native_sdk_binding": {
+        "abi": 1,
+        "sdk_manifest_sha256": "10e1c1dec9b84a26eb9773d82db7372cf2066d429f054d2b49542a551c6ae2e1",
+        "sdk_tree_sha256": "a7abc7fc74c01d1124b1e92427361ec5b32a25ec4fa645c5ad541e442ef60a0e",
+        "target": "x86_64-elf"
+      },
+      "ordinary_iso_sha256": "9370740186c5802b81b3117c697b304f92945426de14d5b87451e60f38f54635",
+      "parent_profile": "xos-x86_64-glibc-host-8b2dee22a327",
+      "parent_profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+      "parent_profile_verification": {
+        "guest_qualification": "not_run",
+        "profile_id": "xos-x86_64-glibc-host-8b2dee22a327",
+        "profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+        "runtime_family": "glibc",
+        "sdk_tree_sha256": "3b7f05a77d720c6de494a470f495d4688c103e83a84ae997c13a21663ca9624c",
+        "status": "candidate_binding_verified"
+      },
+      "runtime_manifest_sha256": "b0982dfe12f319d9a580f4716b66a4838a6d6dfc02576b0c82fee05d4a27d32b",
+      "runtime_source_binding": {
+        "actual_native_inputs": {
+          "src/ports/glibc/spawn_support.cpp": "d826f6eb82870077c9e94ff804960e05f8f7f84442eafe3d9f706b1cc07cbf36",
+          "src/ports/glibc/sysdeps/xos/xos_file_runtime.h": "538d4608c9c91bb622033acfa1ee0369ee7d1501bebebb34157fad53e9fec678",
+          "src/ports/glibc/sysdeps/xos/xos_file_session.h": "d70d1aa5118285a54d0866fe8394a096d0ce390b2552a828348fb1f4b42d1078",
+          "src/ports/glibc/sysdeps/xos/xos_file_wire.h": "d67b15a81ef198690f4d9f429a883ee2b824e42a416b663a3c3d9c338b32f3f4",
+          "src/ports/glibc/sysdeps/xos/xos_terminal_runtime.h": "ae3c1ee8663d6748ba2ffba7739cffb9e2f07b241e4622ef7e38ef753cb22535",
+          "src/ports/glibc/sysdeps/xos/xos_wait_word.h": "3f1fbace33d414fd081e541df106d63cd4a64790c9c0da2bf1c59edf35f87d01",
+          "src/ports/glibc/terminal_support.cpp": "df59c50193b4d9fd27a19fde1e4ce148994d3562a86cfc94d281b3e9be60fb51",
+          "src/ports/glibc/wait_support.cpp": "46079f8e7a7b22ff2916486a8a9ddeba0508b6f6431a67719d5c10ed8876e73d",
+          "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+          "src/shared/include/xos/dynamic_abi.hpp": "96a8c327fc64c406757e5d3aeb5ccd95e9cdd20d1d9a167728d58ef570a9217e",
+          "src/shared/include/xos/dynamic_startup_abi.h": "749b84b10fcfa2c951b1f590747f2625158b339c3255a3123415b097a437b463",
+          "src/shared/include/xos/file_abi.hpp": "9e6e6585dd8dee2e9b2db8d10fac7aeeffb693b41f8f4702d119bbfee3e5c4aa",
+          "src/shared/include/xos/launch_control_abi.h": "b8e32d0971b10d35efe7c5f857f076fb1ed6f6782b2e6b1ff3ae4201a1ae371d",
+          "src/shared/include/xos/observation_abi.hpp": "4dbdb29840a515da2e792d30b3d28264e384992fa8841c839277131d69f1920e",
+          "src/shared/include/xos/process_abi.hpp": "727a831e40dd2f764ee8daaa33f89355ce5bf4d1c7cc82c8a80ab10d38000082",
+          "src/shared/include/xos/process_budget_abi.hpp": "f675a96babf6c081c19e2138864b59b933726fda04e3c5a2302c63373b8bd3b1",
+          "src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+          "src/shared/include/xos/thread_abi.hpp": "a98a3da040d157a5455c1d0ddb2b701fb4faf3f1d17a68d06b18af5e3fa4dddb",
+          "src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+          "src/user/arch/x86_64/syscall.cpp": "b69c2d81b575d86ea5f55e489690db0171a13b5ff208f9c9a9eb1f7b9c17b1a2",
+          "src/user/arch/x86_64/tls.cpp": "07bfc7630f5d9aa3a88af20fead65bb6e3a25cf877cc3a4a369750fb96e1a143",
+          "src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+          "src/user/include/xos/dynamic.hpp": "269c57f63a62c6d4bd4f36386d17200137af65815fa3f5d989546f335583313c",
+          "src/user/include/xos/dynamic_elf.hpp": "ae7155bf1d8709b3d02646742813b6d9149176bb0558dc3e2893c3a56a19015a",
+          "src/user/include/xos/dynamic_launch.hpp": "6f9f9acefbef580f5629b4d63cad296842d87fc009dd7bd8d9360dbd5e419593",
+          "src/user/include/xos/elf.hpp": "c93092a90a6bd6295ddb4f3352cc47d597cb0c4d71047870399db3585dfd9f28",
+          "src/user/include/xos/execution.hpp": "1da5993a6ee873e56ae7533aa85221ac5c27d6c86c1ccc69719b3e702c000a08",
+          "src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+          "src/user/include/xos/file_client.hpp": "e7cda26359bf88b784fd40aa544f3a51c1c4d0677b6db2499c9804bd1cfe978b",
+          "src/user/include/xos/launch_control.hpp": "36496f2565236ede0294504124e242d7bd7d46c761443bb91bc7acb95c1be419",
+          "src/user/include/xos/sdk.hpp": "bc031082e1e44cc90dc8c61badeea6e562664fcaa87ab76beafc38ca72d04221",
+          "src/user/include/xos/spawn.hpp": "67ff2bdddd735b8751962cb8808be9804f883b5e3d692bfa59ee2dd01c53d6d3",
+          "src/user/include/xos/terminal_client.hpp": "3ef1d2d4e763a510f32457dd2eccb37cabe1ea7df5f3ba2cc50814cbf6ea56fb",
+          "src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+          "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+          "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+          "src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e",
+          "src/user/loader/dynamic/closure.cpp": "60e702f072cec5d5943d9a229f8cf6e4dc2d526aa4083c0d1b2790fe2ea2c55c",
+          "src/user/loader/dynamic/elf.cpp": "6703011b4b43e501ddbc6f9074a508fb946dc7216e1da5f52bf635b041577c14",
+          "src/user/loader/dynamic/generation.cpp": "09d55f0b2c6f0571b433ea25ec182d9305bfb9dbf932e9a234bdb741083e844e",
+          "src/user/loader/dynamic/identity.cpp": "1da4640550eee5f3766bfc01ff6f3d7cbf6d3e00c9b4c91e8fc1c5a141c365c1",
+          "src/user/loader/dynamic/rtld_control.cpp": "3cbe121865786858bd12569171c82d59ef892c0e6580299ab29f05fd191f0511",
+          "src/user/loader/dynamic/spawn.cpp": "41e345136b372f9d5622b7e1b7b08cf9d9b315e046fe79f6e1a7d808a89c807a",
+          "src/user/loader/dynamic/startup.cpp": "743ce917e15aac09a4e287fc27d213b2be0e201c807f9717650f1bf2d7639802",
+          "src/user/loader/dynamic/startup.hpp": "0eecfdff04f4df98f21663222ecd3972575de1220a8dee55ccfe7aaeee20af67",
+          "src/user/loader/elf.cpp": "77e14482843952f333957ccf4bdef52e349ced9660df04d9e3e7da84e6b3b61e",
+          "src/user/loader/image_reader.hpp": "e1162a6bc2cc53ddeb7174a7074981bba8e9cc024b65c48d033ff333ab8804fd",
+          "src/user/loader/load.cpp": "7b9bc97c98fd7cdf66fd94d24f5c01137327efa70d3549270d03ca8f43644888",
+          "src/user/sdk/file_client.cpp": "0be4e547cf074110f3596ce199fdc2062219c1a44788ad998140c6846b1fbf16",
+          "src/user/sdk/launch_control.cpp": "5ca3992d5edd19917bfc09c1365295855489d47744a772cb9d8d102a61776cc6",
+          "src/user/sdk/terminal_client.cpp": "05d7ef7d1e90f2aee2edcb69efd754ccbde11c1b9158c4d177fe82fc5e953064",
+          "src/user/sdk/text.cpp": "6f9a8389c89d02f94d9003381fe438ab39705494095ad50593862eaad0cf9d21"
+        },
+        "actual_native_objects": {
+          "0_terminal_support.o": {
+            "inputs": [
+              "src/ports/glibc/sysdeps/xos/xos_file_wire.h",
+              "src/ports/glibc/sysdeps/xos/xos_terminal_runtime.h",
+              "src/ports/glibc/sysdeps/xos/xos_wait_word.h",
+              "src/ports/glibc/terminal_support.cpp",
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/shared/include/xos/terminal_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/user/include/xos/channel_io.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/include/xos/terminal_client.hpp"
+            ],
+            "object_sha256": "dacee6cb1f07d61099d397675257575114ad36d54ec93d51a8be63c31769c0df",
+            "raw_dependency_file_sha256": "ef99d844b49fe3cef03dd3a2efcb28e1703dac1511f61306f0deb40f266c8680"
+          },
+          "10_launch_control.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/launch_control_abi.h",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/user/include/xos/launch_control.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/sdk/launch_control.cpp"
+            ],
+            "object_sha256": "fc2e8d146e0e15612d68d69441521cc3b8e54f237e825bd3802905fa57c84a59",
+            "raw_dependency_file_sha256": "224fcb9e7cdfa4e88d25f438038e9e47f7276a39ccbbaf4654e4d4ca1f7a37af"
+          },
+          "11_identity.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/dynamic_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/user/include/xos/dynamic.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/loader/dynamic/identity.cpp"
+            ],
+            "object_sha256": "5e06eabb05a001ec71da7a48466429ba87b28871bfd33248de09dcfce9fe3a63",
+            "raw_dependency_file_sha256": "0285a14d20b9be4832083165198b581b2c77af41f155c0d3beb5889894e9820c"
+          },
+          "12_generation.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/dynamic_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/user/include/xos/dynamic.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/include/xos/fault_sha256.hpp",
+              "src/user/loader/dynamic/generation.cpp"
+            ],
+            "object_sha256": "7779d1ed6134031e6310e75ad8d56338db4dab77bbb767afb20fc6fd77ccca78",
+            "raw_dependency_file_sha256": "6315253e2e0a06d8191e8189b2ad046e0066b1355d85115867c225a8ab5c6642"
+          },
+          "13_elf.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/dynamic_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/user/include/xos/dynamic.hpp",
+              "src/user/include/xos/dynamic_elf.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/loader/dynamic/elf.cpp"
+            ],
+            "object_sha256": "f085523463cf3a96accd91ad4a4f6fbfc18c70d380bff1f78d68fe7218ace49f",
+            "raw_dependency_file_sha256": "e3d7a1c00e82c7a2a55a33c92326199774a23d3e0fbf5c454eb768731a66ae67"
+          },
+          "14_closure.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/dynamic_abi.hpp",
+              "src/shared/include/xos/dynamic_startup_abi.h",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/launch_control_abi.h",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/user/include/xos/dynamic.hpp",
+              "src/user/include/xos/dynamic_elf.hpp",
+              "src/user/include/xos/dynamic_launch.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/include/xos/file_client.hpp",
+              "src/user/include/xos/launch_control.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/loader/dynamic/closure.cpp",
+              "src/user/loader/dynamic/startup.hpp"
+            ],
+            "object_sha256": "1b4481156f399b492e3b6dfeb8e56686185fc22cb70d6cca21e658133628a27e",
+            "raw_dependency_file_sha256": "977791bbd418fb73285e91c51c47362341bf467ff474b391bae0171334590564"
+          },
+          "15_startup.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/dynamic_abi.hpp",
+              "src/shared/include/xos/dynamic_startup_abi.h",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/launch_control_abi.h",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/user/include/xos/dynamic.hpp",
+              "src/user/include/xos/dynamic_elf.hpp",
+              "src/user/include/xos/dynamic_launch.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/include/xos/fault_sha256.hpp",
+              "src/user/include/xos/file_client.hpp",
+              "src/user/include/xos/launch_control.hpp",
+              "src/user/loader/dynamic/startup.cpp",
+              "src/user/loader/dynamic/startup.hpp"
+            ],
+            "object_sha256": "3b5879d880c8e35046ce4497d70cd0557f951e26d440763d67b0d02e5a812b63",
+            "raw_dependency_file_sha256": "acc47a83767cdd72434e39190cb87cd439c537cc3ebab45da3c4390bed114591"
+          },
+          "16_spawn.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/dynamic_abi.hpp",
+              "src/shared/include/xos/dynamic_startup_abi.h",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/launch_control_abi.h",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/user/include/xos/dynamic.hpp",
+              "src/user/include/xos/dynamic_elf.hpp",
+              "src/user/include/xos/dynamic_launch.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/include/xos/execution.hpp",
+              "src/user/include/xos/file_client.hpp",
+              "src/user/include/xos/launch_control.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/loader/dynamic/spawn.cpp",
+              "src/user/loader/dynamic/startup.hpp"
+            ],
+            "object_sha256": "d2778a7b9b4fff56f5444347626b61bc4a4031465b9134a3fa05a3ea54eb1635",
+            "raw_dependency_file_sha256": "b79891492e631d3d895dd60b45806d67390ac2601ef03fbfbf0f8b62134ed072"
+          },
+          "17_rtld_control.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/dynamic_startup_abi.h",
+              "src/shared/include/xos/launch_control_abi.h",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/user/include/xos/launch_control.hpp",
+              "src/user/loader/dynamic/rtld_control.cpp"
+            ],
+            "object_sha256": "4098d871ab240ae0074a1bb233fe028308d17c7d3d0d0342929f961d902af1bd",
+            "raw_dependency_file_sha256": "ecc3d6044ed69643ed9a28a9f9a233c596fabec2b1d425ee5e1640caf6e9b94d"
+          },
+          "1_terminal_client.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/shared/include/xos/terminal_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/user/include/xos/channel_io.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/include/xos/terminal_client.hpp",
+              "src/user/sdk/terminal_client.cpp"
+            ],
+            "object_sha256": "5f4af82daa18a24ca5d45f97abc9be1eb6b2c833bcdde887aa328079043dd41b",
+            "raw_dependency_file_sha256": "54a2ae7743f10f74d67c0c7cfcf22c287e4acb5173fb4017e138fb4c4e243faa"
+          },
+          "2_syscall.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/user/arch/x86_64/syscall.cpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp"
+            ],
+            "object_sha256": "78a99ea46d0bd3fb77d0597c9418e101343abf2e19ec0ce4eb0001a27e1122b2",
+            "raw_dependency_file_sha256": "0a48ee3c0a5cca0e81f133aece0fb083082d4ef9367cc4749df0dae27ec1c6d1"
+          },
+          "3_elf.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/loader/elf.cpp"
+            ],
+            "object_sha256": "b33c438c67323d8f1813325379efe1384ace2ba16a80abcd66b038f747ce8dd1",
+            "raw_dependency_file_sha256": "803c0520dcb466ba8f37d11354324727182eb8c7e035d03fbc3eb4ed1e222912"
+          },
+          "4_wait_support.o": {
+            "inputs": [
+              "src/ports/glibc/wait_support.cpp",
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp"
+            ],
+            "object_sha256": "6ca670d295ca4011669160fe41d5ae59103920f142cd76da6ce48902f772ccfb",
+            "raw_dependency_file_sha256": "933925b413d8a029eecf27a47693c0783e37bbad8a58e4ddc5ba6af06d2d083a"
+          },
+          "5_spawn_support.o": {
+            "inputs": [
+              "src/ports/glibc/spawn_support.cpp",
+              "src/ports/glibc/sysdeps/xos/xos_file_runtime.h",
+              "src/ports/glibc/sysdeps/xos/xos_file_session.h",
+              "src/ports/glibc/sysdeps/xos/xos_file_wire.h",
+              "src/ports/glibc/sysdeps/xos/xos_wait_word.h",
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/include/xos/execution.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp"
+            ],
+            "object_sha256": "29effc7eb0ab1f8eaa15b101483d886e69a0189c46900abc35a0ce81617dfdc9",
+            "raw_dependency_file_sha256": "d9ebc3bce0e9a83a480ca80684be19c37ac702b207e99807503a76c9c4579ad7"
+          },
+          "6_load.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/shared/include/xos/thread_abi.hpp",
+              "src/shared/include/xos/vm_abi.hpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/include/xos/execution.hpp",
+              "src/user/include/xos/fault_sha256.hpp",
+              "src/user/include/xos/file_client.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/include/xos/tls.hpp",
+              "src/user/include/xos/vm.hpp",
+              "src/user/loader/image_reader.hpp",
+              "src/user/loader/load.cpp"
+            ],
+            "object_sha256": "e6e698e587bb8e2baf155400aadf6a9c62879b5e8fbf604d232a543548b4f6b5",
+            "raw_dependency_file_sha256": "0acd5c5f7581f6963bf4d07f1819102ddbb67412687266c366be6d4e85c5ed1b"
+          },
+          "7_file_client.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/user/include/xos/file_client.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/include/xos/text.hpp",
+              "src/user/include/xos/unicode_width_data.hpp",
+              "src/user/sdk/file_client.cpp"
+            ],
+            "object_sha256": "5bde6242e770ead820512ec75c609f0cd729c8ec9c685ac4504bf6ac3b28af2a",
+            "raw_dependency_file_sha256": "167c68237a261a3ad7a6cf52a2fa9edcacb48525b8bf3ae2433cc5cd4b3c02d9"
+          },
+          "8_text.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/sdk/text.cpp"
+            ],
+            "object_sha256": "c55ce5a95d647a163c2b4dc79778abe6253bfb3cbca3a9a97b6bfc56de061c2b",
+            "raw_dependency_file_sha256": "683f19908319ebfa4f0c0364e4aea06402d888fa292a513e3bff46a5f79866d6"
+          },
+          "9_tls.o": {
+            "inputs": [
+              "src/shared/include/xos/abi_types.hpp",
+              "src/shared/include/xos/file_abi.hpp",
+              "src/shared/include/xos/observation_abi.hpp",
+              "src/shared/include/xos/process_abi.hpp",
+              "src/shared/include/xos/process_budget_abi.hpp",
+              "src/user/arch/x86_64/tls.cpp",
+              "src/user/include/xos/elf.hpp",
+              "src/user/include/xos/sdk.hpp",
+              "src/user/include/xos/spawn.hpp",
+              "src/user/include/xos/tls.hpp"
+            ],
+            "object_sha256": "bce4154bcb86cbf8e31ae3a3c9105952ce4ed249fc4bc14e84c73e103ea3f625",
+            "raw_dependency_file_sha256": "f2b90325664f1eb0dbcf458bead10bb0763cadb3c0f79b9f489f4b9d60fc845c"
+          }
+        },
+        "consumer_sdk_manifest_sha256": "10e1c1dec9b84a26eb9773d82db7372cf2066d429f054d2b49542a551c6ae2e1",
+        "frozen_artifacts": {
+          "gnu/csu/Scrt1.o": "09361ae9aa03ff250e7cac162a491dd984af55254bd60004413db70d7afd6186",
+          "gnu/csu/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+          "gnu/csu/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+          "gnu/elf/ld.so": "fb209dfcb5da3e789aa5048db84df7c86ebe2079f2ce62fedb8b662d63b29b2f",
+          "gnu/elf/xos_file_session.os": "dfbc5fdef89a2c85b45bbe7686c5a1b75a23a628221eabf808b73af9101b469e",
+          "gnu/libc.so": "d373dd7061678d0f6ea1122169b4e6f37d46581e9d0f92b66cbd1f8d351641fa",
+          "native_pic/libxos_terminal_pic.a": "57a4896031eccfee520ecffda87d3b27d5ba8f7ec548350acd7c689f83916341",
+          "pic_crt/target/libgcc/crtbeginS.o": "66fda995333df8d1df62f3aa3d7f1c59b166b720711ef2b95024d395d4713868",
+          "pic_crt/target/libgcc/crtendS.o": "eb9e096ff419207d8fe8a843de4237bca2aeff31002b82f99dff800e8d915a29"
+        },
+        "frozen_git_inputs": 388,
+        "native_abi": "c080a98581ac683150ce49f79fccc85cef737bb26a7d62afa6ca0181505696e3",
+        "runtime_manifest_sha256": "b0982dfe12f319d9a580f4716b66a4838a6d6dfc02576b0c82fee05d4a27d32b",
+        "runtime_rebuilt_for_consumer": false,
+        "runtime_source_revision": "f97ddece8146fb7a4bd2eadfdd4845757557611b",
+        "source_groups": {
+          "native_inputs": 150,
+          "port_inputs": 303,
+          "recipe_inputs": 14
+        },
+        "status": "verified_frozen_runtime_and_consumer_binding",
+        "system_headers": "unchanged complete C SDK snapshot, separately verified by the consumer builder",
+        "unused_snapshot_header_differences": {
+          "src/user/include/xos/net_transport.hpp": {
+            "consumer": "96af69e434657417aa033cbc21cedd123776c95579cc7fb192907e9054ac4022",
+            "frozen": "6f5e7a5ba2cca4ebcec93a43f170adc8e93c385c25098377b259a7d0ac100674"
+          }
+        },
+        "verifier_sha256": "754e2f38d084e2c8ea7c97e4b334fea52dddc1452c267f3a5cac3b67309d90b0"
+      },
+      "system_build_id": "13648be5fde3bd78",
+      "system_manifest_sha256": "29df33894bc6ce249f5cf7391a76927e86b7af9dacb175a2a8a93ba683ad8d27",
+      "trust": {
+        "installed_tls_pins.hpp": "b640da4627537657d2a839e0a67881d7e19782e4ee00d70e75b0ff97b5ab9cfd",
+        "leaf-1.pem": "c95f099716a468493fb9bf5e51c36fdd261bffffc5a3c38170bd6b907830d639",
+        "leaf-2.pem": "c9635baef0fb34346db745ddbc55d209860dbb275b79bbca32fbd20a9cb71766",
+        "root-1.pem": "0c5c757285ee3bab701c63ed7d883f8dd22ef7f867b5108b504f0b7a10ae09ae",
+        "root-2.pem": "c595b070324735f2a4ca308803be0c1bb21d4ddc2ba1f1c4e5bea3dcf3d9ac27",
+        "roots-1.bin": "ea1ace686f58ac0a9edcbc4a03a0c2af597a3f246e108fd68a47d32eaa7aa400",
+        "roots-2.bin": "73cc88dc1d478be87baa1703354c99ef4326cfbdedaa8d55501d3693b68ff3af"
+      }
+    },
+    "features": [
+      "directories",
+      "file_io",
+      "heap",
+      "static_tls",
+      "stdio",
+      "stdio_transfer"
+    ],
+    "format_version": 1,
+    "id": "xos-x86_64-glibc-k4-dhcp-tls-c3581f3c3f99",
+    "layout": "public_fixed_dynamic_startup_v2",
+    "runtime_family": "glibc",
+    "runtime_model": "main_thread_fixed_closure",
+    "sdk_binding": {
+      "archive_members": {
+        "usr/lib/libc.a": 1687,
+        "usr/lib/libgcc.a": 147,
+        "usr/lib/libm.a": 831,
+        "usr/lib/libstdc++.a": 199,
+        "usr/lib/libsupc++.a": 65,
+        "usr/lib/libxos_terminal.a": 17
+      },
+      "compiler": {
+        "gcc_sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+        "gxx_sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+        "target": "x86_64-elf",
+        "version": "16.2.0"
+      },
+      "cxx_runtime": {
+        "gcc_version": "16.2.0",
+        "include_directories": [
+          "usr/include/c++/16.2.0",
+          "usr/include/c++/16.2.0/x86_64-unknown-xos",
+          "usr/include/c++/16.2.0/backward"
+        ],
+        "locale_model": "generic",
+        "source_authentication": {
+          "archive_sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+          "key_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+          "primary_fingerprint": "13975A70E63C361C73AE69EF6EEB81F8981C74C7",
+          "report_sha256": "6a1c3d2e8e5be780d39605ebe88b634c0a5e7d1198a0bf3532ae5de62daf6f00",
+          "signature_sha256": "43d73202dcede15d31001c6ba0d28723014ef57e4dc815631772daadbe23bcd2",
+          "signing_fingerprint": "7F74F97C103468EE5D750B583AB00996FC26A641",
+          "source_lock_sha256": "d43c0bd20209831ad936520999a106661ecca7911b9d80068007e65efae89026",
+          "status": "upstream_signature_verified",
+          "verification_files": {
+            "gcc_source_verification/gpgv.log": "81f75ace9bf61ee7f64b835e518dc4cda053ee4814a28ead6f0ffac5a79edd95",
+            "gcc_source_verification/gpgv.status": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4",
+            "gcc_source_verification/release_key.gpg": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+            "gcc_source_verification/report.json": "6a1c3d2e8e5be780d39605ebe88b634c0a5e7d1198a0bf3532ae5de62daf6f00"
+          }
+        },
+        "target": "x86_64-unknown-xos",
+        "thread_model": "posix",
+        "unwinder": {
+          "frame_registry": "pthread_mutex",
+          "replaced_members": {
+            "emutls.o": "0aa7c2fb60441b44b066add1ec2cb951b69ba2364b4a4e6f0d5c2d74f4e447d8",
+            "unwind-c.o": "c2100138cc1c381a8d5f12e15ee8ab91a5dec3248a977b8640bf9f6939659a29",
+            "unwind-dw2-fde.o": "a253c3c958eac1e479cb8e3f7051bd9761f54080c2d7e9bfeb49e09790923b92",
+            "unwind-dw2.o": "2737dccaa009f5a49286f038c3fdaa491039137a459a392b2265e48b7e7ff08d",
+            "unwind-sjlj.o": "a2bff809d228057b7c3e9b98276a95610839edb93eb3d662756cc403d2372173"
+          },
+          "thread_model": "posix"
+        }
+      },
+      "format_version": 1,
+      "libc_version": "2.44",
+      "link_artifacts": {
+        "user.ld": "265c4e708324b740aea9f76b2b86d9c807f0d7b418ee0877c6526161b71b1f3d",
+        "usr/lib/crtbegin.o": "b13c4d2e37c5fb9276dae5da98fc9354b33a24d093ac962060a045ce4d6f1ead",
+        "usr/lib/crtend.o": "abab18582b725e367ab0e3a1aea24042d9acb0b72442e513938f614439ff9e56",
+        "usr/lib/crti.o": "fbd6bf567ea4894c7c157cd332f3c1a40efdf0f75a3d2259d407d1f27c06e97a",
+        "usr/lib/crtn.o": "319a3d71a405d651a603b6e6653ff4c338fbc3917ab2764c0cf62cef95c0abeb",
+        "usr/lib/libc.a": "ce86ccd8ae89ca58ee3fc4be0b1bab12d87f6402e0d43f8e6833de36c087826e",
+        "usr/lib/libgcc.a": "88beb76641fdae379002b70e5bbb59fb1da96ae476c5d2bc703f738cdc4924c0",
+        "usr/lib/libm.a": "cdaeb5f09651488b008f04c12913ba390ee46297a5e23678e4e40d1beb8ed8ff",
+        "usr/lib/libstdc++.a": "ca6e35950aeb27eeac3f6465f9797c43518d1008817aa570bfe6dd1effa68eae",
+        "usr/lib/libsupc++.a": "e083efbd625219f1a864422db174adc1fc622e756d9cec0bfcaf973e0bfe9948",
+        "usr/lib/libxos_terminal.a": "14ef0470c10c996d1ca543278d43d5ee5ae715f96139d96cd35dec2b3b06c9db",
+        "usr/lib/xos_start.o": "e8abda8cb2ffebc55b4d98e58a12a1729ef7ea11156808a059a82418fbee4800",
+        "usr/lib/xos_start_c.o": "7cc65ba50f708d5a78d18168594418619ab54c71bb6fd7661e109ecb6019e8de",
+        "usr/lib/xos_stdio_receiver.o": "6e7f8463d4bbd876d96ebf1b4ff15f98acc401b481dc2fbe4cec27d2324b4012"
+      },
+      "runtime_family": "glibc",
+      "runtime_model": "threaded",
+      "sdk_manifest_sha256": "d5a5d40d1ad60d11d8dbae2b517d5aaeae0244fdcadb09145b2a45095ca884fa",
+      "sdk_tree_sha256": "3b7f05a77d720c6de494a470f495d4688c103e83a84ae997c13a21663ca9624c",
+      "source_authentication": {
+        "archive_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+        "key_sha256": "49d763416cc91cd7316bbb295284628e0406d5d96ec59e3132fcfca3bbc12f53",
+        "primary_fingerprint": "35B17DF5752577CA0C541CEB94BFDF4484AD142F",
+        "report_sha256": "c1a4611c112db05e01500c4453a8ce8de447a8bd1f0833798fc03353f55103de",
+        "signature_sha256": "44aabe605a02a56959bab51b92d985945db66dbd0117debe3d741252b2133ec6",
+        "signing_fingerprint": "FD19E6D31B192EE4DC63EAD3DC2B16215ED5412A",
+        "source_lock_sha256": "431f05d9d1d9b3665ebff8c08b629258aa3d34985477c6474d2f9eaf44e53e59",
+        "status": "upstream_signature_verified",
+        "verification_files": {
+          "source_verification/gpgv.log": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+          "source_verification/gpgv.status": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+          "source_verification/release_key.gpg": "1521f254b6c7494421a05b4af4db8f89c303487c8fe721237d4932c2faf083af",
+          "source_verification/report.json": "c1a4611c112db05e01500c4453a8ce8de447a8bd1f0833798fc03353f55103de"
+        }
+      }
+    },
+    "sdk_tree_sha256": [
+      "3b7f05a77d720c6de494a470f495d4688c103e83a84ae997c13a21663ca9624c"
+    ],
+    "startup_version": 3,
+    "status": "combined_candidate_guest_not_run",
+    "syscall_abi": 1,
+    "verified_system_builds": [],
+    "word_bits": 64
+  }
+}

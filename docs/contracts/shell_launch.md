@@ -30,8 +30,8 @@ Xsh 返回提示符后，调用者可使用现有 `wait <pid>` 消费完成记�
 `spawn-file` 和 `exec-file` 继续不继承创建权；`exec-driver` 保留历史语义。
 该独立入口使已安装动态控制器能够按普通继承契约运行，同时让 supervisor
 在网络故障验收期间管理其自有服务。它不宣称 POSIX 作业控制、信号或新的
-终端会话能力。[安装组合](installed_dhcp_tls_composition.md) 定义所需配置与验收；
-完整资格包尚待公开，本实现审查 draft 不作为默认当前 main v3 组合资格。
+终端会话能力。实际后台动态 GNU/TLS、无创建权拒绝及资源回收证据随
+[安装组合](installed_dhcp_tls_composition.md) 的绑定报告记录。
 
 ## 1. 范围与非目标
 

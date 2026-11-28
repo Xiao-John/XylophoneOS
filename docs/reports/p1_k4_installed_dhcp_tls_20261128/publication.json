@@ -1,0 +1,120 @@
+{
+  "integrity": "only manifest.json hashes public sibling leaves; raw origin digests identify unpublished local originals",
+  "method": "derived public records; host-local paths replaced or command inventories omitted",
+  "origins": [
+    {
+      "public": "boot_1_serial.log.gz",
+      "raw_local_source": "build/p1_k4_guest_final2/installed_k4_1_serial.log",
+      "raw_unpublished_sha256": "5288d8484bd51db86168789cbb9ec77d005eafd9a7c7d3f339ade89baafcd106",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "boot_1_network.pcap.gz",
+      "raw_local_source": "build/p1_k4_guest_final2/network_1.pcap",
+      "raw_unpublished_sha256": "3cbb3776f82ea1f1765d248dd7fae0388d79096eb7d4fa2d45175267ef1c4c2a",
+      "transformation": "deterministic gzip"
+    },
+    {
+      "public": "boot_2_serial.log.gz",
+      "raw_local_source": "build/p1_k4_guest_final2/installed_k4_2_serial.log",
+      "raw_unpublished_sha256": "9f7b16b2fadce8feca04b442c7ca3ec1096a515267667c6ac793a29ff47ce840",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "boot_2_network.pcap.gz",
+      "raw_local_source": "build/p1_k4_guest_final2/network_2.pcap",
+      "raw_unpublished_sha256": "4516c4e557dbe3d3d37ae1f8417c8cd5c73421ac787965378b6fe9deb927b0a5",
+      "transformation": "deterministic gzip"
+    },
+    {
+      "public": "boot_3_serial.log.gz",
+      "raw_local_source": "build/p1_k4_guest_final2/installed_k4_3_serial.log",
+      "raw_unpublished_sha256": "6eb12a8436f62900b987950fa476b937ede4dd5e4c536e4f119899e8f8b3c82c",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "boot_3_network.pcap.gz",
+      "raw_local_source": "build/p1_k4_guest_final2/network_3.pcap",
+      "raw_unpublished_sha256": "bf9752ed03e9e06eb05c62a86154e63cb8a2f6fb4da7a8ef9c15ec91939d4a57",
+      "transformation": "deterministic gzip"
+    },
+    {
+      "public": "glibc_gpgv.log.gz",
+      "raw_local_source": "build/p1_k4_runtime/glibc_source_verification/gpgv.log",
+      "raw_unpublished_sha256": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "glibc_gpgv.status.gz",
+      "raw_local_source": "build/p1_k4_runtime/glibc_source_verification/gpgv.status",
+      "raw_unpublished_sha256": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "gcc_gpgv.log.gz",
+      "raw_local_source": "build/p1_k4_runtime/gcc_source_verification/gpgv.log",
+      "raw_unpublished_sha256": "81f75ace9bf61ee7f64b835e518dc4cda053ee4814a28ead6f0ffac5a79edd95",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "gcc_gpgv.status.gz",
+      "raw_local_source": "build/p1_k4_runtime/gcc_source_verification/gpgv.status",
+      "raw_unpublished_sha256": "0721a47ed8f1e7a4afb850e980676e497df8d684ec7fdefd75aca075664b49c4",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "gnu_runtime_build.log.gz",
+      "raw_local_source": "build/p1_k4_runtime/build-public-runtime.log",
+      "raw_unpublished_sha256": "5a32b1bc9e1b6a39e2ae1641623d14e36fc9ff98e233ddc59a8d8cfe0f77f841",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "pic_crt_build.log.gz",
+      "raw_local_source": "build/p1_k4_runtime/build-pic-crt.log",
+      "raw_unpublished_sha256": "0b6cf8fb198e5436b46359b7fca8f2b8f30f1772933d676e78f3e3e418744b14",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "tls_libraries_build.log.gz",
+      "raw_local_source": "build/p1_k4_program_final2/tls-libraries.log",
+      "raw_unpublished_sha256": "abce0c0310399c0277fb1fa5f81a402983d21bfbb02f4de4c080cfdba4f6b36a",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "dynamic_preflight.log.gz",
+      "raw_local_source": "build/p1_k4_program_final2/preflight.log",
+      "raw_unpublished_sha256": "d7659f3a4798b9870354b63a61895882cfdae6912b1c2eb85c3cb64380156986",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "dynamic_link_map.log.gz",
+      "raw_local_source": "build/p1_k4_program_final2/main.map",
+      "raw_unpublished_sha256": "b2cb7286f8cd437ba5fc0b5f9df3b8d57a82c2697b183f1117763d764a8ad47b",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "attempt_renew_session.log.gz",
+      "raw_local_source": "build/p1_k4_guest_v2/installed_k4_2_serial.log",
+      "raw_unpublished_sha256": "dfa809757246f084cb8e3cd57ef3e38ecfd2e9f6c7dfc587584b4004648d904b",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "attempt_peer_xid.log.gz",
+      "raw_local_source": "build/p1_k4_guest_v3/installed_k4_2_serial.log",
+      "raw_unpublished_sha256": "68ae3822aa46c9a2f9816d84aa179c7324148c6b3ce04c56236677a4740550d5",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "attempt_quarantine_restart.log.gz",
+      "raw_local_source": "build/p1_k4_guest_v4/installed_k4_2_serial.log",
+      "raw_unpublished_sha256": "ac0d5449023deb3a9276911170b91a5ba7bfd425c8dede30c24e5cedf9030728",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    },
+    {
+      "public": "attempt_early_lease_expiry.log.gz",
+      "raw_local_source": "build/p1_k4_guest_final/installed_k4_2_serial.log",
+      "raw_unpublished_sha256": "508fc91faa1b384c6545938b803d09ece82850b719e75cfb6fa8beb2cc5b3e5e",
+      "transformation": "non-UTF8 bytes escaped, host paths replaced, then deterministic gzip"
+    }
+  ]
+}

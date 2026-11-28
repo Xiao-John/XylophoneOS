@@ -8,18 +8,6 @@ layout or dynamic-startup ABI. Qualification belongs to the exact build and
 installation receipts; a successful component build does not qualify the
 combination.
 
-## Review delivery status
-
-This is an implementation-only review draft. The complete qualification package
-awaits public disclosure authorization and is not included in this draft. The
-implementation and fixture bytes are carried unchanged from their named source;
-the contract describes the required configuration and acceptance cases.
-
-This draft does not establish the default current-main v3 capsule as a qualified
-installed DHCP/TLS combination. The separately frozen v2 runtime evidence cannot
-be rebound to v3. A current-main combination requires matching runtime, SDK,
-installation and caller inputs followed by its own complete target acceptance.
-
 ## Selected installation
 
 `p1_k4_installed_dhcp_tls_v1` uses the supported ordinary boot ISO plus a
@@ -153,5 +141,5 @@ requires a cold boot, while orderly stop/restart recovers in the same boot.
 These fixtures do not qualify GNU worker threads in this C-only closure,
 physical NICs, arbitrary Internet CAs, secure
 hardware time/entropy, power loss, general online library loading, SMP or a
-current-main v3 dynamic capsule combination. Historical static/DHCP/TLS reports remain
+pending newer dynamic capsule ABI. Historical static/DHCP/TLS reports remain
 separate from this installed dynamic composition.

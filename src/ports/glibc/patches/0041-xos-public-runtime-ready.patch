@@ -1,13 +1,17 @@
---- a/elf/dl-init.c
-+++ b/elf/dl-init.c
-@@ -122,4 +122,10 @@ _dl_init (struct link_map *main_map, int argc, char **argv, char **env)
-   /* Finished starting up.  */
-   _dl_starting_up = 0;
+--- a/csu/libc-start.c
++++ b/csu/libc-start.c
+@@ -372,4 +372,14 @@
  #endif
-+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
-+  /* Constructors, relocation, RELRO, TLS and libc startup all precede READY. */
-+  extern long xos_rtld_public_ready (void) attribute_hidden;
-+  if (xos_rtld_public_ready () != 0)
-+    _dl_fatal_printf ("XOS rtld: startup controller rejected READY\n");
+ 
++#if defined SHARED && defined XOS_PUBLIC_DYNAMIC_STARTUP
++  /* The loader's _dl_init may run again for an already loaded internal
++     unwinder, and it precedes the executable's own constructors. Publish
++     readiness only at this single initial entry, after both constructor
++     phases and immediately before main. */
++  extern long xos_dynamic_startup_ready (void) attribute_hidden;
++  if (xos_dynamic_startup_ready () != 0)
++    __libc_fatal ("XOS libc: startup controller rejected READY\n");
 +#endif
++
+   __libc_start_call_main (main, argc, argv MAIN_AUXVEC_PARAM);
  }

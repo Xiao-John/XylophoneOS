@@ -1,0 +1,61 @@
+{
+  "native_iso_sha256": "94dddaf6da7b8a68617fb8ade2980c91f797eef73f4062d8d9a0d25049edb550",
+  "native_sdk_manifest_sha256": "61d3f52a178071cd6d2809b37669b8542e6dd93f5b429b5a924807e76b3e3779",
+  "native_sdk_tree_sha256": "29eeceac7b5913ccf66116d6420a502069ab357efbe80b2917515d4e971bdaee",
+  "not_covered": [
+    "New GNU startup capsule guest qualification",
+    "Process-tree budgets",
+    "Cross-descendant durable revocation",
+    "sys81 explicit channel inheritance stress",
+    "terminal/display/Interactium regression"
+  ],
+  "production_revision": "3699916df590a2fe0ea9b419836ded2d9344e6b3",
+  "runs": [
+    {
+      "fixture_artifacts": {
+        "launch_control.elf": "b4495ec6b76d69ecb2b28aca9ff3e6ba3b87d1e352d92460c8ee821dd6cff03c"
+      },
+      "native_invocations": 33,
+      "resources_each_invocation": [
+        129779,
+        2,
+        0
+      ],
+      "rounds": 3,
+      "status": "passed",
+      "suite": "controller"
+    },
+    {
+      "fixture_artifacts": {
+        "ipc_exec_probe.elf": "123e22fc9934bb8a53260345adc719d608b7436f0be5522712f9d7d1f4a02654"
+      },
+      "native_invocations": 12,
+      "resources_each_invocation": [
+        129779,
+        2,
+        0
+      ],
+      "rounds": 3,
+      "status": "passed",
+      "suite": "ipc_lifecycle"
+    },
+    {
+      "fixture_artifacts": {
+        "ipc_deadline_probe.elf": "374420b97a79a351ca0dc0bd22dd62b92d24f6487737a8532184a1a5d53c13c1"
+      },
+      "native_invocations": 3,
+      "resources_each_invocation": [
+        129779,
+        2,
+        0
+      ],
+      "rounds": 3,
+      "status": "passed",
+      "suite": "ipc_deadline"
+    }
+  ],
+  "scope": "Actual native controller, IPC exec/lifetime/authority/quota and absolute deadlines; no modeled kernel or Files.",
+  "source_input_count": 2196,
+  "status": "passed",
+  "system_build_id": "c1575e2adfc6fa5d"
+}

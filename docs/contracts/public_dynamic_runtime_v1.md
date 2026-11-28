@@ -53,8 +53,10 @@ capsule 的内部布局版本为 2，固定从 `0x71000000` 开始；它位于�
 bootstrap 用同一开放描述映射 main 与 interpreter，准备 argv/env/auxv、
 GNU 初始栈及 Files 会话，再进入真正的 GNU `ld.so`。早期 heap 固定为 8 MiB，
 位于 `0x1fff00000000`，与生成的 DSO 映射区间分离。其余库从已转移的 pin
-加载。重定位、IFUNC、TLS 和构造函数完成后，GNU `dl-init` 通过启动控制协议
-发送 READY，并等待经认证的 ACK 后才返回应用入口。错误路径发送对应失败
+加载。重定位、IFUNC、TLS、DSO 与主程序构造函数全部完成后，共享 libc 的
+初始 `__libc_start_main` 路径通过启动控制协议发送唯一 READY，并等待经认证的
+ACK 后才调用 `main`。内部 unwinder 对已有库的 `RTLD_NOLOAD` 初始化不会重发
+READY，构造函数中创建线程也不会提前发布启动成功。错误路径发送对应失败
 阶段；启动者据截止时间清理仍未就绪的子进程。
 
 ## libc、文件描述符和 exec

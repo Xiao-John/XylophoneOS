@@ -1,0 +1,32 @@
+exec-driver /bin/r2_probe.elf
+[process] event=started pid=20 parent=7
+[process] pid=20 address_space=0x000000000036b000
+[loader] started pid=20 file=/bin/r2_probe.elf
+[process] event=wait_blocked parent=7 child=20
+[process] event=started pid=21 parent=20
+[process] pid=21 address_space=0x00000000006dc000
+P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1
+[task] event=reclaimed pid=21 pages=867
+R2_PROBE_PASS initial_generation_0
+[process] event=started pid=22 parent=20
+[process] pid=22 address_space=0x00000000006dc000
+P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1
+[task] event=reclaimed pid=22 pages=867
+R2_PROBE_PASS activate_1_preserves_old_pin
+R2_PROBE_PASS stale_sequence_rejected
+[process] event=started pid=23 parent=20
+[process] pid=23 address_space=0x00000000006dc000
+P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1
+[task] event=reclaimed pid=23 pages=867
+R2_PROBE_PASS failed_activation_preserves_old
+[process] event=started pid=24 parent=20
+[process] pid=24 address_space=0x00000000006dc000
+P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1
+[task] event=reclaimed pid=24 pages=867
+R2_PROBE_PASS rollback_0
+R2_PROBE_PASS revocation_blocks_future_admission
+R2_PROBE_PASS active_revocation_blocks_capture
+R2_PROBE_OK cases=7 sequence=5 revoked=3
+[task] event=reclaimed pid=20 pages=495
+[wait] pid=20 kind=exited code=0
+xsh>

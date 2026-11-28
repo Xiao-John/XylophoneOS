@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
 extern char **environ;
@@ -15,7 +16,19 @@ static __thread unsigned tls_value = 31;
 static int initialized;
 static int sample(void) { return 47; }
 static int (*relative_function)(void) = sample;
-__attribute__((constructor)) static void initialize(void) { initialized = 19; }
+__attribute__((constructor)) static void initialize(void)
+{
+    initialized = 19;
+    if (getenv("P0_READY_CONSTRUCTOR")) {
+        /* A parent must not return from posix_spawn while this executable's
+           initializer is still running. The delay makes an early rtld READY
+           observable before the completed constructor publishes its file. */
+        const struct timespec delay = {0, 100000000};
+        if (nanosleep(&delay, NULL) != 0) _Exit(51);
+        const int fd = open("/tests/constructor_ready", O_WRONLY | O_CREAT | O_EXCL, 0600);
+        if (fd < 0 || write(fd, "READY", 5) != 5 || close(fd) != 0) _Exit(52);
+    }
+}
 
 static int descriptor(const char *name)
 {
@@ -92,10 +105,18 @@ int main(int argc, char **argv)
     int error = setup_files();
     if (error) return error;
     if (!strcmp(argv[1], "spawn")) {
+        if (unlink("/tests/constructor_ready") != 0 && errno != ENOENT) return 53;
+        if (setenv("P0_READY_CONSTRUCTOR", "1", 1) != 0) return 54;
         char *arguments[] = {argv[0], "spawned", NULL};
         pid_t child = -1;
         int result = posix_spawn(&child, argv[0], NULL, NULL, arguments, environ);
         if (result || child <= 0) { printf("P0_SPAWN_ERROR=%d\n", result); return 42; }
+        const int ready = open("/tests/constructor_ready", O_RDONLY | O_CLOEXEC);
+        char completed[5];
+        if (ready < 0 || read(ready, completed, sizeof(completed)) != 5
+            || memcmp(completed, "READY", sizeof(completed)) || close(ready)
+            || unlink("/tests/constructor_ready") || unsetenv("P0_READY_CONSTRUCTOR")) return 55;
+        puts("P0_PUBLIC_READY_AFTER_CONSTRUCTORS");
         int status = -1;
         if (waitpid(child, &status, 0) != child || !WIFEXITED(status) || WEXITSTATUS(status)) return 43;
         char byte = 0;

@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "1210904b6b4031d680ecd1382fae67deb68ba03ca6048bcf0ef8623a4bc56d49",
+    "conversion.json": "cc6ecbcc906949923eaa4e1a7584cf72ed357fa677b9d62621b9ecf17816ae29",
+    "failed_guest.json": "a82bc634efc8b90ae2ccfb92d48a8a8ecc72293b05e6f04b3b6763a79108a066",
+    "failed_serial.log.gz": "de958761e6616be1888d2c61fd39dbe1fb16453332f73ffd1e46b7c35065ba97"
+  }
+}

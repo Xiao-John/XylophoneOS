@@ -80,7 +80,14 @@ def main():
                 ('XOS_PREVIEW2_BREW', args.preview_prefix),
                 ('XOS_PREVIEW2_TEMP', args.preview_temp)]
     for name, path in raw.items():
-        content = portable(json.loads(path.read_bytes()), mappings, strict=True)
+        content = json.loads(path.read_bytes())
+        if name == 'guest.json' or name.startswith('historical_guest_'):
+            # Only these fields are guest shell commands. Applying guest
+            # roots to host source paths would change their replay meaning.
+            for row in content['checks']:
+                row['command'] = portable(row['command'],
+                    [('XOS_GUEST_TESTS', '/tests'), ('XOS_GUEST_APPS', '/apps')], strict=True)
+        content = portable(content, mappings, strict=True)
         (out / name).write_text(json.dumps(content, indent=2) + '\n')
     for stage in args.stage:
         name = json.loads((stage / 'manifest.json').read_bytes())['name']
@@ -93,6 +100,7 @@ def main():
         (out / ('historical_serial_' + str(index) + '.log.gz')).write_bytes(gzip.compress(log, mtime=0))
     conversion = {'rule': 'known environment roots replaced by explicit replay templates; observations and source/artifact/tool hashes unchanged',
                   'raw_reports': {name: sha(path) for name, path in raw.items()},
+                  'guest_command_roots': {'XOS_GUEST_TESTS': '/tests', 'XOS_GUEST_APPS': '/apps'},
                   'exporter_sha256': sha(__file__), 'leaf_bindings': 'manifest.json files'}
     (out / 'conversion.json').write_text(json.dumps(conversion, indent=2) + '\n')
     rows = '\n'.join('| ' + row['name'] + ' | ' + str(row['round']) + ' | '
@@ -165,6 +173,9 @@ The flat root manifest covers all exported leaves and git authenticates it.
 environment-path substitution. `${{XOS_WORKSPACE}}` is the explicitly selected
 development workspace; `${{XOS_ROOT}}` is this checkout. The Preview2 prefix,
 Cellar and temporary-root templates identify that pinned SDK environment.
+Within the recorded guest shell commands, `${{XOS_GUEST_TESTS}}` means `/tests`
+and `${{XOS_GUEST_APPS}}` means `/apps`; those templates are never applied to
+host source paths or artifact identities. Serial output preserves guest paths.
 
 {rebuild_section}
 {history_section}

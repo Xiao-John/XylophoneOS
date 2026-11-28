@@ -194,7 +194,8 @@ def main():
         c_markers = {
             'basic': ('P0_PUBLIC_C_OK constructor=1 tls=1 relocation=1 environment=1',),
             'policy': ('P0_PUBLIC_RUNTIME_LOAD_POLICY_OK',),
-            'spawn': ('P0_PUBLIC_SPAWN_CHILD_OK aliases=1 cloexec=1',
+            'spawn': ('P0_PUBLIC_READY_AFTER_CONSTRUCTORS',
+                      'P0_PUBLIC_SPAWN_CHILD_OK aliases=1 cloexec=1',
                       'P0_PUBLIC_SPAWN_OK ordinary_api=1 shared_cursor=1 wait_ready=1'),
             'exec': ('P0_PUBLIC_CANCEL_OK old_pid=1 old_descriptors=1',
                      'P0_PUBLIC_EXEC_OK same_pid=1 aliases=1 cloexec=1')}
@@ -207,7 +208,8 @@ def main():
         for name, program, markers in (
                 ('cpp', 'p0cpp', ('D2_SHARED_CXX_OK throw=DSO catch=PIE rtti=shared unwind=complete',
                                  'D2_SHARED_CXX_TLS_DTOR', 'D2_SHARED_CXX_ATEXIT')),
-                ('thread', 'p0thread', ('D2_STD_THREAD_APP_TLS_DTOR', 'D2_SHARED_CXX_TLS_DTOR',
+                ('thread', 'p0thread', ('P0_PUBLIC_CONSTRUCTOR_THREAD_OK',
+                                      'D2_STD_THREAD_APP_TLS_DTOR', 'D2_SHARED_CXX_TLS_DTOR',
                                       'D2_STD_THREAD_OK move=joined app-dtor=1 dso-dtor=1 tls=isolated'))):
             line = 'dynamic-run ' + str(slots[program]) + ' /apps/' + program + '/main'
             definitions.append((name + '-xsh', line, markers))

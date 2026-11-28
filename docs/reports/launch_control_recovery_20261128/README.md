@@ -22,7 +22,9 @@ lost. No earlier pass result has been relabeled as this source's qualification.
 The final system build is `cd41a13a9b8bfc61`. `system-binding.json` retains the
 raw manifest's SHA-256, every source and artifact binding, tools and configuration;
 only its repetitive build command arrays and layout symbol data are omitted.
-The other JSON files retain the original report contents. Logs are plain text;
+JSON exports replace machine-specific paths with explicit `${XOS_*}` templates;
+all other observations and source/artifact digests retain their original values.
+`report-bindings.json` records each original and exported report digest. Logs are plain text;
 serial exports normalize line endings to LF and remove trailing whitespace.
 `serial-bindings.json` records both raw and exported hashes and that transform.
 `evidence_index.json` hashes every published leaf other than itself.
@@ -38,6 +40,13 @@ Run from the repository root inside the Preview 2 Linux SDK launcher. Supply
 the pinned lwIP source archive using `XOS_LWIP_SOURCE_ARCHIVE`. Use new output
 directories; the builders and runners intentionally reject existing fixture/test
 directories. Keep inputs unchanged until the guest finishes.
+
+Command templates use `XOS_ROOT` for the checkout, `XOS_PREVIEW2_PREFIX` for the
+SDK target-tool prefix, `XOS_PREVIEW2_CELLAR` for the SDK's internal packaged
+compiler/dependency directory, and `XOS_WORK_DISK_DIR` for that run's temporary
+FAT disk directory. The Python runners create the latter themselves; the SDK
+launcher supplies the compiler paths. These templates describe replay inputs,
+not paths to be executed without resolution.
 
 ```sh
 python3 tests/launch_control_host.py --output build/launch_host

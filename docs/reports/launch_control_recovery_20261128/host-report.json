@@ -60,13 +60,13 @@
       "-Wconversion",
       "-Wshadow",
       "-I",
-      "/work/xylophoneos-lifecycle/src/shared/include",
+      "${XOS_ROOT}/src/shared/include",
       "-I",
-      "/work/xylophoneos-lifecycle/src/user/include",
-      "/work/xylophoneos-lifecycle/src/user/sdk/launch_control.cpp",
-      "/work/xylophoneos-lifecycle/tests/fixtures/launch_control_host.cpp",
+      "${XOS_ROOT}/src/user/include",
+      "${XOS_ROOT}/src/user/sdk/launch_control.cpp",
+      "${XOS_ROOT}/tests/fixtures/launch_control_host.cpp",
       "-o",
-      "/work/xylophoneos-lifecycle/build/launch_host_v2/ordinary"
+      "${XOS_ROOT}/build/launch_host_v2/ordinary"
     ],
     [
       "g++",
@@ -79,13 +79,13 @@
       "-Wconversion",
       "-Wshadow",
       "-I",
-      "/work/xylophoneos-lifecycle/src/shared/include",
+      "${XOS_ROOT}/src/shared/include",
       "-I",
-      "/work/xylophoneos-lifecycle/src/user/include",
-      "/work/xylophoneos-lifecycle/src/user/sdk/launch_control.cpp",
-      "/work/xylophoneos-lifecycle/tests/fixtures/launch_control_host.cpp",
+      "${XOS_ROOT}/src/user/include",
+      "${XOS_ROOT}/src/user/sdk/launch_control.cpp",
+      "${XOS_ROOT}/tests/fixtures/launch_control_host.cpp",
       "-o",
-      "/work/xylophoneos-lifecycle/build/launch_host_v2/sanitized",
+      "${XOS_ROOT}/build/launch_host_v2/sanitized",
       "-fsanitize=address,undefined",
       "-fno-omit-frame-pointer"
     ]

@@ -26,7 +26,7 @@
     "-rtc",
     "base=utc,clock=host",
     "-cdrom",
-    "/work/xylophoneos-lifecycle/build/launch_system_v2/xos-install.iso",
+    "${XOS_ROOT}/build/launch_system_v2/xos-install.iso",
     "-boot",
     "order=d,strict=on",
     "-no-reboot",
@@ -37,7 +37,7 @@
     "-display",
     "none",
     "-drive",
-    "file=/tmp/xos_launch_guest_1y2ybpgc/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
+    "file=${XOS_WORK_DISK_DIR}/work.img,format=raw,if=ide,index=0,media=disk,cache=writeback"
   ],
   "baseline": [
     129781,

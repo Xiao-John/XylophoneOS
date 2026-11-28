@@ -16,7 +16,7 @@
   },
   "commands": [
     [
-      "/opt/xos/bin/x86_64-elf-g++",
+      "${XOS_PREVIEW2_PREFIX}/bin/x86_64-elf-g++",
       "-std=c++20",
       "-Os",
       "-g",
@@ -39,21 +39,21 @@
       "-mgeneral-regs-only",
       "-nostdinc++",
       "-I",
-      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/include",
-      "/work/xylophoneos-lifecycle/tests/fixtures/launch_control_probe.cpp",
+      "${XOS_ROOT}/build/launch_system_v3/sdk/include",
+      "${XOS_ROOT}/tests/fixtures/launch_control_probe.cpp",
       "-nostdlib",
       "-static",
       "-no-pie",
       "-Wl,--gc-sections,--build-id=none,--no-undefined,--fatal-warnings,-z,noexecstack,-z,max-page-size=4096",
       "-T",
-      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/user.ld",
-      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/crt0.o",
+      "${XOS_ROOT}/build/launch_system_v3/sdk/user.ld",
+      "${XOS_ROOT}/build/launch_system_v3/sdk/crt0.o",
       "-Wl,--start-group",
-      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/lib/libxos.a",
-      "/work/xylophoneos-lifecycle/build/launch_system_v3/sdk/lib/libxos_loader.a",
+      "${XOS_ROOT}/build/launch_system_v3/sdk/lib/libxos.a",
+      "${XOS_ROOT}/build/launch_system_v3/sdk/lib/libxos_loader.a",
       "-Wl,--end-group",
       "-o",
-      "/work/xylophoneos-lifecycle/build/launch_fixture_v3/launch_control.elf"
+      "${XOS_ROOT}/build/launch_fixture_v3/launch_control.elf"
     ]
   ],
   "toolchain": {
@@ -64,43 +64,43 @@
     "nasm": "NASM version 3.02 compiled on Jun 29 2026",
     "executables": {
       "gcc": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-gcc",
         "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
       },
       "g++": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/bin/x86_64-elf-g++",
         "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
       },
       "as": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-as",
         "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
       },
       "ld": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld",
         "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
       },
       "objcopy": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-objcopy",
         "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
       },
       "nm": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-nm",
         "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
       },
       "ar": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-binutils/2.47/bin/x86_64-elf-ar",
         "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
       },
       "cc1": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1",
         "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
       },
       "cc1plus": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
+        "path": "${XOS_PREVIEW2_CELLAR}/x86_64-elf-gcc/16.2.0/libexec/gcc/x86_64-elf/16.2.0/cc1plus",
         "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
       },
       "nasm": {
-        "path": "/home/linuxbrew/.linuxbrew/Cellar/nasm/3.02/bin/nasm",
+        "path": "${XOS_PREVIEW2_CELLAR}/nasm/3.02/bin/nasm",
         "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
       }
     }

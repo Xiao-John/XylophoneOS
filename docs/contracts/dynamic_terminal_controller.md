@@ -120,7 +120,7 @@ endpoint but rejects the second.
 
 The dedicated target fixture is an explicitly selected supervisor with
 compile-time approved generation roots and an actual COM1 terminal actor.
-Its program uses the public GNU runtime. Planned target cases include direct
+Its program uses the public GNU runtime. The recorded target cases include direct
 exec, fork-to-exec with different terminal/launch owners, create-authority
 rejection, actor death, controller exit/cancellation, exact FD/PID/TLS rules,
 native action-0/action-7 limits and cumulative-budget rollback. The host
@@ -160,6 +160,14 @@ Files process, so exact page/object reclamation does not assume the departed
 owner still exists. This fixture adds no device delegation and claims no
 owner-kill or COM1 recovery after bootstrap-owner exit.
 
+After the pending read invalidates the local terminal session, the observed
+failed exec stops during the terminal snapshot with EIO, before sending a
+new PREPARE. The case proves that the existing parent-owned READY/ACK pair,
+PID, authority, Files and pipe state survive and that the parent can wait and
+reap its child. The ordinary direct/fork cases independently prove successful
+exec; the owner-exit case does not claim a new generation handshake after the
+TTY owner disappears.
+
 Each cold phase formats its own private FAT32 disk and imports the same bound
 program/runtime/input payload before adding that phase's new random nonce.
 No prior nonce, report or sync witness is carried into the next phase. The
@@ -174,6 +182,13 @@ free-page counts and its own thread/page accounting; authorized self
 observation supplies parent identity, channels and pipe references. The
 private version-2 evidence format names thread results separately from
 process completion records.
+
+Its channel fields also retain the precise scope of the existing sys90
+`owned_channels` counter: channels marked `endpoint.generic`, created through
+the sys84 endpoint and sys86 naming interfaces. The counter does not count
+sys81 TTY pairs or the independent sys88 IPC-v1 table. TTY ownership and
+revocation are proved separately by native channel information, distinct
+process identities and rejection of the old TTY tokens.
 
 Global completion cleanup is independently checked by the host through
 read-only QMP memory samples. The sampler binds the exact kernel ELF, source

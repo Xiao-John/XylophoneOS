@@ -1,0 +1,15 @@
+{
+  "files": {
+    "abi_consistency.log": "e2e4c52a0306922418b0917ef17cc47d9eba2bec406bbb9f4f1387b8c86eb301",
+    "binding.json": "5ca7934ef98e4a6563b5ca25119caa3691350158c6f21bb55d8ecfc82ab94aff",
+    "docs_consistency.log": "2c88db5ff06c84d102bb2b577ca058521de9c05986f5d0f54b2193ba4c9cc179",
+    "docs_provenance_restored.json": "f37e1b52965c5bd24c7c7dc712dc72840f6452d7b3c11daaf21406462bc69276",
+    "guest_report.json": "b317fec1e6bd6556fd91406f40a7709abd8c61773dfa114bad96881fd7c2ba45",
+    "guest_serial.log": "a98891f746402b9c014a02c65ae708e2003c814be1231324bd7c5af7e8c13846",
+    "host_cases.log": "4bdfb9ffd3ffd6d0fec6f9f0d6f3a19899210c76eb59317a385ec1f73485391f",
+    "identity_elf.log": "69f4bf8f53bd153d34efb7fc9b55999082e2d1c0994d86853d480740a80d7ce5",
+    "initial_compile_failure.log": "02904e045788d2cfb770a4131b9e4e62be465d03bbe6d7b4ff4202bde30dd236",
+    "initial_harness_failure.log": "54e139e121857634a3d455e7cfbc929b183ec4066914c255f33e91f6bac2cbdb"
+  },
+  "version": 1
+}

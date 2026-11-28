@@ -1,0 +1,13 @@
+${XOS_SOURCE}/src/user/loader/dynamic/identity.cpp: In function 'xos::dynamic::error xos::dynamic::inspect_identity(xos::elf::read_exact_fn, void*, xos::u64, const object_identity&)':
+${XOS_SOURCE}/src/user/loader/dynamic/identity.cpp:53:31: error: conversion from 'xos::u64' {aka 'long unsigned int'} to 'xos::u32' {aka 'unsigned int'} may change value [-Werror=conversion]
+   53 |         const u32 type = value(program, 4), flags = value(program + 4, 4);
+      |                          ~~~~~^~~~~~~~~~~~
+${XOS_SOURCE}/src/user/loader/dynamic/identity.cpp:53:58: error: conversion from 'xos::u64' {aka 'long unsigned int'} to 'xos::u32' {aka 'unsigned int'} may change value [-Werror=conversion]
+   53 |         const u32 type = value(program, 4), flags = value(program + 4, 4);
+      |                                                     ~~~~~^~~~~~~~~~~~~~~~
+cc1plus: all warnings being treated as errors
+${XOS_SOURCE}/tests/fixtures/dynamic_admission/cases.cpp: In function 'void run_admission_cases()':
+${XOS_SOURCE}/tests/fixtures/dynamic_admission/cases.cpp:75:28: error: conversion from 'xos::u32' {aka 'unsigned int'} to 'xos::u8' {aka 'unsigned char'} may change value [-Werror=conversion]
+   75 |         item.sha256[0] = i + 1;
+      |                          ~~^~~
+cc1plus: all warnings being treated as errors

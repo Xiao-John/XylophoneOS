@@ -502,6 +502,14 @@ fork 使用独立物理页复制；线程运行时仍不支持 fork/exec。详�
 [匿名 VM 契约](contracts/anonymous_vm.md)，恢复和验收状态见
 [VM3 工作记录](work_log/58b24599_vm3_lifecycle_sdk.md)。
 
+## 原生动态元数据准入组件（2026-11-27）
+
+`<xos/dynamic_abi.hpp>` 与 `<xos/dynamic.hpp>` 登记并解码只读 native identity note、
+有界 generation 及受信单线程启动者内的易失 activate/capture/revoke/rollback。
+实现随 native `libxos_loader.a` 提供，完整身份、错误、权限与版本边界见
+[dynamic_admission_v1](contracts/dynamic_admission_v1.md)。本组件不修改公开
+spawn/exec 的静态 ELF 限制，也不把元数据检查成功当作 runtime-ready。
+
 ## N3 原生网络便利API（2026-11-25）
 
 SDK自动携带`<xos/net_transport.hpp>`，兼容C++17，提供PID固定的connect、TCP/UDP

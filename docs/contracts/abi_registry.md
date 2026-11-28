@@ -239,6 +239,29 @@ EALREADY，跨 PID 返回 EPERM，仍登记但已到期限返回 ETIMEDOUT。seq
 直接返回错误码且保持 errno。缺少新 API 的旧 SDK 保留原非中断语义，不能冒称支持。
 四个活动槽满时返回 EAGAIN，序号耗尽返回 EOVERFLOW；线程退出清理必须验收。pthread_cancel 保持现行 ENOTSUP。
 
+## P1-K2 / P1-K5 后续协作认领（2026-11-28）
+
+本节 `claimed` 只协调实现，不声明能力或目标资格；没有新增 syscall 编号。
+
+| 接口 | 角色与文件范围 | 语义和兼容 |
+| --- | --- | --- |
+| sys34 `sys_process_stdio` arg2=`1ull << 63` 独立 pipe 批量 transfer | P1-K5；kernel pipe/process、`process_abi.hpp`、native loader/SDK 和匹配 glibc spawn | claimed；arg1 只能是调用者拥有的 building child，排除 fork/replacement pending；arg3 指版本 1、144 字节请求，四个 u32 header（version,size,count,reserved）后接 16 项 {u32 source,target}。输入 target 与未用项皆零，source 为 caller 持有且去重的 private pipe token；整批验证和输出准备成功后一次增加 child 引用并返回 target。旧 stdio mode0–2 不变，旧内核拒绝新模式。 |
+| `xos_fork_control_offer` wire v1（128 字节） | P1-K2 fork/controller 线；native loader control、glibc process adapter | claimed；复用现有受保护 launch channel 容量，独立 magic/type，不改既有 READY/ACK message 布局。header u64 magic、u32 version,size；五个 u64 controller_pid,child_pid,generation,nonce,deadline；两个 u32 ready_handle,ack_handle；40 字节 launch artifact；三个 u64 reserved。fork child 必须核内核认证对端、同 artifact/代次和绝对期限后才接受新 controller 并发 READY。 |
+
+pipe transfer 不复制对象或扩充 authority；token 仍由 PID membership 限权，同一对象
+的别名保留。16 个 native pipe references（含 stdio）与 8 个全局 pipe objects 上限保持，
+不承诺 32 个独立对象。预检、COW 输出准备和批量 retain/copyout 之间不得出现部分成功；
+失败不改输出或引用数。原对象的 owner/budget_mask 不变，新增引用不凭空返还树预算，
+最后引用关闭才按原规则归还对象 credit。loader 后续失败通过 abort 回收整批。
+SDK transfer option 默认关闭，原 caller 的 unrouted pipe 拒绝行为保持；匹配并验证的
+GNU FD snapshot 路径才显式开启。startup v3 与 same-PID exec handle 保持路径不变。
+
+fork migration 由 parent 为其真实 fork child 创建新的有界 controller 通道；child
+不得继承或冒用 parent 的上游 controller 端点。parent 释放 Files 锁后才等待新 READY；
+任何验证、期限或 READY 失败均 kill/wait 清理，不能把半建立 child 当作成功返回。
+终端 actor dynamic exec 为独立协议和独立 PR，不用 console/Files 资格代替。
+实现前后都保留原非 shared fork 和失败 exec 的权限/句柄契约。
+
 ## P1-F 撤销记录回收认领（2026-11-28）
 
 Net2 operation **21** `peer_policy` 由 P1-F ClarkE 生命周期线认领；状态为

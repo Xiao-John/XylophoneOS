@@ -1,7 +1,8 @@
 # libc与运行库适配
 
-2026-10-27。当前采用newlib4.6.0.20260123、x86_64-elf静态链接；具体产物/配置/哈希以
-对应SDK manifest为准，不把初版库大小或旧build/sdk当作所有后续SDK的身份。
+现行默认开发入口见 [glibc host SDK](releases/glibc_host_sdk.md)。本页的 newlib
+条目保留 2026-10-27 起的实现基线；具体产物、配置和摘要仍以对应 SDK manifest
+为准，不把旧 `build/sdk` 或某一 libc 的资格转移到另一套运行库。
 
 ## 当前实现
 
@@ -55,3 +56,22 @@ newlib包含多来源许可；声明/组件清单见[许可管理](licensing.md)
 归属审计分开：成员→源文件→声明类别的映射见
 [newlib 成员许可映射](reports/newlib_member_license_20261103/)（1053/1053 全覆盖），
 它不是逐成员法律意见，也不以libc文件名推定单一LGPL授权。
+
+## glibc 时钟 API（Issue #124）
+
+当前源码的 `clock_getcpuclockid(0, ...)` 与显式自身 PID 返回进程 CPU 时钟，
+复用既有 sys89 v1 的计数及实际分辨率；返回值随后可用于 `clock_gettime` 和
+`clock_getres`。其它进程返回 `ENOSYS`，计数不可用时传播实际错误；此函数返回
+正错误号，失败不修改输出，也不改变调用者的 `errno`。
+
+glibc 的 `clock_nanosleep` 适配使用既有 sys47 单调绝对等待。`CLOCK_MONOTONIC`
+和 `CLOCK_REALTIME` 的相对等待均按单调经过时间计算；绝对 realtime 等待在唤醒后
+重新核对墙钟，防止两次采样间的抢占造成提前返回。时间换算和期限相加均检查溢出。
+上游 `nanosleep` 包装层直接复用此适配，并将正错误号转换为 `-1/errno`。
+
+仅支持经过时间等待；CPU 时间睡眠返回 `ENOTSUP`。没有新增墙钟设置、信号中断
+或异步线程取消语义，成功或失败均不伪造剩余时间。POSIX 定时器及目标线程 CPU
+时钟由各自的 Issue #124/#125 变更和资格说明覆盖。
+
+源码、SDK、双 Shell 客体及边界检查记录见
+[df317843](work_log/df317843_issue124_glibc_clock_apis.md)。

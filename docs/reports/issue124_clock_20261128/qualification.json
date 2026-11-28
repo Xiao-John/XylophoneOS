@@ -1,0 +1,412 @@
+{
+  "schema": 1,
+  "status": "passed_static_clock_api_subset",
+  "derived_from_local_reports": true,
+  "baseline_commit": "344655c3f2279a10c62fce5ea039c741aa6172f1",
+  "scope": "Own-process CPU-clock lookup and public elapsed sleeps; unchanged baseline kernel; no timers qualification in this report",
+  "sdk": {
+    "manifest_sha256": "c8dfb664d178e2e4793ea42b63435585eda365248e3942fa6b5dda67cf74137a",
+    "profile": "xos_glibc_static_research_v1",
+    "upstream_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+    "source_authentication": "upstream_signature_verified",
+    "libc_a_sha256": "78e9f16970993429345cde69cf9e02c351b0e3ccbbc4684ee3d62b674a59d317",
+    "artifact_count": 1096,
+    "input_count": 376,
+    "port_inputs": {
+      "src/ports/glibc/sysdeps/xos/clock_getcpuclockid.c": "5362f13716631194e2dbf38c2c75578d9d858e9401a44607f00a8c4ffbb545a4",
+      "src/ports/glibc/sysdeps/xos/clock_nanosleep.c": "24f45f9742606e66cf9061cc277c513824429bdb9fae32d1cad267f21465264f"
+    },
+    "tools": {
+      "x86_64-elf-gcc": {
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+        "version": "x86_64-elf-gcc (GCC) 16.2.0"
+      },
+      "x86_64-elf-g++": {
+        "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99",
+        "version": "x86_64-elf-g++ (GCC) 16.2.0"
+      },
+      "x86_64-elf-ld": {
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+        "version": "GNU ld (GNU Binutils) 2.47.20260726"
+      },
+      "x86_64-elf-as": {
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+        "version": "GNU assembler (GNU Binutils) 2.47.20260726"
+      },
+      "x86_64-elf-ar": {
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0",
+        "version": "GNU ar (GNU Binutils) 2.47.20260726"
+      },
+      "x86_64-elf-readelf": {
+        "sha256": "a6e0ff4b51a996352b63f45270e1381035acba1445da79e91c6efee837edac9d",
+        "version": "GNU readelf (GNU Binutils) 2.47.20260726"
+      },
+      "x86_64-elf-objdump": {
+        "sha256": "70fa553546f0d0e9500e07249c8138a171cfa2e8794873b6cc69514afb05657d",
+        "version": "GNU objdump (GNU Binutils) 2.47.20260726"
+      },
+      "x86_64-elf-objcopy": {
+        "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab",
+        "version": "GNU objcopy (GNU Binutils) 2.47.20260726"
+      },
+      "x86_64-elf-nm": {
+        "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f",
+        "version": "GNU nm (GNU Binutils) 2.47.20260726"
+      },
+      "x86_64-elf-ranlib": {
+        "sha256": "7428cac88865cdb9aa5750f71c66babcddf2c16c925491818ca251becd974216",
+        "version": "GNU ranlib (GNU Binutils) 2.47.20260726"
+      },
+      "gcc": {
+        "sha256": "edbaaa4930e277b5655b943c6d14befcc526c5633f4a2307f0b4a022bd465dee",
+        "version": "x86_64-linux-gnu-gcc-16 (Debian 16.2.0-5) 16.2.0"
+      },
+      "python3": {
+        "sha256": "2d06547d95f85724a410978f7fb4894c3be13ac3164be5d8955ee6d6df6c86a1",
+        "version": "Python 3.14.10"
+      },
+      "make": {
+        "sha256": "b5441a23f8354840947d2e9dac7f29c8a42e08cab32c0a93b8a7e9fb9f13103e",
+        "version": "GNU Make 4.4.1"
+      },
+      "gawk": {
+        "sha256": "16b48c0812cc16ac615eff1926b62ef77da4d24b32cf8a18fe6e276741c0b3b8",
+        "version": "GNU Awk 5.3.2, API 4.0, PMA Avon 8-g1, (GNU MPFR 4.2.2, GNU MP 6.3.0)"
+      },
+      "bison": {
+        "sha256": "7a05f69de2af6f39fbf0223ce2eff5b183b0937eb3fcc3d0077dfb5e2b255cf2",
+        "version": "bison (GNU Bison) 3.8.2"
+      },
+      "patch": {
+        "sha256": "0d507a62e0f112d6958e46a634b49124a562fcaff271a51983f6607be866f17d",
+        "version": "GNU patch 2.8.1"
+      },
+      "gpgv": {
+        "sha256": "e82416f3ae002b63c0731f311519c55fc9e7d3c8bdadbd64239833298f09a2cf",
+        "version": "gpgv (GnuPG) 2.2.40"
+      }
+    },
+    "build_steps": [
+      {
+        "name": "patch-0001-config-sub-xos",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0002-xos-abi-note",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0003-xos-tls-init",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0004-sigset-error-pointer",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0005-raise-hidden-alias",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0006-sigwait-failure",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0007-arc4random-atomic-include",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0008-freopen-no-fd-path",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0009-dlerror-errno-include",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0010-sem-init-private-only",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0011-nptl-explicit-includes",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0012-socket-include-types",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0013-thread-db-sigset-include",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0014-xos-reserved-dtv",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0015-xos-initial-thread-id",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0016-xos-initial-pthread-exit",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0017-xos-shared-object-build",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0018-xos-static-generated-headers",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0019-generic-opendir-signature",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0020-generic-static-build-includes",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0021-xos-process-exit-barrier",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0022-xos-initial-errno",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0023-generic-open-variadic-signature",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0024-nptl-lowlevellock-hidden-declarations",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0025-strict-utf8-scalar-values",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0026-generic-execstack-hidden-declaration",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0027-generic-fstatfs-hidden-definition",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0028-generic-ttyname-r-hidden-definition",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0029-generic-setsockopt-hidden-definition",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0029-xos-rtld-pinned-load",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0030-posix-fatal-include-errno",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0030-xos-rtld-native-heap",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0031-pthread-self-native-tid",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0032-xos-rtld-initial-tp",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0033-xos-rtld-initial-tls",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0034-xos-rtld-fixed-startup-policy",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0035-xos-freeres-selected-subdirs",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0036-xos-shared-tilde-without-nss",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0037-xos-gcc-elf-extensions-on-verified-pins",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0038-xos-public-dlfcn-fixed-closure",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0039-xos-fixed-closure-worker-dtv",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0040-xos-resolve-existing-unwinder",
+        "exit_code": 0
+      },
+      {
+        "name": "patch-0041-xos-public-runtime-ready",
+        "exit_code": 0
+      },
+      {
+        "name": "configure",
+        "exit_code": 0
+      },
+      {
+        "name": "make-lib",
+        "exit_code": 0
+      },
+      {
+        "name": "install-headers",
+        "exit_code": 0
+      },
+      {
+        "name": "install-lib",
+        "exit_code": 0
+      },
+      {
+        "name": "crt-xos_start",
+        "exit_code": 0
+      },
+      {
+        "name": "crt-xos_start_c",
+        "exit_code": 0
+      },
+      {
+        "name": "crt-xos_stdio_receiver",
+        "exit_code": 0
+      },
+      {
+        "name": "terminal-support",
+        "exit_code": 0
+      }
+    ]
+  },
+  "system": {
+    "system_build_id": "7e9d4063fa8154b7",
+    "system_manifest_sha256": "3ed97262a8da8602fb7a741b3b7c44b4715e42d038b443bab647dfad1b6f5319",
+    "image_sha256": "bf08952e7d6126cc1b2ce060142258ffffd3e60e4ad4788b1a7ced22cf98f989",
+    "system_source_distinct_from_sdk_source": true
+  },
+  "test_inputs": {
+    "tests/glibc_self_cpuclock_host.py": "7c0a4079a9743405d7343aac4931970b314319c6c66908edffa9f414a5c0a9da",
+    "tests/glibc_clock_sleep_host.py": "5c30c7a3d7b71125cabfa6371c99d43852159e35f8a1c4085fdc7e031adfa9a1",
+    "tests/glibc_self_cpuclock_guest.py": "4c87f52a1ea34f7c9f72095c5e48de651c27ed9d93cb9b864b6d4e9da4cedb7e",
+    "tests/fixtures/glibc_timers/self_cpuclock.c": "0cca3ea2cf1924aa75b7bb43a8ee1f1919d0193b983a9b874c894be803016f76",
+    "tests/fixtures/glibc_timers/self_cpuclock_host.c": "27c76f24ad97711f9ae11a08e6dd084a789f31e1140f606b4745777dbada4aea",
+    "tests/fixtures/glibc_timers/clock_sleep.c": "e9c404f13db36b897061c552d6202abf392113cb0dba7dcffaa5a3aebfcc551c",
+    "tests/fixtures/glibc_timers/clock_sleep_host.c": "120008fd982be5cd3a06e3c50d313d957a4919ec91b0fea928bd353229ae26b6"
+  },
+  "host": {
+    "self_cpuclock": {
+      "cases": 10,
+      "output": "SELF_CPUCLOCK_HOST_PASS cases=10 error_number errno output_preserved\n",
+      "raw_log_sha256": "9469e371c326f7bcf7cdbcd0bbef7310abc014d98534fa9b02995f9c53837381"
+    },
+    "clock_sleep": {
+      "cases_per_mode": 22,
+      "modes": [
+        "ordinary",
+        "ubsan"
+      ],
+      "output": "CLOCK_SLEEP_HOST_PASS cases=22 deadlines skew overflow failures errno remainder\nCLOCK_SLEEP_HOST_PASS cases=22 deadlines skew overflow failures errno remainder\n",
+      "raw_log_sha256": "b24194def56e5e2382bf82b161ac37640a482708fa7a860668bac5c1a2749fb4"
+    }
+  },
+  "guest": {
+    "programs": {
+      "self_cpuclock": {
+        "source": "glibc_timers/self_cpuclock.c",
+        "source_sha256": "0cca3ea2cf1924aa75b7bb43a8ee1f1919d0193b983a9b874c894be803016f76",
+        "elf_sha256": "f5079df6b9de3023733a016ba718cc89a96344235e17e36d2828b662b38ddfca"
+      },
+      "clock_sleep": {
+        "source": "glibc_timers/clock_sleep.c",
+        "source_sha256": "e9c404f13db36b897061c552d6202abf392113cb0dba7dcffaa5a3aebfcc551c",
+        "elf_sha256": "3f97d8c691b57b87f0015e45f28083b220b0e3adbfad0c206f75ad9dc346582c"
+      }
+    },
+    "dash": {
+      "elf_sha256": "1916e3760677a4dc6acce301bd1f6f37e916f722c1d8078007cde96748175329",
+      "receipt_sha256": "8330cddc3fa023ee1f856f72f5f439dea045da5793266295fea597726ab5915d",
+      "sdk_manifest_sha256": "c8dfb664d178e2e4793ea42b63435585eda365248e3942fa6b5dda67cf74137a"
+    },
+    "profile_sha256": "27831604b365762ead4545b646ebe34dff9939a26934afc2d0f6605d037034dc",
+    "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "qmp": "disabled; serial only",
+    "baseline": [
+      129693,
+      3,
+      1
+    ],
+    "runs": [
+      {
+        "program": "self_cpuclock",
+        "shell": "xsh",
+        "status": "passed",
+        "resources": [
+          129693,
+          3,
+          1
+        ],
+        "output": "/bin/self_cpuclock\n[process] event=started pid=10 parent=7\r\n[process] pid=10 address_space=0x000000000035d000\r\n[loader] started pid=10 file=/bin/self_cpuclock\n[process] event=wait_blocked parent=7 child=10\r\nSELF_CPUCLOCK_PASS delta_ns=6638350 resolution_ns=1 sum=1999999000000\n[task] event=reclaimed pid=10 pages=233\r\n[wait] pid=10 kind=exited code=0\nxsh> "
+      },
+      {
+        "program": "clock_sleep",
+        "shell": "xsh",
+        "status": "passed",
+        "resources": [
+          129693,
+          3,
+          1
+        ],
+        "output": "/bin/clock_sleep\n[process] event=started pid=11 parent=7\r\n[process] pid=11 address_space=0x000000000035d000\r\n[loader] started pid=11 file=/bin/clock_sleep\n[process] event=wait_blocked parent=7 child=11\r\nCLOCK_SLEEP_PASS relative_nanosleep\nCLOCK_SLEEP_PASS absolute_monotonic_realtime\nCLOCK_SLEEP_PASS invalid_overflow_error_number_errno\nCLOCK_SLEEP_PASS blocked_wait_peer_progress complete\n[task] event=reclaimed pid=11 pages=236\r\n[wait] pid=11 kind=exited code=0\nxsh> "
+      },
+      {
+        "program": "self_cpuclock",
+        "shell": "dash",
+        "status": "passed",
+        "resources": [
+          129693,
+          3,
+          1
+        ],
+        "output": "/bin/dash /tests/self_cpuclock.sh\n[process] event=started pid=12 parent=7\r\n[process] pid=12 address_space=0x000000000035d000\r\n[loader] started pid=12 file=/bin/dash\n[process] event=wait_blocked parent=7 child=12\r\n[process] event=started pid=13 parent=12\r\n[process] pid=13 address_space=0x0000000000688000\r\n[process] event=wait_blocked parent=12 child=13\r\nSELF_CPUCLOCK_PASS delta_ns=6841861 resolution_ns=1 sum=1999999000000\n[task] event=reclaimed pid=13 pages=233\r\nSELF_CPUCLOCK_DASH_RC=0\n[task] event=reclaimed pid=12 pages=325\r\n[wait] pid=12 kind=exited code=0\nxsh> "
+      },
+      {
+        "program": "clock_sleep",
+        "shell": "dash",
+        "status": "passed",
+        "resources": [
+          129693,
+          3,
+          1
+        ],
+        "output": "/bin/dash /tests/clock_sleep.sh\n[process] event=started pid=14 parent=7\r\n[process] pid=14 address_space=0x000000000035d000\r\n[loader] started pid=14 file=/bin/dash\n[process] event=wait_blocked parent=7 child=14\r\n[process] event=started pid=15 parent=14\r\n[process] pid=15 address_space=0x0000000000688000\r\n[process] event=wait_blocked parent=14 child=15\r\nCLOCK_SLEEP_PASS relative_nanosleep\nCLOCK_SLEEP_PASS absolute_monotonic_realtime\nCLOCK_SLEEP_PASS invalid_overflow_error_number_errno\nCLOCK_SLEEP_PASS blocked_wait_peer_progress complete\n[task] event=reclaimed pid=15 pages=236\r\nSELF_CPUCLOCK_DASH_RC=0\n[task] event=reclaimed pid=14 pages=325\r\n[wait] pid=14 kind=exited code=0\nxsh> "
+      }
+    ],
+    "serial_sha256": "cc5cf1092d4c8daace02116c657032a290078fbbbb673593fd48fdc83d9f7c66",
+    "runner_sha256": "4c87f52a1ea34f7c9f72095c5e48de651c27ed9d93cb9b864b6d4e9da4cedb7e"
+  },
+  "raw_guest_report_sha256": "baafb54a277e27ff272ece2d5e25f4b12128f552d0b2ce1d706cf0e1b654d857",
+  "limits": [
+    "Other-process clock lookup returns ENOSYS",
+    "CPU-time sleeps return ENOTSUP",
+    "No signal interruption or asynchronous cancellation qualification",
+    "No wall-clock setter",
+    "No timer object or target-thread clock qualification here",
+    "No shared libc or frozen newlib qualification",
+    "Existing prerelease artifacts are not modified"
+  ]
+}

@@ -16,7 +16,7 @@ QT = ROOT / 'src/ports/qt6'
 sys.path[:0] = [str(ROOT / 'scripts'), str(PORT.parent)]
 from build_glibc_program import verify_elf
 from glibc_g1_probe import clean_build_environment, tool_identity
-from target_inputs import digest, recheck_inputs
+from target_inputs import digest, recheck_inputs, tree_digest
 from tls_policy import write_policy
 from xypm_sdk_profile import metadata_snapshot, verify_profile
 
@@ -63,6 +63,15 @@ def build(args):
     inputs.update({ROOT / name: value for name, value in page['archives'].items()})
     inputs.update({ROOT / name: value for name, value in page.get('thin_members', {}).items()})
     inputs.update({args.page / name: value for name, value in page['objects'].items()})
+    trees = {}
+    for name, expected in page['source_trees'].items():
+        relative = Path(name)
+        if relative.is_absolute() or '..' in relative.parts or relative.as_posix() != name:
+            raise ValueError('noncanonical WebCore source tree')
+        trees[ROOT / relative] = expected
+    if len(trees) != 2: raise ValueError('require both WebCore source and generated build trees')
+    for path, expected in trees.items():
+        if tree_digest(path) != expected: raise ValueError('WebCore compiler input tree changed: ' + str(path))
     for directory in (PORT, ROOT / 'src/shared/include/xos', ROOT / 'src/user/include/xos',
                       QT / 'qpa', QT / 'runtime', ROOT / 'src/ports/browser_http',
                       ROOT / 'tests/fixtures/webkit/dom_css'):
@@ -161,11 +170,14 @@ def build(args):
             run('strip-'+name,[tools['strip']['path'],'--strip-debug',out/(name+'.elf')])
             headers[name]=verify_elf(out/(name+'.elf'))
         recheck_inputs(inputs)
+        for path, expected in trees.items():
+            if tree_digest(path) != expected: raise ValueError('WebCore input tree changed during browser build: ' + str(path))
         if verify_profile(profile,'glibc',args.sdk_build) != binding: raise ValueError('SDK changed during browser build')
         record.update(status='clarke_webcore_browser_linked',program_headers=headers,
             objects={path.name:digest(path) for path in out.glob('*.o')},
             artifacts={name:digest(out/name) for name in ('viewport.elf','network.elf','renderer.elf','dom_css.elf','DejaVuSans.ttf')},
             inputs={str(path.relative_to(ROOT)):value for path,value in inputs.items()},
+            source_trees={str(path.relative_to(ROOT)):value for path,value in trees.items()},
             network_policy={'wire_version':2,'peer_policy_operation':21,'peer_policy_revision':1,
                 'document_limit':65536,'navigation_timeout_ns':15000000000,'redirect_limit':0,
                 'https':policy},

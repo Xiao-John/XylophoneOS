@@ -194,3 +194,41 @@ ICU、FreeType/HarfBuzz、libxml2、Fontconfig 已实际重建完成；Skia 软�
 编译。WebCore 全页 ELF、Qt 视口、超过 16 次真实浏览器导航和 renderer trap 恢复
 仍待执行。为避免 UI 的 close 消息与其 pair 回收竞争，应用协议的既有 `close`
 操作增加明确反向 ACK，GUI 最多等待三秒；该完整 UI 路径也仍待真实客体验证。
+
+## 临时对象构建与后续输入
+
+共享磁盘空间不足时，完整 WebCore builder 可显式指定 `--temporary-objects`，
+只把 CMake target 对象目录放入本次 SDK 会话的私有临时盘。此模式关闭 thin
+archives；真实普通归档、生成头文件、编译命令和日志仍留在输出目录。完成真正
+链接后，逐对象记录尺寸与 SHA-256，保留非对象辅助文件，再清除可重建的临时
+对象。失败时保持同一个 SDK shell，才能继续 `--resume`；不能把失效的临时
+路径当作可复用产物。
+
+该选择先用 Skia x86-64 对象实测。第一次自动选取的最小对象是本架构上为空的
+LASX 单元，只证明归档文件格式，不证明实际代码保存；原结果保留。第二次明确
+使用非空的 `SkPoint.cpp` 目标对象，通过临时目录生成 `!<arch>` 普通归档，删除
+原对象后，再以目标 `ld -r --whole-archive` 成功链接。其 906 字节执行节逐节
+保持完全相同，公开投影标明原始报告摘要与省略的宿主路径。完整 WebCore
+临时对象构建尚未完成，不把此小验证算作 WebCore 链接通过。已完成的字体、XML
+和 Fontconfig 源码/对象按前后哈希清理；最终库、头、probe、manifest、许可证、
+日志和锁定源档均保留。
+
+QPA 补上 F1–F12 的扫描码映射，浏览器 reload runner 才能真正用 F5 触发导航。
+最终 GUI 客体须合入 P1-G 的真实 Interactium 服务；其 wire v1 保持不变，F 的
+Ctrl+Q/ACK/正常退出通过既有 `destroy_window` 回收窗口，不声称覆盖 G 的
+独立 `close_request` 请求路径。
+
+Skia、Fontconfig backend、WebP 和 SQLite 现均实际完成。Skia manifest 为
+`6b84f3cf153107391e842abc8058615ae460e2499a84a56264818932b538966b`，
+backend manifest 为
+`8e0eb1207b69e9dfc406b8209a7bb55a0d9533c71c8a1974c6e5e8a06327b8f9`。
+新的 backend 在冻结原生镜像中运行了真实文件/字体/绘图客体：DejaVu Sans 的
+λ 字形编号为 848，绘得 107 个非白像素并退出 0；空字体目录按预期退出 5。
+两次均恢复为 `[129678,3,1]`。完整原始报告和 serial 已进入同一平铺证据目录，
+这仍是依赖子集资格，不替代 WebCore 或 Qt 的最终客体。
+
+恢复检查点 4 为 `b0b426d51340348f8a3ec1e6c0ea1b4406033508`，tree 为
+`93ce71c2cc3ecfeca78567b83c73c7f576eaba99`；其后修改包括上述非空归档验证、
+临时对象生命周期、失败尝试日志保留、WebCore 源/生成树的前后绑定和 QPA 键盘
+入口。WebCore 完整配置现已成功并进入实际 bmalloc、WTF 和原生 LLInt 编译。
+当前完整页面链接、六类 DOM/CSS、Qt scanout 和全部浏览器生命周期仍未完成。

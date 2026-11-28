@@ -28,7 +28,8 @@ class viewport final : public QWindow {
 public:
     viewport(ipc_channel channel, QString address) : channel_(channel), backing_(this), address_(address) {
         setTitle(QStringLiteral("ClarkE — WebCore")); resize(640, 440);
-        QFontDatabase::addApplicationFont(QStringLiteral("/usr/share/fonts/clarke/DejaVuSans.ttf"));
+        if (QFontDatabase::addApplicationFont(QStringLiteral("/usr/share/fonts/clarke/DejaVuSans.ttf")) < 0)
+            qFatal("ClarkE: the installed viewport font could not be loaded");
         const ipc_channel worker_channel = channel_;
         worker_ = std::thread([this, worker_channel] {
             for (;;) {

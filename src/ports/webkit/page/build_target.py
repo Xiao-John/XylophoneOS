@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 """Build and link a real software WebCore page with one complete XOS SDK."""
 import argparse
-from hashlib import sha256
 import json
 import os
 from pathlib import Path
@@ -16,18 +15,9 @@ ROOT = PORT.parents[3]
 sys.path[:0] = [str(ROOT / 'scripts'), str(PORT.parent)]
 from build_glibc_program import verify_elf
 from glibc_g1_probe import clean_build_environment, tool_identity
-from target_inputs import digest, recheck_inputs, target_inputs
+from target_inputs import digest, recheck_inputs, target_inputs, tree_digest
+import temporary_objects
 from xypm_sdk_profile import metadata_snapshot, verify_profile
-
-
-def source_digest(root):
-    result = sha256(); count = 0
-    for path in sorted(root.rglob('*')):
-        if path.is_symlink(): value = 'link:' + os.readlink(path)
-        elif path.is_file(): value = digest(path)
-        else: continue
-        result.update((path.relative_to(root).as_posix() + '\0' + value + '\n').encode()); count += 1
-    return {'files': count, 'sha256': result.hexdigest()}
 
 
 def bound_files(target, name, sdk_hash, expected_status, key='artifacts', prefix=None):
@@ -60,7 +50,7 @@ def build(args):
             or prepared['recipe_sha256'] != digest(PORT / 'prepare_source.py')):
         raise ValueError('prepared source differs from the locked WebCore recipe')
     source = args.prepared / prepared['source']
-    source_before = source_digest(source)
+    source_before = tree_digest(source)
     inputs = {args.prepared / 'manifest.json': digest(args.prepared / 'manifest.json')}
     for target, status, artifact_root, headers in (
         (args.icu, 'static_icu_built', args.icu / 'install', 'include'),
@@ -87,16 +77,28 @@ def build(args):
         headers = {path for path in directory.rglob('*') if path.is_file()}
         if not headers or not headers <= inputs.keys():
             raise ValueError('dependency compiler headers are not completely bound: ' + str(directory))
-    for name in ('build_target.py', 'source_lock.json', 'prepare_source.py'):
+    for name in ('build_target.py', 'source_lock.json', 'prepare_source.py', 'temporary_objects.py'):
         inputs[PORT / name] = digest(PORT / name)
+    inputs[PORT.parent / 'target_inputs.py'] = digest(PORT.parent / 'target_inputs.py')
     for name in ('local_page.cpp', 'local_page.html'):
         path = ROOT / 'tests/fixtures/webkit' / name; inputs[path] = digest(path)
     recheck_inputs(inputs)
     out = args.output
+    previous = None
     if out.exists() and not args.resume: raise ValueError('output exists; select --resume for this candidate')
-    if out.exists() and json.loads((out / 'build_record.json').read_bytes())['sdk_binding'] != binding:
-        raise ValueError('cannot resume another SDK candidate')
+    if out.exists():
+        previous = json.loads((out / 'build_record.json').read_bytes())
+        if previous['sdk_binding'] != binding: raise ValueError('cannot resume another SDK candidate')
+        if previous['status'] == 'webcore_local_page_linked': raise ValueError('this candidate already linked successfully')
     out.mkdir(parents=True, exist_ok=True)
+    attempt = previous.get('attempt', 1) + 1 if previous else 1
+    history = previous.get('previous_attempts', []).copy() if previous else []
+    if previous:
+        snapshot = out / 'attempts' / ('attempt-' + str(attempt - 1) + '.json')
+        snapshot.parent.mkdir(exist_ok=True)
+        if snapshot.exists(): raise ValueError('previous attempt snapshot already exists')
+        shutil.copyfile(out / 'build_record.json', snapshot)
+        history.append({'file': str(snapshot.relative_to(out)), 'sha256': digest(snapshot)})
     drivers = out / 'drivers'; (drivers / 'binutils').mkdir(parents=True, exist_ok=True)
     for name in ('cc', 'cxx'):
         if not (drivers / name).exists(): (drivers / name).symlink_to(PORT.parent / 'icu/xos-compiler')
@@ -117,15 +119,18 @@ def build(args):
                COMPILER_PATH=str(drivers / 'binutils'), PKG_CONFIG_LIBDIR=str(out / 'no-host-pkgconfig'))
     report = {'status': 'building', 'sdk_binding': binding, 'sdk_profile_sha256': profile_hash,
               'sdk_manifest_sha256': sdk_hash, 'source': source_before, 'steps': [], 'target_tools': tools,
-              'sanitized_environment': removed, 'guest_qualification': 'not_run'}
+              'sanitized_environment': removed, 'guest_qualification': 'not_run',
+              'attempt': attempt, 'previous_attempts': history}
 
     def save(): (out / 'build_record.json').write_text(json.dumps(report, indent=2, sort_keys=True) + '\n')
 
     def run(stage, command, cwd=ROOT):
-        command = list(map(str, command)); log = out / (stage + '.log')
+        command = list(map(str, command))
+        log = out / (('attempt-' + str(attempt) + '-' if attempt > 1 else '') + stage + '.log')
         with log.open('w') as stream:
             result = subprocess.run(command, cwd=cwd, env=env, stdout=stream, stderr=subprocess.STDOUT)
-        report['steps'].append({'stage': stage, 'command': command, 'returncode': result.returncode, 'log_sha256': digest(log)})
+        report['steps'].append({'stage': stage, 'command': command, 'returncode': result.returncode,
+                                'log': log.name, 'log_sha256': digest(log)})
         save()
         if result.returncode: raise RuntimeError(stage + ' failed; see ' + str(log))
 
@@ -143,7 +148,9 @@ def build(args):
             '-DXOS_WEBCORE_SOFTWARE=ON', '-DENABLE_STATIC_JSC=ON', '-DUSE_SYSTEM_MALLOC=ON',
             '-DENABLE_JIT=OFF', '-DENABLE_C_LOOP=OFF', '-DENABLE_WEBASSEMBLY=OFF',
             '-DENABLE_SAMPLING_PROFILER=OFF', '-DUSE_LIBBACKTRACE=OFF', '-DUSE_SYSTEM_UNIFDEF=ON',
-            '-DUNIFDEF_EXECUTABLE=' + str(unifdef), '-DUSE_THIN_ARCHIVES=ON', '-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON',
+            '-DUNIFDEF_EXECUTABLE=' + str(unifdef),
+            '-DUSE_THIN_ARCHIVES=' + ('OFF' if args.temporary_objects else 'ON'),
+            '-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON',
             '-DUSE_LCMS=OFF', '-DUSE_WOFF2=OFF', '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_SYSTEM_NAME=XOS',
             '-DCMAKE_SYSTEM_PROCESSOR=x86_64', '-DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY',
             '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON', '-DWEBKIT_MAX_BUNDLE_SIZE=' + str(args.bundle_size),
@@ -162,6 +169,10 @@ def build(args):
             ('WEBGL', 'WEBGPU', 'VIDEO', 'WEB_AUDIO', 'MEDIA_SOURCE', 'MEDIA_STREAM', 'WEB_RTC', 'GEOLOCATION',
              'NOTIFICATIONS', 'GAMEPAD', 'ACCESSIBILITY', 'XSLT')]
         run('configure', configure)
+        if args.temporary_objects:
+            report['temporary_objects'] = temporary_objects.redirect(
+                cmake, args.temporary_objects, out / 'temporary_objects.json', args.resume)
+            save()
         run('build', ['cmake', '--build', cmake, '--target', 'WebCore', '--parallel', str(args.jobs)])
         commands = json.loads((cmake / 'compile_commands.json').read_bytes())
         command = next(item for item in commands if 'WebCore.dir/' in item['command'])
@@ -192,6 +203,8 @@ def build(args):
         thin_members = {}
         for archive in archives:
             with archive.open('rb') as stream: thin = stream.read(8) == b'!<thin>\n'
+            if args.temporary_objects and thin:
+                raise ValueError('temporary objects require self-contained regular archives: ' + str(archive))
             if not thin: continue
             names = subprocess.check_output([tools['ar']['path'], 't', archive], env=env, text=True).splitlines()
             if not names: raise ValueError('empty thin archive: ' + str(archive))
@@ -209,11 +222,16 @@ def build(args):
         run('strip-debug', [tools['strip']['path'], '--strip-debug', elf])
         headers = verify_elf(elf)
         recheck_inputs(inputs)
-        if verify_profile(profile, 'glibc', args.sdk_build) != binding or source_digest(source) != source_before:
+        if verify_profile(profile, 'glibc', args.sdk_build) != binding or tree_digest(source) != source_before:
             raise ValueError('SDK/source changed during WebCore build')
+        if args.temporary_objects:
+            report['temporary_objects'] = temporary_objects.release(
+                cmake, args.temporary_objects, out / 'temporary_objects.json')
         report.update(status='webcore_local_page_linked', elf_sha256=digest(elf), program_headers=headers,
             objects={path.name: digest(path) for path in objects},
             thin_members=thin_members,
+            source_trees={str(source.relative_to(ROOT)): source_before,
+                          str(cmake.relative_to(ROOT)): tree_digest(cmake)},
             archives={str(path.relative_to(ROOT)): digest(path) for path in archives},
             inputs={str(path.relative_to(ROOT)): expected for path, expected in inputs.items()})
         save()
@@ -235,4 +253,6 @@ if __name__ == '__main__':
     parser.add_argument('--jobs', type=int, choices=(1, 2), default=2)
     parser.add_argument('--bundle-size', type=int, choices=(2, 4, 8), default=8)
     parser.add_argument('--resume', action='store_true')
+    parser.add_argument('--temporary-objects', type=lambda value: Path(value).absolute(),
+                        help='dedicated private SDK /tmp directory; keep the SDK session alive for resume')
     build(parser.parse_args())

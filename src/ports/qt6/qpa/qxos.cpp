@@ -113,6 +113,9 @@ Key mapKey(xos::u32 code, xos::u32 mods) {
     if(code==0x149) return {Qt::Key_PageUp,{}};
     if(code==0x151) return {Qt::Key_PageDown,{}};
     if(code==0x153) return {Qt::Key_Delete,{}};
+    if(code>=0x3b && code<=0x44) return {Qt::Key_F1+int(code-0x3b),{}};
+    if(code==0x57) return {Qt::Key_F11,{}};
+    if(code==0x58) return {Qt::Key_F12,{}};
     if(code>=sizeof(normal)-1) return {};
     const char n=normal[code];
     if(!n) return {};

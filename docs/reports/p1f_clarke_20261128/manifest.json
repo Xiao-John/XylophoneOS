@@ -1,5 +1,7 @@
 {
   "files": {
+    "font_backend_report.json": "6ce07c854573b505e02248298528fee0327b6f9de331f87bd76c734bcd90d13e",
+    "font_backend_serial.log": "148524a2fffd3e3e149e04ae37b062b570d4d181f9adcb4a731535b5c50cb671",
     "http_framing_host.log": "e873e751569d4f2d6642cdbec804979eb336140c798c03576966829f1b436e77",
     "https_initial_failed_report.json": "d162958fe0cfbb4ec93148895ebdad2cb185b7ee608b3e6b507728198914595a",
     "https_initial_failed_serial.log": "22ca57c4a30bbd00b92f88ac1508221f0eb3510a592f3b52c5bc219ea07f3677",
@@ -17,7 +19,8 @@
     "launch_supervisor_strip.json": "971925d82464c64eef7808883352644eed703e83edf7a5f89a30a4b540ebd52b",
     "net_client_host.log": "719f12921083acaf0598425f4ee9d09dca6c6a3e9467eb6d174002f1348f4e69",
     "net_service_host.log": "6614b4eb819bb25af82e8a7f5065e3a0959706cee23c8d2593315b56bedf8d9a",
-    "qualification.json": "3cf5c8f3ecb4285f35ebb7fddcb201b6e31d675f959b8526454092e7916ee78b"
+    "qualification.json": "a2cf781c460659995818ab3bcdab1be12ed33c215c252680abf89ea2131a6531",
+    "temporary_archive_probe.json": "9e364e13ed5ec7c7884d5ce1c381d4113676c5cbe0581b09c71e3a6822936f8c"
   },
   "version": 1
 }

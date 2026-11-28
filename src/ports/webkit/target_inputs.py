@@ -2,12 +2,24 @@
 """Verify rebuilt WebCore prerequisites without inheriting old qualifications."""
 from hashlib import file_digest, sha256
 import json
+import os
 from pathlib import Path, PurePosixPath
 
 
 def digest(path):
     with Path(path).open('rb') as stream:
         return file_digest(stream, 'sha256').hexdigest()
+
+
+def tree_digest(root):
+    result = sha256(); count = 0
+    for path in sorted(Path(root).rglob('*')):
+        if path.is_symlink(): value = 'link:' + os.readlink(path)
+        elif path.is_file(): value = digest(path)
+        else: continue
+        result.update((path.relative_to(root).as_posix() + '\0' + value + '\n').encode())
+        count += 1
+    return {'files': count, 'sha256': result.hexdigest()}
 
 
 def target_inputs(target, status, sdk_tree, *, artifact_root=None, headers='prefix/include'):

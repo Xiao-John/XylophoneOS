@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "xos_file_runtime.h"
+#include "xos_file_limits.h"
 #include "xos_net2_socket.h"
 #include "xos_terminal_runtime.h"
 
@@ -22,7 +23,8 @@ extern const void *__xos_startup __attribute__ ((weak, visibility ("hidden")));
    and terminal (bit1) startup. Path-based redirection remains separate. */
 const unsigned int __xos_file_startup_capabilities
   __attribute__ ((visibility ("hidden"))) = 3;
-enum { fd_limit = 32, object_limit = 32 };
+enum { fd_limit = xos_file_descriptor_limit,
+       object_limit = xos_file_object_limit };
 enum { kind_none, kind_kernel, kind_file, kind_pipe_read, kind_pipe_write, kind_terminal, kind_socket };
 _Static_assert (kind_socket == (int) xos_file_kind_socket, "FD socket route identity");
 struct fd_slot { int object; unsigned int close_on_exec; };

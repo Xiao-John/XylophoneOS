@@ -1,0 +1,108 @@
+--- a/lib/signal.in.h
++++ b/lib/signal.in.h
+@@ -256,7 +256,7 @@
+ #  endif
+ 
+ /* This code supports only 32 signals.  */
+-#  if !GNULIB_defined_verify_NSIG_constraint
++#  if !GNULIB_defined_verify_NSIG_constraint && !defined __xos__
+ typedef int verify_NSIG_constraint[NSIG <= 32 ? 1 : -1];
+ #   define GNULIB_defined_verify_NSIG_constraint 1
+ #  endif
+@@ -353,9 +353,11 @@
+    In this implementation, you are not allowed to change a signal handler
+    while the signal is blocked.  */
+ # if !@HAVE_POSIX_SIGNALBLOCKING@
++#  ifndef __xos__
+ #  define SIG_BLOCK   0  /* blocked_set = blocked_set | *set; */
+ #  define SIG_SETMASK 1  /* blocked_set = *set; */
+ #  define SIG_UNBLOCK 2  /* blocked_set = blocked_set & ~*set; */
++#  endif
+ _GL_FUNCDECL_SYS (sigprocmask, int,
+                   (int operation,
+                    const sigset_t *restrict set,
+@@ -482,7 +484,7 @@
+ /* We assume that platforms which lack the sigaction() function also lack
+    the 'struct sigaction' type, and vice versa.  */
+ 
+-#  if !GNULIB_defined_struct_sigaction
++#  if !GNULIB_defined_struct_sigaction && !defined __xos__
+ 
+ struct sigaction
+ {
+--- a/lib/sigaction.c
++++ b/lib/sigaction.c
+@@ -23,6 +23,21 @@
+ #include <errno.h>
+ #include <stdint.h>
+ #include <stdlib.h>
++
++#ifdef __xos__
++/* The XOS glibc headers provide POSIX types, but native signal delivery is
++   absent.  The generic Windows emulation assumes signal() works and must not
++   invent successful handlers for this target.  Leave output untouched. */
++int
++sigaction (int sig, const struct sigaction *restrict act,
++           struct sigaction *restrict previous)
++{
++  (void) act;
++  (void) previous;
++  errno = sig <= 0 || sig >= NSIG ? EINVAL : ENOTSUP;
++  return -1;
++}
++#else
+ 
+ /* This implementation of sigaction is tailored to native Windows behavior:
+    signal() has SysV semantics (ie. the handler is uninstalled before
+@@ -202,3 +217,5 @@
+   errno = saved_errno;
+   return -1;
+ }
++
++#endif /* !__xos__ */
+--- a/lib/sigprocmask.c
++++ b/lib/sigprocmask.c
+@@ -23,6 +23,37 @@
+ #include <errno.h>
+ #include <stdint.h>
+ #include <stdlib.h>
++
++#ifdef __xos__
++/* Keep glibc's real sigset_t and set-manipulation routines.  There is no
++   native delivery state to query or change, and no functional signal()
++   on which to build the generic emulation. */
++int
++sigprocmask (int how, const sigset_t *restrict set,
++             sigset_t *restrict previous)
++{
++  (void) set;
++  (void) previous;
++  errno = how == SIG_BLOCK || how == SIG_UNBLOCK || how == SIG_SETMASK
++          ? ENOTSUP : EINVAL;
++  return -1;
++}
++
++int
++sigpending (sigset_t *pending)
++{
++  (void) pending;
++  errno = ENOTSUP;
++  return -1;
++}
++
++void (*rpl_signal (int sig, void (*handler) (int))) (int)
++{
++  (void) handler;
++  errno = sig <= 0 || sig >= NSIG ? EINVAL : ENOTSUP;
++  return SIG_ERR;
++}
++#else
+ 
+ #if HAVE_MSVC_INVALID_PARAMETER_HANDLER
+ # include "msvc-inval.h"
+@@ -347,3 +378,5 @@
+   return 0;
+ }
+ #endif
++
++#endif /* !__xos__ */

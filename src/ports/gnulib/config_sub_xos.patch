@@ -1,0 +1,11 @@
+--- a/build-aux/config.sub
++++ b/build-aux/config.sub
+@@ -2108,7 +2108,7 @@
+ 	| skyos* \
+ 	| solaris* \
+ 	| solidbsd* \
+-	| sortix* \
++	| sortix* | xos* \
+ 	| storm-chaos* \
+ 	| sunos \
+ 	| sunos[34]* \

@@ -47,3 +47,10 @@ src/ports/lwip/patches/0005_dhcp_absolute_authority.patch whitespace=-blank-at-e
 
 # Preserve exact serial/diagnostic output from the DHCP qualification.
 docs/reports/p0_dhcp_service_20261128/*.log whitespace=-blank-at-eol,cr-at-eol
+
+# GNU patches retain upstream blank/tab context after the unified-diff prefix.
+src/ports/gnulib/config_sub_xos.patch whitespace=-blank-at-eol,-space-before-tab
+src/ports/gnulib/no_signal_xos.patch whitespace=-blank-at-eol,-space-before-tab
+src/ports/gzip/patches/0001_xos_profile.patch whitespace=-blank-at-eol,-space-before-tab
+# Preserve this qualification's exact mixed-newline serial and final prompt.
+docs/reports/gnulib_gzip_20261128/serial.log whitespace=-blank-at-eol,cr-at-eol

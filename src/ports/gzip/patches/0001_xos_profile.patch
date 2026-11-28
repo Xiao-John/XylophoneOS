@@ -1,0 +1,142 @@
+--- a/gzip.c
++++ b/gzip.c
+@@ -196,6 +196,29 @@
+ 
+ /* The set of signals that are caught.  */
+ static sigset_t caught_signals;
++
++/* XOS has no asynchronous signals.  Other targets retain the original
++   signal masks around output cleanup.  These are private gzip operations,
++   not replacement POSIX functions reporting fake success.  */
++static void
++block_cleanup_signals (sigset_t *oldset)
++{
++#ifndef __xos__
++  sigprocmask (SIG_BLOCK, &caught_signals, oldset);
++#else
++  (void) oldset;
++#endif
++}
++
++static void
++restore_cleanup_signals (sigset_t const *oldset)
++{
++#ifndef __xos__
++  sigprocmask (SIG_SETMASK, oldset, NULL);
++#else
++  (void) oldset;
++#endif
++}
+ 
+ /* If nonnegative, close this file descriptor and unlink remove_ofname
+    on error.  */
+@@ -370,6 +393,12 @@
+  "",
+  "With no FILE, or when FILE is -, read standard input.",
+  "",
++#ifdef __xos__
++ "XOS profile: no asynchronous signals or filesystem timestamp restoration.",
++ "Output modes must match the FAT projection; input data is kept with -k/-c.",
++ "XOS port issues: https://github.com/Xiao-John/XylophoneOS/issues",
++ "",
++#endif
+  "Report bugs to <bug-gzip@gnu.org>.",
+   0};
+     char const *const *p = help_msg;
+@@ -795,6 +824,11 @@
+ static int
+ atdir_set (char const *dir, ptrdiff_t dirlen)
+ {
++#ifdef __xos__
++  /* The XOS libc profile has no dirfd-relative path operations.  Use the
++     existing full-path fallback; do not emulate it by changing cwd.  */
++  return -1;
++#endif
+   /* Don't bother opening directories on older systems that
+      lack openat and unlinkat.  It's not worth the porting hassle.  */
+   #if HAVE_OPENAT && HAVE_UNLINKAT
+@@ -986,11 +1020,11 @@
+             int ufd = atdir_eq (ifname, ifbase - ifname) ? dfd : -1;
+             int res;
+ 
+-            sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
++            block_cleanup_signals (&oldset);
+             remove_ofname_fd = -1;
+             res = ufd < 0 ? xunlink (ifname) : unlinkat (ufd, ifbase, 0);
+             unlink_errno = res == 0 ? 0 : errno;
+-            sigprocmask (SIG_SETMASK, &oldset, NULL);
++            restore_cleanup_signals (&oldset);
+ 
+             if (unlink_errno)
+               WARN ((stderr, "%s: %s: %s\n", program_name, ifname,
+@@ -1070,10 +1104,10 @@
+ 
+       volatile_strcpy (remove_ofname, ofname);
+ 
+-      sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
++      block_cleanup_signals (&oldset);
+       remove_ofname_fd = ofd = openat (atfd, base, flags, S_IRUSR | S_IWUSR);
+       open_errno = errno;
+-      sigprocmask (SIG_SETMASK, &oldset, NULL);
++      restore_cleanup_signals (&oldset);
+ 
+       if (0 <= ofd)
+         break;
+@@ -1903,7 +1937,16 @@
+ 
+     do_chown (ofd, ofname, -1, ifstat->st_gid);
+ 
+-#if HAVE_FCHMOD
++#if defined __xos__
++    /* A matching projected mode already has the requested effect.  An
++       unrepresentable permission change must still report a real failure. */
++    struct stat output_stat;
++    r = fstat (ofd, &output_stat);
++    if (r == 0 && (output_stat.st_mode & S_IRWXUGO) != mode)
++      { errno = ENOTSUP; r = -1; }
++    if (r != 0)
++      write_error (); /* Preserve the input and remove the incomplete output. */
++#elif HAVE_FCHMOD
+     r = fchmod (ofd, mode);
+ #else
+     r = chmod (ofname, mode);
+@@ -1970,6 +2013,13 @@
+ static void
+ install_signal_handlers ()
+ {
++#ifdef __xos__
++  /* There is no signal state to query or mask.  In particular, a failed
++     sigaction must not leave an uninitialized action used below.  */
++  sigemptyset (&caught_signals);
++  foreground = 1;
++  return;
++#else
+   int nsigs = sizeof handled_sig / sizeof handled_sig[0];
+   int i;
+   struct sigaction act;
+@@ -1993,6 +2043,7 @@
+           foreground = 1;
+         sigaction (handled_sig[i], &act, NULL);
+       }
++#endif
+ }
+ 
+ /* ========================================================================
+@@ -2038,7 +2089,7 @@
+   sigset_t oldset;
+ 
+   if (!signals_already_blocked)
+-    sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
++    block_cleanup_signals (&oldset);
+   fd = remove_ofname_fd;
+   if (0 <= fd)
+     {
+@@ -2049,7 +2100,7 @@
+       xunlink (fname);
+     }
+   if (!signals_already_blocked)
+-    sigprocmask (SIG_SETMASK, &oldset, NULL);
++    restore_cleanup_signals (&oldset);
+ }
+ 
+ /* ========================================================================

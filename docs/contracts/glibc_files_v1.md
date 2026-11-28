@@ -39,6 +39,15 @@ FAT 的权限和时间投影遵循文件元数据契约：创建 mode 由服务�
 并发上限由 files 服务的 16 handle 配额决定。`dup` 与 `dup2` 引用同一个记录，
 因此共享服务侧 offset；CLOEXEC 则属于各个 FD。独立 `open` 保持独立 offset。
 
+`getdtablesize()` 和 `getrlimit(RLIMIT_NOFILE)` 从 FD 表使用的同一私有容量常量
+返回 32，后者的 soft/hard 值均为 32；上游 `getrlimit64` 转接得到相同结果。
+文件、console、terminal、pipe 和 socket 共用此表，不按打开对象种类另算配额。
+查询不修改限制、不新增 syscall，也不扩大 files 服务独立 open-description 的配额。
+其它有效资源种类返回 `ENOSYS`，无效种类返回 `EINVAL`，失败不覆盖输出；
+`getrlimit` 的空输出指针返回 `EFAULT`。`setrlimit` 保持未实现，`sysconf` 的其它
+能力不由本次资源查询推定。真实 FD 耗尽与 gnulib 消费者由
+`tests/fixtures/gnulib/consumer.c` 和 `tests/gnu_gzip_guest.py` 验证。
+
 一把进程私有锁串行化完整 request/reply 与文件 FD 变更；等待使用现有
 `sys_wait_word/sys_wake_word`。请求序号严格递增，溢出后返回错误。
 普通文件 read/write 各提交一次有界请求，最大分别为 3798/3800 字节，

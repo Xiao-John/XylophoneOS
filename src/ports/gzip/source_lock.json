@@ -1,0 +1,14 @@
+{
+  "version": "1.14",
+  "target": "x86_64-unknown-xos",
+  "source": "https://ftp.gnu.org/gnu/gzip/gzip-1.14.tar.xz",
+  "archive_bytes": 885748,
+  "sha256": "01a7b881bd220bfdf615f97b8718f80bdfd3f6add385b993dcf6efd14e8c0ac6",
+  "signature": "https://ftp.gnu.org/gnu/gzip/gzip-1.14.tar.xz.sig",
+  "signature_sha256": "94634698bea42dad032a10fe66b8b38c4a2efacd36052410402c0c850faf1d1a",
+  "signer_primary_fingerprint": "155D3FC500C834486D1EEA677FD9FCCB000BEEEE",
+  "upstream_keyring": "https://ftp.gnu.org/gnu/gnu-keyring.gpg",
+  "public_key_sha256": "38c37773b56786617ee27d64c42ab90076d3774fda4d9cc70c00470f80d6b4a9",
+  "license": "GPL-3.0-or-later; gnulib files retain their individual notices",
+  "license_sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+}

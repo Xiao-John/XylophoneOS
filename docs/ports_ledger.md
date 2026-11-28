@@ -28,6 +28,7 @@
 | PL-0014 | 2026-11-12 | 线程端口 | `pthread_tryjoin_np`/`timedjoin_np` 需要非阻塞/带 deadline 的 join；`pthread_getcpuclockid` 需要 per-thread CPU 时钟。内核 join 只有阻塞版，`thread_info` 无状态字段 | 评估新增 `sys_thread_tryjoin`/deadline join 与 CPU 时间计入；在此之前保持 `ENOTSUP` | 端口按 `ENOTSUP` 处理 | open |
 | PL-0016 | 2026-11-27 | CPython `_ssl` | 统一 glibc SDK 曾缺 `<netinet/in.h>`。对上游 `_ssl.c` 的实际目标语法检查在 `Modules/socketmodule.h:10` 终止 | 安装签名 glibc 的公共地址头，C 与 C++ 客体验证布局和真实字节序接口 | [原始诊断](reports/cpython_static_openssl_hashlib_20261127/ssl_parse.txt)、[地址头实测](work_log/9f63f328_glibc_network_address_headers.md) | fixed |
 | PL-0017 | 2026-11-27 | CPython `_ssl` | 使用新增地址头的 SDK 重跑目标语法检查，`Modules/socketmodule.h:11` 缺 `<netinet/tcp.h>` | 在 POSIX socket 专项核对 TCP 级选项的公开值及支持范围 | `_ssl` 保持缺失。[目标检查](reports/glibc_network_addresses_20261127/ssl_parse.txt) | open |
+| PL-0018 | 2026-11-28 | GNU gnulib / gzip（Issue #133） | glibc `getrlimit`/`getdtablesize` 为 ENOSYS 桩，gnulib 回退 `INT_MAX`，与实际 32 FD 表不符 | 从 runtime 共用私有常量返回真实 NOFILE soft/hard=32；其余资源明确失败；以真实 gnulib 库和 GNU gzip 验收受控 XOS 配置 | `tests/fixtures/gnulib/consumer.c`；`tests/gnu_gzip_guest.py`；[13 个客体用例与互操作](reports/gnulib_gzip_20261128/README.md)；[实现记录](work_log/3bf5c10d_gnulib_gzip_xos.md) | fixed |
 
 ## 登记规则
 

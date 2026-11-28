@@ -7,7 +7,13 @@ namespace xos::user::files_private_storage {
 // Internal, opt-in fixed-region layout. A 9-sector slot accommodates the
 // maximum 4432-byte Pumpkin snapshot with spare bytes for future framing.
 inline constexpr u32 sector_bytes = 512;
+#if XOS_PUMPKIN_PROVISIONING_STORE
+inline constexpr u32 region_version = 2;
+inline constexpr u32 slot_sectors = 32;
+#else
+inline constexpr u32 region_version = 1;
 inline constexpr u32 slot_sectors = 9;
+#endif
 inline constexpr u32 slot_bytes = slot_sectors * sector_bytes;
 inline constexpr u32 slot_count = 2;
 inline constexpr u32 tail_sectors = 1 + slot_count * slot_sectors;
@@ -39,7 +45,12 @@ public:
             return false;
         }
         const u64 sector = slot_start(slot);
-        return read_sectors(sector, data, 8) && read_sectors(sector + 8, data + 8 * sector_bytes, 1);
+        for (u32 offset = 0; offset < slot_sectors;) {
+            const u32 count = slot_sectors - offset < 8 ? slot_sectors - offset : 8;
+            if (!read_sectors(sector + offset, data + offset * sector_bytes, count)) { return false; }
+            offset += count;
+        }
+        return true;
     }
 
     bool write_slot(u32 slot, const u8 (&data)[slot_bytes]) const {
@@ -47,9 +58,12 @@ public:
             return false;
         }
         const u64 sector = slot_start(slot);
-        return write_sectors(sector, data, 8) &&
-            write_sectors(sector + 8, data + 8 * sector_bytes, 1) &&
-            sdk::syscall(sys_block_sync) == 0;
+        for (u32 offset = 0; offset < slot_sectors;) {
+            const u32 count = slot_sectors - offset < 8 ? slot_sectors - offset : 8;
+            if (!write_sectors(sector + offset, data + offset * sector_bytes, count)) { return false; }
+            offset += count;
+        }
+        return sdk::syscall(sys_block_sync) == 0;
     }
 
 private:
@@ -68,7 +82,7 @@ private:
                 return false;
             }
         }
-        if (read_le(data + 8, 4) != 1 || read_le(data + 12, 4) != slot_sectors ||
+        if (read_le(data + 8, 4) != region_version || read_le(data + 12, 4) != slot_sectors ||
             read_le(data + 16, 8) != prefix) {
             return false;
         }

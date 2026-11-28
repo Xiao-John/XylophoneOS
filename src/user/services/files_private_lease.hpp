@@ -5,9 +5,9 @@
 namespace xos::user::files_private_storage {
 
 // Only used by the two processes in the opt-in storage client profile.
-inline constexpr u32 protocol_version = 1;
+inline constexpr u32 protocol_version = region_version;
 inline constexpr u32 grant_magic = 0x31504b50;
-inline constexpr u32 payload_bytes = slot_bytes / 2;
+inline constexpr u32 payload_bytes = 2304;
 
 enum class access : u32 { reader = 1, writer = 2 };
 enum class operation : u32 { read = 1, begin, chunk, commit, abort };

@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "system": {
+    "build_id": "9c844c127b07c6e4",
+    "manifest_sha256": "0028fb21d136cd9c90b7d6d8dc6f884546ff06da999e8aaa6bc6baac15d900ce",
+    "sdk_manifest_sha256": "b9db3ae390914b14f0c1149f0e9a1bc6f38b85ed8ecac7b82ae2f2f7e982c378",
+    "sdk_tree_sha256": "147f8a0461859a9361beb4b38e1739585775c21fe793ef78db04b6a0df2bdeb7",
+    "artifacts": {
+      "xos-install.iso": "c73edeec52c87e78269b89c64ec11bba48bae860e13ff0fbc510f18ce963e5d7",
+      "user_files.image.elf": "ac3f701ca11b0a5a89bb2000a53e3ac6764e61d56e901e67508ad1622dfc0d6b",
+      "user_supervisor.image.elf": "a3404fc0d28e9ff8f0e3c8d53cd2c4d3bcf3b5802dadb7f68dfc82464c8d826a",
+      "user_pumpkin_durable.image.elf": "6be10725fcacfbaeecfb7fdf5bb658c2c989712c428a56016d8277cd1f07f7a0",
+      "user_p2_anchor_proxy.image.elf": "851b11889e1c0fe0977c6668be850192cdd5c53cfd4ef8f206815180ccdd31ec"
+    }
+  },
+  "profile": "provisioning-v1/private-region-v2",
+  "fault_scope": "real guest Files writes and IPC; injected authority CAS/ACK outcomes; no physical power-loss claim",
+  "cases": {
+    "none": {
+      "initial": "passed",
+      "mutation": "passed",
+      "cold_recovery": "passed",
+      "selected": "new data + new installation metadata",
+      "selected_revision": 8,
+      "stale_disk_denied": true
+    },
+    "rejected_cas": {
+      "initial": "passed",
+      "mutation": "passed",
+      "cold_recovery": "passed",
+      "selected": "old data + old installation metadata",
+      "selected_revision": 7
+    },
+    "committed_unknown": {
+      "initial": "passed",
+      "mutation": "passed",
+      "cold_recovery": "passed",
+      "selected": "new data + new installation metadata",
+      "selected_revision": 8,
+      "stale_disk_denied": true
+    },
+    "uncommitted_unknown": {
+      "initial": "passed",
+      "mutation": "passed",
+      "cold_recovery": "passed",
+      "selected": "old data + old installation metadata",
+      "selected_revision": 7
+    }
+  },
+  "checks": [
+    "real private Files v2 lease",
+    "ordinary application credential authorization",
+    "cross-application credential denied",
+    "ordinary catalog publication denied",
+    "revoked application denied on two live sessions",
+    "durable revoked state",
+    "atomic application data and installation receipt recovery",
+    "exact protected-root recovery",
+    "stale work disk denied",
+    "outcome_unknown stops daemon without retry"
+  ]
+}

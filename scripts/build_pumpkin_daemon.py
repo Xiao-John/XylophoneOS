@@ -14,7 +14,7 @@ from xos_app import tree_receipt
 root = Path(__file__).resolve().parents[1]
 module = "src/user/pumpkin/"
 common_cpp = [module + name for name in
-              ("account_store.cpp", "service_core.cpp", "daemon_protocol.cpp", "native_ipc.cpp")]
+              ("account_store.cpp", "service_core.cpp", "daemon_protocol.cpp", "native_ipc.cpp", "native_ipc_client.cpp")]
 programs = {"pumpkind.elf": module + "daemon_main.cpp",
             "pumpkin_probe.elf": "tests/fixtures/pumpkin/daemon_guest.cpp"}
 storage_programs = {"pumpkin_storage_probe.elf": "tests/fixtures/pumpkin/storage_guest.cpp"}

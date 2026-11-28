@@ -65,6 +65,8 @@ def main():
                         help="test-only durable daemon over the private files lease")
     parser.add_argument("--pumpkin-anchored-probe", action="store_true",
                         help="headless developer test with an exclusive COM1 generation proxy")
+    parser.add_argument("--pumpkin-provisioning-store", action="store_true",
+                        help="explicit v2 private-region application/catalog transaction profile")
     parser.add_argument("--pumpkin-native-login", action="store_true",
                         help="exercise trusted credential delivery in the anchored developer profile")
     parser.add_argument("--pumpkin-user-login", action="store_true",
@@ -109,6 +111,9 @@ def main():
         parser.error("glibc files death probe requires an isolated build subdirectory")
     private_profiles = (args.files_private_storage_probe, args.files_private_client_probe,
                         args.pumpkin_durable_probe, args.pumpkin_anchored_probe)
+    if args.pumpkin_provisioning_store and (not args.pumpkin_anchored_probe or
+                                          args.pumpkin_named_resource_store or args.pumpkin_native_login):
+        parser.error("provisioning requires its dedicated anchored profile")
     if args.pumpkin_native_login and not args.pumpkin_anchored_probe:
         parser.error("native Pumpkin login requires the anchored developer profile")
     if args.pumpkin_user_login and not args.pumpkin_native_login:
@@ -225,6 +230,7 @@ def main():
                                       **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
                                       **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
                                       **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
+                                      **({"pumpkin_provisioning_store": 1} if args.pumpkin_provisioning_store else {}),
                                       "virtio_gpu": gpu_config,
                                       "network_service": network_configuration(ROOT, args.net_dns_probe, net_static_profile, net_dhcp_profile)}, sort_keys=True).encode())
     build_id = source_digest[:16]
@@ -252,6 +258,7 @@ def main():
                                  pumpkin_mobius=bool(desktop_metadata),
                                  pumpkin_user_resource=args.pumpkin_user_resource,
                                  pumpkin_named_resource_store=args.pumpkin_named_resource_store,
+                                 pumpkin_provisioning_store=args.pumpkin_provisioning_store,
                                  quiet_demos_on_launch=args.quiet_demos_on_launch,
                                  net_dns_probe=args.net_dns_probe, net_static_profile=net_static_profile, net_dhcp_profile=net_dhcp_profile)
     user_programs = ("heartbeat", "spinner", "receiver", "sender", "probe", "quitter")
@@ -414,6 +421,7 @@ def main():
         **({"pumpkin_user_resource": True} if args.pumpkin_user_resource else {}),
         **({"quiet_demos_on_launch": True} if args.quiet_demos_on_launch else {}),
         **({"pumpkin_named_resource_store": True} if args.pumpkin_named_resource_store else {}),
+        **({"pumpkin_provisioning_store": 1} if args.pumpkin_provisioning_store else {}),
         "clock_irq_probe": args.clock_irq_probe, "virtio_gpu": gpu_config,
         "sources": source_hashes,
         "sdk_directories": [p.relative_to(BUILD / "sdk").as_posix()

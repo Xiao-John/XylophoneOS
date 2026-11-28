@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "pumpkin/native_ipc.cpp"
+#include "pumpkin/native_ipc_client.cpp"
 #include <cassert>
 #include <cstdio>
 #include <cstring>

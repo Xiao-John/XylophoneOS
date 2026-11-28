@@ -89,6 +89,8 @@ bool files_slot_client::read(u32 slot, u8 (&bytes)[storage::slot_bytes]) {
     bool ok = true;
     for (u32 offset = 0; ok && offset < storage::slot_bytes; offset += storage::payload_bytes) {
         request.offset = offset;
+        request.length = storage::slot_bytes - offset < storage::payload_bytes ?
+            storage::slot_bytes - offset : storage::payload_bytes;
         ok = call(request, response);
         if (ok) {
             __builtin_memcpy(bytes + offset, response.data, request.length);
@@ -111,6 +113,9 @@ bool files_slot_client::write(u32 slot, const u8 (&bytes)[storage::slot_bytes]) 
     bool ok = true;
     for (u32 offset = 0; ok && offset < storage::slot_bytes; offset += storage::payload_bytes) {
         request.offset = offset;
+        request.length = storage::slot_bytes - offset < storage::payload_bytes ?
+            storage::slot_bytes - offset : storage::payload_bytes;
+        wipe_bytes(request.data, sizeof(request.data));
         __builtin_memcpy(request.data, bytes + offset, request.length);
         ok = call(request, response);
     }

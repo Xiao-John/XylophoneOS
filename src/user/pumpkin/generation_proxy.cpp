@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "generation_guest.hpp"
+#include "session_limits.hpp"
 #if XOS_PUMPKIN_NATIVE_LOGIN
 #include "native_login.hpp"
 #endif
@@ -85,7 +86,10 @@ bool relay(user::uart::driver& uart, u64 controller, const pair& supervisor) {
     bool credential_exchanged = false, credential_slots_cleared = false;
     bool destination_reserved = false;
 #else
-#if XOS_PUMPKIN_NAMED_RESOURCE_STORE
+#if XOS_PUMPKIN_PROVISIONING_STORE
+    if ((mode < scenario::cycle || mode > scenario::stale) &&
+        (mode < scenario::provisioning_update || mode > scenario::provisioning_new)) return false;
+#elif XOS_PUMPKIN_NAMED_RESOURCE_STORE
     if ((mode < scenario::cycle || mode > scenario::stale) && mode != scenario::named_empty) return false;
 #else
     if (mode < scenario::cycle || mode > scenario::stale) return false;

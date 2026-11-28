@@ -3,6 +3,7 @@
 #include <xos/dynamic_elf.hpp>
 #include <xos/file_client.hpp>
 #include <xos/launch_control.hpp>
+#include <xos/catalog_abi.hpp>
 
 namespace xos::dynamic {
 struct approved_root { generation_root root; char manifest[128]; };
@@ -55,6 +56,9 @@ error configure(const launch_policy& policy, u64 absolute_deadline);
 // Explicitly link and enable ordinary SDK inspection/spawn routes. Programs
 // which never call this keep the optional runtime out of their static image.
 error install(const launch_policy& policy, u64 absolute_deadline);
+error read_authority(const catalog::authority& authority, u64 absolute_deadline, launch_policy& policy);
+error install_anchored(const catalog::authority& authority, u64 absolute_deadline);
+error export_authority(catalog::authority& authority);
 error export_policy(launch_policy& policy);
 error acquire(const char* path, u64 deadline, closure& result);
 error acquire_index(u32 index, u64 deadline, closure& result);

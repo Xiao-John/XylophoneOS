@@ -15,6 +15,7 @@ public:
     provisioning_store(store_api backing, const nonce& realm) : backing_(backing), realm_(realm) {}
     store_api accounts();
     bool live() const { return !failed_; }
+    const nonce& realm() const { return realm_; }
     provisioning_version version() const { return {revision_, authorization_epoch_, catalog_.epoch}; }
     status checkpoint(repository_checkpoint& out, approved_catalog& catalog) const;
     status create_application(const identity_id& owner, account_name name, u32 rights,
@@ -37,6 +38,7 @@ public:
     // can expose an uncheckpointed catalog. Unknown outcomes stop this store.
     status stage_catalog(const provisioning_version& expected, const catalog_candidate& candidate);
     status revoke_generation(const provisioning_version& expected, u32 index);
+    status activate_generation(const provisioning_version& expected, u32 index);
 private:
     load_result load_accounts(u8* out, usize capacity, usize& length);
     replace_result replace_accounts(u64 previous, const u8* bytes, usize length);

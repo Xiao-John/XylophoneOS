@@ -9,7 +9,7 @@ inline constexpr u32 provisioning_protocol_version = 1;
 enum class provisioning_operation : u32 {
     checkpoint = 1, create_application, revoke_application, read_application,
     write_application, stage_catalog, revoke_generation, admit_generation, inspect_application, delegate_publisher,
-    install_application
+    install_application, publisher_checkpoint, activate_generation
 };
 enum class provisioning_role { client, registrar, catalog_publisher };
 struct publisher_binding {

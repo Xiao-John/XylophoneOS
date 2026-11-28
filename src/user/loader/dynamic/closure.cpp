@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "startup.hpp"
+#include "authority.hpp"
 #include <xos/sdk.hpp>
 #include <xos/thread_abi.hpp>
 
@@ -32,8 +33,8 @@ struct guard {
         if (acquired && owner_pid != self) {
             owner_pid = self;
             files_initialized = false;
-            // A fork retains its private approved policy snapshot. It neither
-            // synchronizes revocation with the parent nor closes parent pins.
+            // Fork retains its private policy snapshot and never closes parent
+            // pins. Anchored admission queries the live authority per operation.
         }
     }
     ~guard() { if (acquired) __atomic_store_n(&policy_lock, 0, __ATOMIC_RELEASE); }
@@ -403,6 +404,7 @@ i64 admission(void*, u64 child, const launch::artifact& current,
     }
     if (!known_current || selected == activation_max_generations) return process_error_denied;
     const activation_ticket ticket{policy.roots[selected].root, policy.sequence, selected, 0};
-    return catalog.admit(ticket) == error::none ? 0 : process_error_denied;
+    if (catalog.admit(ticket) != error::none) return process_error_denied;
+    return authority_admission(current, requested, deadline);
 }
 }

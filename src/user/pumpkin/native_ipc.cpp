@@ -11,6 +11,7 @@
 #endif
 #if XOS_PUMPKIN_PROVISIONING_STORE
 #include "provisioning_protocol.hpp"
+#include <xos/catalog_abi.hpp>
 #endif
 
 namespace xos::user::pumpkin {
@@ -85,6 +86,39 @@ progress process_request(service_core& core, transport_session& session, u64& no
         now = static_cast<u64>(received_at);
     }
 #if XOS_PUMPKIN_PROVISIONING_STORE
+    if (received == sizeof(catalog::query_request)) {
+        catalog::query_request operation{};
+        __builtin_memcpy(&operation, incoming, sizeof(operation));
+        wipe_bytes(incoming, sizeof(incoming));
+        if (!provisioning || !clock_ok || now >= session.expires ||
+            operation.magic != catalog::query_magic || operation.version != catalog::query_version ||
+            !operation.sequence || operation.sequence != session.sequence + 1 ||
+            operation.deadline <= now || operation.deadline - now > max_request_ns) {
+            return clock_ok ? progress::drop : progress::failure;
+        }
+        session.sequence = operation.sequence;
+        catalog::query_reply result{};
+        result.sequence = operation.sequence;
+        __builtin_memcpy(result.realm, provisioning->realm().bytes, sizeof(result.realm));
+        if (__builtin_memcmp(operation.realm, result.realm, sizeof(result.realm))) {
+            result.status = catalog::query_status::denied;
+        } else {
+            repository_checkpoint checkpoint{};
+            if (provisioning->checkpoint(checkpoint, result.catalog) == status::ok) {
+                const auto version = provisioning->version();
+                result.status = catalog::query_status::ok;
+                result.revision = version.revision;
+                result.authorization_epoch = version.authorization_epoch;
+            }
+        }
+        const bool sent = sdk::ipc_send(session.channel.send, &result, sizeof(result)) == 0;
+        wipe_bytes(&operation, sizeof(operation)); wipe_bytes(&result, sizeof(result));
+        if (!sent) { return progress::drop; }
+        const auto enqueued_at = monotonic_now();
+        if (enqueued_at < 0 || static_cast<u64>(enqueued_at) < now) { return progress::failure; }
+        now = static_cast<u64>(enqueued_at); session.reply_expires = now + reply_budget_ns;
+        return progress::keep;
+    }
     if (received == sizeof(provisioning_request)) {
         provisioning_request operation{};
         __builtin_memcpy(&operation, incoming, sizeof(operation));

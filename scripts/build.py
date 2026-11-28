@@ -124,8 +124,8 @@ def main():
         parser.error("operator login requires the native Pumpkin developer profile")
     deployment = {}
     if args.pumpkin_deployment_realm is not None:
-        if not args.pumpkin_user_login:
-            parser.error("a Pumpkin deployment realm requires the private operator login profile")
+        if not (args.pumpkin_user_login or args.pumpkin_provisioning_store):
+            parser.error("a Pumpkin deployment realm requires the private operator login or provisioning profile")
         from pumpkin_generation_provider import deployment_realm
 
         try:

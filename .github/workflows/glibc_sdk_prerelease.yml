@@ -73,6 +73,7 @@ jobs:
             "$RELEASE_TAG-linux-x86_64.tar.zst" "$RELEASE_TAG-sources.tar.zst" \
             package.json qualification.json SHA256SUMS
           gh api "repos/$GITHUB_REPOSITORY/releases/tags/$RELEASE_TAG" > "$RUNNER_TEMP/uploaded-release.json"
+          gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" > "$RUNNER_TEMP/release-ref.json"
           python3 - <<'PY'
           import hashlib, json, os
           from pathlib import Path
@@ -80,7 +81,9 @@ jobs:
           release = json.loads((Path(os.environ['RUNNER_TEMP']) / 'uploaded-release.json').read_text())
           names = [tag + '-linux-x86_64.tar.zst', tag + '-sources.tar.zst', 'package.json', 'qualification.json', 'SHA256SUMS']
           assert release['draft'] and release['prerelease']
-          assert release['target_commitish'] == os.environ['GITHUB_SHA']
+          ref = json.loads((Path(os.environ['RUNNER_TEMP']) / 'release-ref.json').read_text())
+          assert ref['ref'] == 'refs/tags/' + tag and ref['object']['type'] == 'commit'
+          assert ref['object']['sha'] == os.environ['GITHUB_SHA']
           assert {x['name']: x['size'] for x in release['assets']} == {n: Path(n).stat().st_size for n in names}
           for asset in release['assets']:
               with Path(asset['name']).open('rb') as stream:

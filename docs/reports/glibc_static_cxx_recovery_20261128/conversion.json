@@ -1,0 +1,26 @@
+{
+  "base_c_source_commit": "f7240faae1fe1ef6f3dfae44fa21aef864849f23",
+  "export_integrity": "manifest.json is the only exported leaf digest inventory",
+  "original_inputs_sha256": {
+    "sdk_builds/glibc_recovery_base/manifest.json": "7ce5dff65e5c8b7c85fcaa730bb67a2e57a913e512e521349e2f559b8c690bc9",
+    "sdk_builds/static_cxx_recovery_v1/build_record.json": "a4a2541ac0a015c46606447395ebe4cc0c0208459a8aa02b842bfeae252ab087",
+    "static_cxx_receiver/consumer/records/cxx-build.json": "0344efe36cf476635ed6996e7edc91d92e6053e21aec77d176b8cb70ae325f30",
+    "static_cxx_receiver/consumer/records/cxx-check.json": "7f610adc9b5aa79b76b19b25da98f99073127e8ff30a089fd1134d0409c838e7",
+    "static_cxx_receiver/consumer/records/cxx-package.json": "440917a718fe5111983baf830058daae0fb389c51f849211175ba6ab2f07868d",
+    "static_cxx_receiver/consumer/records/path-build.json": "47a955159f0771fc8b57c1486fb2a0d81be0abed8cc6b071bdd9bb908849c8f2",
+    "static_cxx_receiver/consumer/records/path-check.json": "345af2166b5ca9b5569cce9510302f655bf277ddbaa77641d5d17805454b056b",
+    "static_cxx_receiver/consumer/records/path-package.json": "3c992aab262d23de2995db3f9d7cb3a140fa6fd6f4507436fa31ef5bcc3bb3d1",
+    "static_cxx_receiver/receiver_recipe_check.json": "339ab88cb774fd07d8f14e62ba78e45f28bbed30aecadeaa12d4a12ad4f88257",
+    "xylophoneos-static-cxx/build/cxx_guest/glibc_unified_sdk_serial.log": "ada7e330edcfd51a50b9c23e7e8bb447e3f7613b99b48c0b8a1af8ffa3ad16f1",
+    "xylophoneos-static-cxx/build/cxx_guest/report.json": "d05ecc1946b4df2c9e55c00b882635a54c066ff4f15bc148f2a6cb18b93e7dec",
+    "xylophoneos-static-cxx/build/cxx_system/manifest.json": "3865b6021e212c05cde4ff0271a7aa4381d90239a0b48ecba145ae3d14852171"
+  },
+  "qualification_scope": "new static C++ builder and detached consumers; final integrated R1 release composition remains separate",
+  "source_commit": "c9c4dadae128fc94bd34fa4c60030495bc6d5776",
+  "transformations": [
+    "replace only documented environment roots by ${XOS_*} path templates",
+    "JSON key ordering and indentation",
+    "serial: normalize line endings and strip trailing whitespace",
+    "system_binding: preserve all artifact hashes/tools/configuration; raw manifest retains full source/command inventory"
+  ]
+}

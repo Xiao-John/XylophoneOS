@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "files": {
+    "README.md": "970f3ad34c05faa499cc87a18ea2131d1b30da4ad0700dce21b64733a81ac1ab",
+    "base_c_sdk_inputs.json": "3a70b05bd93012451a637a77bf05c2c6a4d00ea1a3df4173d3203e72041e9f86",
+    "build_record.json": "9350f42123fdc912e42a075ad8b0ad960432b8a7b47e467a38774706b7617f40",
+    "consumer_results.json": "4d6119526b404c3c98097f56be77bd6cc940e981822f7ae337e2e45bc0c9b3f0",
+    "conversion.json": "69ac95b38fc548f038c031b1c73c1bf39a1188151cd1de902dd9be61d1550acb",
+    "guest_report.json": "d05ecc1946b4df2c9e55c00b882635a54c066ff4f15bc148f2a6cb18b93e7dec",
+    "guest_serial.log": "d484a73b9e28a6d8d8a9c4f40d4f0340fffa23e1141b45db1ea1eec2f84deeec",
+    "receiver_recipe_check.json": "61fdf87dfa68060929162ee41393d5ca1649b36f2899cc8480de363ca1e02c09",
+    "system_binding.json": "4aed3d52799f3f4c1e45658c7ce34f602859d79b49815a0636d7cb0c998dd4d9"
+  }
+}

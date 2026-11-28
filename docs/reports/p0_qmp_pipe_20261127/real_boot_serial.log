@@ -1,0 +1,6 @@
+XOS: loading stage_two
+XOS real_mode | build 02a853d561d3f009
+The underscores have won. Type help.
+xos> help
+help  about  clear  halt
+xos>

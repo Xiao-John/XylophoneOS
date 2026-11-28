@@ -1,0 +1,23 @@
+{
+  "status": "passed_subset",
+  "sdk_preview_archive_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "transport": "private local FIFO; no socket listener",
+  "cases": [
+    "actual_qmp_greeting_and_capabilities",
+    "query_status_running",
+    "bios_keyboard_help",
+    "screendump"
+  ],
+  "qemu": "11.1.3",
+  "full_smoke": "pending actual candidate and LLVM host tools",
+  "source_sha256": {
+    "tests/boot_smoke.py": "a2fcf2909f10fc5f68bb69f7ff66cedf55a488443e5d59f735fc55788c2e3e2c",
+    "scripts/run_qemu.py": "a4f3fd564157c7f92fb148930db2a21951eb113cc9d736e5469bda1c0f116a31"
+  },
+  "artifacts": {
+    "screen.ppm": "43f18330e6a07762205de67b16825fc4f451e419c492d2cc1462cc87aafbeea4",
+    "real_boot_serial.log": "69b3f230713448059c881b255f7c8c5e8ee8fd9e01365dc270e98631b8d64737",
+    "real_boot_qemu.log": "bfb87e787f266f3bb41d9f164ebd3aee38cb6d80faa63858b6f2c826e1aaebf5"
+  },
+  "public_export": "CRLF converted to LF; trailing serial prompt whitespace trimmed; source prefix replaced by ${SOURCE}; original SHA-256 retained in artifacts"
+}

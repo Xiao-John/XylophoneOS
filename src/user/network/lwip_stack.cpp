@@ -84,7 +84,7 @@ err_t lwip_stack::configure(netif* interface) {
 i64 lwip_stack::initialize(const frame_io& callbacks, const u8* mac) {
     if (active_stack || active_ || !mac || !callbacks.clock || !callbacks.random ||
         !callbacks.receive || !callbacks.transmit) return invalid;
-    io_ = callbacks; active_stack = this;
+    io_ = callbacks; link_active_ = true; active_stack = this;
     (void)milliseconds(); (void)random_word();
     if (failure_) { active_stack = nullptr; return failure_; }
     lwip_init();
@@ -99,6 +99,12 @@ i64 lwip_stack::initialize(const frame_io& callbacks, const u8* mac) {
         active_stack = nullptr; return resources;
     }
     netif_set_default(&interface_); netif_set_up(&interface_); active_ = true;
+    if (io_.link) {
+        const auto link = io_.link(io_.context);
+        if (link < 0) { failure_ = io; return failure_; }
+        link_active_ = link != 0;
+        if (!link_active_) netif_set_link_down(&interface_);
+    }
     return failure_;
 }
 void lwip_stack::shutdown() {
@@ -121,6 +127,7 @@ void lwip_stack::shutdown() {
 err_t lwip_stack::link_output(netif* interface, pbuf* packet) {
     auto& self = *static_cast<lwip_stack*>(interface->state);
     if (self.failure_) return ERR_IF;
+    if (!self.link_active_) return ERR_RTE;
     if (!packet || !packet->tot_len || packet->tot_len > 1514) return ERR_BUF;
     u8 frame[1514];
     const u16_t copied = pbuf_copy_partial(packet, frame, packet->tot_len, 0);
@@ -140,6 +147,12 @@ err_t lwip_stack::link_output(netif* interface, pbuf* packet) {
 }
 i64 lwip_stack::poll() {
     if (!active_ || failure_) return failure_ ? failure_ : closed;
+    if (refresh_link()) return failure_;
+    if (!link_active_) {
+        if (discard_input()) return failure_;
+        sys_check_timeouts();
+        return failure_;
+    }
 #ifdef XOS_LWIP_DHCP_AUTHORITY
     if (advance_dhcp()) return failure_;
 #endif
@@ -177,6 +190,36 @@ i64 lwip_stack::poll() {
     const i64 now = io_.clock(io_.context);
     if (now < 0) failure_ = io;
     else expire_connects(static_cast<u64>(now));
+    return failure_;
+}
+i64 lwip_stack::discard_input() {
+    u8 frame[1514];
+    for (u32 index = 0; index < 64; ++index) {
+        const auto length = io_.receive(io_.context, frame, sizeof(frame));
+        if (length < 0 || length > static_cast<i64>(sizeof(frame))) { failure_ = io; break; }
+        if (!length) break;
+    }
+    return failure_;
+}
+i64 lwip_stack::refresh_link() {
+    if (!io_.link) return 0;
+    const auto link = io_.link(io_.context);
+    if (link < 0) { failure_ = io; return failure_; }
+    const bool up = link != 0;
+    if (up == link_active_) return 0;
+    // Drain completions from the retired link before a new DHCP transaction.
+    link_active_ = false;
+    if (discard_input()) return failure_;
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (dhcp_enabled_) {
+        if (!up) netif_set_link_down(&interface_);
+        else { link_active_ = true; netif_set_link_up(&interface_); }
+        return change_link(up);
+    }
+#endif
+    // A static service has no qualified reacquisition/ACD policy. Its clients
+    // receive service death rather than reuse of pre-loss sockets or caches.
+    failure_ = closed;
     return failure_;
 }
 void lwip_stack::expire_connects(u64 now) {

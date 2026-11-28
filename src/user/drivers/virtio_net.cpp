@@ -177,14 +177,15 @@ i64 driver::configure() {
         registers[i] = reinterpret_cast<volatile u8*>(mapping.address + cap.offset - begin);
         if (i == 0) common_ = registers[0];
     }
-    isr_ = registers[2];
+    isr_ = registers[2]; configuration_ = registers[3];
     if (!reset()) return device_timeout;
     write<u8>(20, 1); write<u8>(20, 3);
     write<u32>(0, 1); const u32 high = read<u32>(4);
     write<u32>(0, 0); const u32 low = read<u32>(4);
     if (!(high & 1) || !(low & (1u << 5))) return device_no_device;
     write<u32>(8, 1); write<u32>(12, 1);
-    write<u32>(8, 0); write<u32>(12, 1u << 5);
+    link_status_ = (low & (1u << 16)) && capabilities[3].length >= 8;
+    write<u32>(8, 0); write<u32>(12, (1u << 5) | (link_status_ ? 1u << 16 : 0));
     write<u8>(20, 11);
     if (!(read<u8>(20) & 8) || read<u16>(18) < 2) return device_io;
     bool stable = false;
@@ -226,9 +227,28 @@ i64 driver::configure() {
 }
 i64 driver::transmit(const u8* frame, u32 length) {
     if (!ready_) return device_closed;
+    const auto link = link_state();
+    if (link < 0) return link;
+    if (!link) return device_busy;
     const i64 result = queues_[1].transmit(frame, length);
     if (!result) { *notify_[1] = 1; fence(); }
     return result;
+}
+i64 driver::link_state() const {
+    if (!ready_) return device_closed;
+    // This query checks the still-owned grant, not physical device presence.
+    // Unexpected PCI disappearance is not inferred from an old MMIO mapping.
+    device_output owned{};
+    const auto result = device::query(grant_, device_configuration_index, owned);
+    if (result) return result;
+    if (!link_status_) return 1; // VirtIO compatibility rule without STATUS.
+    for (u32 attempt = 0; attempt < 8; ++attempt) {
+        const auto generation = read<u8>(21);
+        const auto status = *reinterpret_cast<volatile u16*>(configuration_ + 6);
+        fence();
+        if (generation == read<u8>(21)) return status & 1 ? 1 : 0;
+    }
+    return device_busy;
 }
 i64 driver::receive(u8* frame, u32 capacity) {
     if (!ready_) return device_closed;
@@ -255,7 +275,7 @@ i64 driver::shutdown() {
     bool stopped = true;
     if (!alive && common_) stopped = reset();
     const i64 result = device::close(grant_);
-    grant_ = event_ = 0; common_ = isr_ = nullptr;
+    grant_ = event_ = 0; common_ = isr_ = configuration_ = nullptr; link_status_ = false;
     return result ? result : stopped ? 0 : device_timeout;
 }
 }

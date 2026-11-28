@@ -75,7 +75,8 @@ class QmpPipe:
 
 class Guest:
     def __init__(self, image, name, *, cpu="qemu64,+rdrand", debug_port=None, work_disk=None, iso=None, network=False,
-                 qmp_enabled=True, network_capture=None, network_peer_port=None, log_dir=None):
+                 qmp_enabled=True, network_capture=None, network_peer_port=None, log_dir=None, network_device_id=None,
+                 qtest_enabled=False):
         # Boot medium follows the image suffix unless the caller overrides:
         # .iso files need -cdrom, everything else (real_mode.img) stays floppy.
         if iso is None:
@@ -89,10 +90,13 @@ class Guest:
         if self.qmp_transport not in ('unix', 'pipe'):
             raise ValueError('XOS_QMP_TRANSPORT must be unix or pipe')
         self.qmp_pipe = QmpPipe(self.qmp_path) if qmp_enabled and self.qmp_transport == 'pipe' else None
+        qtest_path = str(Path(self.temp.name) / 'qtest') if qtest_enabled else None
+        self.qtest_pipe = QmpPipe(qtest_path) if qtest_enabled else None
         self.command = qemu_command(image, qmp=self.qmp_path, qmp_transport=self.qmp_transport,
                                     cpu=cpu, debug_port=debug_port,
                                     work_disk=work_disk, iso=iso, network=network, network_capture=network_capture,
-                                    network_peer_port=network_peer_port)
+                                    network_peer_port=network_peer_port, network_device_id=network_device_id,
+                                    qtest_pipe=qtest_path)
         self.stderr = (self.log_dir / f'{name}_qemu.log').open('wb')
         self.process = subprocess.Popen(self.command, stdin=subprocess.PIPE,
                                         stdout=subprocess.PIPE, stderr=self.stderr)
@@ -190,12 +194,29 @@ class Guest:
             self.qmp_socket.close()
         if self.qmp_pipe:
             self.qmp_pipe.close()
+        if self.qtest_pipe:
+            self.qtest_pipe.close()
         self.selector.close()
         self.process.stdin.close()
         self.process.stdout.close()
         self.stderr.close()
         (self.log_dir / f'{self.name}_serial.log').write_bytes(self.output)
         self.temp.cleanup()
+
+    def qtest(self, request):
+        if self.qtest_pipe is None:
+            raise RuntimeError('qtest is disabled for this guest')
+        if '\n' in request or '\r' in request or len(request) > 256:
+            raise ValueError('qtest requires one bounded command')
+        self.qtest_pipe.write(request.encode('ascii') + b'\n')
+        for _ in range(256):
+            response = self.qtest_pipe.readline().decode('ascii').strip()
+            if response.startswith('IRQ '):
+                continue
+            if response == 'OK' or response.startswith('OK '):
+                return response[2:].strip()
+            raise AssertionError('qtest command failed: ' + response)
+        raise AssertionError('qtest asynchronous response bound exceeded')
 
 
 def main():

@@ -112,6 +112,7 @@ i64 syscall(u64 number, u64 first, u64 second, u64 third) {
 }
 namespace xos::user::virtio_net {
 i64 driver::receive(u8*, u32) { return 0; }
+i64 driver::link_state() const { return 1; }
 i64 driver::transmit(const u8*, u32) { return 0; }
 i64 driver::wait(u64) {
     ++round_number; now += 1'000'000ull;

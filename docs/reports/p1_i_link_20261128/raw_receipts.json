@@ -1,0 +1,56 @@
+{
+  "caller.json": {
+    "source_sha256": "68165030c4684d25f404d355193060a0919435477e9233408effb80c24b10bb3"
+  },
+  "device_store_host.log": {
+    "source_sha256": "37cab6ce65a130f1efdd0a2a595ce2e837f278557211cfb7d7b7fc848f91e0bb"
+  },
+  "dhcp_host.json": {
+    "source_sha256": "2e31204d2d3d666f2462c202265c181e6ec74622d63d02de9f848d5773637745"
+  },
+  "diagnostic_configuration.json": {
+    "source_sha256": "8aaaab04647dff36d892785aa7c9d5aa5d660840da8371e314bf89da42e86295"
+  },
+  "diagnostic_configuration_serial.log.gz": {
+    "source_sha256": "2d226045263026050a7f89b8ed0944b1fda7f1db02dd68599f968125f96a11c6"
+  },
+  "diagnostic_removal.json": {
+    "source_sha256": "71ad6ad73bbc7d2b11351baa10196a8112be32d1ba0271cb2ae73f84f11fc183"
+  },
+  "diagnostic_removal_serial.log.gz": {
+    "source_sha256": "ec4a9a4c483fd0a810324063941d5089d76eb3dfb7a9f7ebf772f8dd0a701b52"
+  },
+  "guest.json": {
+    "source_sha256": "372c580323a11d896cf5599e92b1df1299e419adb9dddef0582dad78442b70ab"
+  },
+  "guest_serial.log.gz": {
+    "source_sha256": "3957ace1c443ec650410c398395a2588d25bb3ec382c2834b4f9e9e858aa72f7"
+  },
+  "network.pcap": {
+    "source_sha256": "dd6e86ef33818cb45d1f7f80cada4fa819d284f6b5b87870ca4781db5a6fcdf4"
+  },
+  "pci_observer_host.log": {
+    "source_sha256": "126978210bf2c009034056a94949834cc440f7761cd5ded6294ab9a4f947830e"
+  },
+  "prior_build_failure.log": {
+    "source_sha256": "85835cb395f7841928001f113bb3e6893e159dd5bd2dd4a03db80cdd2308e0cd"
+  },
+  "prior_partial_guest.json": {
+    "source_sha256": "d6c9d77968611f8754820a0942ee54449e675281b9513cc405be3e41189bd578"
+  },
+  "prior_partial_serial.log.gz": {
+    "source_sha256": "82f6fa8b051046090533cf8f0d9184c75fe789f1e64798773ff319bb46352075"
+  },
+  "qtest.log.gz": {
+    "source_sha256": "c6439c7dacfb4b0857fdb9726a5e9952f4c019f9877b350b246287d90208cddb"
+  },
+  "service_host.json": {
+    "source_sha256": "99300354acf34e157521b314c19876983ff026089ab55ecdb0f012dc48e0f317"
+  },
+  "system.json": {
+    "source_sha256": "cbf6482bbde4f6db278f45a226cdb6ab803ce68080d66b6dc3053975c0320fa1"
+  },
+  "virtio_host.log": {
+    "source_sha256": "afe139e256a3175cdbd885273d8d80a2b0eba14e286c0109f4dc09fd50608c64"
+  }
+}

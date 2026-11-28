@@ -46,6 +46,72 @@ lease_snapshot snapshot(session_client& client,u64 pid,u32& closures) {
         check(!client.connect(pid),"read-only reconnect");}
     check(false,"repeated config churn");return {};
 }
+void link_epoch(session_client& client,u64 pid,const lease_snapshot& initial,u64 initial_handle,
+                const char* nonce,u32& closures) {
+    message request{},reply{};
+    request.action=operation::close;request.object=initial_handle;request.deadline=now()+second;
+    check(!client.request(request,reply),"close initial challenge connection");
+    u64 handles[2]{};
+    for(u32 i=0;i<2;++i){
+        request={};request.action=operation::open;request.address=0x0a000203;request.port=4444;
+        request.transport=i?protocol::tcp:protocol::udp;request.deadline=now()+second;
+        check(!client.request(request,reply)&&reply.object,"old queued connection");handles[i]=reply.object;
+    }
+    request={};request.action=operation::send;request.object=handles[0];request.length=32;
+    request.deadline=now()+second;__builtin_memcpy(request.data,nonce,32);
+    check(client.request(request,reply)==32,"queued UDP behind unresolved ARP");
+    u64 ticket=0;check(!client.resolve_start("pending.dhcp.test",17,now()+30*second,ticket)&&ticket,"old DNS ticket");
+    sdk::print("DHCP_LINK_READY_QUEUED\n");
+    const auto prior_closures=closures;
+    const auto deadline=now()+30*second;
+    lease_snapshot down{};
+    for(;;){down=snapshot(client,pid,closures);if(!down.address&&down.reason==3)break;
+        check(now()<deadline,"link-down deadline");pause();}
+    check(down.epoch==initial.epoch+1&&closures>prior_closures,"link loss retires application epoch");
+    u64 denied=0;check(open(client,denied)==closed&&!denied,"link-down new traffic denied");
+    for(const auto handle:handles){request={};request.action=operation::status;request.object=handle;request.deadline=now()+second;
+        check(client.request(request,reply)==closed,"old connection closed while link down");}
+    resolve_reply answer{};check(client.resolve_result(ticket,now()+second,answer)==closed,"old DNS closed while link down");
+    print_snapshot("DHCP_LINK_DOWN",down);sdk::print("DHCP_LINK_DOWN_READY\n");
+    lease_snapshot fresh{};
+    for(;;){fresh=snapshot(client,pid,closures);if(fresh.address)break;
+        check(now()<deadline,"link-up reacquisition deadline");pause();}
+    check(fresh.address==0x0a000210&&fresh.epoch==initial.epoch+2&&fresh.request_sent>initial.request_sent&&
+          fresh.start_attempts>initial.start_attempts,"fresh lease after link up");
+    for(const auto handle:handles){request={};request.action=operation::status;request.object=handle;request.deadline=now()+second;
+        check(client.request(request,reply)==closed,"old connection cannot resurrect");}
+    check(client.resolve_result(ticket,now()+second,answer)==closed,"old ticket cannot resurrect");
+    print_snapshot("DHCP_LINK_UP",fresh);sdk::print("DHCP_LINK_UP_BOUND\n");
+    check(!sdk::syscall(sys_sleep_until,now()+500'000'000ull),"late ARP injection interval");
+    u64 current=0;check(!open(client,current),"fresh application connection");challenge(client,current,nonce);
+    sdk::print("DHCP_GUEST_PASS link_loss\n");
+}
+void device_epoch(session_client& client,u64 pid,u64 initial_handle,const char* nonce) {
+    message request{},reply{};
+    request.action=operation::close;request.object=initial_handle;request.deadline=now()+second;
+    check(!client.request(request,reply),"close device initial challenge");
+    u64 udp=0;
+    for(u32 i=0;i<2;++i){request={};request.action=operation::open;request.address=0x0a000203;
+        request.port=4444;request.transport=i?protocol::tcp:protocol::udp;request.deadline=now()+second;
+        check(!client.request(request,reply)&&reply.object,"device old queued transport");
+        if(!i)udp=reply.object;}
+    request={};request.action=operation::send;request.object=udp;request.length=32;
+    request.deadline=now()+second;__builtin_memcpy(request.data,nonce,32);
+    check(client.request(request,reply)==32,"device queued UDP behind ARP");
+    u64 ticket=0;check(!client.resolve_start("pending.dhcp.test",17,now()+30*second,ticket)&&ticket,
+                       "device old DNS ticket");
+    sdk::print("DHCP_DEVICE_READY_QUEUED\n");const auto deadline=now()+35*second;
+    for(;;){lease_snapshot value{};const auto result=client.lease_status(now()+second,value);
+        if(result==closed)break;
+        check(!result&&now()<deadline,"device old service closure",result);pause();}
+    sdk::print("DHCP_DEVICE_OLD_CLOSED\n");
+    // Keep the original caller alive until the replacement publishes its
+    // name. A new endpoint cannot satisfy the authenticated old PID binding.
+    for(;;){pause();const auto result=client.connect(pid);
+        if(result==denied)break;
+        check(result==closed&&now()<deadline,"replacement rejects old service identity",result);}
+    sdk::print("DHCP_GUEST_PASS device_old_identity\n");
+}
 }
 extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;using namespace xos::net2;
@@ -80,6 +146,8 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     if(sdk::equal(mode,"conflict_backoff_recover"))check(initial.conflicts>=1,"conflict history");
     print_snapshot("DHCP_GUEST_BOUND",initial);
     u64 handle=0;check(!open(client,handle)&&handle,"UDP open");challenge(client,handle,args[3]);
+    if(sdk::equal(mode,"link_loss")){link_epoch(client,pid,initial,handle,args[3],closures);return 0;}
+    if(sdk::equal(mode,"device_old")){device_epoch(client,pid,handle,args[3]);return 0;}
     if(sdk::equal(mode,"bound")||sdk::equal(mode,"malformed")||sdk::equal(mode,"conflict_backoff_recover")) {
         sdk::print("DHCP_GUEST_PASS ");sdk::print(mode);sdk::print("\n");return 0;}
     if(sdk::equal(mode,"restart_old")) {

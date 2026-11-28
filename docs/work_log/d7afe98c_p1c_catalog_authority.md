@@ -2,8 +2,8 @@
 
 ## 当前状态
 
-实现与 host 检查已经重建；新的成套 GNU runtime/native SDK、23 场 XOS guest
-与独立 Linux UID provider 集成仍在验收中。本记录不是 P1-C 完成声明。
+实现与 host 检查已经重建；独立 Linux UID provider 集成已经通过。新的成套
+GNU runtime/native SDK 与 23 场 XOS guest 仍在验收中。本记录不是 P1-C 完成声明。
 不把环境恢复前丢失的构建或旧测试结论附到本轮新字节上。
 
 基线为 main 6332527ab64e92371266363f41f3247717a3cac8，包含已合并 P1-E #442
@@ -16,6 +16,10 @@
   epoch；未知结果停止服务而不重放。
 - PPR1 追加受真实角色约束的 publisher_checkpoint=12 与 activate_generation=13，
   帧大小、旧编号和 publisher 权限范围不变。
+- D 的冻结 distribution_startup.hpp 轻头先由本 foundation PR 交付，避免新
+  runtime/native SDK 的源闭包依赖未合并文件。它只有96字节四阶段消息布局；
+  D controller/验签/staging 实现不混入本 PR。该头原始 SHA-256 为
+  b1053206fdddb8a030ddfb1927fc894d733541f750fe33de92a52aa143745910。
 - PCQ1 以真实 named IPC 的两端 kernel peer、realm、版本和期限核对当前 catalog。
   动态 capsule 明确升级 v3，加入完整 authority binding；自身 owner、current
   和目标 artifact 均须仍受批准，避免新子进程空 current 绕过父根撤销。
@@ -44,6 +48,7 @@
 | PCQ1 生产 reader/admission，模型 kernel transport | 9 普通 + 9 ASan/UBSan 通过 | [authority_host.json](../reports/p1c_catalog_authority/authority_host.json) |
 | 生产 closure/ELF，模型 Files OFD | 23 普通 + 23 ASan/UBSan 通过 | [closure_host.json](../reports/p1c_catalog_authority/closure_host.json) |
 | 新 PCQ1 server、catalog supervisor 与 sys84 proxy | SDK 交叉编译通过 | 尚不能替代实际 guest |
+| 独立 Linux VM provider v2 | 12 项功能检查与 3 项实际进程启动计时通过；真实 UID 1001/1002/1003 | [provider_report.json](../reports/p1c_catalog_authority/provider_report.json) |
 
 公开 JSON 为已标记的可移植派生报告；原报告摘要及转换对应关系见
 [host_conversion.json](../reports/p1c_catalog_authority/host_conversion.json)。
@@ -57,16 +62,29 @@ tests/pumpkin_catalog_guest.py 计划执行 23 次真实 XOS boot：四类 CAS/A
 仅单元测试通过不足以关闭这些项。
 
 Linux provider gate 使用真实 UID 1001/1002/1003。首轮 preflight 发现 fixture
-realm 错写为 17 字节；修正为 16 字节并加断言，生产校验保持原样。后续 VM
-已实际通过 strict profile/private root、provider provision、错误 operator
-provision 拒绝及私有 record 读取拒绝；只读 9p/TCG 冷 Python 导入超过测试进程
-启动预算，正由 root 调整只读映射缓存并重跑。生产 RPC 三秒期限没有调整。
-完整 provider 报告尚未通过，不提前记为独立部署完成。
+realm 错写为 17 字节；修正为 16 字节并加断言，生产校验保持原样。早期只读
+9p/TCG 冷 Python 导入超过夹具启动预算，最终以发布 SDK 中的 QEMU、Linux
+动态 loader 与全部依赖直接启动真实 Linux VM，未使用 proot 伪造 UID。
+成功轮 recovered6 的 QEMU 和测试均以 0 退出；完整 v2 mark CAS、拒绝 stale
+CAS、进程重启恢复、错误 UID 和错误格式均通过。冒充 provider 在被拒绝前
+收到零协议字节。三次实际进程就绪时间为 5.56、13.44、15.36 秒，位于专用
+夹具 30 秒启动预算内；生产 RPC 三秒期限没有调整。
+
+该 VM 只读挂载 SDK 与冻结源码，所有测试可写状态在 guest tmpfs。它证明
+真实 Linux UID/SO_PEERCRED 隔离和 provider v2 恢复，不证明物理宿主部署或
+任意掉电。mark 使用明确的合成完整值，实际 XOS 应用数据由另一个 guest
+gate 检查。原日志摘要、失败轮摘要、kernel/initramfs/SDK/QEMU 及源码绑定
+见 [provider_vm_receipt.json](../reports/p1c_catalog_authority/provider_vm_receipt.json)
+与同目录 flat manifest；没有把前五轮失败改记为通过。
 
 ## 交付条件与边界
 
-D 统一重建 capsule v3 shared GNU runtime，C 只读消费其完整摘要绑定的 SDK，
-构建两个 GNU C 程序后生成 catalog fixture，再构建隔离系统并执行上述矩阵。
+D 统一重建 capsule v3 shared GNU runtime，C 只读消费。该 runtime 绑定 F
+GNU SDK，native PIC 直接从 154 项冻结源码编译，不依赖 D 整系统 native
+SDK；这 154 项以及 recipe/port 输入均须与 C 单树逐项一致。C 另行从自己的
+隔离源树构建 native SDK，避免应用 bootstrap 来源绑定未合并 D 系统的
+build_id。随后构建两个 GNU C 程序，生成 catalog fixture、构建隔离系统
+并执行上述矩阵。保留原 runtime manifest，绝不重新标记其生产来源。
 运行结束重新核对源、runtime、SDK、generation 和系统输入；flat evidence
 index 与实际暂存 public-path gate 通过后才可作为可合并交付。
 

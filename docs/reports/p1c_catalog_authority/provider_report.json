@@ -1,0 +1,128 @@
+{
+  "checks": [
+    {
+      "case": "strict v2 profile and private authority root",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"action\": \"preflight\", \"uid\": 1002, \"status\": \"passed\"}\n",
+      "uid": 1002
+    },
+    {
+      "case": "provider UID provisions v2 authority",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "",
+      "uid": 1002
+    },
+    {
+      "case": "operator UID cannot provision authority",
+      "exit": 1,
+      "stderr": "Pumpkin generation provider could not complete the operation\n",
+      "stdout": "",
+      "uid": 1001
+    },
+    {
+      "case": "operator cannot read authority record",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"action\": \"private_record\", \"uid\": 1001, \"status\": \"passed\"}\n",
+      "uid": 1001
+    },
+    {
+      "case": "provider process became ready",
+      "ready_seconds": 5.5569837220000124,
+      "startup_budget_seconds": 30
+    },
+    {
+      "case": "operator reads blank v2 authority",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"action\": \"empty\", \"uid\": 1001, \"status\": \"passed\"}\n",
+      "uid": 1001
+    },
+    {
+      "case": "full v2 mark CAS and stale CAS rejection",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"action\": \"publish\", \"uid\": 1001, \"status\": \"passed\"}\n",
+      "uid": 1001
+    },
+    {
+      "case": "legacy mark rejected without changing v2 state",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"action\": \"wrong_format\", \"uid\": 1001, \"status\": \"passed\"}\n",
+      "uid": 1001
+    },
+    {
+      "case": "provider rejects actual wrong operator UID",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"action\": \"raw_wrong_uid\", \"uid\": 1003, \"status\": \"passed\"}\n",
+      "uid": 1003
+    },
+    {
+      "case": "provider process became ready",
+      "ready_seconds": 13.440468244000002,
+      "startup_budget_seconds": 30
+    },
+    {
+      "case": "provider restart restores complete new mark",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"action\": \"recover\", \"uid\": 1001, \"status\": \"passed\"}\n",
+      "uid": 1001
+    },
+    {
+      "case": "v1 reader cannot open v2 authority record",
+      "exit": 1,
+      "stderr": "Pumpkin generation provider could not complete the operation\n",
+      "stdout": "",
+      "uid": 1002
+    },
+    {
+      "case": "provider process became ready",
+      "ready_seconds": 15.357989543000002,
+      "startup_budget_seconds": 30
+    },
+    {
+      "case": "operator authenticates real provider UID before sending profile or CAS",
+      "exit": 0,
+      "stderr": "",
+      "stdout": "{\"action\": \"wrong_provider\", \"uid\": 1001, \"status\": \"passed\"}\n",
+      "uid": 1001
+    },
+    {
+      "case": "wrong provider received zero protocol bytes",
+      "exit": 0,
+      "stdout": "{\"action\": \"impostor\", \"uid\": 1003, \"status\": \"passed\"}\n",
+      "uid": 1003
+    }
+  ],
+  "checks_count": 15,
+  "exclusions": [
+    "physical host deployment",
+    "arbitrary power loss",
+    "XOS guest application data recovery",
+    "production capsule or launch qualification"
+  ],
+  "fixture_data": "synthetic complete v2 authority marks; actual XOS application payloads are exercised by the separate XOS guest gate",
+  "format": "xos-pumpkin-provisioning-provider-host-v1",
+  "kernel": "7.3.6+deb14-amd64",
+  "operator_uid": 1001,
+  "profile_sha256": "f7371191c26a63d285ef2da89f31dfa8b08f384f2b6f3d32b5fa243e2bebf536",
+  "protocol_deadline_seconds": 3,
+  "provider_uid": 1002,
+  "qualification_class": "real_linux_vm_process_identity_and_provider_v2_restart",
+  "realm": "5a4419000102030405060708090a0b0c",
+  "scope": "real Linux process UIDs and Unix peer credentials; no guest power-loss claim",
+  "sources": {
+    "scripts/pumpkin_generation_authority.py": "a574d994f1c3a84179064d55dc8d9b9b741a799dfb4d62a16b20339659cedff3",
+    "scripts/pumpkin_generation_provider.py": "90446e0da60ef38216d0e280a494a6a683c95ed43e95ed7aa3d248452564b212",
+    "scripts/xypm_sdk_profile.py": "58ba003d4d44837949c370e4693e3834540296722c35180b98fe3deb1858ae32",
+    "tests/pumpkin_provisioning_provider_host.py": "47e0e1bb53556bdd059431221bc26407b7cf72d65d41cf6070003037bdf841e1"
+  },
+  "startup_budget_note": "Only fixture process startup is bounded at 30 seconds; production provider protocol deadline remains 3 seconds.",
+  "status": "passed",
+  "stranger_uid": 1003
+}

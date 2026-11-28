@@ -1,14 +1,15 @@
 {
+  "derived_integrity": "manifest.json is the sole flat index of derived leaf bytes",
   "format": "xos-p1c-host-evidence-derived-v1",
   "raw_to_derived": {
     "authority_host.json": {
-      "derived_sha256": "b6aae6eb3e56ae41444d67f467042bf4dad06e80e613deebfa6b4b4002d21ce2",
-      "sha256": "97a7e241b4b5472167a44e03ff43d48e6771c965c847c319a4e68a3ed970d62a",
+      "derived_file": "authority_host.json",
+      "raw_sha256": "97a7e241b4b5472167a44e03ff43d48e6771c965c847c319a4e68a3ed970d62a",
       "source": "build/p1c-authority-host/report.json"
     },
     "closure_host.json": {
-      "derived_sha256": "53d3dd87e5a8bf5e4e6f840fa5aa80df61c225e0f09dc1af695c1abe4e9dbb27",
-      "sha256": "2090b2904ec61bba3f28676ca03723a4599570ed8538bdb55506da512ce1e3e0",
+      "derived_file": "closure_host.json",
+      "raw_sha256": "2090b2904ec61bba3f28676ca03723a4599570ed8538bdb55506da512ce1e3e0",
       "source": "build/p1c-closure-host/report.json"
     }
   },

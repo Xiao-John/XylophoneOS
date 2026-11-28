@@ -193,6 +193,7 @@ claimed必须位于对应reserved段，不能与现有接口或其他认领重�
 | boot_info | v1 64字节；显示扩展v2 112字节；payload descriptor独立 | 引导/内核共同登记，不借用对方字段 |
 | dynamic identity / generation | ELF note `XOS\0`/`0x584f5301`，identity v1 128字节；generation v1 header128/object512，最多12对象 | [准入组件](dynamic_admission_v1.md)；[公共 GNU 启动](public_dynamic_runtime_v1.md)；文件格式独立于 syscall，具体组合按对应产物验收 |
 | Pumpkin catalog / dynamic capsule | capsule v3 增加64字节 authority binding；PCQ1/version1 request40/reply784；PPR1保留1592/1560字节，新增op12/13 | [持久 catalog authority](pumpkin_catalog_authority.md)；旧操作编号不变，旧动态组合须重建并核对 native ABI；不新增 syscall |
+| xypm publisher bootstrap | XYPMSUP1 magic，96字节消息，offer/broker/connected/delegated四阶段 | 冻结 distribution_startup.hpp 先随C foundation交付；真实parent/broker核验与PPR12 role proof不可省略，D发行实现另行验收 |
 | endpoint/PID/TID | 内核按生命周期分配的运行时身份 | 不预留静态数字给Qt，不以程序名或客户端自填身份授予权利 |
 | SDK manifest | process_extensions与display_extensions等能力/输入标识 | 普通/线程生成器同步；reserved不登记为supported |
 | net 服务协议 | v1 information/transmit/receive/stop，raw Ethernet 1514 字节 | 用户态 VirtIO-net。[纵切契约](net_user_driver.md)记录 ARP、IRQ 与 reset 的限定客体验收 |

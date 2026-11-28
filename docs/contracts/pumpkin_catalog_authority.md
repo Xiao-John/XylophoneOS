@@ -43,6 +43,13 @@ kernel peer 决定；请求中没有授予自己 publisher 角色的字段。12 
 不增加 revision。13 使用 index 作为选择器，不接纳新根。catalog publisher
 不能使用 13 改变管理员选择，也不能创建账户、应用或再次委派。
 
+C foundation 同时交付供 D 使用的 src/user/include/xos/distribution_startup.hpp：
+固定 XYPMSUP1 magic、96 字节 publisher_startup 和 offer/broker/connected/delegated
+四阶段枚举。它只描述启动消息，不授予角色；调用方必须认证真实 kernel parent、
+broker 与实际已接纳 session，再通过 PPR12。D 的发行实现与实际验收另行交付。
+先纳入此冻结轻头可使共享 runtime、native SDK 的全部源输入在 C PR 中完整重现；
+不能为省略一个尚未合并的头而删改 native_inputs 清单。
+
 ## PCQ1 只读启动查询
 
 src/shared/include/xos/catalog_abi.hpp 定义独立 ABI：

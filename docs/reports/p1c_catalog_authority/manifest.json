@@ -1,0 +1,17 @@
+{
+  "files": {
+    "authority_host.json": "b6aae6eb3e56ae41444d67f467042bf4dad06e80e613deebfa6b4b4002d21ce2",
+    "build_bindings.json": "d8a7a15d9806306affe660bf63cab8964a00ba96cdd7c0659ffa51c733a8758e",
+    "closure_host.json": "53d3dd87e5a8bf5e4e6f840fa5aa80df61c225e0f09dc1af695c1abe4e9dbb27",
+    "host_conversion.json": "ed3a3efa9f1086ed0c1984009e18e76f8c414285ab723640bc64a78ab1826f73",
+    "provider_conversion.json": "b9cdf5a7a7217c809ff61ea6e926e298a57e0a121b8e6b74d91c00ab8b2486a1",
+    "provider_report.json": "f959a9b6cd0399eaaa13ea3edc6b3df5926fa448c5a9c01e621293b2c9a1704b",
+    "provider_vm_initramfs.json": "68afe7f702a6764955a53dceac3fe25ec6b586432702848979158d3e73f6725f",
+    "provider_vm_inputs.json": "54402682b5646bff3167cac08c29e6b44b88263367ddf08d4b47b4f14ce24571",
+    "provider_vm_qemu.json": "d462471736c72f9cb413d26a8a11b61c2b79817d191ef2a04c18578e129713bb",
+    "provider_vm_receipt.json": "9df4af73d986fe3a677e4d26df836a2ceafda75744c426929b0cb11f6c467590",
+    "provider_vm_sources.json": "466dfcfae8ff38a8fc991f9cc4b16a0a2d2344fbf2d233b629eba3b632e4aa2e",
+    "provisioning_host.json": "25a9e1da9cefae4a919a3dd2091f14014b5eb38211a6fae01790c18b7e2760ee"
+  },
+  "version": 1
+}

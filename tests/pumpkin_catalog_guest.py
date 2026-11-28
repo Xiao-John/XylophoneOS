@@ -33,6 +33,10 @@ def programs(builds):
         metadata = json.loads((build / "manifest.json").read_bytes())
         assert metadata["status"] == "built_not_run" and metadata["public_startup"] is True
         assert all(digest(Path(path)) == expected for path, expected in metadata["inputs"].items())
+        fixture_source = ROOT / "tests/fixtures/pumpkin/catalog_descendants.c"
+        source_inputs = [(path, expected) for path, expected in metadata["inputs"].items()
+                         if Path(path).name == fixture_source.name]
+        assert len(source_inputs) == 1 and source_inputs[0][1] == digest(fixture_source)
         if sdk is None:
             sdk, abi = metadata["sdk_binding"]["sdk_manifest_sha256"], metadata["native_abi"]
         assert metadata["sdk_binding"]["sdk_manifest_sha256"] == sdk and metadata["native_abi"] == abi

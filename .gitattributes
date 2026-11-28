@@ -44,3 +44,6 @@ docs/reports/ssg_p3c_engine_neutral_20261031/*.patch whitespace=-blank-at-eol,-s
 
 # DHCP unified patch keeps the required prefix on empty upstream context.
 src/ports/lwip/patches/0005_dhcp_absolute_authority.patch whitespace=-blank-at-eol
+
+# Preserve exact serial/diagnostic output from the DHCP qualification.
+docs/reports/p0_dhcp_service_20261128/*.log whitespace=-blank-at-eol,cr-at-eol

@@ -1,0 +1,97 @@
+{
+  "base_commit": "f7240faae1fe1ef6f3dfae44fa21aef864849f23",
+  "commands": [
+    "env ASAN_OPTIONS=detect_leaks=0 XOS_LWIP_SOURCE_ARCHIVE=${XOS_INPUT_ROOT}/lwip-2.2.1.tar.xz python3 tests/net_dhcp_stack_host.py --sanitize --output build/dhcp_host_final_v2",
+    "python3 tests/net_client_host.py",
+    "python3 tests/net_dhcp_profile.py",
+    "env ASAN_OPTIONS=detect_leaks=0 XOS_LWIP_SOURCE_ARCHIVE=${XOS_INPUT_ROOT}/lwip-2.2.1.tar.xz python3 tests/net_service_host.py --sanitize --output build/dhcp_static_final",
+    "env XOS_LWIP_SOURCE_ARCHIVE=${XOS_INPUT_ROOT}/lwip-2.2.1.tar.xz python3 scripts/build.py --output-dir build/dhcp_system_dns --net-dhcp-profile tests/fixtures/network/dhcp_profile.json --quiet-demos-on-launch",
+    "python3 scripts/build_net_dhcp_probe.py --sdk build/dhcp_system_dns/sdk --output build/dhcp_probe_dns",
+    "python3 tests/net_dhcp_guest.py --system build/dhcp_system_dns --fixtures build/dhcp_probe_dns --output build/dhcp_guest_dns"
+  ],
+  "date": "2026-11-28",
+  "dhcp_dns_cache_epoch_requery": "passed_in_real_guest",
+  "failure_records": [
+    {
+      "outcome": "fixture member name/type mismatch corrected before passing execution",
+      "phase": "host fixture compilation",
+      "raw_diagnostic": "tool output only; no preserved original stderr artifact"
+    },
+    {
+      "outcome": "misleading indentation rejected by -Werror; split statement before final compilation",
+      "phase": "native fixture compilation",
+      "raw_diagnostic": "tool output only; no preserved original stderr artifact"
+    },
+    {
+      "diagnostic": "LeakSanitizer does not work under ptrace (strace, gdb, etc)",
+      "outcome": "LeakSanitizer rejected ptrace environment before semantic cases",
+      "phase": "initial sanitizer --list",
+      "raw_diagnostic": "tool output transcribed; initial log was replaced by later run"
+    },
+    {
+      "outcome": "unarmed independent peer omitted raw NIC warmup ARP; corrected before eight-case qualification",
+      "phase": "first guest run",
+      "record": "first_guest_failure.json",
+      "source_commit": "02b1d786"
+    },
+    {
+      "outcome": "wrong expectation that DISCOVER TX pressure returns dhcp_start ERR_MEM; upstream retries DISCOVER internally. Final tests distinguish real UDP PCB allocation failure.",
+      "phase": "startup pressure test development",
+      "record": "startup_test_development_failure.log"
+    }
+  ],
+  "guest_cases": [
+    "renew",
+    "expire",
+    "nak_config_change",
+    "rebind_new_issuer",
+    "malformed",
+    "acd_conflict",
+    "conflict_backoff_recover",
+    "service_restart"
+  ],
+  "guest_qualification": "passed_subset",
+  "host_dhcp_cases": 18,
+  "leak_sanitizer": "not_run; detect_leaks=0 required by launcher ptrace environment",
+  "module": "P0-N3 production DHCP/ACD lease authority",
+  "native_http_transport": "passed",
+  "native_sdk_closed_receive_cases": 2,
+  "native_sdk_invalid_lease_cases": 14,
+  "native_transport_groups": 8,
+  "not_qualified": [
+    "physical NICs",
+    "link-loss/device-reappearance recovery",
+    "multiple active resolver failover",
+    "IPv6",
+    "DHCP relay/options outside sealed direct-Ethernet profile",
+    "final combined P0-I tree",
+    "R1 distribution/receiver material qualification"
+  ],
+  "profile_negative_cases": 24,
+  "resources_after": [
+    129769,
+    2,
+    0
+  ],
+  "resources_before": [
+    129769,
+    2,
+    0
+  ],
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "sdk": {
+    "bundled_source_commit": "498a40ce85667a72b0c79f0ce1f5c11e7690122f",
+    "bundled_sysroot_build_id": "152cd96f4d4e95ab",
+    "launcher": "ordinary xos-sdk --workdir; offline isolation not claimed",
+    "name": "XOS SDK Preview 2 Linux x86-64",
+    "qualification_sdk": "newly built native system SDK, not the bundled boot ISO"
+  },
+  "source_commit": "da889821137645a014e47d13109042fd0d34caf8",
+  "source_tree": "e62e17a2b0be8de9623b7d4da24e8b3eb3e989bd",
+  "static_production_loop_cases": 2,
+  "static_stack_cases": 32,
+  "system_build_id": "c3dfc464c631ce9e"
+}

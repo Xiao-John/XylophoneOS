@@ -1,0 +1,527 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=c3dfc464c631ce9e
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x000000000027b110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130157 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x0000000000373000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+ping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+AAping
+bad length
+bad pointer
+tx
+Aping
+Abad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+Aping
+bad length
+bad pointer
+tx
+[net-start] pid=9
+Abad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+[net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+Aping
+bad length
+bad pointer
+tx
+Abad length
+bad pointer
+Aping
+Abad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+xsh> tAping
+bad length
+bad pointer
+tx
+race on
+xsh: trace on
+xsh> Aping
+bad length
+bad pointer
+tx
+demo quietAA
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> audio stop
+[task] event=reclaimed pid=10 pages=99
+audio: service stopped
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=9
+[net] close=0
+[task] event=reclaimed pid=9 pages=110
+[wait] pid=9 kind=exited code=0
+xsh> net-probe 41
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x0000000000373000
+[process] event=wait_blocked parent=7 child=11
+[net-probe] tx=1 rx_arp=1 irq=1
+[net] close=0
+NET_USER_DRIVER_PASS
+[task] event=reclaimed pid=11 pages=110
+[wait] pid=11 kind=exited code=0
+xsh> net-start 41
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x0000000000373000
+[net-start] pid=12
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf bound 12 29579ef77caac8b34364d0305d278ded
+[process] event=started pid=13 parent=7
+[process] pid=13 address_space=0x0000000000564000
+[loader] started pid=13 file=/bin/dhcp.elf
+xsh> wait 13
+[process] event=wait_blocked parent=7 child=13
+DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=1160000000 t1=15160000000 t2=25160000000 expiry=37160000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+DHCP_GUEST_CHALLENGE data=6df9160c676b6d2d4248fa0beb918b73feee1843a63b88329f9ccf4b3218de9b
+DHCP_GUEST_PASS bound
+[task] event=reclaimed pid=13 pages=46
+[wait] pid=13 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns 12 29579ef77caac8b34364d0305d278ded
+[process] event=started pid=14 parent=7
+[process] pid=14 address_space=0x0000000000564000
+[loader] started pid=14 file=/bin/dhcp.elf
+xsh> wait 14
+[process] event=wait_blocked parent=7 child=14
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=14 pages=46
+[wait] pid=14 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=12
+[net] close=0
+[task] event=reclaimed pid=12 pages=110
+[wait] pid=12 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=15 parent=7
+[process] pid=15 address_space=0x0000000000373000
+[net-start] pid=15
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf renew 15 50dd601c886627a3d3e40e252e6b9e90
+[process] event=started pid=16 parent=7
+[process] pid=16 address_space=0x0000000000564000
+[loader] started pid=16 file=/bin/dhcp.elf
+xsh> DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=8840000000 t1=22840000000 t2=32840000000 expiry=44840000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+spawn-file /bin/dhcp.eDHCP_GUEST_CHALLENGE data=6665fd768c3c01ee0916390ac06be66316798f9012730339a94109d76a7f9470
+lf dns 15 50dd601c886627a3d3e40e252e6b9e90
+[process] event=started pid=17 parent=7
+[process] pid=17 address_space=0x00000000005d5000
+[loader] started pid=17 file=/bin/dhcp.elf
+xsh> wait 17
+[process] event=wait_blocked parent=7 child=17
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=17 pages=46
+[wait] pid=17 kind=exited code=0
+xsh> wait 16
+[process] event=wait_blocked parent=7 child=16
+DHCP_GUEST_FINAL epoch=2 state=4 address=167772687 server=167772674 request=22840000000 t1=36840000000 t2=46840000000 expiry=58840000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+DHCP_GUEST_PASS renew
+[task] event=reclaimed pid=16 pages=46
+[wait] pid=16 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns 15 50dd601c886627a3d3e40e252e6b9e90
+[process] event=started pid=18 parent=7
+[process] pid=18 address_space=0x0000000000564000
+[loader] started pid=18 file=/bin/dhcp.elf
+xsh> wait 18
+[process] event=wait_blocked parent=7 child=18
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=18 pages=46
+[wait] pid=18 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=15
+[net] close=0
+[task] event=reclaimed pid=15 pages=110
+[wait] pid=15 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=19 parent=7
+[process] pid=19 address_space=0x0000000000373000
+[net-start] pid=19
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf expire 19 0d218af088d0353412601730a08e32b7
+[process] event=started pid=20 parent=7
+[process] pid=20 address_space=0x0000000000564000
+[loader] started pid=20 file=/bin/dhcp.elf
+xsh> DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=23400000000 t1=37400000000 t2=47400000000 expiry=59400000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+spawn-file /bin/dDHCP_GUEST_CHALLENGE data=f82555bb911a63fdcb544df6e7c204b4f11724c169a23969eeb28ff8a652dc31
+hcp.elf dns 19 0d218af088d0353412601730a08e32b7
+[process] event=started pid=21 parent=7
+[process] pid=21 address_space=0x00000000005d5000
+[loader] started pid=21 file=/bin/dhcp.elf
+xsh> wait 21
+[process] event=wait_blocked parent=7 child=21
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=21 pages=46
+[wait] pid=21 kind=exited code=0
+xsh> wait 20
+[process] event=wait_blocked parent=7 child=20
+DHCP_GUEST_OLD_RESOURCES_CLOSED
+DHCP_GUEST_FINAL epoch=3 state=1 address=0 server=0 request=0 t1=0 t2=0 expiry=0 reason=5 rejected=0 conflicts=0 starts=2 start_failures=0
+DHCP_GUEST_PASS expire
+[task] event=reclaimed pid=20 pages=46
+[wait] pid=20 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns_closed 19 0d218af088d0353412601730a08e32b7
+[process] event=started pid=22 parent=7
+[process] pid=22 address_space=0x0000000000564000
+[loader] started pid=22 file=/bin/dhcp.elf
+xsh> wait 22DHCP_GUEST_PASS dns_closed
+[task] event=reclaimed pid=22 pages=46
+
+[wait] pid=22 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=19
+[net] close=0
+[task] event=reclaimed pid=19 pages=110
+[wait] pid=19 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=23 parent=7
+[process] pid=23 address_space=0x0000000000373000
+[net-start] pid=23
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf nak_config_change 23 d4415b5e0a0062c02b7a17f68a4e3811
+[process] event=started pid=24 parent=7
+[process] pid=24 address_space=0x0000000000564000
+[loader] started pid=24 file=/bin/dhcp.elf
+xsh> DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=60010000000 t1=74010000000 t2=84010000000 expiry=96010000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+spawn-file /bin/dDHCP_GUEST_CHALLENGE data=7d2e038f80fe26c3e68db26c1a83f2dd75c9445d7fcf0758000b0e88ef8afc33
+hcp.elf dns 23 d4415b5e0a0062c02b7a17f68a4e3811
+[process] event=started pid=25 parent=7
+[process] pid=25 address_space=0x00000000005d5000
+[loader] started pid=25 file=/bin/dhcp.elf
+xsh> wait 25
+[process] event=wait_blocked parent=7 child=25
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=25 pages=46
+[wait] pid=25 kind=exited code=0
+xsh> wait 24
+[process] event=wait_blocked parent=7 child=24
+DHCP_GUEST_OLD_RESOURCES_CLOSED
+DHCP_GUEST_CHALLENGE data=57e05b9f31e9cdbb995094009e402bf275e8ca65d186671cec28d269bc791f20
+DHCP_GUEST_FINAL epoch=4 state=4 address=167772688 server=167772674 request=74010000000 t1=88010000000 t2=98010000000 expiry=110010000000 reason=1 rejected=0 conflicts=0 starts=2 start_failures=0
+DHCP_GUEST_PASS nak_config_change
+[task] event=reclaimed pid=24 pages=46
+[wait] pid=24 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns 23 d4415b5e0a0062c02b7a17f68a4e3811
+[process] event=started pid=26 parent=7
+[process] pid=26 address_space=0x0000000000564000
+[loader] started pid=26 file=/bin/dhcp.elf
+xsh> wait 26
+[process] event=wait_blocked parent=7 child=26
+DHCP_GUEST_DNS epoch=4 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=26 pages=46
+[wait] pid=26 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=23
+[net] close=0
+[task] event=reclaimed pid=23 pages=110
+[wait] pid=23 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=27 parent=7
+[process] pid=27 address_space=0x0000000000373000
+[net-start] pid=27
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf rebind_new_issuer 27 12ec0f589262a8838817535555b6c443
+[process] event=started pid=28 parent=7
+[process] pid=28 address_space=0x0000000000564000
+[loader] started pid=28 file=/bin/dhcp.elf
+xsh> DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=82020000000 t1=96020000000 t2=106020000000 expiry=118020000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+spawn-file /bin/DHCP_GUEST_CHALLENGE data=7a78e4221d78313e489edae37d16ef0cab0e8800183b3ed1792125a44b81e6a8
+dhcp.elf dns 27 12ec0f589262a8838817535555b6c443
+[process] event=started pid=29 parent=7
+[process] pid=29 address_space=0x00000000005d5000
+[loader] started pid=29 file=/bin/dhcp.elf
+xsh> wait 29
+[process] event=wait_blocked parent=7 child=29
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=29 pages=46
+[wait] pid=29 kind=exited code=0
+xsh> wait 28
+[process] event=wait_blocked parent=7 child=28
+DHCP_GUEST_FINAL epoch=2 state=4 address=167772687 server=167772675 request=96020000000 t1=110020000000 t2=120020000000 expiry=132020000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+DHCP_GUEST_PASS rebind_new_issuer
+[task] event=reclaimed pid=28 pages=46
+[wait] pid=28 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns 27 12ec0f589262a8838817535555b6c443
+[process] event=started pid=30 parent=7
+[process] pid=30 address_space=0x0000000000564000
+[loader] started pid=30 file=/bin/dhcp.elf
+xsh> wait 30
+[process] event=wait_blocked parent=7 child=30
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=30 pages=46
+[wait] pid=30 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=27
+[net] close=0
+[task] event=reclaimed pid=27 pages=110
+[wait] pid=27 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=31 parent=7
+[process] pid=31 address_space=0x0000000000373000
+[net-start] pid=31
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf malformed 31 0671d204c54fbe182648c35ad943e1de
+[process] event=started pid=32 parent=7
+[process] pid=32 address_space=0x0000000000564000
+[loader] started pid=32 file=/bin/dhcp.elf
+xsh> DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=106580000000 t1=120580000000 t2=130580000000 expiry=142580000000 reason=0 rejected=3 conflicts=0 starts=1 start_failures=0
+spawn-file /biDHCP_GUEST_CHALLENGE data=2513a91657314b8da71c1490fe9bdc0416c2e6a9e2d05af742e6030935411c12
+DHCP_GUEST_PASS malformed
+[task] event=reclaimed pid=32 pages=46
+n/dhcp.elf dns 31 0671d204c54fbe182648c35ad943e1de
+[process] event=started pid=33 parent=7
+[process] pid=33 address_space=0x0000000000564000
+[loader] started pid=33 file=/bin/dhcp.elf
+xsh> wait 33
+[process] event=wait_blocked parent=7 child=33
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=33 pages=46
+[wait] pid=33 kind=exited code=0
+xsh> wait 32
+[wait] pid=32 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns 31 0671d204c54fbe182648c35ad943e1de
+[process] event=started pid=34 parent=7
+[process] pid=34 address_space=0x0000000000564000
+[loader] started pid=34 file=/bin/dhcp.elf
+xsh> wait 34
+[process] event=wait_blocked parent=7 child=34
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=34 pages=46
+[wait] pid=34 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=31
+[net] close=0
+[task] event=reclaimed pid=31 pages=110
+[wait] pid=31 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=35 parent=7
+[process] pid=35 address_space=0x0000000000373000
+[net-start] pid=35
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf acd_conflict 35 32b6b55509d43969c69d94387d8ed4f7
+[process] event=started pid=36 parent=7
+[process] pid=36 address_space=0x0000000000564000
+[loader] started pid=36 file=/bin/dhcp.elf
+xsh> wait 36
+[process] event=wait_blocked parent=7 child=36
+DHCP_GUEST_FINAL epoch=1 state=1 address=0 server=0 request=0 t1=0 t2=0 expiry=0 reason=2 rejected=0 conflicts=1 starts=1 start_failures=0
+DHCP_GUEST_PASS acd_conflict
+[task] event=reclaimed pid=36 pages=46
+[wait] pid=36 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns_closed 35 32b6b55509d43969c69d94387d8ed4f7
+[process] event=started pid=37 parent=7
+[process] pid=37 address_space=0x0000000000564000
+[loader] started pid=37 file=/bin/dhcp.elf
+xsh> wait 37DHCP_GUEST_PASS dns_closed
+[task] event=reclaimed pid=37 pages=46
+
+[wait] pid=37 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=35
+[net] close=0
+[task] event=reclaimed pid=35 pages=110
+[wait] pid=35 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=38 parent=7
+[process] pid=38 address_space=0x0000000000373000
+[net-start] pid=38
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf conflict_backoff_recover 38 451c3df8eeac9c24d76e1c99801d5fa7
+[process] event=started pid=39 parent=7
+[process] pid=39 address_space=0x0000000000564000
+[loader] started pid=39 file=/bin/dhcp.elf
+xsh> DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=127040000000 t1=141040000000 t2=151040000000 expiry=163040000000 reason=2 rejected=0 conflicts=1 starts=1 start_failures=0
+spawn-file /bin/dDHCP_GUEST_CHALLENGE data=f8c02ec14ad48c7ce02d7b6120d7a4173a8fc2906c53178a2e9f04661a80e357
+DHCP_GUEST_PASS conflict_backoff_recover
+[task] event=reclaimed pid=39 pages=46
+hcp.elf dns 38 451c3df8eeac9c24d76e1c99801d5fa7
+[process] event=started pid=40 parent=7
+[process] pid=40 address_space=0x0000000000564000
+[loader] started pid=40 file=/bin/dhcp.elf
+xsh> wait 40
+[process] event=wait_blocked parent=7 child=40
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=40 pages=46
+[wait] pid=40 kind=exited code=0
+xsh> wait 39
+[wait] pid=39 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns 38 451c3df8eeac9c24d76e1c99801d5fa7
+[process] event=started pid=41 parent=7
+[process] pid=41 address_space=0x0000000000564000
+[loader] started pid=41 file=/bin/dhcp.elf
+xsh> wait 41
+[process] event=wait_blocked parent=7 child=41
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=41 pages=46
+[wait] pid=41 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=38
+[net] close=0
+[task] event=reclaimed pid=38 pages=110
+[wait] pid=38 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> net-start 41
+[process] event=started pid=42 parent=7
+[process] pid=42 address_space=0x0000000000373000
+[net-start] pid=42
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+spawn-file /bin/dhcp.elf restart_old 42 2a6a404065f7edd0958822322199ccbd
+[process] event=started pid=43 parent=7
+[process] pid=43 address_space=0x0000000000564000
+[loader] started pid=43 file=/bin/dhcp.elf
+xsh> DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=134910000000 t1=148910000000 t2=158910000000 expiry=170910000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+spawn-file /bin/dhcDHCP_GUEST_CHALLENGE data=ac58524b6cf3dc2d192887762c7677e3585cf50a97faae04956184912c75b45e
+DHCP_GUEST_RESTART_READY
+p.elf dns 42 2a6a404065f7edd0958822322199ccbd
+[process] event=started pid=44 parent=7
+[process] pid=44 address_space=0x00000000005d5000
+[loader] started pid=44 file=/bin/dhcp.elf
+xsh> wait 44
+[process] event=wait_blocked parent=7 child=44
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=44 pages=46
+[wait] pid=44 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=42
+DHCP_GUEST_PASS restart_old
+[task] event=reclaimed pid=43 pages=46
+[net] close=0
+[task] event=reclaimed pid=42 pages=110
+[wait] pid=42 kind=exited code=0
+xsh> net-start 41
+[process] event=started pid=45 parent=7
+[process] pid=45 address_space=0x0000000000373000
+[net-start] pid=45
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+wait 43
+[wait] pid=43 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf bound 45 cfd8e26a04b0c3e0b5e27a5d8adade4d
+[process] event=started pid=46 parent=7
+[process] pid=46 address_space=0x0000000000564000
+[loader] started pid=46 file=/bin/dhcp.elf
+xsh> wait 46
+[process] event=wait_blocked parent=7 child=46
+DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=143480000000 t1=157480000000 t2=167480000000 expiry=179480000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0
+DHCP_GUEST_CHALLENGE data=c617bd5780c476451d10741e0c4f4a34ba6654d25168f586fa8f7bbbbe604300
+DHCP_GUEST_PASS bound
+[task] event=reclaimed pid=46 pages=46
+[wait] pid=46 kind=exited code=0
+xsh> spawn-file /bin/dhcp.elf dns 45 cfd8e26a04b0c3e0b5e27a5d8adade4d
+[process] event=started pid=47 parent=7
+[process] pid=47 address_space=0x0000000000564000
+[loader] started pid=47 file=/bin/dhcp.elf
+xsh> wait 47
+[process] event=wait_blocked parent=7 child=47
+DHCP_GUEST_DNS epoch=2 address=167772674
+DHCP_GUEST_PASS dns
+[task] event=reclaimed pid=47 pages=46
+[wait] pid=47 kind=exited code=0
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=45
+[net] close=0
+[task] event=reclaimed pid=45 pages=110
+[wait] pid=45 kind=exited code=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> stats
+[resources] free=129769 tasks=2 completions=0
+xsh> 

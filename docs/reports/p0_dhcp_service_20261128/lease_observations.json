@@ -1,0 +1,19 @@
+{
+  "source_artifact": "guest_serial.log",
+  "observations": [
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=1160000000 t1=15160000000 t2=25160000000 expiry=37160000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=8840000000 t1=22840000000 t2=32840000000 expiry=44840000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_FINAL epoch=2 state=4 address=167772687 server=167772674 request=22840000000 t1=36840000000 t2=46840000000 expiry=58840000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=23400000000 t1=37400000000 t2=47400000000 expiry=59400000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_FINAL epoch=3 state=1 address=0 server=0 request=0 t1=0 t2=0 expiry=0 reason=5 rejected=0 conflicts=0 starts=2 start_failures=0",
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=60010000000 t1=74010000000 t2=84010000000 expiry=96010000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_FINAL epoch=4 state=4 address=167772688 server=167772674 request=74010000000 t1=88010000000 t2=98010000000 expiry=110010000000 reason=1 rejected=0 conflicts=0 starts=2 start_failures=0",
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=82020000000 t1=96020000000 t2=106020000000 expiry=118020000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_FINAL epoch=2 state=4 address=167772687 server=167772675 request=96020000000 t1=110020000000 t2=120020000000 expiry=132020000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=106580000000 t1=120580000000 t2=130580000000 expiry=142580000000 reason=0 rejected=3 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_FINAL epoch=1 state=1 address=0 server=0 request=0 t1=0 t2=0 expiry=0 reason=2 rejected=0 conflicts=1 starts=1 start_failures=0",
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=127040000000 t1=141040000000 t2=151040000000 expiry=163040000000 reason=2 rejected=0 conflicts=1 starts=1 start_failures=0",
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=134910000000 t1=148910000000 t2=158910000000 expiry=170910000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0",
+    "DHCP_GUEST_BOUND epoch=2 state=4 address=167772687 server=167772674 request=143480000000 t1=157480000000 t2=167480000000 expiry=179480000000 reason=0 rejected=0 conflicts=0 starts=1 start_failures=0"
+  ]
+}

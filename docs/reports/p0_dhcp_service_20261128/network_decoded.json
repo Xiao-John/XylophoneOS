@@ -1,0 +1,5721 @@
+{
+  "capture_artifact": "network.pcap",
+  "counts": {
+    "application_udp": 20,
+    "arp": 76,
+    "dhcp": 73,
+    "dns": 28
+  },
+  "dhcp_message_type_counts": {
+    "1": 14,
+    "2": 12,
+    "3": 26,
+    "4": 2,
+    "5": 18,
+    "6": 1
+  },
+  "frame_count": 197,
+  "frames": [
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 1,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 729520,
+      "timestamp_seconds": 1795828346,
+      "udp_bytes": 316,
+      "xid": 2992919137,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 2,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 60,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 231034,
+      "timestamp_seconds": 1795828347
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 3,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 231257,
+      "timestamp_seconds": 1795828347
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 4,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 299094,
+      "timestamp_seconds": 1795828347,
+      "udp_bytes": 316,
+      "xid": 1775680021,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 5,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 299422,
+      "timestamp_seconds": 1795828347,
+      "udp_bytes": 294,
+      "xid": 1775680021,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 6,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 301939,
+      "timestamp_seconds": 1795828347,
+      "udp_bytes": 316,
+      "xid": 1775680021,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 7,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 302085,
+      "timestamp_seconds": 1795828347,
+      "udp_bytes": 294,
+      "xid": 1775680021,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 8,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 496208,
+      "timestamp_seconds": 1795828347
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 9,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 195947,
+      "timestamp_seconds": 1795828349
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 10,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 295899,
+      "timestamp_seconds": 1795828350
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 11,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 295870,
+      "timestamp_seconds": 1795828352
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 12,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 305702,
+      "timestamp_seconds": 1795828354
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 13,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 426093,
+      "timestamp_seconds": 1795828354
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 14,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 426301,
+      "timestamp_seconds": 1795828354
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 15,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "3239353739656637376361616338623334333634643033303564323738646564",
+      "payload_text": "29579ef77caac8b34364d0305d278ded",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 62990,
+      "timestamp_microseconds": 426873,
+      "timestamp_seconds": 1795828354,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 62990,
+      "ether_type": "0800",
+      "index": 16,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "6df9160c676b6d2d4248fa0beb918b73feee1843a63b88329f9ccf4b3218de9b",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 427182,
+      "timestamp_seconds": 1795828354,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 17,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "8eed01000001000000000000256c6976652d3239353739656637376361616338623334333634643033303564323738646564046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-29579ef77caac8b34364d0305d278ded.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 11916,
+      "timestamp_microseconds": 797094,
+      "timestamp_seconds": 1795828354,
+      "transaction_id": 36589,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 11916,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 18,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "8eed81800001000100000000256c6976652d3239353739656637376361616338623334333634643033303564323738646564046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-29579ef77caac8b34364d0305d278ded.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 797435,
+      "timestamp_seconds": 1795828354,
+      "transaction_id": 36589,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 19,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 984856,
+      "timestamp_seconds": 1795828354,
+      "udp_bytes": 316,
+      "xid": 3674503513,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 20,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 985112,
+      "timestamp_seconds": 1795828354,
+      "udp_bytes": 294,
+      "xid": 3674503513,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 21,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 988100,
+      "timestamp_seconds": 1795828354,
+      "udp_bytes": 316,
+      "xid": 3674503513,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 22,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 988214,
+      "timestamp_seconds": 1795828354,
+      "udp_bytes": 294,
+      "xid": 3674503513,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 23,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 75964,
+      "timestamp_seconds": 1795828355
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 24,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 276010,
+      "timestamp_seconds": 1795828356
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 25,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 675309,
+      "timestamp_seconds": 1795828357
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 26,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 675289,
+      "timestamp_seconds": 1795828359
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 27,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 675130,
+      "timestamp_seconds": 1795828361
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 28,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 785815,
+      "timestamp_seconds": 1795828361
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 29,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 785965,
+      "timestamp_seconds": 1795828361
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 30,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "3530646436303163383836363237613364336534306532353265366239653930",
+      "payload_text": "50dd601c886627a3d3e40e252e6b9e90",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 53479,
+      "timestamp_microseconds": 786320,
+      "timestamp_seconds": 1795828361,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 53479,
+      "ether_type": "0800",
+      "index": 31,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "6665fd768c3c01ee0916390ac06be66316798f9012730339a94109d76a7f9470",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 786554,
+      "timestamp_seconds": 1795828361,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 32,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "1ee201000001000000000000256c6976652d3530646436303163383836363237613364336534306532353265366239653930046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-50dd601c886627a3d3e40e252e6b9e90.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 16671,
+      "timestamp_microseconds": 56000,
+      "timestamp_seconds": 1795828362,
+      "transaction_id": 7906,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 16671,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 33,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "1ee281800001000100000000256c6976652d3530646436303163383836363237613364336534306532353265366239653930046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-50dd601c886627a3d3e40e252e6b9e90.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 56249,
+      "timestamp_seconds": 1795828362,
+      "transaction_id": 7906,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 34,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 985084,
+      "timestamp_seconds": 1795828368,
+      "udp_bytes": 316,
+      "xid": 3075079812,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 35,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 985482,
+      "timestamp_seconds": 1795828368,
+      "udp_bytes": 294,
+      "xid": 3075079812,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 36,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 545695,
+      "timestamp_seconds": 1795828369,
+      "udp_bytes": 316,
+      "xid": 4031330773,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 37,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 545995,
+      "timestamp_seconds": 1795828369,
+      "udp_bytes": 294,
+      "xid": 4031330773,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 38,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 548285,
+      "timestamp_seconds": 1795828369,
+      "udp_bytes": 316,
+      "xid": 4031330773,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 39,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 548406,
+      "timestamp_seconds": 1795828369,
+      "udp_bytes": 294,
+      "xid": 4031330773,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 40,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 134737,
+      "timestamp_seconds": 1795828370
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 41,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 534460,
+      "timestamp_seconds": 1795828371
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 42,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 934812,
+      "timestamp_seconds": 1795828372
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 43,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 934221,
+      "timestamp_seconds": 1795828374
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 44,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 934025,
+      "timestamp_seconds": 1795828376
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 45,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 44769,
+      "timestamp_seconds": 1795828377
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 46,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 45064,
+      "timestamp_seconds": 1795828377
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 47,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "3064323138616630383864303335333431323630313733306130386533326237",
+      "payload_text": "0d218af088d0353412601730a08e32b7",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 53331,
+      "timestamp_microseconds": 45610,
+      "timestamp_seconds": 1795828377,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 53331,
+      "ether_type": "0800",
+      "index": 48,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "f82555bb911a63fdcb544df6e7c204b4f11724c169a23969eeb28ff8a652dc31",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 45737,
+      "timestamp_seconds": 1795828377,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 77,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 49,
+      "kind": "dns",
+      "original_bytes": 77,
+      "payload_hex": "a74d010000010000000000000770656e64696e67046468637004746573740000010001",
+      "protocol": 17,
+      "question": "pending.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 58798,
+      "timestamp_microseconds": 85796,
+      "timestamp_seconds": 1795828377,
+      "transaction_id": 42829,
+      "udp_bytes": 43
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 50,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "6fba01000001000000000000256c6976652d3064323138616630383864303335333431323630313733306130386533326237046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-0d218af088d0353412601730a08e32b7.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 29419,
+      "timestamp_microseconds": 314308,
+      "timestamp_seconds": 1795828377,
+      "transaction_id": 28602,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 29419,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 51,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "6fba81800001000100000000256c6976652d3064323138616630383864303335333431323630313733306130386533326237046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-0d218af088d0353412601730a08e32b7.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 314724,
+      "timestamp_seconds": 1795828377,
+      "transaction_id": 28602,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 77,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 52,
+      "kind": "dns",
+      "original_bytes": 77,
+      "payload_hex": "a74d010000010000000000000770656e64696e67046468637004746573740000010001",
+      "protocol": 17,
+      "question": "pending.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 58798,
+      "timestamp_microseconds": 534062,
+      "timestamp_seconds": 1795828378,
+      "transaction_id": 42829,
+      "udp_bytes": 43
+    },
+    {
+      "captured_bytes": 77,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 53,
+      "kind": "dns",
+      "original_bytes": 77,
+      "payload_hex": "a74d010000010000000000000770656e64696e67046468637004746573740000010001",
+      "protocol": 17,
+      "question": "pending.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 58798,
+      "timestamp_microseconds": 533901,
+      "timestamp_seconds": 1795828379,
+      "transaction_id": 42829,
+      "udp_bytes": 43
+    },
+    {
+      "captured_bytes": 77,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 54,
+      "kind": "dns",
+      "original_bytes": 77,
+      "payload_hex": "a74d010000010000000000000770656e64696e67046468637004746573740000010001",
+      "protocol": 17,
+      "question": "pending.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 58798,
+      "timestamp_microseconds": 533831,
+      "timestamp_seconds": 1795828381,
+      "transaction_id": 42829,
+      "udp_bytes": 43
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 55,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 573825,
+      "timestamp_seconds": 1795828383,
+      "udp_bytes": 316,
+      "xid": 1638471519,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 56,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 564381,
+      "timestamp_seconds": 1795828385,
+      "udp_bytes": 316,
+      "xid": 1638471519,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 57,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 595138,
+      "timestamp_seconds": 1795828389,
+      "udp_bytes": 316,
+      "xid": 1638471519,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 58,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 603143,
+      "timestamp_seconds": 1795828393,
+      "udp_bytes": 316,
+      "xid": 1638471519,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 59,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 593040,
+      "timestamp_seconds": 1795828394,
+      "udp_bytes": 316,
+      "xid": 1638471519,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 60,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 592772,
+      "timestamp_seconds": 1795828396,
+      "udp_bytes": 316,
+      "xid": 1638471519,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 61,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 592477,
+      "timestamp_seconds": 1795828399,
+      "udp_bytes": 316,
+      "xid": 1638471519,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 62,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 592252,
+      "timestamp_seconds": 1795828403,
+      "udp_bytes": 316,
+      "xid": 1638471519,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 63,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 602848,
+      "timestamp_seconds": 1795828405,
+      "udp_bytes": 316,
+      "xid": 1048504176,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 64,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 213127,
+      "timestamp_seconds": 1795828406,
+      "udp_bytes": 316,
+      "xid": 4074435702,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 65,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 213412,
+      "timestamp_seconds": 1795828406,
+      "udp_bytes": 294,
+      "xid": 4074435702,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 66,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 216357,
+      "timestamp_seconds": 1795828406,
+      "udp_bytes": 316,
+      "xid": 4074435702,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 67,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 216479,
+      "timestamp_seconds": 1795828406,
+      "udp_bytes": 294,
+      "xid": 4074435702,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 68,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 2103,
+      "timestamp_seconds": 1795828407
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 69,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 1861,
+      "timestamp_seconds": 1795828408
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 70,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 1879,
+      "timestamp_seconds": 1795828409
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 71,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 1835,
+      "timestamp_seconds": 1795828411
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 72,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 1651,
+      "timestamp_seconds": 1795828413
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 73,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 112184,
+      "timestamp_seconds": 1795828413
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 74,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 112347,
+      "timestamp_seconds": 1795828413
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 75,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "6434343135623565306130303632633032623761313766363861346533383131",
+      "payload_text": "d4415b5e0a0062c02b7a17f68a4e3811",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 54026,
+      "timestamp_microseconds": 112839,
+      "timestamp_seconds": 1795828413,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 54026,
+      "ether_type": "0800",
+      "index": 76,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "7d2e038f80fe26c3e68db26c1a83f2dd75c9445d7fcf0758000b0e88ef8afc33",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 113020,
+      "timestamp_seconds": 1795828413,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 77,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 77,
+      "kind": "dns",
+      "original_bytes": 77,
+      "payload_hex": "b88b010000010000000000000770656e64696e67046468637004746573740000010001",
+      "protocol": 17,
+      "question": "pending.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 56721,
+      "timestamp_microseconds": 153149,
+      "timestamp_seconds": 1795828413,
+      "transaction_id": 47243,
+      "udp_bytes": 43
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 78,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "ca8201000001000000000000256c6976652d6434343135623565306130303632633032623761313766363861346533383131046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-d4415b5e0a0062c02b7a17f68a4e3811.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 6899,
+      "timestamp_microseconds": 381790,
+      "timestamp_seconds": 1795828413,
+      "transaction_id": 51842,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 6899,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 79,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "ca8281800001000100000000256c6976652d6434343135623565306130303632633032623761313766363861346533383131046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-d4415b5e0a0062c02b7a17f68a4e3811.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 382000,
+      "timestamp_seconds": 1795828413,
+      "transaction_id": 51842,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 77,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 80,
+      "kind": "dns",
+      "original_bytes": 77,
+      "payload_hex": "b88b010000010000000000000770656e64696e67046468637004746573740000010001",
+      "protocol": 17,
+      "question": "pending.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 56721,
+      "timestamp_microseconds": 201652,
+      "timestamp_seconds": 1795828414,
+      "transaction_id": 47243,
+      "udp_bytes": 43
+    },
+    {
+      "captured_bytes": 77,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 81,
+      "kind": "dns",
+      "original_bytes": 77,
+      "payload_hex": "b88b010000010000000000000770656e64696e67046468637004746573740000010001",
+      "protocol": 17,
+      "question": "pending.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 56721,
+      "timestamp_microseconds": 201562,
+      "timestamp_seconds": 1795828415,
+      "transaction_id": 47243,
+      "udp_bytes": 43
+    },
+    {
+      "captured_bytes": 77,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 82,
+      "kind": "dns",
+      "original_bytes": 77,
+      "payload_hex": "b88b010000010000000000000770656e64696e67046468637004746573740000010001",
+      "protocol": 17,
+      "question": "pending.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 56721,
+      "timestamp_microseconds": 201404,
+      "timestamp_seconds": 1795828417,
+      "transaction_id": 47243,
+      "udp_bytes": 43
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 83,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 241321,
+      "timestamp_seconds": 1795828420,
+      "udp_bytes": 316,
+      "xid": 2356293984,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 292,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 84,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 6,
+      "options": [
+        {
+          "code": 53,
+          "hex": "06",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        }
+      ],
+      "original_bytes": 292,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 241659,
+      "timestamp_seconds": 1795828420,
+      "udp_bytes": 258,
+      "xid": 2356293984,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 85,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 242634,
+      "timestamp_seconds": 1795828420,
+      "udp_bytes": 316,
+      "xid": 1279208197,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 86,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 242755,
+      "timestamp_seconds": 1795828420,
+      "udp_bytes": 294,
+      "xid": 1279208197,
+      "yiaddr": "10.0.2.16"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 87,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a000210",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 242916,
+      "timestamp_seconds": 1795828420,
+      "udp_bytes": 316,
+      "xid": 1279208197,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 88,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 243011,
+      "timestamp_seconds": 1795828420,
+      "udp_bytes": 294,
+      "xid": 1279208197,
+      "yiaddr": "10.0.2.16"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 89,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.16",
+      "timestamp_microseconds": 731063,
+      "timestamp_seconds": 1795828420
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 90,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.16",
+      "timestamp_microseconds": 730971,
+      "timestamp_seconds": 1795828421
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 91,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.16",
+      "timestamp_microseconds": 530803,
+      "timestamp_seconds": 1795828423
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 92,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.16",
+      "source_mac": "525400123456",
+      "target": "10.0.2.16",
+      "timestamp_microseconds": 550680,
+      "timestamp_seconds": 1795828425
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 93,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.16",
+      "source_mac": "525400123456",
+      "target": "10.0.2.16",
+      "timestamp_microseconds": 550535,
+      "timestamp_seconds": 1795828427
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 94,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.16",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 700600,
+      "timestamp_seconds": 1795828427
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 95,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.16",
+      "timestamp_microseconds": 700768,
+      "timestamp_seconds": 1795828427
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 96,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "6434343135623565306130303632633032623761313766363861346533383131",
+      "payload_text": "d4415b5e0a0062c02b7a17f68a4e3811",
+      "protocol": 17,
+      "source": "10.0.2.16",
+      "source_mac": "525400123456",
+      "source_port": 54027,
+      "timestamp_microseconds": 700860,
+      "timestamp_seconds": 1795828427,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.16",
+      "destination_mac": "525400123456",
+      "destination_port": 54027,
+      "ether_type": "0800",
+      "index": 97,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "57e05b9f31e9cdbb995094009e402bf275e8ca65d186671cec28d269bc791f20",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 700982,
+      "timestamp_seconds": 1795828427,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 98,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "478f01000001000000000000256c6976652d6434343135623565306130303632633032623761313766363861346533383131046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-d4415b5e0a0062c02b7a17f68a4e3811.dhcp.test",
+      "source": "10.0.2.16",
+      "source_mac": "525400123456",
+      "source_port": 53861,
+      "timestamp_microseconds": 60611,
+      "timestamp_seconds": 1795828428,
+      "transaction_id": 18319,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.16",
+      "destination_mac": "525400123456",
+      "destination_port": 53861,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 99,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "478f81800001000100000000256c6976652d6434343135623565306130303632633032623761313766363861346533383131046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-d4415b5e0a0062c02b7a17f68a4e3811.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 60825,
+      "timestamp_seconds": 1795828428,
+      "transaction_id": 18319,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 100,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 272732,
+      "timestamp_seconds": 1795828428,
+      "udp_bytes": 316,
+      "xid": 1787074981,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 101,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 272935,
+      "timestamp_seconds": 1795828428,
+      "udp_bytes": 294,
+      "xid": 1787074981,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 102,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 275775,
+      "timestamp_seconds": 1795828428,
+      "udp_bytes": 316,
+      "xid": 1787074981,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 103,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 275865,
+      "timestamp_seconds": 1795828428,
+      "udp_bytes": 294,
+      "xid": 1787074981,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 104,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 560633,
+      "timestamp_seconds": 1795828428
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 105,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 460323,
+      "timestamp_seconds": 1795828430
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 106,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 860283,
+      "timestamp_seconds": 1795828431
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 107,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 860607,
+      "timestamp_seconds": 1795828433
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 108,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 860621,
+      "timestamp_seconds": 1795828435
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 109,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 970524,
+      "timestamp_seconds": 1795828435
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 110,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 970725,
+      "timestamp_seconds": 1795828435
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 111,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "3132656330663538393236326138383338383137353335353535623663343433",
+      "payload_text": "12ec0f589262a8838817535555b6c443",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 55499,
+      "timestamp_microseconds": 971167,
+      "timestamp_seconds": 1795828435,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 55499,
+      "ether_type": "0800",
+      "index": 112,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "7a78e4221d78313e489edae37d16ef0cab0e8800183b3ed1792125a44b81e6a8",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 971417,
+      "timestamp_seconds": 1795828435,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 113,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "3d4501000001000000000000256c6976652d3132656330663538393236326138383338383137353335353535623663343433046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-12ec0f589262a8838817535555b6c443.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 45255,
+      "timestamp_microseconds": 241303,
+      "timestamp_seconds": 1795828436,
+      "transaction_id": 15685,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 45255,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 114,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "3d4581800001000100000000256c6976652d3132656330663538393236326138383338383137353335353535623663343433046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-12ec0f589262a8838817535555b6c443.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 241703,
+      "timestamp_seconds": 1795828436,
+      "transaction_id": 15685,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 115,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 280526,
+      "timestamp_seconds": 1795828442,
+      "udp_bytes": 316,
+      "xid": 3456442653,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 116,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 269629,
+      "timestamp_seconds": 1795828444,
+      "udp_bytes": 316,
+      "xid": 3456442653,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 117,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 279182,
+      "timestamp_seconds": 1795828448,
+      "udp_bytes": 316,
+      "xid": 3456442653,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "10.0.2.15",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 118,
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 289047,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 316,
+      "xid": 3456442653,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 119,
+      "issuer": "10.0.2.3",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000203",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.3",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 289342,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 294,
+      "xid": 3456442653,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 120,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 850577,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 316,
+      "xid": 1178433548,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 121,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 850830,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 294,
+      "xid": 1178433548,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 122,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 853142,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 316,
+      "xid": 1178433548,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 334,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 123,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "duplicate": true,
+          "hex": "00000024",
+          "length": 4
+        }
+      ],
+      "original_bytes": 334,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 853349,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 300,
+      "xid": 1178433548,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 331,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 124,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "malformed_option": true,
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 331,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 895678,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 297,
+      "xid": 1178433548,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 125,
+      "issuer": "10.0.2.4",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000204",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.4",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 895722,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 294,
+      "xid": 1178433548,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 126,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 895724,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 294,
+      "xid": 1178433614,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 127,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 895725,
+      "timestamp_seconds": 1795828452,
+      "udp_bytes": 294,
+      "xid": 1178433548,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 128,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 738980,
+      "timestamp_seconds": 1795828453
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 129,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 638601,
+      "timestamp_seconds": 1795828455
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 130,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 938523,
+      "timestamp_seconds": 1795828456
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 131,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 938535,
+      "timestamp_seconds": 1795828458
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 132,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 938473,
+      "timestamp_seconds": 1795828460
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 133,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 48759,
+      "timestamp_seconds": 1795828461
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 134,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 49243,
+      "timestamp_seconds": 1795828461
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 135,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "3036373164323034633534666265313832363438633335616439343365316465",
+      "payload_text": "0671d204c54fbe182648c35ad943e1de",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 58360,
+      "timestamp_microseconds": 49661,
+      "timestamp_seconds": 1795828461,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 58360,
+      "ether_type": "0800",
+      "index": 136,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "2513a91657314b8da71c1490fe9bdc0416c2e6a9e2d05af742e6030935411c12",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 50510,
+      "timestamp_seconds": 1795828461,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 137,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "7b8601000001000000000000256c6976652d3036373164323034633534666265313832363438633335616439343365316465046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-0671d204c54fbe182648c35ad943e1de.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 28232,
+      "timestamp_microseconds": 319221,
+      "timestamp_seconds": 1795828461,
+      "transaction_id": 31622,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 28232,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 138,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "7b8681800001000100000000256c6976652d3036373164323034633534666265313832363438633335616439343365316465046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-0671d204c54fbe182648c35ad943e1de.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 319430,
+      "timestamp_seconds": 1795828461,
+      "transaction_id": 31622,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 139,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 898590,
+      "timestamp_seconds": 1795828461,
+      "udp_bytes": 316,
+      "xid": 1584051379,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 140,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 898840,
+      "timestamp_seconds": 1795828461,
+      "udp_bytes": 294,
+      "xid": 1584051379,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 141,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 901791,
+      "timestamp_seconds": 1795828461,
+      "udp_bytes": 316,
+      "xid": 1584051379,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 142,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 901920,
+      "timestamp_seconds": 1795828461,
+      "udp_bytes": 294,
+      "xid": 1584051379,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 143,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 188348,
+      "timestamp_seconds": 1795828462
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 144,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.15",
+      "source_mac": "52550a000202",
+      "target": "0.0.0.0",
+      "timestamp_microseconds": 188523,
+      "timestamp_seconds": 1795828462
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 145,
+      "kind": "dhcp",
+      "message_type": 4,
+      "options": [
+        {
+          "code": 53,
+          "hex": "04",
+          "length": 1
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 188975,
+      "timestamp_seconds": 1795828462,
+      "udp_bytes": 316,
+      "xid": 1930915323,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 146,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 802684,
+      "timestamp_seconds": 1795828462,
+      "udp_bytes": 316,
+      "xid": 4050391208,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 147,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 802904,
+      "timestamp_seconds": 1795828462,
+      "udp_bytes": 294,
+      "xid": 4050391208,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 148,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 805746,
+      "timestamp_seconds": 1795828462,
+      "udp_bytes": 316,
+      "xid": 4050391208,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 149,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 806429,
+      "timestamp_seconds": 1795828462,
+      "udp_bytes": 294,
+      "xid": 4050391208,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 150,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 498245,
+      "timestamp_seconds": 1795828463
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 151,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.15",
+      "source_mac": "52550a000202",
+      "target": "0.0.0.0",
+      "timestamp_microseconds": 498769,
+      "timestamp_seconds": 1795828463
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 152,
+      "kind": "dhcp",
+      "message_type": 4,
+      "options": [
+        {
+          "code": 53,
+          "hex": "04",
+          "length": 1
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 499345,
+      "timestamp_seconds": 1795828463,
+      "udp_bytes": 316,
+      "xid": 1070866379,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 153,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 302664,
+      "timestamp_seconds": 1795828473,
+      "udp_bytes": 316,
+      "xid": 3460555504,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 154,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 308237,
+      "timestamp_seconds": 1795828473,
+      "udp_bytes": 294,
+      "xid": 3460555504,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 155,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 308906,
+      "timestamp_seconds": 1795828473,
+      "udp_bytes": 316,
+      "xid": 3460555504,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 156,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 309203,
+      "timestamp_seconds": 1795828473,
+      "udp_bytes": 294,
+      "xid": 3460555504,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 157,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 397486,
+      "timestamp_seconds": 1795828473
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 158,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 149047,
+      "timestamp_seconds": 1795828475
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 159,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 250297,
+      "timestamp_seconds": 1795828476
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 160,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 252069,
+      "timestamp_seconds": 1795828478
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 161,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 247386,
+      "timestamp_seconds": 1795828480
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 162,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 357593,
+      "timestamp_seconds": 1795828480
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 163,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 357781,
+      "timestamp_seconds": 1795828480
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 164,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "3435316333646638656561633963323464373665316339393830316435666137",
+      "payload_text": "451c3df8eeac9c24d76e1c99801d5fa7",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 63568,
+      "timestamp_microseconds": 358041,
+      "timestamp_seconds": 1795828480,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 63568,
+      "ether_type": "0800",
+      "index": 165,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "f8c02ec14ad48c7ce02d7b6120d7a4173a8fc2906c53178a2e9f04661a80e357",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 358992,
+      "timestamp_seconds": 1795828480,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 166,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "e5cb01000001000000000000256c6976652d3435316333646638656561633963323464373665316339393830316435666137046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-451c3df8eeac9c24d76e1c99801d5fa7.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 35848,
+      "timestamp_microseconds": 628678,
+      "timestamp_seconds": 1795828480,
+      "transaction_id": 58827,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 35848,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 167,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "e5cb81800001000100000000256c6976652d3435316333646638656561633963323464373665316339393830316435666137046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-451c3df8eeac9c24d76e1c99801d5fa7.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 629298,
+      "timestamp_seconds": 1795828480,
+      "transaction_id": 58827,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 168,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 232249,
+      "timestamp_seconds": 1795828481,
+      "udp_bytes": 316,
+      "xid": 1509821007,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 169,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 232677,
+      "timestamp_seconds": 1795828481,
+      "udp_bytes": 294,
+      "xid": 1509821007,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 170,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 235023,
+      "timestamp_seconds": 1795828481,
+      "udp_bytes": 316,
+      "xid": 1509821007,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 171,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 235212,
+      "timestamp_seconds": 1795828481,
+      "udp_bytes": 294,
+      "xid": 1509821007,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 172,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 26931,
+      "timestamp_seconds": 1795828482
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 173,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 627800,
+      "timestamp_seconds": 1795828483
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 174,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 228279,
+      "timestamp_seconds": 1795828485
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 175,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 228330,
+      "timestamp_seconds": 1795828487
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 176,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 269843,
+      "timestamp_seconds": 1795828489
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 177,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 387078,
+      "timestamp_seconds": 1795828489
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 178,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 387349,
+      "timestamp_seconds": 1795828489
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 179,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "3261366134303430363566376564643039353838323233323231393963636264",
+      "payload_text": "2a6a404065f7edd0958822322199ccbd",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 53285,
+      "timestamp_microseconds": 388473,
+      "timestamp_seconds": 1795828489,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 53285,
+      "ether_type": "0800",
+      "index": 180,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "ac58524b6cf3dc2d192887762c7677e3585cf50a97faae04956184912c75b45e",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 390298,
+      "timestamp_seconds": 1795828489,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 181,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "e53201000001000000000000256c6976652d3261366134303430363566376564643039353838323233323231393963636264046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-2a6a404065f7edd0958822322199ccbd.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 25798,
+      "timestamp_microseconds": 657892,
+      "timestamp_seconds": 1795828489,
+      "transaction_id": 58674,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 25798,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 182,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "e53281800001000100000000256c6976652d3261366134303430363566376564643039353838323233323231393963636264046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-2a6a404065f7edd0958822322199ccbd.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 658165,
+      "timestamp_seconds": 1795828489,
+      "transaction_id": 58674,
+      "udp_bytes": 89
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 183,
+      "kind": "dhcp",
+      "message_type": 1,
+      "options": [
+        {
+          "code": 53,
+          "hex": "01",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 836325,
+      "timestamp_seconds": 1795828489,
+      "udp_bytes": 316,
+      "xid": 3774520385,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 184,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 2,
+      "options": [
+        {
+          "code": 53,
+          "hex": "02",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 837129,
+      "timestamp_seconds": 1795828489,
+      "udp_bytes": 294,
+      "xid": 3774520385,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 350,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "ffffffffffff",
+      "destination_port": 67,
+      "ether_type": "0800",
+      "index": 185,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 3,
+      "options": [
+        {
+          "code": 53,
+          "hex": "03",
+          "length": 1
+        },
+        {
+          "code": 57,
+          "hex": "0240",
+          "length": 2
+        },
+        {
+          "code": 50,
+          "hex": "0a00020f",
+          "length": 4
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 55,
+          "hex": "01031c06",
+          "length": 4
+        }
+      ],
+      "original_bytes": 350,
+      "protocol": 17,
+      "source": "0.0.0.0",
+      "source_mac": "525400123456",
+      "source_port": 68,
+      "timestamp_microseconds": 839437,
+      "timestamp_seconds": 1795828489,
+      "udp_bytes": 316,
+      "xid": 3774520385,
+      "yiaddr": "0.0.0.0"
+    },
+    {
+      "captured_bytes": 328,
+      "ciaddr": "0.0.0.0",
+      "destination": "255.255.255.255",
+      "destination_mac": "525400123456",
+      "destination_port": 68,
+      "ether_type": "0800",
+      "index": 186,
+      "issuer": "10.0.2.2",
+      "kind": "dhcp",
+      "message_type": 5,
+      "options": [
+        {
+          "code": 53,
+          "hex": "05",
+          "length": 1
+        },
+        {
+          "code": 54,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 1,
+          "hex": "ffffff00",
+          "length": 4
+        },
+        {
+          "code": 3,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 6,
+          "hex": "0a000202",
+          "length": 4
+        },
+        {
+          "code": 51,
+          "hex": "00000024",
+          "length": 4
+        },
+        {
+          "code": 58,
+          "hex": "0000000e",
+          "length": 4
+        },
+        {
+          "code": 59,
+          "hex": "00000018",
+          "length": 4
+        }
+      ],
+      "original_bytes": 328,
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 67,
+      "timestamp_microseconds": 839558,
+      "timestamp_seconds": 1795828489,
+      "udp_bytes": 294,
+      "xid": 3774520385,
+      "yiaddr": "10.0.2.15"
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 187,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 26368,
+      "timestamp_seconds": 1795828490
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 188,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 836719,
+      "timestamp_seconds": 1795828491
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 189,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "0.0.0.0",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 437747,
+      "timestamp_seconds": 1795828493
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 190,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 450212,
+      "timestamp_seconds": 1795828495
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 191,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 456265,
+      "timestamp_seconds": 1795828497
+    },
+    {
+      "captured_bytes": 42,
+      "destination_mac": "ffffffffffff",
+      "ether_type": "0806",
+      "index": 192,
+      "kind": "arp",
+      "opcode": 1,
+      "original_bytes": 42,
+      "sender": "10.0.2.15",
+      "source_mac": "525400123456",
+      "target": "10.0.2.2",
+      "timestamp_microseconds": 576743,
+      "timestamp_seconds": 1795828497
+    },
+    {
+      "captured_bytes": 60,
+      "destination_mac": "525400123456",
+      "ether_type": "0806",
+      "index": 193,
+      "kind": "arp",
+      "opcode": 2,
+      "original_bytes": 60,
+      "sender": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "target": "10.0.2.15",
+      "timestamp_microseconds": 577380,
+      "timestamp_seconds": 1795828497
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 3333,
+      "ether_type": "0800",
+      "index": 194,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "6366643865323661303462306333653062356532376135643861646164653464",
+      "payload_text": "cfd8e26a04b0c3e0b5e27a5d8adade4d",
+      "protocol": 17,
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 55995,
+      "timestamp_microseconds": 578567,
+      "timestamp_seconds": 1795828497,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 74,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 55995,
+      "ether_type": "0800",
+      "index": 195,
+      "kind": "application_udp",
+      "original_bytes": 74,
+      "payload_hex": "c617bd5780c476451d10741e0c4f4a34ba6654d25168f586fa8f7bbbbe604300",
+      "protocol": 17,
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 3333,
+      "timestamp_microseconds": 581102,
+      "timestamp_seconds": 1795828497,
+      "udp_bytes": 40
+    },
+    {
+      "captured_bytes": 107,
+      "destination": "10.0.2.2",
+      "destination_mac": "52550a000202",
+      "destination_port": 53,
+      "ether_type": "0800",
+      "flags": 256,
+      "index": 196,
+      "kind": "dns",
+      "original_bytes": 107,
+      "payload_hex": "d56201000001000000000000256c6976652d6366643865323661303462306333653062356532376135643861646164653464046468637004746573740000010001",
+      "protocol": 17,
+      "question": "live-cfd8e26a04b0c3e0b5e27a5d8adade4d.dhcp.test",
+      "source": "10.0.2.15",
+      "source_mac": "525400123456",
+      "source_port": 41846,
+      "timestamp_microseconds": 927693,
+      "timestamp_seconds": 1795828497,
+      "transaction_id": 54626,
+      "udp_bytes": 73
+    },
+    {
+      "captured_bytes": 123,
+      "destination": "10.0.2.15",
+      "destination_mac": "525400123456",
+      "destination_port": 41846,
+      "ether_type": "0800",
+      "flags": 33152,
+      "index": 197,
+      "kind": "dns",
+      "original_bytes": 123,
+      "payload_hex": "d56281800001000100000000256c6976652d6366643865323661303462306333653062356532376135643861646164653464046468637004746573740000010001c00c000100010000003c00040a000202",
+      "protocol": 17,
+      "question": "live-cfd8e26a04b0c3e0b5e27a5d8adade4d.dhcp.test",
+      "source": "10.0.2.2",
+      "source_mac": "52550a000202",
+      "source_port": 53,
+      "timestamp_microseconds": 928234,
+      "timestamp_seconds": 1795828497,
+      "transaction_id": 54626,
+      "udp_bytes": 89
+    }
+  ]
+}

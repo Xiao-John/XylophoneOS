@@ -1,0 +1,51 @@
+{
+  "asan_options": "detect_leaks=0",
+  "guest_qualification": "not_run",
+  "inputs": {
+    "scripts/lwip_service_build.py": "b7ee87714013ef8ce3e8e8ef9511b7b6cd3cf80438f485cb0ad3f096413db76a",
+    "src/ports/lwip/include/lwipopts.h": "3c591d994320ade25991e112eb3bd6650d9a801f0c601f80148a523ed84a42c5",
+    "src/ports/lwip/patches/0001_dns_reply_validation.patch": "d2b61475f66ff6a2b7e858db135b3f2c8586bf8d7935730c47b2c1da265d4ccb",
+    "src/ports/lwip/patches/0002_dns_bounded_entropy.patch": "ab5fd751ff436224e43a7968447889db5d25e7e0b0b5dc85949fbeeca954ce4b",
+    "src/ports/lwip/patches/0003_dns_lifecycle.patch": "ad37721e5938845ad876ef95f8c7f4ce50d3fd6fbf5c89e24fd59e1330f92dce",
+    "src/ports/lwip/patches/0004_dns_results.patch": "117774bf61ac3d5902eddbdbba6ae19096fe3917c20339ca30b650f3412cbc7e",
+    "src/ports/lwip/patches/0005_dhcp_absolute_authority.patch": "96597ed4d6723264d320f585459fb51d480e61c116a07e2ea3e403db42e097e1",
+    "src/ports/lwip/source_lock.json": "2411562bbacfa89898daf4e7136f1e229183f51b0e0edd14cabb27a96d8174df",
+    "src/shared/include/xos/net_service_abi.hpp": "8365d89889c7d8bc32318dc56c85fb6ce012aee703e779a3dc37d8a16987091f",
+    "src/user/network/dhcp_policy.cpp": "2a770673e35e706560d4ed16eed29659c624c5b12c295477817ec46dd661c75d",
+    "src/user/network/dhcp_policy.hpp": "0c55d31e166a29beb51ba8dc4b0a183400c1c917e7b93861a7f923e93f5eca03",
+    "src/user/network/egress_policy.hpp": "24a64876371a9b3557b6917cef1ba575f443bd0cb56e164afa4caaffa549f862",
+    "src/user/network/include/lwipopts.h": "5cc74b65249f84ac9fe21982d3b98779d81036d7e321e445b9fae4b628975894",
+    "src/user/network/lwip_dhcp.cpp": "51a386f25364e6413e46a116c3945b03bbcafaaa43a14ffc3cefb40e8db0e1b4",
+    "src/user/network/lwip_stack.cpp": "64c46712c1fc9347cdca0ceaed8ece496f15b422b278ff525cdf48e4977047a8",
+    "src/user/network/lwip_stack.hpp": "e465330498dbc1628742ad42c6eb4c86b91cd9a7b493b8eda146af14888f8384",
+    "src/user/network/service_core.cpp": "61e26d1ebd6c4329629d5a3690fbaea33e6bbc7a9197492ff23ded946f44abf8",
+    "src/user/network/service_core.hpp": "98c144560519709aec6019ac6acf13379795fa5a52f8ff9c7a31458b97903476",
+    "src/user/network/service_loop.hpp": "37d03baa0e32d140358f49705f19da5af48613a9a92c208edae8a2c0da020a2f",
+    "tests/fixtures/network/dhcp_stack_host.cpp": "5c4bf463391218775ea4aa5b6b159c100beb985f404e3af8e1a72b5dcf7cfb5d",
+    "tests/net_dhcp_stack_host.py": "cd9fe12dabc5af54d10b28dbb314095c98d032223f1567338ae06e7847d168e2"
+  },
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "scenarios": [
+    "renew",
+    "expire",
+    "nak_config_change",
+    "rebind_new_issuer",
+    "malformed_reply",
+    "acd_conflict",
+    "conflict_backoff_recover",
+    "request_tx_anchor",
+    "queued_arp_retirement",
+    "no_static_fallback",
+    "untransmitted_request",
+    "max_finite_lease",
+    "arp_deferred_request_anchor",
+    "initial_discover_backpressure",
+    "initial_discover_budget",
+    "initial_udp_pcb_pressure",
+    "initial_udp_pcb_budget",
+    "clock_regression"
+  ]
+}

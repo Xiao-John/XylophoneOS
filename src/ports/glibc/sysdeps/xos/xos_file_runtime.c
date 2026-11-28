@@ -429,7 +429,14 @@ begin_until (xos_u64 deadline)
 
 static int begin (void) { return begin_until (~(xos_u64) 0); }
 
-#ifndef SHARED
+#if !defined SHARED || defined XOS_PUBLIC_DYNAMIC_STARTUP
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+extern long xos_dynamic_fork_begin (void) __attribute__ ((visibility ("hidden")));
+extern long xos_dynamic_fork_prepare (xos_u64, xos_u64) __attribute__ ((visibility ("hidden")));
+extern long xos_dynamic_fork_child (xos_u64) __attribute__ ((visibility ("hidden")));
+extern long xos_dynamic_fork_finish (xos_u64, int) __attribute__ ((visibility ("hidden")));
+#endif
+
 static long
 fork_deadline_status (xos_u64 deadline)
 {
@@ -444,8 +451,12 @@ fork_error (long result)
   switch (result)
     {
     case -1: return -EPERM;
+    case -2: return -EINVAL;
     case -5: return -EAGAIN;
-    case -11: return -EBUSY;
+    case -6: case -11: case -12: return -EBUSY;
+    case -13: return -ETIMEDOUT;
+    case -15: return -ESRCH;
+    case -17: return -ENOMEM;
     case -18: return -ENOTSUP;
     default: return -EIO;
     }
@@ -457,14 +468,30 @@ fork_error (long result)
 long
 __xos_file_fork (void)
 {
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+  const long controlled = xos_dynamic_fork_begin ();
+  if (controlled != 0) return fork_error (controlled);
+#endif
   long result = begin ();
-  if (result != 0) return result;
+  if (result != 0)
+    {
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+      (void) xos_dynamic_fork_finish (0, 0);
+#endif
+      return result;
+    }
   int terminal_inherited = 0;
   for (unsigned int i = 0; i < object_limit; ++i)
     if (objects[i].references != 0)
       {
         if (objects[i].kind == kind_socket)
-          { unlock_session (); return -ENOTSUP; }
+          {
+            unlock_session ();
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+            (void) xos_dynamic_fork_finish (0, 0);
+#endif
+            return -ENOTSUP;
+          }
         if (objects[i].kind == kind_terminal) terminal_inherited = 1;
       }
 
@@ -472,6 +499,9 @@ __xos_file_fork (void)
   if (now < 0 || now > LONG_MAX - 5000000000L)
     {
       unlock_session ();
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+      (void) xos_dynamic_fork_finish (0, 0);
+#endif
       return -EIO;
     }
   const xos_u64 deadline = (xos_u64) now + 5000000000ULL;
@@ -483,6 +513,14 @@ __xos_file_fork (void)
       memset (&session, 0, sizeof (session));
       __xos_net2_after_fork ();
       if (terminal_inherited) __xos_terminal_fork_child ();
+      unlock_session ();
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+      /* The new pair is created after the memory snapshot. Only its native
+         parent/controller metadata and explicit offer can authorize adoption.
+         Failure after commit must not return a half-initialized fork child. */
+      if (xos_dynamic_fork_child (deadline) != 0) _exit (127);
+#endif
+      return 0;
     }
   else if (child < 0)
     result = fork_error (child);
@@ -502,17 +540,34 @@ __xos_file_fork (void)
             }
           while (result == -EAGAIN);
         }
-      if (result == 0)
-        result = fork_deadline_status (deadline);
-      if (result == 0)
-        {
-          const long committed = file_trap (58, (xos_u64) child, 0, 0);
-          result = committed == 0 ? child : fork_error (committed);
-        }
-      if (result < 0)
-        (void) file_trap (19, (xos_u64) child, 0, 0);
     }
   unlock_session ();
+  /* Native fork admits only one thread. Release the Files transaction before
+     controller admission and READY exchange, which may use this same session.
+     The child remains non-runnable until both ownership protocols succeed. */
+  int committed = 0;
+  if (child > 0)
+    {
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+      if (result == 0)
+        {
+          const long prepared = xos_dynamic_fork_prepare ((xos_u64) child, deadline);
+          if (prepared != 0) result = fork_error (prepared);
+        }
+#endif
+      if (result == 0) result = fork_deadline_status (deadline);
+      if (result == 0)
+        {
+          const long status = file_trap (58, (xos_u64) child, 0, 0);
+          committed = status == 0;
+          result = committed ? child : fork_error (status);
+        }
+      if (!committed) (void) file_trap (19, (xos_u64) child, 0, 0);
+    }
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+  const long ready = xos_dynamic_fork_finish (child > 0 ? (xos_u64) child : 0, committed);
+  if (committed && ready != 0) result = fork_error (ready);
+#endif
   return result;
 }
 #endif

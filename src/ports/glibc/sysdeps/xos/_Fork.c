@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <errno.h>
 #include <unistd.h>
-#ifndef SHARED
+#if !defined SHARED || defined XOS_PUBLIC_DYNAMIC_STARTUP
 # include <pthreadP.h>
 # include <sys/single_threaded.h>
 # include "xos_thread_identity.h"
@@ -14,7 +14,7 @@
 pid_t
 _Fork (void)
 {
-#ifdef SHARED
+#if defined SHARED && !defined XOS_PUBLIC_DYNAMIC_STARTUP
   __set_errno (ENOSYS);
   return -1;
 #else
@@ -46,6 +46,6 @@ _Fork (void)
 #endif
 }
 libc_hidden_def (_Fork)
-#ifdef SHARED
+#if defined SHARED && !defined XOS_PUBLIC_DYNAMIC_STARTUP
 stub_warning (_Fork)
 #endif

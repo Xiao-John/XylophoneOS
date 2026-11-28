@@ -1,0 +1,14 @@
+[
+  {
+    "case": "independent-pipes-xsh",
+    "failed_exec_ns": 20000000,
+    "successful_exec_through_new_main_ns": 5890000000,
+    "existing_generation_startup_budget_ns": 30000000000
+  },
+  {
+    "case": "independent-pipes-dash",
+    "failed_exec_ns": 20000000,
+    "successful_exec_through_new_main_ns": 5550000000,
+    "existing_generation_startup_budget_ns": 30000000000
+  }
+]

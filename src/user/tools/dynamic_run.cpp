@@ -11,9 +11,10 @@ struct exec_marker { u64 magic; u32 version, size; };
 [[gnu::section(".xos.exec"), gnu::used]] const exec_marker marker{exec_image_abi_magic, 3, sizeof(exec_marker)};
 startup_descriptor forwarded[32];
 
-i64 inherit_authority(u64 child, void*) {
+i64 inherit_authority(u64 child, void* context) {
+    const bool inherit = *static_cast<const bool*>(context);
     return sdk::syscall(sys_process_authority, child,
-                        static_cast<u64>(process_authority_mode::copy_from_caller));
+        static_cast<u64>(inherit ? process_authority_mode::copy_from_caller : process_authority_mode::clear));
 }
 u64 deadline() {
     const i64 now = sdk::syscall(sys_clock_monotonic);
@@ -142,14 +143,19 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;
     const char* const* args = nullptr;
     if (!startup_arguments(startup, args)) return failure("native startup", process_error_invalid);
-    if (startup->argc < 3 || !args[1][0] || args[1][1] || args[1][0] < '0' || args[1][0] > '3') {
-        sdk::print("usage: dynamic-run SLOT /absolute/program [args...]\n"); return 2;
+    const u32 slot_argument = startup->argc > 1 && sdk::equal(args[1], "--without-create") ? 2u : 1u;
+    bool inherit_create = slot_argument == 1;
+    if (startup->argc < slot_argument + 2 || !args[slot_argument][0] || args[slot_argument][1] ||
+        args[slot_argument][0] < '0' || args[slot_argument][0] > '3') {
+        sdk::print("usage: dynamic-run [--without-create] SLOT /absolute/program [args...]\n"); return 2;
     }
-    const u32 slot = static_cast<u32>(args[1][0] - '0');
-    if (slot >= dynamic_run_approved.count || !sdk::equal(args[2], dynamic_run_main_paths[slot]))
+    const u32 slot = static_cast<u32>(args[slot_argument][0] - '0');
+    const u32 program_argument = slot_argument + 1;
+    if (slot >= dynamic_run_approved.count || !sdk::equal(args[program_argument], dynamic_run_main_paths[slot]))
         return failure("target does not match approved slot", process_error_denied);
     sdk::spawn_options options{};
     options.prepare_child = inherit_authority;
+    options.prepare_context = &inherit_create;
     const i64 inherited = inherit_options(*startup, options);
     if (inherited) return failure("inherited stdio", inherited);
     const auto installed = dynamic::install(dynamic_run_approved, deadline());
@@ -158,11 +164,12 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
         const auto activated = dynamic::activate(slot, dynamic_run_approved.sequence, deadline());
         if (activated != dynamic::error::none) return failure("activate", static_cast<i64>(activated));
     }
-    const auto candidate = execution::inspect(args[2]);
+    const auto candidate = execution::inspect(args[program_argument]);
     if (candidate.kind != execution::candidate_kind::executable) return failure("inspect", candidate.error);
     execution::launch_diagnostic diagnostic{};
     execution::image_receipt receipt{};
-    const i64 child = execution::spawn_file_diagnosed_receipt(args[2], startup->argc - 2, args + 2,
+    const i64 child = execution::spawn_file_diagnosed_receipt(args[program_argument],
+        startup->argc - program_argument, args + program_argument,
                                                              options, diagnostic, receipt);
     if (child < 0) return failure("spawn", child);
     process_status status{};

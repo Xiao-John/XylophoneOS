@@ -1,0 +1,21 @@
+{
+  "format_version": 1,
+  "repository_id": "xos.test.distribution.only",
+  "target_profile": "xos-x86_64-glibc-p1-20261128-v1",
+  "key_epoch": 1,
+  "minimum_sequence": 1,
+  "maximum_validity_seconds": 604800,
+  "public_key_ed25519": "1bef00c3a4180ed645d939adf4c1c7014a847fa88583f0f485bea497347c9496",
+  "public_projection": {
+    "raw_report_sha256": "0d4de69b611919f9cbdf3725ce7678bbb2b003fd60f5dd0e7d523590faa2bd28",
+    "raw_bytes": 303,
+    "raw_source": "build/p1d-guest-trust/trust.json",
+    "transform": "JSON presentation and source/workspace or SDK installation prefixes only; all observed status, results, bytes digests, bounds and commands retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "development SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the development SDK"
+    },
+    "raw_report_unchanged": true
+  }
+}

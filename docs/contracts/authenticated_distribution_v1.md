@@ -25,6 +25,15 @@ Authentication and publication are separate decisions. A valid signature
 identifies the publisher and the exact intended closure. It does not confer
 execution, network access, account access or catalog publication authority.
 
+For publicly delivered installer packages, the explicit `--public-artifact`
+build option removes debug sections before packing. The original ELF and its
+receipt remain separate. Entry, the complete program header table, mapping
+properties and every mapped byte except `e_shoff`, `e_shnum` and `e_shstrndx`
+must match. Those three ELF section-table fields are recorded before and after,
+as are raw segment hashes; the first load segment includes them, so its raw
+hash need not match. The transformed artifact receives its own build receipt
+and package digest before actual guest acceptance.
+
 ## Signed bytes and bounded resolution
 
 `release.sig` is exactly 64 raw Ed25519 signature bytes. The signature covers
@@ -153,6 +162,17 @@ additional legacy control channel: it does not enumerate channels where the
 supervisor is only the owner. The real loader must still complete its READY/ACK
 exchange using the remaining existing slots. Kernel quotas, production RPC deadlines,
 admission and runtime code are unchanged by this fixture arrangement.
+
+The isolated launch profile explicitly selects a 300-second private backing
+lease with `--pumpkin-launch-probe --pumpkin-launch-storage-lease`, together
+with the anchored provisioning profile. Its profile and duration are included
+in the system build identity. The ordinary private-storage lease remains 30
+seconds, the existing desktop lease remains separate, each provisioning/Files
+exchange remains bounded to 5 seconds, and installer staging has one 120-second
+absolute deadline. A backing lease is a service lifetime, not an extension of
+an already submitted request. The installer does not renew it or replay a
+failed publication. Deployment must select an authorized backing lifetime
+that covers the intended bounded operation.
 
 The COM1 developer authority used by these integration tests is explicitly
 distinct from P1-C's production independent-UID generation provider. No test

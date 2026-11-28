@@ -2,8 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Build an isolated signed-distribution guest using the production C/B/E sources.
 
-Only this copied fixture source is instrumented. Runtime source and resource
-limits are unchanged; the recorded original/snapshot maps make this explicit.
+Only this copied fixture source is instrumented. Runtime source, kernel quotas
+and per-request deadlines are unchanged. The explicit provisioning launch
+profile selects a bounded backing-store lease for the full staging operation.
+The recorded original/snapshot maps make these choices explicit.
 """
 import argparse
 import hashlib
@@ -78,9 +80,6 @@ def main():
             '    u8 outcome = static_cast<u8>(passed);\n'
             '    if (!passed && static_cast<u8>(mode) >= 32 && static_cast<u8>(mode) <= 36)\n'
             '        outcome = distribution_failure;')
-    replace(source / 'src/user/programs/supervisor.cpp',
-            '#if XOS_PUMPKIN_NATIVE_LOGIN || XOS_PUMPKIN_CATALOG_PROBE\n',
-            '#if XOS_PUMPKIN_NATIVE_LOGIN || XOS_PUMPKIN_CATALOG_PROBE || XOS_XYPM_DISTRIBUTION_PROBE\n')
     proxy = source / 'src/user/pumpkin/generation_proxy.cpp'
     replace(proxy, '(mode < scenario::provisioning_update || mode > scenario::provisioning_new)',
             '(mode < scenario::provisioning_update || mode > scenario::provisioning_new)\n'
@@ -90,7 +89,7 @@ def main():
             "#if XOS_XYPM_DISTRIBUTION_PROBE\n        300'000'000'000\n#elif XOS_PUMPKIN_CATALOG_PROBE\n        90'000'000'000")
     builder = source / 'scripts/user_build.py'
     replace(builder, 'login_flags += ("-DXOS_PUMPKIN_PROVISIONING_STORE=1",)',
-            'login_flags += ("-DXOS_PUMPKIN_PROVISIONING_STORE=1", "-DXOS_PUMPKIN_LAUNCH_PROBE=1", '
+            'login_flags += ("-DXOS_PUMPKIN_PROVISIONING_STORE=1", '
             '"-DXOS_XYPM_DISTRIBUTION_PROBE=1")')
     replace(builder, '*([str(loader_archive)] if name == "supervisor" and pumpkin_catalog_fixture else []),',
             '*([str(loader_archive)] if name == "supervisor" and (pumpkin_catalog_fixture or pumpkin_provisioning_store) else []),')
@@ -99,11 +98,16 @@ def main():
     snapshot = inputs(source)
     system = source / 'build/system'
     command = [sys.executable, str(source / 'scripts/build.py'), '--output-dir', str(system),
-               '--pumpkin-anchored-probe', '--pumpkin-provisioning-store']
+               '--pumpkin-anchored-probe', '--pumpkin-provisioning-store',
+               '--pumpkin-launch-probe', '--pumpkin-launch-storage-lease']
     report = {'status': 'building', 'source_tree': str(original), 'source': str(source),
               'system': str(system), 'original_inputs': originals, 'overlay_inputs': overlay_hashes,
               'snapshot_inputs': snapshot, 'command': command,
-              'scope': 'dedicated developer authority guest; runtime and limits unchanged',
+              'scope': 'dedicated developer authority guest; runtime, kernel quotas and per-request deadlines unchanged',
+              'backing_lease': {'profile': 'launch_acceptance', 'duration_ns': 300_000_000_000,
+                                'default_profile_duration_ns': 30_000_000_000,
+                                'per_request_deadline_ns': 5_000_000_000,
+                                'installer_staging_deadline_ns': 120_000_000_000},
               'control_transport': {'supervisor_proxy': 'authenticated sys84 pair with PPC1 HELLO/ACK',
                                     'daemon_proxy': 'two retained successful sys81 create results; both peers authenticate owner',
                                     'supervisor_participant_enumeration_owned_before_launch': 0},

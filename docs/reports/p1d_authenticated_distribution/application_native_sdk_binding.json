@@ -1,0 +1,18 @@
+{
+  "sdk_manifest_sha256": "59389b0c5d54e955a1f213e2730b94eda4e42d772a9cddb3dfc6e7fc8e1d6c9c",
+  "sdk_tree_sha256": "49dd69bd649cdcc2db43c4056890da8d4741b1f8e095faad349fca005a8e3908",
+  "target": "x86_64-elf",
+  "abi": 1,
+  "public_projection": {
+    "raw_report_sha256": "6ff8414dd8c4cf105eecaad4215a60215cc55cf246b6fb32eb8752977cf04b12",
+    "raw_bytes": 223,
+    "raw_source": "build/p1d-native-sdk-binding.json",
+    "transform": "JSON presentation and source/workspace or SDK installation prefixes only; all observed status, results, bytes digests, bounds and commands retained",
+    "templates": {
+      "XOS_TOOLCHAIN_HOME": "installed SDK cross-tool prefix",
+      "XOS_SDK_TOOL_PREFIX": "development SDK executable wrapper prefix",
+      "XOS_SDK_WORKSPACE": "workspace mounted inside the development SDK"
+    },
+    "raw_report_unchanged": true
+  }
+}

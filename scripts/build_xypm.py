@@ -5,9 +5,83 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import struct
+import subprocess
 from xos_app import build, init_project, pack
-from xypm_format import DEFAULT_PROFILE,canonical,load_json,sha_file,require
+from xypm_format import DEFAULT_PROFILE,canonical,load_json,sha_file,require,inspect_elf
 ROOT=Path(__file__).resolve().parents[1]
+
+def loadable_identity(path, normalize_section_table_header=False):
+    data = path.read_bytes()
+    require(data[:7] == b'\x7fELF\x02\x01\x01', 'public installer is not ELF64 little-endian')
+    entry, offset = struct.unpack_from('<QQ', data, 24)
+    stride, count = struct.unpack_from('<HH', data, 54)
+    require(stride == 56 and offset + stride * count <= len(data), 'invalid public installer headers')
+    # GNU's first PT_LOAD contains the ELF file header. Debug removal updates
+    # only e_shoff/e_shnum/e_shstrndx in that header; none is a loading input.
+    # Compare every remaining mapped byte, the entry and the entire PHDR table.
+    compared = bytearray(data)
+    if normalize_section_table_header:
+        compared[40:48] = bytes(8)
+        compared[60:64] = bytes(4)
+    segments = []
+    for ordinal in range(count):
+        kind, flags, start, address, physical, size, memory, alignment = struct.unpack_from(
+            '<IIQQQQQQ', data, offset + ordinal * stride)
+        if kind == 1:
+            require(start + size <= len(data), 'invalid public installer load bytes')
+            segments.append({'flags': flags, 'file_offset': start, 'address': address, 'physical': physical,
+                             'file_size': size, 'memory_size': memory, 'alignment': alignment,
+                             'sha256': hashlib.sha256(compared[start:start + size]).hexdigest()})
+    return {'entry': entry, 'header_sha256': hashlib.sha256(compared[:64]).hexdigest(),
+            'program_headers_sha256': hashlib.sha256(data[offset:offset + stride * count]).hexdigest(),
+            'segments': segments}
+
+
+def section_table_header(path):
+    data = path.read_bytes()
+    return {'offset': struct.unpack_from('<Q', data, 40)[0],
+            'count': struct.unpack_from('<H', data, 60)[0],
+            'string_table_index': struct.unpack_from('<H', data, 62)[0]}
+
+
+def public_artifact(project, receipt):
+    """Remove debug paths before packaging and retain exact load-image proof."""
+    executable = project / receipt['output']
+    original = executable.with_name(executable.stem + '.unstripped.elf')
+    stripped = executable.with_name(executable.stem + '.public.elf')
+    tool = shutil.which('x86_64-elf-objcopy')
+    require(tool is not None, 'SDK objcopy is required for a public artifact')
+    before = loadable_identity(executable)
+    compared = loadable_identity(executable, True)
+    original_section_table = section_table_header(executable)
+    subprocess.run([tool, '--strip-debug', str(executable), str(stripped)], check=True)
+    require(loadable_identity(stripped, True) == compared,
+            'debug stripping changed executable bytes outside the ELF section-table header fields')
+    layout = inspect_elf(stripped)
+    original_receipt = project / 'build/build_receipt.unstripped.json'
+    original_receipt.write_bytes(canonical(receipt))
+    original_hash = sha_file(executable)
+    executable.replace(original)
+    stripped.replace(executable)
+    receipt['post_link'] = {
+        'operation': 'strip_debug_only', 'recipe_sha256': sha_file(__file__),
+        'tool': 'x86_64-elf-objcopy', 'tool_sha256': sha_file(tool),
+        'command': ['x86_64-elf-objcopy', '--strip-debug', '${XOS_UNSTRIPPED_ELF}', '${XOS_PUBLIC_ELF}'],
+        'original_output_sha256': original_hash,
+        'original_receipt_sha256': sha_file(original_receipt),
+        'loadable_identity_before': before,
+        'loadable_identity_after': loadable_identity(executable),
+        'section_table_header_before': original_section_table,
+        'section_table_header_after': section_table_header(executable),
+        'allowed_header_fields': ['e_shoff', 'e_shnum', 'e_shstrndx'],
+        'equal_except_section_table_header_fields': compared,
+    }
+    receipt['output_sha256'] = sha_file(executable)
+    receipt['elf_check'] = layout
+    (project / 'build/build_receipt.json').write_bytes(canonical(receipt))
+    return receipt
+
 
 def native_glibc_inputs():
     files = {
@@ -53,6 +127,8 @@ def main():
     parser.add_argument('--fault-injection',action='store_true',help='build a test-only interruption fixture')
     parser.add_argument('--openssl-build',type=Path,help='verified target OpenSSL build output')
     parser.add_argument('--repository-trust',type=Path,help='independently provisioned Ed25519 bootstrap')
+    parser.add_argument('--public-artifact',action='store_true',
+                        help='strip debug paths before packing, preserving and proving the complete load image')
     parser.add_argument('--provisioning-source',type=Path,default=ROOT,
                         help='matching Pumpkin source with explicit publisher_checkpoint support')
     args=parser.parse_args()
@@ -95,6 +171,7 @@ def main():
     inputs = {'source':sha_file(source),'native_header':sha_file(native_header),'journal_header':sha_file(journal_header),'transaction_header':sha_file(transaction_header),'recovery_source':sha_file(recovery_source),'repository_headers':{path.name:sha_file(path) for path in repository_headers},'fault_injection':args.fault_injection,'text_header':sha_file(ROOT/'src/user/include/xos/text.hpp'),'width_data_header':sha_file(ROOT/'src/user/include/xos/unicode_width_data.hpp'),'build_script':sha_file(__file__),'builder':sha_file(ROOT/'scripts/xos_app.py'),'sdk_profile':profile}
     if glibc:
         inputs['glibc_native_sources'] = {name: sha_file(path) for name, path in native.items()}
+    inputs['public_artifact'] = args.public_artifact
     if authenticated:
         inputs['authenticated_distribution'] = {name:sha_file(path) for name,path in extra.items()}
         inputs['repository_bootstrap'] = trust
@@ -174,6 +251,8 @@ def main():
         (project/'xos_app.json').write_bytes(canonical(app))
     receipt=(build(project,args.sdk,profile,archives=('src/vendor/libcrypto.a',),gc_sections=True)
              if authenticated else build(project,args.sdk,profile))
+    if args.public_artifact:
+        receipt = public_artifact(project, receipt)
     output=folder/'xypm.xpk'
     if output.exists():output.unlink()
     result=pack(project,args.sdk,profile,output)

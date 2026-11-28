@@ -1,0 +1,121 @@
+{
+  "status": "passed",
+  "stage": "P1-D",
+  "source_recovery_base": "6332527ab64e92371266363f41f3247717a3cac8",
+  "definition": "authenticated official repository, bounded dependency resolution, immutable approved generation install and actual GNU application execution",
+  "guest_suites": {
+    "test": {
+      "raw_report_sha256": "7a51d09b84295ae5c09d6ee2bea5e34c197487a1c3d6948d4b48f53bbe17b9a8",
+      "boots": 5,
+      "installer_processes": 12,
+      "gnu_application_executions": 5,
+      "scenarios": {
+        "scenario_32": {
+          "status": "passed",
+          "authority_revision": 2,
+          "application_stdout_sha256": "66306cfde00b5e373e2c1d5ec90e7b9d958cfcbd2e78e25e1ad82a4419ebc7e3"
+        },
+        "scenario_33": {
+          "status": "passed",
+          "authority_revision": 2,
+          "application_stdout_sha256": "66306cfde00b5e373e2c1d5ec90e7b9d958cfcbd2e78e25e1ad82a4419ebc7e3"
+        },
+        "scenario_34": {
+          "status": "passed",
+          "authority_revision": 2,
+          "application_stdout_sha256": "66306cfde00b5e373e2c1d5ec90e7b9d958cfcbd2e78e25e1ad82a4419ebc7e3"
+        },
+        "scenario_35": {
+          "status": "passed",
+          "authority_revision": 3,
+          "application_stdout_sha256": "40ab837d9bcfbb653d3031f03634e38120a4f76c0b37c3642025c0ad471d05f0"
+        },
+        "scenario_36": {
+          "status": "passed",
+          "authority_revision": 3,
+          "application_stdout_sha256": "40ab837d9bcfbb653d3031f03634e38120a4f76c0b37c3642025c0ad471d05f0"
+        }
+      }
+    },
+    "official": {
+      "raw_report_sha256": "473ddf90189da7eac691003f5d69d737d533c7845541dee287ca9a3df1b23c65",
+      "boots": 3,
+      "installer_processes": 3,
+      "gnu_application_executions": 3,
+      "scenarios": {
+        "scenario_32": {
+          "status": "passed",
+          "authority_revision": 2,
+          "application_stdout_sha256": "66306cfde00b5e373e2c1d5ec90e7b9d958cfcbd2e78e25e1ad82a4419ebc7e3"
+        },
+        "scenario_35": {
+          "status": "passed",
+          "authority_revision": 3,
+          "application_stdout_sha256": "40ab837d9bcfbb653d3031f03634e38120a4f76c0b37c3642025c0ad471d05f0"
+        },
+        "scenario_36": {
+          "status": "passed",
+          "authority_revision": 3,
+          "application_stdout_sha256": "40ab837d9bcfbb653d3031f03634e38120a4f76c0b37c3642025c0ad471d05f0"
+        }
+      }
+    }
+  },
+  "totals": {
+    "boots": 8,
+    "installer_processes": 15,
+    "gnu_application_executions": 8,
+    "successful_installations": 4,
+    "expected_rejections": 10,
+    "interrupted_staging": 1
+  },
+  "host_suites": {
+    "EVP_ordinary_cases": 30,
+    "EVP_ASan_UBSan_cases": 30,
+    "P3_regression_cases": 50,
+    "package_cache_regression": "XYPm_HOST_CACHE_OK"
+  },
+  "official_installer": {
+    "package_sha256": "6e2be19d6bb1cc01c680f12a86ffbd1bd3720199c1eb69e01740d9957aa0d033",
+    "elf_sha256": "017052e197a6b803c72656b1a1adc91ec2c650d1410204f694dc5d48bb27a274",
+    "build_receipt_sha256": "e1b1757eebd27cd78adac167878bac94644b724ffab65b17da7c545033db93ca",
+    "original_elf_sha256": "0846157e122b9cc25bd221588a6f288bf5194cc841b9b2ad42be8d72b4c2e4d9",
+    "strip_proof": "entry and complete program headers unchanged; only e_shoff/e_shnum/e_shstrndx may differ within mapped ELF header, all other mapped bytes identical"
+  },
+  "official_releases": [
+    {
+      "generation": 1101,
+      "sequence": 1,
+      "release_sha256": "bc9a62f84dd1a54f5f536b353f788fbd0f663ee0eb4cc8a546287279b9780b68",
+      "signature_sha256": "e2c59ab0351ea67a94dec91908e3867f7f44d43e143b59d387687cb189f71db8"
+    },
+    {
+      "generation": 1102,
+      "sequence": 2,
+      "release_sha256": "ff73a37608363d8c6e054252733e938216d8a019e96705938b88964b0aad6443",
+      "signature_sha256": "bdbd5d233a45f4de9523d3076c225a8aaec64ad4ec622d870305e04bde9eada0"
+    }
+  ],
+  "lease": {
+    "explicit_profile": "launch_acceptance",
+    "duration_ns": 300000000000,
+    "unchanged_default_ns": 30000000000,
+    "unchanged_per_request_deadline_ns": 5000000000,
+    "installer_staging_deadline_ns": 120000000000
+  },
+  "failed_run_cause": {
+    "classification": "source-and-timing inference supported by subsequent successful explicit-profile run",
+    "observation": "default-profile final PPR6 send/peer/try-send invalid at guest monotonic 33.5s; protected revision remained 1",
+    "source_chain": "30s Files private backing expiry revokes backing; daemon backing liveness failure drains accepted PPR sessions",
+    "direct_expiry_console_trace": "not observed because COM1 was detached to the exclusive proxy; failed diagnostic retained"
+  },
+  "scope_limits": [
+    "The guest uses an explicit developer COM1 authority. Independent UID provider acceptance is a separate P1-C report.",
+    "No new network downloader, automatic execution/network grant, or production deployment profile is claimed.",
+    "Unknown CAS handling is implemented; this D guest faults during immutable staging. C/E separately qualify ambiguous durable CAS outcomes.",
+    "The existing shared GNU fork ENOSYS boundary remains with separately claimed P1-K2; this D gate does not qualify fork.",
+    "Normal sync and process interruption are not evidence for arbitrary physical power loss.",
+    "Recovered results are new runs. The earlier lost local runs are not reconstructed."
+  ],
+  "historical_recovery_checkpoint": "recovery_checkpoint.json retains its original WIP_NOT_QUALIFIED state and is superseded only by this separate actual-result report"
+}

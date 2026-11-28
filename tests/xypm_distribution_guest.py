@@ -83,6 +83,9 @@ def main():
     system_bound = binding(args.system_build)
     manifest = load_json(args.system_build / 'manifest.json')
     assert manifest.get('pumpkin_provisioning_store') == 1
+    assert manifest.get('pumpkin_launch_probe') is True
+    assert manifest.get('pumpkin_launch_storage_lease') == {
+        'profile': 'launch_acceptance', 'duration_ns': 300_000_000_000}
     raw_supervisor = args.system_build / 'user_supervisor.elf'
     stripped_supervisor = args.system_build / 'user_supervisor.image.elf'
     assert loadable(raw_supervisor) == loadable(stripped_supervisor)
@@ -203,6 +206,9 @@ def main():
     report = {'status': 'failed', 'scope': 'real native guest signed distribution + GNU application execution',
               'official': args.official, 'repository_id': trust['repository_id'],
               'system': system_bound, 'sdk': sdk_bound, 'inputs': inputs,
+              'backing_lease': manifest['pumpkin_launch_storage_lease'],
+              'per_request_deadline_ns': 5_000_000_000,
+              'installer_staging_deadline_ns': 120_000_000_000,
               'authority_scope': 'explicit developer COM1 generation authority; production UID provider tested separately',
               'strip_proof': loadable(stripped_supervisor), 'cases': {}}
     disk = output / 'work.img'

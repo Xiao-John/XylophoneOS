@@ -1,0 +1,2 @@
+CLOCK_SLEEP_HOST_PASS cases=24 deadlines skew overflow failures errno remainder interruption
+CLOCK_SLEEP_HOST_PASS cases=24 deadlines skew overflow failures errno remainder interruption

@@ -11,13 +11,23 @@ static unsigned long deadlines[4];
 static unsigned waits, reads, skew_first_wait;
 long __xos_clock_test_trap (unsigned long number, unsigned long first)
 {
+  (void) first;
   if (number == 46) { ++reads; return monotonic; }
   if (number == 64) { ++reads; return realtime; }
-  assert (number == 47 && waits < 4);
-  deadlines[waits++] = first;
-  if (sleep_error) return sleep_error;
-  long delta = (long) first - monotonic;
-  monotonic = first;
+  assert (0);
+  return -1;
+}
+int __xos_sleep_until (unsigned long deadline, unsigned long *remaining)
+{
+  assert (waits < 4);
+  deadlines[waits++] = deadline;
+  if (sleep_error)
+    {
+      if (sleep_error == EINTR && remaining) *remaining = 17;
+      return sleep_error;
+    }
+  long delta = (long) deadline - monotonic;
+  monotonic = deadline;
   realtime += delta;
   if (skew_first_wait && waits == 1) realtime -= 4;
   return 0;
@@ -68,12 +78,18 @@ int main (void)
   assert (__clock_nanosleep (CLOCK_MONOTONIC, 0, &request, NULL) == EOVERFLOW);
   reset (); realtime = -5;
   assert (__clock_nanosleep (CLOCK_REALTIME, TIMER_ABSTIME, &request, NULL) == EIO);
-  reset (); sleep_error = -18;
+  reset (); sleep_error = ENOTSUP;
   assert (__clock_nanosleep (CLOCK_MONOTONIC, 0, &request, &remainder) == ENOTSUP);
-  reset (); sleep_error = -2;
+  reset (); sleep_error = EIO;
   assert (__clock_nanosleep (CLOCK_MONOTONIC, 0, &request, &remainder) == EIO);
-  reset (); sleep_error = 1;
+  reset (); sleep_error = EIO;
   assert (__clock_nanosleep (CLOCK_MONOTONIC, 0, &request, &remainder) == EIO);
   assert (errno == EDOM && remainder.tv_sec == 9 && remainder.tv_nsec == 8);
-  puts ("CLOCK_SLEEP_HOST_PASS cases=22 deadlines skew overflow failures errno remainder");
+  reset (); sleep_error = EINTR;
+  assert (__clock_nanosleep (CLOCK_MONOTONIC, 0, &request, &remainder) == EINTR);
+  assert (remainder.tv_sec == 0 && remainder.tv_nsec == 17 && errno == EDOM);
+  remainder = (struct timespec) {9, 8}; request.tv_nsec = 140;
+  assert (__clock_nanosleep (CLOCK_MONOTONIC, TIMER_ABSTIME, &request, &remainder) == EINTR);
+  assert (remainder.tv_sec == 9 && remainder.tv_nsec == 8 && errno == EDOM);
+  puts ("CLOCK_SLEEP_HOST_PASS cases=24 deadlines skew overflow failures errno remainder interruption");
 }

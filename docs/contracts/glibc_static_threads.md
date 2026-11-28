@@ -35,6 +35,11 @@
 须重新验证该换算与等待生命周期。时钟失效等同步算法无法处理的错误终止进程，
 保留真实失败。
 
+`nanosleep` / `clock_nanosleep` 的正常、绝对和相对 elapsed-time 等待，以及
+进程内按 PID/TID/sequence/deadline 定位的显式中断票据，见
+[libc 定时等待契约](libc_timed_waits.md)。该扩展复用原生 wait-word；相对中断
+返回剩余时间，绝对等待不改剩余时间输出。它不接受 pthread 取消投递。
+
 ## 明确拒绝的语义
 
 | 请求 | 结果 |

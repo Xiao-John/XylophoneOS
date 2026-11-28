@@ -347,7 +347,7 @@
       "artifact_sha256": {
         "src/ports/cpython/upstream/zlib-LICENSE": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
         "src/ports/cpython/zlib_patches/0001_xos_errno_header.patch": "da73f294389ce1ebccb101a3b50a13bb3b170946fbe101bc4aff13d8100693c8",
-        "src/ports/cpython/zlib_lock.json": "3d084526751f4b39c750411223dcc09e560c5789aae1ccbd63affb1884d915bc"
+        "src/ports/cpython/zlib_lock.json": "2207e1c58a1cd3fe55299c6669205c9625f443da46fcc6629d0a8aa0a8cd2b26"
       },
       "used_in": [
         "CPython 3.14.9 static zlib module, gzip, deflate ZIP and zipimport"

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "files": {
+    "binding.json": "59b6198c70dd2c80e4a1d547fbcb1dd7c489a91bf5c295a1b38807da9e4e4a7b",
+    "glibc_cases.log": "655af58ba43bd47e2c6cde4b4d6a353beba185e4cfd16124fc8ac4ed3342e85d",
+    "glibc_report.json": "78dee2b251b86cd847662983bf57353125b38e1dcde396219d4a51bb423e7a38",
+    "native_cases.log": "ff4f87763fcef792d332fef1bbcc2382b6f92ed3b4e00a32893bbfe4c25ebe1d",
+    "native_report.json": "7c847ca6b974ee63cc8dc854aa9e182208f6b58b0d0bb32e6340bc062c7e91e3"
+  }
+}

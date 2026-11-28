@@ -1,0 +1,13 @@
+PASS native_file_deadline ordinary
+PASS native_file_deadline expired
+PASS native_file_deadline ready
+PASS native_file_deadline timeout
+PASS native_file_deadline legacy_timeout
+PASS native_file_deadline at_deadline
+PASS native_file_deadline send_failure
+PASS native_file_deadline closed
+PASS native_file_deadline bad_magic
+PASS native_file_deadline bad_sequence
+PASS native_file_deadline bad_size
+PASS native_file_deadline bad_status
+PASS native_file_deadline bad_length

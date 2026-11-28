@@ -41,16 +41,26 @@ enum { pipe_create = 30, pipe_read = 31, pipe_write = 32, pipe_close = 33,
 enum { file_device_directory_inode = 0xfffe };
 
 static int
-lock_runtime (xos_u32 *lock)
+lock_runtime_until (xos_u32 *lock, xos_u64 deadline)
 {
-  while (__atomic_exchange_n (lock, 1, __ATOMIC_ACQUIRE) != 0)
+  for (;;)
     {
-      long result = __xos_wait_word (lock, 1, ~(xos_u64) 0);
+      if (deadline != ~(xos_u64) 0)
+        {
+          const long now = file_trap (46, 0, 0, 0);
+          if (now < 0) return -EIO;
+          if ((xos_u64) now >= deadline) return -ETIMEDOUT;
+        }
+      if (__atomic_exchange_n (lock, 1, __ATOMIC_ACQUIRE) == 0) return 0;
+      long result = __xos_wait_word (lock, 1, deadline);
+      if (result == -13) return -ETIMEDOUT;
       if (result != 0 && result != -14)
         return -EIO;
     }
-  return 0;
 }
+
+static int lock_runtime (xos_u32 *lock)
+{ return lock_runtime_until (lock, ~(xos_u64) 0); }
 
 static void
 unlock_runtime (xos_u32 *lock)
@@ -363,16 +373,17 @@ __xos_file_adopt_startup (struct xos_file_session *early, xos_u64 deadline)
 #endif
 
 static int
-initialize (void)
+initialize_until (xos_u64 deadline)
 {
   if (initialized) return initialization_error;
 #ifdef SHARED
   /* The relocated libc has no CRT-owned startup state. Its caller must
      adopt the real descriptors and authenticated session before use. */
+  (void) deadline;
   return -EIO;
 #else
   const struct xos_file_startup *startup = &__xos_startup ? __xos_startup : 0;
-  return initialize_from (startup, ~(xos_u64) 0);
+  return initialize_from (startup, deadline);
 #endif
 }
 
@@ -397,15 +408,17 @@ drain_poll_releases (int allow_io)
 }
 
 static int
-begin (void)
+begin_until (xos_u64 deadline)
 {
-  int result = lock_session ();
+  int result = lock_runtime_until (&session_lock, deadline);
   if (result != 0) return result;
-  result = initialize ();
+  result = initialize_until (deadline);
   if (result != 0) unlock_session ();
   else drain_poll_releases (1);
   return result;
 }
+
+static int begin (void) { return begin_until (~(xos_u64) 0); }
 
 #ifndef SHARED
 static long
@@ -1309,8 +1322,9 @@ __xos_file_lease_release (struct xos_file_lease *lease)
   return result;
 }
 
-long
-__xos_file_exchange (const struct xos_file_request *input, struct xos_file_response *output)
+static long
+exchange_until (const struct xos_file_request *input, struct xos_file_response *output,
+                xos_u64 deadline)
 {
   if (input == 0 || output == 0) return -EFAULT;
   /* Callers own disjoint request and response records. */
@@ -1320,13 +1334,13 @@ __xos_file_exchange (const struct xos_file_request *input, struct xos_file_respo
      while the loader sets the new child's directory through this exchange. */
   const int changes_cwd = input->operation == file_cwd_set
     && (input->offset == 0 || input->offset == (xos_u64) file_trap (6, 0, 0, 0));
-  int error = changes_cwd ? lock_runtime (&spawn_cwd_lock) : 0;
+  int error = changes_cwd ? lock_runtime_until (&spawn_cwd_lock, deadline) : 0;
   if (error != 0) return error;
-  long result = begin ();
+  long result = begin_until (deadline);
   if (result == 0)
     {
       request = *input;
-      result = call_service (request.operation);
+      result = call_service_until (request.operation, deadline);
       if (result == 0) *output = response;
       unlock_session ();
     }
@@ -1335,9 +1349,14 @@ __xos_file_exchange (const struct xos_file_request *input, struct xos_file_respo
 }
 
 long
-xos_file_session_exchange (const struct xos_file_request *input, struct xos_file_response *output)
+__xos_file_exchange (const struct xos_file_request *input, struct xos_file_response *output)
 {
-  long result = __xos_file_exchange (input, output);
+  return exchange_until (input, output, ~(xos_u64) 0);
+}
+
+static long
+native_exchange_result (long result)
+{
   switch (result)
     {
     case 0: return 0;
@@ -1356,6 +1375,21 @@ xos_file_session_exchange (const struct xos_file_request *input, struct xos_file
     case -ENOTSUP: return -14;
     case -EROFS: return -15;
     case -EACCES: return -16;
+    case -ETIMEDOUT: return -1001;
     default: return -7;
     }
+}
+
+long
+xos_file_session_exchange (const struct xos_file_request *input, struct xos_file_response *output)
+{
+  return native_exchange_result (__xos_file_exchange (input, output));
+}
+
+long
+xos_file_session_exchange_until (const struct xos_file_request *input,
+                                 struct xos_file_response *output, xos_u64 deadline)
+{
+  if (deadline == 0 || deadline > LONG_MAX) return -2;
+  return native_exchange_result (exchange_until (input, output, deadline));
 }

@@ -1,0 +1,30 @@
+{
+  "scope": "absolute Files deadline in native/G3 shared session",
+  "sdk_preview_archive_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+  "native_host_cases": 13,
+  "glibc_host_cases": 62,
+  "real_files_fatfs_groups": 15,
+  "guest": "not_run",
+  "exported_originals": {
+    "native_report.json": {
+      "original_sha256": "d90e2db12ebc7f1c07a5f70147464955d75aa5af72546250c91b2538e203ae0b",
+      "original_bytes": 6234,
+      "transformation": "UTF-8 newline normalization; trailing whitespace trimmed; source and SDK prefixes replaced by placeholders"
+    },
+    "native_cases.log": {
+      "original_sha256": "ff4f87763fcef792d332fef1bbcc2382b6f92ed3b4e00a32893bbfe4c25ebe1d",
+      "original_bytes": 470,
+      "transformation": "UTF-8 newline normalization; trailing whitespace trimmed; source and SDK prefixes replaced by placeholders"
+    },
+    "glibc_report.json": {
+      "original_sha256": "78dee2b251b86cd847662983bf57353125b38e1dcde396219d4a51bb423e7a38",
+      "original_bytes": 14398,
+      "transformation": "UTF-8 newline normalization; trailing whitespace trimmed; source and SDK prefixes replaced by placeholders"
+    },
+    "glibc_cases.log": {
+      "original_sha256": "655af58ba43bd47e2c6cde4b4d6a353beba185e4cfd16124fc8ac4ed3342e85d",
+      "original_bytes": 2182,
+      "transformation": "UTF-8 newline normalization; trailing whitespace trimmed; source and SDK prefixes replaced by placeholders"
+    }
+  }
+}

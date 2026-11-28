@@ -227,11 +227,15 @@ def main():
             base_native_sdk_binding=base_native, test_native_sdk_binding=final_native,
             exact_native_compilation_payload_sha256=supervisor['native_payload_sha256'],
             c_sdk_binding=c_binding, native_abi=runtime['native_abi'], supervisor_binding=supervisor_binding)
-        create_fat32(disk, 512)
         parents = sorted({str(parent) for path in files for parent in Path(path).parents if str(parent) != '/'},
                          key=lambda path: (path.count('/'), path))
-        for path in parents: transfer(disk, 'mkdir', path)
-        for path, source in files.items(): transfer(disk, 'import', path, source)
+        def populate_disk():
+            create_fat32(disk, 512)
+            for path in parents: transfer(disk, 'mkdir', path)
+            for path, source in files.items():
+                bind(source, report['installed'][path])
+                transfer(disk, 'import', path, source)
+        populate_disk()
         verify_all()
         report['work_disk_before_sha256'] = sha(disk)
         guest = Guest(args.system / 'xos-install.iso', 'dynamic_terminal', work_disk=disk,
@@ -303,17 +307,24 @@ def main():
         guest.expect(b'DYNAMIC_TERMINAL_ALL_PASS cases=13 native_groups=2\n', start=cursor, timeout=30)
         report['checks'].append({'name': 'native_cumulative_budget_no_extension_bypass', 'status': 'passed'})
         guest.close(); guest = None
+        report['normal_work_disk_after_sha256'] = sha(disk)
+        report['cold_disk_policy'] = 'fresh FAT32 population from the same bound payload for each phase'
         report['owner_death_phases'] = {}
         for name, trigger, control in (('owner_exit_calibration', b'C', True), ('terminal_owner_exit', b'D', False)):
             phase = out / name; phase.mkdir()
             nonce = secrets.token_bytes(32)
             nonce_file = phase / 'nonce.bin'; nonce_file.write_bytes(nonce); bind(nonce_file)
-            # QEMU is stopped during every import/export. A fresh nonce prevents
-            # accepting the preceding cold disk's otherwise valid receipt.
-            transfer(disk, 'import', '/tests/terminal_nonce', nonce_file)
-            item = {'status': 'failed', 'nonce_sha256': sha(nonce_file), 'disk_before_sha256': sha(disk),
-                    'global_resource_samples': []}
+            item = {'status': 'failed', 'nonce_sha256': sha(nonce_file),
+                    'installed': dict(report['installed']), 'global_resource_samples': []}
             report['owner_death_phases'][name] = item
+            # The preceding VM is closed and its final disk digest is retained.
+            # Imports use create-new semantics, so each independent cold phase
+            # starts with the same bound payload and no old nonce/report/witness.
+            disk.unlink()
+            populate_disk()
+            item['fresh_payload_disk_sha256'] = sha(disk)
+            transfer(disk, 'import', '/tests/terminal_nonce', nonce_file)
+            item['disk_before_sha256'] = sha(disk)
             guest = Guest(args.system / 'xos-install.iso', name, work_disk=disk,
                           iso=True, qmp_enabled=True, log_dir=phase)
             item['qemu_command'] = guest.command

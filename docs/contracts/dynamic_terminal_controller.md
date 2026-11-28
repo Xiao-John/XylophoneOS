@@ -160,6 +160,13 @@ Files process, so exact page/object reclamation does not assume the departed
 owner still exists. This fixture adds no device delegation and claims no
 owner-kill or COM1 recovery after bootstrap-owner exit.
 
+Each cold phase formats its own private FAT32 disk and imports the same bound
+program/runtime/input payload before adding that phase's new random nonce.
+No prior nonce, report or sync witness is carried into the next phase. The
+normal experiment's final disk hash and each cold phase's payload, input and
+output disk hashes remain recorded. Raw disk hashes need not match between
+phases containing different nonces; the resource comparison remains exact.
+
 The observer is an ordinary spawned process. Its checked call to the
 supervisor-only process-statistics operation must remain denied and leave its
 output unchanged. Existing thread statistics provide the global process and

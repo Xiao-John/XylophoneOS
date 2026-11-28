@@ -7,6 +7,7 @@
 # include "xos_thread_identity.h"
 # include "xos_thread_name.h"
 # include "xos_file_runtime.h"
+# include "xos_timer.h"
 #endif
 
 pid_t
@@ -37,6 +38,7 @@ _Fork (void)
       const xos_u64 previous_tid = THREAD_GETMEM (THREAD_SELF, tid);
       THREAD_SETMEM (THREAD_SELF, tid, info.tid);
       __xos_thread_name_after_fork (previous_tid, info.tid);
+      __xos_timer_after_fork ();
     }
   return (pid_t) child;
 #endif

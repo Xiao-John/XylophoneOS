@@ -92,9 +92,12 @@ def main():
     run('target-install', [make, 'install'], target, target_env)
     if verify_profile(json.loads(args.sdk_profile.read_text()), 'glibc', sdk_build) != binding:
         raise SystemExit('XOS SDK binding changed during the ICU build')
-    artifacts = {f'lib/libicu{name}.a': sha256(prefix / f'lib/libicu{name}.a') for name in ('data', 'i18n', 'uc')}
+    artifacts = {path.relative_to(prefix).as_posix(): sha256(path)
+                 for path in sorted(prefix.rglob('*')) if path.is_file()}
     lock = json.loads((PORT / 'source_lock.json').read_text())
     report = {'status': 'static_icu_built', 'sdk_tree_sha256': binding['sdk_tree_sha256'],
+              'sdk_manifest_sha256': sha256(sdk_build / 'manifest.json'),
+              'sdk_profile_sha256': sha256(args.sdk_profile),
               'sources': {field: lock[field] for field in ('archive_sha256', 'signature_sha256', 'keys_sha256')},
               'recipe': {name: sha256(PORT / name) for name in ('build_target.py', 'prepare_target.py',
                                                                'source_lock.json', 'xos-compiler')},

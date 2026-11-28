@@ -105,8 +105,8 @@ def build(args):
         require_digest(path, locks[name]['sha256'])
     profile = json.loads(args.sdk_profile.read_bytes())
     binding = verify_profile(profile, 'glibc', args.sdk_build)
-    if 'cxx_runtime' not in profile['features'] or binding['sdk_tree_sha256'] != locks['webkit']['llint_icu']['sdk_tree_sha256']:
-        raise ValueError('The probe requires the glibc C/C++ SDK used by ClarkE')
+    if 'cxx_runtime' not in profile['features']:
+        raise ValueError('The probe requires a complete, verified glibc C/C++ SDK')
     sdk_manifest, sdk_hash = metadata_snapshot(args.sdk_build / 'manifest.json',
                                               profile['sdk_binding']['sdk_manifest_sha256'])
     tools = {}
@@ -118,14 +118,9 @@ def build(args):
         tools[suffix] = identity
 
     font_manifest = args.font_target / 'manifest.json'
-    qualified = root / 'docs/reports/clarke_webcore_font_stack_20261126/target_inputs.json'
-    require_digest(font_manifest, digest(qualified))
-    fonts = json.loads(font_manifest.read_bytes())
-    if fonts['profile_binding']['sdk_tree_sha256'] != binding['sdk_tree_sha256']:
-        raise ValueError('The FreeType prefix requires the same exact glibc SDK')
-    for name, expected in fonts['artifacts'].items():
-        if name.startswith('prefix/include/freetype2/') or name == 'prefix/lib/libfreetype.a':
-            require_digest(args.font_target / name, expected)
+    sys.path.insert(0, str(port.parent))
+    from target_inputs import recheck_inputs, target_inputs
+    fonts, font_inputs = target_inputs(args.font_target, 'target_font_stack_linked', binding['sdk_tree_sha256'])
     ft = args.font_target / 'prefix'
 
     output = args.output
@@ -229,6 +224,9 @@ def build(args):
         require_digest(path, expected)
     for name, archive in archives.items():
         require_digest(archive, locks[name]['sha256'])
+    recheck_inputs(font_inputs)
+    if verify_profile(profile, 'glibc', args.sdk_build) != binding:
+        raise ValueError('SDK changed during the raster build')
     exported = [probe, stream_probe, cmake / 'libskia_raster.a', png / 'lib/libpng.a', jpeg / 'lib/libjpeg.a',
                 zlib / 'lib/libz.a', *project_inputs, sources, *(p for p in sorted(notices.iterdir()) if p.is_file())]
     receipt = {'status': 'target_skia_raster_linked', 'builder_sha256': digest(Path(__file__)),

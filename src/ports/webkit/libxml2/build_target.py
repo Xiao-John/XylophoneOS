@@ -32,9 +32,8 @@ def build(args):
     webkit_lock = port.parent / 'source_lock.json'
     profile = json.loads(args.sdk_profile.read_bytes())
     binding = verify_profile(profile, 'glibc', args.sdk_build)
-    expected_tree = json.loads(webkit_lock.read_bytes())['llint_icu']['sdk_tree_sha256']
-    if 'cxx_runtime' not in profile['features'] or binding['sdk_tree_sha256'] != expected_tree:
-        raise ValueError('LibXml2 must use the glibc C/C++ SDK selected for WebKit')
+    if 'cxx_runtime' not in profile['features']:
+        raise ValueError('LibXml2 requires a complete, verified glibc C/C++ SDK')
     sdk_manifest, sdk_hash = metadata_snapshot(args.sdk_build / 'manifest.json',
                                               profile['sdk_binding']['sdk_manifest_sha256'])
     tools = {}

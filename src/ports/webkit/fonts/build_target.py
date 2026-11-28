@@ -16,6 +16,8 @@ port = Path(__file__).resolve().parent
 webkit = port.parent
 root = webkit.parents[2]
 sys.path.insert(0, str(root / "scripts"))
+sys.path.insert(0, str(webkit))
+from target_inputs import recheck_inputs, target_inputs
 from build_glibc_program import verify_elf
 from glibc_g1_probe import clean_build_environment, tool_identity
 from xypm_format import load_json
@@ -44,11 +46,20 @@ def build(args):
     fixture_hash = digest(fixture)
     lock_hashes = {str(path.relative_to(root)): digest(path) for path in (qt_lock, webkit_lock)}
     match(args.qtbase_archive, qt["sha256"])
-    match(args.icu_archive, icu_lock["archive_sha256"])
     profile = load_json(args.sdk_profile)
     binding = verify_profile(profile, "glibc", args.sdk_build)
-    if "cxx_runtime" not in profile["features"] or binding["sdk_tree_sha256"] != icu_lock["sdk_tree_sha256"]:
-        raise ValueError("the font build requires the glibc C/C++ SDK used to build ICU")
+    if "cxx_runtime" not in profile["features"]:
+        raise ValueError("the font build requires a complete glibc C/C++ SDK")
+    icu_inputs = {}
+    if args.icu_target:
+        _, icu_inputs = target_inputs(args.icu_target, 'static_icu_built', binding['sdk_tree_sha256'],
+                                     artifact_root=args.icu_target / 'install', headers='include')
+        icu_binding = {'icu_target_manifest_sha256': icu_inputs[args.icu_target / 'manifest.json']}
+    else:
+        match(args.icu_archive, icu_lock["archive_sha256"])
+        if binding["sdk_tree_sha256"] != icu_lock["sdk_tree_sha256"]:
+            raise ValueError("the legacy ICU archive requires its exact historical SDK")
+        icu_binding = {'icu_archive_sha256': icu_lock['archive_sha256']}
     manifest, sdk_hash = metadata_snapshot(args.sdk_build / "manifest.json",
                                           profile["sdk_binding"]["sdk_manifest_sha256"])
     tools = {}
@@ -80,9 +91,12 @@ def build(args):
     run("unpack_qt", ["tar", "-xJf", args.qtbase_archive, "-C", source,
                       vendor + "freetype", vendor + "harfbuzz-ng",
                       vendor + "wasm/DejaVuSans.ttf", vendor + "wasm/DEJAVU-LICENSE"])
-    run("unpack_icu", ["tar", "--zstd", "-xf", args.icu_archive, "-C", icu])
-    for name, checksum in icu_lock["artifacts"].items():
-        match(icu / name, checksum)
+    if args.icu_target:
+        icu = args.icu_target / 'install'
+    else:
+        run("unpack_icu", ["tar", "--zstd", "-xf", args.icu_archive, "-C", icu])
+        for name, checksum in icu_lock["artifacts"].items():
+            match(icu / name, checksum)
     for driver in ("cc", "cxx"):
         (drivers / driver).symlink_to(driver_source)
     for name in ("as", "ld"):
@@ -142,7 +156,9 @@ def build(args):
             shutil.copyfile(directory / name, destination)
 
     match(args.qtbase_archive, qt["sha256"])
-    match(args.icu_archive, icu_lock["archive_sha256"])
+    if args.icu_archive:
+        match(args.icu_archive, icu_lock["archive_sha256"])
+    recheck_inputs(icu_inputs)
     verify_profile(profile, "glibc", args.sdk_build)
     for name, checksum in lock_hashes.items():
         match(root / name, checksum)
@@ -153,7 +169,7 @@ def build(args):
         match(Path(tool["path"]), tool["sha256"])
     artifacts = sorted(path for path in prefix.rglob("*") if path.is_file()) + [probe, output / "sample.ttf"]
     receipt = {"status": "target_font_stack_linked", "source_locks": lock_hashes, "recipe_sha256": recipe,
-               "qtbase_archive_sha256": qt["sha256"], "icu_archive_sha256": icu_lock["archive_sha256"],
+               "qtbase_archive_sha256": qt["sha256"], **icu_binding,
                "sdk_manifest_sha256": sdk_hash, "profile_binding": binding, "fixture_sha256": fixture_hash,
                "driver_sha256": driver_hash,
                "target_tools": {name: item["sha256"] for name, item in tools.items()},
@@ -163,6 +179,9 @@ def build(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("qtbase-archive", "icu-archive", "sdk-build", "sdk-profile", "output"):
+    for name in ("qtbase-archive", "sdk-build", "sdk-profile", "output"):
         parser.add_argument("--" + name, required=True, type=lambda path: Path(path).resolve())
+    icu = parser.add_mutually_exclusive_group(required=True)
+    icu.add_argument('--icu-target', type=lambda path: Path(path).resolve())
+    icu.add_argument('--icu-archive', type=lambda path: Path(path).resolve())
     build(parser.parse_args())

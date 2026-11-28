@@ -24,11 +24,11 @@ def digest(path):
         return file_digest(stream, 'sha256').hexdigest()
 
 
-def dependency(target, status, library, headers):
+def dependency(target, status, library, headers, sdk_manifest_sha256):
     manifest = target / 'manifest.json'
     data = manifest.read_bytes()
     record = json.loads(data)
-    if record['status'] != status:
+    if record['status'] != status or record['sdk_manifest_sha256'] != sdk_manifest_sha256:
         raise ValueError(f'Incomplete {library} target build')
     prefix = target / 'prefix'
     artifacts = sorted((prefix / 'include' / headers).rglob('*.h')) + [prefix / 'lib' / library]
@@ -58,8 +58,9 @@ def build(args):
     if not tools['gperf']['available']:
         raise ValueError('The build host requires GNU gperf')
 
-    font_inputs = dependency(args.font_target, 'target_font_stack_linked', 'libfreetype.a', 'freetype2')
-    xml_inputs = dependency(args.xml_target, 'target_libxml2_linked', 'libxml2.a', 'libxml2')
+    sdk_hash = sha256(sdk_data).hexdigest()
+    font_inputs = dependency(args.font_target, 'target_font_stack_linked', 'libfreetype.a', 'freetype2', sdk_hash)
+    xml_inputs = dependency(args.xml_target, 'target_libxml2_linked', 'libxml2.a', 'libxml2', sdk_hash)
     sdk = args.sdk_build / 'sysroot'
     fixture = root / 'tests/fixtures/webkit/fontconfig_match.c'
     driver = port.parent / 'icu/xos-compiler'

@@ -47,8 +47,9 @@ static int check_scheduling (unsigned long tid)
          && pthread_getschedparam (tid, &policy, &param) == ENOTSUP
          && pthread_setschedparam (tid, policy, &param) == ENOTSUP
          && pthread_setschedprio (tid, param.sched_priority) == ENOTSUP
-         && pthread_getcpuclockid (tid, &clock) == ENOTSUP
-         && mask == 0x1234 && policy == 37 && param.sched_priority == 23 && clock == 41;
+         && pthread_getcpuclockid (tid, &clock) == 0
+         && clock == -(int) tid - 1
+         && mask == 0x1234 && policy == 37 && param.sched_priority == 23;
 }
 #endif
 #ifdef XOS_GLIBC_TEST_IDENTITY
@@ -258,6 +259,9 @@ static void check_memory (void)
     finish (63);
 }
 #endif
+#if defined XOS_GLIBC_TEST_IDENTITY || defined XOS_GLIBC_TEST_SCHEDULING
+static unsigned int extension_probe_done;
+#endif
 static void guest_thread_worker (void *raw)
 {
   if (((xos_u64) __builtin_frame_address (0) & 15) != 0) finish (95);
@@ -288,6 +292,10 @@ static void guest_thread_worker (void *raw)
     if (__sched_yield () != 0) finish (93);
     __atomic_store_n (&child_yielded, 1, __ATOMIC_RELEASE);
   } while (!__atomic_load_n (&parent_ack, __ATOMIC_ACQUIRE));
+#endif
+#if defined XOS_GLIBC_TEST_IDENTITY || defined XOS_GLIBC_TEST_SCHEDULING
+  while (!__atomic_load_n (&extension_probe_done, __ATOMIC_ACQUIRE))
+    (void) trap (3, 0, 0);
 #endif
   child_result = 0xabc;
 #ifdef XOS_GLIBC_TEST_EXIT
@@ -428,11 +436,12 @@ int guest_main (void)
 #ifdef XOS_GLIBC_TEST_IDENTITY
   check_native_self ();
   struct native_join_time deadline = { 0, 0 };
-  if (__pthread_clockjoin_ex (launch.tid, 0, 1, &deadline, 1) != ENOTSUP)
+  if (__pthread_clockjoin_ex (launch.tid, 0, 1, &deadline, 1) != ETIMEDOUT)
     return 66;
   if (__pthread_clockjoin_ex (__pthread_self (), 0, 0, 0, 1) != EDEADLK)
     return 67;
   void *returned = 0;
+  __atomic_store_n (&extension_probe_done, 1, __ATOMIC_RELEASE);
   if (__pthread_clockjoin_ex (launch.tid, &returned, 0, 0, 1) != 0)
     return 68;
   value = (xos_u64) returned;
@@ -442,8 +451,11 @@ int guest_main (void)
   if (___pthread_detach (__pthread_self ()) != 0
       || ___pthread_detach (__pthread_self ()) != EINVAL)
     return 70;
-  if (native_cancel_checks != 3) return 71;
+  if (native_cancel_checks != 4) return 71;
 #else
+# ifdef XOS_GLIBC_TEST_SCHEDULING
+  __atomic_store_n (&extension_probe_done, 1, __ATOMIC_RELEASE);
+# endif
   if (trap (44, launch.tid, (xos_u64) &value) != 0) return 15;
 #endif
   if (value != G1_JOIN_RESULT || child_result != 0xabc) return 16;

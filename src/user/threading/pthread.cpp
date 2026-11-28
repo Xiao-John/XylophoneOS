@@ -337,6 +337,18 @@ extern "C" int clock_nanosleep(clockid_t clock_id, int flags,
 
 extern "C" int clock_gettime(clockid_t clock, timespec* value) {
     if (!value) { errno = EFAULT; return -1; }
+    if (clock >= static_cast<clockid_t>(-INT_MAX) && clock <= static_cast<clockid_t>(-2)) {
+        thread_cpu_time sample{};
+        const i64 status = thread::cpu_time(static_cast<u64>(~clock), sample);
+        if (status != 0) {
+            errno = status == process_cpu_time_unavailable || status == process_error_invalid
+                ? ENOTSUP : error(status); return -1;
+        }
+        if (sample.system_ns > ~u64{0} - sample.user_ns) { errno = EOVERFLOW; return -1; }
+        const u64 total = sample.user_ns + sample.system_ns;
+        *value = {static_cast<time_t>(total / 1000000000), static_cast<long>(total % 1000000000)};
+        return 0;
+    }
     if (clock == CLOCK_PROCESS_CPUTIME_ID || clock == CLOCK_THREAD_CPUTIME_ID) {
         process_cpu_time sample{};
         const i64 status = sdk::cpu_time(sample);
@@ -365,6 +377,18 @@ extern "C" int clock_gettime(clockid_t clock, timespec* value) {
     value->tv_nsec = static_cast<long>(now % 1000000000); return 0;
 }
 extern "C" int clock_getres(clockid_t clock, timespec* value) {
+    if (clock >= static_cast<clockid_t>(-INT_MAX) && clock <= static_cast<clockid_t>(-2)) {
+        thread_cpu_time sample{};
+        const i64 status = thread::cpu_time(static_cast<u64>(~clock), sample);
+        if (status != 0) {
+            errno = status == process_cpu_time_unavailable || status == process_error_invalid
+                ? ENOTSUP : error(status); return -1;
+        }
+        if (!sample.resolution_ns) { errno = EIO; return -1; }
+        if (value) { *value = {static_cast<time_t>(sample.resolution_ns / 1000000000),
+                              static_cast<long>(sample.resolution_ns % 1000000000)}; }
+        return 0;
+    }
     if (clock == CLOCK_PROCESS_CPUTIME_ID || clock == CLOCK_THREAD_CPUTIME_ID) {
         process_cpu_time sample{};
         const i64 status = sdk::cpu_time(sample);
@@ -581,10 +605,52 @@ extern "C" int pthread_getname_np(pthread_t id, char* name, size_t size) {
     return 0;
 }
 
-// The kernel exposes only a blocking join; non-blocking variants stay honest.
-extern "C" int pthread_tryjoin_np(pthread_t, void**) { return ENOTSUP; }
-extern "C" int pthread_timedjoin_np(pthread_t, void**, const timespec*) { return ENOTSUP; }
-extern "C" int pthread_getcpuclockid(pthread_t, clockid_t*) { return ENOTSUP; }
+// Explicit native options preserve old blocking join and atomically arbitrate timeouts.
+extern "C" int pthread_tryjoin_np(pthread_t id, void** output) {
+    u64 value = 0;
+    const i64 status = thread::join_until(id, value, 0, true);
+    if (status == 0 && output) { *output = reinterpret_cast<void*>(value); }
+    return error(status);
+}
+extern "C" int pthread_timedjoin_np(pthread_t id, void** output, const timespec* limit) {
+    if (!limit) { return pthread_join(id, output); }
+    if (limit->tv_nsec < 0 || limit->tv_nsec >= 1000000000) { return EINVAL; }
+    if (limit->tv_sec >= 0 && static_cast<u64>(limit->tv_sec) >
+        (thread_deadline_infinite - 1 - limit->tv_nsec) / 1000000000) { return EOVERFLOW; }
+    const u64 absolute = limit->tv_sec < 0 ? 0 : static_cast<u64>(limit->tv_sec) * 1000000000 + limit->tv_nsec;
+    for (;;) {
+        u64 until = 0;
+        if (absolute != 0) {
+            // Monotonic-first cannot extend a wall deadline across preemption.
+            // Retry an early native timeout against the original wall time.
+            const i64 mono = sdk::syscall(sys_clock_monotonic), wall = sdk::syscall(sys_clock_realtime);
+            if (mono < 0) { return EOVERFLOW; }
+            if (wall < 0) { return EIO; }
+            if (absolute > static_cast<u64>(wall)) {
+                const u64 remaining = absolute - wall;
+                if (remaining > thread_deadline_infinite - 1 - static_cast<u64>(mono)) { return EOVERFLOW; }
+                until = static_cast<u64>(mono) + remaining;
+            }
+        }
+        u64 value = 0;
+        const i64 status = thread::join_until(id, value, until);
+        if (status == thread_error_timeout && until != 0) { continue; }
+        if (status == 0 && output) { *output = reinterpret_cast<void*>(value); }
+        return error(status);
+    }
+}
+extern "C" int pthread_getcpuclockid(pthread_t id, clockid_t* output) {
+    if (!output) { return EINVAL; }
+    if (id == 0) { return ESRCH; }
+    if (id > static_cast<u64>(INT_MAX) - 1) { return EOVERFLOW; }
+    thread_cpu_time sample{};
+    const i64 status = thread::cpu_time(id, sample);
+    if (status != 0) {
+        return status == process_cpu_time_unavailable || status == process_error_invalid ? ENOTSUP : error(status);
+    }
+    *output = -static_cast<clockid_t>(id) - 1;
+    return 0;
+}
 
 extern "C" unsigned sleep(unsigned seconds) {
     const timespec duration{static_cast<time_t>(seconds), 0};

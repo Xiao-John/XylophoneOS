@@ -24,13 +24,20 @@ def main():
     ))
     pthread = (repo_root / "src/user/threading/pthread.cpp").read_text()
     clock_functions = "\n".join(definition(pthread, signature) for signature in (
+        'int error(i64 result) {',
         'extern "C" int clock_gettime(clockid_t clock, timespec* value) {',
         'extern "C" int clock_getres(clockid_t clock, timespec* value) {',
+    ))
+    join_functions = "\n".join(definition(pthread, signature) for signature in (
+        'extern "C" int pthread_join(pthread_t id, void** output) {',
+        'extern "C" int pthread_tryjoin_np(pthread_t id, void** output) {',
+        'extern "C" int pthread_timedjoin_np(pthread_t id, void** output, const timespec* limit) {',
     ))
     with tempfile.TemporaryDirectory(prefix="xos_cpu_time_") as temporary:
         directory = Path(temporary)
         (directory / "cpu_libc.inc").write_text(functions)
         (directory / "cpu_pthread.inc").write_text(clock_functions)
+        (directory / "join_pthread.inc").write_text(join_functions)
         cxx = os.environ.get("CXX", "c++")
         common = [cxx, "-std=c++20", "-Wall", "-Wextra", "-Werror"]
         core = directory / "cpu_accounting"
@@ -40,7 +47,7 @@ def main():
             str(repo_root / "tests/cpu_accounting_host_test.cpp"), "-o", str(core)], check=True)
         subprocess.run([str(core)], check=True)
         binary = directory / "cpu_libc"
-        subprocess.run(common + ["-I", str(directory),
+        subprocess.run(common + ["-DXOS_THREADED_RUNTIME", "-I", str(directory),
             "-I", str(repo_root / "src/user/include"),
             "-I", str(repo_root / "src/user/threading/include"),
             "-I", str(repo_root / "src/shared/include"),

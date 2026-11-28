@@ -1,0 +1,83 @@
+=== glibc threads: g3_threads ===
+exec-file /bin/g3_threads
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000035e000
+[loader] started pid=10 file=/bin/g3_threads
+[process] event=wait_blocked parent=7 child=10
+G3-T BEGIN public pthread probe
+G3-T PASS unsupported attributes and cancellation errors
+G3-T PASS TLS errno once locks cond sem rwlock barrier TSD join exit quota
+G3-T PASS monotonic and realtime bounded waits
+G3-T PASS complete
+[task] event=reclaimed pid=10 pages=278
+[wait] pid=10 kind=exited code=0
+xsh>
+=== glibc threads: g3_last_thread ===
+exec-file /bin/g3_last_thread
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x000000000035e000
+[loader] started pid=11 file=/bin/g3_last_thread
+[process] event=wait_blocked parent=7 child=11
+G3-T PASS initial pthread_exit join TSD and final-worker atexit
+[task] event=reclaimed pid=11 pages=717
+[wait] pid=11 kind=exited code=0
+xsh>
+=== glibc threads: g3_detached ===
+exec-file /bin/g3_detached
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x000000000035e000
+[loader] started pid=12 file=/bin/g3_detached
+[process] event=wait_blocked parent=7 child=12
+G3-T BEGIN detached lifecycle
+G3-T PASS detached creation detach TSD slots kernel-stack recovery rounds=16
+[task] event=reclaimed pid=12 pages=236
+[wait] pid=12 kind=exited code=0
+xsh>
+=== glibc threads: g3_active_exit ===
+exec-file /bin/g3_active_exit
+[process] event=started pid=13 parent=7
+[process] pid=13 address_space=0x000000000035e000
+[loader] started pid=13 file=/bin/g3_active_exit
+[process] event=wait_blocked parent=7 child=13
+G3-T BEGIN active worker owns stdout
+G3-X callback before blocked flush
+[task] event=exit_cleanup_timeout pid=13 owner_tid=33
+[task] event=reclaimed pid=13 pages=753
+[wait] pid=13 kind=exited code=127
+xsh>
+=== G1 bridge: round 1 ===
+exec-file /bin/g1bridge
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000035e000
+[loader] started pid=10 file=/bin/g1bridge
+[process] event=wait_blocked parent=7 child=10
+[task] event=reclaimed pid=10 pages=45
+[wait] pid=10 kind=exited code=0
+xsh>
+=== G1 bridge: round 2 ===
+exec-file /bin/g1bridge
+[process] event=started pid=11 parent=7
+[process] pid=11 address_space=0x000000000035e000
+[loader] started pid=11 file=/bin/g1bridge
+[process] event=wait_blocked parent=7 child=11
+[task] event=reclaimed pid=11 pages=45
+[wait] pid=11 kind=exited code=0
+xsh>
+=== G1 bridge: round 3 ===
+exec-file /bin/g1bridge
+[process] event=started pid=12 parent=7
+[process] pid=12 address_space=0x000000000035e000
+[loader] started pid=12 file=/bin/g1bridge
+[process] event=wait_blocked parent=7 child=12
+[task] event=reclaimed pid=12 pages=45
+[wait] pid=12 kind=exited code=0
+xsh>
+=== G1 bridge: round 4 ===
+exec-file /bin/g1bridge
+[process] event=started pid=13 parent=7
+[process] pid=13 address_space=0x000000000035e000
+[loader] started pid=13 file=/bin/g1bridge
+[process] event=wait_blocked parent=7 child=13
+[task] event=reclaimed pid=13 pages=45
+[wait] pid=13 kind=exited code=0
+xsh>

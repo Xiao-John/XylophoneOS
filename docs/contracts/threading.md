@@ -207,6 +207,47 @@ joinable默认；同进程一个join者取得回收权，返回时目标TLS/reen
 执行已停止，结果只消费一次，栈/TLS可以安全回收。自join报EDEADLK；无效ID报
 ESRCH，已detach/已有join者报EINVAL。不承诺自动发现任意锁/多线程等待环。0037澄清：detach/成功join完成回收后，
 旧TID已失效，后续操作报ESRCH；仍有记录的detached目标/已有join者报EINVAL。
+
+### 有界 join 与目标线程 CPU 时钟（Issue #125）
+
+`sys44` 第三参数为零时保留原有阻塞 join。第三参数非零时指向 32 字节
+`thread_join_options`：v1 header（version=1、size=32、reserved=0）、
+`deadline_ns` 与 `mode`。mode=1 是立即 try（deadline 必须为零）；mode=2
+是绝对单调 deadline。其它 mode、版本、大小、保留位全部拒绝。已经可回收的
+结果优先于期限检查；活目标 try 返回既有 busy，未就绪且到期返回 timeout。
+等待真正进入 scheduler blocked；timeout 原子释放唯一 join 权及输出 pin，
+不消费结果、不改输出，后续 join/detach 可重试。旧二进制 syscall 44 的行为不变。
+
+glibc `pthread_tryjoin_np` 返回 `EBUSY`；`pthread_timedjoin_np` 的绝对期限按
+`CLOCK_REALTIME` 转换为单调期限，超时为 `ETIMEDOUT`。两个运行库都先取样单调
+时间、再取样墙钟；两次 syscall 之间被抢占只会使原生期限偏早，不会把已过期的
+绝对期限延后。原生 timeout 后按原墙钟绝对期限重新取样，仍有剩余时间就再次等待；
+确认到期时以零 deadline 原子检查已完成结果，再返回 timeout。其它错误不重试。
+`pthread_clockjoin_np` 同时接受 `CLOCK_MONOTONIC`；合法的空 deadline 仍为
+阻塞 join。非法纳秒为 `EINVAL`、不可表示期限为 `EOVERFLOW`，负秒或过去的期限
+执行立即检查。pthread 接口返回错误码而不改 errno；失败不改调用者结果槽。
+不新增异步取消、任意等待环检测或墙钟调整后的等待重绑定。
+
+`sys41` 第二参数 mode=1 是独立的 56 字节 `thread_cpu_time` v1 请求/响应：
+16 字节 header、完整 TID、user_ns、system_ns、elapsed_ns、resolution_ns。
+mode=0 保持原 `thread_info`；第三参数必须为零。目标必须是调用进程内已启动、
+尚未结束的线程；其它进程、预留、已退出（即使 join 结果尚存）或陈旧 TID 返回
+not_found。查询只读，不给予 join 权、不延长目标寿命；任意可用 CPU 计数失效都
+真实返回 unavailable。`sys89` v1 的 72 字节布局、当前线程含义及所有字段不变。
+
+`pthread_getcpuclockid` 返回绑定目标身份的运行库私有 clock ID。glibc 的负值族
+为 `-(TID+1)`，只接受 TID `1..INT_MAX-1`，超出返回 `EOVERFLOW`，不会截断；
+`-1`、`INT_MIN` 不属于此族。XOS 当前无其它负 clock 族。legacy newlib 保持其
+既有 unsigned-long `clockid_t`，在同一有界 TID 上使用该表达式的无符号值，
+不修改公共类型或正 `CLOCK_*` 定义。运行库之间不传递私有 clock ID。
+`clock_gettime/getres` 每次向内核查询该 TID，不会改为调用线程；目标退出后
+返回 `ESRCH`，槽重用不能让旧 clock 指向新线程。自身进程/当前线程的固定时钟保留。
+
+兼容与回滚：旧内核的统一参数门在 dispatch 前拒绝 sys41 的非零第二参数和
+sys44 的非零第三参数，绝不会把 try/timed join 降级为无限等待。新运行库在旧
+内核上 target clock 返回 `ENOTSUP`，扩展 join 返回 `EINVAL`；普通 join 仍可用。
+回滚须成套选旧 SDK/镜像，不改变已发布 SDK 的身份。资格由 Issue #125 专项
+真实客体记录给出；manifest 中接口声明不自动等于已验收。
 detach支持运行中或已结束但未被join领取的线程；终止后安全自动回收。线程ID
 不得因槽重用指向后来线程。执行资源死亡后尽快回收，保留小型join结果和配额槽
 直到join/detach；不能累积整份死线程栈。主线程pthread_exit也遵循同样语义。

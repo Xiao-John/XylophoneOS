@@ -1,0 +1,185 @@
+{
+  "status": "passed",
+  "evidence_kind": "minimal_derived_receipt",
+  "base_commit": "344655c3f2279a10c62fce5ea039c741aa6172f1",
+  "raw_report_sha256": "dc72e54d57403072338d374c44df3807ed3766e1c7519fe5e6650e38193b3ac5",
+  "systems": {
+    "current": {
+      "build_id": "ebaea6ff03805bad",
+      "manifest_sha256": "776a6ed96d5d9e54c0b9a90f93df6dcab92ad627f33d7304544c4dab5754f548",
+      "iso_sha256": "fd74929bb27140cbafba6654d3c7e825e245c1507474918acbb02b93c4a0eae2",
+      "baseline": [
+        129692,
+        3,
+        1
+      ]
+    },
+    "old": {
+      "build_id": "7e9d4063fa8154b7",
+      "manifest_sha256": "3ed97262a8da8602fb7a741b3b7c44b4715e42d038b443bab647dfad1b6f5319",
+      "iso_sha256": "bf08952e7d6126cc1b2ce060142258ffffd3e60e4ad4788b1a7ced22cf98f989",
+      "baseline": [
+        129693,
+        3,
+        1
+      ]
+    }
+  },
+  "glibc_sdk_manifest_sha256": "88375fefc3583fb0f3da5511c041dc7cd767501b5ac5b5a10e5831451b82e368",
+  "glibc_elf_sha256": "3722cbd459af27c5252788c878903b0351408bc273b65c51c84a100af75dc4d5",
+  "newlib_sdk_manifest_sha256": "7d9aaf3f0792f4803933fd7a8fec144355b98ae38cbf44ff613f7e228b41a57a",
+  "newlib_elf_sha256": "f0f6fa89992fd6352dc43a34ab1b84629c6026de56285a77855e811858ff8aa3",
+  "fixture_sha256": "bc2f0ae3bff42db34218df2fa0abb839fb7bd343a6464c50962010c3eaa0f2e2",
+  "runner_sha256": "b815a89ba68e0aa02e9afd9d1dfca35f8b8d847ef1f42f5f966c3f50714ab1c1",
+  "runs": [
+    {
+      "system": "current",
+      "libc": "glibc",
+      "repetition": 1,
+      "markers": [
+        "tryjoin_deadline_timeout_output_preserved",
+        "target_cpu_identity_sleep_busy_resolution",
+        "versioned_abi_invalid_requests",
+        "join_detach_contention_timeout_release_stale_clock",
+        "detached_cpu_clock_lifecycle",
+        "lifecycle_reuse_and_complete",
+        "cross_process_cpu_query_rejected"
+      ],
+      "exit_code": 0,
+      "resources": [
+        129692,
+        3,
+        1
+      ]
+    },
+    {
+      "system": "current",
+      "libc": "glibc",
+      "repetition": 2,
+      "markers": [
+        "tryjoin_deadline_timeout_output_preserved",
+        "target_cpu_identity_sleep_busy_resolution",
+        "versioned_abi_invalid_requests",
+        "join_detach_contention_timeout_release_stale_clock",
+        "detached_cpu_clock_lifecycle",
+        "lifecycle_reuse_and_complete",
+        "cross_process_cpu_query_rejected"
+      ],
+      "exit_code": 0,
+      "resources": [
+        129692,
+        3,
+        1
+      ]
+    },
+    {
+      "system": "current",
+      "libc": "glibc",
+      "repetition": 3,
+      "markers": [
+        "tryjoin_deadline_timeout_output_preserved",
+        "target_cpu_identity_sleep_busy_resolution",
+        "versioned_abi_invalid_requests",
+        "join_detach_contention_timeout_release_stale_clock",
+        "detached_cpu_clock_lifecycle",
+        "lifecycle_reuse_and_complete",
+        "cross_process_cpu_query_rejected"
+      ],
+      "exit_code": 0,
+      "resources": [
+        129692,
+        3,
+        1
+      ]
+    },
+    {
+      "system": "current",
+      "libc": "newlib",
+      "repetition": 1,
+      "markers": [
+        "tryjoin_deadline_timeout_output_preserved",
+        "target_cpu_identity_sleep_busy_resolution",
+        "versioned_abi_invalid_requests",
+        "join_detach_contention_timeout_release_stale_clock",
+        "detached_cpu_clock_lifecycle",
+        "lifecycle_reuse_and_complete"
+      ],
+      "exit_code": 0,
+      "resources": [
+        129692,
+        3,
+        1
+      ]
+    },
+    {
+      "system": "current",
+      "libc": "newlib",
+      "repetition": 2,
+      "markers": [
+        "tryjoin_deadline_timeout_output_preserved",
+        "target_cpu_identity_sleep_busy_resolution",
+        "versioned_abi_invalid_requests",
+        "join_detach_contention_timeout_release_stale_clock",
+        "detached_cpu_clock_lifecycle",
+        "lifecycle_reuse_and_complete"
+      ],
+      "exit_code": 0,
+      "resources": [
+        129692,
+        3,
+        1
+      ]
+    },
+    {
+      "system": "current",
+      "libc": "newlib",
+      "repetition": 3,
+      "markers": [
+        "tryjoin_deadline_timeout_output_preserved",
+        "target_cpu_identity_sleep_busy_resolution",
+        "versioned_abi_invalid_requests",
+        "join_detach_contention_timeout_release_stale_clock",
+        "detached_cpu_clock_lifecycle",
+        "lifecycle_reuse_and_complete"
+      ],
+      "exit_code": 0,
+      "resources": [
+        129692,
+        3,
+        1
+      ]
+    },
+    {
+      "system": "old",
+      "libc": "glibc",
+      "repetition": 1,
+      "markers": [
+        "old_kernel_explicit_rejection_legacy_join"
+      ],
+      "exit_code": 0,
+      "resources": [
+        129693,
+        3,
+        1
+      ]
+    }
+  ],
+  "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "configuration": {
+    "accelerator": "tcg",
+    "machine": "pc-i440fx-10.0",
+    "cpu": "qemu64,+rdrand",
+    "memory_mib": 512,
+    "vcpus": 1,
+    "network": "none",
+    "qmp": "disabled"
+  },
+  "boundaries": [
+    "No cross-process CPU query authority is added.",
+    "Negative clock identifiers are bound to a non-reused TID and stop at thread exit.",
+    "Legacy unsigned-long clockid_t and ordinary single-thread pthread restrictions are preserved.",
+    "Fork isolation is tested by glibc before entering the threaded profile.",
+    "No asynchronous cancellation, CPU timers, dynamic-runtime requalification or SMP claim.",
+    "Previously released host SDK bytes remain unchanged."
+  ]
+}

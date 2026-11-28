@@ -1,0 +1,132 @@
+{
+  "status": "passed_subset",
+  "evidence_kind": "minimal_derived_receipt",
+  "glibc_thread_suite": {
+    "raw_report_sha256": "da9b931286a76ab8e4f901305ca9db531314db67f4cc45e49c50d86e2b3a3869",
+    "system_build_id": "ebaea6ff03805bad",
+    "system_manifest_sha256": "776a6ed96d5d9e54c0b9a90f93df6dcab92ad627f33d7304544c4dab5754f548",
+    "glibc_manifest_sha256": "88375fefc3583fb0f3da5511c041dc7cd767501b5ac5b5a10e5831451b82e368",
+    "baseline": [
+      129692,
+      3,
+      1
+    ],
+    "runs": [
+      {
+        "case": "g3_threads",
+        "repetition": 1,
+        "status": "passed",
+        "expected_exit_code": 0,
+        "expected_outcome": "exited",
+        "elapsed_seconds": 0.6281473850001476,
+        "resources": [
+          129692,
+          3,
+          1
+        ]
+      },
+      {
+        "case": "g3_last_thread",
+        "repetition": 1,
+        "status": "passed",
+        "expected_exit_code": 0,
+        "expected_outcome": "exited",
+        "elapsed_seconds": 0.38456294399998114,
+        "resources": [
+          129692,
+          3,
+          1
+        ]
+      },
+      {
+        "case": "g3_detached",
+        "repetition": 1,
+        "status": "passed",
+        "expected_exit_code": 0,
+        "expected_outcome": "exited",
+        "elapsed_seconds": 0.39501963400016393,
+        "resources": [
+          129692,
+          3,
+          1
+        ]
+      },
+      {
+        "case": "g3_active_exit",
+        "repetition": 1,
+        "status": "passed",
+        "expected_exit_code": 127,
+        "expected_outcome": "exited",
+        "elapsed_seconds": 30.398321913000018,
+        "resources": [
+          129692,
+          3,
+          1
+        ]
+      }
+    ]
+  },
+  "glibc_g1_bridge": {
+    "raw_report_sha256": "86909dc2c2f366c3186e0e3ce369be473bf55c32a571ff5202499d1f18b5019d",
+    "system_build_id": "ebaea6ff03805bad",
+    "system_manifest_sha256": "776a6ed96d5d9e54c0b9a90f93df6dcab92ad627f33d7304544c4dab5754f548",
+    "checks": [
+      "start_failure_rollback",
+      "prepare_start_native_traps",
+      "native_thread_c_entry_alignment_and_argument",
+      "child_tls_and_exit",
+      "join_value",
+      "four_runs_resources_restored",
+      "glibc_target_pthread_self_matches_kernel_tid",
+      "glibc_target_join_detach_and_stale_tid",
+      "glibc_target_unsupported_scheduling_preserves_outputs",
+      "glibc_target_cpu_clock_binds_live_tid",
+      "glibc_target_thread_names_inherit_and_update",
+      "glibc_target_signal_zero_and_delivery_errors"
+    ],
+    "resources": [
+      129692,
+      3,
+      1
+    ],
+    "runs": 4,
+    "identity_provenance": {
+      "report_sha256": "88375fefc3583fb0f3da5511c041dc7cd767501b5ac5b5a10e5831451b82e368",
+      "object_sha256": {
+        "pthread_self.o": "9064f7ae98f9ffb94c222a878cd248db7c09f41e3b9c5f2c5a028f05c98186c8",
+        "pthread_join_common.o": "a70d5cafcfa3847abc868f103a7c6f25bcdb5a4cd433c77b454254d6e99da1e4",
+        "pthread_detach.o": "af44ab63af52cef27fa80345fa99718d97d9e4570ffc4c7f4bc1d8a25557d474",
+        "thrd_current.o": "a71d01c5b44644bc477ceb470597c202f44cc8f23ae1666ebba2b44f86143658"
+      },
+      "complete_sdk_libc_sha256": "da42845c870f45dd2baeaff0a0e966e3776510b9764e582455d093eb8973e9c5"
+    },
+    "scheduling_provenance": {
+      "report_sha256": "88375fefc3583fb0f3da5511c041dc7cd767501b5ac5b5a10e5831451b82e368",
+      "object_sha256": {
+        "pthread_getaffinity.o": "2e1c9748c6f4a52095a0093c53e4f9ec81adbae4235b4b15931959e1d4d297cf",
+        "pthread_setaffinity.o": "c6ad5e65606cf00fbbbf2930d7fb24fe69c2abdc84ed9e7422ef11c45a159521",
+        "pthread_getschedparam.o": "b645c028d05a90296f36346647deeffe4bfdf4af29a34e0efa07afce1d1f569f",
+        "pthread_setschedparam.o": "30d19cbd1bd9f1de6ace818fd631d90798c00995e9f597085e9995d35f6dbc5b",
+        "pthread_setschedprio.o": "7efe08bca83d8af255a98101eb991e84b518580b6759d51fb760af5c066610a8",
+        "pthread_getcpuclockid.o": "5ceef302b2a4eded37ba30d25514f51f49d9fc8485de171919a8f212dab34f66"
+      },
+      "complete_sdk_libc_sha256": "da42845c870f45dd2baeaff0a0e966e3776510b9764e582455d093eb8973e9c5"
+    },
+    "signal_provenance": {
+      "report_sha256": "88375fefc3583fb0f3da5511c041dc7cd767501b5ac5b5a10e5831451b82e368",
+      "object_sha256": {
+        "pthread_kill.o": "56e74663be8b1e0c9e1c9d1c5e6aaadf8833438d86f98534e454066a9227f4a6",
+        "pthread_sigqueue.o": "8f1ca1a01af8f1a44eb0669b6beb5e320e76a13fb7159565053098c65d1f41d8",
+        "pthread_sigmask.o": "b99cb54b92e8a47af51fdfeda316f20b5211bf7ac1d647daf581a9cea500ec05",
+        "xos_thread_name.o": "0f680c15045e7dad5feff72e4371234252f242f0fd2fbd3ba062e510868027ca",
+        "pthread_getname.o": "88fb63f8c4c0f080922e9f81427596dd1e05d539815d699ade788b34223c8b35",
+        "pthread_setname.o": "3d46b9c6a1cd72eedd0e206193dbe4062e27c9b8ee8ab98cd97e5464fc6e2ed6",
+        "lowlevellock.o": "9421a091432d6978b432cb075bddf81a5c571539e4fef0fd52a2a0cd64fc5177",
+        "xos_lll_futex.o": "34e7679966f0c3aff7d26d46c15c32562271b9c89c8679ea75257b52e6daff1f",
+        "xos_wait_word.o": "4dc8fc55a5185800939d0b833066039b2f4bd287a7bf9796b12bb8538d60789e"
+      },
+      "complete_sdk_libc_sha256": "da42845c870f45dd2baeaff0a0e966e3776510b9764e582455d093eb8973e9c5"
+    },
+    "qmp_transport": "pipe"
+  }
+}

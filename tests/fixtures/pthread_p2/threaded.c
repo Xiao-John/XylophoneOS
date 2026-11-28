@@ -68,9 +68,9 @@ int main(void) {
         && pthread_rwlockattr_getpshared(&rw_attr, &rw_shared) == 0
         && rw_shared == PTHREAD_PROCESS_PRIVATE
         && pthread_rwlockattr_destroy(&rw_attr) == 0;
-    const int join_ok = pthread_tryjoin_np(first, 0) == ENOTSUP;
+    const int join_ok = pthread_tryjoin_np(first, 0) == ESRCH;
     clockid_t clock_id;
-    const int clock_ok = pthread_getcpuclockid(first, &clock_id) == ENOTSUP;
+    const int clock_ok = pthread_getcpuclockid(first, &clock_id) == ESRCH;
 
     printf("created=%d counter=%d serial=%d sem=%d join=%d attrs=%d clock=%d\n",
            created, counter, serial_threads, sem_value, join_ok, guard_ok, clock_ok);

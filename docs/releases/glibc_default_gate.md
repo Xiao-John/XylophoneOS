@@ -88,4 +88,24 @@ GNU Make 原样复现并通过 Xshell 与 Dash 的替换客体，同一安装器
 验收门推进。
 [CPython 重链接归档暂存](../work_log/960fce43_glibc_v2_cpython_material_delivery.md)
 
-当前默认发行仍由原配方生产。切换和 newlib 退役以完成上述实际证据和最终组合为准。
+## 2026-11-28 P0 prerelease 的实际资格
+
+新宿主 SDK 已发布为 `xos-sdk-glibc-preview-3` prerelease，默认静态 glibc 2.44
+C/C++ kit。原五个资产已从公开下载地址取回并逐项核对大小、SHA-256、包绑定与
+校验表；草稿恢复工作流另从原归档重新解包，以无 GitHub token 的空消费者目录
+运行 C/C++ 构建、XPK 打包和真实 QEMU 客体，退出、资源及用户数据检查均通过。
+SDK 源码为 `8b2dee22`，恢复验证为 `b60b9aea`，两者身份保持分开。
+[SDK 交付证据](../reports/p0_public_delivery_20261128/README.md)
+
+R1 的最终静态发行组合绑定系统 `7c8c59058be0b5f1` 和独立 profile
+`xos-x86_64-glibc-p0-20261128`，完成普通 79 项、许可材料 10 项、ABI、实际
+安装盘、原生 C/C++/Make/Python、升级中断恢复及冻结 newlib 往返验收。五组
+独立接收方逐字节复现全部 17 个静态程序，替换一个 libc 成员后各组真实客体
+均通过。外层 tar 及源码/重链接材料已冻结；公开上传仍待完成，实际交付状态
+见[发布回执](p0_glibc_preview_3_delivery.json)，不以本地冻结代替公开可获得性。
+[R1 资格及材料](../reports/p0_release_final_20261128/README.md)
+
+宿主 SDK 与 R1 的应用 profile 分别绑定，使用 R1 盘时调用随包
+`application-sdk/xos-app`。此 prerelease 不改写既有稳定发行、Qt 独立 profile
+或原始冻结 newlib 的身份。newlib 退役、安装态网络组合、物理断电与下一轮
+产品能力继续按各自实际验收推进。

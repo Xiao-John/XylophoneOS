@@ -1,0 +1,175 @@
+{
+  "schema": 1,
+  "status": "published_and_requalified",
+  "repository": "Xiao-John/XylophoneOS",
+  "recovery_run": {
+    "id": 46114477779,
+    "url": "https://github.com/Xiao-John/XylophoneOS/actions/runs/46114477779",
+    "job_id": 140885101481,
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-28T05:58:39Z",
+    "updated_at": "2026-11-28T06:00:08Z",
+    "validation_commit": "b60b9aea68f6f270abc0e97077f92adeaa2e72f8",
+    "steps": [
+      {
+        "name": "Download and verify the existing draft",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Requalify the original SDK in a fresh consumer",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "Recheck and publish the existing draft",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "original_build_run": {
+    "id": 46110344041,
+    "url": "https://github.com/Xiao-John/XylophoneOS/actions/runs/46110344041",
+    "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f"
+  },
+  "release": {
+    "id": 461317287,
+    "tag_name": "xos-sdk-glibc-preview-3",
+    "draft": false,
+    "prerelease": true,
+    "published_at": "2026-11-28T06:00:04Z",
+    "url": "https://github.com/Xiao-John/XylophoneOS/releases/tag/xos-sdk-glibc-preview-3",
+    "assets": [
+      {
+        "id": 803323025,
+        "name": "package.json",
+        "size": 1659,
+        "state": "uploaded",
+        "digest": "sha256:bcf274b3e1f691f285a1b0b428a01cef3cb26b1b679a5b2d446056e30360228b",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/package.json"
+      },
+      {
+        "id": 803323030,
+        "name": "qualification.json",
+        "size": 3194,
+        "state": "uploaded",
+        "digest": "sha256:c2c8c62c560134302cedf26e7da386ae95f1b43531b04036bcfab13167d45aa5",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/qualification.json"
+      },
+      {
+        "id": 803323027,
+        "name": "SHA256SUMS",
+        "size": 381,
+        "state": "uploaded",
+        "digest": "sha256:28fc98fa3132f1314b904bf69c340bb848cd758b3fb046f4301753cbe9d06bfb",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/SHA256SUMS"
+      },
+      {
+        "id": 803323029,
+        "name": "xos-sdk-glibc-preview-3-linux-x86_64.tar.zst",
+        "size": 373222439,
+        "state": "uploaded",
+        "digest": "sha256:d3a4dd424fe33215df1d5ef9f93415b634799d52b4126d07dbe08f1fb59b1dcb",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/xos-sdk-glibc-preview-3-linux-x86_64.tar.zst"
+      },
+      {
+        "id": 803323024,
+        "name": "xos-sdk-glibc-preview-3-sources.tar.zst",
+        "size": 144590773,
+        "state": "uploaded",
+        "digest": "sha256:f883ab48729e90ce887a2ad89c02c34b63af3145e5bd4d7dbdd0b768884b60cf",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/xos-sdk-glibc-preview-3-sources.tar.zst"
+      }
+    ]
+  },
+  "tag_ref": {
+    "ref": "refs/tags/xos-sdk-glibc-preview-3",
+    "type": "commit",
+    "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f"
+  },
+  "source_identity": {
+    "artifact_source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+    "recovery_validation_commit": "b60b9aea68f6f270abc0e97077f92adeaa2e72f8",
+    "kept_separate": true
+  },
+  "fresh_consumer": {
+    "status": "passed",
+    "fresh_extraction_verified": true,
+    "consumer_mount": "empty consumer directory only; SDK root read-only",
+    "execution": "packaged ELF bytes; QEMU TCG; no guest network device",
+    "user_data_preserved": true,
+    "applications": {
+      "c": {
+        "build_receipt_sha256": "672341639c51ca77996fbdccafe7649e06d2eab7e9115586bcae0b987bbc4807",
+        "elf_sha256": "c0edc4dd2833c10ffd745a2a47689683d437db928b37195b0c48578a02b8000d",
+        "guest_exit_code": 0,
+        "marker": "GLIBC_KIT_C_OK 2.44",
+        "package_sha256": "9d02bdb068f15be8d3690f34a60dfeae453f4e497e4e71ec1ba4cb6ace13ca3c",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ],
+        "resources_before": [
+          129693,
+          3,
+          1
+        ],
+        "source_sha256": "6e0e4fbd72e70f411bc6eb0ecbbc31059be7bb9d4199240d71d9588f507cc28b",
+        "steps": [
+          "init",
+          "build",
+          "check",
+          "pack",
+          "verify",
+          "extract"
+        ]
+      },
+      "cpp": {
+        "build_receipt_sha256": "d25d3c2982099cad556bd1c0307d37aa804e253c31e4f14f72dbf1492590fd2f",
+        "elf_sha256": "a92339759616810301d1ac8777d0ba9945385e00ebf182b7222ee0f7c65750ef",
+        "guest_exit_code": 0,
+        "marker": "GLIBC_KIT_CPP_OK vector thread exception",
+        "package_sha256": "44d0b0ab38795dbcc1bccaf11a1bebe7d7340462d8914d6ce5e0179d805d8677",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ],
+        "resources_before": [
+          129693,
+          3,
+          1
+        ],
+        "source_sha256": "2c4a070ab5509e9b10257510b258ffcc7670e49e72cb03d25a5aef47f6158a7c",
+        "steps": [
+          "init",
+          "build",
+          "check",
+          "pack",
+          "verify",
+          "extract"
+        ]
+      }
+    },
+    "profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+    "system": {
+      "build_id": "4a379155cac2fbbf",
+      "iso_sha256": "54fbdcd601dad5ac406f0cf5f8c354887ea06b0946dec03191c13235feb725a7",
+      "manifest_sha256": "79efe36c521072b2495d522f9ba171ca228c9eedaa4dbcb970300b811622ad79",
+      "source_sha256": "4a379155cac2fbbf2fa7d4801b37dbb59f07c5116800bb39389d6d642c21edc4"
+    },
+    "serial_sha256": "1de06130def76002cc1b01243df83da589be6d4d969a4e44c61b776dbc2de6da"
+  },
+  "checks": {
+    "original_asset_set_preserved": true,
+    "tag_still_original_source": true,
+    "original_qualification_preserved": true,
+    "recovery_proof_from_completed_job_log": true
+  },
+  "proof": "sdk_recovery_qualification.json",
+  "scope": "Recovery validates and publishes the existing five assets. It does not rebuild the SDK or replace the original qualification. Build-time guest_qualification metadata remains historical; the fresh_consumer result records this recovery run."
+}

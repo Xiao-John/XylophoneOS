@@ -62,6 +62,69 @@ SDK files and symlink targets. `package.json`, `qualification.json` and
 independent consumer run. A build-time `guest_qualification` field remains
 historical metadata; the final `qualification.json` supplies the actual result.
 
+## Use the matching P0-R1 release bundle
+
+The P0-R1 media and application kit have a separate qualification and package
+profile from this host SDK. Its profile is `xos-x86_64-glibc-p0-20261128`, with
+SHA-256 `437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d`,
+and its system build is `7c8c59058be0b5f1`. Check the current delivery state in
+the [publication receipt](p0_glibc_preview_3_delivery.json).
+
+Once the R1 assets are available, download both
+`p0-r1-glibc-release-20261128.tar` and its `.tar.sha256` file into the extracted
+host SDK directory. The tar is 430,346,240 bytes, with SHA-256
+`492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4`.
+From that directory, use a new consumer directory:
+
+```sh
+sha256sum -c p0-r1-glibc-release-20261128.tar.sha256
+mkdir r1-consumer
+tar -xf p0-r1-glibc-release-20261128.tar -C r1-consumer
+
+./xos-sdk --workdir r1-consumer /bin/bash -c '
+  set -eu
+  cd /work/p0-r1-glibc-release-20261128
+  sha256sum -c BUNDLE-CHECKSUMS.sha256
+  sha256sum -c CHECKSUMS.sha256
+  tar -xzf application-sdk.tar.gz
+  tar -xzf images.tar.gz
+  tar -xzf packages.tar.gz
+  ./application-sdk/xos-app init r1_app --id example.r1 --language cpp
+  ./application-sdk/xos-app build r1_app
+  ./application-sdk/xos-app check r1_app
+  ./application-sdk/xos-app pack r1_app --output r1_app.xpk
+'
+```
+
+Use `--language c` for a C project. The result is an XPK bound to the R1
+application profile. Keep the original archives and manifests together.
+The explicit `application-sdk/xos-app` path selects R1's own profile and SDK;
+the bare `xos-app` command selects the host SDK's independently built default
+kit under `/opt/xos/glibc`. Their profiles are not interchangeable. Each wrapper
+checks its recorded tool identities. Keep profile, sysroot, runtime libraries
+and package disk as a matched set; do not edit their identities to force a match.
+
+Start the R1 installer image and matching writable work disk with:
+
+```sh
+./xos-sdk --workdir r1-consumer \
+  python3 /work/p0-r1-glibc-release-20261128/images/launch.py
+```
+
+This launcher uses `images/xos-install-dash.iso` and `images/work_disk.img`,
+QEMU TCG and a serial console on the current terminal. It uses the extracted R1
+media, not the host SDK's default ISO. Retain the original tar for a fresh disk;
+the extracted work disk is writable. `images/launch.py --help` describes the
+image-directory, QEMU and display options.
+
+The R1 bundle contains component sources and five relink archives. The new
+GCC 16.2.0 C++ runtime source archive, signature and public keyring accompany
+the host SDK `*-sources.tar.zst` asset; R1's historical GNU Seed sources are not
+a substitute. The [R1 release evidence](../reports/p0_release_final_20261128/README.md)
+retains its qualification and exact bindings separately from the host SDK consumer.
+SDK `SHA256SUMS` binds the original SDK assets; R1 has its own outer checksum
+and the two checksum files inside its bundle.
+
 ## Maintainer build and publication
 
 From a clean, committed checkout on Linux x86-64 with Python 3.11+, Bubblewrap,

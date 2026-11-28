@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "status": "sdk_published_r1_upload_pending",
+  "checkpoint_date": "2026-11-28",
+  "checkpoint_timezone": "Asia/Shanghai",
+  "repository": "Xiao-John/XylophoneOS",
+  "release": {
+    "id": 461317287,
+    "tag": "xos-sdk-glibc-preview-3",
+    "draft": false,
+    "prerelease": true,
+    "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+    "validation_commit": "b60b9aea68f6f270abc0e97077f92adeaa2e72f8",
+    "url": "https://github.com/Xiao-John/XylophoneOS/releases/tag/xos-sdk-glibc-preview-3",
+    "published_at": "2026-11-28T06:00:04Z"
+  },
+  "sdk": {
+    "system_build_id": "4a379155cac2fbbf",
+    "profile_id": "xos-x86_64-glibc-host-8b2dee22a327",
+    "profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+    "sdk_manifest_sha256": "d5a5d40d1ad60d11d8dbae2b517d5aaeae0244fdcadb09145b2a45095ca884fa",
+    "sdk_tree_sha256": "3b7f05a77d720c6de494a470f495d4688c103e83a84ae997c13a21663ca9624c",
+    "kit_tree_sha256": "58618c50d0abfe85a216db33020fed4c1e0d45c81940aba10f2a271c05f79006",
+    "default_target": "static glibc 2.44 C/C++",
+    "legacy_target": "Preview 2 newlib kept separate; not the original frozen 1024 rollback kit",
+    "assets": [
+      {
+        "id": 803323025,
+        "name": "package.json",
+        "bytes": 1659,
+        "sha256": "bcf274b3e1f691f285a1b0b428a01cef3cb26b1b679a5b2d446056e30360228b",
+        "state": "uploaded",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/package.json"
+      },
+      {
+        "id": 803323030,
+        "name": "qualification.json",
+        "bytes": 3194,
+        "sha256": "c2c8c62c560134302cedf26e7da386ae95f1b43531b04036bcfab13167d45aa5",
+        "state": "uploaded",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/qualification.json"
+      },
+      {
+        "id": 803323027,
+        "name": "SHA256SUMS",
+        "bytes": 381,
+        "sha256": "28fc98fa3132f1314b904bf69c340bb848cd758b3fb046f4301753cbe9d06bfb",
+        "state": "uploaded",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/SHA256SUMS"
+      },
+      {
+        "id": 803323029,
+        "name": "xos-sdk-glibc-preview-3-linux-x86_64.tar.zst",
+        "bytes": 373222439,
+        "sha256": "d3a4dd424fe33215df1d5ef9f93415b634799d52b4126d07dbe08f1fb59b1dcb",
+        "state": "uploaded",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/xos-sdk-glibc-preview-3-linux-x86_64.tar.zst"
+      },
+      {
+        "id": 803323024,
+        "name": "xos-sdk-glibc-preview-3-sources.tar.zst",
+        "bytes": 144590773,
+        "sha256": "f883ab48729e90ce887a2ad89c02c34b63af3145e5bd4d7dbdd0b768884b60cf",
+        "state": "uploaded",
+        "url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/xos-sdk-glibc-preview-3-sources.tar.zst"
+      }
+    ],
+    "public_download_verified": true,
+    "public_download_evidence": "../reports/p0_public_delivery_20261128/sdk_public_download.json",
+    "recovery_qualification": "../reports/p0_public_delivery_20261128/sdk_recovery_qualification.json"
+  },
+  "workflow_attempts": [
+    {
+      "id": 46109935710,
+      "result": "failure",
+      "phase": "host preflight",
+      "detail": "Ubuntu 24.04 rejected Bubblewrap UID-map setup; no SDK build or release."
+    },
+    {
+      "id": 46110344041,
+      "result": "failure",
+      "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+      "phase": "publish draft lookup",
+      "detail": "Build, final-archive C/C++ guest consumer and five asset uploads passed; draft release-by-tag lookup returned HTTP 404."
+    },
+    {
+      "id": 46113698404,
+      "result": "failure",
+      "phase": "existing tag guard",
+      "detail": "The normal path correctly rejected an existing tag. Build and publication were skipped."
+    },
+    {
+      "id": 46114477779,
+      "result": "success",
+      "phase": "recovery",
+      "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+      "validation_commit": "b60b9aea68f6f270abc0e97077f92adeaa2e72f8",
+      "detail": "Authenticated original five-asset download, token-free fresh C/C++ guest consumer, remote recheck and publication all passed. Original assets and tag were preserved."
+    }
+  ],
+  "r1": {
+    "status": "qualified_outer_bundle_not_yet_uploaded",
+    "filename": "p0-r1-glibc-release-20261128.tar",
+    "bytes": 430346240,
+    "sha256": "492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4",
+    "checksum_file": {
+      "name": "p0-r1-glibc-release-20261128.tar.sha256",
+      "bytes": 99,
+      "sha256": "b7119a0b62f53c294d6a17ea2242290284219e76516f4e83c1848692cb7e27ed"
+    },
+    "producer_commit": "3964200d524fd39f3a95c166800832623c5f3591",
+    "public_native_input_correspondence": {
+      "commit": "819ea63ae84b1e89862648af002c2a09d1936c02",
+      "matching_files": 2211,
+      "scope": "The system manifest's individual source-file digests match; this is not a claim of identical entire Git commits."
+    },
+    "system_build_id": "7c8c59058be0b5f1",
+    "iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+    "sdk_manifest_sha256": "56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703",
+    "sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab",
+    "profile_id": "xos-x86_64-glibc-p0-20261128",
+    "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "kit_tree_sha256": "672bb1543fe545a2c48371f27e84ff262671a57ccd1e93f8bdec087529559152",
+    "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+    "initial_disk_sha256": "c2289ab88c37e0e4e3262a2a2d2f643b75b437370903340d6c336012e3168a9a",
+    "frozen_files": 20,
+    "frozen_bytes": 430316403,
+    "outer_regular_files": 23,
+    "restored_bundle_checksums_verified": 22,
+    "qualification": "../reports/p0_release_final_20261128/manifest.json",
+    "delivery_pr": 435,
+    "license_material_status": {
+      "active_open": 0,
+      "deferred": 1,
+      "not_applicable": 7,
+      "scope": "Recorded material review, not a legal opinion."
+    }
+  },
+  "boundaries": [
+    "SDK host and R1 application profiles are distinct; use R1 application-sdk/xos-app for the R1 release disk.",
+    "This prerelease does not change the previous stable release or retire frozen newlib distributions.",
+    "Each module's guest evidence retains its actual source, SDK, image and configuration; it is not one combined installed network profile.",
+    "Online dynamic loading, dynamic fork-to-exec controller migration, independent pipe-object transfer and successful pthread_cancel remain outside the qualified profile.",
+    "Physical NIC and arbitrary power-loss behavior, production time/entropy and OCSP/CRL, full WebCore and multiple-window composition retain their own acceptance requirements."
+  ]
+}

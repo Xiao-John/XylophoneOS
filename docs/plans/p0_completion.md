@@ -59,60 +59,59 @@ campaign's closure and next-round table are updated here after actual module
 delivery. A remaining P0 requirement is retained as P0, not silently moved to
 P1 to declare completion.
 
-## Public delivery checkpoint: 2026-11-28 Asia/Singapore
+## Public delivery checkpoint: 2026-11-28 Asia/Shanghai
 
-GitHub records PRs [#397](https://github.com/Xiao-John/XylophoneOS/pull/397)
-through [#417](https://github.com/Xiao-John/XylophoneOS/pull/417), and
-[#419](https://github.com/Xiao-John/XylophoneOS/pull/419), as merged.
-The public integration merge is
-`4444b9df1b82c2556d70363753305b55fd7a579d`.
-This supersedes the old statement that the campaign PRs were still open.
+The implementation campaign (#397–#417 and #419) is merged. This follow-up
+rebuilt and reran the P0 acceptance in the checksum-pinned SDK environment,
+published fresh minimal evidence per module, and retained each result's actual
+source, SDK, image and configuration identities. Different qualified profiles
+are not relabelled as one identical system.
 
-The table below records the already-public implementation and contract scope.
-Detailed final integration and network acceptance appendices remain withheld
-after automatic publication review required specific authorization. Their
-public-delivery gates remain P0 work. This roadmap contains public repository
-status and future tasks; it does not reproduce those appendices or use an
-unpublished report as a public citation. The restriction is recorded in
-[#417](https://github.com/Xiao-John/XylophoneOS/pull/417) and
-[#418](https://github.com/Xiao-John/XylophoneOS/pull/418), whose historical
-network-evidence branch remains a draft.
+**Publication status: SDK prerelease published and verified; R1 hosted-asset delivery pending.**
+The [final delivery receipt](../releases/p0_glibc_preview_3_delivery.json) records
+the observed SDK tag, successful recovery workflow and five public-download
+digests. R1 upload and its hosted-asset verification remain pending.
+The new [glibc host SDK](../releases/glibc_host_sdk.md) defaults to static glibc
+C/C++; the R1 distribution has a separate, explicitly bound application profile.
+Use the matching R1 kit for its disk and packages.
 
-### Merged implementation map
+### Completed implementation and fresh acceptance
 
-| Module | Public implementation PRs | Contract and remaining delivery boundary |
-| --- | --- | --- |
-| L1 | #400, #403, #415 | IPC lifetime, broken-wait behavior, failed-exec preservation, restart and finite deadlines. The final acceptance appendix is a separate delivery item. |
-| L2 | #401, #403, #412, #415, #416 | Per-owner quotas and authenticated launch/READY/ACK control. Process-tree aggregation and persistent attribution are new capabilities. |
-| R1 | #398, #402, #413, #417 | Explicit glibc release pipeline, reusable static C++ SDK recipe, source authentication, frozen-SDK rollback guards and receiver support. Final distribution qualification records require separate publication authorization. |
-| R2 | #408, #415 | Immutable approved closures, activation, rollback and revocation under a bounded per-controller volatile catalog. Persistent provisioning and descendant-wide revocation are future work. |
-| R3 | #406, #410, #415, #419 | Public GNU startup, Files deadlines, ordinary spawn/same-PID exec and child-owned stdio pipe routes. Online dynamic-library loading and dynamic fork-to-exec controller migration remain outside the public startup profile. |
-| N1 | #399 | Native readiness and TCP write half-close, with ownership and deadlines. Physical NIC qualification is separate. |
-| N2 | #407 | The finite libc poll/shutdown profile and descriptor leases. The existing thread contract returns ENOTSUP for pthread_cancel; successful cancellation delivery and simultaneous close/revoke-in-poll guest qualification are separate scope. |
-| N3 | #405, #409, #414 | Trusted DHCP/ACD address lifecycle, sealed egress policy and DNS separation. A DNS result does not grant connection authority. |
-| N4 | #404 | Bounded independently pinned CA stores and explicit update/rollback identity. This does not establish default installed networking, trusted time, hardware entropy or full browser policy. |
-| I | #411, #417 | Bounded FIFO QMP and integration/SDK/release qualification support. Final integration and network evidence publication remains open; it is not moved into P1. |
+| Module | Implementation PRs | Fresh delivery PRs / evidence | Qualified result and retained boundary |
+| --- | --- | --- | --- |
+| L1 / L2 | #400, #401, #403, #412, #415, #416 | [#432](https://github.com/Xiao-John/XylophoneOS/pull/432), [native integration](../reports/p0_integration_final_20261128/README.md) | 33 launch checks; 12 IPC lifetime/authority/quota mode runs; 3 deadline rounds covering 6 conditions each; 45 stdio checks over 12 native target executions. Resource baselines and user data return. Process-tree budgets and persistent attribution remain new capabilities. |
+| R1 | #398, #402, #413, #417 | [#435](https://github.com/Xiao-John/XylophoneOS/pull/435), [final distribution](../reports/p0_release_final_20261128/README.md), [work log](../work_log/90c2ce10_p0_r1_final_distribution.md) | Exact system, installer, SDK/profile, packages and materials are bound together. Five detached receivers reproduce 17 original glibc programs byte for byte; one-member libc replacement is exercised in the real guest. Package lifecycle, native GNU C/C++/Make/Python composition, interrupted upgrade/recovery, and frozen-newlib roundtrip pass. Outer asset publication is separately recorded in the delivery receipt. |
+| R2 | #408, #415 | [#429](https://github.com/Xiao-John/XylophoneOS/pull/429), [generation evidence](../reports/p0_generation_closure_20261128/README.md) | 21 checks in 3 rounds with 12 actual GNU launches; 23 ordinary and 23 ASan/UBSan host checks. Activation, old pins, stale sequence rejection, failed candidate preservation, rollback and revocation pass within the bounded volatile controller catalog. |
+| R3 | #406, #410, #415, #419 | [#430](https://github.com/Xiao-John/XylophoneOS/pull/430), [public runtime](../reports/p0_public_runtime_closure_20261128/README.md) | All 9 public GNU startup cases pass: C policy/spawn/exec/pipe plus C++ and threads through xsh/dash. Cross-object exceptions, RTTI, unwind, TLS destructors and cleanup use the authenticated startup closure. Online library loading and dynamic fork-to-exec controller migration remain outside this profile. |
+| N1 | #399 | [#426](https://github.com/Xiao-John/XylophoneOS/pull/426), [native network](../reports/p0_n1_final_20261128/README.md) | 12 real-peer guest cases; 32 lwIP and 2 service-loop sanitizer cases. Readiness, write half-close, zero-window queued close, EOF order, ownership, deadlines and resource return pass. Physical NIC qualification is separate. |
+| N2 | #407 | [#425](https://github.com/Xiao-John/XylophoneOS/pull/425), [glibc socket bridge](../reports/p0_n2_final_20261128/README.md) | 12 actual glibc TCP/poll/shutdown cases, including absent/wrong service, descriptor bounds, a finite deadline and late-peer recovery. Connected poll(0), simultaneous close/revoke during poll and successful pthread cancellation remain separate capabilities. |
+| N3 | #405, #409, #414 | [#424](https://github.com/Xiao-John/XylophoneOS/pull/424), [DHCP evidence](../reports/p0_n3_final_20261128/README.md) | 8 DHCP/ACD peer scenarios cover renewal, expiry, NAK, new issuer, malformed input, conflict/backoff and service restart; 18 sanitizer, 24 JSON rejection and 27 egress host cases pass. DNS resolution does not grant connection authority. |
+| N4 | #404 | [#427](https://github.com/Xiao-John/XylophoneOS/pull/427), [TLS evidence](../reports/p0_n4_final_20261128/README.md) | 20 real TLS/trust cases, 15 target parser cases, 118 pinned CA roots parsed and 24 packer checks. Unauthorized certificates send no application request; absent entropy fails closed. Trusted production time, hardware entropy, OCSP/CRL and installed default networking remain separate. |
+| Packaged SDK pipe | #419 | [#428](https://github.com/Xiao-John/XylophoneOS/pull/428), [SDK archive regression](../reports/p0_sdk_pipe_closure_20261128/README.md) | 4 cases launch 4 actual children through the packaged libxos_terminal.a, without replacing the loader implementation. Additional independent pipe-object transfer is separate scope. |
+| I / distribution support | #411, #417 | [#422](https://github.com/Xiao-John/XylophoneOS/pull/422), [#423](https://github.com/Xiao-John/XylophoneOS/pull/423), [#431](https://github.com/Xiao-John/XylophoneOS/pull/431), [#432](https://github.com/Xiao-John/XylophoneOS/pull/432), [#433](https://github.com/Xiao-John/XylophoneOS/pull/433), [#436](https://github.com/Xiao-John/XylophoneOS/pull/436) | Final R1 native candidate 7c8c59058be0b5f1 passes 79 ordinary checks, 10 license-material checks and ABI consistency. Fixed the pinned zlib URL and its ledger digest. The new host-SDK recipe binds committed source, freshly extracts the finished archive and runs its packaged C/C++ programs before publication. |
 
-The original acceptance requirements above remain unchanged. In particular,
-the supported native session-abort operation and the explicitly unsupported
-POSIX pthread-cancellation delivery have separate contracts; a native abort
-must not be described as a pthread cancel. See the public
+The original acceptance requirements above remain unchanged. The supported
+native session-abort operation and unsupported POSIX pthread-cancellation
+have separate contracts; a native abort is not pthread_cancel. See the
 [Net2 contract](../contracts/net_service_v2.md),
 [static-thread contract](../contracts/glibc_static_threads.md),
 [DHCP profile](../contracts/dhcp_service_profile.md), and
 [TLS trust-store contract](../contracts/tls_trust_store.md).
 
-The original interrupted checkpoint remains in Git history and the
-[interruption work log](../work_log/0c6fe827_p0_environment_interruption.md).
-The public merge record above does not rewrite any historical test outcome.
+Historical draft [#418](https://github.com/Xiao-John/XylophoneOS/pull/418) remains
+a record of its earlier source and publication review. The refused historical
+appendices were not republished. The fresh minimal reports above are new runs,
+with explicit raw-report digest provenance and individual public PRs. The
+[interruption work log](../work_log/0c6fe827_p0_environment_interruption.md)
+and prior failures remain in history; their outcomes are not rewritten.
 
 ## Updated P1 table: next-round delivery and acceptance
 
 This table replaces the initial broad workstreams with concrete outcomes.
 It preserves the original P0 acceptance requirements. New capability work can
-start once its named technical prerequisites pass. Outstanding final integration
-and network evidence publication remain P0 delivery items; they are not
-reassigned here.
+start once its named technical prerequisites pass. Fresh final integration and
+network evidence are now public through the module PRs above. The SDK and R1
+hosted-delivery gate is tracked separately until its actual upload is verified.
 
 | Priority / workstream | Next-round deliverable | Entry dependency | Acceptance and retained boundary |
 | --- | --- | --- | --- |
@@ -134,21 +133,24 @@ reassigned here.
 
 P1-H/I extend coverage. Existing DHCP expiry, TCP write half-close, egress/DNS
 separation and bounded CA snapshots remain established module results; the
-remaining detailed qualification publication is still P0-I.
+new capabilities remain in their named P1 entries; the fresh P0 qualification
+reports above retain the exact tested limits.
 
-The first AI-ready module should be P1-A: a useful, testable observation and
-proposal boundary. Writing actions require their own explicit authority,
-preconditions, result/unknown-result semantics, budgets and replay prohibition.
+P1-A provides the first AI-ready module: a scoped, qualified observation and
+proposal boundary recorded in the delivery checkpoint below. Writing actions
+require their own explicit authority, preconditions, result/unknown-result
+semantics, budgets and replay prohibition.
 Those contracts must be reviewed and tested before adding autonomous write
 operations; a natural-language command alone is not a capability.
 
 ## Next implementation sequence
 
-1. Resolve the outstanding specific authorization for final qualification
-   appendices and finish their P0 public-delivery gates.
-2. Begin P1-A with a bounded versioned read-only observation endpoint, typed
-   proposals and offline replay fixtures. An ordinary client must exercise the
-   interface without a model or an autonomous writer.
+1. Preserve the qualified P0 release, profiles, materials and replay commands;
+   finish and verify the hosted SDK/R1 delivery receipt before marking delivery closed.
+2. Build ordinary consumers on the bounded read-only observation/proposal
+   interface delivered in [#434](https://github.com/Xiao-John/XylophoneOS/pull/434).
+   Its versioned endpoint, ordinary clients and offline replay are qualified
+   within the profiles recorded below, without a model or an autonomous writer.
 3. Implement P1-B and the relevant P1-C/E authorization and recovery contracts
    before granting persistent write actions to an AI consumer. Unknown outcomes
    require reconciliation and must not be replayed automatically.
@@ -160,12 +162,13 @@ operations; a natural-language command alone is not a capability.
 
 ### AI-ready staging decision
 
-The merged authority, lifecycle and public-runtime interfaces provide an entry
-point for the read-only observation and proposal phase. The first deliverable
-is a versioned interface and a reproducible validation fixture. Model output
-is recorded as input to validation; it does not become an authorization token,
-a trusted kernel component, or an OS release dependency. Autonomous persistent
-writes require the separate budget, authorization and recovery work above.
+The merged authority, lifecycle and public-runtime interfaces support the
+qualified P1-A read-only observation and proposal phase. Its versioned interface
+and reproducible validation fixtures provide the entry point for ordinary
+consumers. Model output is recorded as input to validation; it does not become
+an authorization token, a trusted kernel component, or an OS release dependency.
+Autonomous persistent writes require the separate budget, authorization and
+recovery work above.
 
 ### P1-A delivery checkpoint: 2026-11-28 Asia/Shanghai
 

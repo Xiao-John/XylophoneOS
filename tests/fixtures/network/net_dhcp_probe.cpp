@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-#include <xos/net_service_client.hpp>
+#include <xos/net_transport.hpp>
 #include <xos/text.hpp>
 namespace {
 using namespace xos;
@@ -51,6 +51,17 @@ extern "C" int xos_user_main(const xos::startup_info* startup) {
     using namespace xos;using namespace xos::net2;
     check(startup->argc==4,"usage");const auto* args=reinterpret_cast<const char*const*>(startup->argv);
     const char* mode=args[1];const auto pid=number(args[2]);check(sdk::length(args[3])==32,"nonce");
+    if(sdk::equal(mode,"dns") || sdk::equal(mode,"dns_closed")) {
+        xos::net2::client resolver;check(!resolver.connect(pid),"resolver transport connect");
+        char name[64]="live-";__builtin_memcpy(name+5,args[3],32);__builtin_memcpy(name+37,".dhcp.test",11);
+        resolve_reply answer{};const auto result=resolver.resolve_ipv4(name,47,now()+4*second,answer);
+        if(sdk::equal(mode,"dns_closed")) check(result==closed&&!answer.address,"unconfigured DHCP resolver closed",result);
+        else {
+            check(!result&&answer.address==0x0a000202&&answer.epoch&&answer.expiry>now(),"native DHCP hostname resolution",result);
+            sdk::print("DHCP_GUEST_DNS epoch=");sdk::decimal(answer.epoch);sdk::print(" address=");sdk::decimal(answer.address);sdk::print("\n");
+        }
+        sdk::print("DHCP_GUEST_PASS ");sdk::print(mode);sdk::print("\n");return 0;
+    }
     session_client client;check(!client.connect(pid),"connect");u32 closures=0;
     lease_snapshot initial{};const auto acquisition=now()+55*second;
     for(;;){initial=snapshot(client,pid,closures);

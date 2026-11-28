@@ -110,6 +110,7 @@ def main():
             # resource baselines. The warmup is separately recorded.
             nonce = peer.arm('bound'); service = start_service()
             pid, start = launch('bound', service, nonce); finish(pid, start, 'bound')
+            dns_pid, dns_start = launch('dns', service, nonce); finish(dns_pid, dns_start, 'dns', timeout=10)
             report['warmup'] = peer.finish_scenario()
             command(guest, 'net-stop', b'kind=exited code=0', timeout=60)
             baseline = resources(guest); report['resources_before'] = baseline
@@ -117,6 +118,10 @@ def main():
                 mode = 'restart_old' if case == 'service_restart' else case
                 nonce = peer.arm(mode); service = start_service()
                 pid, start = launch(mode, service, nonce)
+                if case != 'acd_conflict':
+                    guest.expect(b'DHCP_GUEST_BOUND ', start=start, timeout=45)
+                    dns_pid, dns_start = launch('dns', service, nonce)
+                    finish(dns_pid, dns_start, 'dns', timeout=10)
                 if case == 'service_restart':
                     guest.expect(b'DHCP_GUEST_RESTART_READY', start=start, timeout=35)
                     command(guest, 'net-stop', b'kind=exited code=0', timeout=60)
@@ -127,13 +132,20 @@ def main():
                     finish(pid, start, 'restart_old', timeout=30)
                     new_pid, new_start = launch('bound', replacement, nonce)
                     text = finish(new_pid, new_start, 'bound', timeout=40)
+                    dns_pid, dns_start = launch('dns', replacement, nonce)
+                    finish(dns_pid, dns_start, 'dns', timeout=10)
                     item = {'scenario': case, 'old_service': service, 'new_service': replacement,
                             'old': old_report, 'new': peer.finish_scenario()}
                     if item['old']['dhcp'][0]['xid'] == item['new']['dhcp'][0]['xid']:
                         raise AssertionError('restart reused discovery XID')
                 else:
                     text = finish(pid, start, mode)
+                    dns_mode = 'dns_closed' if case in ('acd_conflict', 'expire') else 'dns'
+                    dns_pid, dns_start = launch(dns_mode, service, nonce)
+                    finish(dns_pid, dns_start, dns_mode, timeout=10)
                     item = peer.finish_scenario()
+                    if case == 'nak_config_change' and [value['source'] for value in item['dns_answers']] != ['10.0.2.15', '10.0.2.16']:
+                        raise AssertionError('DNS cache was not retired with the changed lease epoch')
                     for value in item['udp']:
                         if ('DHCP_GUEST_CHALLENGE data=' + value['challenge']).encode() not in text:
                             raise AssertionError('guest omitted independent fresh UDP challenge')

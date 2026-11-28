@@ -110,6 +110,9 @@ wire version 2 与原 64-byte message header 不变。新增操作 18 `lease_sta
 unicast 地址、掩码、gateway 关系及状态/tuple 一致性。内核报告旧 IPC endpoint
 已消失或 peer broken 时，SDK 返回 `closed`、清 reply 和连接状态，不重发已经
 提交的业务请求。只读监测器可显式以同一已认证 service PID 重新建立会话。
+较高层 `net2::client::resolve_ipv4` 同时接受有效 static 与 DHCP 配置，且要求
+已发布地址和 active resolver；获取中或失效后的 DHCP 不创建解析 ticket。
+其返回值仍绑定原配置 epoch/TTL，DNS 答案不扩大 application egress。
 
 ## 当前范围
 

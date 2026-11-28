@@ -15,7 +15,8 @@ INPUTS = ('tests/fixtures/network/net_dhcp_probe.cpp',
           'tests/fixtures/network/net_dhcp_probe.cpp',
           'src/user/include/xos/net_service_client.hpp',
           'src/shared/include/xos/net_service_abi.hpp',
-          'scripts/build_net_dhcp_probe.py')
+          'scripts/build_net_dhcp_probe.py',
+          'src/user/include/xos/net_transport.hpp')
 RESOLVER_FIXTURE = 'tests/fixtures/network/net_resolver_probe.cpp'
 
 
@@ -32,7 +33,7 @@ def main():
     out.relative_to(ROOT / 'build')
     out.mkdir(parents=True, exist_ok=False)
     versions = audit()
-    for source in INPUTS[2:4]:
+    for source in (*INPUTS[2:4], INPUTS[-1]):
         if sha(ROOT / source) != sha(sdk / 'include/xos' / Path(source).name):
             raise ValueError('SDK network headers differ from current sources')
     inputs = (INPUTS[0], *INPUTS[2:])

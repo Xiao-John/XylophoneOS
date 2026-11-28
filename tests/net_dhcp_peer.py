@@ -32,7 +32,7 @@ class DhcpPeer(TcpWindowPeer):
             self.mode = mode
             self.nonce = secrets.token_hex(16)
             self.report = {'scenario': mode, 'nonce': self.nonce, 'dhcp': [], 'arp_probes': [],
-                           'declines': [], 'udp': [], 'dns_queries': 0, 'injected_malformed': 0}
+                           'declines': [], 'udp': [], 'dns_queries': 0, 'dns_answers': [], 'injected_malformed': 0}
             self.reports.append(self.report)
             self.address = IP1
             self.initial_xid = None
@@ -192,7 +192,30 @@ class DhcpPeer(TcpWindowPeer):
                 raise ValueError('application used stale/unadmitted IPv4 tuple')
             if target == 53:
                 self.report['dns_queries'] += 1
-                return  # Deliberately pending until epoch retirement.
+                query = udp[8:]
+                if len(query) < 17 or query[2:4] != b'\x01\x00' or query[4:6] != b'\0\x01':
+                    raise ValueError('invalid native DNS query')
+                offset = 12
+                labels = []
+                while offset < len(query) and query[offset]:
+                    size = query[offset]; offset += 1
+                    if size > 63 or offset + size >= len(query):
+                        raise ValueError('invalid DNS question label')
+                    labels.append(query[offset:offset + size].decode('ascii')); offset += size
+                if offset + 5 != len(query) or query[offset + 1:] != b'\0\x01\0\x01':
+                    raise ValueError('unexpected DNS question type')
+                name = '.'.join(labels)
+                if name == 'pending.dhcp.test':
+                    return  # Deliberately pending until epoch retirement.
+                if name != 'live-' + self.nonce + '.dhcp.test':
+                    raise ValueError('DNS question omitted fresh scenario nonce')
+                self.report['dns_answers'].append({'name': name, 'source': socket.inet_ntoa(ip[12:16]),
+                    'transaction_id': struct.unpack('!H', query[:2])[0],
+                    'question_sha256': hashlib.sha256(query[12:]).hexdigest()})
+                answer = query[:2] + struct.pack('!HHHHH', 0x8180, 1, 1, 0, 0) + query[12:]
+                answer += struct.pack('!HHHIH4s', 0xc00c, 1, 1, 60, 4, SERVER1)
+                self._ip_udp(SERVER1, self.address, 53, source, answer)
+                return
             if target != 3333 or udp[8:] != self.nonce.encode():
                 raise ValueError('application did not send the fresh nonce on its sealed tuple')
             challenge = secrets.token_bytes(32)

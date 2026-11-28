@@ -1,0 +1,21 @@
+{
+  "cases": [],
+  "elf_sha256": "80c0162aeecba5cb00001b2a536c8fb02e8a4c06096b1f1fb923c850f6d2ad7c",
+  "image_sha256": "d132e8334b66136d7b49479c848c20096e225fc56e0508353cea9b279e6b43bc",
+  "policy": {
+    "ca_sha256": "1d3f4c8e7fc8098d4661b4646f435eb6beae6afccef5342d5b96d0489d71995f",
+    "host": "tls.xos.test",
+    "ipv4_address": "10.0.2.2",
+    "minimum_tls": "1.2",
+    "origin": "https://tls.xos.test:9443",
+    "port": 9443,
+    "require_close_notify": true,
+    "verify_chain": true,
+    "verify_hostname": true
+  },
+  "probe_manifest_sha256": "57bafb712e816d2e3c77d48ee069325be3fb78a5dc6eba2a380a7d5da4482b2e",
+  "runner_sha256": "f461c73162d1a41a69ac459b02f8063945d01281159fb20f9f8b29184bb90b10",
+  "sdk_manifest_sha256": "0c876bac53354501159df75813711002c41baede650f1878116bb64a80a8190b",
+  "status": "failed",
+  "system_manifest_sha256": "1ad679a0a3926de8b2d862aca78c4732c0110b791fb1dcfdc4cacf7964c42c9b"
+}

@@ -13,9 +13,8 @@ xos::i64 abandon(xos::net2::client& client, xos::u64 handle, xos::u64 deadline, 
     if (client.cancel_connection(handle, deadline)) client.close();
     return result;
 }
-}
-xos::i64 read_framed_response(response_reader read, void* context,
-                              unsigned char* buffer, size_t capacity, response& result) {
+xos::i64 read_response(response_reader read, void* context,
+                       unsigned char* buffer, size_t capacity, response& result, bool require_eof) {
     using namespace xos;
     result = {};
     if (!read || !buffer || !capacity) return net2::invalid;
@@ -60,7 +59,22 @@ xos::i64 read_framed_response(response_reader read, void* context,
             }
         }
         if (have_headers && used > expected) return net2::invalid;
+        if (!require_eof && have_headers && used == expected) {
+            const error checked = parse_response(buffer, used, true, parsed);
+            if (checked != error::ok) return parser_error(checked);
+            result = parsed;
+            return 0;
+        }
     }
+}
+}
+xos::i64 read_framed_response(response_reader read, void* context,
+                              unsigned char* buffer, size_t capacity, response& result) {
+    return read_response(read, context, buffer, capacity, result, true);
+}
+xos::i64 read_content_length_response(response_reader read, void* context,
+                                      unsigned char* buffer, size_t capacity, response& result) {
+    return read_response(read, context, buffer, capacity, result, false);
 }
 
 xos::i64 fetch(xos::net2::client& client, const url& input, unsigned char* buffer,

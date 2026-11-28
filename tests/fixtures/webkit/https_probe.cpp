@@ -33,13 +33,15 @@ int main(int argc, char** argv)
         !std::strcmp(argv[2],"expired");
     const bool stalled=!std::strcmp(argv[2],"stall");
     const bool truncated=!std::strcmp(argv[2],"truncated");
-    if (!accepted && !certificate && !stalled && !truncated) return 2;
+    const bool extra=!std::strcmp(argv[2],"extra");
+    if (!accepted && !certificate && !stalled && !truncated && !extra) return 2;
     const bool empty=!response.status && !response.body_offset && !response.body_length;
     const bool pass=after>=before && after-before<10'000'000'000 &&
         (accepted ? (!result && response.status==200 && response.body_length==32 &&
             !std::memcmp(buffer+response.body_offset,argv[3],32)) :
          certificate ? (result==net2::denied && empty) :
-         stalled ? (result==net2::timeout && empty) : (result==net2::io && empty));
+         stalled ? (result==net2::timeout && empty) :
+         extra ? ((result==net2::io || result==net2::invalid) && empty) : (result==net2::io && empty));
     std::printf("CLARKE_HTTPS scenario=%s result=%lld status=%u bytes=%zu elapsed_ns=%lld realtime=%lld pass=%u\n",
         argv[2],static_cast<long long>(result),response.status,response.body_length,
         static_cast<long long>(after-before),static_cast<long long>(std::time(nullptr)),pass ? 1u : 0u);

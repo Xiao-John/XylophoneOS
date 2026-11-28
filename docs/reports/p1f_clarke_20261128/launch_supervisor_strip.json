@@ -1,0 +1,73 @@
+{
+  "user_supervisor.elf": {
+    "sha256": "a487a70560d75e98eea8583e2a82ec8ced146718a7067e7fff8f52dd2d4c1403",
+    "bytes": 777072,
+    "entry": 1073741824,
+    "segments": [
+      {
+        "flags": 5,
+        "va": 1073741824,
+        "pa": 1073741824,
+        "filesz": 85985,
+        "memsz": 85985,
+        "align": 4096,
+        "sha256": "8f28195daa1ba93b545095bf75bd3e0b2775c594d0a5370e5ff44235f81ae9e1"
+      },
+      {
+        "flags": 4,
+        "va": 1073827840,
+        "pa": 1073827840,
+        "filesz": 16812,
+        "memsz": 16812,
+        "align": 4096,
+        "sha256": "d220f698d70b2dd52bef04902a0fbc7abad731cf4323f62ffe6fb45539247a90"
+      },
+      {
+        "flags": 6,
+        "va": 1073848320,
+        "pa": 1073848320,
+        "filesz": 104,
+        "memsz": 290604,
+        "align": 4096,
+        "sha256": "4ba6a944d837f1d23c7d6766e25d268e172d6e59bd16b3da59e8348576f2a95c"
+      }
+    ]
+  },
+  "user_supervisor.image.elf": {
+    "sha256": "a2f5fe4b240d7c230df8839661894b54c4961cb58a725c41e19c924a2925fdf8",
+    "bytes": 111264,
+    "entry": 1073741824,
+    "segments": [
+      {
+        "flags": 5,
+        "va": 1073741824,
+        "pa": 1073741824,
+        "filesz": 85985,
+        "memsz": 85985,
+        "align": 4096,
+        "sha256": "8f28195daa1ba93b545095bf75bd3e0b2775c594d0a5370e5ff44235f81ae9e1"
+      },
+      {
+        "flags": 4,
+        "va": 1073827840,
+        "pa": 1073827840,
+        "filesz": 16812,
+        "memsz": 16812,
+        "align": 4096,
+        "sha256": "d220f698d70b2dd52bef04902a0fbc7abad731cf4323f62ffe6fb45539247a90"
+      },
+      {
+        "flags": 6,
+        "va": 1073848320,
+        "pa": 1073848320,
+        "filesz": 104,
+        "memsz": 290604,
+        "align": 4096,
+        "sha256": "4ba6a944d837f1d23c7d6766e25d268e172d6e59bd16b3da59e8348576f2a95c"
+      }
+    ]
+  },
+  "status": "passed",
+  "scope": "Original supervisor ELF vs explicit ClarkE profile strip-all image: identical entry, PT_LOAD mapping fields and bytes; original128KiB image limit preserved",
+  "system_manifest_sha256": "1ad679a0a3926de8b2d862aca78c4732c0110b791fb1dcfdc4cacf7964c42c9b"
+}

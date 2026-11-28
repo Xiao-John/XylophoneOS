@@ -33,7 +33,8 @@ def main():
         raise ValueError('launch fixture does not match the isolated system')
     required = ('src/user/loader/load.cpp','src/user/include/xos/execution.hpp',
                 'src/shared/include/xos/net_service_abi.hpp','src/user/network/service_core.cpp',
-                'src/user/include/xos/net_service_client.hpp','tests/fixtures/webkit/launch_probe.hpp')
+                'src/user/include/xos/net_service_client.hpp','tests/fixtures/webkit/launch_probe.hpp',
+                'src/kernel/platform/pc/pci.cpp','src/kernel/arch/x86_64/paging.cpp')
     for name in required:
         if digest(ROOT/name) != manifest['sources'][name]: raise ValueError('qualified source changed: '+name)
     image = args.system/'xos-install.iso'
@@ -54,9 +55,28 @@ def main():
         command(guest,'demo quiet',b'demo tasks')
         if b'[net-start] pid=' in guest.output:
             command(guest,'net-stop',b'[wait] pid=',timeout=30)
+        # First use creates the kernel-boot-lifetime PCI reset observer used
+        # to prove DMA quiescence. Record that separately from process lifetimes.
+        cold = resources(guest)
+        for cycle in range(2):
+            start = len(guest.output)
+            command(guest,'net-start 41',b'[net-start] pid=',timeout=60)
+            guest.expect(b'[net] ready native_v2=1',start=start,timeout=60)
+            command(guest,'net-stop',b'[wait] pid=',timeout=30)
+            observed = resources(guest)
+            if cycle == 0:
+                initialized = observed
+                if cold[1:] != initialized[1:] or cold[0] - initialized[0] not in (0,1):
+                    raise AssertionError('unexpected cold PCI reset observer allocation')
+            elif observed != initialized:
+                raise AssertionError('plain network lifecycle did not restore initialized resources')
+        report['device_initialization'] = {'cold':cold,'initialized':initialized,
+            'kernel_observer_pages':cold[0]-initialized[0],'second_plain_cycle':observed,
+            'scope':'one cached kernel PCI reset-status observer page table, per boot; no ClarkE process ran'}
         before = resources(guest); report['before_service'] = before
+        start = len(guest.output)
         output = command(guest,'net-start 41',b'[net-start] pid=',timeout=60)
-        guest.expect(b'[net] ready native_v2=1',timeout=60)
+        guest.expect(b'[net] ready native_v2=1',start=start,timeout=60)
         service = re.search(rb'\[net-start\] pid=(\d+)',output)
         if not service: raise AssertionError('no actual network service PID')
         report['service_pid'] = int(service[1])

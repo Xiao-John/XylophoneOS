@@ -1,0 +1,23 @@
+{
+  "files": {
+    "http_framing_host.log": "e873e751569d4f2d6642cdbec804979eb336140c798c03576966829f1b436e77",
+    "https_initial_failed_report.json": "d162958fe0cfbb4ec93148895ebdad2cb185b7ee608b3e6b507728198914595a",
+    "https_initial_failed_serial.log": "22ca57c4a30bbd00b92f88ac1508221f0eb3510a592f3b52c5bc219ea07f3677",
+    "https_probe_build.json": "b81c85ad5a8274f09285ad8111cf65f01d13c6f62910197fae1f398083b67b0f",
+    "https_report.json": "1609957ca0bccc534f8a4647d6676d3e513bbc040b074bc0f1c6e8bb08909867",
+    "https_serial.log": "ee3d8a94937f8a27aeafe96b186eee2c12bea7bf1f46f0e38c4bab5b8f9383be",
+    "launch_child_strip.json": "110975cbd21fa35b0c9c4dea6e1bf90799913d81d56421c984a76c2e74611201",
+    "launch_cold_failed_report.json": "d6d4d79b41ba0e08c2554a1f60a9a9139fc7000d22dc72bc36459e40a73749b0",
+    "launch_cold_failed_serial.log": "f5a6c57f27dda8bc3bc1ddb59392d0dff8fb4e1b9267a4279ca80f565c24531b",
+    "launch_device_isolation.json": "e95a986dcc7ab4bd638018abbfaf8ee7ef017e013aec3cf520ca543d09b18dbd",
+    "launch_device_isolation_serial.log": "609d87a41cde7a33d92161372e05b9b51e81ca15fd132be99df40afa992bc3ed",
+    "launch_native_system.json": "243d9bcd36fc1f76f6cdf412dc984c197b028031622a38c46263f22ea74c6608",
+    "launch_report.json": "5bc63e5cbec6d96004f05311be324ed71cd54caebb4f0415b7c39d2936724637",
+    "launch_serial.log": "b8e92d5889d09bbdf475928521e9cf15231dbc3445247678431d67d277a2d842",
+    "launch_supervisor_strip.json": "971925d82464c64eef7808883352644eed703e83edf7a5f89a30a4b540ebd52b",
+    "net_client_host.log": "719f12921083acaf0598425f4ee9d09dca6c6a3e9467eb6d174002f1348f4e69",
+    "net_service_host.log": "6614b4eb819bb25af82e8a7f5065e3a0959706cee23c8d2593315b56bedf8d9a",
+    "qualification.json": "3cf5c8f3ecb4285f35ebb7fddcb201b6e31d675f959b8526454092e7916ee78b"
+  },
+  "version": 1
+}

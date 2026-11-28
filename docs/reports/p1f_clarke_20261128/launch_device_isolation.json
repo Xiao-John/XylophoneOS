@@ -1,0 +1,82 @@
+[
+  {
+    "label": "initial",
+    "resources": [
+      129678,
+      3,
+      1
+    ]
+  },
+  {
+    "label": "round0:service_started",
+    "resources": [
+      129506,
+      4,
+      2
+    ]
+  },
+  {
+    "label": "round0:service_stopped",
+    "resources": [
+      129677,
+      3,
+      1
+    ]
+  },
+  {
+    "label": "round1:service_started",
+    "resources": [
+      129506,
+      4,
+      2
+    ]
+  },
+  {
+    "label": "round1:information",
+    "resources": [
+      129506,
+      4,
+      2
+    ]
+  },
+  {
+    "label": "round1:service_stopped",
+    "resources": [
+      129677,
+      3,
+      1
+    ]
+  },
+  {
+    "label": "round2:service_started",
+    "resources": [
+      129506,
+      4,
+      2
+    ]
+  },
+  {
+    "label": "round2:information",
+    "resources": [
+      129506,
+      4,
+      2
+    ]
+  },
+  {
+    "label": "after_one_real_abort",
+    "resources": [
+      129506,
+      4,
+      2
+    ]
+  },
+  {
+    "label": "round2:service_stopped",
+    "resources": [
+      129677,
+      3,
+      1
+    ]
+  }
+]

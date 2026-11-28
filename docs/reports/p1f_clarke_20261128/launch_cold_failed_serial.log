@@ -1,0 +1,261 @@
+XOS: loading stage_two
+[loader] firmware=bios target=x86_64
+[boot] event=kernel_enter arch=x86_64 build=23ab319bdfdfcb3b
+[boot] event=boot_info_valid memory_map=complete
+[boot] event=runtime_checked bss=zero data=valid
+[cpu] event=exceptions_ready idt=0x0000000000272110 vectors=32 double_fault_ist=1
+[display] state=ready width=800 height=600 stride=3200 physical=0x00000000fd000000 bytes=1920000 cache=uc user_mapping=none
+[display] backend=vbe fallback=1
+[mem] event=initialized usable_kib=523775 managed_kib=524160 pages=131040 free_pages=130165 allocated_pages=1
+[mem] event=window low=0x0000000000100000 high=0x000000001ffe0000
+[vm] event=self_check result=pass address=0x0000000040000000 physical=0x000000000036b000
+[block] event=ready device=ata sectors=1048576
+[task] event=created pid=1 name=heartbeat
+[task] event=created pid=2 name=spinner
+[task] event=created pid=3 name=receiver
+[task] event=created pid=4 name=sender
+[task] event=created pid=5 name=probe
+[task] event=created pid=6 name=quitter
+[task] event=created pid=7 name=supervisor bootstrap=trusted_segments
+[task] event=created pid=8 name=files bootstrap=trusted_segments
+[task] event=ready count=8
+[boot] result=ready stage=E04
+The underscores made it to 64 bits.
+
+  ================================================
+   XOS 0.0.2 | 64-bit | more checks than excuses
+   Guest star: Guo YePeng (did not panic, yet)
+   "It booted on my machine." - everyone, ever
+  ================================================
+   guo = ceremonial greeting    joke = deterministic
+   help = actual work
+xos64> run
+[sched] event=starting
+[input] ps2=ready irq1=enabled irq12=enabled
+[sched] event=start tasks=8
+Abad length
+bad pointer
+tx
+bad handle rejected
+no send right
+[task] event=fault pid=5 vector=14 rip=0x0000000040000060 cr2=0x0000000000100000 result=killed tid=5
+[task] event=reclaimed pid=5 pages=11
+bye
+[task] event=reclaimed pid=6 pages=11
+Aping
+bad length
+bad pointer
+tx
+Abad length
+bad pointer
+Aping
+Abad length
+bad pointer
+tx
+Aping
+Abad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Aping
+Abad length
+bad pointer
+tx
+bad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+ping
+Abad length
+bad pointer
+tx
+[files] ready hello.elf bytes=9872
+
+Welcome to Xshell | XylophoneOS
+help: commands   dash -i: POSIX shell   trace on: diagnostics
+
+Abad length
+bad pointer
+Aping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+Abad length
+bad pointer
+ping
+bad length
+bad pointer
+tx
+Aping
+bad length
+bad pointer
+tx
+xsh> tAping
+race onbad length
+bad pointer
+tx
+
+xsh: trace on
+xsh> Aping
+bad length
+bad pointer
+tx
+demo quietAping
+bad length
+bad pointer
+tx
+
+[task] event=killed_by_supervisor pid=1
+[task] event=reclaimed pid=1 pages=11
+[task] event=killed_by_supervisor pid=2
+[task] event=reclaimed pid=2 pages=11
+[task] event=killed_by_supervisor pid=3
+[task] event=reclaimed pid=3 pages=11
+[task] event=killed_by_supervisor pid=4
+[task] event=reclaimed pid=4 pages=11
+[sup] demo tasks stopped
+xsh> stats
+[resources] free=129678 tasks=3 completions=1
+xsh> net-start 41
+[process] event=started pid=10 parent=7
+[process] pid=10 address_space=0x000000000036b000
+[net-start] pid=10
+xsh> [net] ready native_v2=1 user_driver=1 lwip=2.2.1 sessions=4 raw_ethernet=0
+clarke-start-test start
+[task] event=reclaimed pid=11 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=11 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=12 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=12 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=13 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=13 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=14 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=14 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=15 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=15 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=16 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=16 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=17 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=17 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=18 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=18 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=19 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=19 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=20 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=20 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=21 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=21 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=22 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=22 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=23 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=23 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=24 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=24 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=25 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=25 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=26 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=26 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=27 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=27 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=28 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=28 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=29 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=29 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test start
+[task] event=reclaimed pid=30 pages=198
+CLARKE_START_PROBE double_abort=0 spawned=-2 pid=30 first_abort=-6 never_started=1 attempted=1 abort=0 release=0 policy_before=0 policy_after=0 resources=1 result=PASS
+xsh> clarke-start-test double-abort
+[task] event=reclaimed pid=31 pages=198
+CLARKE_START_PROBE double_abort=1 spawned=-1 pid=31 first_abort=0 never_started=1 attempted=1 abort=-1 release=-6 policy_before=0 policy_after=1 resources=1 result=PASS
+xsh> net-stop
+[process] event=wait_blocked parent=7 child=10
+[net] close=0
+[task] event=reclaimed pid=10 pages=105
+[wait] pid=10 kind=exited code=0
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> stats
+[resources] free=129677 tasks=3 completions=1
+xsh> 

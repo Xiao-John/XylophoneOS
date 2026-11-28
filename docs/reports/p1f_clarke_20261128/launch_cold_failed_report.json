@@ -1,0 +1,359 @@
+{
+  "before_service": [
+    129678,
+    3,
+    1
+  ],
+  "cases": [
+    {
+      "fields": [
+        -2,
+        11,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 0
+    },
+    {
+      "fields": [
+        -2,
+        12,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 1
+    },
+    {
+      "fields": [
+        -2,
+        13,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 2
+    },
+    {
+      "fields": [
+        -2,
+        14,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 3
+    },
+    {
+      "fields": [
+        -2,
+        15,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 4
+    },
+    {
+      "fields": [
+        -2,
+        16,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 5
+    },
+    {
+      "fields": [
+        -2,
+        17,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 6
+    },
+    {
+      "fields": [
+        -2,
+        18,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 7
+    },
+    {
+      "fields": [
+        -2,
+        19,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 8
+    },
+    {
+      "fields": [
+        -2,
+        20,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 9
+    },
+    {
+      "fields": [
+        -2,
+        21,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 10
+    },
+    {
+      "fields": [
+        -2,
+        22,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 11
+    },
+    {
+      "fields": [
+        -2,
+        23,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 12
+    },
+    {
+      "fields": [
+        -2,
+        24,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 13
+    },
+    {
+      "fields": [
+        -2,
+        25,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 14
+    },
+    {
+      "fields": [
+        -2,
+        26,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 15
+    },
+    {
+      "fields": [
+        -2,
+        27,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 16
+    },
+    {
+      "fields": [
+        -2,
+        28,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 17
+    },
+    {
+      "fields": [
+        -2,
+        29,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 18
+    },
+    {
+      "fields": [
+        -2,
+        30,
+        -6,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "result": "PASS",
+      "round": 19
+    },
+    {
+      "fields": [
+        -1,
+        31,
+        0,
+        1,
+        1,
+        -1,
+        -6,
+        0,
+        1,
+        1
+      ],
+      "mode": "double_abort",
+      "result": "PASS"
+    }
+  ],
+  "iso_sha256": "d132e8334b66136d7b49479c848c20096e225fc56e0508353cea9b279e6b43bc",
+  "probe_sha256": "a8fe1fc3cf5f3c0396ab63d7b5c9c6c34364858fe520f746b7c325dcc3a3660b",
+  "runner_sha256": "8aa45bf36bbb8adb101242713926813b305640e9b27a2ee1f3ad26ab2262d5bf",
+  "service_pid": 10,
+  "sources": {
+    "src/shared/include/xos/net_service_abi.hpp": "27aaa881a5098121d24e86aca2f9c032153fc6a9f3f74c2e39551a1b1c19af54",
+    "src/user/include/xos/execution.hpp": "8464072884551029449d08a5079ede61a1ebfdb0e40d5028dcf5f9dd1e94d90f",
+    "src/user/include/xos/net_service_client.hpp": "a4b4201388c7f85932c284bf0b050f74d53b648ad3dce613cdf142f29aeec0f4",
+    "src/user/loader/load.cpp": "2c66688ed2d15bd587bbb1258acec09f06636650a598d0bcf3374012b3301d25",
+    "src/user/network/service_core.cpp": "88cc2d3662f95f128af5864fe014a6d988ff8a618a7078a740a49758c0bff12b",
+    "tests/fixtures/webkit/launch_probe.hpp": "c0f32e775d6699c37dbe7ac04f54d20dd0ce0956ccbae5af6dbd6f502c93d0a2"
+  },
+  "status": "failed",
+  "system_manifest_sha256": "1ad679a0a3926de8b2d862aca78c4732c0110b791fb1dcfdc4cacf7964c42c9b"
+}

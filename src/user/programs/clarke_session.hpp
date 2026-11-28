@@ -27,7 +27,11 @@ public:
             const i64 received = receive_now(ui_.channel, incoming_);
             if (!received) {
                 if (!valid_intent(incoming_, last_navigation_, navigation_)) { fatal_ = true; break; }
-                if (incoming_.action == operation::close) { closing = true; break; }
+                if (incoming_.action == operation::close) {
+                    outgoing_ = {}; outgoing_.action = operation::close;
+                    if (!send_packet(ui_.channel, outgoing_, deadline_after(bootstrap_ns))) { fatal_ = true; break; }
+                    closing = true; break;
+                }
                 if (incoming_.action == operation::navigate) {
                     // finish may use scratch packets; preserve the new bounded URL.
                     const u64 next = incoming_.navigation; const u32 length = incoming_.length;

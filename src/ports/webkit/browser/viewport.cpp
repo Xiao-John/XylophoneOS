@@ -57,9 +57,13 @@ protected:
     void exposeEvent(QExposeEvent*) override { paint(); }
     bool event(QEvent* event) override {
         if (event->type() == QEvent::Close) {
+            static_cast<QCloseEvent*>(event)->ignore();
+            if (closing_) return true;
+            closing_ = true;
             packet value{}; value.action = operation::close;
-            (void)send_packet(channel_, value, deadline_after(bootstrap_ns));
-            QGuiApplication::quit(); return true;
+            if (!send_packet(channel_, value, deadline_after(bootstrap_ns))) QGuiApplication::exit(14);
+            QTimer::singleShot(3000, this, [this] { if (closing_) QGuiApplication::exit(14); });
+            return true;
         }
         if (event->type() == QEvent::KeyPress) {
             auto* key = static_cast<QKeyEvent*>(event);
@@ -90,6 +94,7 @@ protected:
 private:
     void reset_pending() { partial_.clear(); position_ = 0; pending_present_ = false; }
     void navigate() {
+        if (closing_) return;
         const QByteArray bytes = address_.toUtf8();
         if (!valid_url(reinterpret_cast<const u8*>(bytes.constData()), static_cast<u32>(bytes.size())) || navigation_ == ~u64{0}) {
             status_ = QStringLiteral("Enter a supported HTTP or HTTPS URL"); paint(); return;
@@ -101,6 +106,7 @@ private:
         paint();
     }
     void cancel() {
+        if (closing_) return;
         packet value{}; value.action = operation::cancel; value.navigation = navigation_;
         reset_pending(); awaiting_ = false; status_ = QStringLiteral("Cancelled");
         if (!send_packet(channel_, value, deadline_after(bootstrap_ns))) QGuiApplication::exit(11);
@@ -108,6 +114,11 @@ private:
     }
     void invalid_frame() { reset_pending(); awaiting_ = false; QGuiApplication::exit(12); }
     void accept(const packet& value) {
+        if (value.action == operation::close) {
+            if (!closing_ || value.navigation || value.length || value.offset || value.result) { invalid_frame(); return; }
+            closing_ = false; QGuiApplication::quit(); return;
+        }
+        if (closing_) return;
         if (value.navigation != navigation_) return;
         if (value.action == operation::status) {
             if (value.length || value.offset || value.result >= 0) { invalid_frame(); return; }
@@ -187,7 +198,7 @@ private:
     sha256 hash_;
     u32 position_ = 0;
     u64 navigation_ = 0;
-    bool awaiting_ = false, pending_present_ = false, select_all_ = false;
+    bool awaiting_ = false, pending_present_ = false, select_all_ = false, closing_ = false;
     std::atomic<bool> stopping_{false};
     std::thread worker_;
 };

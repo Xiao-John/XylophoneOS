@@ -108,7 +108,7 @@ i64 fetch(u64 service, const browser_http::url& target, unsigned char* buffer,
         sent += amount;
     }
     struct response_source { SSL* stream; transport& native; } source{tls.stream, native};
-    status = browser_http::read_framed_response([](void* context, unsigned char* data, u32 size) -> i64 {
+    status = browser_http::read_content_length_response([](void* context, unsigned char* data, u32 size) -> i64 {
         auto& source = *static_cast<response_source*>(context);
         std::size_t received = 0;
         const int result = SSL_read_ex(source.stream, data, size, &received);

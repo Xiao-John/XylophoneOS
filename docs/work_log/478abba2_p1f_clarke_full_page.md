@@ -126,3 +126,71 @@ ICU 按 jobs 2 重建，其他依赖、WebCore 完整链接与 Qt 构建继续�
   满表失败、释放后容量恢复及 40 个 policy 生命周期；实际执行结果后续补录。
 
 源码检查点仍不代表 WebCore full-page、Qt scanout 或任何新 guest 通过。
+
+## 已实际通过的隔离生命周期与 HTTPS 子集
+
+以下新证据在恢复后的已发布 Linux SDK 开发环境重新产生，位于
+[`p1f_clarke_20261128`](../reports/p1f_clarke_20261128/manifest.json)。这是进行中的
+部分验收，不把启动失败 probe 或独立 HTTPS probe 算作 WebCore/Qt 整页通过。
+
+启动/abort 客体使用隔离的 `XOS_LOADER_TEST_BAD_START_ENTRY=1` 镜像。20 个实际
+post-prepare start 拒绝均记录 never-started=1、abort-attempted=1、kernel abort=0，
+然后由可信控制器回收撤销记录，policy occupancy 每轮从 0 回到 0。double-abort
+负例记录 callback 首次 abort=0、loader 第二次 abort=-1；没有推定回收，policy
+occupancy 保留为 1。子程序执行标记始终未出现。服务退出后资源恢复为
+`[free_pages=129677, tasks=3, completions=1]`，与已初始化基线完全一致。
+
+第一次验收曾在最终页数比较失败一页。独立的无 ClarkE `net-start/net-stop` 周期
+重现相同差异；`pci.cpp::observe_supported_reset` 首次为 PCI instance 建立内核
+整个启动周期保留的 reset-status 观察映射。第二个普通周期没有新增页。更新后的
+runner 单独记录 cold `[129678,3,1]` → initialized `[129677,3,1]`，必须第二周期
+严格相等，再开始上述全部 21 个故障用例；没有修改生产实现或放宽进程回收断言。
+两份失败/通过原始 serial 与独立 device isolation 记录均保留，且绑定 PCI/paging
+源码摘要。该例的 ISO SHA-256 为
+`d132e8334b66136d7b49479c848c20096e225fc56e0508353cea9b279e6b43bc`，
+native manifest 为 `1ad679a0a3926de8b2d862aca78c4732c0110b791fb1dcfdc4cacf7964c42c9b`。
+
+HTTPS 实测还发现共享 HTTP reader 的原有入口要求 EOF，不能在 body 完成后主动
+发起 TLS 关闭。因此保留原 `read_framed_response` 行为，并新增准确 Content-Length
+边界入口；它仅交出暂存响应，ClarkE 必须再完成真实双向 TLS 关闭才能返回成功。
+第一次等待 EOF 而超时的 serial 也保留，最终真实 guest 验证如下：
+
+| 场景 | 实际结果 |
+| --- | --- |
+| client-first 正常关闭 | TLS 1.3、200、32 字节 nonce、双向 close_notify，约 1.36 秒 |
+| server-first 正常关闭 | TLS 1.3、200、32 字节 nonce，约 1.13 秒 |
+| 对端不回关闭通知 | 原总 deadline 到 3.00 秒，timeout -205，response 清空 |
+| 裸 TCP EOF、额外 application byte | IO -207，response 清空 |
+| 错误主机名、未知 CA、过期证书 | denied -202，握手 alert；没有 HTTP application request |
+| 负例后再次正常请求 | 成功、32 字节 nonce、双向 close_notify |
+
+每轮资源回到 `[129506,4,2]`，最终服务退出回到 `[129677,3,1]`。实际 guest report
+SHA-256 为 `1609957ca0bccc534f8a4647d6676d3e513bbc040b074bc0f1c6e8bb08909867`，
+probe ELF 为 `b46bbe9381e6d73e6809a84b7b190fda54a85d4cd94f93aa0b80b06a8ce05d22`。
+测试使用显式受控 origin/CA，不宣称公共 CA、DNS 或任意互联网资格。
+
+net2 host 回归实际通过 33 个 real-lwIP core 场景、2 个生产 loop 场景和客户端畸形
+policy 响应检查。HTTP reader 在 SDK `/usr/bin/g++` 的 ASan/UBSan 下通过 fragment、
+旧 EOF 语义、精确 body、截断、surplus、重复/不支持 framing 检查；该受跟踪 SDK
+环境设置 `ASAN_OPTIONS=detect_leaks=0`，不宣称 LeakSanitizer 资格。
+
+可复现的本轮命令以各自独立输出目录执行，已有目录保留而不覆盖：
+
+```sh
+python3 tests/net_service_host.py --archive "$LWIP_ARCHIVE" --output "$NET_HOST_OUTPUT"
+python3 tests/net_client_host.py
+CXX=/usr/bin/g++ ASAN_OPTIONS=detect_leaks=0 python3 tests/browser_http_framing_test.py --output "$FRAMING_OUTPUT"
+python3 tests/clarke_https_guest.py prepare --certificates "$TLS_FIXTURES"
+python3 tests/build_clarke_https_probe.py --sdk-build "$CXX_SDK" --sdk-profile "$SDK_PROFILE" \
+  --openssl "$OPENSSL_TARGET" --tls-root-der "$TLS_FIXTURES/clarke-root.der" \
+  --tls-origin https://tls.xos.test:9443 --tls-address 10.0.2.2 --output "$HTTPS_PROBE"
+XOS_QMP_TRANSPORT=pipe python3 tests/clarke_launch_guest.py --system "$LAUNCH_SYSTEM" \
+  --probe "$LAUNCH_CHILD_STRIPPED" --output "$LAUNCH_GUEST_OUTPUT"
+XOS_QMP_TRANSPORT=pipe python3 tests/clarke_https_guest.py test --system "$LAUNCH_SYSTEM" \
+  --probe "$HTTPS_PROBE" --certificates "$TLS_FIXTURES" --output "$HTTPS_GUEST_OUTPUT"
+```
+
+ICU、FreeType/HarfBuzz、libxml2、Fontconfig 已实际重建完成；Skia 软件绘图归档仍在
+编译。WebCore 全页 ELF、Qt 视口、超过 16 次真实浏览器导航和 renderer trap 恢复
+仍待执行。为避免 UI 的 close 消息与其 pair 回收竞争，应用协议的既有 `close`
+操作增加明确反向 ACK，GUI 最多等待三秒；该完整 UI 路径也仍待真实客体验证。

@@ -44,6 +44,10 @@ the previous workers before starting another navigation. Every wait and IPC
 operation has a finite monotonic deadline. Failure closes the partial frame and
 reaps owned children. A renderer sends its completed frame, waits for a private
 frame acceptance and then exits; it cannot close away an unconsumed final frame.
+Likewise, the UI sends `close` and waits at most three seconds for the controller's
+exact empty `close` acknowledgement before normal exit. The controller acknowledges
+before waiting for UI retirement. This preserves the close message until it is
+consumed instead of racing it against destruction of the child's owned pair.
 
 ## net2 peer policy extension
 

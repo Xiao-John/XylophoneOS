@@ -47,7 +47,7 @@ def exchange(guest,service,scenario,certificates,policy):
                 connection,_=listener.accept()
                 with connection:
                     connection.settimeout(20)
-                    try: stream=context.wrap_socket(connection,server_side=True)
+                    try: stream=context.wrap_socket(connection,server_side=True,suppress_ragged_eofs=False)
                     except ssl.SSLError as error:
                         server['handshake_alert']=error.reason;return
                     with stream:
@@ -62,7 +62,11 @@ def exchange(guest,service,scenario,certificates,policy):
                         header=b'HTTP/1.1 200 OK\r\nContent-Length: 32\r\nConnection: close\r\n\r\n'
                         stream.sendall(header[:13]);stream.sendall(header[13:]+nonce[:11].encode())
                         stream.sendall(nonce[11:].encode())
-                        if scenario=='truncated':
+                        if scenario=='extra':
+                            stream.sendall(b'!');server['extra_application_bytes']=1
+                            try: stream.unwrap().close()
+                            except (ssl.SSLError,OSError) as error: server['expected_rejection']=str(error)
+                        elif scenario=='truncated':
                             stream.shutdown(socket.SHUT_WR);server['abrupt_transport_eof']=True
                         elif scenario=='server-close':
                             stream.unwrap().close();server['client_close_notify']=True
@@ -100,7 +104,7 @@ def exchange(guest,service,scenario,certificates,policy):
     else:
         if not server['application_request'] or server.get('version')!='TLSv1.3':
             raise AssertionError('missing actual TLS application exchange')
-        if scenario!='truncated' and not server.get('client_close_notify'):
+        if scenario not in ('truncated','extra') and not server.get('client_close_notify'):
             raise AssertionError('guest did not send its authenticated close')
     return {'scenario':scenario,'result':int(match[2]),'status':int(match[3]),'bytes':int(match[4]),
             'elapsed_ns':int(match[5]),'guest_realtime':realtime,'host_realtime_window':[before,after],
@@ -122,6 +126,9 @@ def test(args):
         if digest(args.certificates/name)!=expected: raise ValueError('certificate changed: '+name)
     for name in ('src/shared/include/xos/net_service_abi.hpp','src/user/include/xos/net_service_client.hpp'):
         if probe['inputs'][name]!=system['sources'][name]: raise ValueError('probe/native net2 input mismatch')
+    observer_sources=('src/kernel/platform/pc/pci.cpp','src/kernel/arch/x86_64/paging.cpp')
+    for name in observer_sources:
+        if digest(ROOT/name)!=system['sources'][name]: raise ValueError('kernel device lifetime input mismatch')
     if digest(image)!=system['artifacts'][image.name]['sha256']: raise ValueError('native system image changed')
     args.output.mkdir(parents=True,exist_ok=False)
     disk=args.output/'https.img';create_fat32(disk,512);transfer(disk,'import','/clarke_https.elf',elf)
@@ -131,18 +138,35 @@ def test(args):
     report={'status':'failed','system_manifest_sha256':digest(args.system/'manifest.json'),
         'probe_manifest_sha256':digest(args.probe/'manifest.json'),'image_sha256':digest(image),
         'elf_sha256':probe['elf_sha256'],'runner_sha256':digest(Path(__file__)),
-        'sdk_manifest_sha256':probe['sdk_manifest_sha256'],'policy':policy,'cases':[]}
+        'sdk_manifest_sha256':probe['sdk_manifest_sha256'],'policy':policy,'cases':[],
+        'device_lifetime_sources':{name:system['sources'][name] for name in observer_sources}}
     guest=None
     try:
         guest=Guest(image,'clarke_https',work_disk=disk,network=True,log_dir=args.output,qmp_enabled=False)
         guest.expect(b'xos64> ',timeout=30);send_bytes(guest,b'run\r');guest.expect_supervisor(trace=True,timeout=30)
         command(guest,'demo quiet',b'demo tasks')
         if b'[net-start] pid=' in guest.output: command(guest,'net-stop',b'[wait] pid=',timeout=30)
-        before=resources(guest)
+        cold=resources(guest)
+        for cycle in range(2):
+            start=len(guest.output)
+            command(guest,'net-start 41',b'[net-start] pid=',timeout=60)
+            guest.expect(b'[net] ready native_v2=1',start=start,timeout=60)
+            command(guest,'net-stop',b'[wait] pid=',timeout=30)
+            observed=resources(guest)
+            if cycle==0:
+                initialized=observed
+                if cold[1:]!=initialized[1:] or cold[0]-initialized[0] not in (0,1):
+                    raise AssertionError('unexpected cold PCI reset observer allocation')
+            elif observed!=initialized:
+                raise AssertionError('plain network lifecycle did not restore initialized resources')
+        report['device_initialization']={'cold':cold,'initialized':initialized,
+            'kernel_observer_pages':cold[0]-initialized[0],'second_plain_cycle':observed,
+            'scope':'cached kernel PCI reset-status observer page table, per boot; no HTTPS process ran'}
+        before=resources(guest);start=len(guest.output)
         row=command(guest,'net-start 41',b'[net-start] pid=',timeout=60)
-        guest.expect(b'[net] ready native_v2=1',timeout=60)
+        guest.expect(b'[net] ready native_v2=1',start=start,timeout=60)
         service=int(re.search(rb'\[net-start\] pid=(\d+)',row)[1]);baseline=resources(guest)
-        for scenario in ('valid','server-close','stall','truncated','wrong-host','unknown-ca','expired','valid'):
+        for scenario in ('valid','server-close','stall','truncated','extra','wrong-host','unknown-ca','expired','valid'):
             report['cases'].append(exchange(guest,service,scenario,args.certificates,policy))
             for _ in range(30):
                 current=resources(guest)
@@ -156,6 +180,8 @@ def test(args):
             pump(guest,0.1)
         if after!=before: raise AssertionError('network teardown leaked resources')
         report.update(status='passed',before_service=before,after_service=after,exchange_baseline=baseline)
+    except BaseException as error:
+        report['error']=str(error);raise
     finally:
         if guest:
             guest.close();(args.output/'guest.serial.log').write_bytes(guest.output)

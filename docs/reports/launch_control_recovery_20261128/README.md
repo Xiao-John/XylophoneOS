@@ -24,10 +24,13 @@ raw manifest's SHA-256, every source and artifact binding, tools and configurati
 only its repetitive build command arrays and layout symbol data are omitted.
 JSON exports replace machine-specific paths with explicit `${XOS_*}` templates;
 all other observations and source/artifact digests retain their original values.
-`report-bindings.json` records each original and exported report digest. Logs are plain text;
+`report-bindings.json` records each original report digest and conversion rule.
+The exported digests are held only in the flat root `manifest.json`. Logs are plain text;
 serial exports normalize line endings to LF and remove trailing whitespace.
-`serial-bindings.json` records both raw and exported hashes and that transform.
-`evidence_index.json` hashes every published leaf other than itself.
+`serial-bindings.json` records each raw input hash and that transform.
+`manifest.json` hashes every published leaf other than itself, in accordance with
+the evidence-integrity contract. Conversion records reference their output path
+in this root manifest instead of embedding sibling hashes.
 
 The first native attempt correctly rejected a fixture descriptor send to a
 building, unstarted child. The final fixture sends immediately after spawn

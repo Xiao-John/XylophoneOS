@@ -30,7 +30,7 @@ bool text_valid(const char (&text)[128], bool path, bool empty) {
                 || (i - component == 2 && text[component] == '.' && text[component + 1] == '.')) return false;
             component = i + 1;
         } else if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-                     || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.')) return false;
+                     || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.' || c == '+')) return false;
     }
     return true;
 }
@@ -82,7 +82,7 @@ error validate_generation(const generation& value) {
         if (index == 0) {
             if (item.bias || item.span || item.needed_count) return error::role;
         } else {
-            constexpr u64 begin = 0x100000000000ULL, end = 0x200000000000ULL;
+            constexpr u64 begin = 0x100000000000ULL, end = 0x1fff00000000ULL;
             if (item.bias < begin || item.bias >= end || item.bias % 8192 || !item.span || item.span % 4096
                 || item.span > end - item.bias || item.span > head.mapping_budget - mapped) return error::budget;
             mapped += item.span;
@@ -150,7 +150,13 @@ error verify_object(elf::read_exact_fn read, void* context, const generation_obj
 }
 
 error activation_catalog::initialize(const generation_root* roots, u32 count, u32 initial) {
-    if (sequence_ || !roots || !count || count > activation_max_generations || initial >= count) return error::state;
+    return restore(roots, count, initial, 1, 0);
+}
+error activation_catalog::restore(const generation_root* roots, u32 count, u32 active, u64 sequence, u32 revoked) {
+    if (sequence_ || !roots || !count || count > activation_max_generations || !sequence
+        || (revoked & ~((1u << count) - 1)) || (active >= count && active != activation_max_generations)
+        || (active < count && (revoked & (1u << active)))
+        || (active == activation_max_generations && !revoked)) return error::state;
     for (u32 i = 0; i < count; ++i) {
         if (!roots[i].id || zero(roots[i].sha256, 32)) return error::identity;
         for (u32 j = 0; j < i; ++j) {
@@ -159,8 +165,9 @@ error activation_catalog::initialize(const generation_root* roots, u32 count, u3
     }
     for (u32 i = 0; i < count; ++i) roots_[i] = roots[i];
     count_ = count;
-    active_ = initial;
-    sequence_ = 1;
+    active_ = active;
+    sequence_ = sequence;
+    revoked_ = revoked;
     return error::none;
 }
 error activation_catalog::capture(activation_ticket& ticket) const {

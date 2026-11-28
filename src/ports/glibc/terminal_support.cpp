@@ -84,6 +84,19 @@ extern "C" void __xos_terminal_fork_child() {
     // A service loss after commit leaves later terminal I/O unavailable.
     (void)xos::terminal::connect(terminal_session, controller, service);
 }
+extern "C" long __xos_terminal_exec_begin(xos_u32 channels[2], xos_u64* sequence, xos_u64 deadline) {
+    const long locked = lock_terminal(deadline);
+    if (locked < 0) return locked;
+    if (!terminal_session.send_handle || !terminal_session.receive_handle || !terminal_session.next_sequence) {
+        unlock_terminal();
+        return -EIO;
+    }
+    channels[0] = terminal_session.send_handle;
+    channels[1] = terminal_session.receive_handle;
+    *sequence = terminal_session.next_sequence;
+    return 0;
+}
+extern "C" void __xos_terminal_exec_end() { unlock_terminal(); }
 extern "C" long __xos_terminal_read(void* buffer, size_t length, unsigned int flags) {
     if ((flags & O_NONBLOCK) != 0) return -ENOTSUP;
     if (buffer == nullptr && length != 0) return -EFAULT;

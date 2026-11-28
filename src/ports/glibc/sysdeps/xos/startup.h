@@ -5,6 +5,12 @@
 static inline __attribute__ ((noreturn)) void
 xos_startup_fatal (const char *message)
 {
+#ifdef XOS_PUBLIC_DYNAMIC_STARTUP
+# if IS_IN (rtld)
+  extern void xos_rtld_public_failure (void) __attribute__ ((visibility ("hidden")));
+  xos_rtld_public_failure ();
+# endif
+#endif
   unsigned long length = 0;
   while (message[length] != 0)
     ++length;

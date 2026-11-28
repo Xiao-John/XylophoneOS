@@ -20,6 +20,9 @@ long __xos_terminal_close (void) __attribute__ ((visibility ("hidden")));
 long __xos_terminal_fork_prepare (xos_u64, xos_u64)
   __attribute__ ((visibility ("hidden")));
 void __xos_terminal_fork_child (void) __attribute__ ((visibility ("hidden")));
+long __xos_terminal_exec_begin (xos_u32[2], xos_u64 *, xos_u64)
+  __attribute__ ((visibility ("hidden")));
+void __xos_terminal_exec_end (void) __attribute__ ((visibility ("hidden")));
 long __xos_terminal_read (void *, size_t, unsigned int)
   __attribute__ ((visibility ("hidden")));
 long __xos_terminal_write (const void *, size_t, unsigned int)

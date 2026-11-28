@@ -41,6 +41,17 @@ struct xos_spawn_stdio
 long __xos_file_spawn_begin (struct xos_spawn_stdio *) __attribute__ ((visibility ("hidden")));
 void __xos_file_spawn_end (struct xos_spawn_stdio *) __attribute__ ((visibility ("hidden")));
 
+struct xos_exec_descriptors {
+  struct xos_file_startup_descriptor items[32];
+  xos_u32 count, retained[32], terminal_channels[2];
+  xos_u64 terminal_sequence;
+  int terminal_locked;
+};
+long __xos_file_exec_begin (struct xos_exec_descriptors *, xos_u64)
+  __attribute__ ((visibility ("hidden")));
+void __xos_file_exec_end (struct xos_exec_descriptors *, xos_u64)
+  __attribute__ ((visibility ("hidden")));
+
 /* Internal users retain an open description, never a reusable FD number.
    access is -1 for metadata, 0 for reading or 1 for writing. */
 enum xos_file_kind

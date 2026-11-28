@@ -10,6 +10,10 @@
 #include <xos/vm.hpp>
 #include "image_reader.hpp"
 
+extern "C" bool xos_dynamic_spawn_hook(const char*, xos::u32, const char* const*,
+    const xos::sdk::spawn_options*, xos::execution::launch_diagnostic*,
+    xos::execution::image_receipt*, const xos::execution::image_receipt*, xos::i64*) __attribute__((weak));
+
 namespace xos::sdk {
 namespace {
 // The supervisor is single threaded. Keep large working objects out of its
@@ -126,7 +130,8 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
                  void* read_context, u32 argc, const char* const* argv,
                  bool close_file, u32 file_handle, const spawn_options* options = nullptr,
                  execution::launch_diagnostic* diagnostic = nullptr,
-                 verified_image_snapshot* snapshot = nullptr) {
+                 verified_image_snapshot* snapshot = nullptr,
+                 i64 (*pinned_prepare)(u64, void*) = nullptr, void* pinned_context = nullptr) {
     if (diagnostic != nullptr) { *diagnostic = {execution::launch_stage::none, 0, elf::error::none}; }
     if (argc == 0 || argc > process_max_args || argv == nullptr ||
         read_exact == nullptr || name == nullptr) {
@@ -388,6 +393,9 @@ i64 spawn_reader(const char* name, u64 size, elf::read_exact_fn read_exact,
     if (result >= 0 && options != nullptr && options->prepare_child != nullptr) {
         result = options->prepare_child(static_cast<u64>(child), options->prepare_context);
     }
+    if (result >= 0 && pinned_prepare != nullptr) {
+        result = pinned_prepare(static_cast<u64>(child), pinned_context);
+    }
     if (result >= 0 && terminal_startup) {
         const u32 handle = *options->terminal_send_handle;
         if (handle == 0) result = process_error_invalid;
@@ -452,6 +460,10 @@ i64 spawn_buffer_options(const char* name, const u8* bytes, u64 size, u32 argc,
 }
 
 i64 spawn_file_impl(const char* path, u32 argc, const char* const* argv, const spawn_options* options) {
+    i64 dynamic_result = 0;
+    if (xos_dynamic_spawn_hook != nullptr &&
+        xos_dynamic_spawn_hook(path, argc, argv, options, nullptr, nullptr, nullptr, &dynamic_result))
+        return dynamic_result;
     if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
         return process_error_invalid;
     }
@@ -476,6 +488,10 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
         for (u32 i = 0; i < sizeof(receipt->digest); ++i) receipt->digest[i] = 0;
         receipt->size = 0;
     }
+    i64 dynamic_result = 0;
+    if (xos_dynamic_spawn_hook != nullptr &&
+        xos_dynamic_spawn_hook(path, argc, argv, &options, &diagnostic, receipt, expected, &dynamic_result))
+        return dynamic_result;
     if (path == nullptr || argc == 0 || argc > process_max_args || argv == nullptr) {
         diagnostic = {execution::launch_stage::prepare, process_error_invalid, elf::error::none};
         return process_error_invalid;
@@ -543,6 +559,17 @@ i64 spawn_file_diagnosed_impl(const char* path, u32 argc, const char* const* arg
     return child;
 }
 
+i64 spawn_pinned_impl(const char* name, u64 size, elf::read_exact_fn read, void* context,
+    u32 argc, const char* const* argv, const spawn_options& options,
+    execution::launch_diagnostic& diagnostic, u64 deadline,
+    i64 (*prepare)(u64, void*), void* prepare_context) {
+    if (!deadline || !file_client.set_deadline(deadline)) return process_error_invalid;
+    const i64 result = spawn_reader(name, size, read, context, argc, argv, false, 0,
+                                   &options, &diagnostic, nullptr, prepare, prepare_context);
+    (void)file_client.set_deadline(0);
+    return result;
+}
+
 i64 spawn_file(const char* path, u32 argc, const char* const* argv) {
     return spawn_file_impl(path, argc, argv, nullptr);
 }
@@ -584,6 +611,12 @@ i64 spawn_image_options(u32 image, u32 argc, const char* const* argv,
 }
 
 namespace xos::execution {
+i64 spawn_pinned_image(const char* name, u64 size, elf::read_exact_fn read, void* context,
+    u32 argc, const char* const* argv, const sdk::spawn_options& options,
+    launch_diagnostic& diagnostic, u64 deadline, i64 (*prepare)(u64, void*), void* prepare_context) {
+    return sdk::spawn_pinned_impl(name, size, read, context, argc, argv, options,
+                                diagnostic, deadline, prepare, prepare_context);
+}
 i64 spawn_file_diagnosed(const char* path, u32 argc, const char* const* argv,
                          const sdk::spawn_options& options,
                          launch_diagnostic& diagnostic) {

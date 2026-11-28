@@ -6,7 +6,8 @@
 namespace xos::dynamic {
 enum class error : u32 {
     none, io, bounds, header, identity, role, interpreter, writable_identity,
-    digest, sdk, budget, path, duplicate, dependency, cycle, state, revoked, stale
+    digest, sdk, budget, path, duplicate, dependency, cycle, state, revoked, stale,
+    not_selected
 };
 
 bool identity_valid(const object_identity& identity, object_role role, const u8 (&toolchain)[32]);
@@ -28,6 +29,7 @@ struct activation_ticket { generation_root root; u64 sequence; u32 index, reserv
 class activation_catalog {
 public:
     error initialize(const generation_root* roots, u32 count, u32 initial);
+    error restore(const generation_root* roots, u32 count, u32 active, u64 sequence, u32 revoked);
     error capture(activation_ticket& ticket) const;
     error admit(const activation_ticket& ticket) const;
     error activate(u32 index, u64 expected_sequence);

@@ -3,6 +3,8 @@
 #include <xos/file_client.hpp>
 #include <xos/sdk.hpp>
 
+extern "C" bool xos_dynamic_inspect_hook(const char*, xos::execution::candidate*) __attribute__((weak));
+
 namespace xos::execution {
 namespace {
 file::client client;
@@ -50,6 +52,7 @@ bool missing_error(i64 error) { return error == static_cast<i64>(file::status::n
 
 candidate inspect(const char* path) {
     candidate result = empty_candidate(path, candidate_kind::unreadable);
+    if (xos_dynamic_inspect_hook != nullptr && xos_dynamic_inspect_hook(path, &result)) return result;
     if (path == nullptr || path[0] == '\0') {
         result.error = static_cast<i64>(file::status::invalid);
         return result;

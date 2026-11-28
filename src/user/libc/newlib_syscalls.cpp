@@ -1637,8 +1637,8 @@ extern "C" pid_t waitpid(pid_t pid, int* status, int options) {
         return -1;
     }
     xos::process_status result{};
-    const xos::i64 waited = xos::sdk::syscall(xos::sys_process_wait,
-        static_cast<xos::u64>(pid), reinterpret_cast<u64>(&result), (options & WNOHANG) ? 1 : 0);
+    const xos::i64 waited = xos::sdk::wait_flags(
+        static_cast<xos::u64>(pid), result, (options & WNOHANG) ? 1 : 0);
     if (waited == xos::process_error_would_block && (options & WNOHANG)) { return 0; }
     if (waited < 0) { errno = error_from_kernel(waited); return -1; }
     if (status != nullptr) {

@@ -37,8 +37,11 @@ error inspect_identity(elf::read_exact_fn read, void* context, u64 bytes, const 
     if (!identity_valid(expected, expected.role, expected.toolchain_abi)) return error::identity;
     u8 header[64], program[56];
     if (!read(context, 0, header, sizeof(header))) return error::io;
-    constexpr u8 prefix[] = {0x7f, 'E', 'L', 'F', 2, 1, 1, 0};
-    if (!equal(header, prefix, sizeof(prefix)) || !zero(header + 8, 8)
+    constexpr u8 prefix[] = {0x7f, 'E', 'L', 'F', 2, 1, 1};
+    // GNU marks DSOs containing IFUNC/GNU-unique symbols with OSABI 3.
+    // The exact read-only XOS identity below remains mandatory in either case.
+    if (!equal(header, prefix, sizeof(prefix)) || (header[7] != 0 && header[7] != 3)
+        || !zero(header + 8, 8)
         || value(header + 18, 2) != 62 || value(header + 20, 4) != 1
         || value(header + 48, 4) != 0 || value(header + 52, 2) != 64
         || value(header + 54, 2) != 56) return error::header;

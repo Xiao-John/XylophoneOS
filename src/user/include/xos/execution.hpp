@@ -46,4 +46,12 @@ i64 spawn_file_diagnosed_receipt(const char* path, u32 argc, const char* const* 
 i64 spawn_verified_file(const char* path, u32 argc, const char* const* argv,
                         const sdk::spawn_options& options, const image_receipt& expected);
 
+// Static bootstrap adapter for a verified public dynamic closure. The caller
+// retains the same pin. prepare runs after all ELF copies and before either
+// spawn or same-PID exec commit; a failure aborts the building image.
+i64 spawn_pinned_image(const char* name, u64 size, elf::read_exact_fn read,
+                       void* context, u32 argc, const char* const* argv,
+                       const sdk::spawn_options& options, launch_diagnostic& diagnostic,
+                       u64 absolute_deadline, i64 (*prepare)(u64, void*), void* prepare_context);
+
 }

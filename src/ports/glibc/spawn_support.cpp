@@ -85,3 +85,39 @@ extern "C" int __xos_spawn_path(pid_t* output, const char* path, char* const arg
     if (output != nullptr) { *output = static_cast<pid_t>(child); }
     return 0;
 }
+
+extern "C" int __xos_exec_path(const char* path, char* const argv[], char* const envp[]) {
+    using namespace xos;
+    if (!path || !argv) return EINVAL;
+    const auto length = strnlen(path, file::max_name);
+    if (!length) return ENOENT;
+    if (length == file::max_name) return ENAMETOOLONG;
+    if (path[length - 1] == '/') return ENOTDIR;
+    const u32 argc = vector_length(argv, process_max_args);
+    const u32 environment_count = vector_length(envp, startup_environment_max);
+    if (!argc) return EINVAL;
+    if (argc > process_max_args || environment_count > startup_environment_max) return E2BIG;
+    const i64 now = sdk::syscall(sys_clock_monotonic);
+    if (now < 0 || now > INT64_MAX - 30000000000LL) return EIO;
+    const u64 deadline = static_cast<u64>(now) + 30000000000ULL;
+    xos_exec_descriptors snapshot{};
+    const auto captured = __xos_file_exec_begin(&snapshot, deadline);
+    if (captured != 0) return static_cast<int>(-captured);
+    sdk::spawn_options options{};
+    options.replace_image = true;
+    options.environment = envp;
+    options.environment_count = environment_count;
+    static_assert(sizeof(startup_descriptor) == sizeof(xos_file_startup_descriptor));
+    options.descriptors = reinterpret_cast<const startup_descriptor*>(snapshot.items);
+    options.descriptor_count = snapshot.count;
+    if (snapshot.terminal_locked) {
+        options.exec_channel_count = 2;
+        options.exec_channels = snapshot.terminal_channels;
+        options.exec_terminal_send_handle = snapshot.terminal_channels[0];
+        options.exec_terminal_next_sequence = snapshot.terminal_sequence;
+    }
+    execution::launch_diagnostic diagnostic{};
+    const i64 result = execution::spawn_file_diagnosed(path, argc, argv, options, diagnostic);
+    __xos_file_exec_end(&snapshot, deadline);
+    return result < 0 ? launch_error(result, diagnostic) : EIO;
+}

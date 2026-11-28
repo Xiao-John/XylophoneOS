@@ -285,6 +285,59 @@ revision 1，也不扩展 P1-H 的 revision 2。旧服务 unsupported/未知结�
 client、SDK manifest 与实际生命周期证据；细节见
 [Net2 P1-F 认领](net_service_v2.md#p1-f-peer-policy-认领未实施资格)。
 
+## P1-H grant holder release 认领（2026-11-28）
+
+sys88 `ipc_v1_action` **24** `grant_release` 和 feature **bit 5**（mask `0x20`）
+由 P1-H 认领，状态 `claimed`。现有 action 23 `grant_close` 的 manage 权限与
+全局 revoke 语义保持；不得用全局销毁模拟非管理 holder 的引用释放。
+
+action 24 使用既有 40-byte `ipc_v1_object_close` 请求：version 1、size 40、
+flags 0、调用者持有的 grant handle、两个 u64 reserved 均零。操作不需要 manage，
+只释放调用者该 handle 及调用者对同一 grant 的所有映射，其他 holder 的 handle
+和映射保持有效。全部本地映射的 pin、VM continuation、region capacity 先预检，
+busy/state/resources 或无效请求不允许部分 unmap/释放；复用现有 invalid_handle、
+invalid_argument、unsupported 等错误。最后引用释放后才销毁底页；原 owner 和
+budget_mask/树预算归属不因新增/减少 holder 被转移或提前返还 credit。
+
+`query_features` 新增 opt-in flag bit 1（mask `0x2`）：flags 0/1 继续返回原
+known/supported mask `0x1f`，flags 2/3 才返回 `0x3f`，原 bit 0 的 direct-switch
+counter 语义不变。旧内核拒绝 flag 2 为 invalid_argument，对未知 action 返回
+unsupported。SDK 第三个 `include_grant_release` 参数默认 false；Net2 使用
+显式 `(false, true)` 查询，只有 bulk_grant 与 grant_release 都可用才发布页能力。
+匹配 kernel/shared ABI/SDK/libc 后需要真实 quota、foreign handle、拒绝输出、
+失败原子性及 service/client 任一先退出的 guest 证据。本认领不宣称该实现已通过。
+
+## P1-K3 online library profile 认领（2026-11-28）
+
+本节状态为 `claimed`，先协调格式和权限边界，不能作为 dlopen/dlmopen/dlclose
+已经可用的声明。现有 fixed-startup profile 的显式拒绝保持，只有独立构建、
+独立身份并完成真实目标资格的新 profile 才可以打开下述路径；没有新增 syscall。
+
+| 格式 / 接口 | 认领与兼容 |
+| --- | --- |
+| dynamic generation version 2 | 保持 128-byte header 和 512-byte object；header offset 28 的 u32 在 v2 明确命名为 `online_mask`，v1 的同位置 `reserved0` 仍强制为零。mask 只能选择 index >= 3 的 library，非零且无越界位；startup 图不得依赖 online library，额外 library 必须从声明的 online 根可达，所有图继续无环、受数量/字节/映射预算及完整同-pin 身份/版本检查约束。旧 parser 拒绝 v2。 |
+| private GNU entry version 4 | 原 `xos_rtld_pin_plan` 尾部新增四个 u32 `online_version, online_mask, isolated_mask, online_reserved`，已有保留字段仍为零；扩展为零时保持 fixed-startup 语义。online_version=1 才可保留被批准的 online pins；isolated_mask 必须是 online_mask 子集。新 entry 版本隔离布局变化，旧 entry 不能被新结构误读。 |
+| explicit online shared-runtime profile | 正常 GNU dlfcn/rtld 负责依赖引用、符号版本、构造/析构和 TLS unload interlock；底层仅能映射批准且保持的不可变 pin。native ABI 摘要区分新 profile；默认 builder 不启用。受支持的公共 flags 为 RTLD_NOW/RTLD_LOCAL 和显式 RTLD_NOLOAD，其他 flag 先拒绝。 |
+
+命名空间有界为 base 和同时至多一个独立 namespace。独立 namespace 只允许
+无 TLS、其完整依赖也属于 isolated 集合的库；禁止复制 libc/rtld/线程运行库。
+base namespace 的 online TLS 仅允许 dynamic TLS model，禁止运行中要求给所有
+既有线程补静态 TLS 的对象。真实并发线程使用可扩展且显式清理的 GNU DTV；
+旧 fixed-closure 的保留区 DTV 路径不被错误 realloc/free。
+
+online pins 是原批准闭包的有界、进程范围 authority，必须在初始完整预检时
+取得且以相同开放描述转移；运行期不能用路径搜索、相邻 manifest 或环境变量
+加入新对象。mapping/refcount/namespace 随 GNU unload 回收；批准 pin 在整个
+进程内保留，供同一不可变实例重新加载，直到进程退出由 Files 生命周期回收。
+因此一次 dlclose 不宣称释放 approval pin credit；报告必须分别观察 mapping、
+TLS destructor 留存及最终进程资源回收。父/子或其他进程不由该格式获新权限。
+
+初始 Files 会话进入 libc 后，online I/O 必须通过同一串行化会话、原失败闩和
+每次调用的单一绝对期限，不重放未知结果；不得继续使用已经移交的早期序号。
+新/缺失/错误版本对象、namespace 越界及被拒绝 TLS model 都应在使用前失败。
+真实目标须覆盖并发调用、TLS destructor 阻止过早 unload、最后引用/依赖释放、
+保持 pin 后路径变化、失败清理，以及原 fixed profile 仍明确拒绝。
+
 ## 分配流程
 
 1. 使用者先提供最小缺口/探针，说明是否能复用现有SDK/IPC；Qt具体边界见qt_platform.md。

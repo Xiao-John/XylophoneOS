@@ -1,0 +1,7 @@
+${XOS_REPO}/tests/fixtures/glibc_net2/socket_probe.c: In function 'exercise_pipe_poll':
+${XOS_REPO}/tests/fixtures/glibc_net2/socket_probe.c:170:24: error: implicit declaration of function 'pipe2'; did you mean 'pipe'? [-Wimplicit-function-declaration]
+  170 |   int pipes[2]; CHECK (pipe2 (pipes, O_NONBLOCK) == 0);
+      |                        ^~~~~
+${XOS_REPO}/tests/fixtures/glibc_net2/socket_probe.c:22:32: note: in definition of macro 'CHECK'
+   22 | #define CHECK(expr) do { if (!(expr)) { \
+      |                                ^~~~

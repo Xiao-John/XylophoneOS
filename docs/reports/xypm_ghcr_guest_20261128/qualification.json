@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "repository": "xiao-john/xypm-smoke",
+  "manifest_sha256": "cffcf1a0c10178a5b72df199a23382ecfa58927f00c8fe11478b9ee7470658c7",
+  "ca_sha256": "4f6d9a3dcd2db8f3a7edd066e1dd09baae4b8487eedaa087222ed382ea75a0d2",
+  "image_sha256": "4204e68eef567ad4aaa8d53b7f2e58c9d817a676eb09a1c1f95e6393660851c1",
+  "xypm_sha256": "d90e180cfd9485f62b6bfaf87a2a4c43bab73a268c187bcba88b05f1a591856f",
+  "downloaded_xpk_sha256": "ac5ebd3839a58d2992d769b6aa5816a218f80777856101f001cd38ce9530b795",
+  "installed_profile": "xos-x86_64-glibc-ghcr-smoke-v1",
+  "date": "2026-11-28",
+  "base_commit": "c2947d28cf2ed7f78a6ce0643e58b1c10b5e7042",
+  "source_commit": "b8851363f426129ae51cba932a2ca5403d7530ed",
+  "system_build_id": "faa268574f3d5577",
+  "sdk_manifest_sha256": "baed587fdbf4addd18c3957919a232e0dcdb3740126ef68940006446bd97688e",
+  "mbedtls_archive_sha256": "3359a349e23db3d5536fcee032ae7b2ecbfc08972fab643089b5cbf2a375c98c",
+  "trust_generation": 20261128,
+  "network_wire_version": 2,
+  "qemu_version": "11.1.2",
+  "package": {
+    "id": "xos.xypm-smoke",
+    "upstream_version": "0.0.1",
+    "revision": 0
+  },
+  "export": {
+    "original_report_sha256": "24c68c0cb5852a4ab295e91651d64f5b8d6c86d28f669dc25f2cdd0ca5c277b1",
+    "selection": "Guest stdout success markers from download, install, and installed_identity; no command echoes or runtime diagnostics.",
+    "database": "Byte-for-byte offline FAT export after guest shutdown."
+  },
+  "host_regressions": {
+    "http_parser_checks": 212,
+    "http_malformed_vectors": 4096,
+    "http_stream_framing": "passed",
+    "ghcr": 3,
+    "p3_repository": 50,
+    "authenticated_distribution_evp": 30
+  }
+}

@@ -45,6 +45,7 @@ private:
                   const char* hostname, route_source route);
     static int send(void* context, const unsigned char* data, size_t size);
     static int receive(void* context, unsigned char* data, size_t size);
+    xos::u64 request_deadline() const;
     int fail(int error);
     void release();
 

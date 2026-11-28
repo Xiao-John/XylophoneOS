@@ -16,6 +16,7 @@ inline constexpr u32 ipc_v1_max_reply_tokens_per_process = 8;
 inline constexpr u64 ipc_v1_deadline_poll = 0;
 inline constexpr u64 ipc_v1_deadline_infinite = ~u64{0};
 inline constexpr u64 ipc_v1_query_flag_direct_switch_count = 1ull << 0;
+inline constexpr u64 ipc_v1_query_flag_grant_release = 1ull << 1;
 
 enum class ipc_v1_action : u64 {
     query_features = 0,
@@ -41,7 +42,8 @@ enum class ipc_v1_action : u64 {
     grant_delegate = 20,
     grant_map = 21,
     grant_unmap = 22,
-    grant_close = 23
+    grant_close = 23,
+    grant_release = 24
 };
 
 inline constexpr u32 ipc_v1_max_notifications_system = 32;
@@ -73,9 +75,11 @@ enum class ipc_v1_feature : u64 {
     deadline = 1ull << 1,
     notification = 1ull << 2,
     wait_set = 1ull << 3,
-    bulk_grant = 1ull << 4
+    bulk_grant = 1ull << 4,
+    grant_release = 1ull << 5
 };
-inline constexpr u64 ipc_v1_feature_known_mask = 0x1full;
+inline constexpr u64 ipc_v1_feature_known_mask = 0x3full;
+inline constexpr u64 ipc_v1_feature_legacy_mask = 0x1full;
 inline constexpr u64 ipc_v1_feature_ip2_mask =
     static_cast<u64>(ipc_v1_feature::endpoint_call) |
     static_cast<u64>(ipc_v1_feature::deadline);
@@ -84,7 +88,8 @@ inline constexpr u64 ipc_v1_feature_ip3_mask =
     static_cast<u64>(ipc_v1_feature::wait_set);
 inline constexpr u64 ipc_v1_feature_supported_mask =
     ipc_v1_feature_ip2_mask | ipc_v1_feature_ip3_mask |
-    static_cast<u64>(ipc_v1_feature::bulk_grant);
+    static_cast<u64>(ipc_v1_feature::bulk_grant) |
+    static_cast<u64>(ipc_v1_feature::grant_release);
 
 // These values are scoped to sys_ipc_v1 and are not errno values.
 enum class ipc_v1_error : i64 {

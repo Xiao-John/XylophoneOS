@@ -55,9 +55,17 @@ def main(argv=None, *, require_initialized_image=False):
             command.add_argument('--image', type=Path, required=True)
             command.add_argument('--output-image', type=Path, required=True)
             command.add_argument('--offline', action='store_true', required=True)
+    command = sub.add_parser('ghcr-fetch', help='download a pinned public OCI XPK to the host')
+    command.add_argument('repository', help='GHCR repository, owner/name')
+    command.add_argument('manifest_digest', help='trusted OCI manifest sha256 digest')
+    command.add_argument('-o', '--output', type=Path, required=True)
+    command.add_argument('--profile', type=Path, default=DEFAULT_PROFILE)
     args = parser.parse_args(argv)
     try:
-        if args.command.startswith('repo-'):
+        if args.command == 'ghcr-fetch':
+            from xypm_ghcr import fetch_package
+            result = fetch_package(args.repository, args.manifest_digest, args.output, load_json(args.profile))
+        elif args.command.startswith('repo-'):
             from xypm_repository import (create_repository, make_lock, transact_locked,
                                         verify_repository, write_metadata)
             profile = load_json(args.profile)

@@ -95,9 +95,10 @@ public:
         if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
         return result;
     }
-    i64 capabilities(u64 deadline, capability_snapshot& snapshot) {
+    i64 capabilities(u64 deadline, capability_snapshot& snapshot, bool extended = false) {
         message input{}, reply{};
         input.action = operation::capabilities; input.deadline = deadline;
+        input.flags = extended ? capabilities_extended : 0;
         const i64 result = request(input, reply);
         snapshot = {};
         if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
@@ -110,6 +111,18 @@ public:
         snapshot = {};
         if (!result) __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
         return result;
+    }
+    i64 readiness_bind(u64 deadline, readiness_binding& binding) {
+        message input{}, reply{};
+        input.action = operation::readiness_bind; input.deadline = deadline;
+        const i64 result = request(input, reply); binding = {};
+        if (!result) __builtin_memcpy(&binding, reply.data, sizeof(binding));
+        return result;
+    }
+    i64 shutdown_read(u64 handle, u64 deadline) {
+        message input{}, reply{};
+        input.action = operation::shutdown_read; input.object = handle; input.deadline = deadline;
+        return request(input, reply);
     }
     i64 shutdown_write(u64 handle, u64 deadline) {
         message input{}, reply{};
@@ -178,13 +191,21 @@ private:
         case operation::resolve_start:
         case operation::resolve_cancel:
         case operation::shutdown_write:
+        case operation::shutdown_read:
             return !reply.result && !reply.length && !reply.flags;
         case operation::capabilities: {
             if (reply.result || reply.length != sizeof(capability_snapshot) || reply.flags) return false;
             capability_snapshot snapshot{};
             __builtin_memcpy(&snapshot, reply.data, sizeof(snapshot));
-            return snapshot.revision == socket_extension_revision && !snapshot.reserved &&
-                !(snapshot.flags & ~(capability_readiness | capability_shutdown_write));
+            const bool extended = input.flags == capabilities_extended;
+            return snapshot.revision == (extended ? socket_extension_revision_2 : socket_extension_revision) &&
+                !snapshot.reserved && !(snapshot.flags & ~(extended ? 15u : 3u));
+        }
+        case operation::readiness_bind: {
+            if (reply.result || reply.length != sizeof(readiness_binding) || reply.flags) return false;
+            readiness_binding binding{}; __builtin_memcpy(&binding, reply.data, sizeof(binding));
+            return binding.revision == readiness_page_revision && binding.bytes == readiness_page_bytes &&
+                binding.grant && binding.session_generation && !binding.reserved;
         }
         case operation::readiness: {
             if (reply.result || reply.length != sizeof(readiness_snapshot) || reply.flags) return false;

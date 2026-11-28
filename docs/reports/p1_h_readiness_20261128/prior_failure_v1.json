@@ -1,0 +1,10 @@
+{
+  "status": "failed",
+  "runner_sha256": "dc36b5c33b871dc1585a067485c260e98d29dbc33e3752971f2ab03e30cd16b2",
+  "services": [],
+  "cases": [],
+  "deadline_profile": "absolute_ipc_wait",
+  "zero_timeout_connected_socket": "grant_level_snapshot_fresh_negative_or_eagain",
+  "posix_complete_poll": false,
+  "error": "Command '['/usr/bin/python3', PosixPath('${XOS_REPO}/scripts/build_glibc_program.py'), '--sdk', PosixPath('${XOS_REPO}/build/p1h_glibc_sdk/sysroot'), '--profile', PosixPath('${XOS_REPO}/build/p1h_profile.json'), '--source', PosixPath('${XOS_REPO}/tests/fixtures/glibc_net2/socket_probe.c'), '--output', PosixPath('${XOS_REPO}/build/p1h_guest_v1/net2.elf')]' returned non-zero exit status 1."
+}

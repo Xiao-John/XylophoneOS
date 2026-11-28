@@ -596,7 +596,7 @@ free_object (int minimum)
 }
 
 long
-__xos_file_socket (int close_on_exec)
+__xos_file_socket (int flags)
 {
   int error = lock_session ();
   if (error) return error;
@@ -612,8 +612,8 @@ __xos_file_socket (int close_on_exec)
       result = __xos_net2_alloc ();
       if (result >= 0)
         {
-          objects[index] = (struct open_object) { kind_socket, (unsigned int) result, O_RDWR, 1 };
-          descriptors[fd] = (struct fd_slot) { index, close_on_exec != 0 };
+          objects[index] = (struct open_object) { kind_socket, (unsigned int) result, O_RDWR | ((unsigned int) flags & O_NONBLOCK), 1 };
+          descriptors[fd] = (struct fd_slot) { index, (flags & O_CLOEXEC) != 0 };
           result = fd;
         }
     }
@@ -949,7 +949,7 @@ static long
 stream_io (struct open_object object, void *buffer, size_t length, int writing)
 {
   if (object.kind == kind_socket)
-    return __xos_net2_stream (object.handle, buffer, length, writing);
+    return __xos_net2_stream (object.handle, buffer, length, writing, (object.flags & O_NONBLOCK) != 0);
   if (object.kind == kind_terminal)
     return writing ? __xos_terminal_write (buffer, length, object.flags)
                    : __xos_terminal_read (buffer, length, object.flags);
@@ -1262,8 +1262,7 @@ __xos_file_fcntl (int fd, int command, int argument)
       const unsigned int old = objects[index].flags;
       if ((argument & ~(O_ACCMODE | O_APPEND | O_NONBLOCK | O_DIRECTORY)) != 0
           || (((unsigned int) argument ^ old) & O_APPEND) != 0
-          || ((objects[index].kind == kind_terminal || objects[index].kind == kind_socket)
-              && (argument & O_NONBLOCK) != 0))
+          || (objects[index].kind == kind_terminal && (argument & O_NONBLOCK) != 0))
         result = -ENOTSUP;
       else { objects[index].flags = (old & ~(unsigned int) O_NONBLOCK)
           | ((unsigned int) argument & O_NONBLOCK); result = 0; }
@@ -1418,6 +1417,18 @@ __xos_file_poll_lease_acquire (int fd, struct xos_file_lease *lease)
             }
         }
     }
+  unlock_session ();
+  return result;
+}
+
+long
+__xos_file_poll_lease_current (int fd, const struct xos_file_lease *lease)
+{
+  if (!lease || fd < 0 || fd >= fd_limit || lease->object < 0) return -EBADF;
+  if (__atomic_exchange_n (&session_lock, 1, __ATOMIC_ACQUIRE) != 0) return -EAGAIN;
+  const int index = object_for (fd);
+  const long result = index == lease->object && objects[index].references
+    && objects[index].kind == lease->kind && objects[index].handle == lease->handle ? 0 : -EBADF;
   unlock_session ();
   return result;
 }

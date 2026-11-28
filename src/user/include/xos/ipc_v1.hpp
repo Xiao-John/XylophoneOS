@@ -13,16 +13,18 @@ inline i64 invoke(ipc_v1_action action, T& request) {
                        reinterpret_cast<u64>(&request), 0);
 }
 
-inline i64 query_features(ipc_v1_feature_query& output, bool include_direct_switch_count = false) {
+inline i64 query_features(ipc_v1_feature_query& output, bool include_direct_switch_count = false,
+                          bool include_grant_release = false) {
     output = {};
     output.header.version = ipc_v1_version;
     output.header.size = sizeof(output);
     const i64 result = sdk::syscall(sys_ipc_v1,
         static_cast<u64>(ipc_v1_action::query_features),
         reinterpret_cast<u64>(&output),
-        include_direct_switch_count ? ipc_v1_query_flag_direct_switch_count : 0);
+        (include_direct_switch_count ? ipc_v1_query_flag_direct_switch_count : 0) |
+        (include_grant_release ? ipc_v1_query_flag_grant_release : 0));
     if (result != 0) return result;
-    if (output.known_features != ipc_v1_feature_known_mask ||
+    if (output.known_features != (include_grant_release ? ipc_v1_feature_known_mask : ipc_v1_feature_legacy_mask) ||
         (output.supported_features & ~output.known_features) != 0 ||
         output.max_message_bytes != ipc_v1_max_message_bytes ||
         output.max_handles_per_process != ipc_v1_max_handles_per_process ||
@@ -86,6 +88,10 @@ inline i64 grant_unmap(u64 handle, u64 map_id) {
 inline i64 grant_close(u64 handle) {
     ipc_v1_object_close request{}; request.handle=handle;
     return invoke(ipc_v1_action::grant_close, request);
+}
+inline i64 grant_release(u64 handle) {
+    ipc_v1_object_close request{}; request.handle=handle;
+    return invoke(ipc_v1_action::grant_release, request);
 }
 
 inline i64 notification_create(u32 rights, u64& handle) {

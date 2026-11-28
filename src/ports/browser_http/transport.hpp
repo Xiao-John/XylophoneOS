@@ -6,6 +6,14 @@
 namespace browser_http {
 // The reader returns zero on verified end of stream, or a negative transport error.
 using response_reader = xos::i64 (*)(void*, unsigned char*, xos::u32);
+// The caller supplies at least max_headers bytes of workspace. All status codes
+// reach the sink: callers must check result.status and discard provisional
+// output on error, including truncated or unauthenticated EOF.
+using response_sink = xos::i64 (*)(void*, const unsigned char*, xos::u32);
+xos::i64 read_streamed_response(response_reader read, void* read_context,
+                                 response_sink sink, void* sink_context,
+                                 unsigned char* header_buffer, size_t header_capacity,
+                                 size_t body_limit, response& result);
 xos::i64 read_framed_response(response_reader read, void* context,
                               unsigned char* buffer, size_t capacity, response& result);
 

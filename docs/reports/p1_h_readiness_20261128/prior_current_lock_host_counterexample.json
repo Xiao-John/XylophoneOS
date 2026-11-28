@@ -1,0 +1,9 @@
+{
+  "scope": "Expected failing regression against exact pre-fix C source from SDK v6; not a final-candidate test",
+  "old_source_sha256": "217bed13b7a41f413654b3207c70ee0351e0d40201f205d4e71e5ad73be85b65",
+  "sdk_v6_input_match": true,
+  "boundary_fixture_sha256": "270ffe92b0a3f8b065eb5116f333491b937676c0df2af24edcdb883af2c04282",
+  "returncode": -6,
+  "stdout": "",
+  "stderr": "p1h_pre_lock_fix_host: tests/fixtures/glibc_net2/socket_host.c:235: main: Assertion `__xos_net2_poll (&item, 1, 20) == 1 && item.revents == POLLNVAL && !leases' failed.\n"
+}

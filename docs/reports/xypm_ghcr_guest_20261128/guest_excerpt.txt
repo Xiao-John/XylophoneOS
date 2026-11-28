@@ -1,0 +1,17 @@
+[download]
+XYP_GHCR_TOKEN_OK
+XYP_GHCR_VERIFIED path=/fetch/package.xpk sha256=ac5ebd3839a58d2992d769b6aa5816a218f80777856101f001cd38ce9530b795
+[wait] pid=11 kind=exited code=0
+
+[install]
+xypm: install xos.xypm-smoke committed; completing recovery cleanup
+xypm-recover: committed transaction cleaned
+maintenance: completed
+
+[installed_identity]
+id: xos.xypm-smoke
+version: 0.0.1
+revision: 0
+sha256: ac5ebd3839a58d2992d769b6aa5816a218f80777856101f001cd38ce9530b795
+profile: xos-x86_64-glibc-ghcr-smoke-v1
+[wait] pid=14 kind=exited code=0

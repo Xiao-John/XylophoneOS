@@ -143,8 +143,12 @@ int main() {
         assert(ipc_v1::query_features(query,true)==0);
         assert(query.supported_features==0x1f);
         assert(query.direct_switch_count==counter && query.reserved==0);
+        assert(ipc_v1::query_features(query,false,true)==0);
+        assert(query.known_features==0x3f && query.supported_features==0x3f && query.direct_switch_count==0);
+        assert(ipc_v1::query_features(query,true,true)==0);
+        assert(query.known_features==0x3f && query.supported_features==0x3f && query.direct_switch_count==counter);
     }
-    for(u64 flags=2; flags<4; ++flags) {
+    for(u64 flags=4; flags<8; ++flags) {
         ipc_v1_feature_query query{};
         query.header.version=ipc_v1_version; query.header.size=sizeof(query);
         assert(sdk::syscall(sys_ipc_v1,static_cast<u64>(ipc_v1_action::query_features),

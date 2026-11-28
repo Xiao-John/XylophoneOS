@@ -1,0 +1,303 @@
+{
+  "caller.json": {
+    "source_sha256": "9354eecd50c581ef5fe92c6f8e16b1235bb4f2f496cc785e343a704aa5a123c4"
+  },
+  "files_host.json": {
+    "source_sha256": "02656313dd80153625793a8ae46179bc016600cbd5fcadfc75e47af90e861a05"
+  },
+  "guest.json": {
+    "source_sha256": "1c17f5fd1912c5205734c815ddd1dbf9efca27127ff18cf6af1b49e352e543ed"
+  },
+  "manifest_check_scope.json": {
+    "source_sha256": "f8912f93b03dbb26a8c5672dee8fca646395110c92f59aa9b1b23fd9a398c2d8"
+  },
+  "native_sdk.json": {
+    "source_sha256": "1159da969d8a2ff22e014e376fca4e9fff65d6ddde94d8f0d38166d7e8c3d6fa"
+  },
+  "net2_serial.log.gz": {
+    "source_sha256": "71ab18c68bee6b1b1c2cc83655037bd3b72af9d01ce3e72b65763947932d2403"
+  },
+  "network_inputs.json": {
+    "source_sha256": "c1d636f8a9868e3a6ac3f78d81058bf33b81aacc1816f02c3fc26dff567ff39d"
+  },
+  "prior_concurrent_diagnostic_caller.json": {
+    "source_sha256": "d93b2fee707fb0ebb549cca5470aba3a99429eda7e56a2c324340b0a61c9acba"
+  },
+  "prior_concurrent_diagnostic_repeat.json": {
+    "source_sha256": "3802395c280a3fd2aad69c7e87d8be258a67032065323941a5a0e6596f7435b3"
+  },
+  "prior_concurrent_diagnostic_repeat.log.gz": {
+    "source_sha256": "b0f3f7cc45fe22ada648e76d8223ac77d7c8793d5cb202fd7166c414729ca770"
+  },
+  "prior_concurrent_diagnostic_single.json": {
+    "source_sha256": "2b0338a669b046a73181d6cb4437cbb8dd7d0001a5928e7307562debcd84812a"
+  },
+  "prior_concurrent_diagnostic_single.log.gz": {
+    "source_sha256": "6e10d3dbed3d4e83ef244f4f3e73128c33552146f9fe671d6f58b85febab14ee"
+  },
+  "prior_concurrent_diagnostic_source.c.gz": {
+    "source_sha256": "c9265315d2578e414c123bcdc30def8f3d479841cff51afa8b159a1a61bcc1b1"
+  },
+  "prior_concurrent_failure.json": {
+    "source_sha256": "f26a2be75e2aad89a38fe77837330a18aa6116428ccbea2ddfa963d9056185b9"
+  },
+  "prior_concurrent_failure_serial.log.gz": {
+    "source_sha256": "a017493822b03581e102f832e8481e7df9ac6b3335c09429e8073181fd2c3f77"
+  },
+  "prior_current_lock_host_counterexample.json": {
+    "source_sha256": "1c0ec9763f94fba5548ec26951d7a9a3a7e17fe9d5ce8122ca4e2e65657f67d1"
+  },
+  "prior_current_lock_host_failure.log": {
+    "source_sha256": "b4feca34de41a02b16507dbf5c426e553c7824095babc3d68c1f9e42233db8c2"
+  },
+  "prior_failure_v1.json": {
+    "source_sha256": "ad238daf2c8a1166cc401e8c7291f5141f10bb89bdc87cc201b288c64af267ec"
+  },
+  "prior_failure_v2.json": {
+    "source_sha256": "af0b589af2b16eb4941743705112c62746ddc6a50a600b824c8a358feaa98507"
+  },
+  "prior_failure_v2_serial.log.gz": {
+    "source_sha256": "37ea3ed1e2722c31983aaa70da888c8ef70b4762e8e79806bb0aa8d1a6f75be3"
+  },
+  "prior_failure_v3.json": {
+    "source_sha256": "09fd8560394c2fcb683bc5ee4f0b6df995ea7c84b319a921bcdd9defaf75fc99"
+  },
+  "prior_failure_v3_serial.log.gz": {
+    "source_sha256": "20d3a34babb9d2bcc373e3bb9aa1ce1f370d7c085882b8b4205c9af2a882cd2b"
+  },
+  "prior_fixture_compile_failure.log": {
+    "source_sha256": "47f4f11b872e296de8ab91296dffcaa8dbd5aa32e9b6d91f4f333be1c3fca69b"
+  },
+  "prior_grant_diagnostic.json": {
+    "source_sha256": "8e3d99f1040693f19bc5e0e530451a1606628fac9d7506c92dfcf456c595269d"
+  },
+  "prior_grant_diagnostic.log.gz": {
+    "source_sha256": "baf5b2af7b90cf2b6c8fc2578af85fa017a44eb71f2668768f8a221a70f03978"
+  },
+  "prior_parallel_Versions.all.gz": {
+    "source_sha256": "08dc7a8c38453398917c972e8e37d764dffc78c16b102e042295f4878990140f"
+  },
+  "prior_parallel_Versions.def.gz": {
+    "source_sha256": "cc0b82a6930012c8e06811f85bc9ea1165088f04a87c9414631250c0f298233a"
+  },
+  "prior_parallel_Versions.mk.gz": {
+    "source_sha256": "3e5fa47937822e08b761271d1e49e37ad75645ad282f0ec2387ac6c05243531e"
+  },
+  "prior_parallel_Versions.v.gz": {
+    "source_sha256": "520d88c8b0f039b7d25e90d421fd54f82612dc32492faf732b49e3174aa019d3"
+  },
+  "prior_parallel_Versions.v.i.gz": {
+    "source_sha256": "9fee0aa3be81419e4d753015bc3691175564beab8f0d0b4fc54398bde53dfdb7"
+  },
+  "prior_parallel_sdk_failure.json": {
+    "source_sha256": "46dab9b4cc748e665d4b400cfbc64e2ab121ca852b054e1e4d5fcbecbb4205d9"
+  },
+  "prior_parallel_sdk_failure.log.gz": {
+    "source_sha256": "a24c9e6437ad7ec4d0c13019de321f6270b7c5d541bde12086830258a20093ca"
+  },
+  "prior_shutdown_fixture_failure.log": {
+    "source_sha256": "792c57be9036f2a1ef580d2d42e5bad5b22c5da17f792a09deda5f514b0c46b5"
+  },
+  "prior_subset_v4.json": {
+    "source_sha256": "139db2552a731ac9face993f78c3d32daa509c67c4429ffb5e7d61d8425ece48"
+  },
+  "prior_subset_v4_serial.log.gz": {
+    "source_sha256": "7d1be5d92f9a2531cbee76ef99e9330e1e56b6233c7922cf946cdfc2af42aa1a"
+  },
+  "probe_profile_guest.json": {
+    "source_sha256": "39d02568e4295879b049631355f9a5da535ab6220c0932b768f0c7d9658c5045"
+  },
+  "probe_profile_net2_serial.log.gz": {
+    "source_sha256": "87e396b2c1a208b1cbf55dc8b70c9e9984ed7b5981df14a9e739f170e7ea1621"
+  },
+  "probe_profile_system.json": {
+    "source_sha256": "a3df12e74f31592e0bcfcd5111a304bab64ee683ded7cb9b04a0d4543ad7da63"
+  },
+  "probe_profile_window.pcap": {
+    "source_sha256": "8d624673a7ace735e1e6339adb3cd0bc3067fa1ce754ac98b1f3e4362ec59e77"
+  },
+  "probe_profile_window_serial.log.gz": {
+    "source_sha256": "544302b60c01aa23e4f567f7581e40c5305bd6bf34f9bf7eb61429c961cde6a3"
+  },
+  "profile.json": {
+    "source_sha256": "41e2430fb71a40c7e369da3cf4ec4e63f05fd21175a30550a3036c7f56b9ffd6"
+  },
+  "repository_manifest_check.json": {
+    "source_sha256": "00d67f1311429e97d22e15131798c6a71975f2720c8a9af5a54d15455b68a790"
+  },
+  "sdk.json": {
+    "source_sha256": "05496c985c757c8ce81d1c74d7116c9ca996351db62598addad6ef7c40a0daa3"
+  },
+  "sdk_build_logs/configure.log.gz": {
+    "source_sha256": "dd9c2e1f4f2c767b39b68d17e269cccd3c66fbb117f4b0ed5a84a9637a25d49b"
+  },
+  "sdk_build_logs/crt-xos_stdio_receiver.log.gz": {
+    "source_sha256": "3eabb358a4fdfaa9bbc07deabc1a433dfa00def3c7c873bafa7ffc7f8797fb13"
+  },
+  "sdk_build_logs/install-headers.log.gz": {
+    "source_sha256": "31ef833934a927834d0c353017ea671d5304e5ba2a6010407c9d330e1a5865ac"
+  },
+  "sdk_build_logs/install-lib.log.gz": {
+    "source_sha256": "e580acba20f35e230df3829b07dd1a81c75c3dd49b3cfc857faa5319d5c40f29"
+  },
+  "sdk_build_logs/make-lib.log.gz": {
+    "source_sha256": "3d86b6ae101b2319b81f01c777d90334d362bc3c2a09d754ad35826794a3e3b6"
+  },
+  "sdk_build_logs/patch-0001-config-sub-xos.log.gz": {
+    "source_sha256": "b6551048bb2810e42f14d90c81e35951e567f61615178703e48f3ac41bf6a2bf"
+  },
+  "sdk_build_logs/patch-0002-xos-abi-note.log.gz": {
+    "source_sha256": "81ae8607900a18b4167650db29b9207706e22aeb701d3eb21a496f28d317a987"
+  },
+  "sdk_build_logs/patch-0003-xos-tls-init.log.gz": {
+    "source_sha256": "524d59b8a851b03161c15c4c102d2801b8d2a76eeb0203bf7cdd145f45785593"
+  },
+  "sdk_build_logs/patch-0004-sigset-error-pointer.log.gz": {
+    "source_sha256": "56e013daebe400a09363e915c13ae705b5d1dd9290b24193c87cb52d1c2737dc"
+  },
+  "sdk_build_logs/patch-0005-raise-hidden-alias.log.gz": {
+    "source_sha256": "00e1e189b29d87b5f57b3d012fa5690f1ead103b837bf1a58b982891335a9df4"
+  },
+  "sdk_build_logs/patch-0006-sigwait-failure.log.gz": {
+    "source_sha256": "cc1ff215430721ab130f92a6e260313c459fa418101ea86a7ea09a3288b3f2db"
+  },
+  "sdk_build_logs/patch-0007-arc4random-atomic-include.log.gz": {
+    "source_sha256": "a349982d9d60f757c4f449431ae5e40cc4fa3aca051dd9303dba7e84b88d3055"
+  },
+  "sdk_build_logs/patch-0008-freopen-no-fd-path.log.gz": {
+    "source_sha256": "3186d41210a229afa2c2ffd20d8b39b45eae112e9bba08ef814c21579a84e763"
+  },
+  "sdk_build_logs/patch-0009-dlerror-errno-include.log.gz": {
+    "source_sha256": "93748a6cae4af7e91bc1c33ac496bc0d42681a31aba5dbb540cf64e868d47148"
+  },
+  "sdk_build_logs/patch-0010-sem-init-private-only.log.gz": {
+    "source_sha256": "de0c79f4742e1c2fc21bd94664974e9c46f26ecd29fe73780e285cad918ea59b"
+  },
+  "sdk_build_logs/patch-0011-nptl-explicit-includes.log.gz": {
+    "source_sha256": "1b5d09e497f4d5f96caa14a8734adf4cf74019559ea8f43c620a7955306daffa"
+  },
+  "sdk_build_logs/patch-0012-socket-include-types.log.gz": {
+    "source_sha256": "4d44c2b33d6bf195cdf05e192ed1798d4332e7a336e0f597cad9ee90404744eb"
+  },
+  "sdk_build_logs/patch-0013-thread-db-sigset-include.log.gz": {
+    "source_sha256": "db801f380c143b0225b41b2923fa4198a4bb4f3332d56c8467ac76af3ae48ff4"
+  },
+  "sdk_build_logs/patch-0014-xos-reserved-dtv.log.gz": {
+    "source_sha256": "7d3cdd3c2953f3503047724e020f8fd55fa0ca6676a70c9a0583f261e887166c"
+  },
+  "sdk_build_logs/patch-0015-xos-initial-thread-id.log.gz": {
+    "source_sha256": "e15a57b08f67674a21e1978811d96e3f9a17b2fb21a2f9e0dbc9f3f6ad6e1571"
+  },
+  "sdk_build_logs/patch-0016-xos-initial-pthread-exit.log.gz": {
+    "source_sha256": "fad36533420aa135adceb91120a62bc33f10f9d2df4913c27eab6c8de63ba7fa"
+  },
+  "sdk_build_logs/patch-0017-xos-shared-object-build.log.gz": {
+    "source_sha256": "7e1e4bb41e686d452c1f6c0f212a394c9a418b2736ad8beefeb12866b4b374e6"
+  },
+  "sdk_build_logs/patch-0018-xos-static-generated-headers.log.gz": {
+    "source_sha256": "7c58bb2402a900cc1fd3a903d3e14cae39bc3da3d5adf38aa6c787063ab6ac2c"
+  },
+  "sdk_build_logs/patch-0019-generic-opendir-signature.log.gz": {
+    "source_sha256": "e8789060713320b5aa26244260fb9703985ab6c7ea2ea3a35af7d0a8513f3a1f"
+  },
+  "sdk_build_logs/patch-0020-generic-static-build-includes.log.gz": {
+    "source_sha256": "80a8ad8617dbfe1081b1b745ae0a3f07c57761bb0d7e0995f478eac11a9064a2"
+  },
+  "sdk_build_logs/patch-0021-xos-process-exit-barrier.log.gz": {
+    "source_sha256": "7da2093321df042a38e38588f4d16ff8b3989c750032dfa490c8024ca89f3b80"
+  },
+  "sdk_build_logs/patch-0022-xos-initial-errno.log.gz": {
+    "source_sha256": "721228601094a2279394c854be419816415274848a44c21656e2071bfbe08285"
+  },
+  "sdk_build_logs/patch-0023-generic-open-variadic-signature.log.gz": {
+    "source_sha256": "011ad158b9665cc7e4f9b0eb87efc38e749f8222c5ed381aa8f58581daa6026d"
+  },
+  "sdk_build_logs/patch-0024-nptl-lowlevellock-hidden-declarations.log.gz": {
+    "source_sha256": "cb2108988828b96f9f1ede4de30641869d943222abc95a7ab25b8b76a74a94dd"
+  },
+  "sdk_build_logs/patch-0025-strict-utf8-scalar-values.log.gz": {
+    "source_sha256": "e16c1589ec577b04b62fec2dd3cf73c2ba21fbf52a3bfc29d056f3325d667cf5"
+  },
+  "sdk_build_logs/patch-0026-generic-execstack-hidden-declaration.log.gz": {
+    "source_sha256": "a0c43c41d61ca11a80082b945aa2163c1394c845215b097f55745751db710f1a"
+  },
+  "sdk_build_logs/patch-0027-generic-fstatfs-hidden-definition.log.gz": {
+    "source_sha256": "342b8af580919d4abe9d7de925ab80e05561a9b6dad06918b0326ab3267378b8"
+  },
+  "sdk_build_logs/patch-0028-generic-ttyname-r-hidden-definition.log.gz": {
+    "source_sha256": "ea9af946cfcdc8070f9bf4b28fc11391b2be68aed481279e859fa3e7012698a8"
+  },
+  "sdk_build_logs/patch-0029-generic-setsockopt-hidden-definition.log.gz": {
+    "source_sha256": "965b6d76d7959a999ae94fc2d9739c0d444918a671c8682d21462e0ea4874caa"
+  },
+  "sdk_build_logs/patch-0029-xos-rtld-pinned-load.log.gz": {
+    "source_sha256": "6e49f89ebafdc090bffafcf45cb7dc816d18cf73d1ec69b46206be10209e59ef"
+  },
+  "sdk_build_logs/patch-0030-posix-fatal-include-errno.log.gz": {
+    "source_sha256": "d4acb3cdf5e5e3fdd2210f35b4ce3248dd9d2fd5691b7c1b534a765e59f4198f"
+  },
+  "sdk_build_logs/patch-0030-xos-rtld-native-heap.log.gz": {
+    "source_sha256": "db703016d7fc6615c20b9ce546331edeac22c453f2d0c81afd959d7a11b4482e"
+  },
+  "sdk_build_logs/patch-0031-pthread-self-native-tid.log.gz": {
+    "source_sha256": "3919d0a85e6d45a503f7a4cb428281ea17dce11ddae1325e03908d2499780d16"
+  },
+  "sdk_build_logs/patch-0032-xos-rtld-initial-tp.log.gz": {
+    "source_sha256": "e15a57b08f67674a21e1978811d96e3f9a17b2fb21a2f9e0dbc9f3f6ad6e1571"
+  },
+  "sdk_build_logs/patch-0033-xos-rtld-initial-tls.log.gz": {
+    "source_sha256": "8b7883ee627533295714ad4645b66fc3efaf8ef1e9fc7a6b5ac54dda3ade3ba9"
+  },
+  "sdk_build_logs/patch-0034-xos-rtld-fixed-startup-policy.log.gz": {
+    "source_sha256": "284f2c27cf7b5dd86b7f9f06917c793abc900a3a6a43aa07224a5c0157bef039"
+  },
+  "sdk_build_logs/patch-0035-xos-freeres-selected-subdirs.log.gz": {
+    "source_sha256": "bc844848328de0791dafba836ab685dcfea0387b108d188b123192b4124dd409"
+  },
+  "sdk_build_logs/patch-0036-xos-shared-tilde-without-nss.log.gz": {
+    "source_sha256": "ad3b19f7773fa427c6ead62d2e6e6feb7554feb3ef6afcb4ad48d16eff1cdd58"
+  },
+  "sdk_build_logs/patch-0037-xos-gcc-elf-extensions-on-verified-pins.log.gz": {
+    "source_sha256": "a0a641f5f35d9226cec5ff753b50e066caf6e43f0783452e24e772898e96ce88"
+  },
+  "sdk_build_logs/patch-0038-xos-public-dlfcn-fixed-closure.log.gz": {
+    "source_sha256": "465091eb5dff31838aa4ed1d6c733fada62c5aedbd45dd07c5329fbe18ec4aaa"
+  },
+  "sdk_build_logs/patch-0039-xos-fixed-closure-worker-dtv.log.gz": {
+    "source_sha256": "b4a65d7093560d1bd27e1d4c4958ad705d2767470b062e41efda5a28171b4352"
+  },
+  "sdk_build_logs/patch-0040-xos-resolve-existing-unwinder.log.gz": {
+    "source_sha256": "6163e1d851e80a133e48206e39148d61fd29b562ff782ee73835835c6bb57795"
+  },
+  "sdk_build_logs/patch-0041-xos-public-runtime-ready.log.gz": {
+    "source_sha256": "e35718b9baa1baecc4318291bbd314189d9f5a60fbe0c30b327da790e46b55ab"
+  },
+  "sdk_copy_receipt.json": {
+    "source_sha256": "b12f4e309b8b65f401d3496f87ecfcfaafbfc46292e228be5ccd737ec53b1caf"
+  },
+  "service_host.json": {
+    "source_sha256": "dea4bcd47f7f7fcd73015296def267677c70c5ccde447128a8e585ae00bd5964"
+  },
+  "socket_host.json": {
+    "source_sha256": "3337303031f4be8572c3233e4ae6605cf8e649404231ec56c2bb2c3a966d524d"
+  },
+  "source_verification.json": {
+    "source_sha256": "691cd5fa24b54e765220b233473f6dcd205dde3d656d6794551853446662e6cc"
+  },
+  "source_verification_gpgv.log": {
+    "non_utf8_bytes": "rendered as hex escapes; original log retained in SDK source-verification output",
+    "source_sha256": "e9958246cf981fc50b42287a023894ec2ea0fb2e65c831d4e091e9d5c3e96573"
+  },
+  "source_verification_gpgv.status": {
+    "source_sha256": "de364219bbe0d40c97531335b39d5e9b3f398d761923a8ab4174e78df8d10c68"
+  },
+  "system.json": {
+    "source_sha256": "e92b5c736f1c1b1ad43065857938a67ac1fa880b7ebaf7a294cdd5c8ba20f86d"
+  },
+  "window.pcap": {
+    "source_sha256": "6f27b2d6911d415032afccae21591a5887d86a1a0793d85d8448ec47118eac8e"
+  },
+  "window_serial.log.gz": {
+    "source_sha256": "1e8ce25ab5e14e71cdd6be76246cbcefbe2cb391ba0504fe8e16bb57c215a2cc"
+  }
+}

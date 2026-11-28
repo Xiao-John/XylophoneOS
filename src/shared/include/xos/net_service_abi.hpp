@@ -21,7 +21,7 @@ enum class operation : u32 {
     information = 1, open = 2, status = 3, send = 4, receive = 5,
     close = 6, cancel = 7, revoke_peer = 8, stop = 9,
     configuration = 10, configure = 11, resolve_start = 12, resolve_result = 13, resolve_cancel = 14,
-    capabilities = 15, readiness = 16, shutdown_write = 17, lease_status = 18
+    capabilities = 15, readiness = 16, shutdown_write = 17, lease_status = 18, readiness_bind = 19, shutdown_read = 20
 };
 inline constexpr i64 invalid = -201, denied = -202, resources = -203, would_block = -204;
 inline constexpr i64 timeout = -205, closed = -206, io = -207, unsupported = -208;
@@ -52,9 +52,12 @@ struct lease_snapshot {
 inline constexpr u32 connecting = 1, connected = 2, eof = 4, failed = 8;
 inline constexpr u32 socket_extension_revision = 1;
 inline constexpr u32 capability_readiness = 1, capability_shutdown_write = 2;
+inline constexpr u32 socket_extension_revision_2 = 2, capabilities_extended = 1;
+inline constexpr u32 capability_readiness_page = 4, capability_shutdown_read = 8;
+inline constexpr u32 readiness_page_revision = 1, readiness_page_bytes = 4096;
 inline constexpr u32 ready_read = 1, ready_write = 2, ready_eof = 4, ready_error = 8;
 inline constexpr u32 ready_write_closed = 16, ready_connecting = 32;
-inline constexpr u32 ready_all = 63;
+inline constexpr u32 ready_all = 63, ready_read_closed = 64, ready_extended_all = 127;
 struct message {
     u32 version;
     operation action;
@@ -88,6 +91,21 @@ struct readiness_snapshot {
     u32 events, readable_bytes, writable_bytes, reserved;
     i64 error;
 };
+// Server-created read/write/delegate grant without manage rights. The client
+// receives only read_mapping: service exit cannot unmap its retained page.
+struct readiness_binding {
+    u32 revision, bytes;
+    u64 grant, session_generation, reserved;
+};
+struct readiness_record { u64 handle; readiness_snapshot ready; i64 result; };
+struct readiness_page {
+    u64 sequence;
+    u32 revision, count;
+    u64 session_generation, sampled_ns;
+    readiness_record records[connections_per_session];
+};
+static_assert(sizeof(readiness_binding) == 32 && sizeof(readiness_record) == 48);
+static_assert(sizeof(readiness_page) == 128 && __builtin_offsetof(readiness_page, records) == 32);
 static_assert(__builtin_offsetof(message, data) == header_bytes);
 static_assert(sizeof(message) == header_bytes + payload_bytes && sizeof(information) == 32);
 static_assert(sizeof(config_snapshot) == 48 && __builtin_offsetof(config_snapshot, epoch) == 8 &&

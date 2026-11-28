@@ -52,3 +52,10 @@ static_assert(__builtin_offsetof(xos_net2_readiness_snapshot, error) == __builti
 static_assert(xos_net2_ready_read == xos::net2::ready_read && xos_net2_ready_write == xos::net2::ready_write);
 static_assert(xos_net2_ready_eof == xos::net2::ready_eof && xos_net2_ready_error == xos::net2::ready_error);
 static_assert(xos_net2_ready_write_closed == xos::net2::ready_write_closed);
+
+static_assert(sizeof(xos_net2_readiness_binding) == sizeof(xos::net2::readiness_binding));
+static_assert(sizeof(xos_net2_readiness_page) == sizeof(xos::net2::readiness_page));
+static_assert(xos_net2_readiness_bind == static_cast<unsigned>(xos::net2::operation::readiness_bind));
+static_assert(xos_net2_shutdown_read == static_cast<unsigned>(xos::net2::operation::shutdown_read));
+static_assert(xos_net2_cap_readiness_page == xos::net2::capability_readiness_page);
+static_assert(xos_net2_ready_read_closed == xos::net2::ready_read_closed);

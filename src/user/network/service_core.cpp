@@ -108,6 +108,19 @@ void service_core::expire(u64 now) {
     }
 }
 void service_core::shutdown() { for (u32 i = 0; i < session_limit; ++i) detach(i); }
+i64 service_core::capture_readiness(u32 slot, readiness_page& page, u64 now) {
+    page = {}; page.revision = readiness_page_revision; page.sampled_ns = now;
+    page.session_generation = generation(slot);
+    if (!alive(slot) || slot >= client_sessions || !stack_.readiness) return closed;
+    for (u32 i = 0; i < connection_limit; ++i) {
+        if (!connections_[i].handle || connections_[i].owner != slot) continue;
+        if (page.count >= connections_per_session) return resources;
+        auto& item = page.records[page.count++];
+        item.handle = connections_[i].handle;
+        item.result = stack_.readiness(stack_.context, i, item.ready);
+    }
+    return 0;
+}
 i64 service_core::find_connection(u32 owner, u64 handle) const {
     if (!handle) return invalid;
     for (u32 i = 0; i < connection_limit; ++i)
@@ -215,7 +228,8 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
     if ((!opening && (input.address || input.port || input.transport != protocol::none)) ||
         (input.action != operation::send && input.action != operation::configure &&
          input.action != operation::resolve_start && input.length) ||
-        (input.action != operation::receive && input.flags)) {
+        (input.action != operation::receive &&
+         !(input.action == operation::capabilities && input.flags == capabilities_extended) && input.flags)) {
         output.result = invalid; return true;
     }
     if (input.action == operation::information) {
@@ -246,11 +260,21 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
     if (stopping_) { output.result = closed; return true; }
     if (input.action == operation::capabilities) {
         if (input.object) { output.result = invalid; return true; }
-        const capability_snapshot capabilities{socket_extension_revision,
+        const bool extended = input.flags == capabilities_extended;
+        const capability_snapshot capabilities{extended ? socket_extension_revision_2 : socket_extension_revision,
             (stack_.readiness ? capability_readiness : 0) |
-            (stack_.shutdown_write ? capability_shutdown_write : 0), 0};
+            (stack_.shutdown_write ? capability_shutdown_write : 0) |
+            (extended && readiness_pages_ ? capability_readiness_page : 0) |
+            (extended && stack_.shutdown_read ? capability_shutdown_read : 0), 0};
         __builtin_memcpy(output.data, &capabilities, sizeof(capabilities));
         output.length = sizeof(capabilities);
+        return true;
+    }
+    if (input.action == operation::readiness_bind) {
+        if (input.object) output.result = invalid;
+        else if (slot >= client_sessions) output.result = denied;
+        else if (!readiness_pages_) output.result = unsupported;
+        // The transport installs the actual grant after this authorization.
         return true;
     }
     if (input.action == operation::lease_status) {
@@ -289,7 +313,8 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
     }
     if ((static_cast<u32>(input.action) < static_cast<u32>(operation::status) ||
          static_cast<u32>(input.action) > static_cast<u32>(operation::cancel)) &&
-        input.action != operation::readiness && input.action != operation::shutdown_write) {
+        input.action != operation::readiness && input.action != operation::shutdown_write &&
+        input.action != operation::shutdown_read) {
         output.result = unsupported; return true;
     }
     const i64 found = find_connection(slot, input.object);
@@ -302,6 +327,7 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
         readiness_snapshot snapshot{};
         output.result = stack_.readiness ? stack_.readiness(stack_.context, connection_slot, snapshot) : unsupported;
         if (!output.result) {
+            snapshot.events &= ready_all; // Legacy op16 layout/bit mask stays stable.
             __builtin_memcpy(output.data, &snapshot, sizeof(snapshot));
             output.length = sizeof(snapshot);
         }
@@ -309,6 +335,9 @@ bool service_core::dispatch(u32 slot, const message& input, u32 bytes, u64 now, 
     }
     case operation::shutdown_write:
         output.result = stack_.shutdown_write ? stack_.shutdown_write(stack_.context, connection_slot) : unsupported;
+        break;
+    case operation::shutdown_read:
+        output.result = stack_.shutdown_read ? stack_.shutdown_read(stack_.context, connection_slot) : unsupported;
         break;
     case operation::send:
         output.result = stack_.send(stack_.context, connection_slot, input.data, input.length); break;

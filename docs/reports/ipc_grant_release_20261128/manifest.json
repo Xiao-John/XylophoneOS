@@ -1,0 +1,21 @@
+{
+  "files": {
+    "README.md": "8e9f888013e3948c6ef08ee6f04f16bbd974272b60f525145f726bc6b396f071",
+    "diagnostic_v1.json": "f227fa6f13c30d1327cf060c632491ae6e5ab74725f705359a26051f98f6a7fb",
+    "diagnostic_v1_serial.log.gz": "4df9483b85ada74513a2e2c1632cf42abc9e7870daaa8e7cc3f29a7eb89c4f68",
+    "diagnostic_v2.json": "9013f3f7fef1d1920b21b81df2741c086fb3b22942223093ef38ff490c52434c",
+    "diagnostic_v2_serial.log.gz": "a30d42c732d60d7ba3c2a227ad82b7057da53e9440234924f8f5017eaf53730b",
+    "diagnostic_v3.json": "4ea570aac39d89fcdecf9a6dd53f34db5e3fef441491a1b1fc1ffb2ad0c7674b",
+    "diagnostic_v3_serial.log.gz": "48acf79468beaae0d189aba972d346731b8bcac0e213607b8fe66a5175aa3e05",
+    "guest.json": "5692f5c270496e8b0a154786146accf6b365a4f757985266e005ea16400dfdf2",
+    "guest_serial.log.gz": "d4798df947897ac6ec4574dc2d50202d5a579a8ef929c0c91d3d37534155c285",
+    "preflight_host.log": "f5c977b7a7be1c657f33c19ce3cc3d0223aa628dc6e86c3b88a86a718725e6fc",
+    "prior_failure.json": "8c86e961605d1ef19028d7a8f351ff35d2daa19a26cc8cf636393b4152b7d9ad",
+    "prior_failure_serial.log.gz": "c4f0595f4fd4ca7f5074a5c271a774ce4e8102cbe20f7719a81a822aa1413e8e",
+    "query_compat_environment_failure.log": "edfabcc87e261699db404a5b09f03550f8c6e30f3973c9c9fe193d755a2619b5",
+    "query_compat_host.log": "6e08fb6bd017646280268b9d074959042ca4cbf90cac09a5c9b3abbf0c1f194b",
+    "raw_receipts.json": "f27874af4ec6f67e61532ab605869061a56b14da229008e29aeba9198d4e1317",
+    "system.json": "ddf1b7362bd0311672a6b8d6eabf868232bc629a59092630df241479cecdbbfa"
+  },
+  "version": 1
+}

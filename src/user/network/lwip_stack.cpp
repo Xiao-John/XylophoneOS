@@ -263,6 +263,9 @@ err_t lwip_stack::on_receive(void* context, tcp_pcb* pcb, pbuf* packet, err_t er
         return ERR_OK;
     }
     if (error != ERR_OK) return error;
+    if (item.read_closed) {
+        tcp_recved(pcb, packet->tot_len); pbuf_free(packet); return ERR_OK;
+    }
     if (packet->tot_len > tcp_receive_bytes - item.count) return ERR_MEM;
     const u32 tail = (item.head + item.count) % tcp_receive_bytes;
     const u32 first = packet->tot_len < tcp_receive_bytes - tail ? packet->tot_len : tcp_receive_bytes - tail;
@@ -366,6 +369,7 @@ i64 lwip_stack::receive(u32 slot, u8* data, u32 capacity, u32& length, u32& flag
         for (u32 i = 0; i < count; ++i) data[i] = item.data[item.head * payload_bytes + i];
         item.head = (item.head + 1) % udp_queue_limit; --item.count; length = count; return 0;
     }
+    if (item.read_closed) { flags = eof; return 0; }
     if (item.count) {
         const u32 count = item.count < capacity ? item.count : capacity;
         for (u32 i = 0; i < count; ++i) data[i] = item.data[(item.head + i) % tcp_receive_bytes];
@@ -388,8 +392,9 @@ i64 lwip_stack::readiness(u32 slot, readiness_snapshot& snapshot) {
     readiness_snapshot current{};
     current.error = item.error;
     current.readable_bytes = item.count;
-    if (item.count || (item.ended && !item.error)) current.events |= ready_read;
-    if (item.ended && !item.error) current.events |= ready_eof;
+    if (item.count || item.read_closed || (item.ended && !item.error)) current.events |= ready_read;
+    if ((item.ended || item.read_closed) && !item.error) current.events |= ready_eof;
+    if (item.read_closed) current.events |= ready_read_closed;
     if (item.error) current.events |= ready_error;
     if (item.write_closed) current.events |= ready_write_closed;
     if (item.tcp && !item.established) current.events |= ready_connecting;
@@ -405,6 +410,24 @@ i64 lwip_stack::readiness(u32 slot, readiness_snapshot& snapshot) {
     current.generation = old.generation + (changed ? 1 : 0);
     item.ready = current;
     snapshot = current;
+    return 0;
+}
+i64 lwip_stack::shutdown_read(u32 slot) {
+#ifdef XOS_LWIP_DHCP_AUTHORITY
+    if (advance_dhcp()) return failure_;
+    if (!gate_open_) return closed;
+#endif
+    auto& item = connections_[slot];
+    if (item.udp) return unsupported;
+    if (item.error) return item.error;
+    if (item.read_closed) return 0;
+    if (!item.established) return item.tcp ? would_block : closed;
+    if (!item.tcp && !item.ended) return closed;
+    // SHUT_RD is local receive discard. A clean FIN can retire the PCB after
+    // the write-half RPC but before SHUT_RDWR reaches this RPC; the owned
+    // established description and buffered receive bytes remain valid.
+    if (item.count && item.tcp) tcp_recved(item.tcp, static_cast<u16_t>(item.count));
+    item.head = item.count = 0; item.read_closed = true;
     return 0;
 }
 i64 lwip_stack::shutdown_write(u32 slot) {
@@ -465,6 +488,7 @@ stack_api lwip_stack::api() {
 #else
         nullptr
 #endif
+        , [](void* self, u32 slot) { return static_cast<lwip_stack*>(self)->shutdown_read(slot); }
     };
 }
 

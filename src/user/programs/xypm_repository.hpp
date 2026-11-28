@@ -30,10 +30,10 @@ inline void validate_identity(value* item) {
 }
 
 inline bool same_identity(value* left, value* right) {
-    return !std::strcmp(field(left, "id")->text, field(right, "id")->text) &&
-           !std::strcmp(field(left, "upstream_version")->text, field(right, "upstream_version")->text) &&
+    return !::strcmp(field(left, "id")->text, field(right, "id")->text) &&
+           !::strcmp(field(left, "upstream_version")->text, field(right, "upstream_version")->text) &&
            field(left, "revision")->number == field(right, "revision")->number &&
-           !std::strcmp(field(left, "sha256")->text, field(right, "sha256")->text);
+           !::strcmp(field(left, "sha256")->text, field(right, "sha256")->text);
 }
 
 struct repository {
@@ -49,10 +49,10 @@ struct repository {
         size_t low = 0, high = entry_count;
         while (low < high) {
             const size_t middle = low + (high - low) / 2;
-            if (std::strcmp(field(entries[middle], "sha256")->text, digest) < 0) low = middle + 1;
+            if (::strcmp(field(entries[middle], "sha256")->text, digest) < 0) low = middle + 1;
             else high = middle;
         }
-        return low < entry_count && !std::strcmp(field(entries[low], "sha256")->text, digest)
+        return low < entry_count && !::strcmp(field(entries[low], "sha256")->text, digest)
                    ? low : SIZE_MAX;
     }
 
@@ -68,7 +68,7 @@ struct repository {
         profile = string_field(index, "target_profile", 80);
         require(identifier(profile), "invalid repository profile");
 #ifdef XYP_PACKAGE_PROFILE_ID
-        require(!std::strcmp(profile, XYP_PACKAGE_PROFILE_ID), "repository target profile mismatch");
+        require(!::strcmp(profile, XYP_PACKAGE_PROFILE_ID), "repository target profile mismatch");
 #endif
         const char* previous = "";
         for (value* item = need(index, "packages", kind::array)->child; item; item = item->next) {
@@ -78,15 +78,15 @@ struct repository {
             exact_fields(item, keys, 7);
             validate_identity(item);
             const char* digest = field(item, "sha256")->text;
-            require(std::strcmp(previous, digest) < 0, "repository hashes must be unique and sorted");
+            require(::strcmp(previous, digest) < 0, "repository hashes must be unique and sorted");
             previous = digest;
             const uint64_t size = unsigned_number(field(item, "size"), max_archive_bytes,
                                                   "invalid repository package size");
             require(size && size % 512 == 0, "invalid repository package alignment");
             for (size_t i = 0; i < entry_count; ++i) {
                 value* earlier = entries[i];
-                require(std::strcmp(field(earlier, "id")->text, field(item, "id")->text) ||
-                        std::strcmp(field(earlier, "upstream_version")->text, field(item, "upstream_version")->text) ||
+                require(::strcmp(field(earlier, "id")->text, field(item, "id")->text) ||
+                        ::strcmp(field(earlier, "upstream_version")->text, field(item, "upstream_version")->text) ||
                         field(earlier, "revision")->number != field(item, "revision")->number,
                         "ambiguous package version/revision");
             }
@@ -96,7 +96,7 @@ struct repository {
             for (value* feature = need(item, "required_features", kind::array)->child; feature; feature = feature->next) {
                 require(++count <= 64, "too many repository features");
                 const char* name = text(feature, "feature", 80);
-                require(identifier(name) && std::strcmp(previous, name) < 0,
+                require(identifier(name) && ::strcmp(previous, name) < 0,
                         "invalid/duplicate/unsorted repository feature");
 #ifdef XYP_PACKAGE_FEATURES
                 require(XYP_PACKAGE_FEATURES(name), "required repository feature unavailable");
@@ -112,7 +112,7 @@ struct repository {
                 exact_fields(dependency, keys, 4);
                 validate_identity(dependency);
                 const char* name = field(dependency, "id")->text;
-                require(std::strcmp(previous, name) < 0 && std::strcmp(name, field(item, "id")->text),
+                require(::strcmp(previous, name) < 0 && ::strcmp(name, field(item, "id")->text),
                         "duplicate/unsorted/self repository dependency");
                 previous = name;
             }
@@ -129,7 +129,7 @@ struct repository {
         value* item = entries[position];
         for (size_t i = 0; i < entry_count; ++i) {
             if (i != position && states[i])
-                require(std::strcmp(field(entries[i], "id")->text, field(item, "id")->text),
+                require(::strcmp(field(entries[i], "id")->text, field(item, "id")->text),
                         "dependency closure selects conflicting package versions");
         }
         states[position] = 1;
@@ -146,7 +146,7 @@ struct repository {
     void parse_lock(const char* bytes, size_t length, const char* expected_digest = nullptr) {
         digest_bytes(bytes, length, lock_digest);
         if (expected_digest)
-            require(hash_text(expected_digest) && !std::strcmp(expected_digest, lock_digest),
+            require(hash_text(expected_digest) && !::strcmp(expected_digest, lock_digest),
                     "lock SHA-256 mismatch");
         json_parser parser(bytes, length, 0);
         value* lock = parser.parse();
@@ -154,15 +154,15 @@ struct repository {
         exact_fields(lock, keys, 5);
         require(unsigned_number(field(lock, "format_version"), 1, "invalid lock version") == 1,
                 "invalid lock version");
-        require(!std::strcmp(string_field(lock, "target_profile", 80), profile), "lock target profile mismatch");
-        require(!std::strcmp(string_field(lock, "index_sha256", 64), index_digest), "lock/index SHA-256 mismatch");
-        std::memset(states, 0, sizeof(states));
+        require(!::strcmp(string_field(lock, "target_profile", 80), profile), "lock target profile mismatch");
+        require(!::strcmp(string_field(lock, "index_sha256", 64), index_digest), "lock/index SHA-256 mismatch");
+        ::memset(states, 0, sizeof(states));
         selected_count = ordered_count = 0;
         size_t roots = 0;
         const char* previous = "";
         for (value* root = need(lock, "roots", kind::array)->child; root; root = root->next) {
             const char* digest = text(root, "root", 64);
-            require(++roots <= max_selected && hash_text(digest) && std::strcmp(previous, digest) < 0,
+            require(++roots <= max_selected && hash_text(digest) && ::strcmp(previous, digest) < 0,
                     "invalid/duplicate/unsorted lock root");
             previous = digest;
             visit(find_digest(digest));
@@ -171,7 +171,7 @@ struct repository {
         size_t count = 0;
         for (value* chosen = need(lock, "packages", kind::array)->child; chosen; chosen = chosen->next) {
             require(count < ordered_count &&
-                    !std::strcmp(text(chosen, "selected hash", 64), field(ordered[count], "sha256")->text),
+                    !::strcmp(text(chosen, "selected hash", 64), field(ordered[count], "sha256")->text),
                     "lock is not the exact deterministic dependency closure");
             ++count;
         }
@@ -183,10 +183,10 @@ struct repository {
         value* entry = ordered[ordinal];
         value* manifest = package.manifest;
         require(size == uint64_t(field(entry, "size")->number) &&
-                !std::strcmp(package.digest, field(entry, "sha256")->text), "repository package size/hash mismatch");
-        require(!std::strcmp(field(manifest, "target_profile")->text, profile) &&
-                !std::strcmp(field(manifest, "id")->text, field(entry, "id")->text) &&
-                !std::strcmp(field(manifest, "upstream_version")->text, field(entry, "upstream_version")->text) &&
+                !::strcmp(package.digest, field(entry, "sha256")->text), "repository package size/hash mismatch");
+        require(!::strcmp(field(manifest, "target_profile")->text, profile) &&
+                !::strcmp(field(manifest, "id")->text, field(entry, "id")->text) &&
+                !::strcmp(field(manifest, "upstream_version")->text, field(entry, "upstream_version")->text) &&
                 field(manifest, "revision")->number == field(entry, "revision")->number,
                 "repository entry differs from package identity/profile");
         size_t expected = 0, actual = 0;
@@ -195,7 +195,7 @@ struct repository {
             ++actual;
             bool found = false;
             for (value* item = field(entry, "required_features")->child; item; item = item->next)
-                if (!std::strcmp(feature->text, item->text)) found = true;
+                if (!::strcmp(feature->text, item->text)) found = true;
             require(found, "repository feature differs from package");
         }
         require(expected == actual, "repository feature count differs from package");

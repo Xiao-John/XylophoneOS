@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 #include <errno.h>
 #include <limits.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -13,10 +14,13 @@ _Static_assert (sizeof (struct xos_net2_message) == 1088, "Net2 wire size");
 _Static_assert (offsetof (struct xos_net2_message, data) == 64, "Net2 wire header");
 _Static_assert (sizeof (struct xos_net2_capability_snapshot) == 16, "Net2 capability layout");
 _Static_assert (sizeof (struct xos_net2_readiness_snapshot) == 32, "Net2 readiness layout");
+_Static_assert (sizeof (struct xos_net2_readiness_binding) == 32, "Net2 binding layout");
+_Static_assert (sizeof (struct xos_net2_readiness_page) == 128, "Net2 page layout");
+_Static_assert (sizeof (struct xos_net2_grant_map) == 72, "grant map layout");
 
 struct socket_route
 {
-  xos_u32 allocated, write_closed, ready_valid;
+  xos_u32 allocated, write_closed, read_closed, ready_valid, connecting, error_taken;
   xos_u64 generation, handle;
   long ready_result;
   struct xos_net2_readiness_snapshot ready;
@@ -24,8 +28,10 @@ struct socket_route
 struct ipc_pair { xos_u32 send, receive; };
 static struct socket_route routes[xos_net2_local_sockets];
 static struct ipc_pair channel;
-static xos_u32 net_lock, retired;
-static xos_u32 capability_flags, capabilities_known;
+static xos_u32 net_lock, retired, grant_retired;
+static xos_u32 capability_flags, capabilities_known, capability_legacy;
+static xos_u64 readiness_grant, readiness_generation, service_pid;
+static volatile struct xos_net2_readiness_page *readiness_page;
 static long capability_error;
 static int deadline_modes_known;
 /* Only read-only queries may outlive poll's deadline. No application buffer,
@@ -79,20 +85,45 @@ pause_until (xos_u64 deadline)
   return file_trap (sleep_until, next, 0, 0) == 0 ? 0 : -EIO;
 }
 
+static int
+release_readiness_grant (void)
+{
+  if (readiness_grant)
+    {
+      struct xos_net2_grant_close request = { .version = 1, .size = sizeof (request), .handle = readiness_grant };
+      long result = file_trap (88, 24, (xos_u64) &request, 0);
+      if (result && result != -101) /* A stale handle has already been released. */
+        {
+          __atomic_store_n (&grant_retired, 1, __ATOMIC_RELEASE);
+          return result == -107 || result == -112 || result == -114 ? -EAGAIN : -EIO;
+        }
+      readiness_grant = 0;
+    }
+  __atomic_store_n (&grant_retired, 0, __ATOMIC_RELEASE);
+  return 0;
+}
+
 static void
 drop_session (void)
 {
+  readiness_page = 0; readiness_generation = service_pid = 0;
+  /* VM continuation/pins/fragment pressure may defer local unmapping. Retain
+     one reference until a later reap/open succeeds; never overwrite it with
+     a replacement session. Process exit remains the final cleanup boundary. */
+  (void) release_readiness_grant ();
   if (channel.send) (void) file_trap (ipc_endpoint, endpoint_close, channel.send, 0);
   if (channel.receive) (void) file_trap (ipc_endpoint, endpoint_close, channel.receive, 0);
   channel = (struct ipc_pair) { 0 };
   sequence = 0;
-  capability_flags = capabilities_known = 0; capability_error = 0; query_pending = 0; deadline_modes_known = 0;
+  capability_flags = capabilities_known = capability_legacy = 0; capability_error = 0; query_pending = 0; deadline_modes_known = 0;
 }
 
 static int
 open_session (void)
 {
   if (channel.send) return 0;
+  int released = release_readiness_grant ();
+  if (released) return released;
   const char *value = getenv ("XOS_NET_SERVICE_PID");
   if (!value || !*value) return -ENETDOWN;
   xos_u64 expected = 0, send_peer = 0, receive_peer = 0;
@@ -117,6 +148,7 @@ open_session (void)
       return -EACCES;
     }
   ++generation;
+  service_pid = expected;
   sequence = 1;
   return 0;
 }
@@ -169,8 +201,17 @@ valid_response (const struct xos_net2_message *request, const struct xos_net2_me
         struct xos_net2_capability_snapshot snapshot;
         if (reply->result || reply->flags || reply->length != sizeof (snapshot)) return 0;
         memcpy (&snapshot, reply->data, sizeof (snapshot));
-        return snapshot.revision == xos_net2_extension_revision && !snapshot.reserved
-          && !(snapshot.flags & ~(xos_u32) (xos_net2_cap_readiness | xos_net2_cap_shutdown_write));
+        const int extended = request->flags == xos_net2_capabilities_extended;
+        return snapshot.revision == (extended ? xos_net2_extension_revision_2 : xos_net2_extension_revision)
+          && !snapshot.reserved && !(snapshot.flags & ~(xos_u32) (extended ? 15 : 3));
+      }
+    case xos_net2_readiness_bind:
+      {
+        struct xos_net2_readiness_binding binding;
+        if (reply->result || reply->flags || reply->length != sizeof (binding)) return 0;
+        memcpy (&binding, reply->data, sizeof (binding));
+        return binding.revision == 1 && binding.bytes == 4096 && binding.grant
+          && binding.session_generation && !binding.reserved;
       }
     case xos_net2_readiness:
       {
@@ -237,7 +278,9 @@ finish_query (xos_u64 deadline)
           capabilities_known = 1;
           capability_error = reply.result < 0 ? network_error (reply.result) : 0;
           capability_flags = 0;
-          if (!capability_error)
+          if (pending_query.flags == xos_net2_capabilities_extended && capability_error == -EINVAL)
+            { capability_legacy = 1; capabilities_known = 0; capability_error = 0; }
+          if (capabilities_known && !capability_error)
             {
               struct xos_net2_capability_snapshot snapshot;
               memcpy (&snapshot, reply.data, sizeof (snapshot)); capability_flags = snapshot.flags;
@@ -271,7 +314,8 @@ start_query (xos_u32 action, unsigned int slot, xos_u64 object, xos_u64 deadline
   const xos_u64 transport_deadline = deadline_now ();
   if (!transport_deadline) return -EIO;
   pending_query = (struct xos_net2_message) { .version = xos_net2_version,
-    .action = action, .object = object, .sequence = sequence, .deadline = transport_deadline };
+    .action = action, .object = object, .sequence = sequence, .deadline = transport_deadline,
+    .flags = action == xos_net2_capabilities && !capability_legacy ? xos_net2_capabilities_extended : 0 };
   for (;;)
     {
       long now = file_trap (monotonic, 0, 0, 0);
@@ -359,7 +403,7 @@ release_route (struct socket_route *route, xos_u64 deadline, int cancelling)
       if (result < 0 && result != -ENOTCONN) drop_session ();
     }
   route->handle = route->generation = 0;
-  route->write_closed = route->ready_valid = 0;
+  route->write_closed = route->read_closed = route->ready_valid = route->connecting = 0;
 }
 
 long
@@ -384,7 +428,8 @@ __xos_net2_retire (unsigned int slot)
 void
 __xos_net2_reap (void)
 {
-  if (!__atomic_load_n (&retired, __ATOMIC_ACQUIRE)) return;
+  if (!__atomic_load_n (&retired, __ATOMIC_ACQUIRE)
+      && !__atomic_load_n (&grant_retired, __ATOMIC_ACQUIRE)) return;
   xos_u64 deadline = deadline_now ();
   if (!deadline || lock_net (deadline) != 0) return;
   xos_u32 batch = __atomic_exchange_n (&retired, 0, __ATOMIC_ACQUIRE);
@@ -406,21 +451,46 @@ __xos_net2_after_fork (void)
 {
   channel = (struct ipc_pair) { 0 };
   generation = sequence = retired = net_lock = 0;
-  capability_flags = capabilities_known = 0; capability_error = 0; query_pending = 0; deadline_modes_known = 0;
+  capability_flags = capabilities_known = capability_legacy = 0; capability_error = 0; query_pending = 0; deadline_modes_known = 0;
+  readiness_page = 0; readiness_generation = service_pid = 0;
+  (void) release_readiness_grant ();
   memset (routes, 0, sizeof (routes));
 }
 
+static long require_capability (xos_u32, xos_u64);
 static long
-connect_route (unsigned int slot, xos_u32 address, unsigned int port)
+bind_readiness_page (xos_u64 deadline)
+{
+  long result = require_capability (xos_net2_cap_readiness_page, deadline);
+  if (result) return result == -EOPNOTSUPP ? 0 : result;
+  if (readiness_page) return 0;
+  struct xos_net2_message request = { .action = xos_net2_readiness_bind }, reply;
+  result = exchange (&request, &reply, deadline);
+  if (result) return result;
+  struct xos_net2_readiness_binding binding;
+  memcpy (&binding, reply.data, sizeof (binding));
+  readiness_grant = binding.grant;
+  struct xos_net2_grant_map mapping = { .version = 1, .size = sizeof (mapping),
+    .handle = binding.grant, .address = 0x100000a00000ULL, .access = 1 };
+  if (file_trap (88, 21, (xos_u64) &mapping, 0) || mapping.length != binding.bytes || !mapping.map_id)
+    { drop_session (); return -ENOBUFS; }
+  readiness_generation = binding.session_generation;
+  readiness_page = (volatile struct xos_net2_readiness_page *) mapping.address;
+  return 0;
+}
+static long
+connect_route (unsigned int slot, xos_u32 address, unsigned int port, int nonblocking)
 {
   const xos_u64 deadline = deadline_now ();
   if (!deadline) return -EIO;
   long result = lock_net (deadline);
   if (result) return result;
   struct socket_route *route = &routes[slot];
-  if (current_route (route)) { result = -EISCONN; goto done; }
+  if (current_route (route)) { result = route->connecting ? -EALREADY : -EISCONN; goto done; }
   if (route->handle) { result = -ENETDOWN; goto done; }
   result = open_session ();
+  if (result) goto done;
+  result = bind_readiness_page (deadline);
   if (result) goto done;
   struct xos_net2_message reply, request = {
     .action = xos_net2_open, .transport = xos_net2_tcp, .address = address, .port = (__UINT16_TYPE__) port };
@@ -429,6 +499,8 @@ connect_route (unsigned int slot, xos_u32 address, unsigned int port)
     {
       route->generation = generation;
       route->handle = reply.object;
+      route->connecting = reply.flags == xos_net2_connecting;
+      if (route->connecting && nonblocking) { result = -EINPROGRESS; goto done; }
       while (result == 0 && reply.flags == xos_net2_connecting)
         {
           result = pause_until (deadline);
@@ -436,6 +508,7 @@ connect_route (unsigned int slot, xos_u32 address, unsigned int port)
           request = (struct xos_net2_message) { .action = xos_net2_status, .object = route->handle };
           result = exchange (&request, &reply, deadline);
         }
+      route->connecting = 0;
       if (result) release_route (route, deadline, 1);
     }
   if (result == -ECONNRESET) result = -ECONNREFUSED;
@@ -445,7 +518,7 @@ done:
 }
 
 long
-__xos_net2_stream (unsigned int slot, void *buffer, size_t size, int writing)
+__xos_net2_stream (unsigned int slot, void *buffer, size_t size, int writing, int nonblocking)
 {
   if (!buffer && size) return -EFAULT;
   const xos_u64 deadline = deadline_now ();
@@ -458,6 +531,7 @@ __xos_net2_stream (unsigned int slot, void *buffer, size_t size, int writing)
       const struct socket_route *route = &routes[slot];
       if (!current_route (route)) result = route->handle ? -ENETDOWN : -ENOTCONN;
       else if (writing && route->write_closed) result = -EPIPE;
+      else if (!writing && route->read_closed) result = 0;
       else if (count)
         {
           struct xos_net2_message reply, request = {
@@ -469,7 +543,7 @@ __xos_net2_stream (unsigned int slot, void *buffer, size_t size, int writing)
             { memcpy (buffer, reply.data, reply.length); result = reply.length; }
         }
       unlock_net ();
-      if (result != -EAGAIN) return result;
+      if (result != -EAGAIN || nonblocking) return result;
       result = pause_until (deadline);
       if (result) return result;
     }
@@ -482,7 +556,7 @@ __xos_net2_connect_fd (int fd, xos_u32 address, unsigned int port)
   long result = __xos_file_lease_acquire (fd, -1, &lease);
   if (result < 0) return result;
   result = lease.kind == xos_file_kind_socket
-    ? connect_route (lease.handle, address, port) : -ENOTSOCK;
+    ? connect_route (lease.handle, address, port, (lease.flags & O_NONBLOCK) != 0) : -ENOTSOCK;
   (void) __xos_file_lease_release (&lease);
   return result;
 }
@@ -494,7 +568,7 @@ __xos_net2_stream_fd (int fd, void *buffer, size_t size, int writing)
   long result = __xos_file_lease_acquire (fd, -1, &lease);
   if (result < 0) return result;
   result = lease.kind == xos_file_kind_socket
-    ? __xos_net2_stream (lease.handle, buffer, size, writing) : -ENOTSOCK;
+    ? __xos_net2_stream (lease.handle, buffer, size, writing, (lease.flags & O_NONBLOCK) != 0) : -ENOTSOCK;
   (void) __xos_file_lease_release (&lease);
   return result;
 }
@@ -529,7 +603,7 @@ require_capability (xos_u32 flag, xos_u64 deadline)
     {
       long result = finish_query (deadline);
       if (result) return result;
-      if (!capabilities_known)
+      while (!capabilities_known)
         {
           result = start_query (xos_net2_capabilities, 0, 0, deadline);
           if (result) return result;
@@ -541,7 +615,7 @@ require_capability (xos_u32 flag, xos_u64 deadline)
 long
 __xos_net2_shutdown_fd (int fd, int how)
 {
-  if (how != SHUT_WR) return how == SHUT_RD || how == SHUT_RDWR ? -EOPNOTSUPP : -EINVAL;
+  if (how != SHUT_WR && how != SHUT_RD && how != SHUT_RDWR) return -EINVAL;
   struct xos_file_lease lease;
   long result = __xos_file_lease_acquire (fd, -1, &lease);
   if (result < 0) return result;
@@ -554,15 +628,29 @@ __xos_net2_shutdown_fd (int fd, int how)
         {
           struct socket_route *route = &routes[lease.handle];
           if (!current_route (route)) result = route->handle ? -ENETDOWN : -ENOTCONN;
-          else if (!route->write_closed)
+          else
             {
-              result = require_capability (xos_net2_cap_shutdown_write, deadline);
-              if (result == 0)
+              if (how != SHUT_RD && !route->write_closed)
                 {
-                  struct xos_net2_message reply, request = {
-                    .action = xos_net2_shutdown_write, .object = route->handle };
-                  result = exchange (&request, &reply, deadline);
-                  if (result == 0) route->write_closed = 1;
+                  result = require_capability (xos_net2_cap_shutdown_write, deadline);
+                  if (result == 0)
+                    {
+                      struct xos_net2_message reply, request = {
+                        .action = xos_net2_shutdown_write, .object = route->handle };
+                      result = exchange (&request, &reply, deadline);
+                      if (result == 0) route->write_closed = 1;
+                    }
+                }
+              if (!result && how != SHUT_WR && !route->read_closed)
+                {
+                  result = require_capability (xos_net2_cap_shutdown_read, deadline);
+                  if (result == 0)
+                    {
+                      struct xos_net2_message reply, request = {
+                        .action = xos_net2_shutdown_read, .object = route->handle };
+                      result = exchange (&request, &reply, deadline);
+                      if (result == 0) route->read_closed = 1;
+                    }
                 }
             }
           unlock_net ();
@@ -572,20 +660,108 @@ __xos_net2_shutdown_fd (int fd, int how)
   return result == -EAGAIN ? -ETIMEDOUT : result;
 }
 
+static void
+poll_events (struct socket_route *route, const struct xos_net2_readiness_snapshot *snapshot,
+             short events, short *revents)
+{
+  if (!(snapshot->events & xos_net2_ready_connecting)) route->connecting = 0;
+  if ((events & POLLIN) && (snapshot->events & xos_net2_ready_read)) *revents |= POLLIN;
+  if ((events & POLLOUT) && (snapshot->events & xos_net2_ready_write)) *revents |= POLLOUT;
+  if (snapshot->events & xos_net2_ready_eof) *revents |= POLLHUP;
+  if (snapshot->events & xos_net2_ready_error)
+    *revents |= POLLHUP | (route->error_taken ? 0 : POLLERR);
+}
+
+/* No RPC, wait or retry loop is permitted on this path. A shared negative
+   sampled before entry cannot prove absence of a newly arrived event. */
+static long
+poll_page (struct socket_route *route, short events, short *revents, xos_u64 entered)
+{
+  if (!readiness_page) return -EOPNOTSUPP;
+  xos_u64 peer = 0;
+  if (file_trap (ipc_endpoint, endpoint_peer, channel.receive, (xos_u64) &peer) || peer != service_pid)
+    { drop_session (); *revents = POLLERR | POLLHUP; return 0; }
+  const xos_u64 sequence_before = __atomic_load_n (&readiness_page->sequence, __ATOMIC_ACQUIRE);
+  if (!sequence_before || (sequence_before & 1)) return -EAGAIN;
+  struct xos_net2_readiness_page value;
+  const volatile unsigned char *source = (const volatile unsigned char *) readiness_page;
+  for (size_t i = 0; i < sizeof (value); ++i) ((unsigned char *) &value)[i] = source[i];
+  __atomic_thread_fence (__ATOMIC_ACQUIRE);
+  if (__atomic_load_n (&readiness_page->sequence, __ATOMIC_RELAXED) != sequence_before) return -EAGAIN;
+  if (file_trap (ipc_endpoint, endpoint_peer, channel.receive, (xos_u64) &peer) || peer != service_pid)
+    { drop_session (); *revents = POLLERR | POLLHUP; return 0; }
+  if (value.revision != 1 || value.count > 2 || value.session_generation != readiness_generation)
+    { drop_session (); return -EIO; }
+  for (unsigned int i = 0; i < value.count; ++i)
+    if (value.records[i].handle == route->handle)
+      {
+        const struct xos_net2_readiness_record *record = &value.records[i];
+        if (record->result) return network_error (record->result);
+        if (!record->ready.generation || record->ready.reserved || (record->ready.events & ~127U))
+          { drop_session (); return -EIO; }
+        poll_events (route, &record->ready, events, revents);
+        /* Equal timestamps can cover two different observations within one
+           kernel clock tick. They do not establish post-entry freshness. */
+        return *revents || value.sampled_ns > entered ? 0 : -EAGAIN;
+      }
+  return -EAGAIN;
+}
+
+long
+__xos_net2_error_fd (int fd, int *error)
+{
+  struct xos_file_lease lease;
+  long result = __xos_file_lease_acquire (fd, -1, &lease);
+  if (result) return result;
+  if (lease.kind != xos_file_kind_socket) result = -ENOTSOCK;
+  else
+    {
+      const xos_u64 deadline = deadline_now ();
+      result = deadline ? lock_net (deadline) : -EIO;
+      if (!result)
+        {
+          struct socket_route *route = &routes[lease.handle];
+          if (!current_route (route)) result = route->handle ? -ENETDOWN : -ENOTCONN;
+          else
+            {
+              result = require_capability (xos_net2_cap_readiness, deadline);
+              if (!result)
+                {
+                  struct xos_net2_message request = { .action = xos_net2_readiness, .object = route->handle }, reply;
+                  result = exchange (&request, &reply, deadline);
+                  if (!result)
+                    {
+                      struct xos_net2_readiness_snapshot snapshot;
+                      memcpy (&snapshot, reply.data, sizeof (snapshot));
+                      int value = snapshot.error ? -network_error (snapshot.error) : 0;
+                      if (route->connecting && value == ECONNRESET) value = ECONNREFUSED;
+                      *error = route->error_taken ? 0 : value;
+                      if (value) route->error_taken = 1;
+                      if (!(snapshot.events & xos_net2_ready_connecting)) route->connecting = 0;
+                    }
+                }
+            }
+          unlock_net ();
+        }
+    }
+  (void) __xos_file_lease_release (&lease);
+  return result;
+}
+
 static long
 poll_route (unsigned int slot, short events, short *revents, xos_u64 deadline, int immediate)
 {
   long result = 0;
   if (immediate)
     {
-      if (__atomic_exchange_n (&net_lock, 1, __ATOMIC_ACQUIRE) != 0) return -EOPNOTSUPP;
+      if (__atomic_exchange_n (&net_lock, 1, __ATOMIC_ACQUIRE) != 0) return -EAGAIN;
     }
   else result = lock_net (deadline);
   if (result) return result == -ETIMEDOUT ? -EAGAIN : result;
   struct socket_route *route = &routes[slot];
   if (!route->handle) { *revents = POLLHUP; result = 0; }
   else if (!current_route (route)) { *revents = POLLERR | POLLHUP; result = 0; }
-  else if (immediate) result = -EOPNOTSUPP;
+  else if (immediate) result = poll_page (route, events, revents, deadline);
   else
     {
       result = require_capability (xos_net2_cap_readiness, deadline);
@@ -599,16 +775,37 @@ poll_route (unsigned int slot, short events, short *revents, xos_u64 deadline, i
           else if (result == 0)
             {
               const struct xos_net2_readiness_snapshot *snapshot = &route->ready;
-              if ((events & POLLIN) && (snapshot->events & xos_net2_ready_read)) *revents |= POLLIN;
-              if ((events & POLLOUT) && (snapshot->events & xos_net2_ready_write)) *revents |= POLLOUT;
-              if (snapshot->events & xos_net2_ready_eof) *revents |= POLLHUP;
-              if (snapshot->events & xos_net2_ready_error) *revents |= POLLERR;
+              poll_events (route, snapshot, events, revents);
             }
           route->ready_valid = 0;
         }
     }
   unlock_net ();
   return result;
+}
+
+struct pipe_status_snapshot
+{ xos_u32 version, size, readable, writable, flags, reserved; xos_u64 reserved2; };
+_Static_assert (sizeof (struct pipe_status_snapshot) == 32, "pipe snapshot layout");
+static long
+poll_pipe (const struct xos_file_lease *lease, short events, short *revents)
+{
+  struct pipe_status_snapshot status = { .version = 1, .size = sizeof (status) };
+  long result = file_trap (54, lease->handle, 1ULL << 63, (xos_u64) &status);
+  if (result) return result == -2 || result == -18 ? -EOPNOTSUPP : -EBADF;
+  if (status.version != 1 || status.size != sizeof (status) || status.reserved || status.reserved2
+      || (status.flags & ~7U) || ((status.flags & 3) != 1 && (status.flags & 3) != 2)) return -EIO;
+  if (status.flags & 1)
+    {
+      if ((events & POLLIN) && (status.readable || (status.flags & 4))) *revents |= POLLIN;
+      if (status.flags & 4) *revents |= POLLHUP;
+    }
+  else
+    {
+      if (status.flags & 4) *revents |= POLLERR;
+      else if ((events & POLLOUT) && status.writable) *revents |= POLLOUT;
+    }
+  return 0;
 }
 
 long
@@ -636,7 +833,7 @@ __xos_net2_poll (struct pollfd *descriptors, nfds_t count, int timeout_ms)
         {
           acquired = __xos_file_poll_lease_acquire (descriptors[i].fd, &leases[i]);
           if (acquired != -EAGAIN) break;
-          if (timeout_ms == 0) { result = -EOPNOTSUPP; goto done; }
+          if (timeout_ms == 0) { result = -EAGAIN; goto done; }
           long paused = pause_until (until ? until : deadline_now ());
           if (paused)
             {
@@ -649,44 +846,84 @@ __xos_net2_poll (struct pollfd *descriptors, nfds_t count, int timeout_ms)
         }
       if (acquired == -EBADF) { descriptors[i].revents = POLLNVAL; continue; }
       if (acquired) { result = acquired; goto done; }
-      if (leases[i].kind != xos_file_kind_socket && leases[i].kind != xos_file_kind_file)
+      if (leases[i].kind != xos_file_kind_socket && leases[i].kind != xos_file_kind_file &&
+          leases[i].kind != xos_file_kind_pipe_read && leases[i].kind != xos_file_kind_pipe_write &&
+          leases[i].kind != xos_file_kind_kernel)
         { result = -EOPNOTSUPP; goto done; }
     }
   for (;;)
     {
-      long ready_count = 0;
-      /* One caller deadline covers lock acquisition, capability negotiation,
-         snapshots and waiting. A read-only RPC may be consumed by a later call. */
-      const xos_u64 query_deadline = until ? until : deadline_now ();
-      if (!query_deadline) { result = -EIO; break; }
-      for (nfds_t i = 0; i < count; ++i)
+      long ready_count = 0, unavailable = 0;
+      /* Scan every descriptor without waiting first. A stalled first socket
+         must not hide a later ready file, pipe, socket or invalid descriptor. */
+      for (unsigned int pass = 0; pass < 2; ++pass)
         {
-          if (leases[i].object >= 0)
+          const xos_u64 query_deadline = until ? until : deadline_now ();
+          if (!query_deadline) { result = -EIO; goto done; }
+          for (nfds_t i = 0; i < count; ++i)
             {
+              if (leases[i].object < 0)
+                {
+                  if (!pass && descriptors[i].revents) ++ready_count;
+                  continue;
+                }
+              if (pass && leases[i].kind != xos_file_kind_socket) continue;
               descriptors[i].revents = 0;
+              long current = __xos_file_poll_lease_current (descriptors[i].fd, &leases[i]);
+              if (current == -EBADF) { descriptors[i].revents = POLLNVAL; ++ready_count; continue; }
+              if (current == -EAGAIN)
+                {
+                  /* Another thread may be closing/replacing an FD or using
+                     Files. Retry finite polls under the original deadline;
+                     contention is neither a current identity nor readiness. */
+                  if (!unavailable) unavailable = current;
+                  continue;
+                }
+              if (current) { result = current; goto done; }
+              result = 0;
               if (leases[i].kind == xos_file_kind_file)
                 descriptors[i].revents = descriptors[i].events & (POLLIN | POLLOUT);
+              else if (leases[i].kind != xos_file_kind_socket)
+                result = poll_pipe (&leases[i], descriptors[i].events, &descriptors[i].revents);
               else
                 {
+                  const int immediate = !pass || ready_count != 0;
                   result = poll_route (leases[i].handle, descriptors[i].events,
-                                       &descriptors[i].revents, query_deadline, timeout_ms == 0);
-                  if (result == -EAGAIN)
-                    {
-                      result = 0;
-                      for (nfds_t ready = 0; ready < count; ++ready)
-                        if (descriptors[ready].revents) ++result;
-                      goto done;
-                    }
-                  if (result) goto done;
+                                       &descriptors[i].revents,
+                                       immediate ? (xos_u64) began : query_deadline, immediate);
                 }
+              /* A successful late reply is just as capable of racing FD
+                 reuse as a timeout. Never attach either to a new description. */
+              current = __xos_file_poll_lease_current (descriptors[i].fd, &leases[i]);
+              if (current == -EBADF) { descriptors[i].revents = POLLNVAL; result = 0; }
+              else if (current == -EAGAIN)
+                {
+                  descriptors[i].revents = 0;
+                  if (!unavailable) unavailable = current;
+                  result = 0;
+                  continue;
+                }
+              else if (current) { result = current; goto done; }
+              if (result == -EAGAIN || ((!pass || ready_count) && leases[i].kind == xos_file_kind_socket && result == -EOPNOTSUPP))
+                {
+                  if (!unavailable || result == -EOPNOTSUPP) unavailable = result;
+                  result = 0;
+                }
+              else if (result) goto done;
+              if (descriptors[i].revents) ++ready_count;
             }
-          if (descriptors[i].revents) ++ready_count;
+          if (ready_count) { result = ready_count; goto done; }
+          if (!pass && timeout_ms == 0) { result = unavailable; goto done; }
+          const long current = file_trap (monotonic, 0, 0, 0);
+          if (current < 0) { result = -EIO; goto done; }
+          /* After an RPC used the deadline, repeat the nonblocking scan once
+             so close/reuse and unrelated FD changes remain observable. */
+          if (!pass && until && (xos_u64) current >= until) { result = 0; goto done; }
         }
-      if (ready_count || timeout_ms == 0) { result = ready_count; break; }
       const long current = file_trap (monotonic, 0, 0, 0);
       if (current < 0) { result = -EIO; break; }
       const xos_u64 now = (xos_u64) current;
-      if (until && now >= until) { result = 0; break; }
+      if (until && now >= until) continue;
       xos_u64 next = now > LONG_MAX - tick ? LONG_MAX : now + tick;
       if (until && next > until) next = until;
       if (file_trap (sleep_until, next, 0, 0) != 0) { result = -EIO; break; }

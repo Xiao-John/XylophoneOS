@@ -69,6 +69,8 @@ long __xos_file_lease_release (struct xos_file_lease *)
    or dropping a description. Initialization remains an ordinary FD operation. */
 long __xos_file_poll_lease_acquire (int, struct xos_file_lease *)
   __attribute__ ((visibility ("hidden")));
+long __xos_file_poll_lease_current (int, const struct xos_file_lease *)
+  __attribute__ ((visibility ("hidden")));
 void __xos_file_poll_lease_release (struct xos_file_lease *)
   __attribute__ ((visibility ("hidden")));
 long __xos_file_request_path (struct xos_file_request *, const char *)

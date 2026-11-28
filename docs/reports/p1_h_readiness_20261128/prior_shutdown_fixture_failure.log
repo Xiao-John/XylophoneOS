@@ -1,0 +1,29 @@
+NET_SERVICE_CASE_PASS=admission_and_stop
+NET_SERVICE_CASE_PASS=framing_and_replay
+NET_SERVICE_CASE_PASS=address_policy
+NET_SERVICE_CASE_PASS=object_isolation
+NET_SERVICE_CASE_PASS=trusted_egress_policy
+NET_SERVICE_CASE_PASS=invalid_egress_fails_closed
+NET_SERVICE_CASE_PASS=connection_quotas
+NET_SERVICE_CASE_PASS=revoke_policy
+NET_SERVICE_CASE_PASS=deadlines_and_idle
+NET_SERVICE_CASE_PASS=tcp_echo_and_eof
+NET_SERVICE_CASE_PASS=socket_capabilities_and_isolation
+line 249: one TCP SYN
+Traceback (most recent call last):
+  File "${XOS_REPO}/tests/net_service_host.py", line 109, in <module>
+    main()
+    ~~~~^^
+  File "${XOS_REPO}/tests/net_service_host.py", line 102, in main
+    build_and_test(options, options.output.resolve())
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_REPO}/tests/net_service_host.py", line 75, in build_and_test
+    run([str(binary), scenario])
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "${XOS_REPO}/tests/net_service_host.py", line 21, in run
+    subprocess.run(arguments, check=True, timeout=90)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['${XOS_REPO}/build/p1h_net_host_v6/net_service_host', 'readiness_page_and_read_shutdown']' died with <Signals.SIGABRT: 6>.

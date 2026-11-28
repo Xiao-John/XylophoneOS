@@ -15,6 +15,7 @@ import tarfile
 from glibc_g1_probe import clean_build_environment, tool_identity
 from verify_glibc_source import extract_verified_source, read_archive, verify_source
 from build_glibc_terminal_support import input_paths as terminal_inputs
+from net_readiness_manifest import net_readiness_manifest_entry
 
 ROOT = Path(__file__).resolve().parents[1]
 PORT = ROOT / 'src/ports/glibc'
@@ -22,6 +23,7 @@ SDK_SCRIPTS = (
     'archive_member_map.py', 'build_glibc_program.py', 'build_glibc_sdk.py',
     'build_glibc_terminal_support.py', 'glibc_g1_deps.py', 'glibc_g1_probe.py',
     'verify_glibc_source.py', 'xos_app.py', 'xypm_format.py', 'xypm_sdk_profile.py',
+    'net_readiness_manifest.py',
 )
 
 
@@ -97,6 +99,7 @@ def main():
                   'request_bytes': 144, 'batch_max': 16, 'native_references_max': 16,
                   'global_pipe_objects_max': 8, 'posix_spawn_inherited_descriptors': True,
                   'same_pid_exec': 'preserved_existing_handles', 'guest_qualification': 'not_run'},
+              'network_readiness': net_readiness_manifest_entry(),
               'source_sha256': sha(archive),
               'source_authentication': lock['signature_verification'],
               'tools': tools, 'sanitized_environment': removed,

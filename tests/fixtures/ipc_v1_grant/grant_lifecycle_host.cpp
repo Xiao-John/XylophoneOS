@@ -6,6 +6,7 @@
 #include <xos/device_abi.hpp>
 #include <xos/ipc_v1_abi.hpp>
 #include <xos/memory.hpp>
+#include <xos/process_budget_abi.hpp>
 #include "core/anonymous_reservations.hpp"
 #include "core/cpu_accounting.hpp"
 #include "core/device_grants.hpp"
@@ -32,6 +33,9 @@ device_grants::store device_store;
 u32 files_checks, scenarios;
 
 bool files_service_live() { ++files_checks; return false; }
+// This fixture stops before fork allocation. Process-tree budget accounting
+// has its own production tests; these grant admission cases have headroom.
+bool budget_admit(const process_record&, process_budget_vector) { return true; }
 process_record* prepare_task(const char*) { std::abort(); }
 void destroy_task(process_record*) { std::abort(); }
 void fpu_save(u8*) { std::abort(); }
@@ -107,6 +111,9 @@ void close_preflight() {
     const auto owner0 = vm1_probe_regions[0], owner1 = vm1_probe_regions[1];
     assert(ipc_v1_grant_close_status(0) == static_cast<i64>(ipc_v1_error::resources));
     unchanged(owner0, vm1_probe_regions[0]); unchanged(owner1, vm1_probe_regions[1]);
+    assert(ipc_v1_grant_release_status(0, 11) == 0);
+    assert(ipc_v1_grant_release_status(0, 22) == static_cast<i64>(ipc_v1_error::resources));
+    unchanged(owner0, vm1_probe_regions[0]); unchanged(owner1, vm1_probe_regions[1]);
     ++scenarios;
 
     reset(); seed(vm1_probe_regions[0], 1); mapping(0, 11, base + page_size);
@@ -116,8 +123,12 @@ void close_preflight() {
     int context = 0;
     assert(current->continuation.begin(1, 1, &context, fork_copy_step));
     assert(ipc_v1_grant_close_status(0) == static_cast<i64>(ipc_v1_error::busy));
+    assert(ipc_v1_grant_release_status(0, 11) == static_cast<i64>(ipc_v1_error::busy));
+    assert(ipc_v1_grant_release_status(0, 22) == 0);
     current_thread->ipc_v1_pins[0].clear();
     assert(ipc_v1_grant_close_status(0) == static_cast<i64>(ipc_v1_error::state));
+    assert(ipc_v1_grant_release_status(0, 11) == static_cast<i64>(ipc_v1_error::state));
+    assert(ipc_v1_grant_release_status(0, 22) == 0);
     current->continuation.clear(); assert(ipc_v1_grant_close_status(0) == 0);
     ++scenarios;
 }

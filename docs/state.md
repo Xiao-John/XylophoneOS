@@ -1,5 +1,18 @@
 # XOS 当前状态（全局快照）
 
+## 2026-11-28 · xypm 公开 GHCR 下载入口已合入
+
+[#467](https://github.com/Xiao-John/XylophoneOS/pull/467) 已合入主线
+`5f6b7867811d40aea6bc07834ca087911870d6a7`。宿主与原生 glibc xypm 可按
+不可变 OCI 清单摘要取得单个公开 XPK，在完整 HTTPS、长度、摘要和 profile
+校验后发布缓存，再独立执行维护安装。原有 P1-D 认证发行命令保留。
+
+已公开的客体证据覆盖固定 IPv4 与 CA 快照下的下载、安装、查询及停机数据库
+回读；私有仓库、自动 DNS、物理断电和认证发行客体回归仍未验。该资格不扩大
+P0 prerelease 的发行范围。[接入与使用](plans/xypm_ghcr.md) ·
+[原验收记录](reports/xypm_ghcr_guest_20261128/README.md) ·
+[合并交接](work_log/5f6b7867_ghcr_merge_checkpoint.md)
+
 ## 2026-11-28 · 三项 Issue 与 P1-B/C/D/E 已合入
 
 [#124](https://github.com/Xiao-John/XylophoneOS/issues/124)、

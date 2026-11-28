@@ -1,0 +1,308 @@
+{
+  "bundle": {
+    "bytes": 430346240,
+    "sha256": "492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4"
+  },
+  "frozen_inventories": [
+    {
+      "canonical_inventory_sha256": "bf3fc2dff38db08cbb2a455af4423163b26ac4f60da055dce1c68e444e299c20",
+      "encoding": "canonical JSON of original qualification.frozen_assets",
+      "exact_inventory_and_every_file_verified": true,
+      "files": {
+        "CHECKSUMS.sha256": {
+          "bytes": 1672,
+          "sha256": "4241f137d9642304603f45b9e3f3ca2365963d8b0b6e83ca1facfb21092db59f"
+        },
+        "application-sdk.tar.gz": {
+          "bytes": 23574262,
+          "sha256": "439d0e84b75b018c60971c6a62794da255b82cf113218bfb799bb5a431c5b8ef"
+        },
+        "combined_smoke_report.json": {
+          "bytes": 625,
+          "sha256": "af98291aa66c975a164e165169996d9dfff4a26d94b682c814188d3880dc17b2"
+        },
+        "component-sources.json": {
+          "bytes": 23766,
+          "sha256": "ef0c2269b6f67bfca628e2afbd23fa4653e60a65b25a9c8428ff768bc3e574f8"
+        },
+        "component-sources.tar.gz": {
+          "bytes": 26587606,
+          "sha256": "c2425572365b5708237212b82e3933c3f0d66315a93ad14b2184b2d4b44b953f"
+        },
+        "cpython-relink.tar.gz": {
+          "bytes": 34322441,
+          "sha256": "a9f7fddb65c1ab1e1933970c9ca4e2500e5e5af3b4e7732cc18623f6455f0a0f"
+        },
+        "daily-relink.tar.gz": {
+          "bytes": 8743690,
+          "sha256": "1928334e9aac989a2e67789c99c724c2f93c9b4bf4d16a1d850c1a627d5985cc"
+        },
+        "dash-relink.tar.gz": {
+          "bytes": 8848599,
+          "sha256": "d496725815a18fb91331b1edeb9a0e49257a368eaf5657c917f725bfedc1f987"
+        },
+        "distribution_manifest.json": {
+          "bytes": 3813,
+          "sha256": "7565b05cf0e444c73ddf607cb71e8401abf454bd09fac93adb045264600792c0"
+        },
+        "glibc-2.44.tar.xz": {
+          "bytes": 20620544,
+          "sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+        },
+        "gnu-make-relink.tar.gz": {
+          "bytes": 8933359,
+          "sha256": "304e0549cad84da746b7b6d55bf9508ce2377b3610bcd1bd5a87e8c3e430c93b"
+        },
+        "gnu-seed-sources.tar.gz": {
+          "bytes": 182547717,
+          "sha256": "b5bba3d92930124124f516d11b977792af80989dbdadaa03ca0f655a6731e22a"
+        },
+        "gnu_seed_smoke_report.json": {
+          "bytes": 39975,
+          "sha256": "674dbb8f159d5ec1d0035dbde7a887892b65c7025d40883295da68b5b2f4aaa6"
+        },
+        "images.tar.gz": {
+          "bytes": 93310001,
+          "sha256": "ce174d53b4403838b8cffe9dff3fbf351902b7fa3c8e98a7efc37db59059d941"
+        },
+        "package_smoke_report.json": {
+          "bytes": 1876,
+          "sha256": "3ad8848ca0368b3d451741c70b6135fc51c443209d8965619c4022107c13b45d"
+        },
+        "packages.tar.gz": {
+          "bytes": 11645427,
+          "sha256": "e7cce78ad3d11e4d27908281f4f5f787a418f131224a05ef37e13807dad3c39e"
+        },
+        "pipeline_receipt.json": {
+          "bytes": 4073,
+          "sha256": "a6c4aaf4d48f0b6d9d27d36029cc38ec00833cea837ca32ad2abf0a124548fb8"
+        },
+        "release_manifest.json": {
+          "bytes": 3392,
+          "sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e"
+        },
+        "system_manifest.json": {
+          "bytes": 465201,
+          "sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596"
+        },
+        "xypm-relink.tar.gz": {
+          "bytes": 10636195,
+          "sha256": "ee1092662aea147a2d39a432deffee679738d8f71955d69adf462c41d6f112a0"
+        }
+      },
+      "run_id": "f645a9f55f014156937bd263bee870de"
+    },
+    {
+      "canonical_inventory_sha256": "bf3fc2dff38db08cbb2a455af4423163b26ac4f60da055dce1c68e444e299c20",
+      "encoding": "canonical JSON of original qualification.frozen_assets",
+      "exact_inventory_and_every_file_verified": true,
+      "files": {
+        "CHECKSUMS.sha256": {
+          "bytes": 1672,
+          "sha256": "4241f137d9642304603f45b9e3f3ca2365963d8b0b6e83ca1facfb21092db59f"
+        },
+        "application-sdk.tar.gz": {
+          "bytes": 23574262,
+          "sha256": "439d0e84b75b018c60971c6a62794da255b82cf113218bfb799bb5a431c5b8ef"
+        },
+        "combined_smoke_report.json": {
+          "bytes": 625,
+          "sha256": "af98291aa66c975a164e165169996d9dfff4a26d94b682c814188d3880dc17b2"
+        },
+        "component-sources.json": {
+          "bytes": 23766,
+          "sha256": "ef0c2269b6f67bfca628e2afbd23fa4653e60a65b25a9c8428ff768bc3e574f8"
+        },
+        "component-sources.tar.gz": {
+          "bytes": 26587606,
+          "sha256": "c2425572365b5708237212b82e3933c3f0d66315a93ad14b2184b2d4b44b953f"
+        },
+        "cpython-relink.tar.gz": {
+          "bytes": 34322441,
+          "sha256": "a9f7fddb65c1ab1e1933970c9ca4e2500e5e5af3b4e7732cc18623f6455f0a0f"
+        },
+        "daily-relink.tar.gz": {
+          "bytes": 8743690,
+          "sha256": "1928334e9aac989a2e67789c99c724c2f93c9b4bf4d16a1d850c1a627d5985cc"
+        },
+        "dash-relink.tar.gz": {
+          "bytes": 8848599,
+          "sha256": "d496725815a18fb91331b1edeb9a0e49257a368eaf5657c917f725bfedc1f987"
+        },
+        "distribution_manifest.json": {
+          "bytes": 3813,
+          "sha256": "7565b05cf0e444c73ddf607cb71e8401abf454bd09fac93adb045264600792c0"
+        },
+        "glibc-2.44.tar.xz": {
+          "bytes": 20620544,
+          "sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+        },
+        "gnu-make-relink.tar.gz": {
+          "bytes": 8933359,
+          "sha256": "304e0549cad84da746b7b6d55bf9508ce2377b3610bcd1bd5a87e8c3e430c93b"
+        },
+        "gnu-seed-sources.tar.gz": {
+          "bytes": 182547717,
+          "sha256": "b5bba3d92930124124f516d11b977792af80989dbdadaa03ca0f655a6731e22a"
+        },
+        "gnu_seed_smoke_report.json": {
+          "bytes": 39975,
+          "sha256": "674dbb8f159d5ec1d0035dbde7a887892b65c7025d40883295da68b5b2f4aaa6"
+        },
+        "images.tar.gz": {
+          "bytes": 93310001,
+          "sha256": "ce174d53b4403838b8cffe9dff3fbf351902b7fa3c8e98a7efc37db59059d941"
+        },
+        "package_smoke_report.json": {
+          "bytes": 1876,
+          "sha256": "3ad8848ca0368b3d451741c70b6135fc51c443209d8965619c4022107c13b45d"
+        },
+        "packages.tar.gz": {
+          "bytes": 11645427,
+          "sha256": "e7cce78ad3d11e4d27908281f4f5f787a418f131224a05ef37e13807dad3c39e"
+        },
+        "pipeline_receipt.json": {
+          "bytes": 4073,
+          "sha256": "a6c4aaf4d48f0b6d9d27d36029cc38ec00833cea837ca32ad2abf0a124548fb8"
+        },
+        "release_manifest.json": {
+          "bytes": 3392,
+          "sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e"
+        },
+        "system_manifest.json": {
+          "bytes": 465201,
+          "sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596"
+        },
+        "xypm-relink.tar.gz": {
+          "bytes": 10636195,
+          "sha256": "ee1092662aea147a2d39a432deffee679738d8f71955d69adf462c41d6f112a0"
+        }
+      },
+      "run_id": "480ad403fe0f4210a6c5e8ab1975cf26"
+    }
+  ],
+  "immutable_frozen_files_compared": 15,
+  "independent_runs": 2,
+  "programs_per_run": 17,
+  "publication": "derived public comparison; raw input digests identify unpublished originals",
+  "published": false,
+  "raw_comparison": {
+    "raw_source": "build/p1_j_comparison_v2.json",
+    "raw_unpublished_sha256": "4fddd4980d470b606962eb1b2ee41c5c4bf9b3283f4a0a3cfc5bc343a1b1578b"
+  },
+  "run_ids": [
+    "f645a9f55f014156937bd263bee870de",
+    "480ad403fe0f4210a6c5e8ab1975cf26"
+  ],
+  "run_reports": [
+    {
+      "bytes": 38038,
+      "sha256": "9da10ca478de52039f0bb87535e25861b6cc7f7ce5f4383434a4b47b0bfa4c56"
+    },
+    {
+      "bytes": 38038,
+      "sha256": "d8343efc2144a8234655d2985d5b6c8009f21db52777b8a7d4c59379dc8c4bb9"
+    }
+  ],
+  "runner_commit": "dedf69415f1942bcf860b6ec7dd2e211869501e9",
+  "sdk_bindings": {
+    "glibc": {
+      "kit_tree_sha256": "672bb1543fe545a2c48371f27e84ff262671a57ccd1e93f8bdec087529559152",
+      "profile_file_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+      "profile_id": "xos-x86_64-glibc-p0-20261128",
+      "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+      "sdk_manifest_sha256": "56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703",
+      "sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab"
+    },
+    "newlib": {
+      "profile_id": "xos-x86_64-static-single-v1",
+      "profile_sha256": "fd35dc5b949ea332d150e192e538ebc3da9a9868d8c0cdd4d6040cf3fa4e0253",
+      "sdk_manifest_sha256": "dd95ed9b64cf6b200b6d4ccd6e7539696d0aabc1dabc5a7d8d5b16b39565f59e",
+      "sdk_tree_sha256": "e78726755d11d19feabcb7c36faebf6ed9a4e663f85f6beb081ffabae105a874"
+    }
+  },
+  "status": "passed",
+  "system_rebuild": {
+    "artifacts": {
+      "kernel.bin": {
+        "bytes": 886936,
+        "sha256": "7ed5cf48000f1fb876bb223362a8158fc5a460b7e9b619f080d1d533c4f35811"
+      },
+      "user_hello.image.elf": {
+        "bytes": 9872,
+        "sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf"
+      },
+      "xos-install.iso": {
+        "bytes": 954368,
+        "sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51"
+      }
+    },
+    "build_id": "7c8c59058be0b5f1",
+    "debug_elf": {
+      "artifact": {
+        "bytes": 2775072,
+        "sha256": "349ae4424e612e5c300ef095693ac8975592bdad18b982a8033bf01eace97242"
+      },
+      "comparison": "debug_paths_differ_between_producer_and_receiver",
+      "loadable_binary_layout_and_symbols_identical": true,
+      "original_sha256": "213bb7bbaca18f70b8a66d6dbb263a473330db245f9802eb8f13fe36ba97112d"
+    },
+    "source_sha256": "7c8c59058be0b5f1ab85450ad69a0c1409fb04f0f3af2b234a6eca645dcb2260",
+    "status": "passed",
+    "tools": {
+      "executables": {
+        "ar": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0"
+        },
+        "as": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5"
+        },
+        "cc1": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "70ea322e5b6ab2f2e4d9bbfa96c5c6967763421c1d3cddd5b6747167118f481a"
+        },
+        "cc1plus": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "7eeb0592da12d466fa9397e90287e6518cabc119f2622cc9e34304b0fdf99603"
+        },
+        "g++": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "763d8030ec4f6794ddb0aa7b42e2ccb7c686aa08f02003769f228864949a2a99"
+        },
+        "gcc": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf"
+        },
+        "ld": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19"
+        },
+        "nasm": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "2aadda073ebe0115f8aca85685a3ef8ea5850d3f281a2b70bca8213c1063bc90"
+        },
+        "nm": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "3fdef360e0f9acd3f94e664a37bd8a9a042fa3628edf6bae681f89b58a65a45f"
+        },
+        "objcopy": {
+          "path": "${HOST_TOOLCHAIN}",
+          "sha256": "746b8a1e97316d434ffdbe57d1f3bc9bff8a0301b44f5df11a27d153ed31edab"
+        }
+      },
+      "g++": "16.2.0",
+      "gcc": "16.2.0",
+      "ld": "GNU ld (GNU Binutils) 2.47.20260726",
+      "nasm": "NASM version 3.02 compiled on Jun 29 2026",
+      "target": "x86_64-elf"
+    }
+  },
+  "system_source_commit": "819ea63ae84b1e89862648af002c2a09d1936c02",
+  "verifier": {
+    "commit": "2a64ff11e0d1dcbcdaaaafd9ecccecc780ea4f47",
+    "scope": "read_only_comparison_of_completed_runs",
+    "script_sha256": "147abb7c2910932f9f5d1fc08bccde72ea0b3d4a74f0fd1d6b9f425e06dcb979"
+  }
+}

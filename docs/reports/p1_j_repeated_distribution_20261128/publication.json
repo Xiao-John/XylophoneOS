@@ -1,0 +1,771 @@
+{
+  "additional_transformations": [
+    {
+      "public": "guest_gnu.json.gz",
+      "transformation": "Guest command source/output path prefixes replaced by named templates with an explicit exact expansion map; every command round trip verified against its raw original."
+    },
+    {
+      "public": "comparison_attempts.json",
+      "transformation": "Host Python runtime prefix abstracted in the original failed comparison diagnostic; failure outcome preserved."
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "transformation": "Per-receiver host mktemp directory segment abstracted, preserving archive member, symbol and warning text."
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "transformation": "Per-receiver host mktemp directory segment abstracted, preserving archive member, symbol and warning text."
+    },
+    {
+      "public": "readme.md",
+      "transformation": "Narrative reviewed against the source records and explicitly describes these derived output transformations."
+    }
+  ],
+  "integrity": "manifest.json alone hashes public sibling leaves; raw origin hashes identify unpublished originals",
+  "method": "derived records; host paths redacted; original producer statuses and outcomes preserved",
+  "origin_rule": "A raw origin may contribute to both the structured validation result and the labeled validation log; public sibling digests are only in manifest.json.",
+  "original_runner": "dedf69415f1942bcf860b6ec7dd2e211869501e9",
+  "origins": [
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/combined_guest.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/combined_guest_detail.log",
+      "raw_unpublished_sha256": "9e57446e5cfdff13a8092136a0f2f2445b9acc232bf6cbf1db99c9511c3cd782",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/freeze.log",
+      "raw_unpublished_sha256": "e46759471304dd00f3697372d40b95499924aca462063f052574f36e86ad2075",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/guest_cpython.log",
+      "raw_unpublished_sha256": "9dbbbe6642c04999655448bc4309cd81a5f2a7532aec304b4d573e1c39aa99ee",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/guest_daily.log",
+      "raw_unpublished_sha256": "3189e55cb9ca39f5d9a01ad48c1c2bd75cb50f024606157e7fd392440df5f4a2",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/guest_dash.log",
+      "raw_unpublished_sha256": "f1e08ee4bbbd001af1f73033e2c52be72ced009f0d29facb9ea06bd6e2c283c6",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/guest_make.log",
+      "raw_unpublished_sha256": "95e12b41bd7b8b7be8f490f7c08ac124062e3461e635565b2c2e39db08407b4c",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/guest_xypm.log",
+      "raw_unpublished_sha256": "791d16dcedddd2d3bfb988b77928b78bf8d9a4f74bcd3bd8bb52e91cecebd293",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/negative_gates.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/prepare.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/receiver_cpython.log",
+      "raw_unpublished_sha256": "b87a86a76a5be278dbe82684b884af3f98e38a2a55bec630b6b3c06fcb4f35e5",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/receiver_daily.log",
+      "raw_unpublished_sha256": "af2c0e4618f9bb411b12bec014c62e8c2024842811970d03f73cd1e5b60af76c",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/receiver_dash.log",
+      "raw_unpublished_sha256": "48613ddba918283294d65a17a53c3f201516b11c617bb38bacb348d6986c7fe9",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/receiver_make.log",
+      "raw_unpublished_sha256": "2a9bfbf09acb3334400e4991db603550058222ee93089d9df42cbb4e7446ba0f",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/receiver_preflight.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/receiver_xypm.log",
+      "raw_unpublished_sha256": "f1d11c01b335cd8b3b50c64d3426cdfd3232a499ee8c32c0328c64cc41999aca",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/relink_guests.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/source_materials.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/system_build.log",
+      "raw_unpublished_sha256": "9db21bfde57cc40f1764f1a9bb1540019c91ba6c5e3fc39a7497c6523fa48209",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/verify_receivers.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_5/verify_system.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_package_serial.log.gz",
+      "raw_source": "build/p1_j_run_5/combined_guest/installer_serial.log",
+      "raw_unpublished_sha256": "c4292d38b55365d1f0a833d98dfc825e18953b4a36e6148a63966c2997b4a51e",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_package_serial.log.gz",
+      "raw_source": "build/p1_j_run_5/combined_guest/ordinary_serial.log",
+      "raw_unpublished_sha256": "6ef62233daee6e68ca5003727f056c00fe173ae8f77c4e7cd497179d706d5aff",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_gnu_serial.log.gz",
+      "raw_source": "build/p1_j_run_5/combined_guest/gnu_seed/installer_serial.log",
+      "raw_unpublished_sha256": "6c130ff3560f57208fe938a12b859d077c8783489263acbc7437dba482c24343",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_gnu_serial.log.gz",
+      "raw_source": "build/p1_j_run_5/combined_guest/gnu_seed/ordinary_serial.log",
+      "raw_unpublished_sha256": "8de87cdfb8a7aae109ae7b7b5af99a862533ef73d977664d02ceba3a9f0eac1b",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_gnu_serial.log.gz",
+      "raw_source": "build/p1_j_run_5/combined_guest/gnu_seed/reboot_serial.log",
+      "raw_unpublished_sha256": "fbffbca7ac801c12b6b8f3d03eaa8f5c3792d7180e51ebd65a38f023f9170cfd",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_relink_serial.log.gz",
+      "raw_source": "build/p1_j_run_5/relink_guests/daily/release_daily_relink_install_serial.log",
+      "raw_unpublished_sha256": "b28c3cfd7bc9a125e800f99a1a1522741c25cfd62685cd1ea9db2c29075ed632",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_relink_serial.log.gz",
+      "raw_source": "build/p1_j_run_5/relink_guests/dash/release_dash_relink_install_serial.log",
+      "raw_unpublished_sha256": "6570749069de20b0a99229c0fd06321cf15643e3728e56b0efe9d88c185f4d45",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_5_relink_serial.log.gz",
+      "raw_source": "build/p1_j_run_5/relink_guests/xypm/serial.log",
+      "raw_unpublished_sha256": "6bf4aad49d7481ad8515a82f59cd4de6ae5d2888994309c03d6364dda1b50aa7",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/combined_guest.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/combined_guest_detail.log",
+      "raw_unpublished_sha256": "9e57446e5cfdff13a8092136a0f2f2445b9acc232bf6cbf1db99c9511c3cd782",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/freeze.log",
+      "raw_unpublished_sha256": "e46759471304dd00f3697372d40b95499924aca462063f052574f36e86ad2075",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/guest_cpython.log",
+      "raw_unpublished_sha256": "9dbbbe6642c04999655448bc4309cd81a5f2a7532aec304b4d573e1c39aa99ee",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/guest_daily.log",
+      "raw_unpublished_sha256": "3189e55cb9ca39f5d9a01ad48c1c2bd75cb50f024606157e7fd392440df5f4a2",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/guest_dash.log",
+      "raw_unpublished_sha256": "f1e08ee4bbbd001af1f73033e2c52be72ced009f0d29facb9ea06bd6e2c283c6",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/guest_make.log",
+      "raw_unpublished_sha256": "95e12b41bd7b8b7be8f490f7c08ac124062e3461e635565b2c2e39db08407b4c",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/guest_xypm.log",
+      "raw_unpublished_sha256": "791d16dcedddd2d3bfb988b77928b78bf8d9a4f74bcd3bd8bb52e91cecebd293",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/negative_gates.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/prepare.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/receiver_cpython.log",
+      "raw_unpublished_sha256": "a7316bf993cff6f592171492384a1002a2d4aa00e38e540d40acf3fedcbfeb1c",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/receiver_daily.log",
+      "raw_unpublished_sha256": "f5797c32bdc66cec48e78dbbc4eca10302c59163f6fb9727e330dadf55ebb1f7",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/receiver_dash.log",
+      "raw_unpublished_sha256": "fd6b4ca4995b3e4dc4fd53c2a1579ee179de2615d9f57037060bd339adf580bf",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/receiver_make.log",
+      "raw_unpublished_sha256": "78221f669d35280ac6a192283dda11310af2f4a7d89f016a3fcab4bbc081be00",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/receiver_preflight.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/receiver_xypm.log",
+      "raw_unpublished_sha256": "54fb337fe3a830fcc42e793725a3afad7de483d009076ff7a4458555d6545a4e",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/relink_guests.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/source_materials.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/system_build.log",
+      "raw_unpublished_sha256": "9db21bfde57cc40f1764f1a9bb1540019c91ba6c5e3fc39a7497c6523fa48209",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/verify_receivers.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_stage_logs.log.gz",
+      "raw_source": "build/p1_j_run_6/verify_system.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_package_serial.log.gz",
+      "raw_source": "build/p1_j_run_6/combined_guest/installer_serial.log",
+      "raw_unpublished_sha256": "0bee8d65b4dbfde71d1dd1edbc165536d631293163174b13f42b250dc880bfb5",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_package_serial.log.gz",
+      "raw_source": "build/p1_j_run_6/combined_guest/ordinary_serial.log",
+      "raw_unpublished_sha256": "44edca278d4a946b4be84c3f91add196b3e56efec9bf7037849f1abb8ec4ebde",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_gnu_serial.log.gz",
+      "raw_source": "build/p1_j_run_6/combined_guest/gnu_seed/installer_serial.log",
+      "raw_unpublished_sha256": "65c69bab1a9157d20a95113fdb9d1f74756a101a9982c99dbf8b3ccaa95edbd3",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_gnu_serial.log.gz",
+      "raw_source": "build/p1_j_run_6/combined_guest/gnu_seed/ordinary_serial.log",
+      "raw_unpublished_sha256": "7370c503db645535de5ffb5c056f87ef89fb4504ce9be74b97bdf0e9996eb828",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_gnu_serial.log.gz",
+      "raw_source": "build/p1_j_run_6/combined_guest/gnu_seed/reboot_serial.log",
+      "raw_unpublished_sha256": "3c5c73f9c9340fb00bead77e2560f2f33a94432762aeb226b7f9de988e711e94",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_relink_serial.log.gz",
+      "raw_source": "build/p1_j_run_6/relink_guests/daily/release_daily_relink_install_serial.log",
+      "raw_unpublished_sha256": "06fdeda532d93a522050e9dadca6c234cbc4cd6915f240bedf42579e6f033362",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_relink_serial.log.gz",
+      "raw_source": "build/p1_j_run_6/relink_guests/dash/release_dash_relink_install_serial.log",
+      "raw_unpublished_sha256": "96a7b9ba8beff3652922179e847cb0207267cb58b29b6c78b09df2c8e34d206b",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "run_6_relink_serial.log.gz",
+      "raw_source": "build/p1_j_run_6/relink_guests/xypm/serial.log",
+      "raw_unpublished_sha256": "ad86e151ec557042128d80676997611ce821e317c7314c625e0f7b1b171d20cc",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "previous_attempt_logs.log.gz",
+      "raw_source": "build/p1_j_run_1/verify_system.log",
+      "raw_unpublished_sha256": "ac99ed67085540a5e8087095ff8c78f4a55c68f949de0ff76b4ee87fe02111d0",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "previous_attempt_logs.log.gz",
+      "raw_source": "build/p1_j_run_2/prepare.log",
+      "raw_unpublished_sha256": "9e76a9c3c08b4afda5973275b5a143ab0f2e7b3de5e0c82cdb3b56198efad671",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "previous_attempt_logs.log.gz",
+      "raw_source": "build/p1_j_run_3/relink_guests.log",
+      "raw_unpublished_sha256": "35b3eaed086b4712cfd7cd664465a2db3dc8311c250f3c65b54e35cd4b156708",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "previous_attempt_logs.log.gz",
+      "raw_source": "build/p1_j_run_4/combined_guest.log",
+      "raw_unpublished_sha256": "acbf6780a53593983d213df5932f48001553f8676fa32b437515881377bacebc",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "previous_attempt_logs.log.gz",
+      "raw_source": "build/p1_j_run_4/receiver_preflight.log",
+      "raw_unpublished_sha256": "4bc2971153a227fa41e0cfe7523e0b7988f92a54a2371cecb4909a93782c73f4",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "previous_attempt_logs.log.gz",
+      "raw_source": "build/p1_j_comparison.log",
+      "raw_unpublished_sha256": "bcf77f6c8bedc4e8d521138575faf6fb3e8463e66ada8f14415de8fa827d8383",
+      "transformation": "labeled concatenation, non-UTF8 byte escapes, path redaction, deterministic gzip"
+    },
+    {
+      "public": "comparison.json",
+      "raw_source": "build/p1_j_comparison_v2.json",
+      "raw_unpublished_sha256": "4fddd4980d470b606962eb1b2ee41c5c4bf9b3283f4a0a3cfc5bc343a1b1578b",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "workflow.json",
+      "raw_source": "build/p1_j_run_5/run.json",
+      "raw_unpublished_sha256": "9da10ca478de52039f0bb87535e25861b6cc7f7ce5f4383434a4b47b0bfa4c56",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "workflow.json",
+      "raw_source": "build/p1_j_run_6/run.json",
+      "raw_unpublished_sha256": "d8343efc2144a8234655d2985d5b6c8009f21db52777b8a7d4c59379dc8c4bb9",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "native_rebuild.json",
+      "raw_source": "build/p1_j_run_5/system_rebuild.json",
+      "raw_unpublished_sha256": "a7fad5aecfa2ccfcbaa319824b406892e22ae033fb58fdcb0dea750944de698e",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "native_rebuild.json",
+      "raw_source": "build/p1_j_run_6/system_rebuild.json",
+      "raw_unpublished_sha256": "a7fad5aecfa2ccfcbaa319824b406892e22ae033fb58fdcb0dea750944de698e",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "receiver_relinks.json",
+      "raw_source": "build/p1_j_run_5/receivers.json",
+      "raw_unpublished_sha256": "8842eb61ad05ac41949d8ecc0571d45d301dc906557e26894d8ca943d87ad00f",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "receiver_relinks.json",
+      "raw_source": "build/p1_j_run_6/receivers.json",
+      "raw_unpublished_sha256": "8842eb61ad05ac41949d8ecc0571d45d301dc906557e26894d8ca943d87ad00f",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "source_materials.json",
+      "raw_source": "build/p1_j_run_5/run.json",
+      "raw_unpublished_sha256": "9da10ca478de52039f0bb87535e25861b6cc7f7ce5f4383434a4b47b0bfa4c56",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "source_materials.json",
+      "raw_source": "build/p1_j_run_5/source_materials.json",
+      "raw_unpublished_sha256": "a2588acc19f86506021d216a912a6deeaa3177680e96f5fed9a5334ed641584f",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "source_materials.json",
+      "raw_source": "build/p1_j_run_6/run.json",
+      "raw_unpublished_sha256": "d8343efc2144a8234655d2985d5b6c8009f21db52777b8a7d4c59379dc8c4bb9",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "source_materials.json",
+      "raw_source": "build/p1_j_run_6/source_materials.json",
+      "raw_unpublished_sha256": "a2588acc19f86506021d216a912a6deeaa3177680e96f5fed9a5334ed641584f",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "source_anchor.json",
+      "raw_source": "build/p1_j_source_anchor.json",
+      "raw_unpublished_sha256": "2bd794a33d92d28ad8c33b307100062bcd693d294f80e201e029c9d141c61d56",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "verifier_scope.json",
+      "raw_source": "build/p1_j_verifier_scope.json",
+      "raw_unpublished_sha256": "2e3bc39aa23898a40216d743f79aec2811475e9565e6910cb5177119a41bbb1e",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "comparison_attempts.json",
+      "raw_source": "build/p1_j_repeat_pair_orchestration.json",
+      "raw_unpublished_sha256": "a32fcfb625a21c7354cea8d4edfb520bc5326c7ee560711aba18ac91c17c4a82",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "comparison_attempts.json",
+      "raw_source": "build/p1_j_comparison_v2.json",
+      "raw_unpublished_sha256": "4fddd4980d470b606962eb1b2ee41c5c4bf9b3283f4a0a3cfc5bc343a1b1578b",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "system_source_bindings.json.gz",
+      "raw_source": "build/p1_j_run_5/source_binding.json",
+      "raw_unpublished_sha256": "c5697d1262df0c53a5a36adf4d10922660e95be5fe2a20de8738ca6068a2a3b0",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "system_source_bindings.json.gz",
+      "raw_source": "build/p1_j_run_6/source_binding.json",
+      "raw_unpublished_sha256": "c5697d1262df0c53a5a36adf4d10922660e95be5fe2a20de8738ca6068a2a3b0",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "guest_packages.json",
+      "raw_source": "build/p1_j_run_5/combined_guest/report.json",
+      "raw_unpublished_sha256": "3ad8848ca0368b3d451741c70b6135fc51c443209d8965619c4022107c13b45d",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "guest_packages.json",
+      "raw_source": "build/p1_j_run_6/combined_guest/report.json",
+      "raw_unpublished_sha256": "3ad8848ca0368b3d451741c70b6135fc51c443209d8965619c4022107c13b45d",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "guest_gnu.json.gz",
+      "raw_source": "build/p1_j_run_5/combined_guest/gnu_seed/report.json",
+      "raw_unpublished_sha256": "674dbb8f159d5ec1d0035dbde7a887892b65c7025d40883295da68b5b2f4aaa6",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "guest_gnu.json.gz",
+      "raw_source": "build/p1_j_run_6/combined_guest/gnu_seed/report.json",
+      "raw_unpublished_sha256": "674dbb8f159d5ec1d0035dbde7a887892b65c7025d40883295da68b5b2f4aaa6",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "guest_relinks.json",
+      "raw_source": "build/p1_j_run_5/relink_guests.json",
+      "raw_unpublished_sha256": "b1d60b546c7ec27ffd21f7f6ed0ae5de90d9dade1ed5ae7bcd3c04ba4badd18f",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "guest_relinks.json",
+      "raw_source": "build/p1_j_run_6/relink_guests.json",
+      "raw_unpublished_sha256": "84685a32223b5f72f833dda70bedc680c2dc8f539a282d3b4b858ed0b4f3e113",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "negative_gates.json",
+      "raw_source": "build/p1_j_run_5/negative_gates.json",
+      "raw_unpublished_sha256": "16d823ab4b1a3b209d94bfd1b99cbf7e8c80cef6377c08327ad0bc15ab2e41e0",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "negative_gates.json",
+      "raw_source": "build/p1_j_run_6/negative_gates.json",
+      "raw_unpublished_sha256": "16d823ab4b1a3b209d94bfd1b99cbf7e8c80cef6377c08327ad0bc15ab2e41e0",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "receiver_preflight.json",
+      "raw_source": "build/p1_j_run_5/preflight",
+      "raw_unpublished_sha256": "35a7f91b0e251506827b956e4349dc4a03a2a24493c29b38a025d84f6b581f41",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "receiver_preflight.json",
+      "raw_source": "build/p1_j_run_6/preflight",
+      "raw_unpublished_sha256": "35a7f91b0e251506827b956e4349dc4a03a2a24493c29b38a025d84f6b581f41",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "frozen_inventory.json",
+      "raw_source": "build/p1_j_run_5/qualification.json",
+      "raw_unpublished_sha256": "fc1109126de3270d4888c1e0266e825bf3ac4c7bf704d57e13df6f1308af11e6",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "frozen_inventory.json",
+      "raw_source": "build/p1_j_run_6/qualification.json",
+      "raw_unpublished_sha256": "ae90018ad222f7887e26e2baa052d192ba0a6af5ecc81f0a9cbf692fcbdb49fe",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "guest_disk_retirement.json",
+      "raw_source": "build/p1_j_run_5/guest_disk_retirement.json",
+      "raw_unpublished_sha256": "89268641c7099af13cfe4056fb43bbdfbcf44290b6d493456f1ecd78359805f5",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "guest_disk_retirement.json",
+      "raw_source": "build/p1_j_run_6/guest_disk_retirement.json",
+      "raw_unpublished_sha256": "2ae5a8c8f7cc52920e9b5fe4e479ce1ce49d3a5c7d0914cab4b7a52d5b1b261a",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "byte_conservation.json.gz",
+      "raw_source": "build/p1_j_run_5/retention_receipt.json",
+      "raw_unpublished_sha256": "8aa5d4fd07ebc4970ef692de07cddc1d25e3552f2abd7560119874b64cbff4eb",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "byte_conservation.json.gz",
+      "raw_source": "build/p1_j_run_6/retention_receipt.json",
+      "raw_unpublished_sha256": "6a527f3347644d616bfe57456f038821b2ee6400a48baf871146ef07dde7cad3",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "license_audit.json",
+      "raw_source": "build/p1_j_run_5/system_source/build/license_report.json",
+      "raw_unpublished_sha256": "6f77c40f1f83a052b8c81f556272b4f0c7b8c5b389151e4038921a79db843f36",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "license_source_binding.json.gz",
+      "raw_source": "build/p1_j_license_source_binding.json",
+      "raw_unpublished_sha256": "5df78333f9645268626856f98c7305c1ab100029009bdfcfe924e1b2cf9f0ae1",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "attempts.json",
+      "raw_source": "build/p1_j_run_1/run.json",
+      "raw_unpublished_sha256": "1f692c34ea5711d86ac971c3d77d42508f9c325cf20d35d223f49d2a3e1d4f97",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "attempts.json",
+      "raw_source": "build/p1_j_run_2/run.json",
+      "raw_unpublished_sha256": "c01353e4ba23f40974b8317043ab0a97b257355c8b645a01b313022b29fee807",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "attempts.json",
+      "raw_source": "build/p1_j_run_3/run.json",
+      "raw_unpublished_sha256": "8e5fd1c60c09b72a46e83a2a0deb308d5422973586447a889cbf723e5513b592",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "attempts.json",
+      "raw_source": "build/p1_j_run_4/run.json",
+      "raw_unpublished_sha256": "36f55d9b21563bf692a17f3daa68c83021eca3ec8ddde6b302b481d0497c3442",
+      "transformation": "selected or combined JSON fields with explicit raw identities; host paths redacted; deterministic gzip when applicable"
+    },
+    {
+      "public": "validation.log",
+      "raw_source": "build/p1_j_host.log",
+      "raw_unpublished_sha256": "474dae795f951822d9efb3cb10d4f6cb5ba05f2e84b3534f42c92c4745add0d8",
+      "transformation": "labeled actual host, exact-source license and export command logs"
+    },
+    {
+      "public": "validation.log",
+      "raw_source": "build/p1_j_verifier_host.log",
+      "raw_unpublished_sha256": "7af757d874493026165fa4b24c98f2acc10e1a4f7bd51e2969d901a5904f4bc1",
+      "transformation": "labeled actual host, exact-source license and export command logs"
+    },
+    {
+      "public": "validation.log",
+      "raw_source": "build/p1_j_retention_storage_host.log",
+      "raw_unpublished_sha256": "c01a9909c170dfdd6beb567212e2f15d49d316039bd264d72c510e39687ee5ff",
+      "transformation": "labeled actual host, exact-source license and export command logs"
+    },
+    {
+      "public": "validation.log",
+      "raw_source": "build/p1_j_license_full_exact_source.log",
+      "raw_unpublished_sha256": "c2609ffbf5cd6da13fd4cb8b1e199f1fb647a6bd6d78af4b7b53f160081e95f6",
+      "transformation": "labeled actual host, exact-source license and export command logs"
+    },
+    {
+      "public": "validation.log",
+      "raw_source": "build/p1_j_export_repeat_evidence.log",
+      "raw_unpublished_sha256": "2a95cf680fa5db8ce25fbb3aa1cc8e12f84d70aac3b2aee6ae468a20ed956ec2",
+      "transformation": "labeled actual host, exact-source license and export command logs"
+    },
+    {
+      "public": "validation.log",
+      "raw_source": "build/p1_j_export_repeat_evidence_v2.log",
+      "raw_unpublished_sha256": "7b08ec80ef4ab15bc2bc5d51271c6e775ebd08e28374f16c9a600534f6325206",
+      "transformation": "labeled actual host, exact-source license and export command logs"
+    },
+    {
+      "public": "validation.log",
+      "raw_source": "build/p1_j_finalize_repeat_docs.log",
+      "raw_unpublished_sha256": "1d2f379f0997e9fed5cca9f33c2f6d1089a7be3c2ff28b2068194bb9ff45f48b",
+      "transformation": "labeled actual host, exact-source license and export command logs"
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_docs_final.log",
+      "raw_unpublished_sha256": "1587163cc99a6fb6f0d5c2ee766e06574bdaa6bdeac0d6c74f14b6f40d9f250f",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_report_baseline_full.log",
+      "raw_unpublished_sha256": "dde3086a617c077132038f39fc2db1960e818359c9dd7fea8d0e5eb4ac0c4f02",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_report_final.log",
+      "raw_unpublished_sha256": "ec523cef808495294b5d5509ea97665619acdb0cd63efeb608af666d85ca945d",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_evidence_final_initial.log",
+      "raw_unpublished_sha256": "2f65799c508496f38d4ba866470dbac7fcc82f5504e48e807e47f79299e56c1e",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_public_paths_initial.json",
+      "raw_unpublished_sha256": "c65c3215b25bde37cd5b4447955d14e6879563b3b28efae080678061057d7b73",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_public_paths_reviewed.json",
+      "raw_unpublished_sha256": "e23716e80fcf7258866092e2d7aa28abd5026206a098459c9157afabd9f885d2",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_public_path_review.json",
+      "raw_unpublished_sha256": "36e8fc4c643d930fc794c357b10e0b93fd3fdc62b112666dcb46708b3bfc4d71",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_new_doc_links.json",
+      "raw_unpublished_sha256": "2b219255b01288fe88a2ea4b65c0c1618dd298576fece61ed56506384253f4e9",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    },
+    {
+      "public": "validation.json",
+      "raw_source": "build/p1_j_diff_check.log",
+      "raw_unpublished_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "Actual gate result or explicit unchanged-baseline comparison; original gate outcomes are preserved."
+    }
+  ],
+  "postprocessing_sources": [
+    {
+      "raw_source": "build/export_repeat_evidence.py",
+      "raw_unpublished_sha256": "a0e30cc49263c797f85999503a37dae860d226ff051746180a53fa813bae571e",
+      "role": "one-time derived evidence or narrative generation, or its review receipt; not a guest producer"
+    },
+    {
+      "raw_source": "build/finalize_repeat_docs.py",
+      "raw_unpublished_sha256": "bc8cff305ad66d35bd235a49a50b6bc43b0875ff703a06b0051131d731ce4778",
+      "role": "one-time derived evidence or narrative generation, or its review receipt; not a guest producer"
+    },
+    {
+      "raw_source": "build/p1_j_export_commands.json",
+      "raw_unpublished_sha256": "3989c643db0302b08cb078b3338098434ae2f349fd45fd40fae4edac470c8470",
+      "role": "one-time derived evidence or narrative generation, or its review receipt; not a guest producer"
+    },
+    {
+      "raw_source": "build/p1_j_export_path_review.json",
+      "raw_unpublished_sha256": "2e5d6b2193c0225e1b2d8d6cf16b8ae9298dc294e77c8856c555f82356a51e17",
+      "role": "one-time derived evidence or narrative generation, or its review receipt; not a guest producer"
+    },
+    {
+      "raw_source": "build/p1_j_helper_sources/export_before_path_review.py",
+      "raw_unpublished_sha256": "3e5f4f17004d09482a61a1eae3190287d20a1b113517286e80690c9e9653c6dd",
+      "role": "one-time derived evidence or narrative generation, or its review receipt; not a guest producer"
+    }
+  ]
+}

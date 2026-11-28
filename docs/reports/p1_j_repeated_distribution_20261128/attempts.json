@@ -1,0 +1,61 @@
+{
+  "attempts": [
+    {
+      "attempt": 1,
+      "error": "stage failed: verify_system",
+      "finished_at_utc": "2026-11-28T11:13:44.411562+00:00",
+      "raw_run": {
+        "raw_source": "build/p1_j_run_1/run.json",
+        "raw_unpublished_sha256": "1f692c34ea5711d86ac971c3d77d42508f9c325cf20d35d223f49d2a3e1d4f97"
+      },
+      "reason": "Receiver debug ELF carries a different build path; executable ISO/kernel/hello bytes, layout and symbols now compared separately.",
+      "run_id": "78599d103c6b4f49ba150815ae59686d",
+      "runner_commit": "6e77aefd46bed1fb8303f6be244b3b430ec1f665",
+      "started_at_utc": "2026-11-28T11:10:31.086893+00:00",
+      "status": "failed"
+    },
+    {
+      "attempt": 2,
+      "error": "stage failed: prepare",
+      "finished_at_utc": "2026-11-28T11:15:12.323332+00:00",
+      "raw_run": {
+        "raw_source": "build/p1_j_run_2/run.json",
+        "raw_unpublished_sha256": "c01353e4ba23f40974b8317043ab0a97b257355c8b645a01b313022b29fee807"
+      },
+      "reason": "Clean runner snapshot omitted historical release metadata needed by the two explicitly bound SDK families.",
+      "run_id": "fb022678213a4526af2d5a6fff22addc",
+      "runner_commit": "b63ca741dc34d4831113b772aa10c6025c31fae1",
+      "started_at_utc": "2026-11-28T11:14:22.643445+00:00",
+      "status": "failed"
+    },
+    {
+      "attempt": 3,
+      "error": "stage failed: relink_guests",
+      "finished_at_utc": "2026-11-28T11:44:34.480988+00:00",
+      "raw_run": {
+        "raw_source": "build/p1_j_run_3/run.json",
+        "raw_unpublished_sha256": "8e5fd1c60c09b72a46e83a2a0deb308d5422973586447a889cbf723e5513b592"
+      },
+      "reason": "Receiver guest helper expected runner/build for logs. A later manual diagnostic continuation passed but the original workflow remains failed.",
+      "run_id": "a49d904554f74676af00d54561462792",
+      "runner_commit": "edff7cd21ab15742fc41bb1db57f3a565776f0df",
+      "started_at_utc": "2026-11-28T11:17:01.847663+00:00",
+      "status": "failed"
+    },
+    {
+      "attempt": 4,
+      "error": "stage failed: combined_guest",
+      "finished_at_utc": "2026-11-28T12:43:27.064875+00:00",
+      "raw_run": {
+        "raw_source": "build/p1_j_run_4/run.json",
+        "raw_unpublished_sha256": "36f55d9b21563bf692a17f3daa68c83021eca3ec8ddde6b302b481d0497c3442"
+      },
+      "reason": "Package guest and all 20 native GNU cases passed; subsequent receiver archive re-open exhausted workspace storage. Entire workflow remains failed.",
+      "run_id": "5266628c64d64734a68352dca76fb6f3",
+      "runner_commit": "d56a5976940b49aecd0437bb2ef9fa64a9d3bd39",
+      "started_at_utc": "2026-11-28T12:06:03.367844+00:00",
+      "status": "failed"
+    }
+  ],
+  "qualification": "no failed or manually continued attempt counts toward the two fresh runs"
+}

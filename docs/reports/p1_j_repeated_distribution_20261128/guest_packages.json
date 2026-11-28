@@ -1,0 +1,116 @@
+{
+  "5": {
+    "assembled_disk_sha256": "c2289ab88c37e0e4e3262a2a2d2f643b75b437370903340d6c336012e3168a9a",
+    "build_id": "7c8c59058be0b5f1",
+    "checks": [
+      "installer_idempotent_package_setup_and_python_smoke",
+      "cold_ordinary_python_and_native_ownership",
+      "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+    ],
+    "final_disk_sha256": "9bf634c7df1caf4c5dd28926482db1ecd1ea1279833bacd46e01996eed540b6f",
+    "initial_disk": {
+      "files": 57,
+      "status": "verified"
+    },
+    "installed_disk": {
+      "files": 57,
+      "status": "verified"
+    },
+    "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+    "installer_resources": [
+      125799,
+      2,
+      0
+    ],
+    "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+    "ordinary_resources": [
+      129793,
+      2,
+      0
+    ],
+    "packages": {
+      "cpython": {
+        "files": 15,
+        "id": "xos.cpython",
+        "sha256": "1b2bb536dc3ca5b49f2541422fb106386ceb0d08090dd440fa52e4a063f26d58"
+      },
+      "daily": {
+        "files": 26,
+        "id": "xos.daily_utilities",
+        "sha256": "3ac7ecceb7d34a8805d06904fc591b86570df96520c266862048f907c8436d91"
+      },
+      "wheel": {
+        "files": 16,
+        "id": "python_idna",
+        "sha256": "c0ca82b0d64befc78e0aa51a335a24915b3b3e53e8a5d04fd774e8d7ca5e83f5"
+      }
+    },
+    "preserved_user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e",
+    "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "python_fixture_sha256": "76350439c12032ab155d1c59a4f69681901b65c32403c4510ebb2c238e09e9d4",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+    "remaining_disk": {
+      "files": 15,
+      "status": "verified"
+    },
+    "status": "passed_subset"
+  },
+  "6": {
+    "assembled_disk_sha256": "c2289ab88c37e0e4e3262a2a2d2f643b75b437370903340d6c336012e3168a9a",
+    "build_id": "7c8c59058be0b5f1",
+    "checks": [
+      "installer_idempotent_package_setup_and_python_smoke",
+      "cold_ordinary_python_and_native_ownership",
+      "native_daily_and_wheel_reclaimed_python_and_user_data_retained"
+    ],
+    "final_disk_sha256": "9bf634c7df1caf4c5dd28926482db1ecd1ea1279833bacd46e01996eed540b6f",
+    "initial_disk": {
+      "files": 57,
+      "status": "verified"
+    },
+    "installed_disk": {
+      "files": 57,
+      "status": "verified"
+    },
+    "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+    "installer_resources": [
+      125799,
+      2,
+      0
+    ],
+    "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+    "ordinary_resources": [
+      129793,
+      2,
+      0
+    ],
+    "packages": {
+      "cpython": {
+        "files": 15,
+        "id": "xos.cpython",
+        "sha256": "1b2bb536dc3ca5b49f2541422fb106386ceb0d08090dd440fa52e4a063f26d58"
+      },
+      "daily": {
+        "files": 26,
+        "id": "xos.daily_utilities",
+        "sha256": "3ac7ecceb7d34a8805d06904fc591b86570df96520c266862048f907c8436d91"
+      },
+      "wheel": {
+        "files": 16,
+        "id": "python_idna",
+        "sha256": "c0ca82b0d64befc78e0aa51a335a24915b3b3e53e8a5d04fd774e8d7ca5e83f5"
+      }
+    },
+    "preserved_user_sha256": "884b67f09fefcf9ea91c0ceae6675c180cd96ac4c0f7463f1fdf61d42ec8665e",
+    "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "python_fixture_sha256": "76350439c12032ab155d1c59a4f69681901b65c32403c4510ebb2c238e09e9d4",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+    "remaining_disk": {
+      "files": 15,
+      "status": "verified"
+    },
+    "status": "passed_subset"
+  }
+}

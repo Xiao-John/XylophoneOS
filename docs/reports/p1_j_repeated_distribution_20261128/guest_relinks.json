@@ -1,0 +1,572 @@
+{
+  "5": {
+    "reports": {
+      "cpython": {
+        "build_id": "7c8c59058be0b5f1",
+        "cpython_xpk_sha256": "1b2bb536dc3ca5b49f2541422fb106386ceb0d08090dd440fa52e4a063f26d58",
+        "library_sha256": {
+          "usr/lib/python3.14/os.py": "976bdb3e24925f2fb3ce43a4d788de6dcbb88a7cc8604c60ae690fbdd6507546",
+          "usr/lib/python314.zip": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79"
+        },
+        "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "original": {
+          "cases": {
+            "absent_file": {
+              "exit": 2,
+              "exit_markers": 0,
+              "output": "can't open file"
+            },
+            "compression": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc"
+            },
+            "version": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": "Python 3.14.9"
+            }
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "original_sha256": "fddd323bbebaa1c64f43c9065595370330491c7ec548675d04c5a77d0aed5555",
+        "output_sha256": {
+          "${RUN}/py3a2/payload.gz": "7669dbc7421ceb264e5b497eddd62eb505d2bb49e5b94239d199860b7492ae5b",
+          "${RUN}/py3a2/payload.zip": "af3faeea5ce0ba620ed2656f1d469be0747f288387208df904fa6e93761453ea"
+        },
+        "probe_sha256": "40e01975035b186018427e191827175518357841b7e4e10ddeb63a7cb70933ca",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement": {
+          "cases": {
+            "absent_file": {
+              "exit": 2,
+              "exit_markers": 1,
+              "output": "can't open file"
+            },
+            "compression": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc"
+            },
+            "version": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": "Python 3.14.9"
+            }
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "replacement_sha256": "b206a4307c6864d18d7d4c3ef79dec1f014bec80c31527fc89078065a07ff441",
+        "runner_sha256": "1f1f6fc12beb221f8ce940b2c748c98bbcf965960945d5ca4af81918c70a2aad",
+        "serial_sha256": {
+          "original": "763b3b25f55c6805c82e54a5fb3b4652be60bbb654202613d47794f31aeb44fd",
+          "replacement": "3d49072748d8c3d04c020148cff982468bb051fe20b3fd295873d7393dc65829"
+        },
+        "status": "passed_subset"
+      },
+      "daily": {
+        "build_id": "7c8c59058be0b5f1",
+        "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+        "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "original": {
+          "exit_markers": 0,
+          "outputs": {
+            "basename": "data",
+            "cat": "first\nsecond",
+            "cp": "",
+            "dirname": "/tmp/daily-relink",
+            "head": "first",
+            "ls": "data\nmoved\ntee",
+            "mkdir": "",
+            "mv": "",
+            "rm": "",
+            "rmdir": "",
+            "tail": "second",
+            "tee": "first\nsecond",
+            "wc": "2 /tmp/daily-relink/tee"
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "package_receipt_sha256": "d4005f8f3864f0c2317ce5104342fd5a4f938f2c72e150c8917db19aa341fc7d",
+        "package_sha256": "3ac7ecceb7d34a8805d06904fc591b86570df96520c266862048f907c8436d91",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement": {
+          "exit_markers": 13,
+          "outputs": {
+            "basename": "data",
+            "cat": "first\nsecond",
+            "cp": "",
+            "dirname": "/tmp/daily-relink",
+            "head": "first",
+            "ls": "data\nmoved\ntee",
+            "mkdir": "",
+            "mv": "",
+            "rm": "",
+            "rmdir": "",
+            "tail": "second",
+            "tee": "first\nsecond",
+            "wc": "2 /tmp/daily-relink/tee"
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "replacement_sha256": "add7f9849792e84abb70db7eb9078c4ae6725938772ef24e053c598a7d87fb2d",
+        "serial_sha256": {
+          "installer": "b28c3cfd7bc9a125e800f99a1a1522741c25cfd62685cd1ea9db2c29075ed632",
+          "original": "cada1143e057f86efa4a9c7dc039eafe9adb2e31388445b6668e8cca7ceb44f0",
+          "replacement": "410b79622e4a2e488f948c90b146b7edbaeb4683d339dd1f5f193f6e3dfef060"
+        },
+        "status": "passed_subset",
+        "test_sha256": "1e69d820805470a2d2739d32bb89b72d92d448f9d2c07dc4569d2b6d18dbdca2"
+      },
+      "dash": {
+        "build_id": "7c8c59058be0b5f1",
+        "checks": {
+          "original": {
+            "pid": 10,
+            "resources": [
+              129793,
+              2,
+              0
+            ]
+          },
+          "replacement": {
+            "pid": 773355,
+            "resources": [
+              129793,
+              2,
+              0
+            ]
+          }
+        },
+        "external_sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf",
+        "guest_dash_path": "/usr/bin/dash",
+        "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+        "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "ordinary_system_manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596",
+        "original_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement_sha256": "dcb23f43bfa2d4e6172550242f29172a84c097d30a2c99ef37761e560115df4b",
+        "serial_sha256": {
+          "installer": "6570749069de20b0a99229c0fd06321cf15643e3728e56b0efe9d88c185f4d45",
+          "original": "f940ad94cf6c2fb48531062e735d110b89337052609a4c389ac1f1d05aee3e9d",
+          "replacement": "f5916ff2b7cc89b3a0335b3d4dff54bb08fb092a70df0fb0e50703309552d460"
+        },
+        "status": "passed_subset",
+        "test_sha256": "b4951880a6820a23232006f45b220cd9ba0ad0b5cc0150f5fd33612a80394429"
+      },
+      "make": {
+        "build_id": "7c8c59058be0b5f1",
+        "dash_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+        "gnu_seed_receipt_sha256": "5463030a758a6810062d8ccc0c6b3d2cf0eeff2fa5fe33ffd4c7f191c2fafe62",
+        "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "original": {
+          "cases": {
+            "dash_recipe": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": [
+                "GMAKE_RELINK_RECIPE=dash",
+                "GMAKE_RELINK_DASH_OK"
+              ]
+            },
+            "version": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": [
+                "GNU Make 4.4.1"
+              ]
+            },
+            "xshell_recipe": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": [
+                "GMAKE_RELINK_RECIPE=xshell"
+              ]
+            },
+            "xshell_recipe_failure": {
+              "exit": 2,
+              "exit_markers": 0,
+              "output": [
+                "Error 7"
+              ]
+            }
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "original_sha256": "c2858f7c8c7da3717b03ec8edefbad82388219a484cb6c5c1c905f4681020108",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement": {
+          "cases": {
+            "dash_recipe": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": [
+                "GMAKE_RELINK_RECIPE=dash",
+                "GMAKE_RELINK_DASH_OK"
+              ]
+            },
+            "version": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": [
+                "GNU Make 4.4.1"
+              ]
+            },
+            "xshell_recipe": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": [
+                "GMAKE_RELINK_RECIPE=xshell"
+              ]
+            },
+            "xshell_recipe_failure": {
+              "exit": 2,
+              "exit_markers": 1,
+              "output": [
+                "Error 7"
+              ]
+            }
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "replacement_sha256": "9774f5b6cffc4a24c8b9012233e29027bb48ccf21131bd75ca4b1adc8d610d61",
+        "runner_sha256": "043573f9dee014f2aaad7f887d0726b272cb509dbde1b0fe8bb1b5755cd0c960",
+        "serial_sha256": {
+          "original": "41dcd87279481c72063777d73acb7bd9748387905809cd3f2923d041c5d02358",
+          "replacement": "311ef2a9664b22d25f691198bac8ebb445e28dfddde3cc43f789badd452ac565"
+        },
+        "status": "passed_subset"
+      },
+      "xypm": {
+        "build_id": "7c8c59058be0b5f1",
+        "installed_disk_sha256": "65ac08bfb827cd3a20d89c14496ed61238abfbe1a1ec7191eee65b67d39b47d7",
+        "iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "original_sha256": "494f24536dc82aa8d5a090a706b02d4e30fb573f4c8245ebad25ebe4d1fb8311",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement_sha256": "8e3e8f90b456d51d9741c990be393d9364c93513f26138a8f997f3b9a270eee9",
+        "resources": [
+          129793,
+          2,
+          0
+        ],
+        "serial_sha256": "6bf4aad49d7481ad8515a82f59cd4de6ae5d2888994309c03d6364dda1b50aa7",
+        "status": "passed_subset"
+      }
+    },
+    "status": "passed"
+  },
+  "6": {
+    "reports": {
+      "cpython": {
+        "build_id": "7c8c59058be0b5f1",
+        "cpython_xpk_sha256": "1b2bb536dc3ca5b49f2541422fb106386ceb0d08090dd440fa52e4a063f26d58",
+        "library_sha256": {
+          "usr/lib/python3.14/os.py": "976bdb3e24925f2fb3ce43a4d788de6dcbb88a7cc8604c60ae690fbdd6507546",
+          "usr/lib/python314.zip": "2eb1eb04dafd17e6fb8d84f9c86991b77b8631ac0350106419e5b485fce4be79"
+        },
+        "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "original": {
+          "cases": {
+            "absent_file": {
+              "exit": 2,
+              "exit_markers": 0,
+              "output": "can't open file"
+            },
+            "compression": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc"
+            },
+            "version": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": "Python 3.14.9"
+            }
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "original_sha256": "fddd323bbebaa1c64f43c9065595370330491c7ec548675d04c5a77d0aed5555",
+        "output_sha256": {
+          "${RUN}/py3a2/payload.gz": "7669dbc7421ceb264e5b497eddd62eb505d2bb49e5b94239d199860b7492ae5b",
+          "${RUN}/py3a2/payload.zip": "af3faeea5ce0ba620ed2656f1d469be0747f288387208df904fa6e93761453ea"
+        },
+        "probe_sha256": "40e01975035b186018427e191827175518357841b7e4e10ddeb63a7cb70933ca",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement": {
+          "cases": {
+            "absent_file": {
+              "exit": 2,
+              "exit_markers": 1,
+              "output": "can't open file"
+            },
+            "compression": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": "PY3_A2_OK zlib streaming gzip deflate_zip zipimport truncated corrupted crc"
+            },
+            "version": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": "Python 3.14.9"
+            }
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "replacement_sha256": "b206a4307c6864d18d7d4c3ef79dec1f014bec80c31527fc89078065a07ff441",
+        "runner_sha256": "1f1f6fc12beb221f8ce940b2c748c98bbcf965960945d5ca4af81918c70a2aad",
+        "serial_sha256": {
+          "original": "3c26554ed59a1f1c8dc1ea8e57fe082eb8425c51fd20f1df0e6f94b74a8a4efc",
+          "replacement": "9dfc50c95c924ec33d32af76f3223712003b624fc15fb1d2d6a4742106f613b9"
+        },
+        "status": "passed_subset"
+      },
+      "daily": {
+        "build_id": "7c8c59058be0b5f1",
+        "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+        "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "original": {
+          "exit_markers": 0,
+          "outputs": {
+            "basename": "data",
+            "cat": "first\nsecond",
+            "cp": "",
+            "dirname": "/tmp/daily-relink",
+            "head": "first",
+            "ls": "data\nmoved\ntee",
+            "mkdir": "",
+            "mv": "",
+            "rm": "",
+            "rmdir": "",
+            "tail": "second",
+            "tee": "first\nsecond",
+            "wc": "2 /tmp/daily-relink/tee"
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "package_receipt_sha256": "d4005f8f3864f0c2317ce5104342fd5a4f938f2c72e150c8917db19aa341fc7d",
+        "package_sha256": "3ac7ecceb7d34a8805d06904fc591b86570df96520c266862048f907c8436d91",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement": {
+          "exit_markers": 13,
+          "outputs": {
+            "basename": "data",
+            "cat": "first\nsecond",
+            "cp": "",
+            "dirname": "/tmp/daily-relink",
+            "head": "first",
+            "ls": "data\nmoved\ntee",
+            "mkdir": "",
+            "mv": "",
+            "rm": "",
+            "rmdir": "",
+            "tail": "second",
+            "tee": "first\nsecond",
+            "wc": "2 /tmp/daily-relink/tee"
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "replacement_sha256": "add7f9849792e84abb70db7eb9078c4ae6725938772ef24e053c598a7d87fb2d",
+        "serial_sha256": {
+          "installer": "06fdeda532d93a522050e9dadca6c234cbc4cd6915f240bedf42579e6f033362",
+          "original": "c8bc9aab37102cd8999eadbe62e1b2367d452fd32a6d51956f16868a31d56fff",
+          "replacement": "6fa4f3ddc2b69ae6cc02243d302266ea683a5c23637dc2d0a55bec7043678a1a"
+        },
+        "status": "passed_subset",
+        "test_sha256": "1e69d820805470a2d2739d32bb89b72d92d448f9d2c07dc4569d2b6d18dbdca2"
+      },
+      "dash": {
+        "build_id": "7c8c59058be0b5f1",
+        "checks": {
+          "original": {
+            "pid": 10,
+            "resources": [
+              129793,
+              2,
+              0
+            ]
+          },
+          "replacement": {
+            "pid": 773355,
+            "resources": [
+              129793,
+              2,
+              0
+            ]
+          }
+        },
+        "external_sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf",
+        "guest_dash_path": "/usr/bin/dash",
+        "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+        "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "ordinary_system_manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596",
+        "original_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement_sha256": "dcb23f43bfa2d4e6172550242f29172a84c097d30a2c99ef37761e560115df4b",
+        "serial_sha256": {
+          "installer": "96a7b9ba8beff3652922179e847cb0207267cb58b29b6c78b09df2c8e34d206b",
+          "original": "60dcf530d8495c61ba5dd244319822a4ece46ebf11416292a8e2a9cb71ab4ccc",
+          "replacement": "c401e19f9ac792337200d90989c0d04017b62bf4e319f3b062c87de7b464ee35"
+        },
+        "status": "passed_subset",
+        "test_sha256": "b4951880a6820a23232006f45b220cd9ba0ad0b5cc0150f5fd33612a80394429"
+      },
+      "make": {
+        "build_id": "7c8c59058be0b5f1",
+        "dash_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+        "gnu_seed_receipt_sha256": "5463030a758a6810062d8ccc0c6b3d2cf0eeff2fa5fe33ffd4c7f191c2fafe62",
+        "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "original": {
+          "cases": {
+            "dash_recipe": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": [
+                "GMAKE_RELINK_RECIPE=dash",
+                "GMAKE_RELINK_DASH_OK"
+              ]
+            },
+            "version": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": [
+                "GNU Make 4.4.1"
+              ]
+            },
+            "xshell_recipe": {
+              "exit": 0,
+              "exit_markers": 0,
+              "output": [
+                "GMAKE_RELINK_RECIPE=xshell"
+              ]
+            },
+            "xshell_recipe_failure": {
+              "exit": 2,
+              "exit_markers": 0,
+              "output": [
+                "Error 7"
+              ]
+            }
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "original_sha256": "c2858f7c8c7da3717b03ec8edefbad82388219a484cb6c5c1c905f4681020108",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement": {
+          "cases": {
+            "dash_recipe": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": [
+                "GMAKE_RELINK_RECIPE=dash",
+                "GMAKE_RELINK_DASH_OK"
+              ]
+            },
+            "version": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": [
+                "GNU Make 4.4.1"
+              ]
+            },
+            "xshell_recipe": {
+              "exit": 0,
+              "exit_markers": 1,
+              "output": [
+                "GMAKE_RELINK_RECIPE=xshell"
+              ]
+            },
+            "xshell_recipe_failure": {
+              "exit": 2,
+              "exit_markers": 1,
+              "output": [
+                "Error 7"
+              ]
+            }
+          },
+          "resources": [
+            129793,
+            2,
+            0
+          ]
+        },
+        "replacement_sha256": "9774f5b6cffc4a24c8b9012233e29027bb48ccf21131bd75ca4b1adc8d610d61",
+        "runner_sha256": "043573f9dee014f2aaad7f887d0726b272cb509dbde1b0fe8bb1b5755cd0c960",
+        "serial_sha256": {
+          "original": "16c1f9bfb947a01adc6a0bcefbf702ce4688706d40da79fdb6e08091ff67de65",
+          "replacement": "6d35ee5292826c876d7324357f71ff60cd6fc37db71c07c8994ce84217f2f40d"
+        },
+        "status": "passed_subset"
+      },
+      "xypm": {
+        "build_id": "7c8c59058be0b5f1",
+        "installed_disk_sha256": "65ac08bfb827cd3a20d89c14496ed61238abfbe1a1ec7191eee65b67d39b47d7",
+        "iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+        "original_sha256": "494f24536dc82aa8d5a090a706b02d4e30fb573f4c8245ebad25ebe4d1fb8311",
+        "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+        "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+        "replacement_sha256": "8e3e8f90b456d51d9741c990be393d9364c93513f26138a8f997f3b9a270eee9",
+        "resources": [
+          129793,
+          2,
+          0
+        ],
+        "serial_sha256": "ad86e151ec557042128d80676997611ce821e317c7314c625e0f7b1b171d20cc",
+        "status": "passed_subset"
+      }
+    },
+    "status": "passed"
+  }
+}

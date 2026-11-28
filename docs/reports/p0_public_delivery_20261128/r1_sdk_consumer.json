@@ -1,0 +1,79 @@
+{
+  "checks": {
+    "build": "passed",
+    "bundle_checksums_22_entries": "passed",
+    "check": "passed",
+    "embedded_receipt_matches_build": "passed",
+    "frozen_checksums_19_entries": "passed",
+    "host_archive_hash": "passed",
+    "host_default_profile_rejected_same_xpk": "passed",
+    "init_cpp": "passed",
+    "pack": "passed",
+    "packaged_executable_matches_build": "passed",
+    "r1_outer_checksum": "passed",
+    "xpk_integrity_with_r1_profile": "passed"
+  },
+  "completed_utc": "2026-11-28T06:03:53.047410+00:00",
+  "errors": [],
+  "evidence": {
+    "build_receipt.json": "57cb6e92e21a8e32cf4bc6f5e529d08886daf14509ede94992bd6e5ace88760a",
+    "commands.json": "a53f3cce0dd2a5cdfe53661daed35a7e7cc13695f9728e49a6f358da0cf1a2c3",
+    "profile_selection.json": "bb2765948e3b2a7d881371b83eba74bb09b57a26651d19bfa15a9d417f13df7e",
+    "r1_commands.log": "a6b2791b3ff9474471461bad7b775918edbf7a5c99028ce07df2d3c3fc99db0a",
+    "r1_commands.sh": "c599fa8758019fa7edd997ecb190ecc9d17518053cf93f6d2cf5e3d8d051754d",
+    "r1_setup.log": "e9dc501db8170a12ca1ad31327c0b2aa0bc638c5cd13901e57bf3507c8872063",
+    "tool_versions.json": "c1b8b10e9b88c4653caf250855066b3f1d0ac31689d88a067e2b7d76afd0d116"
+  },
+  "guest_execution": "not_run_for_this_generated_application",
+  "host_sdk": {
+    "archive": {
+      "bytes": 373222439,
+      "name": "xos-sdk-glibc-preview-3-linux-x86_64.tar.zst",
+      "sha256": "d3a4dd424fe33215df1d5ef9f93415b634799d52b4126d07dbe08f1fb59b1dcb"
+    },
+    "default_profile_id": "xos-x86_64-glibc-host-8b2dee22a327",
+    "default_profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+    "host_sdk_manifest_sha256": "6823e578d75de6a8dca14cdda2c33789b7218bc0d8843f2202c0e5009878c600",
+    "independent_fresh_extraction": true,
+    "public_download_url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/xos-sdk-glibc-preview-3-linux-x86_64.tar.zst",
+    "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+    "tag": "xos-sdk-glibc-preview-3"
+  },
+  "large_os_suites": "not_rerun",
+  "offline_isolation_asserted": false,
+  "ordinary_launcher": true,
+  "r1": {
+    "application_archive_sha256": "439d0e84b75b018c60971c6a62794da255b82cf113218bfb799bb5a431c5b8ef",
+    "archive": {
+      "bytes": 430346240,
+      "name": "p0-r1-glibc-release-20261128.tar",
+      "sha256": "492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4"
+    },
+    "bundle_manifest_sha256": "4d09bd8689bc7c74a619f4f771c6e3a575246913bc73d678c49c6d25696a75dc",
+    "profile_id": "xos-x86_64-glibc-p0-20261128",
+    "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "sdk_manifest_sha256": "56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703",
+    "sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab"
+  },
+  "result": {
+    "build_receipt_sha256": "57cb6e92e21a8e32cf4bc6f5e529d08886daf14509ede94992bd6e5ace88760a",
+    "elf_sha256": "e13fb42221076ce6130188a2026eb29b4e36fee53859eec6e8066b811622f253",
+    "package_bytes": 3317760,
+    "package_sha256": "509358189a6da0f65cbadc9aa39de64738d279b9ab691632231b281ed61b2606",
+    "payload_files": 13,
+    "target_profile": "xos-x86_64-glibc-p0-20261128"
+  },
+  "schema": 1,
+  "scope": "Fresh extraction of the public host SDK and exact frozen R1 bundle; documented explicit R1 kit C++ init/build/check/pack and package-profile verification only.",
+  "status": "passed_documented_r1_cpp_build_check_pack",
+  "tool_versions": {
+    "archive_host_zstandard": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***",
+    "assembler": "GNU assembler (GNU Binutils) 2.47.20260726",
+    "gcc": "x86_64-elf-gcc (GCC) 16.2.0",
+    "gxx": "x86_64-elf-g++ (GCC) 16.2.0",
+    "launcher_host_bubblewrap": "bubblewrap 0.12.0",
+    "linker": "GNU ld (GNU Binutils) 2.47.20260726",
+    "python": "Python 3.14.10",
+    "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)"
+  }
+}

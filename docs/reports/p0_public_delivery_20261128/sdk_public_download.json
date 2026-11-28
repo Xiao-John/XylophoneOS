@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "method": "Independently hashed all five public-download files against the release API; parsed original text assets and the fresh recovery proof.",
+  "files": [
+    {
+      "name": "package.json",
+      "size": 1659,
+      "sha256": "bcf274b3e1f691f285a1b0b428a01cef3cb26b1b679a5b2d446056e30360228b",
+      "matches_api": true
+    },
+    {
+      "name": "qualification.json",
+      "size": 3194,
+      "sha256": "c2c8c62c560134302cedf26e7da386ae95f1b43531b04036bcfab13167d45aa5",
+      "matches_api": true
+    },
+    {
+      "name": "SHA256SUMS",
+      "size": 381,
+      "sha256": "28fc98fa3132f1314b904bf69c340bb848cd758b3fb046f4301753cbe9d06bfb",
+      "matches_api": true
+    },
+    {
+      "name": "xos-sdk-glibc-preview-3-linux-x86_64.tar.zst",
+      "size": 373222439,
+      "sha256": "d3a4dd424fe33215df1d5ef9f93415b634799d52b4126d07dbe08f1fb59b1dcb",
+      "matches_api": true
+    },
+    {
+      "name": "xos-sdk-glibc-preview-3-sources.tar.zst",
+      "size": 144590773,
+      "sha256": "f883ab48729e90ce887a2ad89c02c34b63af3145e5bd4d7dbdd0b768884b60cf",
+      "matches_api": true
+    }
+  ],
+  "checksum_entries_verified": 4,
+  "artifact_source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+  "recovery_validation_commit": "b60b9aea68f6f270abc0e97077f92adeaa2e72f8",
+  "source_and_validation_kept_separate": true,
+  "original_qualification_preserved": true,
+  "profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+  "system_build_id": "4a379155cac2fbbf",
+  "original_serial_sha256": "9e624cce5622cc2895867d1c0f7dcfe643ca22a322d50a06594862bed476aa29",
+  "recovery_serial_sha256": "1de06130def76002cc1b01243df83da589be6d4d969a4e44c61b776dbc2de6da",
+  "both_consumers_passed": true
+}

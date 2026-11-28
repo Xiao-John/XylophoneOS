@@ -1,11 +1,40 @@
 # XOS 当前状态（全局快照）
 
-2026-11-28 · P1-A 只读观测与提案回放里程碑。新增有界 sys90 状态源、按
+## 2026-11-28 · P0 发行闭环
+
+本轮新复跑的 L1/L2、R2/R3、N1–N4、打包 SDK pipe 与原生组合验收已经通过各自
+独立 PR 合入。R1 最终静态发行组合已完成 17 个程序的独立逐字节重链、替换 libc
+后的真实 QEMU 客体运行、原生 GNU 工具组合、升级中断恢复及冻结 newlib 往返。
+新版 glibc host SDK 已以 `xos-sdk-glibc-preview-3` prerelease 公开，原归档
+重新解包后的 C/C++ 客体和全部五个公开下载资产均已核验。R1 完整归档及校验文件
+也已公开上传并重新下载，外层摘要、22/19 项校验表及 20 项冻结清单全部通过。
+本轮 P0 的公开交付关口已完成。[最终发布回执](releases/p0_glibc_preview_3_delivery.json)
+
+原生最终候选 `7c8c59058be0b5f1` 通过 79 项常规检查、10 项许可材料检查与 ABI
+核对；L1/L2 的 33 项启动、12 组 IPC 模式、3 轮 deadline 和 45 项 stdio 检查
+分别保留其回执。R2/R3 公开 GNU 动态启动与 N1–N4 网络结果也绑定各自实际镜像、
+SDK、源码和配置，不能将这些独立 profile 合称为默认安装组合。
+
+[本轮 P0 清单与 P1 边界](plans/p0_completion.md) ·
+[原生组合证据](reports/p0_integration_final_20261128/README.md) ·
+[R1 最终发行证据](reports/p0_release_final_20261128/README.md) ·
+[glibc host SDK 使用说明](releases/glibc_host_sdk.md)
+
+进程树预算、持久代际、在线动态库装卸、额外 pipe、安装态网络组合、
+物理网卡/断电、完整 WebCore 和多窗口保持各自计划边界。旧稳定发行、Qt 独立
+profile 和冻结 newlib 资料保留各自身份。
+
+## 2026-11-28 · P1-A 只读观测与提案回放
+
+[#434](https://github.com/Xiao-John/XylophoneOS/pull/434) 已合入有界 sys90 状态源、按
 PID/镜像代次授权的普通用户态 endpoint，以及六类 observation 和独立 proposal
 schema。普通客体 21 组、静态 Net2 3 轮、真实 loaded trust 45 项和 IPC 生命周期
 4 组通过，102 份实际记录重复回放一致。提案不授予执行权限，接口不执行写入；
 runtime catalog 仍局部易失，trust 记录选定的已加载 store，不改变既有 TLS stream。
-P0 闭环仍按原工作线推进。[P1-A 记录](work_log/63c043b9_p1_a_observation.md)
+P0 交付单列于上方闭环记录；本节各项源码、SDK、镜像和配置身份保留原绑定。
+[P1-A 记录](work_log/63c043b9_p1_a_observation.md)
+
+## 2026-11-27 · 前阶段上下文
 
 2026-11-27 · 下一阶段里程碑。主线已合入可显式选择的 glibc C/C++ 应用 SDK、
 原生 xypm 客体维护、Qt Quick 软件渲染及外部应用工具包、Mobius glibc 会话和
@@ -117,7 +146,7 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 | 应用故障包 FB0–FB2 | 受限通过；FB3/FB4、断电安全、全局收集未验 | [0080](work_log/0080_fb0_fault_bundle.md)、[0081](work_log/0081_fb1_fb2_fault_bundle.md) |
 | 时钟/IRQ 统一（C29） | #33 已合，统一时基落地 | [0112](work_log/0112_clock_irq_split.md) |
 | VirtIO-Net / N2–N3 | sys112 授权的用户态驱动和 lwIP v2 已合入。传输、多应用隔离、生命周期和撤销有绑定客体结果。raw 诊断保持隔离。 | [原始帧纵切](contracts/net_user_driver.md)、[v2 契约](contracts/net_service_v2.md)、[多应用复验](work_log/69b0e274_network_guest_readiness_and_window.md) |
-| N4 DNS/DHCP | 配置、名称契约和私有 DNS 诊断已合入。普通配置的旧网络操作已复验。生产 DNS/DHCP 保持关闭。 | [N4 契约](contracts/network_n4_v1_proposal.md)、[DNS 诊断 PR #269](https://github.com/Xiao-John/XylophoneOS/pull/269) |
+| DNS/DHCP（P0-N3） | N3 的显式 DHCP/ACD profile 已通过 8 个真实对端场景及重启、续租、到期、NAK 和冲突恢复；DNS 与连接授权分离。默认安装网络组合另验。 | [N3 公开证据](reports/p0_n3_final_20261128/README.md)、[DHCP 契约](contracts/dhcp_service_profile.md) |
 | ClarkE 浏览器 | glibc Widgets 安装包已验证受控 TLS 1.3、HTML/CSS/图像及不受信任 CA 拒绝。原生 TLS 客体读取的已验证叶证书与实际对端一致。真实 JavaScriptCore 静态 shell 已合入，锁定的 Test262 同步子集通过 16 次执行。WebCore、完整测试套件和生产网络继续验收。 | [安装包 HTTPS](work_log/7e05f732_clarke_installed_https.md)、[TLS 叶证书](work_log/514a40f2_clarke_verified_peer_leaf.md)、[JSC 客体](work_log/3eba7c25_clarke_jsc_guest.md)、[Test262 子集](work_log/aca430b2_clarke_test262_guest.md) |
 | Mobius 系统 UI | 正式入口和 glibc Qt Widgets 会话已合入。统一 glibc SDK v1 套件通过独立接收、静态复链、双入口和 XPK 升级回退。原 newlib 桌面的旧入口仍可恢复。Mobius v2 Widgets 构建和 Curvive 分发许可继续验收。 | [v1 Widgets 套件](work_log/2d4bde25_mobius_unified_widgets.md)、[旧版工作盘与回退](work_log/f38242fd_mobius_glibc_xpk_lifecycle.md) |
 | Pumpkin | 身份核心、原生 IPC、私有存储区和受信客户端已合入。开发配置通过跨重启多账户登录、具名资源 FAT 导入、独立 broker 授权、注销、单账户吊销和旧盘拒绝。生产代际及凭据交付继续验收。 | [持久登录和 broker](work_log/7ce64487_pumpkin_durable_account_resource_login.md)、[FAT 导入](work_log/a64d215d_pumpkin_fat_import_integrated.md)、[多账户 PR #272](https://github.com/Xiao-John/XylophoneOS/pull/272) |
@@ -142,11 +171,11 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 | 显示/ISO | sys65/66 在 buildef83c9fc92217380 重验 G02 19组通过 | [当前报告](reports/qt_e16_qualified_20261028/g02/report.json)、[显示历史](history/boot_display.md)；QtGui/QPA 单全屏 raster 已验 |
 | CPython | PY0–PY2/T3-PY、A1–A3、B1–B4 有原 profile 专项证据。统一 glibc SDK 的静态核心已验证实际 stock 安装、重启、旧包拒绝及卸载保留数据。静态 zlib 通过 gzip、压缩 ZIP/导入与卸载。可选静态 `_hashlib` 在普通 CLI 客体验证 OpenSSL 已知向量。发行 IDNA 组合、`_hashlib` 安装包及 `_ssl` 各自验收。 | [用户态摘要](history/userland.md)、[统一 SDK 实测](work_log/4d321863_glibc_cpython_unified_stock.md)、[zlib 实测](work_log/9739fdaa_glibc_cpython_zlib.md)、[OpenSSL hashlib](work_log/c1c3d3d7_cpython_static_openssl_hashlib.md) |
 | OpenSSL | 统一 glibc SDK 的 OpenSSL 3.5.9 静态归档已通过普通离线客体的 SHA-256、熵、TLS 1.3 内存通道和主机名校验。WebCore WebCrypto、CPython `_ssl` 及网络 TLS 独立验收。 | [构建与实测](work_log/e832a3fc_openssl_static_glibc_foundation.md) |
-| glibc 网络 | 静态 SDK 的 IPv4/IPv6 结构及字节序已验。受信静态配置通过阻塞 IPv4 TCP、描述符和服务回收，GNU 共享 libc 重链和 D1 C 入口通过。动态 TCP、就绪等待和 IPv6 联网仍待验收。 | [地址布局](work_log/9f63f328_glibc_network_address_headers.md)、[TCP 专项](work_log/61202e5f_glibc_net2_tcp.md) |
-| 统一 glibc v2 候选 | 搬移后的工具包通过 C/C++、线程、地址与文件等待。独立发行候选通过四份归档接收和 GNU Seed、CPython/zlib、IDNA 组合客体。保留 v1 回退，最终候选的升级和中断恢复仍待验收。 | [C/C++ 工具包](work_log/ee216d1d_glibc_file_network_unified_sdk.md)、[发行候选](work_log/9f6b0349_glibc_v2_release_inputs.md) |
+| glibc 网络 | N1/N2 已验原生就绪/写半关闭与静态 glibc TCP/poll/shutdown 的有限 profile；N4 已验版本化 CA 与 TLS。IPv6 实际联网、connected poll(0)、并发 close/revoke-in-poll 与默认安装组合另验。 | [N1](reports/p0_n1_final_20261128/README.md)、[N2](reports/p0_n2_final_20261128/README.md)、[N4](reports/p0_n4_final_20261128/README.md) |
+| 统一 glibc v2 候选 | R1 最终候选已完成包生命周期、原生 GNU C/C++/Make/Python、升级中断恢复、17 个静态程序重链与替换客体，冻结 newlib 往返通过 4 次冷启。公开资产状态见最终交付回执。 | [R1 证据](reports/p0_release_final_20261128/README.md)、[工作记录](work_log/90c2ce10_p0_r1_final_distribution.md) |
 | xypm | P2 与 glibc C++ 客体安装、升级、卸载、重启和恢复已有实验 profile 证据，冻结 newlib 入口已复验。P3 离线仓库、锁和重启回读已合入。同 glibc profile 已验证历史 P2 重放升级至 P3、冷启和中断恢复，旧 newlib 盘复制品拒绝跨 profile 升级后仍能由 P2 正常读取。 | [glibc 事务](work_log/24df429a_xypm_glibc_guest_transactions.md)、[P2](work_log/0066_xypm_p2_validation.md)、[P3](work_log/7c2de8a4_xypm_p3_preview_guest.md)、[跨版本](work_log/3ce98ac7_glibc_g4_xypm_p2_p3.md) |
-| glibc | 静态 C/C++、双 Shell 管线和重定向、单终端描述符读就绪已合入。D1 验证了双高地址布局、私有入口栈和可跨 8,196 页的原生依赖映射器。glibc 已产出 1,645 成员的 PIC 归档和部分链接对象，完整解释器仍受启动门禁限制。完整 C3、动态链接和默认切换仍在验收范围。 | [双入口管线](work_log/6d49a810_glibc_dash_child_stdio.md)、[私有入口栈](work_log/51852664_glibc_d1_private_entry_stack.md)、[共享归档](work_log/8e477872_glibc_shared_io_and_pic_archive.md) |
-| SDK 过渡 | 已在独立工作区将统一 glibc C/C++ SDK v2 选为应用默认，验证 C/C++ 构建、xypm profile 拒绝、v0.0.1-1024 原发行介质回退及恢复 glibc 的三次冷启。发行默认切换和 newlib 退役仍依赖最终资产清单与组合验收。 | [SDK profile 契约](contracts/xypm_sdk_profiles.md)、[v2 默认与原发行回退](work_log/4c8a56a1_glibc_v2_workspace_default.md)、[发行默认门](releases/glibc_default_gate.md) |
+| glibc | 静态 C/C++ SDK 与 9 类公开 GNU 动态启动用例已通过；R2 代际激活、旧 pin、失败保留、撤销和回滚已验。动态资格是批准的启动闭包；在线 dlopen/dlmopen/dlclose、动态 fork→exec 迁移仍拒绝或另验。 | [公开运行时](reports/p0_public_runtime_closure_20261128/README.md)、[代际生命周期](reports/p0_generation_closure_20261128/README.md) |
+| SDK 过渡 | `xos-sdk-glibc-preview-3` 已公开，默认静态 C/C++ kit；从原成品重新解包后的真实客体、五资产公开下载和 R1 显式 kit 构建/包 profile 核验均通过。R1 套件与新 host SDK 的默认 profile 独立，冻结 newlib 不混用。 | [host SDK](releases/glibc_host_sdk.md)、[SDK profile 契约](contracts/xypm_sdk_profiles.md)、[R1 记录](work_log/90c2ce10_p0_r1_final_distribution.md) |
 | 审计/整合 | A01–A04修复与PR3兼容已交付PR4 | [整合摘要](history/delivery_audit.md)，组合build76a2e4380f64fb2e，7定向组通过；非旧全量重验 |
 | POSIX/Qt | 静态 QtQml 通过脚本、绑定、回收和 VM 配额负向检查。Quick 软件渲染及输入在两种 Shell 通过。独立工具包构建的外部应用已在 Mobius 与 ClarkE 共存的工作盘上验证文本、退出和资源回收。 | [QtQml](work_log/d8bd3467_qt_e18_target_qml_and_vm.md)、[Quick](work_log/13a6b397_qt_e19_quick_through_legacy_dash.md)、[同盘组合](work_log/dcbbd42a_desktop_products_combined_guest.md) |
 | 许可 | 材料检查通过；newlib 1053/1053、GCC 运行库 397/407 成员映射、GNU Seed 分发审查、Qt 静态分发审查与收口材料（文本/§4d0/补丁标注）已交付 | [许可证管理](licensing.md)、[0188](work_log/0188_d7_license_two_leaves.md)、[0189](work_log/0189_d7_license_full_closure.md)；均为映射/材料审查，**非法务意见**，Qt 静态交付物已按 B4/B5 门槛随 0.0.2-1103 分发（非法务意见） |
@@ -157,7 +186,8 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 
 | 负责线 | 范围 |
 | --- | --- |
-| 总协调 | 阶段计划、产品标识、公共 ABI、SDK 默认和组合验收 |
+| 总协调 | 本轮 P0 模块已合并，glibc SDK prerelease 与 R1 公开资产均完成下载核验；维护交付回执及下一轮计划、产品标识、公共 ABI 与 profile 边界。 |
+| P1-A 系统底座 | #434 已交付有界只读观察、普通客户端、proposal 和离线重放的限定资格；接入普通消费者，持久写入依赖 P1-B 与相关 P1-C/E 的授权、预算和恢复契约。 |
 | 运行库 | GNU rtld 独立堆、首线程 TLS 与文件状态交接，范围为 glibc sysdeps 和 D1 私有 loader。另行推进 glibc dash 命令替换与 stock 安装，覆盖 shell、候选构建和应用组合。 |
 | Qt 与浏览器 | Qt Quick v2 已验断网接收与双 Shell，推进 Mobius v2 Widgets 和 Curvive 分发材料。ClarkE 已构建 WebCore 软件归档，先补平台静态链接，再验收页面、CSS 布局与 Qt 视口。 |
 | 身份 | Pumpkin 私有客户端、监督器与操作者工具负责在线撤销及 Mobius 会话回收。生产凭据、独立代际来源和长期资源归属继续验收。 |
@@ -166,15 +196,16 @@ Pumpkin 的显式 Linux 配置已接入独立 UID 的代际提供者，实测首
 
 ## 下一步
 
+- 后续构建及复验以已核实的 SDK/R1 发布回执选择输入；保持两者 profile、源材料和
+  冻结 newlib 回退的明确对应，不替换历史资格。
 - 在 P1-A 只读接口上接入普通消费者；持久写入先完成 P1-B 与相关 P1-C/E 的
   显式授权、预算、恢复及结果未知契约。[P1 路线](plans/p0_completion.md)
-- 组合候选通过 79 项常规、10 项许可材料和 50 次 glibc 客体运行。收口须从最终
-  主线提交重建系统和两套 SDK，实际运行组合门禁，并将结果绑定到该源码与产物。
-  [组合复验](work_log/ea2d71c6_next_stage_combined_guest.md)
-- N4 生产启用、glibc 默认 SDK 切换、动态链接 D1–D4、显示/ps2/ata 后续设备迁移、
-  系统重建/自举（D6）与 Qt QML/Quick 各按专项计划推进。
-- 按 Discipline → 本页 → 宪法 → 专项契约/登记接手；新开发独立分支/PR 交付，
-  公共 build 排他。
+- 按 [P1 表](plans/p0_completion.md#updated-p1-table-next-round-delivery-and-acceptance)
+  推进权限预算、持久代际及应用所需组合；各项单独 PR、实际验收。
+- 物理设备、完整 WebCore、多窗口与系统重建/自举继续各自计划。本轮静态 SDK
+  发布不代表 full POSIX、任意动态装卸或这些产品已经完成。
+- 按 Discipline → 本页 → 宪法 → 专项契约/登记接手，构建目录独占，公开证据绑定
+  实际源码和产物，失败与未运行项继续保留。
 
 ## 历史快照补记
 

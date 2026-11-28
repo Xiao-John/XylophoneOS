@@ -1,0 +1,98 @@
+{
+  "download_receipt_sha256": "5e93a754bb580b318e2d5e180ac9d570667bb37957ef26e6c758bd552e851f26",
+  "original_qualification_sha256": "c2c8c62c560134302cedf26e7da386ae95f1b43531b04036bcfab13167d45aa5",
+  "qualification": {
+    "applications": {
+      "c": {
+        "build_receipt_sha256": "672341639c51ca77996fbdccafe7649e06d2eab7e9115586bcae0b987bbc4807",
+        "elf_sha256": "c0edc4dd2833c10ffd745a2a47689683d437db928b37195b0c48578a02b8000d",
+        "guest_exit_code": 0,
+        "marker": "GLIBC_KIT_C_OK 2.44",
+        "package_sha256": "9d02bdb068f15be8d3690f34a60dfeae453f4e497e4e71ec1ba4cb6ace13ca3c",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ],
+        "resources_before": [
+          129693,
+          3,
+          1
+        ],
+        "source_sha256": "6e0e4fbd72e70f411bc6eb0ecbbc31059be7bb9d4199240d71d9588f507cc28b",
+        "steps": [
+          "init",
+          "build",
+          "check",
+          "pack",
+          "verify",
+          "extract"
+        ]
+      },
+      "cpp": {
+        "build_receipt_sha256": "d25d3c2982099cad556bd1c0307d37aa804e253c31e4f14f72dbf1492590fd2f",
+        "elf_sha256": "a92339759616810301d1ac8777d0ba9945385e00ebf182b7222ee0f7c65750ef",
+        "guest_exit_code": 0,
+        "marker": "GLIBC_KIT_CPP_OK vector thread exception",
+        "package_sha256": "44d0b0ab38795dbcc1bccaf11a1bebe7d7340462d8914d6ce5e0179d805d8677",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ],
+        "resources_before": [
+          129693,
+          3,
+          1
+        ],
+        "source_sha256": "2c4a070ab5509e9b10257510b258ffcc7670e49e72cb03d25a5aef47f6158a7c",
+        "steps": [
+          "init",
+          "build",
+          "check",
+          "pack",
+          "verify",
+          "extract"
+        ]
+      }
+    },
+    "archive": {
+      "name": "xos-sdk-glibc-preview-3-linux-x86_64.tar.zst",
+      "sha256": "d3a4dd424fe33215df1d5ef9f93415b634799d52b4126d07dbe08f1fb59b1dcb"
+    },
+    "base_sdk_sha256": "60df6913fe2a56517e645c93673ebd9590ba3dd90acc56030c80c3738955cac9",
+    "binding": {
+      "guest_qualification": "not_run",
+      "profile_id": "xos-x86_64-glibc-host-8b2dee22a327",
+      "profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+      "runtime_family": "glibc",
+      "sdk_tree_sha256": "3b7f05a77d720c6de494a470f495d4688c103e83a84ae997c13a21663ca9624c",
+      "status": "candidate_binding_verified"
+    },
+    "consumer_mount": "empty consumer directory only; SDK root read-only",
+    "execution": "packaged ELF bytes; QEMU TCG; no guest network device",
+    "fresh_extraction_verified": true,
+    "host_sdk_manifest_sha256": "6823e578d75de6a8dca14cdda2c33789b7218bc0d8843f2202c0e5009878c600",
+    "profile_sha256": "250c34567cd6612bbe4d53b30a01659b618a89aebd86fbe8f3eeb66394322dd7",
+    "schema": 1,
+    "serial_sha256": "1de06130def76002cc1b01243df83da589be6d4d969a4e44c61b776dbc2de6da",
+    "source_archive": {
+      "name": "xos-sdk-glibc-preview-3-sources.tar.zst",
+      "sha256": "f883ab48729e90ce887a2ad89c02c34b63af3145e5bd4d7dbdd0b768884b60cf"
+    },
+    "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+    "status": "passed",
+    "system": {
+      "build_id": "4a379155cac2fbbf",
+      "iso_sha256": "54fbdcd601dad5ac406f0cf5f8c354887ea06b0946dec03191c13235feb725a7",
+      "manifest_sha256": "79efe36c521072b2495d522f9ba171ca228c9eedaa4dbcb970300b811622ad79",
+      "source_sha256": "4a379155cac2fbbf2fa7d4801b37dbb59f07c5116800bb39389d6d642c21edc4"
+    },
+    "user_data_preserved": true
+  },
+  "release_id": 461317287,
+  "schema": 1,
+  "source_commit": "8b2dee22a3272692603e9d01534c9b648375d04f",
+  "status": "passed",
+  "validation_commit": "b60b9aea68f6f270abc0e97077f92adeaa2e72f8"
+}

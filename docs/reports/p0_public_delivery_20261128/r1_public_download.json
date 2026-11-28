@@ -1,0 +1,149 @@
+{
+  "authentication": "No GitHub Authorization header or cookies supplied; public release URLs only.",
+  "command": [
+    "python3",
+    "ops/r1-public-download/verify_public_download.py",
+    "--saved-reference",
+    "recovered-release/p0-r1-glibc-release-20261128.tar"
+  ],
+  "completed_utc": "2026-11-28T06:18:06.092679+00:00",
+  "downloads": [
+    {
+      "bytes": 99,
+      "completed_utc": "2026-11-28T06:17:41.223473+00:00",
+      "expected_release_asset_id": 803482667,
+      "http_status": 200,
+      "name": "p0-r1-glibc-release-20261128.tar.sha256",
+      "request_url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/p0-r1-glibc-release-20261128.tar.sha256",
+      "sha256": "b7119a0b62f53c294d6a17ea2242290284219e76516f4e83c1848692cb7e27ed",
+      "started_utc": "2026-11-28T06:17:28.631934+00:00",
+      "status": "downloaded_and_matched_expected_release_asset"
+    },
+    {
+      "bytes": 430346240,
+      "completed_utc": "2026-11-28T06:18:04.397154+00:00",
+      "expected_release_asset_id": 803481989,
+      "http_status": 200,
+      "name": "p0-r1-glibc-release-20261128.tar",
+      "request_url": "https://github.com/Xiao-John/XylophoneOS/releases/download/xos-sdk-glibc-preview-3/p0-r1-glibc-release-20261128.tar",
+      "sha256": "492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4",
+      "started_utc": "2026-11-28T06:17:41.224056+00:00",
+      "status": "downloaded_and_matched_expected_release_asset"
+    }
+  ],
+  "errors": [],
+  "kind": "independent_unauthenticated_public_r1_delivery_verification",
+  "outer": {
+    "bundle_manifest_sha256": "4d09bd8689bc7c74a619f4f771c6e3a575246913bc73d678c49c6d25696a75dc",
+    "directories": 1,
+    "frozen_checksum_entries_verified": 19,
+    "frozen_files": {
+      "CHECKSUMS.sha256": {
+        "bytes": 1672,
+        "sha256": "bee561c954da469afcfbd3fb6659f7ea0ee27f81f471675f2dcb486cd229ef4e"
+      },
+      "application-sdk.tar.gz": {
+        "bytes": 23574262,
+        "sha256": "439d0e84b75b018c60971c6a62794da255b82cf113218bfb799bb5a431c5b8ef"
+      },
+      "combined_smoke_report.json": {
+        "bytes": 905,
+        "sha256": "f0db62322e3984cf2e7f88115ba69ab731103e3e1a1edfa5efff29b68c9068e7"
+      },
+      "component-sources.json": {
+        "bytes": 23766,
+        "sha256": "ef0c2269b6f67bfca628e2afbd23fa4653e60a65b25a9c8428ff768bc3e574f8"
+      },
+      "component-sources.tar.gz": {
+        "bytes": 26587606,
+        "sha256": "c2425572365b5708237212b82e3933c3f0d66315a93ad14b2184b2d4b44b953f"
+      },
+      "cpython-relink.tar.gz": {
+        "bytes": 34322441,
+        "sha256": "a9f7fddb65c1ab1e1933970c9ca4e2500e5e5af3b4e7732cc18623f6455f0a0f"
+      },
+      "daily-relink.tar.gz": {
+        "bytes": 8743690,
+        "sha256": "1928334e9aac989a2e67789c99c724c2f93c9b4bf4d16a1d850c1a627d5985cc"
+      },
+      "dash-relink.tar.gz": {
+        "bytes": 8848599,
+        "sha256": "d496725815a18fb91331b1edeb9a0e49257a368eaf5657c917f725bfedc1f987"
+      },
+      "distribution_manifest.json": {
+        "bytes": 3813,
+        "sha256": "7565b05cf0e444c73ddf607cb71e8401abf454bd09fac93adb045264600792c0"
+      },
+      "glibc-2.44.tar.xz": {
+        "bytes": 20620544,
+        "sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667"
+      },
+      "gnu-make-relink.tar.gz": {
+        "bytes": 8933359,
+        "sha256": "304e0549cad84da746b7b6d55bf9508ce2377b3610bcd1bd5a87e8c3e430c93b"
+      },
+      "gnu-seed-sources.tar.gz": {
+        "bytes": 182547717,
+        "sha256": "b5bba3d92930124124f516d11b977792af80989dbdadaa03ca0f655a6731e22a"
+      },
+      "gnu_seed_smoke_report.json": {
+        "bytes": 41555,
+        "sha256": "662d43997418a0498c1574c90b56161788eac1499d51f66cdff4ea3fd1305660"
+      },
+      "images.tar.gz": {
+        "bytes": 93310001,
+        "sha256": "ce174d53b4403838b8cffe9dff3fbf351902b7fa3c8e98a7efc37db59059d941"
+      },
+      "package_smoke_report.json": {
+        "bytes": 2185,
+        "sha256": "f88dcb663bfaf5b1f24c460c69e2deff4c90582ad6fc50fc66ef9f462c6ed47c"
+      },
+      "packages.tar.gz": {
+        "bytes": 11645427,
+        "sha256": "e7cce78ad3d11e4d27908281f4f5f787a418f131224a05ef37e13807dad3c39e"
+      },
+      "pipeline_receipt.json": {
+        "bytes": 4073,
+        "sha256": "39b1a524e19aa1a9a15afa91a3c4dfbb78f3b241ba1742cb5fc100581aea308d"
+      },
+      "release_manifest.json": {
+        "bytes": 3392,
+        "sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e"
+      },
+      "system_manifest.json": {
+        "bytes": 465201,
+        "sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596"
+      },
+      "xypm-relink.tar.gz": {
+        "bytes": 10636195,
+        "sha256": "ee1092662aea147a2d39a432deffee679738d8f71955d69adf462c41d6f112a0"
+      }
+    },
+    "frozen_manifest_files_verified": 20,
+    "links": 0,
+    "members": 24,
+    "outer_checksum_entries_verified": 22,
+    "profile_id": "xos-x86_64-glibc-p0-20261128",
+    "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "regular_files": 23,
+    "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+    "status": "passed",
+    "system_build_id": "7c8c59058be0b5f1"
+  },
+  "outer_checksum_file": "passed",
+  "release": {
+    "expected_release_id": 461317287,
+    "repository": "Xiao-John/XylophoneOS",
+    "tag": "xos-sdk-glibc-preview-3"
+  },
+  "saved_version_comparison": {
+    "bytes": 430346240,
+    "public_download_matches_saved_version": true,
+    "reference_name": "p0-r1-glibc-release-20261128.tar",
+    "sha256": "492c7b311431132398b84f62ff9357f516983039094559d41d4159e3e7e19ff4"
+  },
+  "schema": 1,
+  "started_utc": "2026-11-28T06:17:28.630433+00:00",
+  "status": "passed",
+  "verifier_sha256": "5e3a150544f34dbd741b5999dbbc3d13a8146a173dd3208ba3823c2b6bc32fe8"
+}

@@ -1,0 +1,92 @@
+{
+  "build_id": "7c8c59058be0b5f1",
+  "dash_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+  "gnu_seed_receipt_sha256": "5463030a758a6810062d8ccc0c6b3d2cf0eeff2fa5fe33ffd4c7f191c2fafe62",
+  "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+  "original": {
+    "cases": {
+      "dash_recipe": {
+        "exit": 0,
+        "exit_markers": 0,
+        "output": [
+          "GMAKE_RELINK_RECIPE=dash",
+          "GMAKE_RELINK_DASH_OK"
+        ]
+      },
+      "version": {
+        "exit": 0,
+        "exit_markers": 0,
+        "output": [
+          "GNU Make 4.4.1"
+        ]
+      },
+      "xshell_recipe": {
+        "exit": 0,
+        "exit_markers": 0,
+        "output": [
+          "GMAKE_RELINK_RECIPE=xshell"
+        ]
+      },
+      "xshell_recipe_failure": {
+        "exit": 2,
+        "exit_markers": 0,
+        "output": [
+          "Error 7"
+        ]
+      }
+    },
+    "resources": [
+      129793,
+      2,
+      0
+    ]
+  },
+  "original_sha256": "c2858f7c8c7da3717b03ec8edefbad82388219a484cb6c5c1c905f4681020108",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+  "replacement": {
+    "cases": {
+      "dash_recipe": {
+        "exit": 0,
+        "exit_markers": 1,
+        "output": [
+          "GMAKE_RELINK_RECIPE=dash",
+          "GMAKE_RELINK_DASH_OK"
+        ]
+      },
+      "version": {
+        "exit": 0,
+        "exit_markers": 1,
+        "output": [
+          "GNU Make 4.4.1"
+        ]
+      },
+      "xshell_recipe": {
+        "exit": 0,
+        "exit_markers": 1,
+        "output": [
+          "GMAKE_RELINK_RECIPE=xshell"
+        ]
+      },
+      "xshell_recipe_failure": {
+        "exit": 2,
+        "exit_markers": 1,
+        "output": [
+          "Error 7"
+        ]
+      }
+    },
+    "resources": [
+      129793,
+      2,
+      0
+    ]
+  },
+  "replacement_sha256": "9774f5b6cffc4a24c8b9012233e29027bb48ccf21131bd75ca4b1adc8d610d61",
+  "runner_sha256": "043573f9dee014f2aaad7f887d0726b272cb509dbde1b0fe8bb1b5755cd0c960",
+  "serial_sha256": {
+    "original": "4d4f6c89f1a379023d6839699323fc2162bdef1238b98f4e64c72a9d02fcac19",
+    "replacement": "03b7839c359a9dd1fb5486f7ca57018b083a83b5484a2b7d21893f172b287166"
+  },
+  "status": "passed_subset"
+}

@@ -1,0 +1,12 @@
+{
+  "changed_inputs": [
+    "src/main.cpp"
+  ],
+  "fault_application_receipt_sha256": "819529f9416e3ee9ccf9b2eb070fb8ee1795bf824ba323b8aeb2a2127fd43afa",
+  "fault_prefix": "#define XYP_TEST_FAULTS 1",
+  "release_application_receipt_sha256": "680dc30d7bc15ba367e09419927277bb1356d6a5c18ad7dd7ae5d3cb7467965c",
+  "same_compiler_and_binutils": true,
+  "same_sdk_profile_builders": true,
+  "status": "passed",
+  "unchanged_inputs": 21
+}

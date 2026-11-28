@@ -1,0 +1,37 @@
+{
+  "build_id": "7c8c59058be0b5f1",
+  "checks": {
+    "original": {
+      "pid": 10,
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    },
+    "replacement": {
+      "pid": 773355,
+      "resources": [
+        129793,
+        2,
+        0
+      ]
+    }
+  },
+  "external_sha256": "de0aaf6c1346db2e22b60e9e36381cabaa97348fd7f8e76ae0b75696a87fa6cf",
+  "guest_dash_path": "/usr/bin/dash",
+  "installer_iso_sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c",
+  "ordinary_iso_sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51",
+  "ordinary_system_manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596",
+  "original_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+  "qemu": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+  "release_manifest_sha256": "0e97d5f9e563fc33619563af1b35f041e021e507fa1ef1abaabf4354731a188e",
+  "replacement_sha256": "dcb23f43bfa2d4e6172550242f29172a84c097d30a2c99ef37761e560115df4b",
+  "serial_sha256": {
+    "installer": "512e2d269f48cac8c23c1d9dc69de56911a92a14e899243d8cdd0c4d8136d753",
+    "original": "6f3fee58438801b8deee7bd0ba05021e203ac1be04ff3eaf5991ac05942dd548",
+    "replacement": "ec5b6207836d1f9cd0e83902f4c919793fe5be0b0033f67b48f3f9d2788f6321"
+  },
+  "status": "passed_subset",
+  "test_sha256": "b4951880a6820a23232006f45b220cd9ba0ad0b5cc0150f5fd33612a80394429"
+}

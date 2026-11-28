@@ -1,0 +1,83 @@
+{
+  "application_sdk": {
+    "kit_tree_sha256": "672bb1543fe545a2c48371f27e84ff262671a57ccd1e93f8bdec087529559152",
+    "profile_file_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "profile_id": "xos-x86_64-glibc-p0-20261128",
+    "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "sdk_manifest_sha256": "56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703",
+    "sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab"
+  },
+  "archives": {
+    "application-sdk.tar.gz": {
+      "bytes": 23574262,
+      "sha256": "439d0e84b75b018c60971c6a62794da255b82cf113218bfb799bb5a431c5b8ef"
+    },
+    "gnu-seed-sources.tar.gz": {
+      "bytes": 182547717,
+      "sha256": "b5bba3d92930124124f516d11b977792af80989dbdadaa03ca0f655a6731e22a"
+    },
+    "images.tar.gz": {
+      "bytes": 93310001,
+      "sha256": "ce174d53b4403838b8cffe9dff3fbf351902b7fa3c8e98a7efc37db59059d941"
+    },
+    "packages.tar.gz": {
+      "bytes": 11645427,
+      "sha256": "e7cce78ad3d11e4d27908281f4f5f787a418f131224a05ef37e13807dad3c39e"
+    }
+  },
+  "candidate_manifest_sha256": "37bae9e8e42cc446e1add514281f5bcb5e94b706606691aefa9a9659477749a8",
+  "candidate_source_commit": "3964200d524fd39f3a95c166800832623c5f3591",
+  "daily_sha256": "3ac7ecceb7d34a8805d06904fc591b86570df96520c266862048f907c8436d91",
+  "dash_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+  "gnu_seed": {
+    "receipt": {
+      "bytes": 197620,
+      "sha256": "5463030a758a6810062d8ccc0c6b3d2cf0eeff2fa5fe33ffd4c7f191c2fafe62"
+    },
+    "sources_manifest": {
+      "bytes": 11148,
+      "sha256": "25742b6c074fa5be0384c07a94887500e66cf064af7956640e2816e27b8099c2"
+    }
+  },
+  "installer_guest_sha256": "24576dfd54b4520671ecff698996af3f4fe36e63db55cb4b22994c0d143148f0",
+  "installer_iso": {
+    "bytes": 17315840,
+    "sha256": "2f52f09af373987505c0143af7df641101fb7a035efab3b562584209e0b4f62c"
+  },
+  "installer_manifest_sha256": "e203b1f045834e8f552f76c728a2f3b721366131c8e3a20c1f0c83b53a924b50",
+  "launcher_sha256": "149e10e50f9717a9449e788de8a061e2b2a1a68f2b52a40dfb8e1c69a3d1a61c",
+  "packages": {
+    "cpython": {
+      "files": 15,
+      "id": "xos.cpython",
+      "sha256": "1b2bb536dc3ca5b49f2541422fb106386ceb0d08090dd440fa52e4a063f26d58"
+    },
+    "daily": {
+      "files": 26,
+      "id": "xos.daily_utilities",
+      "sha256": "3ac7ecceb7d34a8805d06904fc591b86570df96520c266862048f907c8436d91"
+    },
+    "wheel": {
+      "files": 16,
+      "id": "python_idna",
+      "sha256": "c0ca82b0d64befc78e0aa51a335a24915b3b3e53e8a5d04fd774e8d7ca5e83f5"
+    }
+  },
+  "schema_version": 1,
+  "status": "assembled_glibc_candidate",
+  "stock_guest_sha256": "b21fde1294336be3a103cf3780eb8745072fc3ba885424f66c2e5fe0104e9782",
+  "system": {
+    "build_id": "7c8c59058be0b5f1",
+    "iso": {
+      "bytes": 954368,
+      "sha256": "ab2b8f11de13e433705c8965d4437df72a6c6308af260844a810ef2e722e7f51"
+    },
+    "manifest_sha256": "7832c6150d70b3bd99ddc177912b7e5ebfeeef72df838135ecade58b12930596",
+    "source_sha256": "7c8c59058be0b5f1ab85450ad69a0c1409fb04f0f3af2b234a6eca645dcb2260"
+  },
+  "work_disk": {
+    "bytes": 536870912,
+    "sha256": "c2289ab88c37e0e4e3262a2a2d2f643b75b437370903340d6c336012e3168a9a"
+  },
+  "xypm_sha256": "494f24536dc82aa8d5a090a706b02d4e30fb573f4c8245ebad25ebe4d1fb8311"
+}

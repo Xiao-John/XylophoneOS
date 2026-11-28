@@ -1,0 +1,142 @@
+{
+  "checkout_mounted": false,
+  "environment": "SDK Preview 2 normal launcher; each receiver has a separate work mount containing only the material archive and receiver script",
+  "network_namespace_isolation": "not_run_host_NETLINK_ROUTE_denied",
+  "programs": 17,
+  "receivers": {
+    "cpython": {
+      "archive_bytes": 34322441,
+      "archive_comparison": {
+        "changed_members": [
+          "exit.o"
+        ],
+        "ordered_members_equal": 1687,
+        "original_archive_sha256": "b08924cc0101c363df8867dd966565ce109f6ea4c819c95a34c48c4d4de5a991",
+        "original_exit_object_sha256": "0bcf06251cbf7dc075520ff599f7ec254cbf073774d1ced25412ad11a09152bc",
+        "replacement_archive_sha256": "96038e9c3672f83daead4d607210e630de6894bd22913b8edf4dfbb6e82a01f7",
+        "replacement_exit_object_sha256": "1e66d7628109996423806ed5d73f0e83bc31b1b693817ecf9fda5f8b7862a8f4"
+      },
+      "archive_sha256": "a9f7fddb65c1ab1e1933970c9ca4e2500e5e5af3b4e7732cc18623f6455f0a0f",
+      "exit_code": 0,
+      "incorrect_replacement_digest_rejected_before_output": true,
+      "manifest_sha256": "ee17476ee39a130a46fcb9d7ec35ab58ba897fc4af9eeb77a56995b6e637d43c",
+      "original_elf_sha256": "fddd323bbebaa1c64f43c9065595370330491c7ec548675d04c5a77d0aed5555",
+      "original_link_receipt": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/objects/target/Modules/faulthandler.o: note: the message above does not take linker garbage collection into account\n${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/objects/target/Modules/timemodule.o: note: the message above does not take linker garbage collection into account\n${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/objects/target/Python/fileutils.o: note: the message above does not take linker garbage collection into account\n${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/objects/target/Modules/posixmodule.o: note: the message above does not take linker garbage collection into account\n${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/sysroot/usr/lib/libc.a(lchmod.o): note: the message above does not take linker garbage collection into account\ncd08974c62b44b8c1915f5cf2336b760adfcf92137e02c6453d5ac714ec0f236\nfddd323bbebaa1c64f43c9065595370330491c7ec548675d04c5a77d0aed5555",
+      "receiver_log_sha256": "3d4790fa8abb8c7671146150186af25abe81aaad43432f0ea2bbc5c6e80070ec",
+      "receiver_script_sha256": "9dc26575ea754c4c2c546abfc9175e586090e6c82fd806e7dc2dcf95216b378f",
+      "replacement_elf_sha256": "b206a4307c6864d18d7d4c3ef79dec1f014bec80c31527fc89078065a07ff441",
+      "replacement_link_receipt": "${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/objects/target/Modules/faulthandler.o: note: the message above does not take linker garbage collection into account\n${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/objects/target/Modules/timemodule.o: note: the message above does not take linker garbage collection into account\n${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/objects/target/Python/fileutils.o: note: the message above does not take linker garbage collection into account\n${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/materials/objects/target/Modules/posixmodule.o: note: the message above does not take linker garbage collection into account\n${XOS_TOOLCHAIN_ROOT}/Cellar/x86_64-elf-binutils/2.47/bin/x86_64-elf-ld: ${XOS_TEMP}/libc.a(lchmod.o): note: the message above does not take linker garbage collection into account\nafe6820c5e428df945d3c9d3900ef05296e21500bcc09d117ccdf947b1797a08\nb206a4307c6864d18d7d4c3ef79dec1f014bec80c31527fc89078065a07ff441"
+    },
+    "daily": {
+      "archive_bytes": 8743690,
+      "archive_comparison": {
+        "changed_members": [
+          "exit.o"
+        ],
+        "ordered_members_equal": 1687,
+        "original_archive_sha256": "b08924cc0101c363df8867dd966565ce109f6ea4c819c95a34c48c4d4de5a991",
+        "original_exit_object_sha256": "0bcf06251cbf7dc075520ff599f7ec254cbf073774d1ced25412ad11a09152bc",
+        "replacement_archive_sha256": "bd67d3d50cf5340dfae82428d36caa1af64c5ff8cb8102bb7b8c71eb75e75eb0",
+        "replacement_exit_object_sha256": "6e964a61d82e42b2cdca24252aeebf98bc93ab96e26f57999b2553aea8a57e44"
+      },
+      "archive_sha256": "1928334e9aac989a2e67789c99c724c2f93c9b4bf4d16a1d850c1a627d5985cc",
+      "exit_code": 0,
+      "incorrect_replacement_digest_rejected_before_output": true,
+      "manifest_sha256": "41bd58364942be682b807c966e006f1a2867cea7e5e992b4b8095d32b7b798e6",
+      "original_programs": {
+        "basename": "e4cea4b7cdbbbf20f6654edaddac8bf9a22e94b8817d40e90dcd5ece30752fa8",
+        "cat": "eec6637238547b9781be095bebd9cbfa38d5151fcd6162d6656cfb21d2a18ef0",
+        "cp": "9dfc8dee9157a03aa0dbfeb01f79e96f0c0f7dc0777e3f48b47a8c87465ddd5b",
+        "dirname": "7cee9b9b8543fcaeeaf5ad5d41464965c880310a24ed72c9b1c3bb33c765de75",
+        "head": "1bb5a26ad2a96a76e2ccc7f7154443ac391f8a595f95bea867a3d4184cf76363",
+        "ls": "c6f6e8378a5a5f5818b3ee8eb9c518c151f3e70f368a6712b09b198bd6916345",
+        "mkdir": "d7877ec7612bb617cccae5c72536effee45a33b2fe72c7afd37a4faf29ec7251",
+        "mv": "7402143cdd5c6afb34adc2621d77198dc1c50d437ff18db1f20ba54a35f8e34c",
+        "rm": "b9231dc0eb5f7ba9da369d8eecc732b04f93af92d61e425b2262c84a306b09c6",
+        "rmdir": "e9259d9ad720528cd65ee99b4fe5e3350a597b909ac22d722b870ab1fcaa635b",
+        "tail": "ca1364e1cc5cd8cd3cda02e243e60cbd029b5fb377addc74fd96aaaeabcc3507",
+        "tee": "99659017ed7c297bad0d08208697b157c865a1f11361b1166dbfde8e504e3e8f",
+        "wc": "aba74e7cba29a0a3054617600e76300acb8d40c7a852357bfa26136ac34d8f61"
+      },
+      "receiver_log_sha256": "870091912f0f65af38131a24efcae84f25a827a187b42e805f885d000c59460e",
+      "receiver_script_sha256": "31deda481bfeb44f956fee38bbf7a14fdfe494cff01f09df3d25a754b1765630",
+      "replacement_programs": {
+        "basename": "50e71323e210fddf2f800d74a93120e7f096d8b096ffe3cddbdad1581afb5412",
+        "cat": "194b2f4f8164bb9954a97f531c7ebfb4c588368ae2880102bf10cd5a33a88d98",
+        "cp": "63aa113491aaf70ec96bd8aad97a481cd845f3150e82ed0ee55315a747a2bc91",
+        "dirname": "8cca441967533613a09451945d43168c2f0a879bc5fd6bf48bc0bf045735bf54",
+        "head": "b5b5199a67213e4a4cd872ba0c2077f6fcdd402578d05854800b7ff8e208c2f7",
+        "ls": "a504dabbf87d281682d09f421f6cf5cd80aeb1dd55daf88157f438d98c562a77",
+        "mkdir": "54d85d104facf4a1f1ddcf32a089e5f2a5e36f696af36a823c5633791d11e7b9",
+        "mv": "99bfd532481d86f34a35b44716c951937c9a423f8d2c334d3994ab039499a7de",
+        "rm": "31b60fe2130fe29c82afbd66279289a995045a8e307844975d117415227b3aa3",
+        "rmdir": "4ebfea30dfd515e8e80b71399a33510a801f30d4567fa1db7bfd3b3b71423d12",
+        "tail": "d3defeba3202514763b3ee2dff1c855035a9110747c86719dff47ad51f0653e3",
+        "tee": "f5f862740399ce4cad60792d07b5db84b77d7168b5fd6d9e809e35e3d5aa5a05",
+        "wc": "f7af70b87c76edb77e291038d474ae390d71bcee6ce27dd1a30b747536f54546"
+      }
+    },
+    "dash": {
+      "archive_bytes": 8848599,
+      "archive_comparison": {
+        "changed_members": [
+          "getpid.o"
+        ],
+        "ordered_members_equal": 1687,
+        "original_member_sha256": "513123f3afa44f5457f7333c5318d9a15c0a61fbef35128142972bf43f2c100a",
+        "replacement_archive_sha256": "486894db7915b73a2adb78a9630ba4660a12442473e1e8ee0737599b1871a2f3",
+        "replacement_member_sha256": "0e21416722bae54b821d16f51a90f582544d8d1666a7b528cbde092b351bf7ee"
+      },
+      "archive_sha256": "d496725815a18fb91331b1edeb9a0e49257a368eaf5657c917f725bfedc1f987",
+      "exit_code": 0,
+      "incorrect_replacement_digest_rejected_before_output": true,
+      "manifest_sha256": "fc2c76bae3d81d79bb4ef7454b1ce4e1008436f9f188de72ce125cda72dc896e",
+      "original_elf_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+      "receiver_log_sha256": "0939bb6dab940b9659eff1ec44225da4b7183a6fedbf873a6b0c51bac7e75b54",
+      "receiver_script_sha256": "fc2a6732f8394b5bd64c55dbd1b39300df0221714413a849d5a03d72444a6848",
+      "replacement_elf_sha256": "dcb23f43bfa2d4e6172550242f29172a84c097d30a2c99ef37761e560115df4b"
+    },
+    "make": {
+      "archive_bytes": 8933359,
+      "archive_comparison": {
+        "changed_members": [
+          "exit.o"
+        ],
+        "ordered_members_equal": 1687,
+        "original_member_sha256": "0bcf06251cbf7dc075520ff599f7ec254cbf073774d1ced25412ad11a09152bc",
+        "replacement_archive_sha256": "8b57459f14d654b0c8a4baab58382b4276f9cda7bd01970be5d14e901b4a3d99",
+        "replacement_member_sha256": "cf82f85699d69c49ee1d07213b607ee0f6148bf4e86ca110e18ca56b02b05af6"
+      },
+      "archive_sha256": "304e0549cad84da746b7b6d55bf9508ce2377b3610bcd1bd5a87e8c3e430c93b",
+      "exit_code": 0,
+      "incorrect_replacement_digest_rejected_before_output": true,
+      "manifest_sha256": "2fa6b280d915a7a1c1983164e88a5d89a74f8e36eae6677a6fc00fccea307255",
+      "original_elf_sha256": "c2858f7c8c7da3717b03ec8edefbad82388219a484cb6c5c1c905f4681020108",
+      "receiver_log_sha256": "16ed7088888a6080adecdd307a83a24bb76bb4fc1227cc7b5dbfd649a435848a",
+      "receiver_script_sha256": "ab45a7f0d562629b2344052c0235c9b633e507dfb10c98253d031eb352adb1e3",
+      "replacement_elf_sha256": "9774f5b6cffc4a24c8b9012233e29027bb48ccf21131bd75ca4b1adc8d610d61"
+    },
+    "xypm": {
+      "archive_bytes": 10636195,
+      "archive_comparison": {
+        "changed_members": [
+          "ioputs.o"
+        ],
+        "ordered_members_equal": 1687,
+        "original_member_sha256": "8e3150139a1214e34c0fa83bf0fcadd1d3c178551549b7000169337c3e22602d",
+        "replacement_archive_sha256": "c57b1eb52f24a5207e92814a7328c26b0ca73f08f21fa0ac4d3bb4c7dc5e2d99",
+        "replacement_member_sha256": "c950b3758f9b4cbca633210bb98762e98b0001549e24760a5a892a34a1a341c9"
+      },
+      "archive_sha256": "ee1092662aea147a2d39a432deffee679738d8f71955d69adf462c41d6f112a0",
+      "exit_code": 0,
+      "incorrect_material_manifest_rejected_before_output": true,
+      "incorrect_replacement_digest_rejected_before_output": true,
+      "manifest_sha256": "25af841d5fd2003b4ac6c1e47581b5a0f63a644cafb0b78e20287ee42baea923",
+      "original_elf_sha256": "494f24536dc82aa8d5a090a706b02d4e30fb573f4c8245ebad25ebe4d1fb8311",
+      "receiver_log_sha256": "441acce831545d415c3e9a393afe2b4694a86db03bd05a69f3fa52b0a508b67b",
+      "receiver_script_sha256": "942b7fbb4bd7218c213acc7c025a2edeb4b363ed4877aea934c93e76b6dfc123",
+      "replacement_elf_sha256": "8e3e8f90b456d51d9741c990be393d9364c93513f26138a8f997f3b9a270eee9"
+    }
+  },
+  "status": "passed"
+}

@@ -1,0 +1,17 @@
+{
+  "reports": {
+    "combined_report.json": {
+      "published_sha256": "f0db62322e3984cf2e7f88115ba69ab731103e3e1a1edfa5efff29b68c9068e7",
+      "raw_sha256": "af98291aa66c975a164e165169996d9dfff4a26d94b682c814188d3880dc17b2"
+    },
+    "gnu_seed/report.json": {
+      "published_sha256": "662d43997418a0498c1574c90b56161788eac1499d51f66cdff4ea3fd1305660",
+      "raw_sha256": "674dbb8f159d5ec1d0035dbde7a887892b65c7025d40883295da68b5b2f4aaa6"
+    },
+    "report.json": {
+      "published_sha256": "f88dcb663bfaf5b1f24c460c69e2deff4c90582ad6fc50fc66ef9f462c6ed47c",
+      "raw_sha256": "3ad8848ca0368b3d451741c70b6135fc51c443209d8965619c4022107c13b45d"
+    }
+  },
+  "status": "exported"
+}

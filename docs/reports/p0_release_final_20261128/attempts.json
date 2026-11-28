@@ -1,0 +1,20 @@
+{
+  "dash_link_capture": {
+    "actual_relinked_elf_sha256": "2c26bc3484093eef0e5eeb3692fa8c4ddf9b975391c2707948a41926cdf5570c",
+    "byte_identical_to_installer_dash": true,
+    "initial_collection": "rejected: the default Automake quiet log did not contain the final link command",
+    "initial_make_log_sha256": "102159d97a972376d51b70ed01e526184f5837ea261806cca831124d20d8b118",
+    "objects_and_configuration_unchanged": true,
+    "replay": "make -C ${XOS_DASH_WORK}/build/src V=1 -W main.o dash",
+    "replay_log_sha256": "5e98df041b4da597721401a4b995375687a4de66b1e10489fb813a8669f89f80"
+  },
+  "failed_candidate": {
+    "cause": "The official zlib archive URL changed in the source lock while the registered lock digest had not yet been updated.",
+    "raw_manifest_sha256": "0d01298d94efcf9492dd957d8642b7fe093e72e37e3fd39c9ec41df35b07c85b",
+    "repair_commit": "3964200d524fd39f3a95c166800832623c5f3591",
+    "replacement_candidate": "candidate.json",
+    "source_commit": "495706e",
+    "status": "failed_at_license_audit"
+  },
+  "package_output_guard": "An output outside build/releases was rejected before assembly; the successful command used the dedicated release directory."
+}

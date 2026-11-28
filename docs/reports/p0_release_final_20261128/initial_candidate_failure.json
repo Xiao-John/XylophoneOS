@@ -1,0 +1,89 @@
+{
+  "application_sdk": {
+    "kit_tree_sha256": "672bb1543fe545a2c48371f27e84ff262671a57ccd1e93f8bdec087529559152",
+    "profile_file_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "profile_id": "xos-x86_64-glibc-p0-20261128",
+    "profile_sha256": "437926bf43578493f38ea3c4834e98babebf797ef4e504a914dbbd93bdd9080d",
+    "sdk_manifest_sha256": "56c596967ff6ec6c51b593e91ff01f3c4bc7ac2903ace6ab426b290b358f4703",
+    "sdk_tree_sha256": "7ea2166b55e753e1bc194f988bfff11e52bde806061d35fd3a208c3b2ebf16ab"
+  },
+  "artifacts": {},
+  "error": "licenses failed; see ${XOS_RELEASE_TREE}/build/candidates/p0-final-20261128/licenses.log",
+  "guest_qualification": "pending",
+  "installer_guest_qualification": "not_run",
+  "published": false,
+  "source_commit": "495706eab2dc49ae8c0b955ab06faa785088938c",
+  "status": "failed",
+  "steps": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/build.py",
+        "--quiet-demos-on-launch"
+      ],
+      "log": "system.log",
+      "name": "system",
+      "returncode": 0,
+      "status": "passed"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/build_dash.py",
+        "--receipt",
+        "${XOS_RELEASE_TREE}/build/candidates/p0-final-20261128/dash_manifest.json",
+        "--sdk",
+        "${XOS_RELEASE_TREE}/build/p0-glibc-kit-20261128/sdk/sysroot",
+        "--glibc-profile",
+        "${XOS_RELEASE_TREE}/build/p0-glibc-kit-20261128/profile.json"
+      ],
+      "log": "dash.log",
+      "name": "dash",
+      "returncode": 0,
+      "status": "passed"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/build_glibc_daily_bundle.py",
+        "--kit",
+        "${XOS_RELEASE_TREE}/build/p0-glibc-kit-20261128",
+        "--sbase",
+        "${XOS_SOURCES}/sbase",
+        "--output",
+        "${XOS_RELEASE_TREE}/build/candidates/p0-final-20261128/stock"
+      ],
+      "log": "stock.log",
+      "name": "stock",
+      "returncode": 0,
+      "status": "passed"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/build_install_iso.py",
+        "--dash-manifest",
+        "${XOS_RELEASE_TREE}/build/candidates/p0-final-20261128/dash_manifest.json",
+        "--member",
+        "3:daily=${XOS_RELEASE_TREE}/build/candidates/p0-final-20261128/stock/daily.xpk",
+        "--member",
+        "5:xypm=${XOS_RELEASE_TREE}/build/candidates/p0-final-20261128/stock/xypm.elf"
+      ],
+      "log": "install_iso.log",
+      "name": "install_iso",
+      "returncode": 0,
+      "status": "passed"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/license_audit.py"
+      ],
+      "log": "licenses.log",
+      "name": "licenses",
+      "returncode": 1,
+      "status": "failed"
+    }
+  ],
+  "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,596 @@
+{
+  "base_commit": "344655c3f2279a10c62fce5ea039c741aa6172f1",
+  "dash": {
+    "bytes": 3573480,
+    "input_filter": "Only repository source inputs shown; SDK files are bound by sdk_manifest_sha256 and the original full dash receipt.",
+    "inputs": {
+      "profile": "effeb71556aabd8e0698a1c608dc937038d8f5afe1da6d722fe05c7b2ec7f814",
+      "scripts/build_dash.py": "8adff76f3673454fafee76d399de09f74145fce046589feb3d0b8bccfc8fcb35",
+      "src/ports/dash/README.md": "54397b5bc7f9887ef4431a9bfe3394de6bc9b6de01fb0195576d0c29404df42e",
+      "src/ports/dash/admission_xos.c": "dd220d4b53a9d3bf3ca9140623342e1bd4327b2f75beab3cb0ab8d674db6de28",
+      "src/ports/dash/console_xos.cpp": "9c43f57ef611b81b23c58219afa41f44bc057441ffeeec0d9269bd023c6f5950",
+      "src/ports/dash/jobs_xos.c": "d801a81efa67f0f9c480f641c288c52b3216476e144a18c6c47eadcca134fe6a",
+      "src/ports/dash/patches/0001_xos_simple_commands.patch": "899b4abb8e7ecac697fa63c469e03342c8a48df238313ce419d1a49cc6aa22a7",
+      "src/ports/dash/patches/0002_xos_pipeline.patch": "fe6b32d02697db2c8b19f7d5cd95512a76ad69ce2b05c07d3b51963a61cc531a",
+      "src/ports/dash/patches/0003_xos_here_exec.patch": "b6720ba8712cda197aa24d9f7e48418cbdaf17b630e86ec4c8b162eac6bed978",
+      "src/ports/dash/signals_xos.c": "65fb4df159541504cd2c539dca475128f03069381de635cd6aaeaeba5043d76d",
+      "src/ports/dash/source_lock.json": "d2988258efeff75f11239cbf57b4dc572c108a8639edf8481fdaedcdccc01c26",
+      "src/ports/dash/upstream/COPYING": "254a7894923ff62e69184a991dcbccae97edee58a1105e8efbe78caf10595d72",
+      "src/ports/dash/upstream/dash-0.5.13.5.tar.gz": "40090101a2a491f13e901d3d48e90414f26634628b9bfff35ff540363c227a7d",
+      "src/ports/dash/xos_profile.h": "b6abee8aee56c1f5bceaf1a34a5868a3d68c591db1ee4370c6cca5282efb6c77",
+      "src/shared/include/xos/abi_types.hpp": "2a417532cbdafc1d7545064ef78fe692b07ab0ec430f44367d779415fdc48478",
+      "src/shared/include/xos/audio_abi.hpp": "6b9e27332b5163d2eceb9e364581a80f74be098c8b47711f7b577f7e9b4b901d",
+      "src/shared/include/xos/device_abi.hpp": "cdece558f19833d44f5d372a674d430e869c8a9d8fdfb8d1a81e49581a10fa11",
+      "src/shared/include/xos/display_abi.hpp": "cb68448ca2d8d72622698a1e95441ae665a25e484a8abdcb94f29036378e1622",
+      "src/shared/include/xos/dynamic_abi.hpp": "96a8c327fc64c406757e5d3aeb5ccd95e9cdd20d1d9a167728d58ef570a9217e",
+      "src/shared/include/xos/file_abi.hpp": "9e6e6585dd8dee2e9b2db8d10fac7aeeffb693b41f8f4702d119bbfee3e5c4aa",
+      "src/shared/include/xos/interactium_abi.hpp": "361abd4c9564f8c02a311c55a521ecd462b9b06de03a53f51031e317b09589af",
+      "src/shared/include/xos/ipc_v1_abi.hpp": "0b77924d799879b0a4915b43723ca899d5bc8e2195e8e15853bf090a4e3d6911",
+      "src/shared/include/xos/net_abi.hpp": "14e0baf22c2de09588c8924b07a05a7b6095fc4db0b9d408405efbaa18cd819e",
+      "src/shared/include/xos/net_service_abi.hpp": "8365d89889c7d8bc32318dc56c85fb6ce012aee703e779a3dc37d8a16987091f",
+      "src/shared/include/xos/observation_abi.hpp": "4dbdb29840a515da2e792d30b3d28264e384992fa8841c839277131d69f1920e",
+      "src/shared/include/xos/observation_service_abi.hpp": "0c832f6eba5fed6871bbc3e652cda743ef5548f1a0aadaa77c1b58e00bb09fed",
+      "src/shared/include/xos/process_abi.hpp": "e7097ee765656ed758382af9d7a44e6723fedf774e3fa8d30bc1667d53eb3542",
+      "src/shared/include/xos/terminal_abi.hpp": "ed6087dda8d402f1ea36f5fadd36b97d9e3ce759d234479ec1c0ff36593607c7",
+      "src/shared/include/xos/thread_abi.hpp": "3d3c70a4bb58ae517dab861c9171f84fe707350b021eb94af9752b3e54834a5e",
+      "src/shared/include/xos/vm_abi.hpp": "2f02a1bf36c86953d70e49b28fbb4e243f4a417eb26647f0af53de6bb9728e95",
+      "src/user/arch/x86_64/syscall.cpp": "b69c2d81b575d86ea5f55e489690db0171a13b5ff208f9c9a9eb1f7b9c17b1a2",
+      "src/user/include/xos/audio_client.hpp": "75b4ef444194a38a9f64889b49c849ad399870129c81b2971ae27f8bfbd38746",
+      "src/user/include/xos/channel_io.hpp": "a8123186b82dfb974891fb66a3e1f3b568c353bdcb8720b52064ef609a138be9",
+      "src/user/include/xos/device.hpp": "a51d315ee644b727da7db66bb3111c3553a85e6fb8c0e8b6870dc70b07c08e5d",
+      "src/user/include/xos/display_client.hpp": "93f8349de6efdd765e31747847c512e7e76466930bd84f1b61fe3e6dbb15a395",
+      "src/user/include/xos/dynamic.hpp": "269c57f63a62c6d4bd4f36386d17200137af65815fa3f5d989546f335583313c",
+      "src/user/include/xos/dynamic_elf.hpp": "ae7155bf1d8709b3d02646742813b6d9149176bb0558dc3e2893c3a56a19015a",
+      "src/user/include/xos/dynamic_launch.hpp": "1484042cb1804a8cd388eed2365efaed95972d7c72d6a2b68660ad1a97058c11",
+      "src/user/include/xos/elf.hpp": "c93092a90a6bd6295ddb4f3352cc47d597cb0c4d71047870399db3585dfd9f28",
+      "src/user/include/xos/execution.hpp": "1da5993a6ee873e56ae7533aa85221ac5c27d6c86c1ccc69719b3e702c000a08",
+      "src/user/include/xos/fault_sha256.hpp": "04e28a644eadaf21cc86dd1063456141caccd845d4a338604cd981212357f45d",
+      "src/user/include/xos/file_client.hpp": "e7cda26359bf88b784fd40aa544f3a51c1c4d0677b6db2499c9804bd1cfe978b",
+      "src/user/include/xos/file_ui.hpp": "b078a633cb47dd6537ae4bc945a766750e0467b860bfaa677275d5d92758123c",
+      "src/user/include/xos/ipc_v1.hpp": "b2eab30120f634d077b88a80d446a4908c21fbf12ddf33d5e962cb6c90d5983c",
+      "src/user/include/xos/launch_control.hpp": "36496f2565236ede0294504124e242d7bd7d46c761443bb91bc7acb95c1be419",
+      "src/user/include/xos/libc_runtime.hpp": "d2808f67bf4be32d9de8d8003dded9c41ffa5b2169a8a63e1eb2cd93c9401dce",
+      "src/user/include/xos/net_client.hpp": "b4024b191e578f9af9820ed5b09622b4ba137c949026465ebd6134e63a8b7b62",
+      "src/user/include/xos/net_service_client.hpp": "64abc994ef3998106428f466ee5c64b034aaae4f4dc989b6cb9edc37a224e7a8",
+      "src/user/include/xos/net_transport.hpp": "6f5e7a5ba2cca4ebcec93a43f170adc8e93c385c25098377b259a7d0ac100674",
+      "src/user/include/xos/observation.hpp": "8ecfa7e00e32e85a5079f75ec34910e1504ab07289fbfbc2be7e06645652ece3",
+      "src/user/include/xos/observation_sources.hpp": "4fc7b534f1ba5ae8a69ac68cbd67ec8b530cd05cd4147fe8a9850243c60c640e",
+      "src/user/include/xos/runtime_lock.hpp": "047cefb19504110544a94f9053950eb543bc827dace493513be31ccb24be9706",
+      "src/user/include/xos/sdk.hpp": "cd34445a2cf4ff65651f4efb88f8be2cfe15ea2fb7bab6af2a9630d05722f42a",
+      "src/user/include/xos/spawn.hpp": "67ff2bdddd735b8751962cb8808be9804f883b5e3d692bfa59ee2dd01c53d6d3",
+      "src/user/include/xos/terminal_client.hpp": "3ef1d2d4e763a510f32457dd2eccb37cabe1ea7df5f3ba2cc50814cbf6ea56fb",
+      "src/user/include/xos/terminal_control.hpp": "b2f803aa503e91c6c35ab174b0f7e6638c0edcec32375d33dd98b404fa00f78e",
+      "src/user/include/xos/text.hpp": "308cc2daf07b197fb474293418148e3db5b35033eec92727f894c53afd175085",
+      "src/user/include/xos/thread_core.hpp": "068ef50080f66d85600bfbfecd294c66c9100b58bae6968d7bc0919979581f49",
+      "src/user/include/xos/tls.hpp": "c67cb8d2caea4f4da7ed44db61f26fba3ad20bc0f4f53e79d8ae752797d2e6e7",
+      "src/user/include/xos/unicode_width_data.hpp": "9e57137d6b1f67774805219b2170d3ef4638b180401ed18ac89fa3610cdb5c11",
+      "src/user/include/xos/vm.hpp": "45b721bce4dbe68123446415a16a953d1c85d9de0b5a9fc7c13c33fff3bcb82e"
+    },
+    "load_segments_unchanged": true,
+    "profile": "dash_glibc_preview",
+    "sdk_manifest_sha256": "7b3d51c8e13c9b0435a8bdfcbe8b3adff22540e426be43741e19dfc94b56e14e",
+    "sha256": "d22105d8a742dfd68b486fedc070be322fa5f4631409429b79b0c2e2df82a02a",
+    "status": "built_not_run",
+    "version": "0.5.13.5"
+  },
+  "derivation": {
+    "original_receipts": {
+      "build/issue133_dash.json": "f9a760643020e60b37dadd912b9320f3459c8ea209caf98ae9dbe11fbfc49ea0",
+      "build/issue133_guest_v2/report.json": "5b4bbac2dd56d7848f49c9c19cce17fe753b1f623b59fe648b898cd1fccb646a",
+      "build/issue133_gzip_v3/manifest.json": "59b59ce7e54c06ef5dc20ad99b837ea41da7685a128c74c839137920e08085f7",
+      "build/issue133_negative_checks.json": "1596ba9feadb55ae788b2196fb3a8ed27dbaaec97869a2753657d293399ab234",
+      "build/issue133_profile.json": "effeb71556aabd8e0698a1c608dc937038d8f5afe1da6d722fe05c7b2ec7f814",
+      "build/issue133_sdk_v2/manifest.json": "7b3d51c8e13c9b0435a8bdfcbe8b3adff22540e426be43741e19dfc94b56e14e"
+    },
+    "rules": [
+      "retain observed statuses, numeric results and artifact/input identities",
+      "replace host executable paths by basenames",
+      "omit full SDK artifact lists and raw build command paths",
+      "sibling evidence leaves are referenced by name; only the flat manifest hashes them",
+      "Guest command arguments use an explicit XOS_GUEST_WORK template bound to /work; raw serial retains the literal commands."
+    ]
+  },
+  "development_failures": [
+    {
+      "reason": "fixed missing null spelling include and GNU sysdeps selector getdtsz before the successful fresh SDK build",
+      "result": "interrupted",
+      "stage": "first SDK attempt"
+    },
+    {
+      "reason": "generic replacement redefined existing glibc struct sigaction and assumed a usable Windows signal backend; fixed by shared explicit unsupported XOS backend",
+      "result": "build_failed",
+      "stage": "first honest gnulib signal configuration"
+    },
+    {
+      "reason": "stat-macros.h absent in this gnulib snapshot; consumer now uses its actual generated sys/stat.h definitions",
+      "result": "build_failed",
+      "stage": "initial consumer compile"
+    },
+    {
+      "reason": "exec-file intentionally grants no process creation authority; use the ordinary xsh launch for nested dash as prescribed by the existing shell_launch contract",
+      "result": "failed after 11 passing cases",
+      "stage": "first guest harness"
+    }
+  ],
+  "evidence_kind": "derived_minimized_receipt",
+  "gnu_build": {
+    "config_sha256": "71df67636317f682918b5218b577e4233c54c0cc94ad75327ba12c2da4e5eb12",
+    "host_make": {
+      "available": true,
+      "executable": "make",
+      "sha256": "b5441a23f8354840947d2e9dac7f29c8a42e08cab32c0a93b8a7e9fb9f13103e",
+      "version": "GNU Make 4.4.1",
+      "version_exit_code": 0
+    },
+    "inputs": {
+      "scripts/build_gnu_gzip.py": "7c31251b696bcae7d2e3d4c6b1311c8d5f2ea8990070a85e1e0ff123a48bf2b6",
+      "scripts/gnulib_xos.py": "7b6160777a75bdce8b0df4804c33e4e986d4246614686b1867d671daa8806c09",
+      "src/ports/gnulib/README.md": "773ab319c78c13506273aff5c8a9648f66c92c53faf51b6c980024f4be046290",
+      "src/ports/gnulib/config_sub_xos.patch": "f3ba394a4d0cc275d61eb01e3f8ee4bd8f03913bc6f7ca69d866893d6124ca47",
+      "src/ports/gnulib/no_signal_xos.patch": "042850960de7dcf89c54bd2aeab504f1d65e3a8fc3c18f5ef079aa0484e6393f",
+      "src/ports/gzip/README.md": "19138b20a792b822e9899c7f2b9ed7874c96d3df76c5240319d22d59542bfc53",
+      "src/ports/gzip/keys/gzip_1_14.tar.xz.sig": "94634698bea42dad032a10fe66b8b38c4a2efacd36052410402c0c850faf1d1a",
+      "src/ports/gzip/keys/release_1_14.asc": "38c37773b56786617ee27d64c42ab90076d3774fda4d9cc70c00470f80d6b4a9",
+      "src/ports/gzip/patches/0001_xos_profile.patch": "64c26c7e2a050eaa5e43bf68c03e36b02d38ef8879fe52ed97a112cd3301c8de",
+      "src/ports/gzip/source_lock.json": "a5d24912a3615f5db6bfac108e6862869ccf77927b8941e1e189abc11a2d547c",
+      "src/ports/gzip/upstream/COPYING": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "tests/fixtures/gnulib/consumer.c": "238a04ebe1c8af74134d353c7e787306400739c05546ee143f9016840aa02da6"
+    },
+    "profile": "xos-x86_64-glibc-issue133",
+    "profile_sha256": "effeb71556aabd8e0698a1c608dc937038d8f5afe1da6d722fe05c7b2ec7f814",
+    "programs": {
+      "gnulib_consumer": {
+        "layout": {
+          "format": "static_elf64",
+          "load_and_main_stack_pages": 202,
+          "load_segments": 3,
+          "machine": "x86_64",
+          "static_tls": true
+        },
+        "path": "gnulib_consumer.elf",
+        "sha256": "58958733781e0aa8b00ddb620ff05fcabab3ae6b0b791a22286f03053f2bfece"
+      },
+      "gzip": {
+        "layout": {
+          "format": "static_elf64",
+          "load_and_main_stack_pages": 450,
+          "load_segments": 3,
+          "machine": "x86_64",
+          "static_tls": true
+        },
+        "path": "target/gzip",
+        "sha256": "2b2f22a4f351b7ef574917eb3824f6f4589d716d6deba56cf8235c45183e09ce"
+      }
+    },
+    "runtime_family": "glibc",
+    "sanitized_environment": [],
+    "sdk_binding": {
+      "guest_qualification": "not_run",
+      "profile_id": "xos-x86_64-glibc-issue133",
+      "profile_sha256": "effeb71556aabd8e0698a1c608dc937038d8f5afe1da6d722fe05c7b2ec7f814",
+      "runtime_family": "glibc",
+      "sdk_tree_sha256": "c64e70818fb84087889f3b4053cbb2326c8a18f9814104688d250b30d8ae7126",
+      "status": "candidate_binding_verified"
+    },
+    "sdk_manifest_sha256": "7b3d51c8e13c9b0435a8bdfcbe8b3adff22540e426be43741e19dfc94b56e14e",
+    "source_verification": {
+      "archive_sha256": "01a7b881bd220bfdf615f97b8718f80bdfd3f6add385b993dcf6efd14e8c0ac6",
+      "hash_algorithm": 10,
+      "primary_fingerprint": "155D3FC500C834486D1EEA677FD9FCCB000BEEEE",
+      "public_key_sha256": "38c37773b56786617ee27d64c42ab90076d3774fda4d9cc70c00470f80d6b4a9",
+      "signature_sha256": "94634698bea42dad032a10fe66b8b38c4a2efacd36052410402c0c850faf1d1a",
+      "signature_timestamp": 1744257051,
+      "signing_fingerprint": "155D3FC500C834486D1EEA677FD9FCCB000BEEEE",
+      "status": "upstream_signature_verified",
+      "status_output": "gpgv_status.txt",
+      "verifier": {
+        "available": true,
+        "executable": "gpgv",
+        "sha256": "e82416f3ae002b63c0731f311519c55fc9e7d3c8bdadbd64239833298f09a2cf",
+        "version": "gpgv (GnuPG) 2.2.40",
+        "version_exit_code": 0
+      }
+    },
+    "status": "built_not_run",
+    "steps": [
+      {
+        "log_sha256": "3f8ad39999f016ddfbdbd9e1d8008acb96c99a690e13d11fe8a9004f6a8206fa",
+        "returncode": 0,
+        "step": "config_sub_xos"
+      },
+      {
+        "log_sha256": "c4cc4f30a6bbfd4bc95c0ae87f9aa210abce4866eccfee848923eee4e7bbbb19",
+        "returncode": 0,
+        "step": "no_signal_xos"
+      },
+      {
+        "log_sha256": "4b68853ada571efb993e33514240bd95d7e923bdc283b4eac8960caef25106ab",
+        "returncode": 0,
+        "step": "0001_xos_profile"
+      },
+      {
+        "log_sha256": "3d6952002f276891ebe43f671625e5f5b07b82b58462b3feee20e523a09aac9e",
+        "returncode": 0,
+        "step": "configure"
+      },
+      {
+        "log_sha256": "abd65354611ac17b832287cb137e1d1571673dd812f5bdcad3f0e2de2a4e6b1f",
+        "returncode": 0,
+        "step": "compile"
+      },
+      {
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "returncode": 0,
+        "step": "consumer_compile"
+      },
+      {
+        "log_sha256": "0a00638c24c341ac5e8aab9dee3da1bdb0abf80d7f867bfdeeb772c797c6968c",
+        "returncode": 0,
+        "step": "consumer_link"
+      }
+    ],
+    "target": "x86_64-unknown-xos",
+    "tools": {
+      "ar": {
+        "available": true,
+        "executable": "x86_64-elf-ar",
+        "sha256": "34536c1aa11af4aa97124a17bbd4a7cddb335d6fd8c54b9b3f30ebc261d424c0",
+        "version": "GNU ar (GNU Binutils) 2.47.20260726",
+        "version_exit_code": 0
+      },
+      "as": {
+        "available": true,
+        "executable": "x86_64-elf-as",
+        "sha256": "37afceb16d9450c1e7973d8b55bb65d3d56b3c82ed10a5f733ee0726063cb1c5",
+        "version": "GNU assembler (GNU Binutils) 2.47.20260726",
+        "version_exit_code": 0
+      },
+      "gcc": {
+        "available": true,
+        "executable": "x86_64-elf-gcc",
+        "sha256": "9e7bfa60f3bb71cb815130641221cda183be6738c9aeff1558730bb994b2babf",
+        "version": "x86_64-elf-gcc (GCC) 16.2.0",
+        "version_exit_code": 0
+      },
+      "ld": {
+        "available": true,
+        "executable": "x86_64-elf-ld",
+        "sha256": "f95ae5843670ac5423cb1b746c7236dc24ff0a8dfec6aa1966ed2bf513d1ef19",
+        "version": "GNU ld (GNU Binutils) 2.47.20260726",
+        "version_exit_code": 0
+      },
+      "ranlib": {
+        "available": true,
+        "executable": "x86_64-elf-ranlib",
+        "sha256": "7428cac88865cdb9aa5750f71c66babcddf2c16c925491818ca251becd974216",
+        "version": "GNU ranlib (GNU Binutils) 2.47.20260726",
+        "version_exit_code": 0
+      }
+    },
+    "version": "1.14"
+  },
+  "guest": {
+    "baseline_os": "unchanged kernel/native services; independent source-built glibc application SDK",
+    "build_receipt_sha256": "59b59ce7e54c06ef5dc20ad99b837ea41da7685a128c74c839137920e08085f7",
+    "cases": [
+      {
+        "command": "/usr/bin/gnulib_consumer",
+        "exit_code": 0,
+        "name": "gnulib_public_interfaces",
+        "output_sha256": "44eddbfbb8ded35754863ed2b35736957e941affb2615f428a45702b4599eb94",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip --version",
+        "exit_code": 0,
+        "name": "gzip_version",
+        "output_sha256": "5159e682bea337afd4fa7c9a7a4f61a2fd6934e13965c2f55f055ee7bf1f98b8",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip --help",
+        "exit_code": 0,
+        "name": "gzip_profile_help",
+        "output_sha256": "0b5c9543d34431b59c567330164f170bd44636af4c4ad671fb4df4e5997914fe",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip -t ${XOS_GUEST_WORK}/host.gz",
+        "exit_code": 0,
+        "name": "host_stream_integrity",
+        "output_sha256": "ccc9fadca1b45d4e820bd411e89f218b7faf8101e3e6df5bac2237fb001c9650",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip -nk ${XOS_GUEST_WORK}/named",
+        "exit_code": 0,
+        "name": "named_compression_keep",
+        "output_sha256": "71b840aa15f05e1acb058b37af4f8ec33f4fb44cdbef75f087f08fb15983d932",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip -n ${XOS_GUEST_WORK}/remove",
+        "exit_code": 0,
+        "name": "named_compression_remove",
+        "output_sha256": "4b44bb730ceaf9eb99f0a7bc53b552715e5281dc6bcbb57db6f4cc819d7ebf26",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip -d ${XOS_GUEST_WORK}/remove.gz",
+        "exit_code": 0,
+        "name": "named_decompression_remove",
+        "output_sha256": "3b50fd826dbb5dbf94a340323a26c50d71bc58843c0b67014ad2c7d9237f48d6",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip -t ${XOS_GUEST_WORK}/crc.gz",
+        "exit_code": 1,
+        "name": "bad_crc_rejected",
+        "output_sha256": "9ff022025fa06371862782d85eb7d16e6914c9e8bd69ebe337c7324864139cda",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip -t ${XOS_GUEST_WORK}/truncated.gz",
+        "exit_code": 1,
+        "name": "truncated_rejected",
+        "output_sha256": "f96796756068466e3114ae79a656b950a83ee5ce6f153ebcada2b89ecd54fe6e",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip -t ${XOS_GUEST_WORK}/not_gzip",
+        "exit_code": 1,
+        "name": "non_gzip_rejected",
+        "output_sha256": "ba9a8d4f79b4003679204674d88cdfdb12213b83552c8bb2b48096aa2ea4db52",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/gzip -k ${XOS_GUEST_WORK}/missing",
+        "exit_code": 1,
+        "name": "missing_input_rejected",
+        "output_sha256": "014d37e7084e07cf1837f31e20cc0018802d3984ea2bd8ede9a5ba6ab8355c72",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/dash ${XOS_GUEST_WORK}/streams.sh",
+        "exit_code": 0,
+        "name": "dash_streams_and_pipe",
+        "output_sha256": "02efd452e1f62a081b59b8d3a79bf44dc23e29ae404af81e8fc57795941d9ca2",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      },
+      {
+        "command": "/usr/bin/dash ${XOS_GUEST_WORK}/errors.sh",
+        "exit_code": 0,
+        "name": "dash_errors_and_cleanup",
+        "output_sha256": "8703936982830a5dbe0504803ce8a1cbf697d0fc6feb0387b1096ffdf91bdad3",
+        "resources_after": [
+          129693,
+          3,
+          1
+        ]
+      }
+    ],
+    "closed_stdout_rejected": true,
+    "command_template_bindings": {
+      "XOS_GUEST_WORK": "/work"
+    },
+    "concatenated_members": true,
+    "dash_receipt_sha256": "f9a760643020e60b37dadd912b9320f3459c8ea209caf98ae9dbe11fbfc49ea0",
+    "disk_tool_sha256": "c37a86c0eb75860e4f032e6bc0b8b1958f773cbb16d62557ffb5c6b417e81210",
+    "existing_output_preserved": true,
+    "final_disk_sha256": "0d6ad00b499cb77bf458b764ab51b5dbb9144a4b32d20e961abad007c77ed25d",
+    "host_gzip": {
+      "sha256": "9cf7b607252713c39d39c0efc16db1732d4099a555b26dfae68a1544841daef9",
+      "version": "gzip 1.14"
+    },
+    "initial_disk_sha256": "453da642fbf6fe29dcd2fe6712c81ef54481fde856e4f7a43412cf2f63701443",
+    "malformed_input_preserved": true,
+    "offline_checks": [
+      {
+        "path": "/work/plain",
+        "sha256": "f9a2b412f1a7b39cc5f685848444750ec18d96975a3102656b76b8c1871dbe55"
+      },
+      {
+        "path": "/work/named",
+        "sha256": "f9a2b412f1a7b39cc5f685848444750ec18d96975a3102656b76b8c1871dbe55"
+      },
+      {
+        "path": "/work/remove",
+        "sha256": "f9a2b412f1a7b39cc5f685848444750ec18d96975a3102656b76b8c1871dbe55"
+      },
+      {
+        "path": "/work/from_host",
+        "sha256": "f9a2b412f1a7b39cc5f685848444750ec18d96975a3102656b76b8c1871dbe55"
+      },
+      {
+        "path": "/work/pipeline",
+        "sha256": "f9a2b412f1a7b39cc5f685848444750ec18d96975a3102656b76b8c1871dbe55"
+      },
+      {
+        "host_decode": "passed",
+        "path": "/work/named.gz",
+        "sha256": "bdcf095f7ad31f7f058ed54c603b377631b80c1ad98b6f1a4d8d2a4e06055ba7"
+      },
+      {
+        "host_decode": "passed",
+        "path": "/work/from_guest.gz",
+        "sha256": "bdcf095f7ad31f7f058ed54c603b377631b80c1ad98b6f1a4d8d2a4e06055ba7"
+      }
+    ],
+    "partial_named_output_removed": true,
+    "profile_limits": [
+      "no asynchronous signal handlers",
+      "no directory-fd-relative paths; use full paths",
+      "no filesystem timestamp preservation or restoration",
+      "mode copying succeeds only when projected output mode already matches",
+      "no ownership changes; FAT projects uid/gid zero"
+    ],
+    "profile_sha256": "effeb71556aabd8e0698a1c608dc937038d8f5afe1da6d722fe05c7b2ec7f814",
+    "programs": {
+      "dash": "d22105d8a742dfd68b486fedc070be322fa5f4631409429b79b0c2e2df82a02a",
+      "gnulib_consumer": "58958733781e0aa8b00ddb620ff05fcabab3ae6b0b791a22286f03053f2bfece",
+      "gzip": "2b2f22a4f351b7ef574917eb3824f6f4589d716d6deba56cf8235c45183e09ce"
+    },
+    "qemu_sha256": "bea1a94ed5686c5cc8051175990519138a703982c7e5911a7dad64601633d1bf",
+    "qemu_version": "QEMU emulator version 11.1.3 (Debian 1:11.1.3+ds-2)",
+    "resource_baseline": [
+      129693,
+      3,
+      1
+    ],
+    "resource_recovery": true,
+    "runner_inputs": {
+      "scripts/make_work_disk.py": "253258bc57e2c3ca69bfe6499688661e6d040b305157efd06628ab67405bfb71",
+      "scripts/run_qemu.py": "a4f3fd564157c7f92fb148930db2a21951eb113cc9d736e5469bda1c0f116a31",
+      "scripts/xypm_format.py": "661d1919f42e06f5ac942b5dfbcacdc4f1dffac16e0c3ee701e8c9e742bc808c",
+      "scripts/xypm_image.py": "f5a560ceb6d32c9ef78df58aa2ef6d7c4e5eae550327595eb0c54416c14800d6",
+      "tests/boot_smoke.py": "651b1226c871ec310bcf0c39107713f450c26962ce3ae28400639f4adf2aff63",
+      "tests/gnu_gzip_guest.py": "fae6c9f4d55deec1b3eff0462fc39ed8ade9b98e7a45bd4c06d4bcbeef2d9fa4",
+      "tests/process_smoke.py": "38e41d54222a2734b32000f30fe1677d10056454362f6d47e3b6259861721ee6",
+      "tests/task_smoke.py": "38ff9083d0afa4f9a77778a1bf8a689bbdba1b4307bb3d25fe9403f580a3d824"
+    },
+    "runner_sha256": "fae6c9f4d55deec1b3eff0462fc39ed8ade9b98e7a45bd4c06d4bcbeef2d9fa4",
+    "schema": 1,
+    "sdk_manifest_sha256": "7b3d51c8e13c9b0435a8bdfcbe8b3adff22540e426be43741e19dfc94b56e14e",
+    "serial_log": "serial.log",
+    "status": "passed",
+    "suite": "gnu_gzip_and_gnulib",
+    "system_build_id": "7e9d4063fa8154b7",
+    "system_iso_sha256": "bf08952e7d6126cc1b2ce060142258ffffd3e60e4ad4788b1a7ced22cf98f989",
+    "system_manifest_sha256": "3ed97262a8da8602fb7a741b3b7c44b4715e42d038b443bab647dfad1b6f5319",
+    "user_data_preserved": true
+  },
+  "license_audit": {
+    "build_id": "df4757640f8b7ec2",
+    "limits": [
+      "member mapping is declaration extraction, not a legal opinion",
+      "qt static redistribution remains NOT_GRANTED (see review report)",
+      "legacy dependency mappings retain their historical derived status; captured mappings do not grant distribution rights"
+    ],
+    "materials_checked": 10,
+    "not_completed": [],
+    "raw_report_sha256": "1deeb4b368f848de35d9c113be7337cb9e31c49069382f78c459f5722a5a64d2",
+    "scope": "registered_materials_and_sdk_copies",
+    "separate_material_build": "not the ISO used by the GNU guest qualification",
+    "status": "passed"
+  },
+  "negative_build_gates": {
+    "cases": [
+      {
+        "case": "tampered_archive",
+        "reason": "gzip archive differs from its source lock",
+        "returncode": 1,
+        "status": "passed"
+      },
+      {
+        "case": "old_sdk_prerequisite",
+        "reason": "SDK still lacks the native gnulib resource/directory prerequisites",
+        "returncode": 1,
+        "status": "passed"
+      }
+    ],
+    "schema": 1,
+    "status": "passed"
+  },
+  "not_run": [
+    "full upstream make check (requires host-side harness tools in guest)",
+    "other GNU packages or all gnulib modules",
+    "legacy newlib retrofit",
+    "binary packaging or prerelease publication",
+    "arbitrary Unix permissions/ownership, symlinks or asynchronous signals"
+  ],
+  "report_manifest_gate": {
+    "baseline_affected_directories": [
+      "glibc_v2_cpython_material_delivery_20261127",
+      "glibc_v2_current_release_20261127",
+      "glibc_v2_daily_material_delivery_20261127",
+      "glibc_v2_dash_material_delivery_20261127",
+      "glibc_v2_gnu_make_material_delivery_20261127",
+      "glibc_v2_release_upstream_source_20261127",
+      "mobius_qt_v2_replacement_20261127",
+      "mobius_widgets_v2_20261127",
+      "mobius_widgets_v2_guest_20261127",
+      "mobius_widgets_v2_reproducible_20261127"
+    ],
+    "baseline_failure_count": 17,
+    "baseline_global_status": "failed",
+    "baseline_verification": "Each affected existing manifest is byte-identical to origin/main; this PR does not modify them.",
+    "new_directory": "compliant"
+  },
+  "schema": 1,
+  "scope": "GNU gzip 1.14 and bundled gnulib on the static XOS glibc profile",
+  "sdk": {
+    "artifact_count": 1098,
+    "changed_port_inputs": {
+      "src/ports/glibc/sysdeps/xos/getdtsz.c": "5d74e3bf9c28d01c4cdd29cf9784ff8ffdc63c1f5b5ba1f0fac2caf3b8f3723b",
+      "src/ports/glibc/sysdeps/xos/getrlimit.c": "38da2e39ffd8254b04b91f0457c9212260448b608d89dad3011325df06dc18cf",
+      "src/ports/glibc/sysdeps/xos/xos_file_limits.h": "97bb42c56629231b01a30cd2309f4442237bd5411851541e971e6ae8183a9046",
+      "src/ports/glibc/sysdeps/xos/xos_file_runtime.c": "a769a373acc2c8015d483c7267c3a0437e753d6218a1ed01d94ea989669af2f2"
+    },
+    "glibc_source_sha256": "37f600f2bef3c5e8300147059568b2a2e40a7ad6ccc65ce942556d49429cc667",
+    "guest_qualification_scope": "only the changed FD queries and this GNU consumer suite; no blanket SDK release qualification",
+    "native_queries_not_stubs": [
+      "getrlimit",
+      "getdtablesize"
+    ],
+    "signature_status": "upstream_signature_verified",
+    "status": "static_sdk_built",
+    "sysconf": "remains an ENOSYS stub"
+  },
+  "source_identity": {
+    "archive_url": "https://ftp.gnu.org/gnu/gzip/gzip-1.14.tar.xz",
+    "key_export": "minimal armored public key; fingerprint and exact bytes pinned in source_lock.json",
+    "observed_keyring_sha256": "0ed9052a6d6c70bf0cfcbdc59022f94c2493c6df02973f94d19e95ab9f125812",
+    "reviewed_key_source": "https://ftp.gnu.org/gnu/gnu-keyring.gpg",
+    "signature_url": "https://ftp.gnu.org/gnu/gzip/gzip-1.14.tar.xz.sig",
+    "signer": "Jim Meyering"
+  },
+  "status": "passed"
+}
